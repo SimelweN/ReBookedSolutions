@@ -345,10 +345,30 @@ export const deleteStudyTip = async (id: string): Promise<void> => {
   }
 };
 
+// Check if study resources table exists
+const checkTableExists = async (tableName: string): Promise<boolean> => {
+  try {
+    const { error } = await supabase.from(tableName).select("id").limit(1);
+
+    return !error || error.code !== "42P01";
+  } catch (error) {
+    return false;
+  }
+};
+
 // Get all study resources
 export const getStudyResources = async (): Promise<StudyResource[]> => {
   try {
     console.log("Fetching study resources...");
+
+    // Check if table exists first
+    const tableExists = await checkTableExists("study_resources");
+    if (!tableExists) {
+      console.warn(
+        "Study resources table does not exist. Please run database migrations.",
+      );
+      return [];
+    }
 
     const { data, error } = await supabase
       .from("study_resources")
@@ -358,6 +378,15 @@ export const getStudyResources = async (): Promise<StudyResource[]> => {
 
     if (error) {
       logError("studyResourcesService.getStudyResources", error);
+
+      // Handle specific database errors
+      if (error.code === "42P01") {
+        console.warn(
+          "Study resources table not found. Database migration may be needed.",
+        );
+        return [];
+      }
+
       throw new Error("Failed to fetch study resources");
     }
 
