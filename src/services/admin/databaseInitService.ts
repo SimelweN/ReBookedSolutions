@@ -202,5 +202,3 @@ export class DatabaseInitService {
     }
   }
 }
-
-export default DatabaseInitService;
