@@ -181,7 +181,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.ru.ac.za",
     studentPortal: "https://www.ru.ac.za/students",
     admissionsContact: "admissions@ru.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: generateUniversityFaculties("ru", "Traditional University"),
     establishedYear: 1904,
     studentPopulation: 8500,
     type: "Traditional University",
@@ -207,7 +207,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.nwu.ac.za",
     studentPortal: "https://www.nwu.ac.za/students",
     admissionsContact: "admissions@nwu.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: generateUniversityFaculties("nwu", "Traditional University"),
     establishedYear: 2004,
     studentPopulation: 65000,
     type: "Traditional University",
@@ -233,7 +233,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.uwc.ac.za",
     studentPortal: "https://www.uwc.ac.za/students",
     admissionsContact: "admissions@uwc.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: generateUniversityFaculties("uwc", "Traditional University"),
     establishedYear: 1960,
     studentPopulation: 24000,
     type: "Traditional University",
@@ -259,7 +259,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.ufh.ac.za",
     studentPortal: "https://www.ufh.ac.za/students",
     admissionsContact: "admissions@ufh.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: generateUniversityFaculties("ufh", "Traditional University"),
     establishedYear: 1916,
     studentPopulation: 12000,
     type: "Traditional University",
@@ -285,7 +285,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.ul.ac.za",
     studentPortal: "https://www.ul.ac.za/students",
     admissionsContact: "admissions@ul.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: generateUniversityFaculties("ul", "Traditional University"),
     establishedYear: 2005,
     studentPopulation: 25000,
     type: "Traditional University",
@@ -313,7 +313,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.tut.ac.za",
     studentPortal: "https://www.tut.ac.za/students",
     admissionsContact: "admissions@tut.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: generateUniversityFaculties("tut", "University of Technology"),
     establishedYear: 2004,
     studentPopulation: 60000,
     type: "University of Technology",
@@ -339,7 +339,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.dut.ac.za",
     studentPortal: "https://www.dut.ac.za/students",
     admissionsContact: "admissions@dut.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: generateUniversityFaculties("dut", "University of Technology"),
     establishedYear: 2002,
     studentPopulation: 33000,
     type: "University of Technology",
@@ -365,7 +365,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.cput.ac.za",
     studentPortal: "https://www.cput.ac.za/students",
     admissionsContact: "admissions@cput.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: generateUniversityFaculties("cput", "University of Technology"),
     establishedYear: 2005,
     studentPopulation: 32000,
     type: "University of Technology",
@@ -391,7 +391,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.cut.ac.za",
     studentPortal: "https://www.cut.ac.za/students",
     admissionsContact: "admissions@cut.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: generateUniversityFaculties("cut", "University of Technology"),
     establishedYear: 1981,
     studentPopulation: 15000,
     type: "University of Technology",
@@ -417,7 +417,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.vut.ac.za",
     studentPortal: "https://www.vut.ac.za/students",
     admissionsContact: "admissions@vut.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: generateUniversityFaculties("vut", "University of Technology"),
     establishedYear: 1966,
     studentPopulation: 20000,
     type: "University of Technology",
@@ -443,7 +443,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.mut.ac.za",
     studentPortal: "https://www.mut.ac.za/students",
     admissionsContact: "admissions@mut.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: generateUniversityFaculties("mut", "University of Technology"),
     establishedYear: 1979,
     studentPopulation: 13000,
     type: "University of Technology",
@@ -471,7 +471,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.uj.ac.za",
     studentPortal: "https://www.uj.ac.za/students",
     admissionsContact: "admissions@uj.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: generateUniversityFaculties("uj", "Comprehensive University"),
     establishedYear: 2005,
     studentPopulation: 50000,
     type: "Comprehensive University",
@@ -497,7 +497,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.unisa.ac.za",
     studentPortal: "https://www.unisa.ac.za/students",
     admissionsContact: "admissions@unisa.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: generateUniversityFaculties("unisa", "Comprehensive University"),
     establishedYear: 1873,
     studentPopulation: 300000,
     type: "Comprehensive University",
@@ -523,10 +523,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.unizulu.ac.za",
     studentPortal: "https://www.unizulu.ac.za/students",
     admissionsContact: "admissions@unizulu.ac.za",
-    faculties: generateUniversityFaculties(
-      "unizul",
-      "Comprehensive University",
-    ),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1960,
     studentPopulation: 16000,
     type: "Comprehensive University",
@@ -552,7 +549,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.univen.ac.za",
     studentPortal: "https://www.univen.ac.za/students",
     admissionsContact: "admissions@univen.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: generateUniversityFaculties("uv", "Comprehensive University"),
     establishedYear: 1982,
     studentPopulation: 15000,
     type: "Comprehensive University",
@@ -578,7 +575,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.wsu.ac.za",
     studentPortal: "https://www.wsu.ac.za/students",
     admissionsContact: "admissions@wsu.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: generateUniversityFaculties("wsu", "Comprehensive University"),
     establishedYear: 2005,
     studentPopulation: 28000,
     type: "Comprehensive University",
