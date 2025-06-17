@@ -138,7 +138,7 @@ const Navbar = () => {
           </div>
 
           {/* Right Side Actions */}
-          <div className="hidden md:flex items-center space-x-2 lg:space-x-4">
+          <div className="hidden md:flex items-center space-x-2 lg:space-x-4 transition-all duration-200 ease-in-out">
             {isAuthenticated ? (
               <>
                 <CartButton />
@@ -228,7 +228,7 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden border-t border-gray-100 py-3">
+          <div className="md:hidden border-t border-gray-100 py-3 animate-in slide-in-from-top-2 duration-200">
             <div className="space-y-1">
               <Link
                 to="/books"
