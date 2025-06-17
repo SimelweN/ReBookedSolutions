@@ -14,7 +14,7 @@ export interface Activity {
   type: ActivityType;
   title: string;
   description: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   created_at: string;
 }
 
