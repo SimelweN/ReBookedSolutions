@@ -318,10 +318,23 @@ export const useNotifications = (): NotificationHookReturn => {
 
   // Cleanup retry timeout and subscription on unmount
   useEffect(() => {
+    // Set up periodic cleanup to prevent memory issues
+    const cleanupInterval = setInterval(() => {
+      // Force garbage collection of old notification data
+      if (notifications.length > 200) {
+        console.log(
+          "[NotificationHook] Cleaning up old notifications for performance",
+        );
+        setNotifications((prev) => prev.slice(-100)); // Keep only last 100 notifications
+      }
+    }, 60000); // Every minute
+
     return () => {
       console.log(
         "[NotificationHook] Component unmounting - cleaning up all resources",
       );
+
+      clearInterval(cleanupInterval);
 
       if (retryTimeoutRef.current) {
         clearTimeout(retryTimeoutRef.current);
@@ -346,7 +359,7 @@ export const useNotifications = (): NotificationHookReturn => {
       isInitialLoadRef.current = true;
       subscribingRef.current = false;
     };
-  }, []);
+  }, [notifications.length]);
 
   // Performance optimization: memoize computed values
   const unreadCount = notifications.filter((n) => !n.read).length;
