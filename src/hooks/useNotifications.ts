@@ -31,6 +31,7 @@ export const useNotifications = (): NotificationHookReturn => {
   const isInitialLoadRef = useRef(true);
   const subscriptionRef = useRef<{ unsubscribe: () => void } | null>(null);
   const refreshingRef = useRef(false); // Prevent concurrent refreshes
+  const subscribingRef = useRef(false); // Prevent multiple subscription attempts
 
   const MAX_RETRY_ATTEMPTS = 3;
   const RETRY_DELAYS = [5000, 15000, 30000]; // Progressive retry delays
@@ -198,6 +199,15 @@ export const useNotifications = (): NotificationHookReturn => {
     let debounceTimeout: NodeJS.Timeout | null = null;
     const channelName = `notifications_${user.id}_${Date.now()}`; // Add timestamp to ensure unique channel names
 
+    // Prevent multiple subscription attempts
+    if (subscribingRef.current) {
+      console.log(
+        "[NotificationHook] Subscription already in progress, skipping",
+      );
+      return;
+    }
+
+    subscribingRef.current = true;
     console.log(
       "[NotificationHook] Setting up new subscription for user:",
       user.id,
@@ -255,19 +265,22 @@ export const useNotifications = (): NotificationHookReturn => {
             "[NotificationHook] Subscription established for user:",
             user.id,
           );
+          subscribingRef.current = false; // Reset the subscribing flag
         } else if (status === "CHANNEL_ERROR") {
           console.warn(
             "[NotificationHook] Subscription error for user:",
             user.id,
           );
-          // Clear the ref on error to allow retry
+          // Clear the refs on error to allow retry
           subscriptionRef.current = null;
+          subscribingRef.current = false;
         } else if (status === "CLOSED") {
           console.log(
             "[NotificationHook] Subscription closed for user:",
             user.id,
           );
           subscriptionRef.current = null;
+          subscribingRef.current = false;
         }
       });
 
@@ -294,10 +307,12 @@ export const useNotifications = (): NotificationHookReturn => {
             error,
           );
         }
+        subscribingRef.current = false;
       };
     } catch (error) {
       console.error("Error setting up notification subscription:", error);
       subscriptionRef.current = null;
+      subscribingRef.current = false;
     }
   }, [user?.id, isAuthenticated]); // Only depend on user ID and auth status
 
@@ -329,6 +344,7 @@ export const useNotifications = (): NotificationHookReturn => {
       // Reset flags
       refreshingRef.current = false;
       isInitialLoadRef.current = true;
+      subscribingRef.current = false;
     };
   }, []);
 
