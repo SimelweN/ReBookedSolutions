@@ -424,6 +424,15 @@ export const getStudyTips = async (): Promise<StudyTip[]> => {
   try {
     console.log("Fetching study tips...");
 
+    // Check if table exists first
+    const tableExists = await checkTableExists("study_tips");
+    if (!tableExists) {
+      console.warn(
+        "Study tips table does not exist. Please run database migrations.",
+      );
+      return [];
+    }
+
     const { data, error } = await supabase
       .from("study_tips")
       .select("*")
@@ -432,6 +441,15 @@ export const getStudyTips = async (): Promise<StudyTip[]> => {
 
     if (error) {
       logError("studyResourcesService.getStudyTips", error);
+
+      // Handle specific database errors
+      if (error.code === "42P01") {
+        console.warn(
+          "Study tips table not found. Database migration may be needed.",
+        );
+        return [];
+      }
+
       throw new Error("Failed to fetch study tips");
     }
 
