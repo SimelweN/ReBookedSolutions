@@ -2115,7 +2115,7 @@ const SimpleAPSCalculator: React.FC = () => {
           <div className="lg:col-span-2">
             <Tabs
               value={activeInsight}
-              onValueChange={(value) => setActiveInsight(value as any)}
+              onValueChange={(value: string) => setActiveInsight(value)}
               className="w-full"
             >
               <TabsList className="grid grid-cols-1 sm:grid-cols-3 w-full mb-6 bg-white border border-slate-200 h-auto sm:h-10">
