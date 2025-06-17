@@ -183,7 +183,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.ru.ac.za",
     studentPortal: "https://www.ru.ac.za/students",
     admissionsContact: "admissions@ru.ac.za",
-    faculties: generateUniversityFaculties("ru", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1904,
     studentPopulation: 8500,
     type: "Traditional University",
@@ -209,7 +209,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.nwu.ac.za",
     studentPortal: "https://www.nwu.ac.za/students",
     admissionsContact: "admissions@nwu.ac.za",
-    faculties: generateUniversityFaculties("nwu", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2004,
     studentPopulation: 65000,
     type: "Traditional University",
@@ -235,7 +235,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.uwc.ac.za",
     studentPortal: "https://www.uwc.ac.za/students",
     admissionsContact: "admissions@uwc.ac.za",
-    faculties: generateUniversityFaculties("uwc", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1960,
     studentPopulation: 24000,
     type: "Traditional University",
@@ -261,7 +261,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.ufh.ac.za",
     studentPortal: "https://www.ufh.ac.za/students",
     admissionsContact: "admissions@ufh.ac.za",
-    faculties: generateUniversityFaculties("ufh", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1916,
     studentPopulation: 12000,
     type: "Traditional University",
@@ -287,7 +287,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.ul.ac.za",
     studentPortal: "https://www.ul.ac.za/students",
     admissionsContact: "admissions@ul.ac.za",
-    faculties: generateUniversityFaculties("ul", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2005,
     studentPopulation: 25000,
     type: "Traditional University",
