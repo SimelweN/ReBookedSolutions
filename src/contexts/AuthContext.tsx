@@ -144,15 +144,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         });
 
         if (session.user) {
-          // Create immediate fallback profile to prevent UI flickering
+          // Batch state updates to prevent multiple re-renders and glitching
           const fallbackProfile = createFallbackProfile(session.user);
 
-          // Set all auth state together to prevent multiple re-renders
+          // Use React's automatic batching by updating state synchronously
           setSession(session);
           setUser(session.user);
           setProfile(fallbackProfile);
+          setIsLoading(false); // Immediately stop loading for UI responsiveness
 
-          console.log("ℹ️ [AuthContext] Using immediate fallback profile");
+          console.log("ℹ️ [AuthContext] Auth state updated synchronously");
 
           // Try to load full profile in background (non-blocking)
           fetchUserProfileQuick(session.user)
@@ -359,12 +360,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("🔄 [AuthContext] Auth state changed:", {
+        event,
+        hasSession: !!session,
+      });
+
       if (session) {
         handleAuthStateChange(session, event);
       } else {
+        // Batch clear all auth state to prevent UI flickering
         setUser(null);
         setProfile(null);
         setSession(null);
+        setIsLoading(false);
+        console.log("✅ [AuthContext] Auth state cleared");
       }
     });
 

@@ -25,8 +25,8 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Prevent navbar flickering during auth initialization
-  // Only show loading for initial auth check, not for subsequent role changes
-  if (isLoading && !user) {
+  // Only show loading state during the very initial auth check
+  if (isLoading && !user && !profile) {
     return (
       <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

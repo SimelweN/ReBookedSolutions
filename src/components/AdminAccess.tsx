@@ -5,11 +5,16 @@ import { Shield } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const AdminAccess = () => {
-  const { profile, isAuthenticated, isAdmin } = useAuth();
+  const { profile, isAuthenticated, isAdmin, isLoading } = useAuth();
   const navigate = useNavigate();
 
+  // Don't render anything during loading or for non-authenticated users
+  if (isLoading || !isAuthenticated) {
+    return null;
+  }
+
   // Only show the Admin Access button if user is authenticated and is an admin
-  if (!isAuthenticated || !isAdmin) {
+  if (!isAdmin) {
     return null; // Don't render anything for non-admin users
   }
 
