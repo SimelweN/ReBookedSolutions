@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { updateAddressValidation } from "./addressValidationService";
+import { safeLogError } from "@/utils/errorHandling";
 
 interface Address {
   complex: string;
@@ -33,12 +34,7 @@ export const saveUserAddresses = async (
       .single();
 
     if (error) {
-      const errorMessage = error.message || "Unknown error";
-      console.error("Error fetching updated addresses:", {
-        message: errorMessage,
-        code: error.code,
-        details: error.details,
-      });
+      safeLogError("Error fetching updated addresses", error);
       throw error;
     }
 
@@ -49,11 +45,7 @@ export const saveUserAddresses = async (
       canListBooks: result.canListBooks,
     };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error("Error saving addresses:", {
-      message: errorMessage,
-      error: error instanceof Error ? error.stack : error,
-    });
+    safeLogError("Error saving addresses", error);
     throw error;
   }
 };
@@ -67,23 +59,16 @@ export const getUserAddresses = async (userId: string) => {
       .single();
 
     if (error) {
-      const errorMessage = error.message || "Unknown error";
-      console.error("Error fetching addresses:", {
-        message: errorMessage,
-        code: error.code,
-        details: error.details,
-      });
-      throw new Error(`Failed to fetch addresses: ${errorMessage}`);
+      safeLogError("Error fetching addresses", error);
+      throw new Error(
+        `Failed to fetch addresses: ${error.message || "Unknown error"}`,
+      );
     }
 
     return data;
   } catch (error) {
+    safeLogError("Error loading addresses", error, { userId });
     const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error("Error loading addresses:", {
-      message: errorMessage,
-      userId,
-      error: error instanceof Error ? error.stack : error,
-    });
     throw new Error(`Failed to load user addresses: ${errorMessage}`);
   }
 };
