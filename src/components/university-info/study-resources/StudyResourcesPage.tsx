@@ -77,11 +77,19 @@ const StudyResourcesPage = () => {
           type: err instanceof Error ? err.constructor.name : typeof err,
         });
 
-        // Determine appropriate error message
-        const errorMessage =
-          err instanceof Error && err.message.includes("table")
-            ? "Database not fully set up yet. Showing default study content."
-            : "Failed to load admin content. Showing default study content.";
+        // Determine appropriate error message based on error type
+        let errorMessage =
+          "Failed to load admin content. Showing default study content.";
+
+        if (err instanceof Error) {
+          if (err.message.includes("table") || err.message.includes("42P01")) {
+            errorMessage =
+              "Study resources database tables not found. Please contact admin to set up the database.";
+          } else if (err.message.includes("migrations")) {
+            errorMessage =
+              "Database setup required. Please contact admin to run migrations.";
+          }
+        }
 
         setError(errorMessage);
 
