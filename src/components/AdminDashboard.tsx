@@ -379,19 +379,19 @@ const AdminDashboard = () => {
         {/* Tab Content with improved styling */}
         <div className="mt-6">
           <TabsContent value="earnings" className="space-y-4 mt-0">
-            <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-x-auto">
               <AdminEarningsTab stats={stats} />
             </div>
           </TabsContent>
 
           <TabsContent value="users" className="space-y-4 mt-0">
-            <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-x-auto">
               <AdminUsersTab users={users} onUserAction={handleUserAction} />
             </div>
           </TabsContent>
 
           <TabsContent value="listings" className="space-y-4 mt-0">
-            <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-x-auto">
               <AdminListingsTab
                 listings={listings}
                 onListingAction={handleListingAction}
@@ -400,7 +400,7 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="programs" className="space-y-4 mt-0">
-            <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 md:p-6">
               <AdminProgramsTab />
             </div>
           </TabsContent>
