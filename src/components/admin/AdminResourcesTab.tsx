@@ -35,6 +35,8 @@ import {
   createStudyTip,
   updateStudyTip,
   deleteStudyTip,
+  getStudyResources,
+  getStudyTips,
 } from "@/services/admin/studyResourcesService";
 import { toast } from "sonner";
 import {
