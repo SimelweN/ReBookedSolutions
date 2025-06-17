@@ -44,6 +44,11 @@ const StudyResourcesPage = () => {
         const { tips: adminTips, resources: adminResources } =
           await getAllStudyContent();
 
+        console.log("Fetched admin content:", {
+          tipsCount: adminTips.length,
+          resourcesCount: adminResources.length,
+        });
+
         // Combine static content with admin-added content and sponsored content
         const combinedTips = [
           ...STUDY_TIPS,
