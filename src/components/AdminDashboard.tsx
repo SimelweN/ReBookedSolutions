@@ -406,8 +406,14 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="resources" className="space-y-4 mt-0">
-            <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 md:p-6">
               <AdminResourcesTab />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="utilities" className="space-y-4 mt-0">
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 md:p-6">
+              <AdminUtilitiesTab />
             </div>
           </TabsContent>
 
