@@ -1823,7 +1823,7 @@ const SimpleAPSCalculator: React.FC = () => {
     };
   }, [degreeAnalysis, universityMatches, totalAPS]);
 
-  // Filter degrees with pagination
+  // Filter degrees with pagination and grouping by faculty
   const filteredDegrees = useMemo(() => {
     let filtered = degreeAnalysis;
 
@@ -1841,12 +1841,44 @@ const SimpleAPSCalculator: React.FC = () => {
         case "all":
         default:
           // Show all programs, but prioritize eligible ones
+          filtered = filtered.sort((a, b) => {
+            if (a.eligible && !b.eligible) return -1;
+            if (!a.eligible && b.eligible) return 1;
+            return b.apsRequirement - a.apsRequirement;
+          });
           break;
       }
     }
 
     return filtered;
   }, [degreeAnalysis, selectedFilter, totalAPS]);
+
+  // Group programs by faculty
+  const programsByFaculty = useMemo(() => {
+    const grouped = filteredDegrees.reduce(
+      (acc, program) => {
+        const faculty = program.faculty || "Other";
+        if (!acc[faculty]) {
+          acc[faculty] = [];
+        }
+        acc[faculty].push(program);
+        return acc;
+      },
+      {} as Record<string, typeof filteredDegrees>,
+    );
+
+    // Sort faculties by number of eligible programs
+    const sortedFaculties = Object.entries(grouped)
+      .map(([faculty, programs]) => ({
+        faculty,
+        programs,
+        eligibleCount: programs.filter((p) => p.eligible).length,
+        totalCount: programs.length,
+      }))
+      .sort((a, b) => b.eligibleCount - a.eligibleCount);
+
+    return sortedFaculties;
+  }, [filteredDegrees]);
 
   // Pagination for programs display
   const displayedPrograms = useMemo(() => {
@@ -2199,81 +2231,146 @@ const SimpleAPSCalculator: React.FC = () => {
                         </Button>
                       </div>
                     ) : (
-                      <div className="space-y-4">
-                        {displayedPrograms.map((degree, index) => (
-                          <div
-                            key={index}
-                            className="p-4 border border-slate-200 rounded-lg hover:shadow-md transition-shadow"
-                          >
-                            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
-                              <div className="flex-1 min-w-0">
-                                <h4 className="font-semibold text-slate-900 mb-1">
-                                  {degree.name}
-                                </h4>
-                                <p className="text-sm text-slate-600 mb-2">
-                                  {degree.university} • {degree.faculty}
-                                </p>
-                                <p className="text-sm text-slate-700">
-                                  {degree.description}
-                                </p>
-                              </div>
-                              <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2">
-                                <Badge
-                                  variant={
-                                    degree.eligible ? "default" : "destructive"
-                                  }
-                                  className={`${degree.eligible ? "bg-emerald-600 hover:bg-emerald-700" : ""} whitespace-nowrap`}
-                                >
-                                  APS {degree.apsRequirement}
-                                </Badge>
-                                <Badge
-                                  variant="outline"
-                                  className={cn(
-                                    "whitespace-nowrap",
-                                    degree.competitiveness === "High"
-                                      ? "border-red-200 text-red-700 bg-red-50"
-                                      : degree.competitiveness === "Moderate"
-                                        ? "border-orange-200 text-orange-700 bg-orange-50"
-                                        : "border-green-200 text-green-700 bg-green-50",
-                                  )}
-                                >
-                                  {degree.competitiveness}
-                                </Badge>
-                              </div>
-                            </div>
-
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
-                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                                <span className="flex items-center gap-1 text-slate-600">
-                                  <Calendar className="h-3 w-3" />
-                                  {degree.duration}
-                                </span>
-                                {degree.eligible ? (
-                                  <span className="flex items-center gap-1 text-emerald-600">
-                                    <CheckCircle className="h-3 w-3" />
-                                    Eligible
-                                  </span>
-                                ) : (
-                                  <span className="flex items-center gap-1 text-red-600">
-                                    <AlertTriangle className="h-3 w-3" />
-                                    Need {degree.apsGap} more points
-                                  </span>
-                                )}
-                              </div>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="border-green-500 text-green-600 hover:bg-green-50 w-full sm:w-auto justify-center sm:justify-start"
+                      <div className="space-y-6">
+                        {/* Faculty Grouped Display */}
+                        {programsByFaculty
+                          .slice(
+                            0,
+                            showAllPrograms ? programsByFaculty.length : 3,
+                          )
+                          .map(
+                            ({
+                              faculty,
+                              programs,
+                              eligibleCount,
+                              totalCount,
+                            }) => (
+                              <div
+                                key={faculty}
+                                className="border border-slate-200 rounded-lg p-4"
                               >
-                                View Details
-                                <ChevronRight className="h-3 w-3 ml-1" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
+                                {/* Faculty Header */}
+                                <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+                                  <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+                                    <Building className="h-5 w-5 text-blue-500" />
+                                    {faculty}
+                                  </h3>
+                                  <div className="flex items-center gap-2">
+                                    <Badge
+                                      variant="outline"
+                                      className="bg-emerald-50 text-emerald-700 border-emerald-200"
+                                    >
+                                      {eligibleCount} eligible
+                                    </Badge>
+                                    <Badge variant="outline">
+                                      {totalCount} total
+                                    </Badge>
+                                  </div>
+                                </div>
 
-                        {/* View More Button */}
-                        {filteredDegrees.length > 6 && (
+                                {/* Programs in this faculty */}
+                                <div className="space-y-3">
+                                  {programs
+                                    .slice(
+                                      0,
+                                      showAllPrograms ? programs.length : 3,
+                                    )
+                                    .map((degree, index) => (
+                                      <div
+                                        key={index}
+                                        className={`p-3 rounded-lg border transition-shadow hover:shadow-md ${degree.eligible ? "border-emerald-200 bg-emerald-50" : "border-slate-200 bg-slate-50"}`}
+                                      >
+                                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                                          <div className="flex-1 min-w-0">
+                                            <h4 className="font-semibold text-slate-900 mb-1">
+                                              {degree.name}
+                                            </h4>
+                                            <p className="text-sm text-slate-600 mb-2">
+                                              {degree.university}
+                                            </p>
+                                            <p className="text-sm text-slate-700">
+                                              {degree.description}
+                                            </p>
+                                          </div>
+                                          <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2">
+                                            <Badge
+                                              variant={
+                                                degree.eligible
+                                                  ? "default"
+                                                  : "destructive"
+                                              }
+                                              className={`${degree.eligible ? "bg-emerald-600 hover:bg-emerald-700" : ""} whitespace-nowrap`}
+                                            >
+                                              APS {degree.apsRequirement}
+                                            </Badge>
+                                            <Badge
+                                              variant="outline"
+                                              className={cn(
+                                                "whitespace-nowrap",
+                                                degree.competitiveness ===
+                                                  "High"
+                                                  ? "border-red-200 text-red-700 bg-red-50"
+                                                  : degree.competitiveness ===
+                                                      "Moderate"
+                                                    ? "border-orange-200 text-orange-700 bg-orange-50"
+                                                    : "border-green-200 text-green-700 bg-green-50",
+                                              )}
+                                            >
+                                              {degree.competitiveness}
+                                            </Badge>
+                                          </div>
+                                        </div>
+
+                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm mt-3">
+                                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                                            <span className="flex items-center gap-1 text-slate-600">
+                                              <Calendar className="h-3 w-3" />
+                                              {degree.duration}
+                                            </span>
+                                            {degree.eligible ? (
+                                              <span className="flex items-center gap-1 text-emerald-600">
+                                                <CheckCircle className="h-3 w-3" />
+                                                Eligible
+                                              </span>
+                                            ) : (
+                                              <span className="flex items-center gap-1 text-red-600">
+                                                <AlertTriangle className="h-3 w-3" />
+                                                Need {degree.apsGap} more points
+                                              </span>
+                                            )}
+                                          </div>
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            className="border-green-500 text-green-600 hover:bg-green-50 w-full sm:w-auto justify-center sm:justify-start"
+                                          >
+                                            View Details
+                                            <ChevronRight className="h-3 w-3 ml-1" />
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    ))}
+
+                                  {/* Show more programs in this faculty */}
+                                  {!showAllPrograms && programs.length > 3 && (
+                                    <div className="text-center pt-2">
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => setShowAllPrograms(true)}
+                                        className="text-slate-600 hover:text-slate-900"
+                                      >
+                                        +{programs.length - 3} more in {faculty}
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            ),
+                          )}
+
+                        {/* View More Faculties Button */}
+                        {programsByFaculty.length > 3 && (
                           <div className="text-center mt-6 pt-4 border-t border-slate-100">
                             {!showAllPrograms ? (
                               <Button
@@ -2281,8 +2378,8 @@ const SimpleAPSCalculator: React.FC = () => {
                                 variant="outline"
                                 className="border-emerald-200 text-emerald-600 hover:bg-emerald-50"
                               >
-                                View More Programs ({filteredDegrees.length - 6}{" "}
-                                more)
+                                View All Faculties (
+                                {programsByFaculty.length - 3} more)
                               </Button>
                             ) : (
                               <Button
