@@ -24,6 +24,7 @@ const notificationCache = new Map<
   { data: Notification[]; timestamp: number }
 >();
 const CACHE_DURATION = 30000; // 30 seconds cache
+const MAX_CACHE_SIZE = 100; // Maximum number of cached entries
 
 // Abort controller for request cancellation
 let currentFetchController: AbortController | null = null;
@@ -120,6 +121,12 @@ export const getNotifications = async (
       timestamp: Date.now(),
     });
 
+    // Clean up cache periodically
+    if (Math.random() < 0.1) {
+      // 10% chance to run cleanup
+      cleanupCache();
+    }
+
     return notifications;
   } catch (error) {
     const errorMessage =
@@ -208,6 +215,28 @@ const cleanupRecentNotifications = () => {
     if (now - timestamp > DUPLICATE_PREVENTION_WINDOW) {
       recentNotifications.delete(key);
     }
+  }
+};
+
+// Helper function to clean up cache to prevent memory issues
+const cleanupCache = () => {
+  const now = Date.now();
+
+  // Remove expired entries
+  for (const [key, entry] of notificationCache.entries()) {
+    if (now - entry.timestamp > CACHE_DURATION) {
+      notificationCache.delete(key);
+    }
+  }
+
+  // If cache is still too large, remove oldest entries
+  if (notificationCache.size > MAX_CACHE_SIZE) {
+    const entries = Array.from(notificationCache.entries()).sort(
+      (a, b) => a[1].timestamp - b[1].timestamp,
+    );
+
+    const toDelete = entries.slice(0, notificationCache.size - MAX_CACHE_SIZE);
+    toDelete.forEach(([key]) => notificationCache.delete(key));
   }
 };
 
