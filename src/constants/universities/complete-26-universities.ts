@@ -9,8 +9,8 @@ import { assignComprehensivePrograms } from "@/utils/comprehensiveProgramAssignm
  * Programs are assigned using the comprehensive course allocation system.
  */
 
-// All 26 South African Public Universities
-export const ALL_26_SA_UNIVERSITIES: University[] = [
+// Base universities without programs (will be populated by comprehensive assignment)
+const BASE_UNIVERSITIES: University[] = [
   // TRADITIONAL UNIVERSITIES (11)
   {
     id: "uct",
@@ -25,7 +25,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.uct.ac.za",
     studentPortal: "https://www.uct.ac.za/students",
     admissionsContact: "admissions@uct.ac.za",
-    faculties: generateUniversityFaculties("uct", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1829,
     studentPopulation: 29000,
     type: "Traditional University",
