@@ -62,14 +62,20 @@ const logDetailedError = (context: string, error: unknown) => {
       hint: supabaseError.hint || "No hint",
     };
     console.error(`[BookQueries] ${context}:`, errorDetails);
+  } else if (error instanceof Error) {
+    // Handle standard Error objects
+    console.error(`[BookQueries] ${context}:`, {
+      message: error.message,
+      name: error.name,
+      stack: error.stack,
+    });
   } else {
-    // Handle other error types
-    const errorDetails = {
-      message: error instanceof Error ? error.message : String(error),
-      name: error instanceof Error ? error.name : "Unknown",
+    // Handle other error types (primitives, etc.)
+    console.error(`[BookQueries] ${context}:`, {
+      message: String(error),
       type: typeof error,
-    };
-    console.error(`[BookQueries] ${context}:`, errorDetails);
+      value: error,
+    });
   }
 
   // Also log to our error utility (but don't spam it)
@@ -320,6 +326,10 @@ export const getUserBooks = async (userId: string): Promise<Book[]> => {
 // Enhanced fallback function with better error handling
 const getUserBooksWithFallback = async (userId: string): Promise<Book[]> => {
   try {
+    console.log(
+      `[BookQueries] getUserBooksWithFallback started for user: ${userId}`,
+    );
+
     // Get books for user
     const { data: booksData, error: booksError } = await supabase
       .from("books")
@@ -328,11 +338,18 @@ const getUserBooksWithFallback = async (userId: string): Promise<Book[]> => {
       .order("created_at", { ascending: false });
 
     if (booksError) {
-      logDetailedError("getUserBooksWithFallback - books query", booksError);
+      logDetailedError(
+        "getUserBooksWithFallback - books query failed",
+        booksError,
+      );
       throw new Error(
         `Failed to fetch user books: ${booksError.message || "Unknown database error"}`,
       );
     }
+
+    console.log(
+      `[BookQueries] Found ${booksData?.length || 0} books for user ${userId}`,
+    );
 
     if (!booksData || booksData.length === 0) {
       return [];
@@ -349,17 +366,20 @@ const getUserBooksWithFallback = async (userId: string): Promise<Book[]> => {
 
       if (profileError) {
         logDetailedError(
-          "getUserBooksWithFallback - profile query",
+          "getUserBooksWithFallback - profile query failed",
           profileError,
         );
       } else {
         profileData = profile;
+        console.log(
+          `[BookQueries] Found profile for user ${userId}: ${profile?.name || "Anonymous"}`,
+        );
       }
     } catch (profileFetchError) {
       logDetailedError("Exception fetching user profile", profileFetchError);
     }
 
-    return booksData.map((book: any) => {
+    const mappedBooks = booksData.map((book: any) => {
       const bookData: BookQueryResult = {
         ...book,
         profiles: profileData || {
@@ -370,8 +390,24 @@ const getUserBooksWithFallback = async (userId: string): Promise<Book[]> => {
       };
       return mapBookFromDatabase(bookData);
     });
+
+    console.log(
+      `[BookQueries] Successfully mapped ${mappedBooks.length} books for user ${userId}`,
+    );
+    return mappedBooks;
   } catch (error) {
-    logDetailedError("Error in getUserBooksWithFallback", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`[BookQueries] Error in getUserBooksWithFallback:`, {
+      message: errorMessage,
+      userId,
+      error: error instanceof Error ? error.stack : error,
+    });
+
+    // If it's a network error, throw it so retry can handle it
+    if (error instanceof Error && error.message.includes("Failed to fetch")) {
+      throw error;
+    }
+
     return [];
   }
 };
