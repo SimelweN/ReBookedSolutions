@@ -189,16 +189,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
               );
             });
 
-          // Add login notification for new sign-ins only
+          // Add login notification for new sign-ins only (prevent duplicates)
           if (event === "SIGNED_IN" && !isInitializing) {
             try {
-              const lastLoginKey = `lastLogin_${session.user.id}`;
-              const lastLogin = sessionStorage.getItem(lastLoginKey);
+              const sessionKey = `loginNotification_${session.user.id}`;
+              const lastNotificationTime = sessionStorage.getItem(sessionKey);
               const now = Date.now();
 
-              // Only send notification if last login was more than 5 minutes ago
-              if (!lastLogin || now - parseInt(lastLogin) > 300000) {
-                sessionStorage.setItem(lastLoginKey, now.toString());
+              // Only send notification if:
+              // 1. No previous notification was sent in this session
+              // 2. OR last notification was more than 1 hour ago
+              const shouldSendNotification =
+                !lastNotificationTime ||
+                now - parseInt(lastNotificationTime) > 3600000; // 1 hour
+
+              if (shouldSendNotification) {
+                // Prevent race conditions by setting the timestamp immediately
+                sessionStorage.setItem(sessionKey, now.toString());
 
                 addNotification({
                   userId: session.user.id,
@@ -211,7 +218,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                     "[AuthContext] Login notification failed:",
                     notifError,
                   );
+                  // Remove the timestamp if notification failed
+                  sessionStorage.removeItem(sessionKey);
                 });
+              } else {
+                console.log(
+                  "[AuthContext] Skipping duplicate login notification",
+                );
               }
             } catch (notifError) {
               console.warn(
