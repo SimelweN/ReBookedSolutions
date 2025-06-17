@@ -661,7 +661,7 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
               Cancel
             </Button>
             <Button
-              onClick={handleDeleteDemoBooks}
+              onClick={handleDeleteDemoBooksConfirm}
               disabled={isLoading}
               className="bg-orange-600 hover:bg-orange-700"
             >
