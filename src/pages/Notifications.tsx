@@ -101,6 +101,9 @@ const Notifications = () => {
     try {
       await markNotificationAsRead(id);
       toast.success("Notification marked as read");
+
+      // Refresh notifications to show updated state
+      await refreshNotifications();
     } catch (error) {
       console.error("Error marking notification as read:", error);
       toast.error("Failed to mark notification as read");
@@ -111,6 +114,9 @@ const Notifications = () => {
     try {
       await deleteNotification(id);
       toast.success("Notification deleted");
+
+      // Refresh notifications to show updated state
+      await refreshNotifications();
     } catch (error) {
       console.error("Error deleting notification:", error);
       toast.error("Failed to delete notification");
@@ -128,6 +134,9 @@ const Notifications = () => {
 
       await markMultipleAsRead(unreadIds);
       toast.success(`Marked ${unreadIds.length} notifications as read`);
+
+      // Refresh notifications to show updated state
+      await refreshNotifications();
     } catch (error) {
       console.error("Error marking all as read:", error);
       toast.error("Failed to mark all as read");
@@ -144,6 +153,9 @@ const Notifications = () => {
       const allIds = formattedNotifications.map((n) => n.id);
       await deleteMultipleNotifications(allIds);
       toast.success(`Cleared ${allIds.length} notifications`);
+
+      // Refresh notifications to show updated state
+      await refreshNotifications();
     } catch (error) {
       console.error("Error clearing all notifications:", error);
       toast.error("Failed to clear all notifications");
