@@ -199,15 +199,6 @@ export class AdminUtilityService {
         );
       });
 
-      if (fetchError) {
-        logError("AdminUtilityService.deleteDemoBooks - fetch", fetchError);
-        return {
-          success: false,
-          deletedCount: 0,
-          message: "Failed to fetch demo books",
-        };
-      }
-
       if (!demoBooks || demoBooks.length === 0) {
         return {
           success: true,
