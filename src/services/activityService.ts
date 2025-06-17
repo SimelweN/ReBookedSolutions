@@ -329,7 +329,7 @@ export class ActivityService {
   /**
    * Helper method for detailed error logging
    */
-  private static logDetailedError(message: string, error: any): void {
+  private static logDetailedError(message: string, error: unknown): void {
     console.error(`❌ ${message}:`, {
       error: error?.message || error,
       stack: error?.stack,
