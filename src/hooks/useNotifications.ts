@@ -144,10 +144,13 @@ export const useNotifications = (): NotificationHookReturn => {
     [user, isAuthenticated],
   );
 
-  // Initial load effect
+  // Initial load effect with better duplicate prevention
   useEffect(() => {
     if (isAuthenticated && user) {
-      refreshNotifications();
+      // Only refresh if we haven't loaded data for this user yet
+      if (isInitialLoadRef.current || notifications.length === 0) {
+        refreshNotifications();
+      }
     } else {
       // Clear state when user logs out
       setNotifications([]);
@@ -161,7 +164,7 @@ export const useNotifications = (): NotificationHookReturn => {
         retryTimeoutRef.current = null;
       }
     }
-  }, [user?.id, isAuthenticated]); // Constants don't need to be in dependencies
+  }, [user?.id, isAuthenticated]); // Only depend on user ID and auth status
 
   // Set up real-time subscription for notifications with improved debouncing
   useEffect(() => {
