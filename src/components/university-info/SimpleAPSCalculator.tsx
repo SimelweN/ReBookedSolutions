@@ -1774,8 +1774,10 @@ const SimpleAPSCalculator: React.FC = () => {
     return Array.from(universityMap.values())
       .map((uni) => {
         const avgAPS = Math.round(
-          uni.programs.reduce((sum: number, p: any) => sum + p.aps, 0) /
-            uni.programs.length,
+          uni.programs.reduce(
+            (sum: number, p: { aps: number }) => sum + p.aps,
+            0,
+          ) / uni.programs.length,
         );
         let competitiveness: "High" | "Moderate" | "Accessible" = "Accessible";
         if (avgAPS >= 30) competitiveness = "High";
