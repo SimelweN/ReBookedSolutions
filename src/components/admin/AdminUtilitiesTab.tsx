@@ -167,19 +167,34 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
           </p>
         </div>
 
-        <Button
-          onClick={loadDatabaseStats}
-          disabled={isLoading}
-          variant="outline"
-          size="sm"
-        >
-          {isLoading ? (
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-          ) : (
-            <Database className="h-4 w-4 mr-2" />
-          )}
-          Refresh Stats
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={handleDeleteDemoBooks}
+            disabled={isLoading}
+            variant="destructive"
+            size="sm"
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Trash2 className="h-4 w-4 mr-2" />
+            )}
+            Delete Demo Books Now
+          </Button>
+          <Button
+            onClick={loadDatabaseStats}
+            disabled={isLoading}
+            variant="outline"
+            size="sm"
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Database className="h-4 w-4 mr-2" />
+            )}
+            Refresh Stats
+          </Button>
+        </div>
       </div>
 
       {/* Database Status */}
