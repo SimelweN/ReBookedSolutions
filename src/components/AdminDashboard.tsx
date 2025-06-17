@@ -336,8 +336,8 @@ const AdminDashboard = () => {
             </TabsList>
           </div>
         ) : (
-          // Desktop: Grid layout with cards
-          <div className="grid grid-cols-7 gap-2 p-2 bg-white border border-gray-200 rounded-lg shadow-sm">
+          // Desktop: Proper TabsList with grid styling
+          <TabsList className="grid grid-cols-7 gap-2 p-2 bg-white border border-gray-200 rounded-lg shadow-sm h-auto">
             {tabConfig.map((tab) => {
               const Icon = tab.icon;
               return (
@@ -363,7 +363,7 @@ const AdminDashboard = () => {
                 </TabsTrigger>
               );
             })}
-          </div>
+          </TabsList>
         )}
 
         {/* Tab Content with improved styling */}
