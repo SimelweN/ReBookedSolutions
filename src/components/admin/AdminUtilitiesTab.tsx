@@ -175,7 +175,7 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
   };
 
   // Load stats on component mount
-  React.useEffect(() => {
+  useEffect(() => {
     loadDatabaseStats();
   }, []);
 
