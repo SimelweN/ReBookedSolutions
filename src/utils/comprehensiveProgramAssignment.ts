@@ -1,40 +1,8 @@
 import { University, Faculty, Degree } from "@/types/university";
+import { assignAllCoursesToUniversities } from "@/constants/universities/complete-course-allocation";
 
-// University ID mappings for the exclusion rules - ALL 26 SA UNIVERSITIES
-const UNIVERSITY_MAPPINGS: Record<string, string> = {
-  // Traditional Universities (11)
-  UCT: "uct",
-  Wits: "wits",
-  SU: "stellenbosch",
-  UP: "up",
-  UKZN: "ukzn",
-  RU: "ru",
-  NWU: "nwu",
-  UFS: "ufs",
-  UWC: "uwc",
-  UFH: "ufh",
-  UL: "ul",
-
-  // Universities of Technology (6)
-  CPUT: "cput",
-  DUT: "dut",
-  TUT: "tut",
-  VUT: "vut",
-  CUT: "cut",
-  MUT: "mut",
-
-  // Comprehensive Universities (6)
-  UJ: "uj",
-  UNIZULU: "unizulu",
-  WSU: "wsu",
-  UNIVEN: "univen",
-  UMP: "ump",
-  SPU: "sol",
-
-  // Specialized Universities (3)
-  UNISA: "unisa",
-  SMU: "smu",
-};
+// Re-export the comprehensive assignment function
+export { assignAllCoursesToUniversities };
 
 // Reverse mapping for display purposes
 const UNIVERSITY_ID_TO_CODE: Record<string, string> = Object.fromEntries(
