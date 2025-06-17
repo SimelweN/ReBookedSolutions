@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { safeLogError } from "@/utils/errorHandling";
 
 interface Address {
   complex?: string;
@@ -30,25 +31,14 @@ export const canUserListBooks = async (userId: string): Promise<boolean> => {
       .single();
 
     if (error) {
-      const errorMessage = error.message || "Unknown error";
-      console.error("Error checking if user can list books:", {
-        message: errorMessage,
-        code: error.code,
-        userId,
-        details: error.details,
-      });
+      safeLogError("Error checking if user can list books", error, { userId });
       return false;
     }
 
     // User can list books if they have completed address setup
     return data?.addresses_same !== null;
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error("Error in canUserListBooks:", {
-      message: errorMessage,
-      userId,
-      error: error instanceof Error ? error.stack : error,
-    });
+    safeLogError("Error in canUserListBooks", error, { userId });
     return false;
   }
 };
@@ -77,24 +67,16 @@ export const updateAddressValidation = async (
       .eq("id", userId);
 
     if (error) {
-      const errorMessage = error.message || "Unknown error";
-      console.error("Error updating address validation:", {
-        message: errorMessage,
-        code: error.code,
-        userId,
-        details: error.details,
-      });
-      throw new Error(`Failed to update address validation: ${errorMessage}`);
+      safeLogError("Error updating address validation", error, { userId });
+      throw new Error(
+        `Failed to update address validation: ${error.message || "Unknown error"}`,
+      );
     }
 
     return { canListBooks: canList };
   } catch (error) {
+    safeLogError("Error in updateAddressValidation", error, { userId });
     const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error("Error in updateAddressValidation:", {
-      message: errorMessage,
-      userId,
-      error: error instanceof Error ? error.stack : error,
-    });
     throw new Error(`Address validation failed: ${errorMessage}`);
   }
 };
