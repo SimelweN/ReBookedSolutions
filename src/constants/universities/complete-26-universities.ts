@@ -129,7 +129,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.ukzn.ac.za",
     studentPortal: "https://www.ukzn.ac.za/students",
     admissionsContact: "admissions@ukzn.ac.za",
-    faculties: generateUniversityFaculties("ukzn", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2004,
     studentPopulation: 47000,
     type: "Traditional University",
