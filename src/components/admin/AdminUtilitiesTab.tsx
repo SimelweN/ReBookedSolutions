@@ -66,11 +66,38 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
   const loadDatabaseStats = async () => {
     setIsLoading(true);
     try {
-      const stats = await AdminUtilityService.getDatabaseStats();
+      const [stats, status] = await Promise.all([
+        AdminUtilityService.getDatabaseStats(),
+        DatabaseInitService.getDatabaseStatus(),
+      ]);
       setDbStats(stats);
+      setDbStatus(status);
     } catch (error) {
       console.error("Error loading database stats:", error);
       toast.error("Failed to load database statistics");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Initialize database tables
+  const handleInitializeDatabase = async () => {
+    setIsLoading(true);
+    try {
+      const result = await DatabaseInitService.initializeDatabase();
+      setInitResult(result);
+
+      if (result.success) {
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+
+      // Refresh status and stats
+      await loadDatabaseStats();
+    } catch (error) {
+      console.error("Error initializing database:", error);
+      toast.error("Failed to initialize database");
     } finally {
       setIsLoading(false);
     }
