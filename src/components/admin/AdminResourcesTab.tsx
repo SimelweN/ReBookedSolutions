@@ -110,84 +110,6 @@ const AdminResourcesTab = ({ className }: AdminResourcesTabProps) => {
     effectiveness: 0,
   });
 
-  // Mock data for demonstration
-  const mockResources: StudyResource[] = [
-    {
-      id: "res-1",
-      title: "Advanced Mathematics Study Guide",
-      description: "Comprehensive guide for calculus and linear algebra",
-      type: "pdf",
-      category: "Mathematics",
-      difficulty: "Advanced",
-      url: "https://example.com/math-guide.pdf",
-      rating: 4.8,
-      provider: "MathExpert",
-      duration: "3 hours",
-      tags: ["calculus", "linear-algebra", "mathematics"],
-      isActive: true,
-      isFeatured: true,
-      isSponsored: false,
-      createdAt: "2024-01-15T10:00:00Z",
-      updatedAt: "2024-01-15T10:00:00Z",
-    },
-    {
-      id: "res-2",
-      title: "Physics Video Lectures",
-      description:
-        "Interactive physics lectures covering mechanics and thermodynamics",
-      type: "video",
-      category: "Physics",
-      difficulty: "Intermediate",
-      url: "https://youtube.com/physics-lectures",
-      rating: 4.5,
-      provider: "PhysicsWorld",
-      duration: "5 hours",
-      tags: ["physics", "mechanics", "thermodynamics"],
-      isActive: true,
-      isFeatured: false,
-      isSponsored: true,
-      sponsorName: "EduTech Solutions",
-      sponsorLogo: "https://example.com/logo.png",
-      createdAt: "2024-01-14T14:30:00Z",
-      updatedAt: "2024-01-14T14:30:00Z",
-    },
-  ];
-
-  const mockTips: StudyTip[] = [
-    {
-      id: "tip-1",
-      title: "Effective Note-Taking Strategies",
-      content:
-        "Use the Cornell note-taking method for better retention. Divide your page into three sections: notes, cues, and summary.",
-      category: "Study Skills",
-      difficulty: "Beginner",
-      tags: ["note-taking", "study-skills", "productivity"],
-      isActive: true,
-      author: "Dr. Sarah Johnson",
-      estimatedTime: "15 minutes",
-      effectiveness: 85,
-      createdAt: "2024-01-13T09:15:00Z",
-      updatedAt: "2024-01-13T09:15:00Z",
-    },
-    {
-      id: "tip-2",
-      title: "Memory Palace Technique",
-      content:
-        "Create mental associations by linking information to familiar locations in your mind. This ancient technique can improve recall by up to 300%.",
-      category: "Memory",
-      difficulty: "Intermediate",
-      tags: ["memory", "mnemonics", "recall"],
-      isActive: true,
-      author: "Prof. Michael Chen",
-      estimatedTime: "30 minutes",
-      effectiveness: 92,
-      isSponsored: true,
-      sponsorName: "Memory Masters",
-      createdAt: "2024-01-12T16:45:00Z",
-      updatedAt: "2024-01-12T16:45:00Z",
-    },
-  ];
-
   useEffect(() => {
     // Load existing items when tab changes
     loadExistingItems();
@@ -196,17 +118,24 @@ const AdminResourcesTab = ({ className }: AdminResourcesTabProps) => {
   const loadExistingItems = async () => {
     setIsLoadingItems(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
       if (activeTab === "resources") {
-        setExistingResources(mockResources);
+        const resources = await getStudyResources();
+        setExistingResources(resources);
+        console.log("Loaded resources:", resources.length);
       } else {
-        setExistingTips(mockTips);
+        const tips = await getStudyTips();
+        setExistingTips(tips);
+        console.log("Loaded tips:", tips.length);
       }
     } catch (error) {
       console.error("Error loading items:", error);
       toast.error("Failed to load existing items");
+      // Set empty arrays on error
+      if (activeTab === "resources") {
+        setExistingResources([]);
+      } else {
+        setExistingTips([]);
+      }
     } finally {
       setIsLoadingItems(false);
     }
