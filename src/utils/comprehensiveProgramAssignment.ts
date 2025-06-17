@@ -4,21 +4,13 @@ import { assignAllCoursesToUniversities } from "@/constants/universities/complet
 // Re-export the comprehensive assignment function
 export { assignAllCoursesToUniversities };
 
-// Reverse mapping for display purposes
-const UNIVERSITY_ID_TO_CODE: Record<string, string> = Object.fromEntries(
-  Object.entries(UNIVERSITY_MAPPINGS).map(([code, id]) => [id, code]),
-);
-
-// Program definitions with inclusion/exclusion rules
-interface ProgramRule {
-  name: string;
-  faculty: string;
-  duration: string;
-  apsRequirement: number;
-  description: string;
-  careerProspects: string[];
-  subjects: Array<{ name: string; level: number; isRequired: boolean }>;
-  rule: "all" | { exclude: string[] } | { include: string[] };
+/**
+ * Main assignment function that uses the complete course allocation system
+ */
+export function assignComprehensivePrograms(
+  universities: University[],
+): University[] {
+  return assignAllCoursesToUniversities(universities);
 }
 
 const COMPREHENSIVE_PROGRAMS: ProgramRule[] = [
