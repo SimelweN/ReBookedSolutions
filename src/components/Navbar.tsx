@@ -167,13 +167,18 @@ const Navbar = () => {
                   <Link to="/profile">
                     <Button
                       variant="ghost"
-                      className="text-gray-700 hover:text-book-600 px-2 lg:px-3 h-10 text-sm"
+                      className="text-gray-700 hover:text-book-600 p-2 h-10 w-10 rounded-full"
                       title={profile?.name || user?.email || "Profile"}
                     >
-                      <User className="w-4 h-4" />
-                      <span className="ml-1 lg:ml-2 hidden lg:inline">
-                        {profile?.name || "Profile"}
-                      </span>
+                      {profile?.profile_picture_url ? (
+                        <img
+                          src={profile.profile_picture_url}
+                          alt={profile?.name || "Profile"}
+                          className="w-6 h-6 rounded-full object-cover"
+                        />
+                      ) : (
+                        <User className="w-5 h-5" />
+                      )}
                     </Button>
                   </Link>
 
@@ -300,8 +305,16 @@ const Navbar = () => {
                     className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-book-600 rounded-md min-h-[44px]"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <User className="w-5 h-5 mr-3" />
-                    {profile?.name || "Profile"}
+                    {profile?.profile_picture_url ? (
+                      <img
+                        src={profile.profile_picture_url}
+                        alt="Profile"
+                        className="w-6 h-6 rounded-full object-cover mr-3"
+                      />
+                    ) : (
+                      <User className="w-5 h-5 mr-3" />
+                    )}
+                    Profile
                   </Link>
 
                   <button
