@@ -480,7 +480,7 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
                 className="w-full border-orange-300 text-orange-700 hover:bg-orange-100"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
-                Delete Demo Books
+                Delete Demo Books (Confirm)
               </Button>
             </div>
 
