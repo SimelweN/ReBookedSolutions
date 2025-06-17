@@ -1,61 +1,18 @@
 import { University } from "@/types/university";
-import {
-  generateUniversityPrograms,
-  getAllFaculties,
-} from "./comprehensive-program-allocation";
+import { assignComprehensivePrograms } from "@/utils/comprehensiveProgramAssignment";
 
 /**
  * COMPLETE 26 SOUTH AFRICAN PUBLIC UNIVERSITIES
  *
  * This is the definitive list of all 26 public universities in South Africa
- * with comprehensive program allocation and proper faculty structures.
+ * with comprehensive program allocation based on the complete course list.
+ * Programs are assigned using the comprehensive course allocation system.
+ *
+ * Note: All faculties are populated via comprehensive assignment - no manual faculty generation.
  */
 
-// Function to generate comprehensive faculties for a university
-const generateUniversityFaculties = (
-  universityId: string,
-  universityType: string,
-) => {
-  const programs = generateUniversityPrograms(universityId, universityType);
-  const facultyMap = new Map();
-
-  // Debug logging for development
-  if (import.meta.env.DEV) {
-    console.log(
-      `🏫 Generating faculties for ${universityId} (${universityType}): ${programs.length} programs`,
-    );
-  }
-
-  // Group programs by faculty
-  programs.forEach((program) => {
-    const facultyKey = program.faculty;
-
-    if (!facultyMap.has(facultyKey)) {
-      facultyMap.set(facultyKey, {
-        id: `${facultyKey.toLowerCase().replace(/\s+/g, "-")}`,
-        name: `Faculty of ${facultyKey}`,
-        description: `The Faculty of ${facultyKey} offers comprehensive academic programs and research opportunities in ${facultyKey.toLowerCase()}.`,
-        degrees: [],
-      });
-    }
-
-    facultyMap.get(facultyKey)!.degrees.push(program);
-  });
-
-  const faculties = Array.from(facultyMap.values());
-
-  // Debug logging for development
-  if (import.meta.env.DEV) {
-    console.log(
-      `📚 ${universityId}: Generated ${faculties.length} faculties with total ${programs.length} programs`,
-    );
-  }
-
-  return faculties;
-};
-
-// All 26 South African Public Universities
-export const ALL_26_SA_UNIVERSITIES: University[] = [
+// Base universities without programs (will be populated by comprehensive assignment)
+const BASE_UNIVERSITIES: University[] = [
   // TRADITIONAL UNIVERSITIES (11)
   {
     id: "uct",
@@ -70,7 +27,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.uct.ac.za",
     studentPortal: "https://www.uct.ac.za/students",
     admissionsContact: "admissions@uct.ac.za",
-    faculties: generateUniversityFaculties("uct", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1829,
     studentPopulation: 29000,
     type: "Traditional University",
@@ -96,7 +53,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.wits.ac.za",
     studentPortal: "https://www.wits.ac.za/students",
     admissionsContact: "admissions@wits.ac.za",
-    faculties: generateUniversityFaculties("wits", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1922,
     studentPopulation: 40000,
     type: "Traditional University",
@@ -122,7 +79,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.sun.ac.za",
     studentPortal: "https://www.sun.ac.za/students",
     admissionsContact: "admissions@sun.ac.za",
-    faculties: generateUniversityFaculties("su", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1918,
     studentPopulation: 32000,
     type: "Traditional University",
@@ -148,7 +105,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.up.ac.za",
     studentPortal: "https://www.up.ac.za/students",
     admissionsContact: "admissions@up.ac.za",
-    faculties: generateUniversityFaculties("up", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1908,
     studentPopulation: 56000,
     type: "Traditional University",
@@ -174,7 +131,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.ukzn.ac.za",
     studentPortal: "https://www.ukzn.ac.za/students",
     admissionsContact: "admissions@ukzn.ac.za",
-    faculties: generateUniversityFaculties("ukzn", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2004,
     studentPopulation: 47000,
     type: "Traditional University",
@@ -200,7 +157,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.ufs.ac.za",
     studentPortal: "https://www.ufs.ac.za/students",
     admissionsContact: "admissions@ufs.ac.za",
-    faculties: generateUniversityFaculties("ufs", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1904,
     studentPopulation: 38000,
     type: "Traditional University",
@@ -226,7 +183,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.ru.ac.za",
     studentPortal: "https://www.ru.ac.za/students",
     admissionsContact: "admissions@ru.ac.za",
-    faculties: generateUniversityFaculties("ru", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1904,
     studentPopulation: 8500,
     type: "Traditional University",
@@ -252,7 +209,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.nwu.ac.za",
     studentPortal: "https://www.nwu.ac.za/students",
     admissionsContact: "admissions@nwu.ac.za",
-    faculties: generateUniversityFaculties("nwu", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2004,
     studentPopulation: 65000,
     type: "Traditional University",
@@ -278,7 +235,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.uwc.ac.za",
     studentPortal: "https://www.uwc.ac.za/students",
     admissionsContact: "admissions@uwc.ac.za",
-    faculties: generateUniversityFaculties("uwc", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1960,
     studentPopulation: 24000,
     type: "Traditional University",
@@ -304,7 +261,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.ufh.ac.za",
     studentPortal: "https://www.ufh.ac.za/students",
     admissionsContact: "admissions@ufh.ac.za",
-    faculties: generateUniversityFaculties("ufh", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1916,
     studentPopulation: 12000,
     type: "Traditional University",
@@ -330,7 +287,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.ul.ac.za",
     studentPortal: "https://www.ul.ac.za/students",
     admissionsContact: "admissions@ul.ac.za",
-    faculties: generateUniversityFaculties("ul", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2005,
     studentPopulation: 25000,
     type: "Traditional University",
@@ -358,7 +315,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.tut.ac.za",
     studentPortal: "https://www.tut.ac.za/students",
     admissionsContact: "admissions@tut.ac.za",
-    faculties: generateUniversityFaculties("tut", "University of Technology"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2004,
     studentPopulation: 60000,
     type: "University of Technology",
@@ -384,7 +341,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.dut.ac.za",
     studentPortal: "https://www.dut.ac.za/students",
     admissionsContact: "admissions@dut.ac.za",
-    faculties: generateUniversityFaculties("dut", "University of Technology"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2002,
     studentPopulation: 33000,
     type: "University of Technology",
@@ -410,7 +367,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.cput.ac.za",
     studentPortal: "https://www.cput.ac.za/students",
     admissionsContact: "admissions@cput.ac.za",
-    faculties: generateUniversityFaculties("cput", "University of Technology"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2005,
     studentPopulation: 32000,
     type: "University of Technology",
@@ -436,7 +393,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.cut.ac.za",
     studentPortal: "https://www.cut.ac.za/students",
     admissionsContact: "admissions@cut.ac.za",
-    faculties: generateUniversityFaculties("cut", "University of Technology"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1981,
     studentPopulation: 15000,
     type: "University of Technology",
@@ -462,7 +419,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.vut.ac.za",
     studentPortal: "https://www.vut.ac.za/students",
     admissionsContact: "admissions@vut.ac.za",
-    faculties: generateUniversityFaculties("vut", "University of Technology"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1966,
     studentPopulation: 20000,
     type: "University of Technology",
@@ -488,7 +445,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.mut.ac.za",
     studentPortal: "https://www.mut.ac.za/students",
     admissionsContact: "admissions@mut.ac.za",
-    faculties: generateUniversityFaculties("mut", "University of Technology"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1979,
     studentPopulation: 13000,
     type: "University of Technology",
@@ -516,7 +473,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.uj.ac.za",
     studentPortal: "https://www.uj.ac.za/students",
     admissionsContact: "admissions@uj.ac.za",
-    faculties: generateUniversityFaculties("uj", "Comprehensive University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2005,
     studentPopulation: 50000,
     type: "Comprehensive University",
@@ -542,7 +499,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.unisa.ac.za",
     studentPortal: "https://www.unisa.ac.za/students",
     admissionsContact: "admissions@unisa.ac.za",
-    faculties: generateUniversityFaculties("unisa", "Comprehensive University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1873,
     studentPopulation: 300000,
     type: "Comprehensive University",
@@ -568,10 +525,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.unizulu.ac.za",
     studentPortal: "https://www.unizulu.ac.za/students",
     admissionsContact: "admissions@unizulu.ac.za",
-    faculties: generateUniversityFaculties(
-      "unizul",
-      "Comprehensive University",
-    ),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1960,
     studentPopulation: 16000,
     type: "Comprehensive University",
@@ -597,7 +551,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.univen.ac.za",
     studentPortal: "https://www.univen.ac.za/students",
     admissionsContact: "admissions@univen.ac.za",
-    faculties: generateUniversityFaculties("uv", "Comprehensive University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1982,
     studentPopulation: 15000,
     type: "Comprehensive University",
@@ -623,7 +577,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.wsu.ac.za",
     studentPortal: "https://www.wsu.ac.za/students",
     admissionsContact: "admissions@wsu.ac.za",
-    faculties: generateUniversityFaculties("wsu", "Comprehensive University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2005,
     studentPopulation: 28000,
     type: "Comprehensive University",
@@ -651,7 +605,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.smu.ac.za",
     studentPortal: "https://www.smu.ac.za/students",
     admissionsContact: "admissions@smu.ac.za",
-    faculties: generateUniversityFaculties("smu", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2014,
     studentPopulation: 6000,
     type: "Traditional University",
@@ -677,7 +631,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.spu.ac.za",
     studentPortal: "https://www.spu.ac.za/students",
     admissionsContact: "admissions@spu.ac.za",
-    faculties: generateUniversityFaculties("spu", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2013,
     studentPopulation: 3000,
     type: "Traditional University",
@@ -703,7 +657,7 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     website: "https://www.ump.ac.za",
     studentPortal: "https://www.ump.ac.za/students",
     admissionsContact: "admissions@ump.ac.za",
-    faculties: generateUniversityFaculties("ump", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2013,
     studentPopulation: 4000,
     type: "Traditional University",
@@ -717,6 +671,10 @@ export const ALL_26_SA_UNIVERSITIES: University[] = [
     },
   },
 ];
+
+// Apply comprehensive program assignment to all universities
+export const ALL_26_SA_UNIVERSITIES =
+  assignComprehensivePrograms(BASE_UNIVERSITIES);
 
 // Export for compatibility
 export const ALL_SOUTH_AFRICAN_UNIVERSITIES = ALL_26_SA_UNIVERSITIES;
