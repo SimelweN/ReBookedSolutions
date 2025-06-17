@@ -315,26 +315,26 @@ const AdminDashboard = () => {
       {/* Modern Tabs Design */}
       <Tabs defaultValue="earnings" className="w-full">
         {isMobile ? (
-          // Mobile: Scrollable horizontal tabs
-          <div className="w-full overflow-x-auto">
-            <TabsList className="inline-flex w-max min-w-full h-auto p-2 bg-white border border-gray-200 rounded-lg shadow-sm">
+          // Mobile: Scrollable horizontal tabs with improved spacing
+          <div className="w-full overflow-x-auto scrollbar-hide">
+            <TabsList className="inline-flex w-max min-w-full h-auto p-1 bg-white border border-gray-200 rounded-lg shadow-sm">
               {tabConfig.map((tab) => {
                 const Icon = tab.icon;
                 return (
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
-                    className="flex flex-col items-center justify-center px-3 py-3 min-w-[80px] data-[state=active]:bg-book-600 data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-200 rounded-md"
+                    className="flex flex-col items-center justify-center px-2.5 py-2.5 min-w-[75px] data-[state=active]:bg-book-600 data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-200 rounded-md mx-0.5"
                   >
                     <div className="relative">
-                      <Icon className="h-4 w-4 mb-1" />
+                      <Icon className="h-3.5 w-3.5 mb-1" />
                       {tab.badge && tab.badge > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1 min-w-[16px] h-4 flex items-center justify-center">
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1 min-w-[14px] h-3.5 flex items-center justify-center text-[10px]">
                           {tab.badge > 99 ? "99+" : tab.badge}
                         </span>
                       )}
                     </div>
-                    <span className="text-xs font-medium truncate max-w-[60px]">
+                    <span className="text-[10px] font-medium truncate max-w-[65px] leading-tight">
                       {tab.label}
                     </span>
                   </TabsTrigger>
@@ -344,27 +344,29 @@ const AdminDashboard = () => {
           </div>
         ) : (
           // Desktop: Proper TabsList with grid styling
-          <TabsList className="grid grid-cols-7 gap-2 p-2 bg-white border border-gray-200 rounded-lg shadow-sm h-auto">
+          <TabsList className="grid grid-cols-8 gap-2 p-2 bg-white border border-gray-200 rounded-lg shadow-sm h-auto">
             {tabConfig.map((tab) => {
               const Icon = tab.icon;
               return (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="flex flex-col items-center justify-center p-4 h-auto data-[state=active]:bg-book-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-lg hover:bg-gray-50 data-[state=active]:hover:bg-book-700 group"
+                  className="flex flex-col items-center justify-center p-3 h-auto data-[state=active]:bg-book-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-lg hover:bg-gray-50 data-[state=active]:hover:bg-book-700 group"
                 >
                   <div className="relative mb-2">
                     <Icon
-                      className={`h-6 w-6 ${tab.color} group-data-[state=active]:text-white transition-colors`}
+                      className={`h-5 w-5 ${tab.color} group-data-[state=active]:text-white transition-colors`}
                     />
                     {tab.badge && tab.badge > 0 && (
-                      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] h-5 flex items-center justify-center">
+                      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[18px] h-4 flex items-center justify-center">
                         {tab.badge > 99 ? "99+" : tab.badge}
                       </span>
                     )}
                   </div>
-                  <span className="text-sm font-medium mb-1">{tab.label}</span>
-                  <span className="text-xs opacity-70 text-center line-clamp-2">
+                  <span className="text-xs font-medium mb-1 text-center">
+                    {tab.label}
+                  </span>
+                  <span className="text-[10px] opacity-70 text-center line-clamp-2 leading-tight">
                     {tab.description}
                   </span>
                 </TabsTrigger>
