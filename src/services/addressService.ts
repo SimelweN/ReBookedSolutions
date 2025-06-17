@@ -50,27 +50,40 @@ export const saveUserAddresses = async (
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error("Error saving addresses:", errorMessage);
+    console.error("Error saving addresses:", {
+      message: errorMessage,
+      error: error instanceof Error ? error.stack : error,
+    });
     throw error;
   }
 };
 
 export const getUserAddresses = async (userId: string) => {
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("pickup_address, shipping_address, addresses_same")
-    .eq("id", userId)
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("pickup_address, shipping_address, addresses_same")
+      .eq("id", userId)
+      .single();
 
-  if (error) {
-    const errorMessage = error.message || "Unknown error";
-    console.error("Error fetching addresses:", {
+    if (error) {
+      const errorMessage = error.message || "Unknown error";
+      console.error("Error fetching addresses:", {
+        message: errorMessage,
+        code: error.code,
+        details: error.details,
+      });
+      throw new Error(`Failed to fetch addresses: ${errorMessage}`);
+    }
+
+    return data;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Error loading addresses:", {
       message: errorMessage,
-      code: error.code,
-      details: error.details,
+      userId,
+      error: error instanceof Error ? error.stack : error,
     });
-    throw error;
+    throw new Error(`Failed to load user addresses: ${errorMessage}`);
   }
-
-  return data;
 };

@@ -30,14 +30,25 @@ export const canUserListBooks = async (userId: string): Promise<boolean> => {
       .single();
 
     if (error) {
-      console.error("Error checking if user can list books:", error);
+      const errorMessage = error.message || "Unknown error";
+      console.error("Error checking if user can list books:", {
+        message: errorMessage,
+        code: error.code,
+        userId,
+        details: error.details,
+      });
       return false;
     }
 
     // User can list books if they have completed address setup
     return data?.addresses_same !== null;
   } catch (error) {
-    console.error("Error in canUserListBooks:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Error in canUserListBooks:", {
+      message: errorMessage,
+      userId,
+      error: error instanceof Error ? error.stack : error,
+    });
     return false;
   }
 };
@@ -66,13 +77,24 @@ export const updateAddressValidation = async (
       .eq("id", userId);
 
     if (error) {
-      console.error("Error updating address validation:", error);
-      throw error;
+      const errorMessage = error.message || "Unknown error";
+      console.error("Error updating address validation:", {
+        message: errorMessage,
+        code: error.code,
+        userId,
+        details: error.details,
+      });
+      throw new Error(`Failed to update address validation: ${errorMessage}`);
     }
 
     return { canListBooks: canList };
   } catch (error) {
-    console.error("Error in updateAddressValidation:", error);
-    throw error;
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Error in updateAddressValidation:", {
+      message: errorMessage,
+      userId,
+      error: error instanceof Error ? error.stack : error,
+    });
+    throw new Error(`Address validation failed: ${errorMessage}`);
   }
 };
