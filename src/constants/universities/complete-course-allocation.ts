@@ -12,7 +12,7 @@ const UNIVERSITY_MAPPINGS: Record<string, string> = {
   // Traditional Universities (11)
   UCT: "uct",
   WITS: "wits",
-  SU: "stellenbosch",
+  SU: "su", // Fixed: should be "su" not "stellenbosch"
   UP: "up",
   UKZN: "ukzn",
   RU: "ru",
@@ -36,7 +36,7 @@ const UNIVERSITY_MAPPINGS: Record<string, string> = {
   WSU: "wsu",
   UNIVEN: "univen",
   UMP: "ump",
-  SPU: "sol",
+  SPU: "spu", // Fixed: should be "spu" not "sol"
 
   // Specialized Universities (3)
   UNISA: "unisa",
