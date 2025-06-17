@@ -11,6 +11,7 @@ import {
   getErrorMessage,
   logDatabaseError,
 } from "@/utils/errorUtils";
+import { safeLogError } from "@/utils/errorHandling";
 import { retryWithConnection } from "@/utils/connectionHealthCheck";
 
 // Circuit breaker to prevent error spam
@@ -52,31 +53,8 @@ const logDetailedError = (context: string, error: unknown) => {
     return;
   }
 
-  // Handle Supabase errors specifically
-  if (error && typeof error === "object" && "message" in error) {
-    const supabaseError = error as any;
-    const errorDetails = {
-      message: supabaseError.message || "Unknown error",
-      code: supabaseError.code || "NO_CODE",
-      details: supabaseError.details || "No details",
-      hint: supabaseError.hint || "No hint",
-    };
-    console.error(`[BookQueries] ${context}:`, errorDetails);
-  } else if (error instanceof Error) {
-    // Handle standard Error objects
-    console.error(`[BookQueries] ${context}:`, {
-      message: error.message,
-      name: error.name,
-      stack: error.stack,
-    });
-  } else {
-    // Handle other error types (primitives, etc.)
-    console.error(`[BookQueries] ${context}:`, {
-      message: String(error),
-      type: typeof error,
-      value: error,
-    });
-  }
+  // Use safe error logging to prevent [object Object] issues
+  safeLogError(`BookQueries - ${context}`, error);
 
   // Also log to our error utility (but don't spam it)
   if (logError && bookQueryErrorCount <= 3) {
