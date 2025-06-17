@@ -5,6 +5,7 @@ import React, {
   useState,
   useCallback,
   useMemo,
+  useRef,
 } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -77,6 +78,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [initError, setInitError] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
 
+  // Ref to track current state and prevent duplicate updates
+  const currentUserIdRef = useRef<string | null>(null);
+
   const isAuthenticated = !!user && !!session;
   const isAdmin = profile?.isAdmin === true;
 
@@ -145,16 +149,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         });
 
         if (session.user) {
-          // Batch state updates to prevent multiple re-renders and glitching
-          const fallbackProfile = createFallbackProfile(session.user);
+          // Check if this is actually a new user to prevent unnecessary updates
+          if (currentUserIdRef.current !== session.user.id) {
+            currentUserIdRef.current = session.user.id;
 
-          // Use React's automatic batching by updating state synchronously
-          setSession(session);
-          setUser(session.user);
-          setProfile(fallbackProfile);
-          setIsLoading(false); // Immediately stop loading for UI responsiveness
+            // Batch state updates to prevent multiple re-renders and glitching
+            const fallbackProfile = createFallbackProfile(session.user);
 
-          console.log("ℹ️ [AuthContext] Auth state updated synchronously");
+            // Use React's automatic batching by updating state synchronously
+            setSession(session);
+            setUser(session.user);
+            setProfile(fallbackProfile);
+            setIsLoading(false); // Immediately stop loading for UI responsiveness
+
+            console.log(
+              "ℹ️ [AuthContext] Auth state updated for new user:",
+              session.user.id,
+            );
+          } else {
+            console.log(
+              "ℹ️ [AuthContext] Skipping duplicate auth update for same user",
+            );
+          }
 
           // Try to load full profile in background (non-blocking)
           fetchUserProfileQuick(session.user)
@@ -368,6 +384,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       if (session) {
         handleAuthStateChange(session, event);
       } else {
+        // Clear user tracking ref
+        currentUserIdRef.current = null;
+
         // Batch clear all auth state to prevent UI flickering
         setUser(null);
         setProfile(null);
