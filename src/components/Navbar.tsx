@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,8 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Prevent navbar flickering during auth initialization
-  if (isLoading) {
+  // Only show loading state during the very initial auth check
+  if (isLoading && !user && !profile) {
     return (
       <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -137,7 +138,7 @@ const Navbar = () => {
           </div>
 
           {/* Right Side Actions */}
-          <div className="hidden md:flex items-center space-x-2 lg:space-x-4">
+          <div className="hidden md:flex items-center space-x-2 lg:space-x-4 transition-all duration-200 ease-in-out">
             {isAuthenticated ? (
               <>
                 <CartButton />
@@ -166,13 +167,18 @@ const Navbar = () => {
                   <Link to="/profile">
                     <Button
                       variant="ghost"
-                      className="text-gray-700 hover:text-book-600 px-2 lg:px-3 h-10 text-sm"
+                      className="text-gray-700 hover:text-book-600 p-2 h-10 w-10 rounded-full"
                       title={profile?.name || user?.email || "Profile"}
                     >
-                      <User className="w-4 h-4" />
-                      <span className="ml-1 lg:ml-2 hidden lg:inline">
-                        {profile?.name || "Profile"}
-                      </span>
+                      {profile?.profile_picture_url ? (
+                        <img
+                          src={profile.profile_picture_url}
+                          alt={profile?.name || "Profile"}
+                          className="w-6 h-6 rounded-full object-cover"
+                        />
+                      ) : (
+                        <User className="w-5 h-5" />
+                      )}
                     </Button>
                   </Link>
 
@@ -227,7 +233,7 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden border-t border-gray-100 py-3">
+          <div className="md:hidden border-t border-gray-100 py-3 animate-in slide-in-from-top-2 duration-200">
             <div className="space-y-1">
               <Link
                 to="/books"
@@ -299,8 +305,16 @@ const Navbar = () => {
                     className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-book-600 rounded-md min-h-[44px]"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <User className="w-5 h-5 mr-3" />
-                    {profile?.name || "Profile"}
+                    {profile?.profile_picture_url ? (
+                      <img
+                        src={profile.profile_picture_url}
+                        alt="Profile"
+                        className="w-6 h-6 rounded-full object-cover mr-3"
+                      />
+                    ) : (
+                      <User className="w-5 h-5 mr-3" />
+                    )}
+                    Profile
                   </Link>
 
                   <button
@@ -341,4 +355,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default memo(Navbar);

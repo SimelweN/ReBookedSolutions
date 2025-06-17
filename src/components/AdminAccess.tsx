@@ -1,16 +1,26 @@
-import { useState } from "react";
+import { memo, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Shield } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const AdminAccess = () => {
-  const { profile, isAuthenticated, isAdmin } = useAuth();
+  const { profile, isAuthenticated, isAdmin, isLoading } = useAuth();
   const navigate = useNavigate();
 
-  // Only show the Admin Access button if user is authenticated and is an admin
-  if (!isAuthenticated || !isAdmin) {
-    return null; // Don't render anything for non-admin users
+  // Memoize the visibility logic to prevent unnecessary re-renders
+  const shouldShowButton = useMemo(() => {
+    return !isLoading && isAuthenticated && isAdmin;
+  }, [isLoading, isAuthenticated, isAdmin]);
+
+  // Early return with transition-friendly approach
+  if (!shouldShowButton) {
+    return (
+      <div
+        className="opacity-0 pointer-events-none transition-opacity duration-200"
+        aria-hidden="true"
+      />
+    );
   }
 
   const handleAdminAccess = () => {
@@ -19,15 +29,17 @@ const AdminAccess = () => {
   };
 
   return (
-    <Button
-      onClick={handleAdminAccess}
-      variant="outline"
-      className="flex items-center hover:bg-book-100 min-h-[44px] touch-manipulation"
-    >
-      <Shield className="mr-2 h-4 w-4" />
-      <span>Admin</span>
-    </Button>
+    <div className="opacity-100 transition-opacity duration-200">
+      <Button
+        onClick={handleAdminAccess}
+        variant="outline"
+        className="flex items-center hover:bg-book-100 min-h-[44px] touch-manipulation transition-all duration-200"
+      >
+        <Shield className="mr-2 h-4 w-4" />
+        <span>Admin</span>
+      </Button>
+    </div>
   );
 };
 
-export default AdminAccess;
+export default memo(AdminAccess);

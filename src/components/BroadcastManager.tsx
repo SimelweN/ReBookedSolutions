@@ -23,12 +23,11 @@ const BroadcastManager = () => {
   // Always call useAuth - if it fails, the component will fail gracefully
   const { user, isAuthenticated } = useAuth();
 
-  // Early return if broadcasts are disabled
-  if (BROADCASTS_DISABLED) {
-    return null;
-  }
-
   useEffect(() => {
+    // Early return if broadcasts are disabled
+    if (BROADCASTS_DISABLED) {
+      return;
+    }
     const checkForBroadcasts = async () => {
       // Check if broadcasts are disabled for this session
       if (localStorage.getItem("broadcasts_disabled") === "true") {
@@ -116,6 +115,11 @@ const BroadcastManager = () => {
   };
 
   if (!currentBroadcast || !showBroadcast) {
+    return null;
+  }
+
+  // Early return after hooks if broadcasts are disabled
+  if (BROADCASTS_DISABLED) {
     return null;
   }
 

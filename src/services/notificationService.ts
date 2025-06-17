@@ -24,9 +24,14 @@ const notificationCache = new Map<
   { data: Notification[]; timestamp: number }
 >();
 const CACHE_DURATION = 30000; // 30 seconds cache
+const MAX_CACHE_SIZE = 100; // Maximum number of cached entries
 
 // Abort controller for request cancellation
 let currentFetchController: AbortController | null = null;
+
+// Track recent notifications to prevent duplicates
+const recentNotifications = new Map<string, number>();
+const DUPLICATE_PREVENTION_WINDOW = 60000; // 1 minute window
 
 export const getNotifications = async (
   userId: string,
@@ -116,6 +121,12 @@ export const getNotifications = async (
       timestamp: Date.now(),
     });
 
+    // Clean up cache periodically
+    if (Math.random() < 0.1) {
+      // 10% chance to run cleanup
+      cleanupCache();
+    }
+
     return notifications;
   } catch (error) {
     const errorMessage =
@@ -153,6 +164,22 @@ export const addNotification = async (
   notification: NotificationInput,
 ): Promise<void> => {
   try {
+    // Create a unique key for this notification to prevent duplicates
+    const notificationKey = `${notification.userId}-${notification.title}-${notification.type}`;
+    const now = Date.now();
+
+    // Check if we recently sent a similar notification
+    const lastSent = recentNotifications.get(notificationKey);
+    if (lastSent && now - lastSent < DUPLICATE_PREVENTION_WINDOW) {
+      console.log(
+        `[NotificationService] Preventing duplicate notification: ${notification.title}`,
+      );
+      return; // Skip sending duplicate notification
+    }
+
+    // Mark this notification as sent
+    recentNotifications.set(notificationKey, now);
+
     const { error } = await supabase.from("notifications").insert([
       {
         user_id: notification.userId,
@@ -165,14 +192,51 @@ export const addNotification = async (
 
     if (error) {
       console.error("Error adding notification:", error);
+      // Remove from recent notifications if failed
+      recentNotifications.delete(notificationKey);
       throw error;
     }
 
     // Invalidate cache after adding new notification
     notificationCache.delete(notification.userId);
+
+    // Clean up old entries from recentNotifications map
+    cleanupRecentNotifications();
   } catch (error) {
     console.error("Error in addNotification:", error);
     throw error;
+  }
+};
+
+// Helper function to clean up old entries from the recent notifications map
+const cleanupRecentNotifications = () => {
+  const now = Date.now();
+  for (const [key, timestamp] of recentNotifications.entries()) {
+    if (now - timestamp > DUPLICATE_PREVENTION_WINDOW) {
+      recentNotifications.delete(key);
+    }
+  }
+};
+
+// Helper function to clean up cache to prevent memory issues
+const cleanupCache = () => {
+  const now = Date.now();
+
+  // Remove expired entries
+  for (const [key, entry] of notificationCache.entries()) {
+    if (now - entry.timestamp > CACHE_DURATION) {
+      notificationCache.delete(key);
+    }
+  }
+
+  // If cache is still too large, remove oldest entries
+  if (notificationCache.size > MAX_CACHE_SIZE) {
+    const entries = Array.from(notificationCache.entries()).sort(
+      (a, b) => a[1].timestamp - b[1].timestamp,
+    );
+
+    const toDelete = entries.slice(0, notificationCache.size - MAX_CACHE_SIZE);
+    toDelete.forEach(([key]) => notificationCache.delete(key));
   }
 };
 

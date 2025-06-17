@@ -14,7 +14,7 @@ export interface Activity {
   type: ActivityType;
   title: string;
   description: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   created_at: string;
 }
 
@@ -62,8 +62,8 @@ export class ActivityService {
     type: ActivityType,
     title: string,
     description: string,
-    metadata?: Record<string, any>,
-  ): Promise<{ success: boolean; error?: string; details?: any }> {
+    metadata?: Record<string, unknown>,
+  ): Promise<{ success: boolean; error?: string; details?: unknown }> {
     try {
       // Validate required parameters
       if (!userId || !type || !title || !description) {
@@ -329,7 +329,7 @@ export class ActivityService {
   /**
    * Helper method for detailed error logging
    */
-  private static logDetailedError(message: string, error: any): void {
+  private static logDetailedError(message: string, error: unknown): void {
     console.error(`❌ ${message}:`, {
       error: error?.message || error,
       stack: error?.stack,

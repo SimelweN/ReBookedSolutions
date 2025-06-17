@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Bell, BellOff, AlertTriangle, RefreshCw } from "lucide-react";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useAuth } from "@/contexts/AuthContext";
@@ -152,4 +153,4 @@ const NotificationBadge = ({
   );
 };
 
-export default NotificationBadge;
+export default memo(NotificationBadge);

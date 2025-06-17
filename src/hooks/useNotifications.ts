@@ -31,6 +31,7 @@ export const useNotifications = (): NotificationHookReturn => {
   const isInitialLoadRef = useRef(true);
   const subscriptionRef = useRef<{ unsubscribe: () => void } | null>(null);
   const refreshingRef = useRef(false); // Prevent concurrent refreshes
+  const subscribingRef = useRef(false); // Prevent multiple subscription attempts
 
   const MAX_RETRY_ATTEMPTS = 3;
   const RETRY_DELAYS = [5000, 15000, 30000]; // Progressive retry delays
@@ -144,10 +145,13 @@ export const useNotifications = (): NotificationHookReturn => {
     [user, isAuthenticated],
   );
 
-  // Initial load effect
+  // Initial load effect with better duplicate prevention
   useEffect(() => {
     if (isAuthenticated && user) {
-      refreshNotifications();
+      // Only refresh if we haven't loaded data for this user yet
+      if (isInitialLoadRef.current || notifications.length === 0) {
+        refreshNotifications();
+      }
     } else {
       // Clear state when user logs out
       setNotifications([]);
@@ -161,15 +165,18 @@ export const useNotifications = (): NotificationHookReturn => {
         retryTimeoutRef.current = null;
       }
     }
-  }, [user?.id, isAuthenticated]); // Constants don't need to be in dependencies
+  }, [user?.id, isAuthenticated]); // Only depend on user ID and auth status
 
-  // Set up real-time subscription for notifications with debouncing
+  // Set up real-time subscription for notifications with proper cleanup
   useEffect(() => {
     if (!isAuthenticated || !user) {
       // Clean up any existing subscription
       if (subscriptionRef.current) {
         try {
           supabase.removeChannel(subscriptionRef.current);
+          console.log(
+            "[NotificationHook] Cleaned up subscription for logged out user",
+          );
         } catch (error) {
           console.error("Error removing notification channel:", error);
         }
@@ -178,44 +185,65 @@ export const useNotifications = (): NotificationHookReturn => {
       return;
     }
 
-    // Clean up previous subscription if it exists
+    // Always clean up existing subscription before creating new one
     if (subscriptionRef.current) {
       try {
         supabase.removeChannel(subscriptionRef.current);
+        console.log("[NotificationHook] Cleaned up existing subscription");
       } catch (error) {
-        console.error("Error removing previous notification channel:", error);
+        console.error("Error removing existing notification channel:", error);
       }
+      subscriptionRef.current = null;
     }
 
     let debounceTimeout: NodeJS.Timeout | null = null;
+    const channelName = `notifications_${user.id}_${Date.now()}`; // Add timestamp to ensure unique channel names
+
+    // Prevent multiple subscription attempts
+    if (subscribingRef.current) {
+      console.log(
+        "[NotificationHook] Subscription already in progress, skipping",
+      );
+      return;
+    }
+
+    subscribingRef.current = true;
+    console.log(
+      "[NotificationHook] Setting up new subscription for user:",
+      user.id,
+    );
 
     try {
-      subscriptionRef.current = supabase
-        .channel(`notifications_${user.id}_${Date.now()}`) // Add timestamp to ensure unique channel
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "notifications",
-            filter: `user_id=eq.${user.id}`,
-          },
-          (payload) => {
+      const channel = supabase.channel(channelName);
+
+      // Configure the channel before subscribing
+      channel.on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          console.log(
+            "[NotificationHook] Received subscription event:",
+            payload.eventType,
+          );
+
+          // Only handle INSERT events to prevent duplicate refreshes
+          if (payload.eventType === "INSERT") {
             // Debounce the refresh to prevent multiple rapid calls
             if (debounceTimeout) {
               clearTimeout(debounceTimeout);
             }
 
             debounceTimeout = setTimeout(() => {
-              // Clear cache and refresh on any notification changes
+              // Clear cache and refresh only on new notifications
               clearNotificationCache(user.id);
 
-              // Only refresh if we don't have errors or if this is an insert/update
-              // Also prevent refresh if we're already refreshing
-              if (
-                (!hasError || payload.eventType === "INSERT") &&
-                !refreshingRef.current
-              ) {
+              // Prevent refresh if we're already refreshing
+              if (!refreshingRef.current) {
                 refreshNotifications().catch((error) => {
                   if (import.meta.env.DEV) {
                     console.error(
@@ -225,47 +253,98 @@ export const useNotifications = (): NotificationHookReturn => {
                   }
                 });
               }
-            }, 2000); // Increased to 2 second debounce to reduce rapid calls
-          },
-        )
-        .subscribe((status) => {
-          if (status === "SUBSCRIBED") {
-            if (import.meta.env.DEV) {
-              console.log("Notification subscription established");
-            }
-          } else if (status === "CHANNEL_ERROR") {
-            console.warn("Notification subscription error");
+            }, 1000); // Reduced debounce time for better responsiveness
           }
-        });
+        },
+      );
 
+      // Subscribe to the channel
+      channel.subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          console.log(
+            "[NotificationHook] Subscription established for user:",
+            user.id,
+          );
+          subscribingRef.current = false; // Reset the subscribing flag
+        } else if (status === "CHANNEL_ERROR") {
+          console.warn(
+            "[NotificationHook] Subscription error for user:",
+            user.id,
+          );
+          // Clear the refs on error to allow retry
+          subscriptionRef.current = null;
+          subscribingRef.current = false;
+        } else if (status === "CLOSED") {
+          console.log(
+            "[NotificationHook] Subscription closed for user:",
+            user.id,
+          );
+          subscriptionRef.current = null;
+          subscribingRef.current = false;
+        }
+      });
+
+      // Store the channel reference
+      subscriptionRef.current = channel;
+
+      // Cleanup function
       return () => {
+        console.log(
+          "[NotificationHook] Cleaning up subscription on effect cleanup",
+        );
         if (debounceTimeout) {
           clearTimeout(debounceTimeout);
+          debounceTimeout = null;
         }
         try {
           if (subscriptionRef.current) {
             supabase.removeChannel(subscriptionRef.current);
+            subscriptionRef.current = null;
           }
         } catch (error) {
-          console.error("Error removing notification channel:", error);
+          console.error(
+            "Error removing notification channel on cleanup:",
+            error,
+          );
         }
-        subscriptionRef.current = null;
+        subscribingRef.current = false;
       };
     } catch (error) {
       console.error("Error setting up notification subscription:", error);
+      subscriptionRef.current = null;
+      subscribingRef.current = false;
     }
-  }, [user?.id, isAuthenticated, refreshNotifications]); // Include refreshNotifications
+  }, [user?.id, isAuthenticated]); // Only depend on user ID and auth status
 
   // Cleanup retry timeout and subscription on unmount
   useEffect(() => {
+    // Set up periodic cleanup to prevent memory issues
+    const cleanupInterval = setInterval(() => {
+      // Force garbage collection of old notification data
+      if (notifications.length > 200) {
+        console.log(
+          "[NotificationHook] Cleaning up old notifications for performance",
+        );
+        setNotifications((prev) => prev.slice(-100)); // Keep only last 100 notifications
+      }
+    }, 60000); // Every minute
+
     return () => {
+      console.log(
+        "[NotificationHook] Component unmounting - cleaning up all resources",
+      );
+
+      clearInterval(cleanupInterval);
+
       if (retryTimeoutRef.current) {
         clearTimeout(retryTimeoutRef.current);
         retryTimeoutRef.current = null;
       }
+
       if (subscriptionRef.current) {
         try {
           supabase.removeChannel(subscriptionRef.current);
+          console.log("[NotificationHook] Subscription cleaned up on unmount");
         } catch (error) {
           console.error(
             "Error removing notification channel on unmount:",
@@ -274,8 +353,13 @@ export const useNotifications = (): NotificationHookReturn => {
         }
         subscriptionRef.current = null;
       }
+
+      // Reset flags
+      refreshingRef.current = false;
+      isInitialLoadRef.current = true;
+      subscribingRef.current = false;
     };
-  }, []);
+  }, [notifications.length]);
 
   // Performance optimization: memoize computed values
   const unreadCount = notifications.filter((n) => !n.read).length;

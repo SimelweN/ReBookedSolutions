@@ -4,6 +4,8 @@ import React, {
   useEffect,
   useState,
   useCallback,
+  useMemo,
+  useRef,
 } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -76,6 +78,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [initError, setInitError] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
 
+  // Ref to track current state and prevent duplicate updates
+  const currentUserIdRef = useRef<string | null>(null);
+
   const isAuthenticated = !!user && !!session;
   const isAdmin = profile?.isAdmin === true;
 
@@ -143,21 +148,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           userId: session.user?.id,
         });
 
-        // Set session and user in batch to prevent flickering
-        setSession(session);
-        setUser(session.user);
-
         if (session.user) {
-          // Create immediate fallback profile to prevent UI flickering
-          const fallbackProfile = createFallbackProfile(session.user);
-          setProfile(fallbackProfile);
+          // Check if this is actually a new user to prevent unnecessary updates
+          if (currentUserIdRef.current !== session.user.id) {
+            currentUserIdRef.current = session.user.id;
 
-          console.log("ℹ️ [AuthContext] Using immediate fallback profile");
+            // Batch state updates to prevent multiple re-renders and glitching
+            const fallbackProfile = createFallbackProfile(session.user);
+
+            // Use React's automatic batching by updating state synchronously
+            setSession(session);
+            setUser(session.user);
+            setProfile(fallbackProfile);
+            setIsLoading(false); // Immediately stop loading for UI responsiveness
+
+            console.log(
+              "ℹ️ [AuthContext] Auth state updated for new user:",
+              session.user.id,
+            );
+          } else {
+            console.log(
+              "ℹ️ [AuthContext] Skipping duplicate auth update for same user",
+            );
+          }
 
           // Try to load full profile in background (non-blocking)
           fetchUserProfileQuick(session.user)
             .then((userProfile) => {
-              if (userProfile) {
+              if (userProfile && userProfile.id === session.user?.id) {
+                // Only update if profile belongs to the same user (prevent race conditions)
                 setProfile(userProfile);
                 console.log(
                   "✅ [AuthContext] Background profile load successful",
@@ -170,16 +189,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
               );
             });
 
-          // Add login notification for new sign-ins only
+          // Add login notification for new sign-ins only (prevent duplicates)
           if (event === "SIGNED_IN" && !isInitializing) {
             try {
-              const lastLoginKey = `lastLogin_${session.user.id}`;
-              const lastLogin = sessionStorage.getItem(lastLoginKey);
+              const sessionKey = `loginNotification_${session.user.id}`;
+              const lastNotificationTime = sessionStorage.getItem(sessionKey);
               const now = Date.now();
 
-              // Only send notification if last login was more than 5 minutes ago
-              if (!lastLogin || now - parseInt(lastLogin) > 300000) {
-                sessionStorage.setItem(lastLoginKey, now.toString());
+              // Only send notification if:
+              // 1. No previous notification was sent in this session
+              // 2. OR last notification was more than 1 hour ago
+              const shouldSendNotification =
+                !lastNotificationTime ||
+                now - parseInt(lastNotificationTime) > 3600000; // 1 hour
+
+              if (shouldSendNotification) {
+                // Prevent race conditions by setting the timestamp immediately
+                sessionStorage.setItem(sessionKey, now.toString());
 
                 addNotification({
                   userId: session.user.id,
@@ -192,7 +218,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                     "[AuthContext] Login notification failed:",
                     notifError,
                   );
+                  // Remove the timestamp if notification failed
+                  sessionStorage.removeItem(sessionKey);
                 });
+              } else {
+                console.log(
+                  "[AuthContext] Skipping duplicate login notification",
+                );
               }
             } catch (notifError) {
               console.warn(
@@ -258,13 +290,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         await handleAuthStateChange(session, "SESSION_RESTORED");
       } else {
         // No session found - user is not authenticated
+        // Batch state updates to prevent glitching
         setUser(null);
         setProfile(null);
         setSession(null);
+        setIsLoading(false);
       }
-
-      // Always ensure loading is turned off after initialization
-      setIsLoading(false);
 
       setAuthInitialized(true);
       console.log("✅ [AuthContext] Auth initialized successfully");
@@ -358,31 +389,57 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("🔄 [AuthContext] Auth state changed:", {
+        event,
+        hasSession: !!session,
+      });
+
       if (session) {
         handleAuthStateChange(session, event);
       } else {
+        // Clear user tracking ref
+        currentUserIdRef.current = null;
+
+        // Batch clear all auth state to prevent UI flickering
         setUser(null);
         setProfile(null);
         setSession(null);
+        setIsLoading(false);
+        console.log("✅ [AuthContext] Auth state cleared");
       }
     });
 
     return () => subscription.unsubscribe();
   }, [handleAuthStateChange]);
 
-  const value = {
-    user,
-    profile,
-    session,
-    isLoading,
-    isAuthenticated,
-    isAdmin,
-    initError,
-    login,
-    register,
-    logout,
-    refreshProfile,
-  };
+  const value = useMemo(
+    () => ({
+      user,
+      profile,
+      session,
+      isLoading,
+      isAuthenticated,
+      isAdmin,
+      initError,
+      login,
+      register,
+      logout,
+      refreshProfile,
+    }),
+    [
+      user,
+      profile,
+      session,
+      isLoading,
+      isAuthenticated,
+      isAdmin,
+      initError,
+      login,
+      register,
+      logout,
+      refreshProfile,
+    ],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

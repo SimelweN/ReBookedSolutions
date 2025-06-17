@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { createBook } from "@/services/book/bookMutations";
 import { BookFormData } from "@/types/book";
 import { toast } from "sonner";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, AlertTriangle } from "lucide-react";
 import MultiImageUpload from "@/components/MultiImageUpload";
 import FirstUploadSuccessDialog from "@/components/FirstUploadSuccessDialog";
 import PostListingSuccessDialog from "@/components/PostListingSuccessDialog";
@@ -20,6 +20,8 @@ import { BookInformationForm } from "@/components/create-listing/BookInformation
 import { PricingSection } from "@/components/create-listing/PricingSection";
 import { BookTypeSection } from "@/components/create-listing/BookTypeSection";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { canUserListBooks } from "@/services/addressValidationService";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const CreateListing = () => {
   const { user, profile } = useAuth();
@@ -53,6 +55,31 @@ const CreateListing = () => {
   const [showFirstUploadDialog, setShowFirstUploadDialog] = useState(false);
   const [showPostListingDialog, setShowPostListingDialog] = useState(false);
   const [showShareProfileDialog, setShowShareProfileDialog] = useState(false);
+  const [canListBooks, setCanListBooks] = useState<boolean | null>(null);
+  const [isCheckingAddress, setIsCheckingAddress] = useState(true);
+
+  // Check if user can list books on component mount
+  useEffect(() => {
+    const checkAddressStatus = async () => {
+      if (!user) {
+        setCanListBooks(false);
+        setIsCheckingAddress(false);
+        return;
+      }
+
+      try {
+        const canList = await canUserListBooks(user.id);
+        setCanListBooks(canList);
+      } catch (error) {
+        console.error("Error checking address status:", error);
+        setCanListBooks(false);
+      } finally {
+        setIsCheckingAddress(false);
+      }
+    };
+
+    checkAddressStatus();
+  }, [user]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -134,6 +161,20 @@ const CreateListing = () => {
     // Prevent double submission
     if (isSubmitting) return;
 
+    if (!user) {
+      toast.error("You must be logged in to create a listing");
+      return;
+    }
+
+    // Check if user can list books before validating form
+    if (canListBooks === false) {
+      toast.error(
+        "Please add a pickup address in your profile before listing books",
+      );
+      navigate("/profile");
+      return;
+    }
+
     if (!validateForm()) {
       const firstErrorField = Object.keys(errors)[0];
       if (firstErrorField) {
@@ -141,11 +182,6 @@ const CreateListing = () => {
         element?.scrollIntoView({ behavior: "smooth", block: "center" });
       }
       toast.error("Please fill in all required fields and upload all photos");
-      return;
-    }
-
-    if (!user) {
-      toast.error("You must be logged in to create a listing");
       return;
     }
 
@@ -248,6 +284,41 @@ const CreateListing = () => {
       <div
         className={`container mx-auto ${isMobile ? "px-2" : "px-4"} py-4 md:py-8 max-w-2xl`}
       >
+        {/* Address Requirement Alert */}
+        {!isCheckingAddress && canListBooks === false && (
+          <Alert className="mb-6 border-orange-200 bg-orange-50">
+            <AlertTriangle className="h-4 w-4 text-orange-600" />
+            <AlertDescription className="text-orange-800">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="font-medium">Pickup Address Required</span>
+                  <p className="text-sm mt-1">
+                    You need to set a pickup address in your profile before you
+                    can list books for sale.
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/profile")}
+                  className="ml-4 border-orange-300 text-orange-700 hover:bg-orange-100"
+                >
+                  Go to Profile
+                </Button>
+              </div>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Loading Address Check */}
+        {isCheckingAddress && (
+          <Alert className="mb-6">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <AlertDescription>
+              Checking address requirements...
+            </AlertDescription>
+          </Alert>
+        )}
+
         <Button
           variant="ghost"
           onClick={() => navigate(-1)}
@@ -336,14 +407,23 @@ const CreateListing = () => {
 
             <Button
               type="submit"
-              disabled={isSubmitting}
-              className={`w-full bg-book-600 hover:bg-book-700 text-white ${isMobile ? "py-3 h-12 text-base" : "py-3 text-lg"} touch-manipulation`}
+              disabled={
+                isSubmitting || isCheckingAddress || canListBooks === false
+              }
+              className={`w-full ${canListBooks === false ? "bg-gray-400 cursor-not-allowed" : "bg-book-600 hover:bg-book-700"} text-white ${isMobile ? "py-3 h-12 text-base" : "py-3 text-lg"} touch-manipulation`}
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   Creating Listing...
                 </>
+              ) : isCheckingAddress ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Checking Address...
+                </>
+              ) : canListBooks === false ? (
+                "Pickup Address Required"
               ) : (
                 "Create Listing"
               )}
