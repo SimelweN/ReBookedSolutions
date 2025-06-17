@@ -606,7 +606,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.smu.ac.za",
     studentPortal: "https://www.smu.ac.za/students",
     admissionsContact: "admissions@smu.ac.za",
-    faculties: generateUniversityFaculties("smu", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2014,
     studentPopulation: 6000,
     type: "Traditional University",
