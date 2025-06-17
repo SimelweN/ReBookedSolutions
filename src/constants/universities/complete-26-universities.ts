@@ -673,6 +673,10 @@ const BASE_UNIVERSITIES: University[] = [
   },
 ];
 
+// Apply comprehensive program assignment to all universities
+export const ALL_26_SA_UNIVERSITIES =
+  assignComprehensivePrograms(BASE_UNIVERSITIES);
+
 // Export for compatibility
 export const ALL_SOUTH_AFRICAN_UNIVERSITIES = ALL_26_SA_UNIVERSITIES;
 
