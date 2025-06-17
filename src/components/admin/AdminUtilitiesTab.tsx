@@ -60,7 +60,12 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
     allTablesExist: false,
     missingTables: [] as string[],
   });
-  const [initResult, setInitResult] = useState<any>(null);
+  const [initResult, setInitResult] = useState<{
+    success: boolean;
+    message: string;
+    tablesCreated: string[];
+    errors: string[];
+  } | null>(null);
 
   // Load database statistics
   const loadDatabaseStats = async () => {
