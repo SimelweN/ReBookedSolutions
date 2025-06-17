@@ -182,6 +182,93 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
         </Button>
       </div>
 
+      {/* Database Status */}
+      <Card
+        className={
+          !dbStatus.allTablesExist
+            ? "border-yellow-200 bg-yellow-50"
+            : "border-green-200 bg-green-50"
+        }
+      >
+        <CardHeader>
+          <CardTitle
+            className={`flex items-center gap-2 ${!dbStatus.allTablesExist ? "text-yellow-700" : "text-green-700"}`}
+          >
+            <Database className="h-5 w-5" />
+            Database Status
+          </CardTitle>
+          <CardDescription>
+            {dbStatus.allTablesExist
+              ? "All required database tables are available"
+              : `Missing tables: ${dbStatus.missingTables.join(", ")}`}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-center justify-between p-3 border rounded-lg">
+                <span className="font-medium">Study Resources Table</span>
+                <div className="flex items-center gap-2">
+                  {dbStatus.studyResourcesExists ? (
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                  ) : (
+                    <XCircle className="h-5 w-5 text-red-600" />
+                  )}
+                  <span
+                    className={`text-sm ${dbStatus.studyResourcesExists ? "text-green-700" : "text-red-700"}`}
+                  >
+                    {dbStatus.studyResourcesExists ? "Exists" : "Missing"}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between p-3 border rounded-lg">
+                <span className="font-medium">Study Tips Table</span>
+                <div className="flex items-center gap-2">
+                  {dbStatus.studyTipsExists ? (
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                  ) : (
+                    <XCircle className="h-5 w-5 text-red-600" />
+                  )}
+                  <span
+                    className={`text-sm ${dbStatus.studyTipsExists ? "text-green-700" : "text-red-700"}`}
+                  >
+                    {dbStatus.studyTipsExists ? "Exists" : "Missing"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {!dbStatus.allTablesExist && (
+              <div className="p-4 bg-yellow-100 border border-yellow-200 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                  <h4 className="font-medium text-yellow-800">
+                    Database Setup Required
+                  </h4>
+                </div>
+                <p className="text-sm text-yellow-700 mb-4">
+                  The study resources and tips features require database tables
+                  that are currently missing. Click the button below to create
+                  them automatically.
+                </p>
+                <Button
+                  onClick={handleInitializeDatabase}
+                  disabled={isLoading}
+                  className="bg-yellow-600 hover:bg-yellow-700"
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Database className="h-4 w-4 mr-2" />
+                  )}
+                  Initialize Database Tables
+                </Button>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Database Statistics */}
       <Card>
         <CardHeader>
@@ -240,6 +327,59 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Database Initialization Result */}
+      {initResult && (
+        <Card
+          className={
+            initResult.success
+              ? "border-green-200 bg-green-50"
+              : "border-red-200 bg-red-50"
+          }
+        >
+          <CardHeader>
+            <CardTitle
+              className={`flex items-center gap-2 ${initResult.success ? "text-green-700" : "text-red-700"}`}
+            >
+              {initResult.success ? (
+                <CheckCircle className="h-5 w-5" />
+              ) : (
+                <XCircle className="h-5 w-5" />
+              )}
+              Database Initialization Result
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <p
+                className={
+                  initResult.success ? "text-green-800" : "text-red-800"
+                }
+              >
+                {initResult.message}
+              </p>
+              {initResult.tablesCreated.length > 0 && (
+                <p className="text-sm text-gray-600">
+                  Tables created:{" "}
+                  <Badge variant="outline">
+                    {initResult.tablesCreated.join(", ")}
+                  </Badge>
+                </p>
+              )}
+              {initResult.errors && initResult.errors.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-sm text-red-700 font-medium">Errors:</p>
+                  <ul className="list-disc list-inside text-sm text-red-600 space-y-1">
+                    {initResult.errors.map((error: string, index: number) => (
+                      <li key={index}>{error}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Bulk Operations */}
       <Card className="border-2 border-red-200">
