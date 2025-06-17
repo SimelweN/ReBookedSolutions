@@ -1,6 +1,6 @@
 import { University } from "@/types/university";
 import {
-  assignAllCoursesToUniversities,
+  assignAllCoursesToUniversities as assignCoursesToUniversities,
   getCoursesForUniversity,
   getCourseAllocationStats,
   COMPREHENSIVE_COURSES,
@@ -17,7 +17,7 @@ import {
 export function assignComprehensivePrograms(
   universities: University[],
 ): University[] {
-  return assignAllCoursesToUniversities(universities);
+  return assignCoursesToUniversities(universities);
 }
 
 // Re-export utility functions for external use
