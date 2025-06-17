@@ -304,13 +304,19 @@ export const useNotifications = (): NotificationHookReturn => {
   // Cleanup retry timeout and subscription on unmount
   useEffect(() => {
     return () => {
+      console.log(
+        "[NotificationHook] Component unmounting - cleaning up all resources",
+      );
+
       if (retryTimeoutRef.current) {
         clearTimeout(retryTimeoutRef.current);
         retryTimeoutRef.current = null;
       }
+
       if (subscriptionRef.current) {
         try {
           supabase.removeChannel(subscriptionRef.current);
+          console.log("[NotificationHook] Subscription cleaned up on unmount");
         } catch (error) {
           console.error(
             "Error removing notification channel on unmount:",
@@ -319,6 +325,10 @@ export const useNotifications = (): NotificationHookReturn => {
         }
         subscriptionRef.current = null;
       }
+
+      // Reset flags
+      refreshingRef.current = false;
+      isInitialLoadRef.current = true;
     };
   }, []);
 
