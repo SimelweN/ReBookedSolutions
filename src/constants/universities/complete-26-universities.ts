@@ -51,7 +51,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.wits.ac.za",
     studentPortal: "https://www.wits.ac.za/students",
     admissionsContact: "admissions@wits.ac.za",
-    faculties: generateUniversityFaculties("wits", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1922,
     studentPopulation: 40000,
     type: "Traditional University",
