@@ -261,13 +261,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         await handleAuthStateChange(session, "SESSION_RESTORED");
       } else {
         // No session found - user is not authenticated
+        // Batch state updates to prevent glitching
         setUser(null);
         setProfile(null);
         setSession(null);
+        setIsLoading(false);
       }
-
-      // Always ensure loading is turned off after initialization
-      setIsLoading(false);
 
       setAuthInitialized(true);
       console.log("✅ [AuthContext] Auth initialized successfully");
