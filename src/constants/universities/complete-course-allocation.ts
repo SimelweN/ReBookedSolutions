@@ -3843,7 +3843,7 @@ function generateUniversityAPS(
   const prestigeAdjustments: Record<string, number> = {
     uct: 3,
     wits: 3,
-    stellenbosch: 2,
+    su: 2, // Fixed: use "su" instead of "stellenbosch"
     up: 2,
     ukzn: 1,
     ufs: 1,
