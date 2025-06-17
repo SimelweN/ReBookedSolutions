@@ -59,8 +59,8 @@ export const updateAddressValidation = async (
     const { error } = await supabase
       .from("profiles")
       .update({
-        pickup_address: pickupAddress as any,
-        shipping_address: shippingAddress as any,
+        pickup_address: pickupAddress as Record<string, unknown>,
+        shipping_address: shippingAddress as Record<string, unknown>,
         addresses_same: addressesSame,
         updated_at: new Date().toISOString(),
       })
