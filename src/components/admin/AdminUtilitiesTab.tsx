@@ -127,8 +127,31 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
     }
   };
 
-  // Handle delete demo books
+  // Handle delete demo books (immediate action)
   const handleDeleteDemoBooks = async () => {
+    setIsLoading(true);
+    try {
+      const result = await AdminUtilityService.deleteDemoBooks();
+      setLastResult(result);
+
+      if (result.success) {
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+
+      // Refresh stats
+      await loadDatabaseStats();
+    } catch (error) {
+      console.error("Error deleting demo books:", error);
+      toast.error("Failed to delete demo books");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle delete demo books (with confirmation dialog)
+  const handleDeleteDemoBooksConfirm = async () => {
     setIsLoading(true);
     try {
       const result = await AdminUtilityService.deleteDemoBooks();
