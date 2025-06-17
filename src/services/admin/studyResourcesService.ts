@@ -224,6 +224,14 @@ export const createStudyTip = async (
   try {
     console.log("Creating study tip:", data);
 
+    // Check if table exists first
+    const tableExists = await checkTableExists("study_tips");
+    if (!tableExists) {
+      throw new Error(
+        "Study tips table does not exist. Please run database migrations first.",
+      );
+    }
+
     const tipData = {
       title: data.title,
       content: data.content,
@@ -249,6 +257,13 @@ export const createStudyTip = async (
 
     if (error) {
       logError("studyResourcesService.createStudyTip", error);
+
+      if (error.code === "42P01") {
+        throw new Error(
+          "Study tips table not found. Database migration needed.",
+        );
+      }
+
       throw new Error("Failed to create study tip");
     }
 
