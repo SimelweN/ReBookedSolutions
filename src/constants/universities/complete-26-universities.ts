@@ -1,58 +1,13 @@
 import { University } from "@/types/university";
-import {
-  generateUniversityPrograms,
-  getAllFaculties,
-} from "./comprehensive-program-allocation";
+import { assignComprehensivePrograms } from "@/utils/comprehensiveProgramAssignment";
 
 /**
  * COMPLETE 26 SOUTH AFRICAN PUBLIC UNIVERSITIES
  *
  * This is the definitive list of all 26 public universities in South Africa
- * with comprehensive program allocation and proper faculty structures.
+ * with comprehensive program allocation based on the complete course list.
+ * Programs are assigned using the comprehensive course allocation system.
  */
-
-// Function to generate comprehensive faculties for a university
-const generateUniversityFaculties = (
-  universityId: string,
-  universityType: string,
-) => {
-  const programs = generateUniversityPrograms(universityId, universityType);
-  const facultyMap = new Map();
-
-  // Debug logging for development
-  if (import.meta.env.DEV) {
-    console.log(
-      `🏫 Generating faculties for ${universityId} (${universityType}): ${programs.length} programs`,
-    );
-  }
-
-  // Group programs by faculty
-  programs.forEach((program) => {
-    const facultyKey = program.faculty;
-
-    if (!facultyMap.has(facultyKey)) {
-      facultyMap.set(facultyKey, {
-        id: `${facultyKey.toLowerCase().replace(/\s+/g, "-")}`,
-        name: `Faculty of ${facultyKey}`,
-        description: `The Faculty of ${facultyKey} offers comprehensive academic programs and research opportunities in ${facultyKey.toLowerCase()}.`,
-        degrees: [],
-      });
-    }
-
-    facultyMap.get(facultyKey)!.degrees.push(program);
-  });
-
-  const faculties = Array.from(facultyMap.values());
-
-  // Debug logging for development
-  if (import.meta.env.DEV) {
-    console.log(
-      `📚 ${universityId}: Generated ${faculties.length} faculties with total ${programs.length} programs`,
-    );
-  }
-
-  return faculties;
-};
 
 // All 26 South African Public Universities
 export const ALL_26_SA_UNIVERSITIES: University[] = [
