@@ -248,21 +248,50 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
                 </div>
                 <p className="text-sm text-yellow-700 mb-4">
                   The study resources and tips features require database tables
-                  that are currently missing. Click the button below to create
-                  them automatically.
+                  that are currently missing. Please run the SQL script manually
+                  in your Supabase dashboard.
                 </p>
-                <Button
-                  onClick={handleInitializeDatabase}
-                  disabled={isLoading}
-                  className="bg-yellow-600 hover:bg-yellow-700"
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  ) : (
-                    <Database className="h-4 w-4 mr-2" />
-                  )}
-                  Initialize Database Tables
-                </Button>
+                <div className="space-y-3">
+                  <div className="p-3 bg-white border border-yellow-300 rounded text-xs">
+                    <p className="font-medium text-gray-800 mb-2">
+                      Manual Setup Instructions:
+                    </p>
+                    <ol className="list-decimal list-inside space-y-1 text-gray-700">
+                      <li>Go to your Supabase project dashboard</li>
+                      <li>Open the SQL Editor</li>
+                      <li>
+                        Copy and paste the SQL from{" "}
+                        <code>database_setup.sql</code>
+                      </li>
+                      <li>Run the script</li>
+                      <li>Refresh this page</li>
+                    </ol>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={handleInitializeDatabase}
+                      disabled={isLoading}
+                      variant="outline"
+                      size="sm"
+                    >
+                      {isLoading ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Database className="h-4 w-4 mr-2" />
+                      )}
+                      Try Auto-Setup
+                    </Button>
+                    <Button
+                      onClick={loadDatabaseStats}
+                      disabled={isLoading}
+                      variant="outline"
+                      size="sm"
+                    >
+                      <Database className="h-4 w-4 mr-2" />
+                      Check Again
+                    </Button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
