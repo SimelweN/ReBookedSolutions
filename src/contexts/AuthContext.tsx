@@ -143,13 +143,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           userId: session.user?.id,
         });
 
-        // Set session and user in batch to prevent flickering
-        setSession(session);
-        setUser(session.user);
-
         if (session.user) {
           // Create immediate fallback profile to prevent UI flickering
           const fallbackProfile = createFallbackProfile(session.user);
+
+          // Set all auth state together to prevent multiple re-renders
+          setSession(session);
+          setUser(session.user);
           setProfile(fallbackProfile);
 
           console.log("ℹ️ [AuthContext] Using immediate fallback profile");
@@ -157,7 +157,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           // Try to load full profile in background (non-blocking)
           fetchUserProfileQuick(session.user)
             .then((userProfile) => {
-              if (userProfile) {
+              if (userProfile && userProfile.id === session.user?.id) {
+                // Only update if profile belongs to the same user (prevent race conditions)
                 setProfile(userProfile);
                 console.log(
                   "✅ [AuthContext] Background profile load successful",
