@@ -407,14 +407,23 @@ const CreateListing = () => {
 
             <Button
               type="submit"
-              disabled={isSubmitting}
-              className={`w-full bg-book-600 hover:bg-book-700 text-white ${isMobile ? "py-3 h-12 text-base" : "py-3 text-lg"} touch-manipulation`}
+              disabled={
+                isSubmitting || isCheckingAddress || canListBooks === false
+              }
+              className={`w-full ${canListBooks === false ? "bg-gray-400 cursor-not-allowed" : "bg-book-600 hover:bg-book-700"} text-white ${isMobile ? "py-3 h-12 text-base" : "py-3 text-lg"} touch-manipulation`}
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   Creating Listing...
                 </>
+              ) : isCheckingAddress ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Checking Address...
+                </>
+              ) : canListBooks === false ? (
+                "Pickup Address Required"
               ) : (
                 "Create Listing"
               )}
