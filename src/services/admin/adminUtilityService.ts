@@ -132,7 +132,7 @@ export class AdminUtilityService {
     try {
       console.log("Starting deletion of demo/test books...");
 
-      // Define patterns that identify demo/test books
+      // Define patterns that identify demo/test books (case insensitive)
       const demoPatterns = [
         "test",
         "demo",
@@ -141,20 +141,63 @@ export class AdminUtilityService {
         "placeholder",
         "dummy",
         "lorem ipsum",
+        "fake",
+        "mock",
+        "temp",
+        "temporary",
+        "trial",
+        "practice",
+        "training",
+        "tutorial",
+        "debugging",
+        "debug",
       ];
 
-      // Build query to find demo books
-      let query = supabase.from("books").select("id, title");
+      console.log("Searching for demo books with patterns:", demoPatterns);
 
-      // Add conditions for demo patterns in title
-      const titleConditions = demoPatterns
-        .map((pattern) => `title.ilike.%${pattern}%`)
-        .join(",");
-
-      const { data: demoBooks, error: fetchError } = await supabase
+      // Get all books first, then filter on the frontend for more aggressive matching
+      const { data: allBooks, error: fetchError } = await supabase
         .from("books")
-        .select("id, title")
-        .or(titleConditions);
+        .select("id, title, author, isbn");
+
+      if (fetchError) {
+        logError(
+          "AdminUtilityService.deleteDemoBooks - fetch all books",
+          fetchError,
+        );
+        return {
+          success: false,
+          deletedCount: 0,
+          message: "Failed to fetch books for demo detection",
+        };
+      }
+
+      if (!allBooks || allBooks.length === 0) {
+        return {
+          success: true,
+          deletedCount: 0,
+          message: "No books found to check",
+        };
+      }
+
+      // Filter books that match demo patterns (more aggressive matching)
+      const demoBooks = allBooks.filter((book) => {
+        const title = book.title?.toLowerCase() || "";
+        const author = book.author?.toLowerCase() || "";
+        const isbn = book.isbn?.toLowerCase() || "";
+
+        return demoPatterns.some(
+          (pattern) =>
+            title.includes(pattern) ||
+            author.includes(pattern) ||
+            isbn.includes(pattern) ||
+            title.match(/^(book|title|name)\s*\d*$/i) || // Generic titles like "Book 1", "Title", "Name"
+            title.match(/^[a-z]{1,5}$/i) || // Very short random titles
+            title.includes("untitled") ||
+            title.includes("no title") ||
+            title.includes("new book"),
+        );
+      });
 
       if (fetchError) {
         logError("AdminUtilityService.deleteDemoBooks - fetch", fetchError);
