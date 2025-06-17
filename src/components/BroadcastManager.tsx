@@ -118,6 +118,11 @@ const BroadcastManager = () => {
     return null;
   }
 
+  // Early return after hooks if broadcasts are disabled
+  if (BROADCASTS_DISABLED) {
+    return null;
+  }
+
   return (
     <BroadcastDialog
       broadcast={currentBroadcast}
