@@ -1,5 +1,56 @@
 /* Mobile-specific improvements for better touch interaction and usability */
 
+/* Scrollbar hiding utility */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+/* Admin dashboard mobile improvements */
+.admin-mobile-tabs {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.admin-mobile-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+/* Improved mobile containers */
+@media (max-width: 768px) {
+  .admin-dashboard-container {
+    padding: 0.75rem;
+  }
+
+  .admin-tab-content {
+    padding: 1rem;
+  }
+
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-dashboard-container {
+    padding: 0.5rem;
+  }
+
+  .admin-tab-content {
+    padding: 0.75rem;
+  }
+
+  .admin-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}
+
 /* Ensure minimum touch target sizes (44px for accessibility) */
 .mobile-touch-target {
   min-height: 44px;
