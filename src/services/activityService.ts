@@ -62,8 +62,8 @@ export class ActivityService {
     type: ActivityType,
     title: string,
     description: string,
-    metadata?: Record<string, any>,
-  ): Promise<{ success: boolean; error?: string; details?: any }> {
+    metadata?: Record<string, unknown>,
+  ): Promise<{ success: boolean; error?: string; details?: unknown }> {
     try {
       // Validate required parameters
       if (!userId || !type || !title || !description) {
