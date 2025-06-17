@@ -47,6 +47,14 @@ export const createStudyResource = async (
   try {
     console.log("Creating study resource:", data);
 
+    // Check if table exists first
+    const tableExists = await checkTableExists("study_resources");
+    if (!tableExists) {
+      throw new Error(
+        "Study resources table does not exist. Please run database migrations first.",
+      );
+    }
+
     const resourceData = {
       title: data.title,
       description: data.description,
@@ -76,6 +84,13 @@ export const createStudyResource = async (
 
     if (error) {
       logError("studyResourcesService.createStudyResource", error);
+
+      if (error.code === "42P01") {
+        throw new Error(
+          "Study resources table not found. Database migration needed.",
+        );
+      }
+
       throw new Error("Failed to create study resource");
     }
 
