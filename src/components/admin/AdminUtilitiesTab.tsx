@@ -54,6 +54,13 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
     activeListings: 0,
     soldBooks: 0,
   });
+  const [dbStatus, setDbStatus] = useState({
+    studyResourcesExists: false,
+    studyTipsExists: false,
+    allTablesExist: false,
+    missingTables: [] as string[],
+  });
+  const [initResult, setInitResult] = useState<any>(null);
 
   // Load database statistics
   const loadDatabaseStats = async () => {
