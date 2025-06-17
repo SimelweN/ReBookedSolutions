@@ -153,4 +153,4 @@ const NotificationBadge = ({
   );
 };
 
-export default NotificationBadge;
+export default memo(NotificationBadge);
