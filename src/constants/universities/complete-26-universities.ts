@@ -315,7 +315,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.tut.ac.za",
     studentPortal: "https://www.tut.ac.za/students",
     admissionsContact: "admissions@tut.ac.za",
-    faculties: generateUniversityFaculties("tut", "University of Technology"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2004,
     studentPopulation: 60000,
     type: "University of Technology",
@@ -341,7 +341,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.dut.ac.za",
     studentPortal: "https://www.dut.ac.za/students",
     admissionsContact: "admissions@dut.ac.za",
-    faculties: generateUniversityFaculties("dut", "University of Technology"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2002,
     studentPopulation: 33000,
     type: "University of Technology",
@@ -367,7 +367,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.cput.ac.za",
     studentPortal: "https://www.cput.ac.za/students",
     admissionsContact: "admissions@cput.ac.za",
-    faculties: generateUniversityFaculties("cput", "University of Technology"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2005,
     studentPopulation: 32000,
     type: "University of Technology",
@@ -393,7 +393,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.cut.ac.za",
     studentPortal: "https://www.cut.ac.za/students",
     admissionsContact: "admissions@cut.ac.za",
-    faculties: generateUniversityFaculties("cut", "University of Technology"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1981,
     studentPopulation: 15000,
     type: "University of Technology",
@@ -419,7 +419,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.vut.ac.za",
     studentPortal: "https://www.vut.ac.za/students",
     admissionsContact: "admissions@vut.ac.za",
-    faculties: generateUniversityFaculties("vut", "University of Technology"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1966,
     studentPopulation: 20000,
     type: "University of Technology",
