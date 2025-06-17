@@ -632,7 +632,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.spu.ac.za",
     studentPortal: "https://www.spu.ac.za/students",
     admissionsContact: "admissions@spu.ac.za",
-    faculties: generateUniversityFaculties("spu", "Traditional University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2013,
     studentPopulation: 3000,
     type: "Traditional University",
