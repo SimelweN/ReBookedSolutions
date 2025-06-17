@@ -303,10 +303,10 @@ export const getBookById = async (id: string): Promise<Book | null> => {
 
 export const getUserBooks = async (userId: string): Promise<Book[]> => {
   try {
-    console.log("Fetching user books for ID:", userId);
+    console.log(`[BookQueries] Fetching user books for ID: ${userId}`);
 
     if (!userId) {
-      console.log("No userId provided");
+      console.log("[BookQueries] No userId provided to getUserBooks");
       return [];
     }
 
@@ -317,9 +317,30 @@ export const getUserBooks = async (userId: string): Promise<Book[]> => {
       1000,
     );
   } catch (error) {
-    logDetailedError("Error in getUserBooks", error);
-    // Return fallback data instead of throwing
-    return await getUserBooksWithFallback(userId);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`[BookQueries] Error in getUserBooks:`, {
+      message: errorMessage,
+      userId,
+      error: error instanceof Error ? error.stack : error,
+    });
+
+    // Try one more time without retry wrapper as a final fallback
+    try {
+      console.log(`[BookQueries] Attempting final fallback for user ${userId}`);
+      return await getUserBooksWithFallback(userId);
+    } catch (fallbackError) {
+      const fallbackMessage =
+        fallbackError instanceof Error
+          ? fallbackError.message
+          : String(fallbackError);
+      console.error(`[BookQueries] Final fallback also failed:`, {
+        message: fallbackMessage,
+        userId,
+        error:
+          fallbackError instanceof Error ? fallbackError.stack : fallbackError,
+      });
+      return [];
+    }
   }
 };
 
