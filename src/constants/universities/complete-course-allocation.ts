@@ -541,7 +541,7 @@ const COMPREHENSIVE_COURSES: CourseTemplate[] = [
     universitySpecificAPS: {
       uct: 45,
       wits: 44,
-      stellenbosch: 44,
+      su: 44, // Fixed: use "su" instead of "stellenbosch"
       up: 42,
       ukzn: 40,
       ufs: 38,
