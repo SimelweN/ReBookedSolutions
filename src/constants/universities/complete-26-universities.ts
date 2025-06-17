@@ -445,7 +445,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.mut.ac.za",
     studentPortal: "https://www.mut.ac.za/students",
     admissionsContact: "admissions@mut.ac.za",
-    faculties: generateUniversityFaculties("mut", "University of Technology"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1979,
     studentPopulation: 13000,
     type: "University of Technology",
@@ -473,7 +473,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.uj.ac.za",
     studentPortal: "https://www.uj.ac.za/students",
     admissionsContact: "admissions@uj.ac.za",
-    faculties: generateUniversityFaculties("uj", "Comprehensive University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2005,
     studentPopulation: 50000,
     type: "Comprehensive University",
@@ -499,7 +499,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.unisa.ac.za",
     studentPortal: "https://www.unisa.ac.za/students",
     admissionsContact: "admissions@unisa.ac.za",
-    faculties: generateUniversityFaculties("unisa", "Comprehensive University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1873,
     studentPopulation: 300000,
     type: "Comprehensive University",
@@ -551,7 +551,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.univen.ac.za",
     studentPortal: "https://www.univen.ac.za/students",
     admissionsContact: "admissions@univen.ac.za",
-    faculties: generateUniversityFaculties("uv", "Comprehensive University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 1982,
     studentPopulation: 15000,
     type: "Comprehensive University",
@@ -577,7 +577,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.wsu.ac.za",
     studentPortal: "https://www.wsu.ac.za/students",
     admissionsContact: "admissions@wsu.ac.za",
-    faculties: generateUniversityFaculties("wsu", "Comprehensive University"),
+    faculties: [], // Will be populated by comprehensive assignment
     establishedYear: 2005,
     studentPopulation: 28000,
     type: "Comprehensive University",
