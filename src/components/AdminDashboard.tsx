@@ -282,6 +282,13 @@ const AdminDashboard = () => {
       description: "Study resources and tips",
     },
     {
+      value: "utilities",
+      label: "Utilities",
+      icon: Settings,
+      color: "text-red-600",
+      description: "Bulk operations and data management",
+    },
+    {
       value: "contact",
       label: "Messages",
       icon: MessageSquare,
