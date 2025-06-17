@@ -28,6 +28,10 @@ const CACHE_DURATION = 30000; // 30 seconds cache
 // Abort controller for request cancellation
 let currentFetchController: AbortController | null = null;
 
+// Track recent notifications to prevent duplicates
+const recentNotifications = new Map<string, number>();
+const DUPLICATE_PREVENTION_WINDOW = 60000; // 1 minute window
+
 export const getNotifications = async (
   userId: string,
 ): Promise<Notification[]> => {
@@ -153,6 +157,22 @@ export const addNotification = async (
   notification: NotificationInput,
 ): Promise<void> => {
   try {
+    // Create a unique key for this notification to prevent duplicates
+    const notificationKey = `${notification.userId}-${notification.title}-${notification.type}`;
+    const now = Date.now();
+
+    // Check if we recently sent a similar notification
+    const lastSent = recentNotifications.get(notificationKey);
+    if (lastSent && now - lastSent < DUPLICATE_PREVENTION_WINDOW) {
+      console.log(
+        `[NotificationService] Preventing duplicate notification: ${notification.title}`,
+      );
+      return; // Skip sending duplicate notification
+    }
+
+    // Mark this notification as sent
+    recentNotifications.set(notificationKey, now);
+
     const { error } = await supabase.from("notifications").insert([
       {
         user_id: notification.userId,
@@ -165,14 +185,29 @@ export const addNotification = async (
 
     if (error) {
       console.error("Error adding notification:", error);
+      // Remove from recent notifications if failed
+      recentNotifications.delete(notificationKey);
       throw error;
     }
 
     // Invalidate cache after adding new notification
     notificationCache.delete(notification.userId);
+
+    // Clean up old entries from recentNotifications map
+    cleanupRecentNotifications();
   } catch (error) {
     console.error("Error in addNotification:", error);
     throw error;
+  }
+};
+
+// Helper function to clean up old entries from the recent notifications map
+const cleanupRecentNotifications = () => {
+  const now = Date.now();
+  for (const [key, timestamp] of recentNotifications.entries()) {
+    if (now - timestamp > DUPLICATE_PREVENTION_WINDOW) {
+      recentNotifications.delete(key);
+    }
   }
 };
 
