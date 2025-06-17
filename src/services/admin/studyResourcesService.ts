@@ -1,117 +1,471 @@
-// Placeholder for study resources service
-// In a real app, this would interact with Supabase or another backend
+import { supabase } from "@/integrations/supabase/client";
+import { logError } from "@/utils/errorUtils";
+import { StudyTip, StudyResource } from "@/types/university";
 
 interface StudyResourcePayload {
   title: string;
   description: string;
-  type: "guide" | "template" | "tip";
-  difficulty: "beginner" | "intermediate" | "advanced";
+  type: "pdf" | "video" | "website" | "tool" | "course";
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
   category: string;
   tags: string[];
-  content: string;
-  author: string;
-  featured: boolean;
+  url?: string;
+  provider?: string;
+  duration?: string;
+  rating?: number;
+  downloadUrl?: string;
+  isActive: boolean;
+  isFeatured?: boolean;
+  isSponsored?: boolean;
+  sponsorName?: string;
+  sponsorLogo?: string;
+  sponsorUrl?: string;
+  sponsorCta?: string;
 }
 
 interface StudyTipPayload {
   title: string;
   content: string;
   category: string;
-  difficulty: "beginner" | "intermediate" | "advanced";
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
   tags: string[];
-  featured: boolean;
-  author: string;
+  isActive: boolean;
+  author?: string;
+  estimatedTime?: string;
+  effectiveness?: number;
+  isSponsored?: boolean;
+  sponsorName?: string;
+  sponsorLogo?: string;
+  sponsorUrl?: string;
+  sponsorCta?: string;
 }
 
-// Export individual functions as expected by AdminResourcesTab.tsx
+// Create study resource in database
 export const createStudyResource = async (
   data: StudyResourcePayload,
-): Promise<any> => {
-  console.log("Creating study resource:", data);
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  return {
-    ...data,
-    id: Date.now().toString(),
-    createdAt: new Date().toISOString(),
-    views: 0,
-    likes: 0,
-  };
+): Promise<StudyResource> => {
+  try {
+    console.log("Creating study resource:", data);
+
+    const resourceData = {
+      title: data.title,
+      description: data.description,
+      type: data.type,
+      difficulty: data.difficulty,
+      category: data.category,
+      tags: data.tags,
+      url: data.url,
+      provider: data.provider,
+      duration: data.duration,
+      rating: data.rating || 0,
+      download_url: data.downloadUrl,
+      is_active: data.isActive,
+      is_featured: data.isFeatured || false,
+      is_sponsored: data.isSponsored || false,
+      sponsor_name: data.sponsorName,
+      sponsor_logo: data.sponsorLogo,
+      sponsor_url: data.sponsorUrl,
+      sponsor_cta: data.sponsorCta,
+    };
+
+    const { data: result, error } = await supabase
+      .from("study_resources")
+      .insert([resourceData])
+      .select()
+      .single();
+
+    if (error) {
+      logError("studyResourcesService.createStudyResource", error);
+      throw new Error("Failed to create study resource");
+    }
+
+    return {
+      id: result.id,
+      title: result.title,
+      description: result.description,
+      type: result.type,
+      category: result.category,
+      difficulty: result.difficulty,
+      url: result.url,
+      rating: result.rating,
+      provider: result.provider,
+      duration: result.duration,
+      tags: result.tags || [],
+      downloadUrl: result.download_url,
+      isActive: result.is_active,
+      isFeatured: result.is_featured,
+      isSponsored: result.is_sponsored,
+      sponsorName: result.sponsor_name,
+      sponsorLogo: result.sponsor_logo,
+      sponsorUrl: result.sponsor_url,
+      sponsorCta: result.sponsor_cta,
+      createdAt: result.created_at,
+      updatedAt: result.updated_at,
+    };
+  } catch (error) {
+    logError("studyResourcesService.createStudyResource", error);
+    throw error;
+  }
 };
 
+// Update study resource
 export const updateStudyResource = async (
   id: string,
   data: Partial<StudyResourcePayload>,
-): Promise<any> => {
-  console.log(`Updating study resource ${id}:`, data);
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  return { id, ...data };
+): Promise<StudyResource> => {
+  try {
+    console.log(`Updating study resource ${id}:`, data);
+
+    const updateData: any = {};
+    if (data.title !== undefined) updateData.title = data.title;
+    if (data.description !== undefined)
+      updateData.description = data.description;
+    if (data.type !== undefined) updateData.type = data.type;
+    if (data.difficulty !== undefined) updateData.difficulty = data.difficulty;
+    if (data.category !== undefined) updateData.category = data.category;
+    if (data.tags !== undefined) updateData.tags = data.tags;
+    if (data.url !== undefined) updateData.url = data.url;
+    if (data.provider !== undefined) updateData.provider = data.provider;
+    if (data.duration !== undefined) updateData.duration = data.duration;
+    if (data.rating !== undefined) updateData.rating = data.rating;
+    if (data.downloadUrl !== undefined)
+      updateData.download_url = data.downloadUrl;
+    if (data.isActive !== undefined) updateData.is_active = data.isActive;
+    if (data.isFeatured !== undefined) updateData.is_featured = data.isFeatured;
+    if (data.isSponsored !== undefined)
+      updateData.is_sponsored = data.isSponsored;
+    if (data.sponsorName !== undefined)
+      updateData.sponsor_name = data.sponsorName;
+    if (data.sponsorLogo !== undefined)
+      updateData.sponsor_logo = data.sponsorLogo;
+    if (data.sponsorUrl !== undefined) updateData.sponsor_url = data.sponsorUrl;
+    if (data.sponsorCta !== undefined) updateData.sponsor_cta = data.sponsorCta;
+
+    const { data: result, error } = await supabase
+      .from("study_resources")
+      .update(updateData)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      logError("studyResourcesService.updateStudyResource", error);
+      throw new Error("Failed to update study resource");
+    }
+
+    return {
+      id: result.id,
+      title: result.title,
+      description: result.description,
+      type: result.type,
+      category: result.category,
+      difficulty: result.difficulty,
+      url: result.url,
+      rating: result.rating,
+      provider: result.provider,
+      duration: result.duration,
+      tags: result.tags || [],
+      downloadUrl: result.download_url,
+      isActive: result.is_active,
+      isFeatured: result.is_featured,
+      isSponsored: result.is_sponsored,
+      sponsorName: result.sponsor_name,
+      sponsorLogo: result.sponsor_logo,
+      sponsorUrl: result.sponsor_url,
+      sponsorCta: result.sponsor_cta,
+      createdAt: result.created_at,
+      updatedAt: result.updated_at,
+    };
+  } catch (error) {
+    logError("studyResourcesService.updateStudyResource", error);
+    throw error;
+  }
 };
 
+// Delete study resource
 export const deleteStudyResource = async (id: string): Promise<void> => {
-  console.log(`Deleting study resource ${id}`);
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  try {
+    console.log(`Deleting study resource ${id}`);
+
+    const { error } = await supabase
+      .from("study_resources")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      logError("studyResourcesService.deleteStudyResource", error);
+      throw new Error("Failed to delete study resource");
+    }
+  } catch (error) {
+    logError("studyResourcesService.deleteStudyResource", error);
+    throw error;
+  }
 };
 
-export const createStudyTip = async (data: StudyTipPayload): Promise<any> => {
-  console.log("Creating study tip:", data);
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  return {
-    ...data,
-    id: Date.now().toString(),
-    createdAt: new Date().toISOString(),
-    views: 0,
-    likes: 0,
-  };
+// Create study tip in database
+export const createStudyTip = async (
+  data: StudyTipPayload,
+): Promise<StudyTip> => {
+  try {
+    console.log("Creating study tip:", data);
+
+    const tipData = {
+      title: data.title,
+      content: data.content,
+      category: data.category,
+      difficulty: data.difficulty,
+      tags: data.tags,
+      is_active: data.isActive,
+      author: data.author,
+      estimated_time: data.estimatedTime,
+      effectiveness: data.effectiveness,
+      is_sponsored: data.isSponsored || false,
+      sponsor_name: data.sponsorName,
+      sponsor_logo: data.sponsorLogo,
+      sponsor_url: data.sponsorUrl,
+      sponsor_cta: data.sponsorCta,
+    };
+
+    const { data: result, error } = await supabase
+      .from("study_tips")
+      .insert([tipData])
+      .select()
+      .single();
+
+    if (error) {
+      logError("studyResourcesService.createStudyTip", error);
+      throw new Error("Failed to create study tip");
+    }
+
+    return {
+      id: result.id,
+      title: result.title,
+      content: result.content,
+      category: result.category,
+      difficulty: result.difficulty,
+      tags: result.tags || [],
+      isActive: result.is_active,
+      author: result.author,
+      estimatedTime: result.estimated_time,
+      effectiveness: result.effectiveness,
+      isSponsored: result.is_sponsored,
+      sponsorName: result.sponsor_name,
+      sponsorLogo: result.sponsor_logo,
+      sponsorUrl: result.sponsor_url,
+      sponsorCta: result.sponsor_cta,
+      createdAt: result.created_at,
+      updatedAt: result.updated_at,
+    };
+  } catch (error) {
+    logError("studyResourcesService.createStudyTip", error);
+    throw error;
+  }
 };
 
+// Update study tip
 export const updateStudyTip = async (
   id: string,
   data: Partial<StudyTipPayload>,
-): Promise<any> => {
-  console.log(`Updating study tip ${id}:`, data);
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  return { id, ...data };
+): Promise<StudyTip> => {
+  try {
+    console.log(`Updating study tip ${id}:`, data);
+
+    const updateData: any = {};
+    if (data.title !== undefined) updateData.title = data.title;
+    if (data.content !== undefined) updateData.content = data.content;
+    if (data.category !== undefined) updateData.category = data.category;
+    if (data.difficulty !== undefined) updateData.difficulty = data.difficulty;
+    if (data.tags !== undefined) updateData.tags = data.tags;
+    if (data.isActive !== undefined) updateData.is_active = data.isActive;
+    if (data.author !== undefined) updateData.author = data.author;
+    if (data.estimatedTime !== undefined)
+      updateData.estimated_time = data.estimatedTime;
+    if (data.effectiveness !== undefined)
+      updateData.effectiveness = data.effectiveness;
+    if (data.isSponsored !== undefined)
+      updateData.is_sponsored = data.isSponsored;
+    if (data.sponsorName !== undefined)
+      updateData.sponsor_name = data.sponsorName;
+    if (data.sponsorLogo !== undefined)
+      updateData.sponsor_logo = data.sponsorLogo;
+    if (data.sponsorUrl !== undefined) updateData.sponsor_url = data.sponsorUrl;
+    if (data.sponsorCta !== undefined) updateData.sponsor_cta = data.sponsorCta;
+
+    const { data: result, error } = await supabase
+      .from("study_tips")
+      .update(updateData)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      logError("studyResourcesService.updateStudyTip", error);
+      throw new Error("Failed to update study tip");
+    }
+
+    return {
+      id: result.id,
+      title: result.title,
+      content: result.content,
+      category: result.category,
+      difficulty: result.difficulty,
+      tags: result.tags || [],
+      isActive: result.is_active,
+      author: result.author,
+      estimatedTime: result.estimated_time,
+      effectiveness: result.effectiveness,
+      isSponsored: result.is_sponsored,
+      sponsorName: result.sponsor_name,
+      sponsorLogo: result.sponsor_logo,
+      sponsorUrl: result.sponsor_url,
+      sponsorCta: result.sponsor_cta,
+      createdAt: result.created_at,
+      updatedAt: result.updated_at,
+    };
+  } catch (error) {
+    logError("studyResourcesService.updateStudyTip", error);
+    throw error;
+  }
 };
 
+// Delete study tip
 export const deleteStudyTip = async (id: string): Promise<void> => {
-  console.log(`Deleting study tip ${id}`);
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  try {
+    console.log(`Deleting study tip ${id}`);
+
+    const { error } = await supabase.from("study_tips").delete().eq("id", id);
+
+    if (error) {
+      logError("studyResourcesService.deleteStudyTip", error);
+      throw new Error("Failed to delete study tip");
+    }
+  } catch (error) {
+    logError("studyResourcesService.deleteStudyTip", error);
+    throw error;
+  }
 };
 
-export const studyResourcesService = {
-  getStudyResources: async (): Promise<any[]> => {
+// Get all study resources
+export const getStudyResources = async (): Promise<StudyResource[]> => {
+  try {
     console.log("Fetching study resources...");
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return []; // Return empty array for now
-  },
+
+    const { data, error } = await supabase
+      .from("study_resources")
+      .select("*")
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      logError("studyResourcesService.getStudyResources", error);
+      throw new Error("Failed to fetch study resources");
+    }
+
+    return (data || []).map((item) => ({
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      type: item.type,
+      category: item.category,
+      difficulty: item.difficulty,
+      url: item.url,
+      rating: item.rating,
+      provider: item.provider,
+      duration: item.duration,
+      tags: item.tags || [],
+      downloadUrl: item.download_url,
+      isActive: item.is_active,
+      isFeatured: item.is_featured,
+      isSponsored: item.is_sponsored,
+      sponsorName: item.sponsor_name,
+      sponsorLogo: item.sponsor_logo,
+      sponsorUrl: item.sponsor_url,
+      sponsorCta: item.sponsor_cta,
+      createdAt: item.created_at,
+      updatedAt: item.updated_at,
+    }));
+  } catch (error) {
+    logError("studyResourcesService.getStudyResources", error);
+    return []; // Return empty array on error
+  }
+};
+
+// Get all study tips
+export const getStudyTips = async (): Promise<StudyTip[]> => {
+  try {
+    console.log("Fetching study tips...");
+
+    const { data, error } = await supabase
+      .from("study_tips")
+      .select("*")
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      logError("studyResourcesService.getStudyTips", error);
+      throw new Error("Failed to fetch study tips");
+    }
+
+    return (data || []).map((item) => ({
+      id: item.id,
+      title: item.title,
+      content: item.content,
+      category: item.category,
+      difficulty: item.difficulty,
+      tags: item.tags || [],
+      isActive: item.is_active,
+      author: item.author,
+      estimatedTime: item.estimated_time,
+      effectiveness: item.effectiveness,
+      isSponsored: item.is_sponsored,
+      sponsorName: item.sponsor_name,
+      sponsorLogo: item.sponsor_logo,
+      sponsorUrl: item.sponsor_url,
+      sponsorCta: item.sponsor_cta,
+      createdAt: item.created_at,
+      updatedAt: item.updated_at,
+    }));
+  } catch (error) {
+    logError("studyResourcesService.getStudyTips", error);
+    return []; // Return empty array on error
+  }
+};
+
+// Legacy service object for backwards compatibility
+export const studyResourcesService = {
+  getStudyResources,
   createStudyResource,
   updateStudyResource,
   deleteStudyResource,
-  getStudyTips: async (): Promise<any[]> => {
-    console.log("Fetching study tips...");
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return [];
-  },
+  getStudyTips,
   createStudyTip,
   updateStudyTip,
   deleteStudyTip,
-  getAllStudyContent: async (): Promise<any[]> => {
-    console.log("Fetching all study content...");
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return [];
+  getAllStudyContent: async () => {
+    const [tips, resources] = await Promise.all([
+      getStudyTips(),
+      getStudyResources(),
+    ]);
+    return { tips, resources };
   },
 };
 
-// Export the function directly as well for compatibility
+// Get all study content (tips and resources)
 export const getAllStudyContent = async (): Promise<{
-  tips: any[];
-  resources: any[];
+  tips: StudyTip[];
+  resources: StudyResource[];
 }> => {
-  console.log("Fetching all study content...");
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  return {
-    tips: [],
-    resources: [],
-  };
+  try {
+    console.log("Fetching all study content...");
+
+    const [tips, resources] = await Promise.all([
+      getStudyTips(),
+      getStudyResources(),
+    ]);
+
+    return { tips, resources };
+  } catch (error) {
+    logError("studyResourcesService.getAllStudyContent", error);
+    return { tips: [], resources: [] };
+  }
 };
