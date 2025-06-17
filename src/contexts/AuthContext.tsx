@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useState,
   useCallback,
+  useMemo,
 } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -380,19 +381,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => subscription.unsubscribe();
   }, [handleAuthStateChange]);
 
-  const value = {
-    user,
-    profile,
-    session,
-    isLoading,
-    isAuthenticated,
-    isAdmin,
-    initError,
-    login,
-    register,
-    logout,
-    refreshProfile,
-  };
+  const value = useMemo(
+    () => ({
+      user,
+      profile,
+      session,
+      isLoading,
+      isAuthenticated,
+      isAdmin,
+      initError,
+      login,
+      register,
+      logout,
+      refreshProfile,
+    }),
+    [
+      user,
+      profile,
+      session,
+      isLoading,
+      isAuthenticated,
+      isAdmin,
+      initError,
+      login,
+      register,
+      logout,
+      refreshProfile,
+    ],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

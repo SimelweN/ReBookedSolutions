@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Shield } from "lucide-react";
@@ -35,4 +35,4 @@ const AdminAccess = () => {
   );
 };
 
-export default AdminAccess;
+export default memo(AdminAccess);
