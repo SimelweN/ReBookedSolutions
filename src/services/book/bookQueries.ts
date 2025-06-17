@@ -403,7 +403,18 @@ const getUserBooksWithFallback = async (userId: string): Promise<Book[]> => {
     });
 
     // If it's a network error, throw it so retry can handle it
-    if (error instanceof Error && error.message.includes("Failed to fetch")) {
+    if (
+      error instanceof Error &&
+      (error.message.includes("Failed to fetch") ||
+        error.message.includes("NetworkError") ||
+        error.message.includes("fetch") ||
+        error.message.includes("timeout") ||
+        error.name === "NetworkError" ||
+        error.name === "TypeError")
+    ) {
+      console.log(
+        `[BookQueries] Network error detected, allowing retry: ${error.message}`,
+      );
       throw error;
     }
 
