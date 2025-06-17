@@ -20,46 +20,41 @@ export class DatabaseInitService {
 
   /**
    * Create study_resources table if it doesn't exist
+   * Since we can't execute raw SQL, we'll try to create a sample record to trigger table creation
    */
   static async createStudyResourcesTable(): Promise<boolean> {
     try {
-      console.log("Creating study_resources table...");
+      console.log("Attempting to access/create study_resources table...");
 
-      // Note: This won't work with RLS in production, but provides guidance
-      const { error } = await supabase.rpc("exec_sql", {
-        sql: `
-        CREATE TABLE IF NOT EXISTS study_resources (
-          id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-          title TEXT NOT NULL,
-          description TEXT NOT NULL,
-          type TEXT NOT NULL CHECK (type IN ('pdf', 'video', 'website', 'tool', 'course')),
-          category TEXT NOT NULL,
-          difficulty TEXT NOT NULL CHECK (difficulty IN ('Beginner', 'Intermediate', 'Advanced')),
-          url TEXT,
-          rating DECIMAL(3,2) DEFAULT 0 CHECK (rating >= 0 AND rating <= 5),
-          provider TEXT,
-          duration TEXT,
-          tags TEXT[] DEFAULT '{}',
-          download_url TEXT,
-          is_active BOOLEAN DEFAULT true,
-          is_featured BOOLEAN DEFAULT false,
-          is_sponsored BOOLEAN DEFAULT false,
-          sponsor_name TEXT,
-          sponsor_logo TEXT,
-          sponsor_url TEXT,
-          sponsor_cta TEXT,
-          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-          updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-        );
-        `,
-      });
+      // Try to insert a test record - this might create the table if it has auto-creation enabled
+      const { error } = await supabase.from("study_resources").insert([
+        {
+          title: "Database Test Resource",
+          description:
+            "This is a test resource to verify database connectivity",
+          type: "pdf",
+          category: "System",
+          difficulty: "Beginner",
+          tags: ["test"],
+          is_active: false, // Keep it inactive so it doesn't show up
+        },
+      ]);
 
       if (error) {
         logError("DatabaseInitService.createStudyResourcesTable", error);
+
+        // If error is because table doesn't exist, we can't create it from the client
+        if (error.code === "42P01") {
+          console.warn(
+            "Cannot create study_resources table from client - needs database admin access",
+          );
+          return false;
+        }
+
         return false;
       }
 
-      console.log("Study resources table created successfully");
+      console.log("Study resources table is accessible");
       return true;
     } catch (error) {
       logError("DatabaseInitService.createStudyResourcesTable", error);
@@ -72,38 +67,35 @@ export class DatabaseInitService {
    */
   static async createStudyTipsTable(): Promise<boolean> {
     try {
-      console.log("Creating study_tips table...");
+      console.log("Attempting to access/create study_tips table...");
 
-      const { error } = await supabase.rpc("exec_sql", {
-        sql: `
-        CREATE TABLE IF NOT EXISTS study_tips (
-          id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-          title TEXT NOT NULL,
-          content TEXT NOT NULL,
-          category TEXT NOT NULL,
-          difficulty TEXT NOT NULL CHECK (difficulty IN ('Beginner', 'Intermediate', 'Advanced')),
-          tags TEXT[] DEFAULT '{}',
-          is_active BOOLEAN DEFAULT true,
-          author TEXT,
-          estimated_time TEXT,
-          effectiveness INTEGER CHECK (effectiveness >= 0 AND effectiveness <= 100),
-          is_sponsored BOOLEAN DEFAULT false,
-          sponsor_name TEXT,
-          sponsor_logo TEXT,
-          sponsor_url TEXT,
-          sponsor_cta TEXT,
-          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-          updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-        );
-        `,
-      });
+      // Try to insert a test record
+      const { error } = await supabase.from("study_tips").insert([
+        {
+          title: "Database Test Tip",
+          content: "This is a test tip to verify database connectivity",
+          category: "System",
+          difficulty: "Beginner",
+          tags: ["test"],
+          is_active: false, // Keep it inactive so it doesn't show up
+        },
+      ]);
 
       if (error) {
         logError("DatabaseInitService.createStudyTipsTable", error);
+
+        // If error is because table doesn't exist, we can't create it from the client
+        if (error.code === "42P01") {
+          console.warn(
+            "Cannot create study_tips table from client - needs database admin access",
+          );
+          return false;
+        }
+
         return false;
       }
 
-      console.log("Study tips table created successfully");
+      console.log("Study tips table is accessible");
       return true;
     } catch (error) {
       logError("DatabaseInitService.createStudyTipsTable", error);
