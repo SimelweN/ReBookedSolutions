@@ -195,10 +195,110 @@ const SaleSuccessPopup = ({
                 )}
                 <div className="p-4 bg-green-50 rounded-lg border border-green-200">
                   <p className="text-sm text-green-800">
-                    💰 <strong>R{bookPrice}</strong> will be transferred to your
-                    account once delivery is confirmed
+                    💰 <strong>R{Math.round(bookPrice * 0.9)}</strong> (90% of R
+                    {bookPrice}) will be transferred after delivery confirmation
+                  </p>
+                  <p className="text-xs text-green-700 mt-1">
+                    Platform fee: R{bookPrice - Math.round(bookPrice * 0.9)}
                   </p>
                 </div>
+              </div>
+            )}
+
+            {step === 1 && (
+              <div className="space-y-4">
+                <p className="text-gray-600 text-sm">
+                  {steps[step].description}
+                </p>
+
+                {/* Buyer Contact Information */}
+                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    Buyer Contact Details
+                  </h4>
+                  <div className="space-y-1 text-sm text-blue-800">
+                    <p>
+                      <strong>Name:</strong>{" "}
+                      {buyerName || "Available in notifications"}
+                    </p>
+                    <p>
+                      <strong>Email:</strong>{" "}
+                      {buyerEmail || "Available in notifications"}
+                    </p>
+                  </div>
+                  <p className="text-xs text-blue-700 mt-2">
+                    ⏰ Contact within 24 hours to arrange delivery
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  {nextSteps.map((nextStep, index) => (
+                    <div
+                      key={index}
+                      className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border"
+                    >
+                      <span className="text-lg">{nextStep.icon}</span>
+                      <div className="flex-1 text-left">
+                        <h4 className="font-semibold text-sm">
+                          {nextStep.title}
+                        </h4>
+                        <p className="text-xs text-gray-600">
+                          {nextStep.description}
+                        </p>
+                      </div>
+                      <ArrowRight className="h-4 w-4 text-gray-400 mt-1" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-4">
+                <p className="text-gray-600 text-sm">
+                  {steps[step].description}
+                </p>
+
+                {payoutInfo && (
+                  <div className="space-y-3">
+                    <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                      <h4 className="font-semibold text-green-900 mb-2 flex items-center gap-2">
+                        <DollarSign className="h-4 w-4" />
+                        Payout Breakdown
+                      </h4>
+                      <div className="space-y-1 text-sm text-green-800">
+                        <p>
+                          <strong>Book Price:</strong> R
+                          {payoutInfo.originalPrice}
+                        </p>
+                        <p>
+                          <strong>Your Share (90%):</strong> R
+                          {payoutInfo.sellerPayout}
+                        </p>
+                        <p>
+                          <strong>Platform Fee (10%):</strong> R
+                          {payoutInfo.platformFee}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <h4 className="font-semibold text-blue-900 mb-2">
+                        Payment Timeline
+                      </h4>
+                      <div className="space-y-1 text-xs text-blue-800">
+                        <p>✅ 1. Book sold and buyer contacted</p>
+                        <p>🚚 2. Arrange delivery with buyer</p>
+                        <p>📦 3. Confirm delivery completion</p>
+                        <p>
+                          💰 4. Receive R{payoutInfo.sellerPayout} (2-3 business
+                          days)
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
