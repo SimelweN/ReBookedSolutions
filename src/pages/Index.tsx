@@ -5,8 +5,9 @@ import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { getBooks } from "@/services/book/bookQueries";
 import { Book } from "@/types/book";
-import { BookOpen, Search, Star } from "lucide-react";
+import { BookOpen, Search, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import TargetedBookDeletionService from "@/services/admin/targetedBookDeletion";
 
 const Index = () => {
   const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
