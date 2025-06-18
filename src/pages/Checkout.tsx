@@ -340,40 +340,43 @@ const Checkout = () => {
             );
           }
 
-          // Note: createAutomaticShipment is prepared but disabled as per requirements
-          const shipmentResult = await createAutomaticShipment(
-            bookDetails,
-            user.id,
-          );
+          // Attempt automatic shipment creation (optional)
+          try {
+            const shipmentResult = await createAutomaticShipment(
+              bookDetails,
+              user.id,
+            );
 
-          if (shipmentResult) {
-            console.log(
-              `Shipment created for "${purchasedBook.title}":`,
-              shipmentResult,
+            if (shipmentResult) {
+              console.log(
+                `✅ Automatic shipment created for "${purchasedBook.title}":`,
+                shipmentResult,
+              );
+              toast.success(
+                `Automatic delivery arranged for "${purchasedBook.title}" - Tracking: ${shipmentResult.trackingNumber}`,
+                {
+                  duration: 5000,
+                },
+              );
+            } else {
+              console.log(
+                `ℹ️ Manual delivery required for "${purchasedBook.title}" - addresses not configured`,
+              );
+              // Don't show warning to user - this is normal
+            }
+          } catch (shipmentError) {
+            console.warn(
+              `⚠️ Automatic shipment failed for "${purchasedBook.title}":`,
+              shipmentError.message,
             );
-            toast.success(
-              `Shipment created for "${purchasedBook.title}" - Tracking: ${shipmentResult.trackingNumber}`,
-              {
-                duration: 5000,
-              },
-            );
-          } else {
-            console.log(
-              `Automatic shipment creation is disabled for "${purchasedBook.title}"`,
-            );
+            // Don't show error to user - manual delivery is still available
           }
-        } catch (shipmentError) {
+        } catch (generalError) {
           console.error(
-            `Error creating shipment for "${purchasedBook.title}":`,
-            shipmentError,
+            `❌ Unexpected error processing "${purchasedBook.title}":`,
+            generalError,
           );
-          // Don't fail the entire purchase if shipment creation fails
-          toast.warning(
-            `Purchase successful, but shipment creation failed for "${purchasedBook.title}". Please contact support.`,
-            {
-              duration: 7000,
-            },
-          );
+          // Don't fail the entire purchase for individual book errors
         }
       }
 
