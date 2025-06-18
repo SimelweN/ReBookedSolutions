@@ -119,6 +119,33 @@ const formatAddressForCourierGuy = (address: any): string => {
  * Create automatic shipment when a book is purchased
  * Note: This function is prepared but shipment creation is currently disabled
  */
+/**
+ * Create a manual shipment notification when automatic shipment isn't possible
+ */
+export const createManualShipmentNotification = async (
+  bookDetails: BookDetails,
+  buyerId: string,
+): Promise<void> => {
+  try {
+    console.log("[AutoShipment] Creating manual shipment notification");
+
+    // In a real implementation, this would:
+    // 1. Notify admin team to arrange manual shipment
+    // 2. Send notification to seller to prepare book
+    // 3. Send notification to buyer about delivery timeline
+
+    return;
+  } catch (error) {
+    console.error(
+      "[AutoShipment] Failed to create manual shipment notification:",
+      error,
+    );
+  }
+};
+
+/**
+ * Create automatic shipment if addresses are available, otherwise return null
+ */
 export const createAutomaticShipment = async (
   bookDetails: BookDetails,
   buyerId: string,
