@@ -18,12 +18,14 @@ export default function EnvironmentError({
   missingVariables = [],
   error,
 }: EnvironmentErrorProps) {
+  const navigate = useNavigate();
+
   const handleRefresh = () => {
     window.location.reload();
   };
 
   const handleHome = () => {
-    window.location.href = "/";
+    navigate("/");
   };
 
   return (
