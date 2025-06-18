@@ -163,11 +163,21 @@ export const createAutomaticShipment = async (
       buyerId,
     });
 
+    // Validate input parameters
+    if (!bookDetails?.sellerId || !buyerId) {
+      console.error("[AutoShipment] Invalid parameters:", {
+        sellerId: bookDetails?.sellerId,
+        buyerId,
+      });
+      return null;
+    }
+
     // Get seller information (sender)
     const seller = await getUserProfileWithAddresses(bookDetails.sellerId);
     if (!seller) {
       console.warn(
         "[AutoShipment] Seller profile not found - shipment will be manual",
+        { sellerId: bookDetails.sellerId },
       );
       return null;
     }
@@ -184,6 +194,7 @@ export const createAutomaticShipment = async (
     if (!buyer) {
       console.warn(
         "[AutoShipment] Buyer profile not found - shipment will be manual",
+        { buyerId },
       );
       return null;
     }
