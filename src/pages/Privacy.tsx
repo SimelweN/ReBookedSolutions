@@ -43,7 +43,10 @@ const Privacy = () => {
                 of data collection, usage, storage, and your rights.
               </p>
               <button
-                onClick={() => navigate("/policies")}
+                onClick={() => {
+                  console.log("Button clicked - navigating to /policies");
+                  window.location.href = "/policies";
+                }}
                 className="inline-flex items-center bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
               >
                 Go to Complete Privacy Policy →

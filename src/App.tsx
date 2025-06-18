@@ -84,7 +84,28 @@ function App() {
                       <Route path="/faq" element={<FAQ />} />
                       <Route path="/terms" element={<Terms />} />
                       <Route path="/privacy" element={<Privacy />} />
-                      <Route path="/policies" element={<Policies />} />
+                      <Route
+                        path="/policies"
+                        element={
+                          <div
+                            style={{
+                              padding: "20px",
+                              background: "lightgreen",
+                              minHeight: "100vh",
+                            }}
+                          >
+                            <h1>POLICIES PAGE TEST</h1>
+                            <p>
+                              If you can see this green page, the routing is
+                              working!
+                            </p>
+                            <p>Current URL should be: /policies</p>
+                            <button onClick={() => window.history.back()}>
+                              Go Back
+                            </button>
+                          </div>
+                        }
+                      />
                       <Route path="/contact" element={<ContactUs />} />
                       <Route path="/report" element={<Report />} />
                       <Route path="/shipping" element={<Shipping />} />
