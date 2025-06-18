@@ -22,8 +22,19 @@ const Index = () => {
   const loadFeaturedBooks = async () => {
     try {
       setIsLoading(true);
+      console.log("[Index] Loading books...");
+
       const allBooks = await getBooks();
-      setFeaturedBooks(Array.isArray(allBooks) ? allBooks.slice(0, 4) : []); // Get first 4 books for featured section
+      console.log("[Index] Received books:", {
+        isArray: Array.isArray(allBooks),
+        length: allBooks?.length || 0,
+        firstFew: allBooks?.slice(0, 2) || [],
+      });
+
+      const booksToShow = Array.isArray(allBooks) ? allBooks.slice(0, 4) : [];
+      setFeaturedBooks(booksToShow);
+
+      console.log("[Index] Set featured books:", booksToShow.length);
     } catch (error) {
       const errorDetails = {
         message: error instanceof Error ? error.message : String(error),
@@ -42,6 +53,31 @@ const Index = () => {
       toast.error(userMessage);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleCleanupBooks = async () => {
+    try {
+      console.log("🧹 Starting book cleanup from homepage...");
+      toast.loading("Cleaning up duplicate/test books...", { id: "cleanup" });
+
+      const results =
+        await TargetedBookDeletionService.runComprehensiveCleanup();
+
+      if (results.summary.success) {
+        toast.success(
+          `✅ Cleanup completed! Deleted ${results.summary.totalDeleted} books`,
+          { id: "cleanup", duration: 5000 },
+        );
+
+        // Reload books after cleanup
+        await loadFeaturedBooks();
+      } else {
+        toast.error("⚠️ Cleanup partially failed", { id: "cleanup" });
+      }
+    } catch (error) {
+      console.error("❌ Cleanup failed:", error);
+      toast.error("Cleanup failed", { id: "cleanup" });
     }
   };
 
