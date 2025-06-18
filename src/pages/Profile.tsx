@@ -571,6 +571,11 @@ const Profile = () => {
           onClose={() => setIsDeleteProfileDialogOpen(false)}
         />
 
+        <CommitSystemExplainer
+          isOpen={isCommitSystemDialogOpen}
+          onClose={() => setIsCommitSystemDialogOpen(false)}
+        />
+
         <ReportIssueDialog
           isOpen={isReportIssueDialogOpen}
           onClose={() => setIsReportIssueDialogOpen(false)}
