@@ -4,6 +4,7 @@ import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { createBook } from "@/services/book/bookMutations";
 import { BookFormData } from "@/types/book";
 import { toast } from "sonner";
@@ -410,10 +411,44 @@ const CreateListing = () => {
               )}
             </div>
 
+            <div className="flex items-start space-x-3">
+              <Checkbox
+                id="sellerPolicy"
+                checked={sellerPolicyAccepted}
+                onCheckedChange={(checked) =>
+                  setSellerPolicyAccepted(checked === true)
+                }
+                className="mt-1"
+                required
+              />
+              <div className="space-y-1">
+                <Label
+                  htmlFor="sellerPolicy"
+                  className="text-sm text-gray-600 leading-relaxed"
+                >
+                  I agree to the{" "}
+                  <a
+                    href="/policies"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-book-600 hover:text-book-800 underline"
+                  >
+                    Seller Policy and ReBooked's platform rules
+                  </a>
+                </Label>
+                {errors.sellerPolicy && (
+                  <p className="text-xs text-red-500">{errors.sellerPolicy}</p>
+                )}
+              </div>
+            </div>
+
             <Button
               type="submit"
               disabled={
-                isSubmitting || isCheckingAddress || canListBooks === false
+                isSubmitting ||
+                isCheckingAddress ||
+                canListBooks === false ||
+                !sellerPolicyAccepted
               }
               className={`w-full ${canListBooks === false ? "bg-gray-400 cursor-not-allowed" : "bg-book-600 hover:bg-book-700"} text-white ${isMobile ? "py-3 h-12 text-base" : "py-3 text-lg"} touch-manipulation`}
             >
