@@ -1368,7 +1368,7 @@ const Policies = () => {
                       5.2 Internal Resolution
                     </h3>
                     <p className="text-gray-700 leading-relaxed">
-                      ReBooked Solutions will assess disputes within 7��10
+                      ReBooked Solutions will assess disputes within 7–10
                       business days and may request further evidence from both
                       parties. The platform's decision will be based on:
                     </p>
@@ -1438,33 +1438,39 @@ const Policies = () => {
         </Tabs>
 
         {/* Contact Section */}
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle className="text-2xl flex items-center gap-2">
-              <Mail className="h-6 w-6" />
-              Contact Information
+        <Card className="mt-6 sm:mt-8">
+          <CardHeader className="pb-4 sm:pb-6">
+            <CardTitle className="text-lg sm:text-xl lg:text-2xl flex items-center gap-2">
+              <Mail className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0" />
+              <span>Contact Information</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <p className="text-blue-700 mb-4">
+          <CardContent className="px-4 sm:px-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6">
+              <p className="text-blue-700 mb-3 sm:mb-4 text-sm sm:text-base">
                 For all policy-related questions and support:
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-blue-700">
-                    <strong>Email:</strong> support@rebookedsolutions.co.za
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="space-y-2">
+                  <p className="text-blue-700 text-sm sm:text-base">
+                    <strong>Email:</strong>{" "}
+                    <span className="break-all">
+                      support@rebookedsolutions.co.za
+                    </span>
                   </p>
-                  <p className="text-blue-700">
+                  <p className="text-blue-700 text-sm sm:text-base">
                     <strong>Business Hours:</strong> Monday–Friday, 09:00–17:00
                     (SAST)
                   </p>
                 </div>
-                <div>
-                  <p className="text-blue-700">
-                    <strong>Website:</strong> www.rebookedsolutions.co.za
+                <div className="space-y-2">
+                  <p className="text-blue-700 text-sm sm:text-base">
+                    <strong>Website:</strong>{" "}
+                    <span className="break-all">
+                      www.rebookedsolutions.co.za
+                    </span>
                   </p>
-                  <p className="text-blue-700">
+                  <p className="text-blue-700 text-sm sm:text-base">
                     <strong>Company:</strong> ReBooked Solutions (Pty) Ltd
                   </p>
                 </div>
