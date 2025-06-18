@@ -62,13 +62,39 @@ export const getUserProfileWithAddresses = async (
       .single();
 
     if (error) {
-      logError("Error fetching user profile", error);
-      return null;
+      console.warn(
+        `[AutoShipment] User profile not found for ${userId}:`,
+        error.message,
+      );
+      // Return a basic profile if the user exists but doesn't have address info
+      const { data: basicProfile, error: basicError } = await supabase
+        .from("profiles")
+        .select("id, name, email")
+        .eq("id", userId)
+        .single();
+
+      if (basicError) {
+        console.error(
+          `[AutoShipment] Error fetching basic profile for ${userId}:`,
+          basicError.message,
+        );
+        return null;
+      }
+
+      return {
+        ...basicProfile,
+        pickup_address: null,
+        shipping_address: null,
+        addresses_same: false,
+      };
     }
 
     return data;
   } catch (error) {
-    logError("Error in getUserProfileWithAddresses", error);
+    console.error(
+      `[AutoShipment] Unexpected error fetching profile for ${userId}:`,
+      error,
+    );
     return null;
   }
 };
