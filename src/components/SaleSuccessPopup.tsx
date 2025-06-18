@@ -139,13 +139,13 @@ const SaleSuccessPopup = ({
 
   const handleViewNotifications = () => {
     handleClose();
-    window.location.href = "/notifications";
+    navigate("/notifications");
   };
 
   const handleViewSale = () => {
     handleClose();
     if (saleId) {
-      window.location.href = `/activity`;
+      navigate("/activity");
     }
   };
 
