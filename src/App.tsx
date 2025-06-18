@@ -46,7 +46,6 @@ import CourseDetail from "./pages/CourseDetail";
 import StudyResources from "./pages/StudyResources";
 import AddProgram from "./pages/AddProgram";
 import Policies from "./pages/Policies";
-import PoliciesTest from "./pages/PoliciesTest";
 
 import "./App.css";
 
