@@ -281,7 +281,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Limpopo",
     location: "Polokwane",
     province: "Limpopo",
-    logo: "/logos/universities/ul.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/limpopo-d4c90b?format=webp&width=800",
     overview:
       "University serving the Limpopo province with focus on rural development and community engagement.",
     website: "https://www.ul.ac.za",
