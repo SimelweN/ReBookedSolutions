@@ -5,44 +5,16 @@ import App from "./App.tsx";
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
 import "./index.css";
 
-// Environment validation with graceful fallbacks
-const validateEnvironment = () => {
-  const hasSupabaseUrl =
-    import.meta.env.VITE_SUPABASE_URL &&
-    import.meta.env.VITE_SUPABASE_URL.trim() !== "";
-  const hasSupabaseKey =
-    import.meta.env.VITE_SUPABASE_ANON_KEY &&
-    import.meta.env.VITE_SUPABASE_ANON_KEY.trim() !== "";
-
-  const missing = [];
-  if (!hasSupabaseUrl) missing.push("VITE_SUPABASE_URL");
-  if (!hasSupabaseKey) missing.push("VITE_SUPABASE_ANON_KEY");
-
-  if (missing.length > 0) {
-    console.warn("⚠️ Missing Supabase configuration:", missing.join(", "));
-    return { isValid: false, missing };
-  }
-
-  console.log("✅ Environment validation passed");
-  return { isValid: true, missing: [] };
-};
+// Import environment validation from config
+import { checkEnvironmentConfig } from "./config/environment";
 
 // Initialize application
 if (import.meta.env.DEV) {
   console.log("🚀 ReBooked Solutions - Starting application...");
 }
 
-// Validate environment with graceful handling
-let environmentValidation;
-try {
-  environmentValidation = validateEnvironment();
-} catch (error) {
-  console.warn("Environment validation warning:", error);
-  environmentValidation = {
-    isValid: false,
-    missing: ["VITE_SUPABASE_URL", "VITE_SUPABASE_ANON_KEY"],
-  };
-}
+// Check environment configuration
+const environmentConfig = checkEnvironmentConfig();
 
 // Create a simple query client with minimal configuration
 const queryClient = new QueryClient({
@@ -67,79 +39,12 @@ const initializeApp = () => {
 
   const root = createRoot(rootElement);
 
-  // Check if we should show environment error in production
-  if (import.meta.env.PROD && !environmentValidation.isValid) {
-    // Dynamically import and render environment error component
-    import("./components/EnvironmentError")
-      .then((module) => {
-        const EnvironmentError = module.default;
-        root.render(
-          <React.StrictMode>
-            <EnvironmentError
-              missingVariables={environmentValidation.missing}
-            />
-          </React.StrictMode>,
-        );
-      })
-      .catch(() => {
-        // Fallback if component import fails
-        root.render(
-          <div
-            style={{
-              minHeight: "100vh",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontFamily: "system-ui",
-              background: "#f9fafb",
-              padding: "1rem",
-            }}
-          >
-            <div
-              style={{
-                textAlign: "center",
-                padding: "2rem",
-                background: "white",
-                borderRadius: "0.5rem",
-                boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-                maxWidth: "500px",
-              }}
-            >
-              <h1 style={{ color: "#dc2626", marginBottom: "1rem" }}>
-                Configuration Error
-              </h1>
-              <p style={{ marginBottom: "1rem" }}>
-                Missing environment variables:{" "}
-                {environmentValidation.missing.join(", ")}
-              </p>
-              <p
-                style={{
-                  marginBottom: "1.5rem",
-                  fontSize: "0.875rem",
-                  color: "#6b7280",
-                }}
-              >
-                Please configure your environment variables in your hosting
-                platform and redeploy.
-              </p>
-              <button
-                onClick={() => window.location.reload()}
-                style={{
-                  background: "#3b82f6",
-                  color: "white",
-                  padding: "0.75rem 1.5rem",
-                  border: "none",
-                  borderRadius: "0.5rem",
-                  cursor: "pointer",
-                }}
-              >
-                Retry
-              </button>
-            </div>
-          </div>,
-        );
-      });
-    return;
+  // Show environment warning in production if using defaults
+  if (import.meta.env.PROD && environmentConfig.usingDefaults) {
+    console.warn(
+      "⚠️ Production deployment using default configuration - functionality may be limited",
+    );
+    // Continue with app initialization but with warning
   }
 
   // Render the app with comprehensive error boundaries
