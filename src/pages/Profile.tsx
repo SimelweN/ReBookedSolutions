@@ -261,6 +261,14 @@ const Profile = () => {
     setIsBuyerHowItWorksOpen(true);
   };
 
+  const handleBookNotSelling = () => {
+    setIsBookNotSellingDialogOpen(true);
+  };
+
+  const handleReportIssue = () => {
+    setIsReportIssueDialogOpen(true);
+  };
+
   if (!profile || !user) {
     return (
       <Layout>
