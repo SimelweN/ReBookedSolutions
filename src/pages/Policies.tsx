@@ -106,19 +106,44 @@ const Policies = () => {
           </div>
 
           {/* Privacy Policy Tab */}
-          <TabsContent value="privacy" className="space-y-6">
+          <TabsContent value="privacy" className="space-y-4 sm:space-y-6">
             <Card>
-              <CardHeader>
-                <CardTitle className="text-3xl flex items-center gap-2">
-                  <Shield className="h-8 w-8" />
-                  Privacy Policy
+              <CardHeader className="pb-4 sm:pb-6">
+                <CardTitle className="text-xl sm:text-2xl lg:text-3xl flex items-center gap-2 mb-2 sm:mb-3">
+                  <Shield className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 flex-shrink-0" />
+                  <span>Privacy Policy</span>
                 </CardTitle>
-                <p className="text-gray-600">
-                  Effective Date: 10 June 2025 | Platform:
-                  www.rebookedsolutions.co.za | Operator: ReBooked Solutions
-                  (Pty) Ltd | Contact: support@rebookedsolutions.co.za |
-                  Jurisdiction: Republic of South Africa
-                </p>
+                <div className="text-gray-600 text-xs sm:text-sm space-y-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                    <span>
+                      <strong>Effective Date:</strong> 10 June 2025
+                    </span>
+                    <span className="hidden sm:inline">•</span>
+                    <span>
+                      <strong>Platform:</strong>{" "}
+                      <span className="break-all">
+                        www.rebookedsolutions.co.za
+                      </span>
+                    </span>
+                  </div>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                    <span>
+                      <strong>Operator:</strong> ReBooked Solutions (Pty) Ltd
+                    </span>
+                    <span className="hidden sm:inline">•</span>
+                    <span>
+                      <strong>Contact:</strong>{" "}
+                      <span className="break-all">
+                        support@rebookedsolutions.co.za
+                      </span>
+                    </span>
+                  </div>
+                  <div>
+                    <span>
+                      <strong>Jurisdiction:</strong> Republic of South Africa
+                    </span>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="prose max-w-none space-y-6">
