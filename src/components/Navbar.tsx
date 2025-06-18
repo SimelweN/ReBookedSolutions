@@ -24,6 +24,8 @@ const Navbar = () => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // Define functions before any early returns to avoid hoisting issues
+
   // Only show minimal loading during critical auth initialization
   if (isLoading && !user && !profile && !isAuthenticated) {
     return (
