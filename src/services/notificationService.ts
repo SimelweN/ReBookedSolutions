@@ -164,8 +164,9 @@ export const addNotification = async (
   notification: NotificationInput,
 ): Promise<void> => {
   try {
-    // Create a unique key for this notification to prevent duplicates
-    const notificationKey = `${notification.userId}-${notification.title}-${notification.type}`;
+    // Create a comprehensive unique key for this notification to prevent duplicates
+    const messageHash = btoa(notification.message).slice(0, 10); // Simple hash of message
+    const notificationKey = `${notification.userId}-${notification.title}-${notification.type}-${messageHash}`;
     const now = Date.now();
 
     // Check if we recently sent a similar notification
@@ -177,7 +178,30 @@ export const addNotification = async (
       return; // Skip sending duplicate notification
     }
 
-    // Mark this notification as sent
+    // Check database for recent similar notifications (additional protection)
+    const { data: recentDbNotifications, error: checkError } = await supabase
+      .from("notifications")
+      .select("id, created_at")
+      .eq("user_id", notification.userId)
+      .eq("title", notification.title)
+      .eq("type", notification.type)
+      .gte(
+        "created_at",
+        new Date(now - DUPLICATE_PREVENTION_WINDOW).toISOString(),
+      )
+      .limit(1);
+
+    if (checkError) {
+      console.warn("Failed to check for duplicate notifications:", checkError);
+      // Continue with insertion - don't fail completely
+    } else if (recentDbNotifications && recentDbNotifications.length > 0) {
+      console.log(
+        `[NotificationService] Found recent similar notification in database, skipping: ${notification.title}`,
+      );
+      return;
+    }
+
+    // Mark this notification as sent before inserting
     recentNotifications.set(notificationKey, now);
 
     const { error } = await supabase.from("notifications").insert([
@@ -196,6 +220,10 @@ export const addNotification = async (
       recentNotifications.delete(notificationKey);
       throw error;
     }
+
+    console.log(
+      `[NotificationService] Successfully added notification: ${notification.title}`,
+    );
 
     // Invalidate cache after adding new notification
     notificationCache.delete(notification.userId);

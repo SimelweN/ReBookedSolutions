@@ -12,7 +12,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { validateUserShipmentEligibility } from "@/services/automaticShipmentService";
+import { checkShipmentEligibility } from "@/services/automaticShipmentService";
 import CourierGuyTracker from "./CourierGuyTracker";
 
 const CourierGuyTrackingOnly = () => {
@@ -29,7 +29,7 @@ const CourierGuyTrackingOnly = () => {
 
     setIsLoading(true);
     try {
-      const userEligibility = await validateUserShipmentEligibility(user.id);
+      const userEligibility = await checkShipmentEligibility(user.id);
       setEligibility(
         userEligibility || {
           canSell: false,

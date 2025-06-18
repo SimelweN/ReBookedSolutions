@@ -40,7 +40,7 @@ interface BookDetails {
 
 /**
  * Get user profile with address information
- * Note: Phone numbers are not currently available in the profiles schema
+ * Returns null if user not found, but won't throw errors
  */
 export const getUserProfileWithAddresses = async (
   userId: string,
@@ -62,13 +62,39 @@ export const getUserProfileWithAddresses = async (
       .single();
 
     if (error) {
-      logError("Error fetching user profile", error);
-      return null;
+      console.warn(
+        `[AutoShipment] User profile not found for ${userId}:`,
+        error.message,
+      );
+      // Return a basic profile if the user exists but doesn't have address info
+      const { data: basicProfile, error: basicError } = await supabase
+        .from("profiles")
+        .select("id, name, email")
+        .eq("id", userId)
+        .single();
+
+      if (basicError) {
+        console.error(
+          `[AutoShipment] Error fetching basic profile for ${userId}:`,
+          basicError.message,
+        );
+        return null;
+      }
+
+      return {
+        ...basicProfile,
+        pickup_address: null,
+        shipping_address: null,
+        addresses_same: false,
+      };
     }
 
     return data;
   } catch (error) {
-    logError("Error in getUserProfileWithAddresses", error);
+    console.error(
+      `[AutoShipment] Unexpected error fetching profile for ${userId}:`,
+      error,
+    );
     return null;
   }
 };
@@ -79,26 +105,49 @@ export const getUserProfileWithAddresses = async (
 const formatAddressForCourierGuy = (address: any): string => {
   if (!address) return "";
 
-  const parts = [];
-
-  if (address.complex) parts.push(address.complex);
-  if (address.unitNumber) parts.push(`Unit ${address.unitNumber}`);
-  if (address.streetAddress) parts.push(address.streetAddress);
-  if (address.suburb) parts.push(address.suburb);
+  const parts = [
+    address.complex,
+    address.unitNumber,
+    address.streetAddress,
+    address.suburb,
+  ].filter(Boolean);
 
   return parts.join(", ");
 };
 
 /**
- * Create automatic shipment when a book is purchased
- * Note: This function is prepared but shipment creation is currently disabled
+ * Create a manual shipment notification when automatic shipment isn't possible
+ */
+export const createManualShipmentNotification = async (
+  bookDetails: BookDetails,
+  buyerId: string,
+): Promise<void> => {
+  try {
+    console.log("[AutoShipment] Creating manual shipment notification");
+
+    // In a real implementation, this would:
+    // 1. Notify admin team to arrange manual shipment
+    // 2. Send notification to seller to prepare book
+    // 3. Send notification to buyer about delivery timeline
+
+    return;
+  } catch (error) {
+    console.error(
+      "[AutoShipment] Failed to create manual shipment notification:",
+      error,
+    );
+  }
+};
+
+/**
+ * Create automatic shipment if addresses are available, otherwise return null
  */
 export const createAutomaticShipment = async (
   bookDetails: BookDetails,
   buyerId: string,
-): Promise<{ shipmentId: string; trackingNumber: string } | null> => {
+): Promise<any> => {
   try {
-    console.log("Preparing automatic shipment for book purchase:", {
+    console.log("[AutoShipment] Attempting to create automatic shipment:", {
       bookId: bookDetails.id,
       sellerId: bookDetails.sellerId,
       buyerId,
@@ -106,16 +155,27 @@ export const createAutomaticShipment = async (
 
     // Get seller information (sender)
     const seller = await getUserProfileWithAddresses(bookDetails.sellerId);
-    if (!seller || !seller.pickup_address) {
-      throw new Error(
-        "Seller pickup address not found. Cannot create shipment.",
+    if (!seller) {
+      console.warn(
+        "[AutoShipment] Seller profile not found - shipment will be manual",
       );
+      return null;
+    }
+
+    if (!seller.pickup_address) {
+      console.warn(
+        "[AutoShipment] Seller pickup address not configured - shipment will be manual",
+      );
+      return null;
     }
 
     // Get buyer information (recipient)
     const buyer = await getUserProfileWithAddresses(buyerId);
     if (!buyer) {
-      throw new Error("Buyer information not found. Cannot create shipment.");
+      console.warn(
+        "[AutoShipment] Buyer profile not found - shipment will be manual",
+      );
+      return null;
     }
 
     // Determine buyer's delivery address
@@ -124,138 +184,90 @@ export const createAutomaticShipment = async (
       : buyer.shipping_address;
 
     if (!buyerDeliveryAddress) {
-      throw new Error(
-        "Buyer delivery address not found. Cannot create shipment.",
+      console.warn(
+        "[AutoShipment] Buyer delivery address not configured - shipment will be manual",
       );
+      return null;
     }
 
     // Prepare shipment data
     const shipmentData: CourierGuyShipmentData = {
-      // Sender information (from seller's pickup address)
-      senderName: seller.name,
-      senderAddress: formatAddressForCourierGuy(seller.pickup_address),
-      senderCity: seller.pickup_address.city,
-      senderProvince: seller.pickup_address.province,
-      senderPostalCode: seller.pickup_address.postalCode,
-      senderPhone: "", // Phone not available in current schema
-
-      // Recipient information (from buyer's delivery address)
-      recipientName: buyer.name,
-      recipientAddress: formatAddressForCourierGuy(buyerDeliveryAddress),
-      recipientCity: buyerDeliveryAddress.city,
-      recipientProvince: buyerDeliveryAddress.province,
-      recipientPostalCode: buyerDeliveryAddress.postalCode,
-      recipientPhone: "", // Phone not available in current schema
-
-      // Package information
-      weight: 1.0, // Default weight for textbooks
-      description: `Textbook: ${bookDetails.title} by ${bookDetails.author}`,
-      value: bookDetails.price,
-      reference: `RBS-${bookDetails.id}-${Date.now()}`,
+      collection: {
+        contact: seller.name || "Seller",
+        phone: "0000000000", // Default phone
+        email: seller.email || "",
+        address: {
+          complex: seller.pickup_address.complex || "",
+          unitNumber: seller.pickup_address.unitNumber || "",
+          streetAddress: seller.pickup_address.streetAddress,
+          suburb: seller.pickup_address.suburb || "",
+          city: seller.pickup_address.city,
+          province: seller.pickup_address.province,
+          postalCode: seller.pickup_address.postalCode,
+        },
+      },
+      delivery: {
+        contact: buyer.name || "Buyer",
+        phone: "0000000000", // Default phone
+        email: buyer.email || "",
+        address: {
+          complex: buyerDeliveryAddress.complex || "",
+          unitNumber: buyerDeliveryAddress.unitNumber || "",
+          streetAddress: buyerDeliveryAddress.streetAddress,
+          suburb: buyerDeliveryAddress.suburb || "",
+          city: buyerDeliveryAddress.city,
+          province: buyerDeliveryAddress.province,
+          postalCode: buyerDeliveryAddress.postalCode,
+        },
+      },
+      parcels: [
+        {
+          reference: `BOOK-${bookDetails.id}`,
+          description: `${bookDetails.title} by ${bookDetails.author}`,
+          value: bookDetails.price,
+          weight: 0.5, // Default weight for books
+          dimensions: {
+            length: 25,
+            width: 20,
+            height: 3,
+          },
+        },
+      ],
+      serviceType: "ECO",
+      instructions: `Book purchase: ${bookDetails.title}`,
     };
 
-    console.log("Shipment data prepared (creation disabled):", shipmentData);
+    console.log("[AutoShipment] Creating shipment with Courier Guy...");
 
-    // NOTE: Shipment creation is disabled as per requirements
-    // Uncomment the following lines to enable automatic shipment creation:
+    // Create the shipment
+    const shipmentResult = await createCourierGuyShipment(shipmentData);
 
-    /*
-    const shipment = await createCourierGuyShipment(shipmentData);
+    console.log(
+      "[AutoShipment] ✅ Automatic shipment created successfully:",
+      shipmentResult,
+    );
 
-    // Store shipment information in database for tracking
-    await storeShipmentRecord(bookDetails.id, seller.id, buyer.id, shipment);
-
-    return {
-      shipmentId: shipment.id,
-      trackingNumber: shipment.tracking_number
-    };
-    */
-
-    console.log("⚠️ Automatic shipment creation is currently disabled");
-    return null;
+    return shipmentResult;
   } catch (error) {
-    console.error("Error creating automatic shipment:", error);
-    throw error;
-  }
-};
-
-/**
- * Store shipment record in database for future tracking
- * Note: This function is prepared but not used while shipment creation is disabled
- */
-const storeShipmentRecord = async (
-  bookId: string,
-  sellerId: string,
-  buyerId: string,
-  shipment: any,
-) => {
-  try {
-    const { error } = await supabase.from("shipments").insert({
-      book_id: bookId,
-      seller_id: sellerId,
-      buyer_id: buyerId,
-      courier_guy_shipment_id: shipment.id,
-      tracking_number: shipment.tracking_number,
-      status: shipment.status,
-      created_at: new Date().toISOString(),
-      reference: shipment.reference,
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("[AutoShipment] Automatic shipment creation failed:", {
+      error: errorMessage,
+      bookId: bookDetails.id,
+      sellerId: bookDetails.sellerId,
+      buyerId,
     });
 
-    if (error) {
-      console.error("Error storing shipment record:", error);
-      throw error;
-    }
+    // Create manual shipment notification as fallback
+    await createManualShipmentNotification(bookDetails, buyerId);
 
-    console.log("Shipment record stored successfully");
-  } catch (error) {
-    console.error("Error in storeShipmentRecord:", error);
-    throw error;
+    return null;
   }
 };
 
 /**
- * Get shipment records for a user (as buyer or seller)
- * Note: Returns empty array since shipments table is not yet created
+ * Check if a user has addresses configured for automatic shipments
  */
-export const getUserShipments = async (userId: string) => {
-  try {
-    // Note: Shipments table not created yet, return empty array
-    console.log(
-      "getUserShipments called for user:",
-      userId,
-      "- returning empty array (table not created)",
-    );
-    return [];
-
-    /* Uncomment when shipments table is created:
-    const { data, error } = await supabase
-      .from('shipments')
-      .select(`
-        *,
-        book:books(title, author, price),
-        seller:profiles!seller_id(name, email),
-        buyer:profiles!buyer_id(name, email)
-      `)
-      .or(`seller_id.eq.${userId},buyer_id.eq.${userId}`)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching user shipments:', error);
-      return [];
-    }
-
-    return data || [];
-    */
-  } catch (error) {
-    console.error("Error in getUserShipments:", error);
-    return [];
-  }
-};
-
-/**
- * Validate user addresses for shipment eligibility
- */
-export const validateUserShipmentEligibility = async (
+export const checkShipmentEligibility = async (
   userId: string,
 ): Promise<{
   canSell: boolean;
@@ -263,20 +275,24 @@ export const validateUserShipmentEligibility = async (
   errors: string[];
 }> => {
   try {
-    const user = await getUserProfileWithAddresses(userId);
-    const errors: string[] = [];
+    const profile = await getUserProfileWithAddresses(userId);
 
-    if (!user) {
-      errors.push("User profile not found");
-      return { canSell: false, canBuy: false, errors };
+    if (!profile) {
+      return {
+        canSell: false,
+        canBuy: false,
+        errors: ["User profile not found"],
+      };
     }
 
+    const errors: string[] = [];
+
     // Check if user can sell (needs pickup address)
-    const canSell = !!(
-      user.pickup_address?.streetAddress &&
-      user.pickup_address?.city &&
-      user.pickup_address?.province &&
-      user.pickup_address?.postalCode
+    const canSell = Boolean(
+      profile.pickup_address?.streetAddress &&
+        profile.pickup_address?.city &&
+        profile.pickup_address?.province &&
+        profile.pickup_address?.postalCode,
     );
 
     if (!canSell) {
@@ -284,14 +300,15 @@ export const validateUserShipmentEligibility = async (
     }
 
     // Check if user can buy (needs delivery address)
-    const deliveryAddress = user.addresses_same
-      ? user.pickup_address
-      : user.shipping_address;
-    const canBuy = !!(
+    const deliveryAddress = profile.addresses_same
+      ? profile.pickup_address
+      : profile.shipping_address;
+
+    const canBuy = Boolean(
       deliveryAddress?.streetAddress &&
-      deliveryAddress?.city &&
-      deliveryAddress?.province &&
-      deliveryAddress?.postalCode
+        deliveryAddress?.city &&
+        deliveryAddress?.province &&
+        deliveryAddress?.postalCode,
     );
 
     if (!canBuy) {

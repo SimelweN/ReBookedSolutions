@@ -1,159 +1,115 @@
-
-import Layout from '@/components/Layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Layout from "@/components/Layout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Terms = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Auto-redirect after 5 seconds
+    const timer = setTimeout(() => {
+      navigate("/policies");
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
         <Card className="max-w-4xl mx-auto">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold text-book-800">Terms and Conditions</CardTitle>
-            <p className="text-gray-600">Last updated: January 2025</p>
+            <CardTitle className="text-3xl font-bold text-book-800">
+              Terms and Conditions
+            </CardTitle>
+            <p className="text-gray-600">
+              Page moved - redirecting you to our comprehensive policies
+            </p>
           </CardHeader>
-          <CardContent className="prose prose-book max-w-none">
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-book-700 mb-4">1. Acceptance of Terms</h2>
-              <p className="mb-4">
-                By accessing and using Rebooked Solutions ("the Service"), you accept and agree to be bound by the terms and provision of this agreement. This service is provided in <strong>South Africa</strong>, and is subject to South African law.
+          <CardContent className="space-y-8">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+              <h2 className="text-2xl font-semibold text-red-700 mb-4">
+                ⚠️ IMPORTANT NOTICE
+              </h2>
+              <p className="mb-4 text-red-800">
+                <strong>This page has been moved!</strong> Our complete legal
+                documentation is now consolidated into a comprehensive policies
+                page that includes all Terms & Conditions, Privacy Policy,
+                Refund Policy, Cancellation Policy, Shipping & Delivery Policy,
+                and Returns & Disputes Policy.
               </p>
-            </section>
+              <p className="mb-4 text-red-700">
+                All policies comply with South African consumer protection laws
+                (CPA, ECTA, POPIA) and provide detailed coverage of your rights
+                and our platform responsibilities.
+              </p>
+              <a
+                href="/policies"
+                className="inline-flex items-center bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              >
+                Go to Complete Policies & Terms →
+              </a>
+              <p className="text-sm text-red-600 mt-3">
+                You will be automatically redirected in 5 seconds...
+              </p>
+            </div>
 
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-book-700 mb-4">2. Use License</h2>
-              <p className="mb-4">
-                Permission is granted to temporarily use Rebooked Solutions for personal, non-commercial transitory viewing only. This includes:
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h2 className="text-2xl font-semibold text-blue-700 mb-4">
+                📍 Page Moved
+              </h2>
+              <p className="mb-4 text-blue-800">
+                Our legal documentation has been consolidated into a
+                comprehensive policies page for better user experience and legal
+                compliance.
               </p>
-              <ul className="list-disc list-inside mb-4 ml-4">
-                <li>Browsing available textbooks</li>
-                <li>Creating listings for textbooks you own</li>
-                <li>Purchasing textbooks from other users</li>
-                <li>Communicating with other users through our platform</li>
+              <p className="mb-4 text-blue-700">The new page includes:</p>
+              <ul className="list-disc list-inside mb-4 ml-4 text-blue-700">
+                <li>
+                  <strong>Complete Terms & Conditions</strong> - 16
+                  comprehensive sections
+                </li>
+                <li>
+                  <strong>Privacy Policy</strong> - POPIA compliant
+                </li>
+                <li>
+                  <strong>Refund Policy</strong> - Consumer Protection Act
+                  compliant
+                </li>
+                <li>
+                  <strong>Cancellation Policy</strong> - Buyer and seller
+                  guidelines
+                </li>
+                <li>
+                  <strong>Shipping & Delivery Policy</strong> - Courier
+                  responsibilities
+                </li>
+                <li>
+                  <strong>Returns & Disputes Policy</strong> - Resolution
+                  procedures
+                </li>
               </ul>
-            </section>
+            </div>
 
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-book-700 mb-4">3. User Accounts</h2>
-              <p className="mb-4">
-                To access certain features of the Service, you must create an account. You are responsible for:
-              </p>
-              <ul className="list-disc list-inside mb-4 ml-4">
-                <li>Maintaining the confidentiality of your account credentials</li>
-                <li>All activities that occur under your account</li>
-                <li>Providing accurate and complete information</li>
-                <li>Updating your information to keep it current</li>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+              <h3 className="text-xl font-semibold text-green-700 mb-3">
+                ✅ What's New:
+              </h3>
+              <ul className="list-disc list-inside text-green-700 space-y-2">
+                <li>
+                  Enhanced legal compliance with South African consumer
+                  protection laws
+                </li>
+                <li>
+                  Detailed platform liability limitations and user
+                  responsibilities
+                </li>
+                <li>Comprehensive dispute resolution procedures</li>
+                <li>Clear intellectual property protections</li>
+                <li>Professional tabbed interface for easy navigation</li>
               </ul>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-book-700 mb-4">4. Marketplace Rules</h2>
-              <h3 className="text-xl font-medium text-book-600 mb-2">For Sellers:</h3>
-              <ul className="list-disc list-inside mb-4 ml-4">
-                <li>You must own the textbooks you list</li>
-                <li>Provide accurate descriptions and photos</li>
-                <li>Honor all sales commitments</li>
-                <li>Maintain reasonable response times</li>
-              </ul>
-              
-              <h3 className="text-xl font-medium text-book-600 mb-2">For Buyers:</h3>
-              <ul className="list-disc list-inside mb-4 ml-4">
-                <li>Pay for purchases in a timely manner</li>
-                <li>Inspect items upon receipt</li>
-                <li>Report any issues within 48 hours</li>
-                <li>Treat all users with respect</li>
-              </ul>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-book-700 mb-4">5. Payments and Fees</h2>
-              <p className="mb-4">
-                Rebooked Solutions charges a 10% commission on all successful sales. This fee covers:
-              </p>
-              <ul className="list-disc list-inside mb-4 ml-4">
-                <li>Platform maintenance and hosting</li>
-                <li>Payment processing</li>
-                <li>Customer support</li>
-                <li>Security and fraud protection</li>
-              </ul>
-              <p className="mb-4">
-                All payments are processed securely through Paystack. We do not store payment information on our servers.
-              </p>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-book-700 mb-4">6. Prohibited Uses</h2>
-              <p className="mb-4">You may not use our service:</p>
-              <ul className="list-disc list-inside mb-4 ml-4">
-                <li>For any unlawful purpose or to solicit others to perform unlawful acts</li>
-                <li>To violate any international, federal, provincial, or state regulations, rules, laws, or local ordinances</li>
-                <li>To infringe upon or violate our intellectual property rights or the intellectual property rights of others</li>
-                <li>To harass, abuse, insult, harm, defame, slander, disparage, intimidate, or discriminate</li>
-                <li>To submit false or misleading information</li>
-                <li>To upload or transmit viruses or any other type of malicious code</li>
-              </ul>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-book-700 mb-4">7. Shipping and Returns</h2>
-              <p className="mb-4">
-                Shipping arrangements are made between buyers and sellers. Rebooked Solutions facilitates these transactions but is not responsible for:
-              </p>
-              <ul className="list-disc list-inside mb-4 ml-4">
-                <li>Lost or damaged items during shipping</li>
-                <li>Delays in delivery</li>
-                <li>Disputes over item condition</li>
-              </ul>
-              <p className="mb-4">
-                Returns are handled on a case-by-case basis. Contact our support team within 48 hours of receiving an item if you have concerns.
-              </p>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-book-700 mb-4">8. Privacy Policy</h2>
-              <p className="mb-4">
-                Your privacy is important to us. Our Privacy Policy explains how we collect, use, and protect your information when you use our Service.
-              </p>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-book-700 mb-4">9. Disclaimers</h2>
-              <p className="mb-4">
-                The information on this website is provided on an "as is" basis. To the fullest extent permitted by law, Rebooked Solutions:
-              </p>
-              <ul className="list-disc list-inside mb-4 ml-4">
-                <li>Excludes all representations and warranties relating to this website and its contents</li>
-                <li>Does not warrant that the website will be constantly available or available at all</li>
-                <li>Does not guarantee the accuracy of listings or user-provided information</li>
-              </ul>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-book-700 mb-4">10. Limitations</h2>
-              <p className="mb-4">
-                In no event shall Rebooked Solutions or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on Rebooked Solutions's website.
-              </p>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-book-700 mb-4">11. Governing Law</h2>
-              <p className="mb-4">
-                These terms and conditions are governed by and construed in accordance with the laws of South Africa, and you irrevocably submit to the exclusive jurisdiction of the courts in that state or location.
-              </p>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-book-700 mb-4">12. Changes to Terms</h2>
-              <p className="mb-4">
-                Rebooked Solutions reserves the right to revise these terms of service at any time without notice. By using this website, you are agreeing to be bound by the then current version of these terms of service.
-              </p>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-book-700 mb-4">13. Contact Information</h2>
-              <p className="mb-4">
-                If you have any questions about these Terms and Conditions, please contact us through our support channels.
-              </p>
-            </section>
+            </div>
           </CardContent>
         </Card>
       </div>

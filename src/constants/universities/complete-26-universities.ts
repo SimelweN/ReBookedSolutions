@@ -21,7 +21,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Cape Town",
     location: "Cape Town",
     province: "Western Cape",
-    logo: "/logos/universities/uct.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/uct-fff84c?format=webp&width=800",
     overview:
       "Africa's leading university, globally ranked for academic excellence and research innovation.",
     website: "https://www.uct.ac.za",
@@ -47,7 +47,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of the Witwatersrand",
     location: "Johannesburg",
     province: "Gauteng",
-    logo: "/logos/universities/wits.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/wits-e516dc?format=webp&width=800",
     overview:
       "Leading African research university with a global reputation for academic excellence and innovation.",
     website: "https://www.wits.ac.za",
@@ -73,7 +73,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Stellenbosch University",
     location: "Stellenbosch",
     province: "Western Cape",
-    logo: "/logos/universities/stellenbosch.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/stellenbosh-f2423b?format=webp&width=800",
     overview:
       "Research-intensive university with a tradition of academic excellence and innovation in South Africa.",
     website: "https://www.sun.ac.za",
@@ -99,7 +99,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Pretoria",
     location: "Pretoria",
     province: "Gauteng",
-    logo: "/logos/universities/pretoria.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/up-d5c0a5?format=webp&width=800",
     overview:
       "Top research university in South Africa with comprehensive academic programs and research excellence.",
     website: "https://www.up.ac.za",
@@ -125,7 +125,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of KwaZulu-Natal",
     location: "Durban",
     province: "KwaZulu-Natal",
-    logo: "/logos/universities/ukzn.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/ukzn-6666c2?format=webp&width=800",
     overview:
       "Leading research university with strong community engagement and academic excellence.",
     website: "https://www.ukzn.ac.za",
@@ -151,7 +151,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of the Free State",
     location: "Bloemfontein",
     province: "Free State",
-    logo: "/logos/universities/ufs.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/ufs-ace12a?format=webp&width=800",
     overview:
       "Multi-campus university with strong research focus and comprehensive academic programs.",
     website: "https://www.ufs.ac.za",
@@ -177,7 +177,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Rhodes University",
     location: "Makhanda",
     province: "Eastern Cape",
-    logo: "/logos/universities/rhodes.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/rhodes-59a57e?format=webp&width=800",
     overview:
       "Prestigious small university known for academic excellence and high-quality research output.",
     website: "https://www.ru.ac.za",
@@ -203,7 +203,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "North-West University",
     location: "Potchefstroom",
     province: "North West",
-    logo: "/logos/universities/nwu.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/nwu-071a25?format=webp&width=800",
     overview:
       "Multi-campus university offering diverse academic programs with strong research focus.",
     website: "https://www.nwu.ac.za",
@@ -229,7 +229,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of the Western Cape",
     location: "Cape Town",
     province: "Western Cape",
-    logo: "/logos/universities/uwc.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/cape-peninusla-499c5e?format=webp&width=800",
     overview:
       "University with strong community focus and commitment to social justice and transformation.",
     website: "https://www.uwc.ac.za",
@@ -255,7 +255,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Fort Hare",
     location: "Alice",
     province: "Eastern Cape",
-    logo: "/logos/universities/ufh.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/fort-hare-cc3cf9?format=webp&width=800",
     overview:
       "Historic university with proud legacy of African leadership development and academic excellence.",
     website: "https://www.ufh.ac.za",
@@ -281,7 +281,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Limpopo",
     location: "Polokwane",
     province: "Limpopo",
-    logo: "/logos/universities/ul.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/limpopo-d4c90b?format=webp&width=800",
     overview:
       "University serving the Limpopo province with focus on rural development and community engagement.",
     website: "https://www.ul.ac.za",
@@ -309,7 +309,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Tshwane University of Technology",
     location: "Pretoria",
     province: "Gauteng",
-    logo: "/logos/universities/tut.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/tut-502ab8?format=webp&width=800",
     overview:
       "Leading university of technology providing career-focused education and practical skills development.",
     website: "https://www.tut.ac.za",
@@ -335,7 +335,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Durban University of Technology",
     location: "Durban",
     province: "KwaZulu-Natal",
-    logo: "/logos/universities/dut.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/dut-30eb73?format=webp&width=800",
     overview:
       "Technology-focused university with strong industry partnerships and practical learning approach.",
     website: "https://www.dut.ac.za",
@@ -361,7 +361,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Cape Peninsula University of Technology",
     location: "Cape Town",
     province: "Western Cape",
-    logo: "/logos/universities/cput.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/cape-peninusla-499c5e?format=webp&width=800",
     overview:
       "Technology university known for practical, career-oriented programs and industry engagement.",
     website: "https://www.cput.ac.za",
@@ -387,7 +387,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Central University of Technology",
     location: "Bloemfontein",
     province: "Free State",
-    logo: "/logos/universities/cut.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/cut-16c93d?format=webp&width=800",
     overview:
       "Technology university focusing on applied research and career-oriented education.",
     website: "https://www.cut.ac.za",
@@ -413,7 +413,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Vaal University of Technology",
     location: "Vanderbijlpark",
     province: "Gauteng",
-    logo: "/logos/universities/vut.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/val-c96fb0?format=webp&width=800",
     overview:
       "Technology university providing practical education and skills development for the Vaal region.",
     website: "https://www.vut.ac.za",
@@ -439,7 +439,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Mangosuthu University of Technology",
     location: "Durban",
     province: "KwaZulu-Natal",
-    logo: "/logos/universities/mut.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/mut-4a527e?format=webp&width=800",
     overview:
       "Technology university serving KwaZulu-Natal with focus on practical skills and community development.",
     website: "https://www.mut.ac.za",
@@ -467,7 +467,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Johannesburg",
     location: "Johannesburg",
     province: "Gauteng",
-    logo: "/logos/universities/uj.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/uj-340834?format=webp&width=800",
     overview:
       "Large comprehensive university offering diverse academic and technological programs.",
     website: "https://www.uj.ac.za",
@@ -493,7 +493,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of South Africa",
     location: "Pretoria",
     province: "Gauteng",
-    logo: "/logos/universities/unisa.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/unisa-617e53?format=webp&width=800",
     overview:
       "Africa's largest distance education university with comprehensive academic programs.",
     website: "https://www.unisa.ac.za",
@@ -519,7 +519,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Zululand",
     location: "Richards Bay",
     province: "KwaZulu-Natal",
-    logo: "/logos/universities/unizul.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/zululand-aed843?format=webp&width=800",
     overview:
       "Comprehensive university serving rural KwaZulu-Natal with focus on community development.",
     website: "https://www.unizulu.ac.za",
@@ -545,7 +545,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Venda",
     location: "Thohoyandou",
     province: "Limpopo",
-    logo: "/logos/universities/uv.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/venda-03b8c7?format=webp&width=800",
     overview:
       "Comprehensive university serving the Venda region with focus on rural development.",
     website: "https://www.univen.ac.za",
@@ -571,7 +571,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Walter Sisulu University",
     location: "Mthatha",
     province: "Eastern Cape",
-    logo: "/logos/universities/wsu.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/wsu-a30990?format=webp&width=800",
     overview:
       "Comprehensive university serving the Eastern Cape with multiple campuses and diverse programs.",
     website: "https://www.wsu.ac.za",
@@ -599,7 +599,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Sefako Makgatho Health Sciences University",
     location: "Pretoria",
     province: "Gauteng",
-    logo: "/logos/universities/smu.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/sefako-7760a4?format=webp&width=800",
     overview:
       "Specialized health sciences university focusing on medical and health-related programs.",
     website: "https://www.smu.ac.za",
@@ -625,7 +625,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Sol Plaatje University",
     location: "Kimberley",
     province: "Northern Cape",
-    logo: "/logos/universities/spu.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/sol-plaatje-28cea9?format=webp&width=800",
     overview:
       "New university established to serve the Northern Cape region with innovative programs.",
     website: "https://www.spu.ac.za",
@@ -651,7 +651,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Mpumalanga",
     location: "Nelspruit",
     province: "Mpumalanga",
-    logo: "/logos/universities/ump.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/mpumalanga-b87746?format=webp&width=800",
     overview:
       "New university serving Mpumalanga province with focus on regional development needs.",
     website: "https://www.ump.ac.za",

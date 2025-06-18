@@ -189,14 +189,32 @@ const AdminResourcesTab = ({ className }: AdminResourcesTabProps) => {
 
   // Handle create item
   const handleCreateItem = async () => {
-    if (!formData.title?.trim() || !formData.description?.trim()) {
-      toast.error("Please fill in required fields");
+    // Enhanced validation
+    if (!formData.title?.trim()) {
+      toast.error("Title is required");
+      return;
+    }
+
+    if (!formData.description?.trim()) {
+      toast.error("Description is required");
+      return;
+    }
+
+    if (!formData.category?.trim()) {
+      toast.error("Category is required");
       return;
     }
 
     setIsCreating(true);
     try {
+      console.log(`[AdminResourcesTab] Creating ${activeTab}:`, formData);
+
       if (activeTab === "resources") {
+        // Validate resource-specific fields
+        if (!formData.type) {
+          throw new Error("Resource type is required");
+        }
+
         const normalizedResource = normalizeStudyResource({
           ...formData,
           tags: normalizeTagsToArray(formData.tags as string),
@@ -212,9 +230,25 @@ const AdminResourcesTab = ({ className }: AdminResourcesTabProps) => {
             | "Advanced",
         });
 
+        // Validate normalized data
+        if (
+          !normalizedResource.title ||
+          !normalizedResource.description ||
+          !normalizedResource.category
+        ) {
+          throw new Error("Required fields missing after normalization");
+        }
+
         await createStudyResource(normalizedResource);
         toast.success("Study resource created successfully!");
+        console.log("[AdminResourcesTab] Study resource created successfully");
       } else {
+        // Validate tip-specific fields
+        if (!formData.content?.trim()) {
+          toast.error("Content is required for study tips");
+          return;
+        }
+
         const normalizedTip = normalizeStudyTip({
           ...formData,
           tags: normalizeTagsToArray(formData.tags as string),
@@ -224,14 +258,27 @@ const AdminResourcesTab = ({ className }: AdminResourcesTabProps) => {
             | "Advanced",
         });
 
+        // Validate normalized data
+        if (
+          !normalizedTip.title ||
+          !normalizedTip.description ||
+          !normalizedTip.content
+        ) {
+          throw new Error("Required fields missing after normalization");
+        }
+
         await createStudyTip(normalizedTip);
         toast.success("Study tip created successfully!");
+        console.log("[AdminResourcesTab] Study tip created successfully");
       }
+
       resetForm();
-      loadExistingItems(); // Refresh the list
+      await loadExistingItems(); // Refresh the list
     } catch (error) {
-      console.error("Error creating item:", error);
-      toast.error("Failed to create item");
+      console.error(`Error creating ${activeTab}:`, error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
+      toast.error(`Failed to create ${activeTab}: ${errorMessage}`);
     } finally {
       setIsCreating(false);
     }

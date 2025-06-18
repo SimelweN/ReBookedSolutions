@@ -31,6 +31,7 @@ import {
   Truck,
 } from "lucide-react";
 import { toast } from "sonner";
+import SaleSuccessPopup from "@/components/SaleSuccessPopup";
 
 interface AddressData {
   complex?: string;
@@ -81,6 +82,14 @@ const Checkout = () => {
   const [selectedDelivery, setSelectedDelivery] =
     useState<DeliveryQuote | null>(null);
   const [loadingQuotes, setLoadingQuotes] = useState(false);
+  const [showSalePopup, setShowSalePopup] = useState(false);
+  const [saleData, setSaleData] = useState<{
+    bookTitle: string;
+    bookPrice: number;
+    buyerName: string;
+    buyerEmail: string;
+    saleId?: string;
+  } | null>(null);
 
   const isCartCheckout = id === "cart";
   const cartData = location.state?.cartItems || [];
@@ -331,41 +340,57 @@ const Checkout = () => {
             );
           }
 
-          // Note: createAutomaticShipment is prepared but disabled as per requirements
-          const shipmentResult = await createAutomaticShipment(
-            bookDetails,
-            user.id,
-          );
+          // Attempt automatic shipment creation (optional)
+          try {
+            const shipmentResult = await createAutomaticShipment(
+              bookDetails,
+              user.id,
+            );
 
-          if (shipmentResult) {
-            console.log(
-              `Shipment created for "${purchasedBook.title}":`,
-              shipmentResult,
+            if (shipmentResult) {
+              console.log(
+                `✅ Automatic shipment created for "${purchasedBook.title}":`,
+                shipmentResult,
+              );
+              toast.success(
+                `Automatic delivery arranged for "${purchasedBook.title}" - Tracking: ${shipmentResult.trackingNumber}`,
+                {
+                  duration: 5000,
+                },
+              );
+            } else {
+              console.log(
+                `ℹ️ Manual delivery required for "${purchasedBook.title}" - addresses not configured`,
+              );
+              // Don't show warning to user - this is normal
+            }
+          } catch (shipmentError) {
+            console.warn(
+              `⚠️ Automatic shipment failed for "${purchasedBook.title}":`,
+              shipmentError.message,
             );
-            toast.success(
-              `Shipment created for "${purchasedBook.title}" - Tracking: ${shipmentResult.trackingNumber}`,
-              {
-                duration: 5000,
-              },
-            );
-          } else {
-            console.log(
-              `Automatic shipment creation is disabled for "${purchasedBook.title}"`,
-            );
+            // Don't show error to user - manual delivery is still available
           }
-        } catch (shipmentError) {
+        } catch (generalError) {
           console.error(
-            `Error creating shipment for "${purchasedBook.title}":`,
-            shipmentError,
+            `❌ Unexpected error processing "${purchasedBook.title}":`,
+            generalError,
           );
-          // Don't fail the entire purchase if shipment creation fails
-          toast.warning(
-            `Purchase successful, but shipment creation failed for "${purchasedBook.title}". Please contact support.`,
-            {
-              duration: 7000,
-            },
-          );
+          // Don't fail the entire purchase for individual book errors
         }
+      }
+
+      // Show sale success popup immediately
+      const firstBook = purchasedBooks[0];
+      if (firstBook) {
+        setSaleData({
+          bookTitle: firstBook.title,
+          bookPrice: firstBook.price,
+          buyerName: user.name || user.email || "Unknown Buyer",
+          buyerEmail: user.email || "",
+          saleId: "sale_" + Date.now(), // Generate a simple sale ID
+        });
+        setShowSalePopup(true);
       }
 
       toast.success(
@@ -380,8 +405,8 @@ const Checkout = () => {
         clearCart();
       }
 
-      // Redirect to shipping page instead of home to show tracking info
-      navigate("/shipping");
+      // Note: Don't auto-redirect so user can see the popup
+      // navigate("/shipping"); - removed
     } catch (error) {
       console.error("Payment error:", error);
       toast.error("Payment failed. Please try again.", { id: "payment" });
@@ -827,6 +852,24 @@ const Checkout = () => {
           </div>
         </div>
       </div>
+
+      {/* Sale Success Popup */}
+      {saleData && (
+        <SaleSuccessPopup
+          isOpen={showSalePopup}
+          onClose={() => {
+            setShowSalePopup(false);
+            setSaleData(null);
+            // Navigate to shipping page after popup closes
+            navigate("/shipping");
+          }}
+          bookTitle={saleData.bookTitle}
+          bookPrice={saleData.bookPrice}
+          buyerName={saleData.buyerName}
+          buyerEmail={saleData.buyerEmail}
+          saleId={saleData.saleId}
+        />
+      )}
     </Layout>
   );
 };

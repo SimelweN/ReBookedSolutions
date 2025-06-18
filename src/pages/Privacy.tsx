@@ -1,7 +1,20 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Privacy = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Auto-redirect after 5 seconds
+    const timer = setTimeout(() => {
+      navigate("/policies");
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
@@ -10,152 +23,84 @@ const Privacy = () => {
             <CardTitle className="text-3xl font-bold text-book-800">
               Privacy Policy
             </CardTitle>
-            <p className="text-gray-600">Effective Date: May 25, 2025</p>
+            <p className="text-gray-600">
+              Page moved - redirecting you to our comprehensive policies
+            </p>
           </CardHeader>
-          <CardContent className="prose prose-lg max-w-none">
-            <p className="text-gray-700 mb-6">
-              At Rebooked Solutions, we are committed to protecting your privacy
-              and ensuring the security of your personal information. This
-              Privacy Policy explains how we collect, use, and safeguard your
-              data when you use our textbook marketplace platform.
-            </p>
+          <CardContent className="space-y-8">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+              <h2 className="text-2xl font-semibold text-red-700 mb-4">
+                ⚠️ IMPORTANT NOTICE
+              </h2>
+              <p className="mb-4 text-red-800">
+                <strong>This page has been moved!</strong> Our complete Privacy
+                Policy is now part of our comprehensive policies page that
+                includes all legal documentation.
+              </p>
+              <p className="mb-4 text-red-700">
+                Our Privacy Policy is fully compliant with the Protection of
+                Personal Information Act (POPIA) and includes detailed coverage
+                of data collection, usage, storage, and your rights.
+              </p>
+              <a
+                href="/policies"
+                className="inline-flex items-center bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              >
+                Go to Complete Privacy Policy →
+              </a>
+              <p className="text-sm text-red-600 mt-3">
+                You will be automatically redirected in 5 seconds...
+              </p>
+            </div>
 
-            <h2 className="text-2xl font-semibold text-book-800 mt-8 mb-4">
-              Information We Collect
-            </h2>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h2 className="text-2xl font-semibold text-blue-700 mb-4">
+                🔒 Enhanced Privacy Protection
+              </h2>
+              <p className="mb-4 text-blue-800">
+                Our comprehensive Privacy Policy now includes:
+              </p>
+              <ul className="list-disc list-inside mb-4 ml-4 text-blue-700">
+                <li>
+                  <strong>POPIA Compliance</strong> - Full Protection of
+                  Personal Information Act coverage
+                </li>
+                <li>
+                  <strong>Data Collection Details</strong> - Exactly what
+                  information we collect and why
+                </li>
+                <li>
+                  <strong>Your Rights</strong> - How to access, correct, or
+                  delete your personal data
+                </li>
+                <li>
+                  <strong>Security Measures</strong> - How we protect your
+                  information
+                </li>
+                <li>
+                  <strong>International Transfers</strong> - Safeguards for data
+                  processed outside South Africa
+                </li>
+                <li>
+                  <strong>Contact Information</strong> - How to reach us about
+                  privacy concerns
+                </li>
+              </ul>
+            </div>
 
-            <h3 className="text-xl font-semibold text-book-700 mt-6 mb-3">
-              Personal Information
-            </h3>
-            <ul className="list-disc pl-6 mb-4 space-y-2">
-              <li>Name and contact information (email address)</li>
-              <li>Account credentials and authentication data</li>
-              <li>Profile information you choose to provide</li>
-              <li>Communication preferences</li>
-            </ul>
-
-            <h3 className="text-xl font-semibold text-book-700 mt-6 mb-3">
-              Book Listing Information
-            </h3>
-            <ul className="list-disc pl-6 mb-4 space-y-2">
-              <li>Book details (title, author, condition, price)</li>
-              <li>Photos and descriptions of your textbooks</li>
-              <li>Transaction history and sales data</li>
-              <li>Communication with buyers and sellers</li>
-            </ul>
-
-            <h3 className="text-xl font-semibold text-book-700 mt-6 mb-3">
-              Technical Information
-            </h3>
-            <ul className="list-disc pl-6 mb-4 space-y-2">
-              <li>Device information and browser type</li>
-              <li>IP address and location data</li>
-              <li>Usage patterns and app performance data</li>
-              <li>Cookies and similar tracking technologies</li>
-            </ul>
-
-            <h2 className="text-2xl font-semibold text-book-800 mt-8 mb-4">
-              How We Use Your Information
-            </h2>
-            <ul className="list-disc pl-6 mb-4 space-y-2">
-              <li>Facilitate buying and selling of textbooks</li>
-              <li>Process transactions and maintain account security</li>
-              <li>Provide customer support and respond to inquiries</li>
-              <li>
-                Send important updates about your account and transactions
-              </li>
-              <li>Improve our platform and develop new features</li>
-              <li>Prevent fraud and ensure platform safety</li>
-              <li>Comply with legal obligations</li>
-            </ul>
-
-            <h2 className="text-2xl font-semibold text-book-800 mt-8 mb-4">
-              Information Sharing
-            </h2>
-            <p className="mb-4">
-              We do not sell, rent, or share your personal information with
-              third parties except in the following circumstances:
-            </p>
-            <ul className="list-disc pl-6 mb-4 space-y-2">
-              <li>
-                With other users when necessary for transactions (e.g., contact
-                information for book pickup)
-              </li>
-              <li>With service providers who help us operate the platform</li>
-              <li>When required by law or to protect our rights and safety</li>
-              <li>In connection with a business transfer or merger</li>
-              <li>With your explicit consent</li>
-            </ul>
-
-            <h2 className="text-2xl font-semibold text-book-800 mt-8 mb-4">
-              Data Security
-            </h2>
-            <p className="mb-4">
-              We implement appropriate technical and organizational measures to
-              protect your personal information against unauthorized access,
-              alteration, disclosure, or destruction. However, no method of
-              transmission over the internet is 100% secure.
-            </p>
-
-            <h2 className="text-2xl font-semibold text-book-800 mt-8 mb-4">
-              Your Rights
-            </h2>
-            <p className="mb-4">You have the right to:</p>
-            <ul className="list-disc pl-6 mb-4 space-y-2">
-              <li>Access and update your personal information</li>
-              <li>Delete your account and associated data</li>
-              <li>Opt out of non-essential communications</li>
-              <li>Request a copy of your data</li>
-              <li>Report privacy concerns to us</li>
-            </ul>
-
-            <h2 className="text-2xl font-semibold text-book-800 mt-8 mb-4">
-              Cookies and Tracking
-            </h2>
-            <p className="mb-4">
-              We use cookies and similar technologies to enhance your
-              experience, remember your preferences, and analyze platform usage.
-              You can control cookie settings through your browser preferences.
-            </p>
-
-            <h2 className="text-2xl font-semibold text-book-800 mt-8 mb-4">
-              Eligibility and Children's Privacy
-            </h2>
-            <p className="mb-4">
-              Rebooked Solutions is intended for users aged 18 and older. If you
-              are under 18, you must obtain parental or legal guardian consent
-              to use this platform. Rebooked Solutions does not encourage users
-              under the age of 18 to sell or trade books.
-            </p>
-            <p className="mb-4">
-              Our platform is not intended for users under 13 years of age. We
-              do not knowingly collect personal information from children under
-              13.
-            </p>
-
-            <h2 className="text-2xl font-semibold text-book-800 mt-8 mb-4">
-              Changes to This Policy
-            </h2>
-            <p className="mb-4">
-              We may update this Privacy Policy from time to time. We will
-              notify users of significant changes through email or platform
-              notifications.
-            </p>
-
-            <h2 className="text-2xl font-semibold text-book-800 mt-8 mb-4">
-              Contact Us
-            </h2>
-            <p className="mb-4">
-              If you have questions about this Privacy Policy or how we handle
-              your data, please contact us at:
-            </p>
-            <p className="mb-2">
-              <strong>Email:</strong>&nbsp;support@rebookedsolutions.co.za
-            </p>
-            <p className="mb-2">
-              <strong>Address:</strong> Rebooked Solutions, Gauteng, South
-              Africa
-            </p>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+              <h3 className="text-xl font-semibold text-green-700 mb-3">
+                ✅ Professional Legal Framework:
+              </h3>
+              <ul className="list-disc list-inside text-green-700 space-y-2">
+                <li>
+                  15 comprehensive sections covering all aspects of privacy
+                </li>
+                <li>Clear explanations in plain language</li>
+                <li>Specific contact details for privacy inquiries</li>
+                <li>Professional tabbed interface for easy navigation</li>
+              </ul>
+            </div>
           </CardContent>
         </Card>
       </div>
