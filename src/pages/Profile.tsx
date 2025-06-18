@@ -501,11 +501,6 @@ const Profile = () => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56">
-                      <DropdownMenuItem onClick={handleEditProfile}>
-                        <User className="h-4 w-4 mr-2" />
-                        Edit Profile
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={() => navigate("/notifications")}
                       >
