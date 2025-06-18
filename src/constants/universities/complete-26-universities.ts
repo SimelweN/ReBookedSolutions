@@ -255,7 +255,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Fort Hare",
     location: "Alice",
     province: "Eastern Cape",
-    logo: "/logos/universities/ufh.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/fort-hare-cc3cf9?format=webp&width=800",
     overview:
       "Historic university with proud legacy of African leadership development and academic excellence.",
     website: "https://www.ufh.ac.za",
