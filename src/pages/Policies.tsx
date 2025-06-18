@@ -560,13 +560,13 @@ const Policies = () => {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="prose max-w-none space-y-6">
+              <CardContent className="px-4 sm:px-6">
+                <div className="prose max-w-none space-y-4 sm:space-y-6">
                   <section>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">
                       1. INTRODUCTION
                     </h3>
-                    <p className="text-gray-700 leading-relaxed">
+                    <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
                       Welcome to ReBooked Solutions. These Terms and Conditions
                       ("Terms") are a legally binding agreement between you and
                       ReBooked Solutions (Pty) Ltd ("ReBooked", "we", "us", or
@@ -1368,7 +1368,7 @@ const Policies = () => {
                       5.2 Internal Resolution
                     </h3>
                     <p className="text-gray-700 leading-relaxed">
-                      ReBooked Solutions will assess disputes within 7–10
+                      ReBooked Solutions will assess disputes within 7��10
                       business days and may request further evidence from both
                       parties. The platform's decision will be based on:
                     </p>
