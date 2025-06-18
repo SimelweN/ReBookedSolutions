@@ -106,30 +106,48 @@ export const useNotifications = (): NotificationHookReturn => {
           throw new Error("Invalid data format received");
         }
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Unknown error occurred";
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        console.error(`[NotificationHook] Error fetching notifications:`, errorMessage);
 
-        if (import.meta.env.DEV) {
-          console.warn("Error in refreshNotifications:", errorMessage);
+        // Handle 403 errors with session refresh
+        if (errorMessage.includes("403") || errorMessage.includes("forbidden")) {
+          console.log("[NotificationHook] 403 error detected, attempting session refresh");
+          try {
+            const { data: { session } } = await supabase.auth.refreshSession();
+            if (session) {
+              console.log("[NotificationHook] Session refreshed, retrying notification fetch");
+              // Clear error and retry immediately
+              setHasError(false);
+              setLastError(undefined);
+              setTimeout(() => refreshNotifications(true), 1000);
+              return;
+            }
+          } catch (refreshError) {
+            console.error("[NotificationHook] Session refresh failed:", refreshError);
+          }
         }
 
+        // Set user-friendly error state
         setHasError(true);
-        setLastError(errorMessage);
+        setLastError(error instanceof Error ? error : new Error(errorMessage));
 
-        // Implement progressive retry with exponential backoff
-        if (
-          retryCountRef.current < MAX_RETRY_ATTEMPTS &&
-          !retryTimeoutRef.current
-        ) {
-          const delay =
-            RETRY_DELAYS[retryCountRef.current] ||
-            RETRY_DELAYS[RETRY_DELAYS.length - 1];
-
-          retryTimeoutRef.current = setTimeout(() => {
-            retryTimeoutRef.current = null;
+        // Only retry on network or temporary errors, not on auth errors
+        if (errorMessage.includes("network") || errorMessage.includes("timeout") || errorMessage.includes("Failed to fetch")) {
+          if (retryCountRef.current < MAX_RETRY_ATTEMPTS) {
             retryCountRef.current++;
+            const retryDelay = RETRY_DELAYS[retryCountRef.current - 1] || RETRY_DELAYS[RETRY_DELAYS.length - 1];
 
-            if (isAuthenticated && user) {
+            console.log(`[NotificationHook] Scheduling retry ${retryCountRef.current}/${MAX_RETRY_ATTEMPTS} in ${retryDelay}ms`);
+
+            retryTimeoutRef.current = setTimeout(() => {
+              refreshNotifications(true);
+            }, retryDelay);
+          } else {
+            console.warn(`[NotificationHook] Max retry attempts reached (${MAX_RETRY_ATTEMPTS})`);
+          }
+        } else {
+          console.warn(`[NotificationHook] Non-retryable error: ${errorMessage}`);
+        }
               refreshNotifications(true);
             }
           }, delay);
