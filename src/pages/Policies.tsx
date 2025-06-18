@@ -229,7 +229,7 @@ const Policies = () => {
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-2">
                   <Scale className="h-6 w-6" />
-                  Terms & Conditions
+                  📜 TERMS AND CONDITIONS OF USE
                 </CardTitle>
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
                   <p className="text-blue-800 text-sm">
@@ -237,59 +237,498 @@ const Policies = () => {
                     {new Date().toLocaleDateString()} <br />
                     <strong>Platform Operator:</strong> ReBooked Solutions (Pty)
                     Ltd <br />
-                    <strong>Governing Laws:</strong> Consumer Protection Act,
-                    ECTA, POPIA
+                    <strong>Email:</strong> support@rebookedsolutions.co.za{" "}
+                    <br />
+                    <strong>Jurisdiction:</strong> Republic of South Africa{" "}
+                    <br />
+                    <strong>Governing Laws:</strong>
                   </p>
+                  <ul className="list-disc list-inside text-blue-700 text-sm mt-2 ml-4">
+                    <li>Consumer Protection Act (CPA) No. 68 of 2008</li>
+                    <li>
+                      Electronic Communications and Transactions Act (ECTA) No.
+                      25 of 2002
+                    </li>
+                    <li>
+                      Protection of Personal Information Act (POPIA) No. 4 of
+                      2013
+                    </li>
+                  </ul>
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                  <p className="text-amber-800 text-sm">
-                    <strong>Platform Nature:</strong> ReBooked Solutions
-                    operates as a digital intermediary between independent
-                    sellers and buyers and does not own or control the inventory
-                    sold on the platform. Users accept that ReBooked Solutions
-                    acts only as a venue and not as a contracting party to the
-                    sale.
+                {/* 1. Introduction */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">
+                    1. INTRODUCTION
+                  </h3>
+                  <p className="text-gray-700 mb-3">
+                    Welcome to ReBooked Solutions. These Terms and Conditions
+                    ("Terms") are a legally binding agreement between you and
+                    ReBooked Solutions (Pty) Ltd ("ReBooked", "we", "us", or
+                    "our"). They govern your access to and use of our platform,
+                    services, and content. If you do not agree to these Terms,
+                    you must cease all use of our services immediately.
+                  </p>
+                  <p className="text-gray-700">
+                    By using the Platform, you confirm that you understand and
+                    agree to these Terms, our policies (including but not
+                    limited to Refund, Return, Shipping, and Dispute policies),
+                    and our Privacy Policy. You accept all risks associated with
+                    using a peer-to-peer resale platform and accept that
+                    ReBooked Solutions is not a party to any sale of goods
+                    between users.
                   </p>
                 </div>
 
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
-                    <div>
-                      <p className="font-semibold text-red-800 mb-2">
-                        Platform Limitation of Liability
+                {/* 2. Definitions */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">2. DEFINITIONS</h3>
+                  <div className="space-y-3">
+                    <p className="text-gray-700">
+                      <strong>"Platform"</strong> refers to the website
+                      www.rebookedsolutions.co.za, including all services,
+                      features, and content available therein.
+                    </p>
+                    <p className="text-gray-700">
+                      <strong>"User"</strong> or <strong>"you"</strong> refers
+                      to any individual or entity who accesses or uses the
+                      Platform, whether as a buyer, seller, or visitor.
+                    </p>
+                    <p className="text-gray-700">
+                      <strong>"ReBooked Campus"</strong> refers to the
+                      informational and educational segment of the Platform
+                      offering academic resources, university data, APS tools,
+                      bursary listings, blog posts, and study tips.
+                    </p>
+                    <p className="text-gray-700">
+                      <strong>"Content"</strong> includes any text, images,
+                      documents, posts, data, links, files, or other materials
+                      submitted, posted, or displayed by users.
+                    </p>
+                    <p className="text-gray-700">
+                      <strong>"Third Party"</strong> refers to any entity or
+                      service provider that is not owned or directly controlled
+                      by ReBooked Solutions.
+                    </p>
+                  </div>
+                </div>
+
+                {/* 3. Platform Nature & Disclaimer */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">
+                    3. PLATFORM NATURE & DISCLAIMER OF RESPONSIBILITY
+                  </h3>
+                  <p className="text-gray-700 mb-3">
+                    ReBooked Solutions is an online marketplace and academic
+                    resource platform. We do not buy, own, stock, or sell any
+                    books or physical goods listed by users. All transactions
+                    are conducted directly between buyers and sellers.
+                  </p>
+                  <p className="text-gray-700 mb-3">
+                    We provide a digital venue and payment integration only. We
+                    make no warranties regarding the suitability, safety,
+                    legality, or quality of items listed, nor the credibility of
+                    sellers or accuracy of ReBooked Campus information. All
+                    users transact at their own risk.
+                  </p>
+
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-red-800 mb-2">
+                          We are not liable for:
+                        </p>
+                        <ul className="list-disc list-inside text-red-700 text-sm space-y-1">
+                          <li>
+                            Misleading listings or undisclosed book conditions
+                          </li>
+                          <li>Counterfeit, plagiarised, or illegal goods</li>
+                          <li>Non-performance or breach by any user</li>
+                          <li>Courier or delivery delays</li>
+                          <li>Failed payments or chargebacks</li>
+                          <li>Errors in educational or institutional data</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="text-gray-700 mt-3">
+                    You acknowledge that ReBooked is not a party to any contract
+                    for sale formed between users, nor are we agents of any
+                    buyer or seller.
+                  </p>
+                </div>
+
+                {/* 4. User Eligibility */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">
+                    4. USER ELIGIBILITY
+                  </h3>
+                  <p className="text-gray-700 mb-3">
+                    By using the Platform, you warrant that:
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 text-gray-700 ml-4">
+                    <li>
+                      You are 18 years or older, or have consent from a
+                      parent/guardian.
+                    </li>
+                    <li>
+                      You are not prohibited under South African law from using
+                      online marketplaces.
+                    </li>
+                    <li>
+                      You are providing accurate and lawful personal and payment
+                      information.
+                    </li>
+                    <li>
+                      You accept full legal responsibility for all activities
+                      under your account.
+                    </li>
+                  </ul>
+                </div>
+
+                {/* 5. User Account Responsibilities */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">
+                    5. USER ACCOUNT RESPONSIBILITIES
+                  </h3>
+                  <div className="space-y-3">
+                    <p className="text-gray-700">
+                      <strong>5.1</strong> Each user is responsible for
+                      maintaining the confidentiality and accuracy of their
+                      account information. You must not share your password or
+                      allow anyone else to access your account.
+                    </p>
+                    <p className="text-gray-700">
+                      <strong>5.2</strong> You are liable for all actions
+                      performed through your account, including fraud,
+                      unauthorised sales, or misrepresentations. ReBooked
+                      disclaims all liability for unauthorised access due to
+                      user negligence.
+                    </p>
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                      <p className="text-amber-800 text-sm mb-2">
+                        <strong>5.3</strong> ReBooked reserves the right to
+                        suspend or permanently terminate any user account at any
+                        time for:
                       </p>
-                      <p className="text-red-700 text-sm mb-2">
-                        As per Section 56 of the CPA, remedies for defective
-                        goods are enforceable against the seller, not the
-                        platform. ReBooked Solutions assumes no liability for:
-                      </p>
-                      <ul className="list-disc list-inside text-red-700 text-sm space-y-1 ml-4">
-                        <li>Goods condition, legality, or delivery</li>
-                        <li>Buyer or seller conduct</li>
-                        <li>Courier issues</li>
-                        <li>Consequential losses or damages</li>
+                      <ul className="list-disc list-inside text-amber-700 text-sm space-y-1 ml-4">
+                        <li>Violating these Terms</li>
+                        <li>Posting harmful, misleading, or illegal content</li>
+                        <li>
+                          Attempting to circumvent platform systems or fees
+                        </li>
+                        <li>Using the platform to deceive or defraud others</li>
                       </ul>
                     </div>
                   </div>
                 </div>
 
+                {/* 6. Transactions, Fees, and Payments */}
                 <div>
                   <h3 className="text-xl font-semibold mb-3">
-                    Total Liability Limitation
+                    6. TRANSACTIONS, FEES, AND PAYMENTS
+                  </h3>
+                  <div className="space-y-3">
+                    <p className="text-gray-700">
+                      <strong>6.1</strong> All payments are facilitated through
+                      trusted third-party payment processors (e.g., Paystack).
+                      ReBooked does not store credit card information or process
+                      payments internally.
+                    </p>
+                    <p className="text-gray-700">
+                      <strong>6.2</strong> ReBooked charges a 10% service fee
+                      per successful transaction. This fee is automatically
+                      deducted before payouts are made to sellers.
+                    </p>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <p className="text-blue-800 text-sm mb-2">
+                        <strong>6.3</strong> We are not liable for:
+                      </p>
+                      <ul className="list-disc list-inside text-blue-700 text-sm space-y-1 ml-4">
+                        <li>Failed or delayed payments</li>
+                        <li>Withdrawal issues due to incorrect bank details</li>
+                        <li>Currency conversion or third-party bank fees</li>
+                      </ul>
+                      <p className="text-blue-800 text-sm mt-2">
+                        Sellers are solely responsible for compliance with SARS
+                        or tax reporting requirements.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 7. Shipping, Delivery, Returns, and Refunds */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">
+                    7. SHIPPING, DELIVERY, RETURNS, AND REFUNDS
                   </h3>
                   <p className="text-gray-700 mb-3">
-                    ReBooked Solutions' total liability in any dispute shall not
-                    exceed the commission earned on the disputed transaction.
-                    Under no circumstances will the platform be liable for:
+                    All buyers and sellers agree to abide by ReBooked's:
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 text-gray-700 ml-4 mb-3">
+                    <li>Refund Policy</li>
+                    <li>Return Policy</li>
+                    <li>Shipping Policy</li>
+                    <li>Cancellation Policy</li>
+                    <li>Dispute Resolution Policy</li>
+                  </ul>
+                  <p className="text-gray-700 mb-3">
+                    These policies are incorporated by reference and enforceable
+                    as part of these Terms.
+                  </p>
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <p className="text-yellow-800 text-sm mb-2">
+                      You acknowledge that:
+                    </p>
+                    <ul className="list-disc list-inside text-yellow-700 text-sm space-y-1 ml-4">
+                      <li>ReBooked does not ship or handle physical goods.</li>
+                      <li>
+                        ReBooked is not liable for lost, stolen, delayed, or
+                        damaged packages.
+                      </li>
+                      <li>
+                        Return disputes are handled between buyer and seller,
+                        with ReBooked only providing a non-binding mediation
+                        role.
+                      </li>
+                      <li>
+                        Refunds are not guaranteed unless supported by clear
+                        evidence and governed under our published policies.
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* 8. ReBooked Campus Terms */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">
+                    8. REBOOKED CAMPUS TERMS
+                  </h3>
+                  <div className="space-y-3">
+                    <p className="text-gray-700">
+                      <strong>8.1</strong> ReBooked Campus offers informational
+                      academic resources such as:
+                    </p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-700 ml-4">
+                      <li>APS calculation tools</li>
+                      <li>Bursary listings</li>
+                      <li>University program data</li>
+                      <li>Application advice</li>
+                      <li>Sponsor or affiliate content</li>
+                    </ul>
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-3">
+                      <p className="text-red-800 text-sm mb-2">
+                        <strong>8.2</strong> All content in ReBooked Campus is
+                        provided "as-is" for informational purposes only. We do
+                        not:
+                      </p>
+                      <ul className="list-disc list-inside text-red-700 text-sm space-y-1 ml-4">
+                        <li>
+                          Guarantee data accuracy (APS scores, deadlines, etc.)
+                        </li>
+                        <li>
+                          Represent any university or financial aid provider
+                        </li>
+                        <li>Guarantee bursary outcomes or funding</li>
+                        <li>
+                          Accept liability for decisions made based on this
+                          information
+                        </li>
+                      </ul>
+                      <p className="text-red-800 text-sm mt-2">
+                        Users must verify all information directly with the
+                        official institution or funding body. ReBooked accepts
+                        no responsibility for missed deadlines, incorrect
+                        submissions, or misinterpreted content.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 9. User Content and Conduct */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">
+                    9. USER CONTENT AND CONDUCT
+                  </h3>
+                  <p className="text-gray-700 mb-3">
+                    Users must not upload, post, or distribute any content that
+                    is:
                   </p>
                   <ul className="list-disc list-inside space-y-1 text-gray-700 ml-4">
-                    <li>Loss of income or profits</li>
-                    <li>Emotional distress</li>
-                    <li>Indirect, incidental, or special damages</li>
+                    <li>False, deceptive, or misleading</li>
+                    <li>Offensive, defamatory, racist, or abusive</li>
+                    <li>Infringing on intellectual property or copyright</li>
+                    <li>
+                      Illegal or in violation of applicable academic codes
+                    </li>
                   </ul>
+                  <p className="text-gray-700 mt-3">
+                    We may remove content and/or suspend users without notice.
+                    ReBooked is not liable for third-party or user-generated
+                    content hosted on the Platform.
+                  </p>
+                </div>
+
+                {/* 10. Intellectual Property */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">
+                    10. INTELLECTUAL PROPERTY
+                  </h3>
+                  <p className="text-gray-700 mb-3">
+                    All content, tools, design elements, software, and branding
+                    related to ReBooked Solutions are the property of ReBooked
+                    Solutions (Pty) Ltd unless otherwise stated. This includes,
+                    but is not limited to:
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 text-gray-700 ml-4">
+                    <li>The APS Calculator</li>
+                    <li>The ReBooked Campus interface</li>
+                    <li>Study materials and guides</li>
+                    <li>Custom icons, logos, and user interfaces</li>
+                  </ul>
+                  <p className="text-gray-700 mt-3">
+                    No part of the Platform may be copied, distributed, sold,
+                    modified, reverse-engineered, or reused without express
+                    written permission.
+                  </p>
+                </div>
+
+                {/* 11. Disclaimers and Limitation of Liability */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">
+                    11. DISCLAIMERS AND LIMITATION OF LIABILITY
+                  </h3>
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p className="font-semibold text-red-800 mb-3">
+                      TO THE MAXIMUM EXTENT PERMITTED UNDER SOUTH AFRICAN LAW:
+                    </p>
+                    <ul className="list-disc list-inside text-red-700 text-sm space-y-2">
+                      <li>
+                        ReBooked Solutions disclaims all warranties, express or
+                        implied, including merchantability, title, fitness for
+                        purpose, or non-infringement.
+                      </li>
+                      <li>
+                        We are not liable for any losses (direct or indirect),
+                        loss of data, opportunity, profit, goodwill, or personal
+                        injury caused by use of the Platform.
+                      </li>
+                      <li>
+                        We are not liable for third-party actions, including
+                        users, payment providers, couriers, institutions, or
+                        advertisers.
+                      </li>
+                      <li>
+                        Use of ReBooked Campus is at your sole risk, and no
+                        guarantees are made regarding academic success or
+                        institutional acceptance.
+                      </li>
+                      <li>
+                        ReBooked shall never be liable for damages exceeding the
+                        total amount of platform fees earned from the specific
+                        transaction in dispute.
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* 12. Indemnity */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">12. INDEMNITY</h3>
+                  <p className="text-gray-700 mb-3">
+                    You agree to fully indemnify and hold harmless ReBooked
+                    Solutions (Pty) Ltd, its directors, employees, agents, and
+                    service providers against any claims, liabilities, damages,
+                    losses, fines, legal fees, or costs arising from:
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 text-gray-700 ml-4">
+                    <li>Your use or misuse of the Platform</li>
+                    <li>Your breach of these Terms</li>
+                    <li>Your violation of any third-party rights</li>
+                    <li>Your inaccurate or fraudulent content</li>
+                    <li>
+                      Disputes arising from your transactions, listings, or
+                      communications
+                    </li>
+                  </ul>
+                </div>
+
+                {/* 13. Termination */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">
+                    13. TERMINATION
+                  </h3>
+                  <p className="text-gray-700 mb-3">
+                    ReBooked may, at its sole discretion and without notice:
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 text-gray-700 ml-4">
+                    <li>Suspend or permanently ban your account</li>
+                    <li>Remove or block content</li>
+                    <li>Deny platform access</li>
+                    <li>Pursue civil or criminal action</li>
+                  </ul>
+                  <p className="text-gray-700 mt-3">
+                    Termination does not limit our right to recover unpaid fees
+                    or enforce indemnity.
+                  </p>
+                </div>
+
+                {/* 14. Governing Law and Jurisdiction */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">
+                    14. GOVERNING LAW AND JURISDICTION
+                  </h3>
+                  <p className="text-gray-700 mb-3">
+                    These Terms are governed by the laws of the Republic of
+                    South Africa. You agree that:
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 text-gray-700 ml-4">
+                    <li>
+                      Any dispute shall first be submitted to ReBooked's
+                      internal dispute resolution process.
+                    </li>
+                    <li>
+                      Unresolved matters may be referred to the Consumer Goods
+                      and Services Ombud (CGSO) or the National Consumer
+                      Commission.
+                    </li>
+                    <li>
+                      Jurisdiction lies with the courts of South Africa, and all
+                      legal notices must be served to the registered address of
+                      ReBooked Solutions (Pty) Ltd.
+                    </li>
+                  </ul>
+                </div>
+
+                {/* 15. Amendments */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">15. AMENDMENTS</h3>
+                  <p className="text-gray-700">
+                    We reserve the right to amend these Terms at any time.
+                    Updates will be posted on the Platform, and your continued
+                    use after such changes constitutes your acceptance.
+                  </p>
+                </div>
+
+                {/* 16. Contact Information */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">
+                    16. CONTACT INFORMATION
+                  </h3>
+                  <p className="text-gray-700 mb-3">
+                    For all support, legal, or general inquiries:
+                  </p>
+                  <div className="bg-book-50 border border-book-200 rounded-lg p-4">
+                    <p className="text-book-700">
+                      📧 support@rebookedsolutions.co.za
+                      <br />
+                      📍 ReBooked Solutions (Pty) Ltd – Registered in South
+                      Africa
+                    </p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
