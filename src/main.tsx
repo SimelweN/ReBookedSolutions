@@ -86,8 +86,12 @@ const initializeApp = () => {
 
   const root = createRoot(rootElement);
 
-  // Enhanced deployment safety: Check if we should show environment error
-  if (!environmentValidation.isValid && !environmentValidation.isDev) {
+  // Check if we should show environment error (only in strict production mode)
+  if (
+    import.meta.env.PROD &&
+    !environmentValidation.isValid &&
+    !environmentValidation.isDev
+  ) {
     // Dynamically import and render environment error component
     import("./components/EnvironmentError")
       .then((module) => {
