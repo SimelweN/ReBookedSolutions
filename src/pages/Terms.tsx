@@ -17,17 +17,17 @@ const Terms = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4 sm:py-8">
         <Card className="max-w-4xl mx-auto">
-          <CardHeader>
-            <CardTitle className="text-3xl font-bold text-book-800">
+          <CardHeader className="pb-4 sm:pb-6">
+            <CardTitle className="text-xl sm:text-2xl lg:text-3xl font-bold text-book-800">
               Terms and Conditions
             </CardTitle>
-            <p className="text-gray-600">
+            <p className="text-gray-600 text-sm sm:text-base">
               Page moved - redirecting you to our comprehensive policies
             </p>
           </CardHeader>
-          <CardContent className="space-y-8">
+          <CardContent className="space-y-4 sm:space-y-8 px-4 sm:px-6">
             <div className="bg-red-50 border border-red-200 rounded-lg p-6">
               <h2 className="text-2xl font-semibold text-red-700 mb-4">
                 ⚠️ IMPORTANT NOTICE
