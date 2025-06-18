@@ -231,9 +231,6 @@ const Profile = () => {
     }
   };
 
-  const [isLoadingAddress, setIsLoadingAddress] = useState(false);
-  const [addressData, setAddressData] = useState<any>(null);
-
   const handleDeleteProfile = async () => {
     if (!user) return;
 
