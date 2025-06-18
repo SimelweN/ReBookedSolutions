@@ -62,10 +62,7 @@ export const getUserProfileWithAddresses = async (
       .single();
 
     if (error) {
-      console.warn(
-        `[AutoShipment] User profile not found for ${userId}:`,
-        error.message,
-      );
+      console.warn(`[AutoShipment] User profile not found for ${userId}:`, error.message);
       // Return a basic profile if the user exists but doesn't have address info
       const { data: basicProfile, error: basicError } = await supabase
         .from("profiles")
@@ -74,10 +71,7 @@ export const getUserProfileWithAddresses = async (
         .single();
 
       if (basicError) {
-        console.error(
-          `[AutoShipment] Error fetching basic profile for ${userId}:`,
-          basicError.message,
-        );
+        console.error(`[AutoShipment] Error fetching basic profile for ${userId}:`, basicError.message);
         return null;
       }
 
@@ -85,19 +79,26 @@ export const getUserProfileWithAddresses = async (
         ...basicProfile,
         pickup_address: null,
         shipping_address: null,
-        addresses_same: false,
+        addresses_same: false
       };
     }
 
     return data;
   } catch (error) {
-    console.error(
-      `[AutoShipment] Unexpected error fetching profile for ${userId}:`,
-      error,
-    );
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("[AutoShipment] Automatic shipment creation failed:", {
+      error: errorMessage,
+      bookId: bookDetails.id,
+      sellerId: bookDetails.sellerId,
+      buyerId
+    });
+    logError("Error creating automatic shipment", error);
+
+    // Create manual shipment notification as fallback
+    await createManualShipmentNotification(bookDetails, buyerId);
+
     return null;
   }
-};
 
 /**
  * Format address for Courier Guy API
@@ -136,10 +137,7 @@ export const createManualShipmentNotification = async (
 
     return;
   } catch (error) {
-    console.error(
-      "[AutoShipment] Failed to create manual shipment notification:",
-      error,
-    );
+    console.error("[AutoShipment] Failed to create manual shipment notification:", error);
   }
 };
 
@@ -160,25 +158,19 @@ export const createAutomaticShipment = async (
     // Get seller information (sender)
     const seller = await getUserProfileWithAddresses(bookDetails.sellerId);
     if (!seller) {
-      console.warn(
-        "[AutoShipment] Seller profile not found - shipment will be manual",
-      );
+      console.warn("[AutoShipment] Seller profile not found - shipment will be manual");
       return null;
     }
 
     if (!seller.pickup_address) {
-      console.warn(
-        "[AutoShipment] Seller pickup address not configured - shipment will be manual",
-      );
+      console.warn("[AutoShipment] Seller pickup address not configured - shipment will be manual");
       return null;
     }
 
     // Get buyer information (recipient)
     const buyer = await getUserProfileWithAddresses(buyerId);
     if (!buyer) {
-      console.warn(
-        "[AutoShipment] Buyer profile not found - shipment will be manual",
-      );
+      console.warn("[AutoShipment] Buyer profile not found - shipment will be manual");
       return null;
     }
 
@@ -188,9 +180,7 @@ export const createAutomaticShipment = async (
       : buyer.shipping_address;
 
     if (!buyerDeliveryAddress) {
-      console.warn(
-        "[AutoShipment] Buyer delivery address not configured - shipment will be manual",
-      );
+      console.warn("[AutoShipment] Buyer delivery address not configured - shipment will be manual");
       return null;
     }
 
