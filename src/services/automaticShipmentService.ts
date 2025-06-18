@@ -122,9 +122,9 @@ const formatAddressForCourierGuy = (address: any): string => {
 export const createAutomaticShipment = async (
   bookDetails: BookDetails,
   buyerId: string,
-): Promise<{ shipmentId: string; trackingNumber: string } | null> => {
+): Promise<any> => {
   try {
-    console.log("Preparing automatic shipment for book purchase:", {
+    console.log("[AutoShipment] Attempting to create automatic shipment:", {
       bookId: bookDetails.id,
       sellerId: bookDetails.sellerId,
       buyerId,
@@ -132,16 +132,27 @@ export const createAutomaticShipment = async (
 
     // Get seller information (sender)
     const seller = await getUserProfileWithAddresses(bookDetails.sellerId);
-    if (!seller || !seller.pickup_address) {
-      throw new Error(
-        "Seller pickup address not found. Cannot create shipment.",
+    if (!seller) {
+      console.warn(
+        "[AutoShipment] Seller profile not found - shipment will be manual",
       );
+      return null;
+    }
+
+    if (!seller.pickup_address) {
+      console.warn(
+        "[AutoShipment] Seller pickup address not configured - shipment will be manual",
+      );
+      return null;
     }
 
     // Get buyer information (recipient)
     const buyer = await getUserProfileWithAddresses(buyerId);
     if (!buyer) {
-      throw new Error("Buyer information not found. Cannot create shipment.");
+      console.warn(
+        "[AutoShipment] Buyer profile not found - shipment will be manual",
+      );
+      return null;
     }
 
     // Determine buyer's delivery address
@@ -150,9 +161,10 @@ export const createAutomaticShipment = async (
       : buyer.shipping_address;
 
     if (!buyerDeliveryAddress) {
-      throw new Error(
-        "Buyer delivery address not found. Cannot create shipment.",
+      console.warn(
+        "[AutoShipment] Buyer delivery address not configured - shipment will be manual",
       );
+      return null;
     }
 
     // Prepare shipment data
