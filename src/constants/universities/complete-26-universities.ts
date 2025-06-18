@@ -387,7 +387,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Central University of Technology",
     location: "Bloemfontein",
     province: "Free State",
-    logo: "/logos/universities/cut.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/cut-16c93d?format=webp&width=800",
     overview:
       "Technology university focusing on applied research and career-oriented education.",
     website: "https://www.cut.ac.za",
