@@ -151,7 +151,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of the Free State",
     location: "Bloemfontein",
     province: "Free State",
-    logo: "/logos/universities/ufs.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/ufs-ace12a?format=webp&width=800",
     overview:
       "Multi-campus university with strong research focus and comprehensive academic programs.",
     website: "https://www.ufs.ac.za",
