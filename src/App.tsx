@@ -45,6 +45,10 @@ import FacultyDetail from "./pages/FacultyDetail";
 import CourseDetail from "./pages/CourseDetail";
 import StudyResources from "./pages/StudyResources";
 import AddProgram from "./pages/AddProgram";
+import RefundPolicy from "./pages/RefundPolicy";
+import CancellationPolicy from "./pages/CancellationPolicy";
+import ShippingDeliveryPolicy from "./pages/ShippingDeliveryPolicy";
+import ReturnsDisputesPolicy from "./pages/ReturnsDisputesPolicy";
 
 import "./App.css";
 
@@ -79,6 +83,19 @@ function App() {
                     <Route path="/faq" element={<FAQ />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/refund-policy" element={<RefundPolicy />} />
+                    <Route
+                      path="/cancellation-policy"
+                      element={<CancellationPolicy />}
+                    />
+                    <Route
+                      path="/shipping-delivery-policy"
+                      element={<ShippingDeliveryPolicy />}
+                    />
+                    <Route
+                      path="/returns-disputes-policy"
+                      element={<ReturnsDisputesPolicy />}
+                    />
                     <Route path="/contact" element={<ContactUs />} />
                     <Route path="/report" element={<Report />} />
                     <Route path="/shipping" element={<Shipping />} />
