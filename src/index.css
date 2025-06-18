@@ -12,6 +12,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/* DEBUG: Ensure content is visible */
+html,
+body {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+#root {
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: 100vh !important;
+  background-color: #f9fafb !important;
+}
+
 /* Global Mobile Responsiveness Fixes */
 @media (max-width: 768px) {
   /* Prevent horizontal overflow */

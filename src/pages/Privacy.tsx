@@ -17,27 +17,27 @@ const Privacy = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4 sm:py-8">
         <Card className="max-w-4xl mx-auto">
-          <CardHeader>
-            <CardTitle className="text-3xl font-bold text-book-800">
+          <CardHeader className="pb-4 sm:pb-6">
+            <CardTitle className="text-xl sm:text-2xl lg:text-3xl font-bold text-book-800">
               Privacy Policy
             </CardTitle>
-            <p className="text-gray-600">
+            <p className="text-gray-600 text-sm sm:text-base">
               Page moved - redirecting you to our comprehensive policies
             </p>
           </CardHeader>
-          <CardContent className="space-y-8">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-              <h2 className="text-2xl font-semibold text-red-700 mb-4">
+          <CardContent className="space-y-4 sm:space-y-8 px-4 sm:px-6">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-red-700 mb-3 sm:mb-4">
                 ⚠️ IMPORTANT NOTICE
               </h2>
-              <p className="mb-4 text-red-800">
+              <p className="mb-3 sm:mb-4 text-red-800 text-sm sm:text-base">
                 <strong>This page has been moved!</strong> Our complete Privacy
                 Policy is now part of our comprehensive policies page that
                 includes all legal documentation.
               </p>
-              <p className="mb-4 text-red-700">
+              <p className="mb-3 sm:mb-4 text-red-700 text-sm sm:text-base">
                 Our Privacy Policy is fully compliant with the Protection of
                 Personal Information Act (POPIA) and includes detailed coverage
                 of data collection, usage, storage, and your rights.
@@ -47,11 +47,11 @@ const Privacy = () => {
                   console.log("Button clicked - navigating to /policies");
                   window.location.href = "/policies";
                 }}
-                className="inline-flex items-center bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                className="w-full sm:w-auto inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white px-4 sm:px-6 py-3 rounded-lg font-medium transition-colors text-sm sm:text-base"
               >
                 Go to Complete Privacy Policy →
               </button>
-              <p className="text-sm text-red-600 mt-3">
+              <p className="text-xs sm:text-sm text-red-600 mt-3">
                 You will be automatically redirected in 5 seconds...
               </p>
             </div>

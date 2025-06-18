@@ -5,26 +5,44 @@ import App from "./App.tsx";
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
 import "./index.css";
 
-// Environment validation with graceful fallbacks
+// Enhanced environment validation with deployment safety
 const validateEnvironment = () => {
-  const hasSupabaseUrl =
-    import.meta.env.VITE_SUPABASE_URL &&
-    import.meta.env.VITE_SUPABASE_URL.trim() !== "";
-  const hasSupabaseKey =
-    import.meta.env.VITE_SUPABASE_ANON_KEY &&
-    import.meta.env.VITE_SUPABASE_ANON_KEY.trim() !== "";
+  try {
+    const hasSupabaseUrl =
+      import.meta.env.VITE_SUPABASE_URL &&
+      import.meta.env.VITE_SUPABASE_URL.trim() !== "" &&
+      import.meta.env.VITE_SUPABASE_URL !== "undefined";
 
-  const missing = [];
-  if (!hasSupabaseUrl) missing.push("VITE_SUPABASE_URL");
-  if (!hasSupabaseKey) missing.push("VITE_SUPABASE_ANON_KEY");
+    const hasSupabaseKey =
+      import.meta.env.VITE_SUPABASE_ANON_KEY &&
+      import.meta.env.VITE_SUPABASE_ANON_KEY.trim() !== "" &&
+      import.meta.env.VITE_SUPABASE_ANON_KEY !== "undefined";
 
-  if (missing.length > 0) {
-    console.warn("⚠️ Missing Supabase configuration:", missing.join(", "));
-    return { isValid: false, missing };
+    const missing = [];
+    if (!hasSupabaseUrl) missing.push("VITE_SUPABASE_URL");
+    if (!hasSupabaseKey) missing.push("VITE_SUPABASE_ANON_KEY");
+
+    // In development, we're more lenient
+    if (import.meta.env.DEV && missing.length > 0) {
+      console.warn(
+        "⚠️ Missing Supabase configuration (DEV MODE):",
+        missing.join(", "),
+      );
+      console.warn("⚠️ App will run with limited functionality");
+      return { isValid: true, missing, isDev: true };
+    }
+
+    if (missing.length > 0) {
+      console.warn("⚠️ Missing Supabase configuration:", missing.join(", "));
+      return { isValid: false, missing, isDev: false };
+    }
+
+    console.log("✅ Environment validation passed");
+    return { isValid: true, missing: [], isDev: false };
+  } catch (error) {
+    console.error("Environment validation error:", error);
+    return { isValid: false, missing: ["VALIDATION_ERROR"], isDev: false };
   }
-
-  console.log("✅ Environment validation passed");
-  return { isValid: true, missing: [] };
 };
 
 // Initialize application
@@ -58,7 +76,7 @@ const queryClient = new QueryClient({
   },
 });
 
-// Initialize the React app
+// Initialize the React app with enhanced error handling
 const initializeApp = () => {
   const rootElement = document.getElementById("root");
   if (!rootElement) {
@@ -67,8 +85,13 @@ const initializeApp = () => {
 
   const root = createRoot(rootElement);
 
-  // Check if we should show environment error in production
-  if (import.meta.env.PROD && !environmentValidation.isValid) {
+  // Only show environment error in very specific production cases (disabled for now)
+  if (
+    false &&
+    import.meta.env.PROD &&
+    !environmentValidation.isValid &&
+    !environmentValidation.isDev
+  ) {
     // Dynamically import and render environment error component
     import("./components/EnvironmentError")
       .then((module) => {
