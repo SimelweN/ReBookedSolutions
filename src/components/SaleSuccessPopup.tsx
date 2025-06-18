@@ -54,9 +54,14 @@ const SaleSuccessPopup = ({
       description: `"${bookTitle}" sold for R${bookPrice}`,
     },
     {
-      icon: <Package className="h-12 w-12 text-blue-500" />,
-      title: "📦 Next Steps",
-      description: "Here's what you need to do to complete the sale",
+      icon: <Mail className="h-12 w-12 text-blue-500" />,
+      title: "📞 Contact Buyer & Arrange Delivery",
+      description: "Contact details and next steps",
+    },
+    {
+      icon: <DollarSign className="h-12 w-12 text-green-500" />,
+      title: "💰 Your Payout Information",
+      description: "You'll receive 90% after delivery confirmation",
     },
   ];
 
