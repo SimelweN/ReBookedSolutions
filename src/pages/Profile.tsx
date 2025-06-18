@@ -42,7 +42,8 @@ const Profile = () => {
   const { profile, user } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const [isDeleteProfileDialogOpen, setIsDeleteProfileDialogOpen] = useState(false);
+  const [isDeleteProfileDialogOpen, setIsDeleteProfileDialogOpen] =
+    useState(false);
   const [isBookNotSellingDialogOpen, setIsBookNotSellingDialogOpen] =
     useState(false);
   const [isReportIssueDialogOpen, setIsReportIssueDialogOpen] = useState(false);
@@ -237,7 +238,9 @@ const Profile = () => {
     try {
       // Here you would implement the actual profile deletion logic
       // For now, we'll show a confirmation toast
-      toast.success("Profile deletion request submitted. You will receive an email confirmation.");
+      toast.success(
+        "Profile deletion request submitted. You will receive an email confirmation.",
+      );
       setIsDeleteProfileDialogOpen(false);
 
       // Optionally navigate to a goodbye page or logout
@@ -245,7 +248,6 @@ const Profile = () => {
     } catch (error) {
       toast.error("Failed to delete profile. Please try again.");
     }
-  };
   };
 
   const handleReportIssue = () => {
