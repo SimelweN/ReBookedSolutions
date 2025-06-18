@@ -7,8 +7,19 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Package, Truck, Bell, ArrowRight } from "lucide-react";
+import {
+  CheckCircle,
+  Package,
+  Truck,
+  Bell,
+  ArrowRight,
+  Mail,
+  Phone,
+  DollarSign,
+} from "lucide-react";
 import { addNotification } from "@/services/notificationService";
+import BuyerContactService from "@/services/buyerContactService";
+import SellerPayoutService from "@/services/sellerPayoutService";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
