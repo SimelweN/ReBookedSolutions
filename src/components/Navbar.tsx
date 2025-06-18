@@ -24,9 +24,8 @@ const Navbar = () => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Prevent navbar flickering during auth initialization
-  // Only show loading state during the very initial auth check
-  if (isLoading && !user && !profile) {
+  // Only show minimal loading during critical auth initialization
+  if (isLoading && !user && !profile && !isAuthenticated) {
     return (
       <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -46,16 +45,38 @@ const Navbar = () => {
               </Link>
             </div>
 
-            {/* Loading placeholder */}
+            {/* Show basic navigation even during loading */}
             <div className="hidden md:flex items-center space-x-4">
-              <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
-              <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
+              <Link
+                to="/books"
+                className="text-gray-700 hover:text-book-600 px-3 py-2 text-sm font-medium transition-colors"
+              >
+                Books
+              </Link>
+              <Link
+                to="/university-info"
+                className="text-gray-700 hover:text-book-600 px-3 py-2 text-sm font-medium transition-colors"
+              >
+                Campus
+              </Link>
               <div className="w-20 h-10 bg-gray-200 rounded animate-pulse"></div>
             </div>
 
-            {/* Mobile menu button placeholder */}
+            {/* Mobile menu button */}
             <div className="md:hidden">
-              <div className="w-10 h-10 bg-gray-200 rounded animate-pulse"></div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleMenu}
+                className="p-2"
+                aria-label="Toggle menu"
+              >
+                {isMenuOpen ? (
+                  <X className="h-5 w-5" />
+                ) : (
+                  <Menu className="h-5 w-5" />
+                )}
+              </Button>
             </div>
           </div>
         </div>
