@@ -31,6 +31,7 @@ import {
   Truck,
 } from "lucide-react";
 import { toast } from "sonner";
+import SaleSuccessPopup from "@/components/SaleSuccessPopup";
 
 interface AddressData {
   complex?: string;
