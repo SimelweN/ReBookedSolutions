@@ -335,7 +335,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Durban University of Technology",
     location: "Durban",
     province: "KwaZulu-Natal",
-    logo: "/logos/universities/dut.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/dut-30eb73?format=webp&width=800",
     overview:
       "Technology-focused university with strong industry partnerships and practical learning approach.",
     website: "https://www.dut.ac.za",
