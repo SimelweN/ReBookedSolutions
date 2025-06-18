@@ -180,8 +180,3 @@ try {
     `;
   }
 }
-
-// Clean up debug file
-const cleanupDebugFile = () => {
-  // This would normally be done by build process, but for now we'll leave it
-};
