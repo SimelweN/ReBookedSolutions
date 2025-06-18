@@ -63,6 +63,7 @@ const DURATION_OPTIONS = [
 
 const AddProgramForm = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
