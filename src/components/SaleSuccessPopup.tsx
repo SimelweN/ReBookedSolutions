@@ -95,8 +95,9 @@ const SaleSuccessPopup = ({
 
   useEffect(() => {
     if (isOpen && user) {
-      // Add immediate notification to user's notification history
+      // Add immediate notification and initiate buyer contact
       saveNotificationToHistory();
+      calculatePayoutInfo();
     }
   }, [isOpen, user]);
 
@@ -105,19 +106,45 @@ const SaleSuccessPopup = ({
 
     setIsAddingNotification(true);
     try {
+      // Save notification with buyer contact details
       await addNotification({
         userId: user.id,
-        title: "🎉 Book Sold Successfully!",
-        message: `Your book "${bookTitle}" has been sold for R${bookPrice}. Next steps: prepare the book for delivery, contact the buyer, and arrange shipping.`,
+        title: "🎉 Book Sold - Contact Buyer!",
+        message: `Your book "${bookTitle}" sold for R${bookPrice}! Buyer: ${buyerName} (${buyerEmail}). Contact them immediately to arrange delivery. You'll receive R${Math.round(bookPrice * 0.9)} (90%) after delivery confirmation.`,
         type: "success",
         read: false,
       });
+
+      // If we have buyer contact info, initiate contact process
+      if (buyerEmail && buyerName) {
+        try {
+          await BuyerContactService.initiateContact({
+            buyerId: "buyer_id_placeholder", // In real app, this would come from the purchase
+            buyerName,
+            buyerEmail,
+            sellerId: user.id,
+            sellerName: user.name || user.email || "Seller",
+            sellerEmail: user.email || "",
+            bookTitle,
+            bookPrice,
+            saleId: saleId || "sale_" + Date.now(),
+          });
+        } catch (contactError) {
+          console.error("Error initiating buyer contact:", contactError);
+          // Don't fail the notification if contact fails
+        }
+      }
     } catch (error) {
       console.error("Error saving sale notification:", error);
       // Don't show error to user as this is background operation
     } finally {
       setIsAddingNotification(false);
     }
+  };
+
+  const calculatePayoutInfo = () => {
+    const payout = SellerPayoutService.calculatePayout(bookPrice);
+    setPayoutInfo(payout);
   };
 
   const handleNext = () => {
