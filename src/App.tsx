@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
@@ -8,6 +8,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import ErrorBoundary from "./components/ErrorBoundary";
 import AuthErrorBoundary from "./components/AuthErrorBoundary";
 import OAuthRedirectHandler from "./components/OAuthRedirectHandler";
+import DeploymentSafeRouter from "./components/DeploymentSafeRouter";
 // TEMPORARY: Disabled to fix error spam
 // import BroadcastManager from "./components/BroadcastManager";
 
