@@ -173,37 +173,67 @@ const AdminDashboard = () => {
   };
 
   const handleListingAction = async (listingId: string, action: "delete") => {
+    if (action !== "delete") return;
+
     try {
-      if (action === "delete") {
-        await deleteBookListing(listingId);
+      console.log(
+        `[AdminDashboard] Attempting to delete listing: ${listingId}`,
+      );
 
-        // Remove from local state immediately for better UX
-        setListings(listings.filter((listing) => listing.id !== listingId));
-        toast.success("Listing deleted successfully");
+      // Get current user for admin tracking
+      const adminId = user?.id;
 
-        // Reload stats and full listings to ensure accuracy
-        try {
-          const [newStats, updatedListings] = await Promise.all([
-            getAdminStats(),
-            getAllListings(),
-          ]);
-          setStats(newStats);
-          setListings(updatedListings);
-        } catch (error) {
-          console.error("Failed to reload data after listing deletion:", error);
-          // Reload the page data to ensure consistency
-          loadDashboardData();
-        }
+      if (!adminId) {
+        throw new Error("Admin user ID is required for deletion tracking");
+      }
+
+      // Perform deletion with admin tracking
+      await deleteBookListing(listingId, adminId);
+
+      // Remove from local state immediately for better UX
+      setListings((prevListings) =>
+        prevListings.filter((listing) => listing.id !== listingId),
+      );
+
+      toast.success("Listing deleted successfully");
+      console.log(
+        `[AdminDashboard] Successfully deleted listing: ${listingId}`,
+      );
+
+      // Reload stats and full listings to ensure accuracy
+      try {
+        const [newStats, updatedListings] = await Promise.all([
+          getAdminStats(),
+          getAllListings(),
+        ]);
+        setStats(newStats);
+        setListings(updatedListings);
+        console.log(`[AdminDashboard] Data reloaded after deletion`);
+      } catch (reloadError) {
+        console.error(
+          "Failed to reload data after listing deletion:",
+          reloadError,
+        );
+        // If reload fails, trigger full dashboard reload
+        loadDashboardData();
       }
     } catch (error) {
-      console.error(`Error ${action}ing listing:`, error);
-      handleError(error, `${action} Listing`);
+      console.error(`Error deleting listing ${listingId}:`, error);
+
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
+      toast.error(`Failed to delete listing: ${errorMessage}`);
+
+      handleError(error, "Delete Listing");
+
       // Reload listings in case of error to show current state
       try {
         const updatedListings = await getAllListings();
         setListings(updatedListings);
       } catch (reloadError) {
         console.error("Failed to reload listings after error:", reloadError);
+        // If even reload fails, trigger full dashboard reload
+        loadDashboardData();
       }
     }
   };
