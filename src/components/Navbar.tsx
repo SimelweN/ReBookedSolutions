@@ -25,6 +25,24 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Define functions before any early returns to avoid hoisting issues
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success(`Successfully logged out. Goodbye!`);
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Failed to logout. Please try again.");
+    }
+  };
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
 
   // Only show minimal loading during critical auth initialization
   if (isLoading && !user && !profile && !isAuthenticated) {
