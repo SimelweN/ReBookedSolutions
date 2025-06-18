@@ -38,25 +38,15 @@ try {
 
 // Performance optimizations are handled by performanceUtils
 
-// Create a client with improved error handling
+// Create a simple query client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes
-      retry: (failureCount, error) => {
-        // Don't retry on 4xx errors (client errors)
-        if (error && typeof error === "object" && "status" in error) {
-          const status = (error as { status: number }).status;
-          if (status >= 400 && status < 500) {
-            return false;
-          }
-        }
-        return failureCount < 3;
-      },
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      retry: 1, // Simple retry
     },
     mutations: {
-      retry: false, // Don't retry mutations by default
+      retry: false,
     },
   },
 });
