@@ -19,21 +19,22 @@ try {
 
 // Development-only utilities
 if (import.meta.env.DEV) {
-  import("./utils/connectionHealthCheck").then(({ logConnectionHealth }) => {
-    logConnectionHealth();
-  });
-
-  // Analyze bundle size
-  setTimeout(() => {
-    analyzeBundleSize();
-  }, 1000);
+  console.log("🚀 Development mode - app starting...");
 }
 
-// Initialize performance monitoring
-initCoreWebVitals();
+// Initialize performance monitoring (simplified)
+try {
+  initCoreWebVitals();
+} catch (error) {
+  console.warn("Performance monitoring failed:", error);
+}
 
-// Initialize security measures
-initSecurity();
+// Initialize security measures (simplified)
+try {
+  initSecurity();
+} catch (error) {
+  console.warn("Security initialization failed:", error);
+}
 
 // Performance optimizations are handled by performanceUtils
 
