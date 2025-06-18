@@ -46,6 +46,7 @@ import CourseDetail from "./pages/CourseDetail";
 import StudyResources from "./pages/StudyResources";
 import AddProgram from "./pages/AddProgram";
 import Policies from "./pages/Policies";
+import PoliciesTest from "./pages/PoliciesTest";
 
 import "./App.css";
 
@@ -84,7 +85,7 @@ function App() {
                       <Route path="/faq" element={<FAQ />} />
                       <Route path="/terms" element={<Terms />} />
                       <Route path="/privacy" element={<Privacy />} />
-                      <Route path="/policies" element={<Policies />} />
+                      <Route path="/policies" element={<PoliciesTest />} />
                       <Route path="/contact" element={<ContactUs />} />
                       <Route path="/report" element={<Report />} />
                       <Route path="/shipping" element={<Shipping />} />
