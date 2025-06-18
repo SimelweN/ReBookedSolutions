@@ -875,6 +875,19 @@ const Checkout = () => {
           saleId={saleData.saleId}
         />
       )}
+
+      {/* Commit Reminder Modal for Buyers */}
+      <CommitReminderModal
+        isOpen={showCommitReminderModal}
+        onClose={() => {
+          setShowCommitReminderModal(false);
+          // Show the sale success popup after commit reminder
+          if (saleData) {
+            setShowSalePopup(true);
+          }
+        }}
+        type="buyer"
+      />
     </Layout>
   );
 };
