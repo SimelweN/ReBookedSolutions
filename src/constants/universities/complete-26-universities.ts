@@ -47,7 +47,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of the Witwatersrand",
     location: "Johannesburg",
     province: "Gauteng",
-    logo: "/logos/universities/wits.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/wits-e516dc?format=webp&width=800",
     overview:
       "Leading African research university with a global reputation for academic excellence and innovation.",
     website: "https://www.wits.ac.za",
