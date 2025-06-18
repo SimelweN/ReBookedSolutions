@@ -82,6 +82,13 @@ const Checkout = () => {
   const [selectedDelivery, setSelectedDelivery] =
     useState<DeliveryQuote | null>(null);
   const [loadingQuotes, setLoadingQuotes] = useState(false);
+  const [showSalePopup, setShowSalePopup] = useState(false);
+  const [saleData, setSaleData] = useState<{
+    bookTitle: string;
+    bookPrice: number;
+    buyerName: string;
+    saleId?: string;
+  } | null>(null);
 
   const isCartCheckout = id === "cart";
   const cartData = location.state?.cartItems || [];
