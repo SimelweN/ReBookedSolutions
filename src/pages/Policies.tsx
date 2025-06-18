@@ -145,13 +145,13 @@ const Policies = () => {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="prose max-w-none space-y-6">
+              <CardContent className="px-4 sm:px-6">
+                <div className="prose max-w-none space-y-4 sm:space-y-6">
                   <section>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">
                       1. Introduction
                     </h3>
-                    <p className="text-gray-700 leading-relaxed">
+                    <p className="text-gray-700 leading-relaxed text-sm sm:text-base mb-3 sm:mb-4">
                       ReBooked Solutions (Pty) Ltd ("ReBooked", "we", "our", or
                       "us") is committed to protecting your privacy. This
                       Privacy Policy outlines how we collect, use, store, share,
@@ -159,7 +159,7 @@ const Policies = () => {
                       the Protection of Personal Information Act (POPIA) and
                       applicable South African law.
                     </p>
-                    <p className="text-gray-700 leading-relaxed">
+                    <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
                       By accessing or using any part of the ReBooked platform,
                       including ReBooked Campus, you consent to the collection
                       and processing of your personal information as outlined in
