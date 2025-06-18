@@ -99,7 +99,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Pretoria",
     location: "Pretoria",
     province: "Gauteng",
-    logo: "/logos/universities/pretoria.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/up-d5c0a5?format=webp&width=800",
     overview:
       "Top research university in South Africa with comprehensive academic programs and research excellence.",
     website: "https://www.up.ac.za",
