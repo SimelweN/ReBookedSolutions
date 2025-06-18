@@ -14,15 +14,17 @@ const validateEnvironment = () => {
     import.meta.env.VITE_SUPABASE_ANON_KEY &&
     import.meta.env.VITE_SUPABASE_ANON_KEY.trim() !== "";
 
-  if (!hasSupabaseUrl || !hasSupabaseKey) {
-    console.warn(
-      "⚠️ Missing Supabase configuration - using development defaults",
-    );
-    return false;
+  const missing = [];
+  if (!hasSupabaseUrl) missing.push("VITE_SUPABASE_URL");
+  if (!hasSupabaseKey) missing.push("VITE_SUPABASE_ANON_KEY");
+
+  if (missing.length > 0) {
+    console.warn("⚠️ Missing Supabase configuration:", missing.join(", "));
+    return { isValid: false, missing };
   }
 
   console.log("✅ Environment validation passed");
-  return true;
+  return { isValid: true, missing: [] };
 };
 
 // Initialize application
@@ -31,11 +33,15 @@ if (import.meta.env.DEV) {
 }
 
 // Validate environment with graceful handling
+let environmentValidation;
 try {
-  validateEnvironment();
+  environmentValidation = validateEnvironment();
 } catch (error) {
   console.warn("Environment validation warning:", error);
-  // Continue anyway - don't block the app
+  environmentValidation = {
+    isValid: false,
+    missing: ["VITE_SUPABASE_URL", "VITE_SUPABASE_ANON_KEY"],
+  };
 }
 
 // Create a simple query client with minimal configuration
@@ -60,6 +66,81 @@ const initializeApp = () => {
   }
 
   const root = createRoot(rootElement);
+
+  // Check if we should show environment error in production
+  if (import.meta.env.PROD && !environmentValidation.isValid) {
+    // Dynamically import and render environment error component
+    import("./components/EnvironmentError")
+      .then((module) => {
+        const EnvironmentError = module.default;
+        root.render(
+          <React.StrictMode>
+            <EnvironmentError
+              missingVariables={environmentValidation.missing}
+            />
+          </React.StrictMode>,
+        );
+      })
+      .catch(() => {
+        // Fallback if component import fails
+        root.render(
+          <div
+            style={{
+              minHeight: "100vh",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontFamily: "system-ui",
+              background: "#f9fafb",
+              padding: "1rem",
+            }}
+          >
+            <div
+              style={{
+                textAlign: "center",
+                padding: "2rem",
+                background: "white",
+                borderRadius: "0.5rem",
+                boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+                maxWidth: "500px",
+              }}
+            >
+              <h1 style={{ color: "#dc2626", marginBottom: "1rem" }}>
+                Configuration Error
+              </h1>
+              <p style={{ marginBottom: "1rem" }}>
+                Missing environment variables:{" "}
+                {environmentValidation.missing.join(", ")}
+              </p>
+              <p
+                style={{
+                  marginBottom: "1.5rem",
+                  fontSize: "0.875rem",
+                  color: "#6b7280",
+                }}
+              >
+                Please configure your environment variables in your hosting
+                platform and redeploy.
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                style={{
+                  background: "#3b82f6",
+                  color: "white",
+                  padding: "0.75rem 1.5rem",
+                  border: "none",
+                  borderRadius: "0.5rem",
+                  cursor: "pointer",
+                }}
+              >
+                Retry
+              </button>
+            </div>
+          </div>,
+        );
+      });
+    return;
+  }
 
   // Render the app with comprehensive error boundaries
   root.render(

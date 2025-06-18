@@ -42,12 +42,15 @@ const Privacy = () => {
                 Personal Information Act (POPIA) and includes detailed coverage
                 of data collection, usage, storage, and your rights.
               </p>
-              <a
-                href="/policies"
+              <button
+                onClick={() => {
+                  console.log("Button clicked - navigating to /policies");
+                  window.location.href = "/policies";
+                }}
                 className="inline-flex items-center bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
               >
                 Go to Complete Privacy Policy →
-              </a>
+              </button>
               <p className="text-sm text-red-600 mt-3">
                 You will be automatically redirected in 5 seconds...
               </p>
