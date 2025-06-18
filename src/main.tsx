@@ -6,26 +6,44 @@ import ErrorBoundary from "./components/ErrorBoundary.tsx";
 import "./index.css";
 import "./styles/policies-mobile.css";
 
-// Environment validation with graceful fallbacks
+// Enhanced environment validation with deployment safety
 const validateEnvironment = () => {
-  const hasSupabaseUrl =
-    import.meta.env.VITE_SUPABASE_URL &&
-    import.meta.env.VITE_SUPABASE_URL.trim() !== "";
-  const hasSupabaseKey =
-    import.meta.env.VITE_SUPABASE_ANON_KEY &&
-    import.meta.env.VITE_SUPABASE_ANON_KEY.trim() !== "";
+  try {
+    const hasSupabaseUrl =
+      import.meta.env.VITE_SUPABASE_URL &&
+      import.meta.env.VITE_SUPABASE_URL.trim() !== "" &&
+      import.meta.env.VITE_SUPABASE_URL !== "undefined";
 
-  const missing = [];
-  if (!hasSupabaseUrl) missing.push("VITE_SUPABASE_URL");
-  if (!hasSupabaseKey) missing.push("VITE_SUPABASE_ANON_KEY");
+    const hasSupabaseKey =
+      import.meta.env.VITE_SUPABASE_ANON_KEY &&
+      import.meta.env.VITE_SUPABASE_ANON_KEY.trim() !== "" &&
+      import.meta.env.VITE_SUPABASE_ANON_KEY !== "undefined";
 
-  if (missing.length > 0) {
-    console.warn("⚠️ Missing Supabase configuration:", missing.join(", "));
-    return { isValid: false, missing };
+    const missing = [];
+    if (!hasSupabaseUrl) missing.push("VITE_SUPABASE_URL");
+    if (!hasSupabaseKey) missing.push("VITE_SUPABASE_ANON_KEY");
+
+    // In development, we're more lenient
+    if (import.meta.env.DEV && missing.length > 0) {
+      console.warn(
+        "⚠️ Missing Supabase configuration (DEV MODE):",
+        missing.join(", "),
+      );
+      console.warn("⚠️ App will run with limited functionality");
+      return { isValid: true, missing, isDev: true };
+    }
+
+    if (missing.length > 0) {
+      console.warn("⚠️ Missing Supabase configuration:", missing.join(", "));
+      return { isValid: false, missing, isDev: false };
+    }
+
+    console.log("✅ Environment validation passed");
+    return { isValid: true, missing: [], isDev: false };
+  } catch (error) {
+    console.error("Environment validation error:", error);
+    return { isValid: false, missing: ["VALIDATION_ERROR"], isDev: false };
   }
-
-  console.log("✅ Environment validation passed");
-  return { isValid: true, missing: [] };
 };
 
 // Initialize application
