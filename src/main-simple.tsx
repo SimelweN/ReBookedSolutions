@@ -1,7 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import TestApp from "./TestApp.tsx";
+import App from "./App-minimal.tsx";
 import "./index.css";
 
 // Create a simple query client
