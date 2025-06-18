@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
 import ProfileHeader from "@/components/ProfileHeader";
-import ShareProfileDialog from "@/components/ShareProfileDialog";
 import BookNotSellingDialog from "@/components/BookNotSellingDialog";
 import ReportIssueDialog from "@/components/ReportIssueDialog";
 import HowItWorksDialog from "@/components/HowItWorksDialog";
@@ -22,7 +21,6 @@ import {
   ShoppingCart,
   Settings,
   User,
-  Share2,
   HelpCircle,
   MoreHorizontal,
   Heart,
