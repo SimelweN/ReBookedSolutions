@@ -202,7 +202,7 @@ function App() {
                 {process.env.NODE_ENV === "development" && (
                   <>{/* Debug components removed from production */}</>
                 )}
-              </DeploymentSafeRouter>
+              </Router>
             </CartProvider>
           </AuthProvider>
         </AuthErrorBoundary>
