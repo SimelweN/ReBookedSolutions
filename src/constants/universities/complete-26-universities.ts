@@ -413,7 +413,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Vaal University of Technology",
     location: "Vanderbijlpark",
     province: "Gauteng",
-    logo: "/logos/universities/vut.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/val-c96fb0?format=webp&width=800",
     overview:
       "Technology university providing practical education and skills development for the Vaal region.",
     website: "https://www.vut.ac.za",
@@ -439,7 +439,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Mangosuthu University of Technology",
     location: "Durban",
     province: "KwaZulu-Natal",
-    logo: "/logos/universities/mut.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/mut-4a527e?format=webp&width=800",
     overview:
       "Technology university serving KwaZulu-Natal with focus on practical skills and community development.",
     website: "https://www.mut.ac.za",
@@ -467,7 +467,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Johannesburg",
     location: "Johannesburg",
     province: "Gauteng",
-    logo: "/logos/universities/uj.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/uj-340834?format=webp&width=800",
     overview:
       "Large comprehensive university offering diverse academic and technological programs.",
     website: "https://www.uj.ac.za",
@@ -493,7 +493,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of South Africa",
     location: "Pretoria",
     province: "Gauteng",
-    logo: "/logos/universities/unisa.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/unisa-617e53?format=webp&width=800",
     overview:
       "Africa's largest distance education university with comprehensive academic programs.",
     website: "https://www.unisa.ac.za",
@@ -519,7 +519,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Zululand",
     location: "Richards Bay",
     province: "KwaZulu-Natal",
-    logo: "/logos/universities/unizul.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/zululand-aed843?format=webp&width=800",
     overview:
       "Comprehensive university serving rural KwaZulu-Natal with focus on community development.",
     website: "https://www.unizulu.ac.za",
