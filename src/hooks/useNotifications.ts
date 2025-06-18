@@ -208,8 +208,8 @@ export const useNotifications = (): NotificationHookReturn => {
 
   // Set up real-time subscription for notifications with proper cleanup
   useEffect(() => {
-    if (!isAuthenticated || !user) {
-      // Clean up any existing subscription
+    if (!isAuthenticated || !user?.id) {
+      // Clean up any existing subscription when user logs out
       if (subscriptionRef.current) {
         try {
           subscriptionRef.current.unsubscribe();
@@ -220,12 +220,12 @@ export const useNotifications = (): NotificationHookReturn => {
           console.error("Error removing notification channel:", error);
         }
         subscriptionRef.current = null;
-        subscribingRef.current = false;
       }
+      subscribingRef.current = false;
       return;
     }
 
-    // Prevent multiple subscription attempts for the same user
+    // Prevent multiple subscription attempts
     if (subscribingRef.current || subscriptionRef.current) {
       console.log(
         "[NotificationHook] Subscription already exists or in progress, skipping",
@@ -234,17 +234,22 @@ export const useNotifications = (): NotificationHookReturn => {
     }
 
     let debounceTimeout: NodeJS.Timeout | null = null;
+    let channel: any = null;
 
-    const channelName = `notifications_${user.id}`;
+    // Create a unique channel name with timestamp to avoid conflicts
+    const channelName = `notifications_${user.id}_${Date.now()}`;
 
     subscribingRef.current = true;
     console.log(
       "[NotificationHook] Setting up new subscription for user:",
       user.id,
+      "with channel:",
+      channelName,
     );
 
     try {
-      const channel = supabase.channel(channelName);
+      // Create a new channel instance
+      channel = supabase.channel(channelName);
 
       // Configure the channel before subscribing
       channel.on(
@@ -283,25 +288,32 @@ export const useNotifications = (): NotificationHookReturn => {
                   }
                 });
               }
-            }, 1000); // Reduced debounce time for better responsiveness
+            }, 1000);
           }
         },
       );
 
       // Subscribe to the channel
       channel.subscribe((status) => {
+        console.log(
+          "[NotificationHook] Subscription status:",
+          status,
+          "for channel:",
+          channelName,
+        );
+
         if (status === "SUBSCRIBED") {
           console.log(
             "[NotificationHook] Subscription established for user:",
             user.id,
           );
-          subscribingRef.current = false; // Reset the subscribing flag
+          subscribingRef.current = false;
         } else if (status === "CHANNEL_ERROR") {
           console.warn(
             "[NotificationHook] Subscription error for user:",
             user.id,
           );
-          // Clear the refs on error to allow retry
+          // Reset flags on error
           subscriptionRef.current = null;
           subscribingRef.current = false;
         } else if (status === "CLOSED") {
@@ -316,28 +328,6 @@ export const useNotifications = (): NotificationHookReturn => {
 
       // Store the channel reference
       subscriptionRef.current = channel;
-      // Cleanup function
-      return () => {
-        console.log(
-          "[NotificationHook] Cleaning up subscription on effect cleanup",
-        );
-        if (debounceTimeout) {
-          clearTimeout(debounceTimeout);
-          debounceTimeout = null;
-        }
-        try {
-          if (subscriptionRef.current) {
-            subscriptionRef.current.unsubscribe();
-            subscriptionRef.current = null;
-          }
-        } catch (error) {
-          console.error(
-            "Error removing notification channel on cleanup:",
-            error,
-          );
-        }
-        subscribingRef.current = false;
-      };
     } catch (error) {
       console.error("Error setting up notification subscription:", error);
       subscriptionRef.current = null;
@@ -345,6 +335,37 @@ export const useNotifications = (): NotificationHookReturn => {
       setHasError(true);
       setLastError(error as Error);
     }
+
+    // Cleanup function
+    return () => {
+      console.log(
+        "[NotificationHook] Cleaning up subscription on effect cleanup",
+        channelName,
+      );
+
+      if (debounceTimeout) {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = null;
+      }
+
+      if (channel) {
+        try {
+          channel.unsubscribe();
+          console.log(
+            "[NotificationHook] Successfully unsubscribed from channel:",
+            channelName,
+          );
+        } catch (error) {
+          console.error(
+            "Error removing notification channel on cleanup:",
+            error,
+          );
+        }
+      }
+
+      subscriptionRef.current = null;
+      subscribingRef.current = false;
+    };
   }, [user?.id, isAuthenticated]); // Only depend on user ID and auth status
 
   // Cleanup retry timeout and subscription on unmount
