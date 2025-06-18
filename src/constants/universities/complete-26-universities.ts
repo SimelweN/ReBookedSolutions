@@ -361,7 +361,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Cape Peninsula University of Technology",
     location: "Cape Town",
     province: "Western Cape",
-    logo: "/logos/universities/cput.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/cape-peninusla-499c5e?format=webp&width=800",
     overview:
       "Technology university known for practical, career-oriented programs and industry engagement.",
     website: "https://www.cput.ac.za",
