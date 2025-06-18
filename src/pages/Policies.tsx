@@ -169,10 +169,10 @@ const Policies = () => {
                   </section>
 
                   <section>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">
                       2. Scope of the Policy
                     </h3>
-                    <p className="text-gray-700 leading-relaxed">
+                    <p className="text-gray-700 leading-relaxed text-sm sm:text-base mb-3 sm:mb-4">
                       This Privacy Policy applies to all visitors, users, and
                       account holders of ReBooked Solutions. It covers
                       information collected through our main marketplace,
@@ -182,10 +182,10 @@ const Policies = () => {
                   </section>
 
                   <section>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">
                       3. What Information We Collect
                     </h3>
-                    <p className="text-gray-700 leading-relaxed">
+                    <p className="text-gray-700 leading-relaxed text-sm sm:text-base mb-3 sm:mb-4">
                       We collect personal information that is necessary to
                       provide our services and ensure platform security. This
                       includes, but is not limited to:
