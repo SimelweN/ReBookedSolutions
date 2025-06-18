@@ -39,11 +39,13 @@ const SaleSuccessPopup = ({
   bookTitle,
   bookPrice,
   buyerName,
+  buyerEmail,
   saleId,
 }: SaleSuccessPopupProps) => {
   const { user } = useAuth();
   const [step, setStep] = useState(0);
   const [isAddingNotification, setIsAddingNotification] = useState(false);
+  const [payoutInfo, setPayoutInfo] = useState<any>(null);
 
   const steps = [
     {
