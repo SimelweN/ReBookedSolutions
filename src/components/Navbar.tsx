@@ -104,25 +104,6 @@ const Navbar = () => {
     );
   }
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      toast.success(`Successfully logged out. Goodbye!`);
-      navigate("/");
-    } catch (error) {
-      console.error("Logout error:", error);
-      toast.error("Failed to logout. Please try again.");
-    }
-  };
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
-
   return (
     <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
