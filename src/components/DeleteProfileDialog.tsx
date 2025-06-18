@@ -34,9 +34,11 @@ const DeleteProfileDialog = ({ isOpen, onClose }: DeleteProfileDialogProps) => {
     try {
       // Here you would implement the actual profile deletion logic
       // For now, we'll simulate the process
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      toast.success("Profile deletion request submitted. You will receive an email confirmation.");
+      toast.success(
+        "Profile deletion request submitted. You will receive an email confirmation.",
+      );
       onClose();
 
       // Reset form
@@ -63,7 +65,8 @@ const DeleteProfileDialog = ({ isOpen, onClose }: DeleteProfileDialogProps) => {
             Delete Profile
           </DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete your account and remove all your data from our servers.
+            This action cannot be undone. This will permanently delete your
+            account and remove all your data from our servers.
           </DialogDescription>
         </DialogHeader>
 
@@ -82,9 +85,9 @@ const DeleteProfileDialog = ({ isOpen, onClose }: DeleteProfileDialogProps) => {
           </div>
 
           <p className="text-sm text-gray-600">
-            Please type <strong>DELETE</strong> to confirm you want to permanently delete your account.
+            Please type <strong>DELETE</strong> to confirm you want to
+            permanently delete your account.
           </p>
-        </div>
 
           <div className="space-y-2">
             <Label htmlFor="confirm-delete">Type 'DELETE' to confirm</Label>
@@ -100,11 +103,7 @@ const DeleteProfileDialog = ({ isOpen, onClose }: DeleteProfileDialogProps) => {
         </div>
 
         <DialogFooter className="gap-2">
-          <Button
-            variant="outline"
-            onClick={handleClose}
-            disabled={isDeleting}
-          >
+          <Button variant="outline" onClick={handleClose} disabled={isDeleting}>
             Cancel
           </Button>
           <Button
