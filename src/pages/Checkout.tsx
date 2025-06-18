@@ -385,7 +385,7 @@ const Checkout = () => {
         }
       }
 
-      // Show sale success popup immediately
+      // Set sale data but don't show popup immediately - will show after commit reminder
       const firstBook = purchasedBooks[0];
       if (firstBook) {
         setSaleData({
@@ -395,7 +395,7 @@ const Checkout = () => {
           buyerEmail: user.email || "",
           saleId: "sale_" + Date.now(), // Generate a simple sale ID
         });
-        setShowSalePopup(true);
+        // setShowSalePopup(true); - Removed: will show after commit reminder
       }
 
       toast.success(
