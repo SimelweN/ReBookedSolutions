@@ -19,6 +19,7 @@ import { addNotification } from "@/services/notificationService";
 import SellerPayoutService from "@/services/sellerPayoutService";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface SaleSuccessPopupProps {
   isOpen: boolean;
@@ -40,6 +41,7 @@ const SaleSuccessPopup = ({
   saleId,
 }: SaleSuccessPopupProps) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [isAddingNotification, setIsAddingNotification] = useState(false);
   const [payoutInfo, setPayoutInfo] = useState<any>(null);
