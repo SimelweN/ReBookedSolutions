@@ -288,7 +288,7 @@ export const useNotifications = (): NotificationHookReturn => {
         }
         try {
           if (subscriptionRef.current) {
-            supabase.removeChannel(subscriptionRef.current);
+            subscriptionRef.current.unsubscribe();
             subscriptionRef.current = null;
           }
         } catch (error) {
