@@ -1,7 +1,13 @@
-
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface ErrorFallbackProps {
   error?: Error;
@@ -10,14 +16,16 @@ interface ErrorFallbackProps {
   description?: string;
 }
 
-const ErrorFallback = ({ 
-  error, 
-  resetError, 
+const ErrorFallback = ({
+  error,
+  resetError,
   title = "Something went wrong",
-  description = "An unexpected error occurred. Please try again."
+  description = "An unexpected error occurred. Please try again.",
 }: ErrorFallbackProps) => {
+  const navigate = useNavigate();
+
   const handleGoHome = () => {
-    window.location.href = '/';
+    navigate("/");
   };
 
   const handleRefresh = () => {
@@ -53,9 +61,9 @@ const ErrorFallback = ({
               </pre>
             </details>
           )}
-          
+
           <div className="flex flex-col sm:flex-row gap-2">
-            <Button 
+            <Button
               onClick={handleRefresh}
               className="flex-1"
               variant="default"
@@ -63,11 +71,7 @@ const ErrorFallback = ({
               <RefreshCw className="w-4 h-4 mr-2" />
               Try Again
             </Button>
-            <Button 
-              onClick={handleGoHome}
-              className="flex-1"
-              variant="outline"
-            >
+            <Button onClick={handleGoHome} className="flex-1" variant="outline">
               <Home className="w-4 h-4 mr-2" />
               Go Home
             </Button>
