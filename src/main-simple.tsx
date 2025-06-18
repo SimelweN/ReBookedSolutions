@@ -30,7 +30,7 @@ const root = createRoot(rootElement);
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <TestApp />
+      <App />
     </QueryClientProvider>
   </React.StrictMode>,
 );
