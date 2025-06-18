@@ -34,11 +34,9 @@ const DeleteProfileDialog = ({ isOpen, onClose }: DeleteProfileDialogProps) => {
     try {
       // Here you would implement the actual profile deletion logic
       // For now, we'll simulate the process
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-      toast.success(
-        "Profile deletion request submitted. You will receive an email confirmation.",
-      );
+      toast.success("Profile deletion request submitted. You will receive an email confirmation.");
       onClose();
 
       // Reset form
@@ -64,33 +62,30 @@ const DeleteProfileDialog = ({ isOpen, onClose }: DeleteProfileDialogProps) => {
             <AlertTriangle className="h-5 w-5" />
             Delete Profile
           </DialogTitle>
-          <DialogDescription className="text-left space-y-3">
-            <p className="font-semibold text-red-700">
-              This action cannot be undone. This will permanently delete your
-              account and remove all your data from our servers.
-            </p>
-
-            <div className="bg-red-50 p-3 rounded-lg border border-red-200">
-              <p className="text-sm text-red-800">
-                <strong>What will be deleted:</strong>
-              </p>
-              <ul className="text-sm text-red-700 mt-2 space-y-1">
-                <li>• Your profile and account information</li>
-                <li>• All your book listings</li>
-                <li>• Your transaction history</li>
-                <li>• Your saved addresses</li>
-                <li>• All notifications and messages</li>
-              </ul>
-            </div>
-
-            <p className="text-sm text-gray-600">
-              Please type <strong>DELETE</strong> to confirm you want to
-              permanently delete your account.
-            </p>
+          <DialogDescription>
+            This action cannot be undone. This will permanently delete your account and remove all your data from our servers.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
+          <div className="bg-red-50 p-3 rounded-lg border border-red-200">
+            <p className="text-sm text-red-800 font-semibold mb-2">
+              What will be deleted:
+            </p>
+            <ul className="text-sm text-red-700 space-y-1">
+              <li>• Your profile and account information</li>
+              <li>• All your book listings</li>
+              <li>• Your transaction history</li>
+              <li>• Your saved addresses</li>
+              <li>• All notifications and messages</li>
+            </ul>
+          </div>
+
+          <p className="text-sm text-gray-600">
+            Please type <strong>DELETE</strong> to confirm you want to permanently delete your account.
+          </p>
+        </div>
+
           <div className="space-y-2">
             <Label htmlFor="confirm-delete">Type 'DELETE' to confirm</Label>
             <Input
@@ -105,7 +100,11 @@ const DeleteProfileDialog = ({ isOpen, onClose }: DeleteProfileDialogProps) => {
         </div>
 
         <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={handleClose} disabled={isDeleting}>
+          <Button
+            variant="outline"
+            onClick={handleClose}
+            disabled={isDeleting}
+          >
             Cancel
           </Button>
           <Button
