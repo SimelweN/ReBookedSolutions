@@ -44,6 +44,8 @@ const Profile = () => {
   const isMobile = useIsMobile();
   const [isDeleteProfileDialogOpen, setIsDeleteProfileDialogOpen] =
     useState(false);
+  const [isCommitSystemDialogOpen, setIsCommitSystemDialogOpen] =
+    useState(false);
   const [isBookNotSellingDialogOpen, setIsBookNotSellingDialogOpen] =
     useState(false);
   const [isReportIssueDialogOpen, setIsReportIssueDialogOpen] = useState(false);
@@ -413,6 +415,12 @@ const Profile = () => {
                       <DropdownMenuItem onClick={handleBuyerHowItWorks}>
                         <ShoppingCart className="h-4 w-4 mr-2" />
                         How Being A Buyer Works
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => setIsCommitSystemDialogOpen(true)}
+                      >
+                        <AlertTriangle className="h-4 w-4 mr-2" />
+                        48-Hour Commit System
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
