@@ -49,6 +49,7 @@ import RefundPolicy from "./pages/RefundPolicy";
 import CancellationPolicy from "./pages/CancellationPolicy";
 import ShippingDeliveryPolicy from "./pages/ShippingDeliveryPolicy";
 import ReturnsDisputesPolicy from "./pages/ReturnsDisputesPolicy";
+import Policies from "./pages/Policies";
 
 import "./App.css";
 
@@ -96,6 +97,7 @@ function App() {
                       path="/returns-disputes-policy"
                       element={<ReturnsDisputesPolicy />}
                     />
+                    <Route path="/policies" element={<Policies />} />
                     <Route path="/contact" element={<ContactUs />} />
                     <Route path="/report" element={<Report />} />
                     <Route path="/shipping" element={<Shipping />} />
