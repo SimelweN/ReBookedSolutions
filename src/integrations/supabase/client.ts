@@ -2,34 +2,19 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
 
-import { ENV } from "@/config/environment";
+import { ENV, validateEnvironment } from "@/config/environment";
 
-// Validate Supabase configuration before creating client
-const validateSupabaseConfig = () => {
-  if (!ENV.VITE_SUPABASE_URL || ENV.VITE_SUPABASE_URL.trim() === "") {
-    throw new Error(
-      "VITE_SUPABASE_URL is required. Please set this environment variable.",
-    );
-  }
+// Validate environment configuration (non-blocking)
+const isValidEnvironment = validateEnvironment();
 
-  if (!ENV.VITE_SUPABASE_ANON_KEY || ENV.VITE_SUPABASE_ANON_KEY.trim() === "") {
-    throw new Error(
-      "VITE_SUPABASE_ANON_KEY is required. Please set this environment variable.",
-    );
-  }
-
-  // Basic URL validation
-  try {
-    new URL(ENV.VITE_SUPABASE_URL);
-  } catch {
-    throw new Error(
-      `Invalid VITE_SUPABASE_URL: "${ENV.VITE_SUPABASE_URL}". Must be a valid URL.`,
-    );
-  }
-};
-
-// Validate configuration
-validateSupabaseConfig();
+// Log configuration status
+if (!isValidEnvironment) {
+  console.warn(
+    "⚠️ Supabase client initialized with default/fallback configuration",
+  );
+} else {
+  console.log("✅ Supabase client initialized successfully");
+}
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
