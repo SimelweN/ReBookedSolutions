@@ -9,6 +9,7 @@ import HowItWorksDialog from "@/components/HowItWorksDialog";
 import CommitSystemExplainer from "@/components/CommitSystemExplainer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   DropdownMenu,
   DropdownMenuContent,
