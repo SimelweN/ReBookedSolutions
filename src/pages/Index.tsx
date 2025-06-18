@@ -7,7 +7,6 @@ import { getBooks } from "@/services/book/bookQueries";
 import { Book } from "@/types/book";
 import { BookOpen, Search, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import TargetedBookDeletionService from "@/services/admin/targetedBookDeletion";
 
 const Index = () => {
   const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
@@ -53,31 +52,6 @@ const Index = () => {
       toast.error(userMessage);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleCleanupBooks = async () => {
-    try {
-      console.log("🧹 Starting book cleanup from homepage...");
-      toast.loading("Cleaning up duplicate/test books...", { id: "cleanup" });
-
-      const results =
-        await TargetedBookDeletionService.runComprehensiveCleanup();
-
-      if (results.summary.success) {
-        toast.success(
-          `✅ Cleanup completed! Deleted ${results.summary.totalDeleted} books`,
-          { id: "cleanup", duration: 5000 },
-        );
-
-        // Reload books after cleanup
-        await loadFeaturedBooks();
-      } else {
-        toast.error("⚠️ Cleanup partially failed", { id: "cleanup" });
-      }
-    } catch (error) {
-      console.error("❌ Cleanup failed:", error);
-      toast.error("Cleanup failed", { id: "cleanup" });
     }
   };
 
