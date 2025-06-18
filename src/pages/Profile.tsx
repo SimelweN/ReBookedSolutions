@@ -42,8 +42,8 @@ const Profile = () => {
   const { profile, user } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [isDeleteProfileDialogOpen, setIsDeleteProfileDialogOpen] =
+    useState(false);
   const [isBookNotSellingDialogOpen, setIsBookNotSellingDialogOpen] =
     useState(false);
   const [isReportIssueDialogOpen, setIsReportIssueDialogOpen] = useState(false);
@@ -335,12 +335,12 @@ const Profile = () => {
                   </Button>
 
                   <Button
-                    onClick={handleShareProfile}
-                    variant="outline"
-                    className="w-full border-book-600 text-book-600 hover:bg-book-50"
+                    onClick={() => setIsDeleteProfileDialogOpen(true)}
+                    variant="destructive"
+                    className="w-full"
                   >
-                    <Share2 className="h-4 w-4 mr-2" />
-                    Share Profile
+                    <AlertTriangle className="h-4 w-4 mr-2" />
+                    Delete Profile
                   </Button>
                 </CardContent>
               </Card>
@@ -359,11 +359,6 @@ const Profile = () => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end">
-                      <DropdownMenuItem onClick={handleEditProfile}>
-                        <User className="h-4 w-4 mr-2" />
-                        Edit Profile
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={() => navigate("/notifications")}
                       >
