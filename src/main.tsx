@@ -85,8 +85,9 @@ const initializeApp = () => {
 
   const root = createRoot(rootElement);
 
-  // Check if we should show environment error (only in strict production mode)
+  // Only show environment error in very specific production cases (disabled for now)
   if (
+    false &&
     import.meta.env.PROD &&
     !environmentValidation.isValid &&
     !environmentValidation.isDev
