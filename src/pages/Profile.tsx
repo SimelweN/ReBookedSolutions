@@ -3,6 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
 import ProfileHeader from "@/components/ProfileHeader";
 import BookNotSellingDialog from "@/components/BookNotSellingDialog";
+import DeleteProfileDialog from "@/components/DeleteProfileDialog";
 import ReportIssueDialog from "@/components/ReportIssueDialog";
 import HowItWorksDialog from "@/components/HowItWorksDialog";
 import { Button } from "@/components/ui/button";
