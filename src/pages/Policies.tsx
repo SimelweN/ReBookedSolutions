@@ -21,6 +21,9 @@ import {
 const Policies = () => {
   const [activeTab, setActiveTab] = useState("overview");
 
+  // Test if the component renders - if you see this in browser, component is working
+  console.log("Policies component is rendering - activeTab:", activeTab);
+
   const policyStats = [
     {
       label: "Report Issues",
