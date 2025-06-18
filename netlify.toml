@@ -5,14 +5,7 @@
 [build.environment]
   NODE_VERSION = "18"
 
-# SPA redirect rules
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  conditions = {Role = ["admin"], Country = ["US"]}
-
-# Fallback for all other routes (SPA support)
+# SPA redirect rules - simple fallback for all routes
 [[redirects]]
   from = "/*"
   to = "/index.html"
