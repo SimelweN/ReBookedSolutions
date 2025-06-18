@@ -24,17 +24,32 @@ const Policies = () => {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mt-4 max-w-4xl mx-auto">
             <div className="text-blue-800 text-xs sm:text-sm space-y-1 sm:space-y-0">
               <div className="flex flex-col sm:flex-row sm:items-center justify-center flex-wrap gap-1 sm:gap-2">
-                <span><strong>Effective Date:</strong> 10 June 2025</span>
+                <span>
+                  <strong>Effective Date:</strong> 10 June 2025
+                </span>
                 <span className="hidden sm:inline">•</span>
-                <span><strong>Platform:</strong> <span className="break-all">www.rebookedsolutions.co.za</span></span>
+                <span>
+                  <strong>Platform:</strong>{" "}
+                  <span className="break-all">www.rebookedsolutions.co.za</span>
+                </span>
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center justify-center flex-wrap gap-1 sm:gap-2 mt-2 sm:mt-1">
-                <span><strong>Platform Operator:</strong> ReBooked Solutions (Pty) Ltd</span>
+                <span>
+                  <strong>Platform Operator:</strong> ReBooked Solutions (Pty)
+                  Ltd
+                </span>
                 <span className="hidden sm:inline">•</span>
-                <span><strong>Support:</strong> <span className="break-all">support@rebookedsolutions.co.za</span></span>
+                <span>
+                  <strong>Support:</strong>{" "}
+                  <span className="break-all">
+                    support@rebookedsolutions.co.za
+                  </span>
+                </span>
               </div>
               <div className="mt-2 sm:mt-1">
-                <span><strong>Jurisdiction:</strong> Republic of South Africa</span>
+                <span>
+                  <strong>Jurisdiction:</strong> Republic of South Africa
+                </span>
               </div>
             </div>
           </div>
@@ -43,27 +58,48 @@ const Policies = () => {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="mb-6 sm:mb-8">
             <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-1 p-1 bg-gray-100 rounded-lg overflow-x-auto">
-              <TabsTrigger value="privacy" className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap">
+              <TabsTrigger
+                value="privacy"
+                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+              >
                 <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
                 <span className="truncate">Privacy Policy</span>
               </TabsTrigger>
-              <TabsTrigger value="terms" className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap">
+              <TabsTrigger
+                value="terms"
+                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+              >
                 <Scale className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
                 <span className="truncate">Terms & Conditions</span>
               </TabsTrigger>
-              <TabsTrigger value="refunds" className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap">
+              <TabsTrigger
+                value="refunds"
+                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+              >
                 <span className="truncate">Refund Policy</span>
               </TabsTrigger>
-              <TabsTrigger value="cancellation" className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap">
+              <TabsTrigger
+                value="cancellation"
+                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+              >
                 <span className="truncate">Cancellation Policy</span>
               </TabsTrigger>
-              <TabsTrigger value="shipping" className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap">
+              <TabsTrigger
+                value="shipping"
+                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+              >
                 <span className="truncate">Shipping & Delivery</span>
               </TabsTrigger>
-              <TabsTrigger value="returns" className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap">
+              <TabsTrigger
+                value="returns"
+                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+              >
                 <span className="truncate">Return Policy</span>
               </TabsTrigger>
-              <TabsTrigger value="disputes" className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap">
+              <TabsTrigger
+                value="disputes"
+                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+              >
                 <span className="truncate">Dispute Resolution</span>
               </TabsTrigger>
             </TabsList>
@@ -79,17 +115,33 @@ const Policies = () => {
                 </CardTitle>
                 <div className="text-gray-600 text-xs sm:text-sm space-y-1">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                    <span><strong>Effective Date:</strong> 10 June 2025</span>
+                    <span>
+                      <strong>Effective Date:</strong> 10 June 2025
+                    </span>
                     <span className="hidden sm:inline">•</span>
-                    <span><strong>Platform:</strong> <span className="break-all">www.rebookedsolutions.co.za</span></span>
+                    <span>
+                      <strong>Platform:</strong>{" "}
+                      <span className="break-all">
+                        www.rebookedsolutions.co.za
+                      </span>
+                    </span>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                    <span><strong>Operator:</strong> ReBooked Solutions (Pty) Ltd</span>
+                    <span>
+                      <strong>Operator:</strong> ReBooked Solutions (Pty) Ltd
+                    </span>
                     <span className="hidden sm:inline">•</span>
-                    <span><strong>Contact:</strong> <span className="break-all">support@rebookedsolutions.co.za</span></span>
+                    <span>
+                      <strong>Contact:</strong>{" "}
+                      <span className="break-all">
+                        support@rebookedsolutions.co.za
+                      </span>
+                    </span>
                   </div>
                   <div>
-                    <span><strong>Jurisdiction:</strong> Republic of South Africa</span>
+                    <span>
+                      <strong>Jurisdiction:</strong> Republic of South Africa
+                    </span>
                   </div>
                 </div>
               </CardHeader>
@@ -469,14 +521,26 @@ const Policies = () => {
                 </CardTitle>
                 <div className="text-gray-600 text-xs sm:text-sm space-y-1">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                    <span><strong>Effective Date:</strong> 10 June 2025</span>
+                    <span>
+                      <strong>Effective Date:</strong> 10 June 2025
+                    </span>
                     <span className="hidden sm:inline">•</span>
-                    <span><strong>Platform Operator:</strong> ReBooked Solutions (Pty) Ltd</span>
+                    <span>
+                      <strong>Platform Operator:</strong> ReBooked Solutions
+                      (Pty) Ltd
+                    </span>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                    <span><strong>Email:</strong> <span className="break-all">support@rebookedsolutions.co.za</span></span>
+                    <span>
+                      <strong>Email:</strong>{" "}
+                      <span className="break-all">
+                        support@rebookedsolutions.co.za
+                      </span>
+                    </span>
                     <span className="hidden sm:inline">•</span>
-                    <span><strong>Jurisdiction:</strong> Republic of South Africa</span>
+                    <span>
+                      <strong>Jurisdiction:</strong> Republic of South Africa
+                    </span>
                   </div>
                 </div>
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 sm:p-4 mt-3">
@@ -484,10 +548,16 @@ const Policies = () => {
                     <p className="font-semibold mb-2">Governing Laws:</p>
                     <ul className="space-y-1 text-xs sm:text-sm">
                       <li>• Consumer Protection Act (CPA) No. 68 of 2008</li>
-                      <li>• Electronic Communications and Transactions Act (ECTA) No. 25 of 2002</li>
-                      <li>• Protection of Personal Information Act (POPIA) No. 4 of 2013</li>
+                      <li>
+                        • Electronic Communications and Transactions Act (ECTA)
+                        No. 25 of 2002
+                      </li>
+                      <li>
+                        • Protection of Personal Information Act (POPIA) No. 4
+                        of 2013
+                      </li>
                     </ul>
-                  </p>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
