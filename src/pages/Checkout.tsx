@@ -863,6 +863,7 @@ const Checkout = () => {
           bookTitle={saleData.bookTitle}
           bookPrice={saleData.bookPrice}
           buyerName={saleData.buyerName}
+          buyerEmail={saleData.buyerEmail}
           saleId={saleData.saleId}
         />
       )}
