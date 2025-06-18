@@ -6,6 +6,7 @@ import BookNotSellingDialog from "@/components/BookNotSellingDialog";
 import DeleteProfileDialog from "@/components/DeleteProfileDialog";
 import ReportIssueDialog from "@/components/ReportIssueDialog";
 import HowItWorksDialog from "@/components/HowItWorksDialog";
+import CommitSystemExplainer from "@/components/CommitSystemExplainer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
