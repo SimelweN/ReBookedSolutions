@@ -36,14 +36,29 @@ const Policies = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
-            <TabsTrigger value="privacy" className="text-sm">
-              <Shield className="h-4 w-4 mr-2" />
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-7 gap-1 mb-8">
+            <TabsTrigger value="privacy" className="text-xs sm:text-sm">
+              <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
               Privacy Policy
             </TabsTrigger>
-            <TabsTrigger value="terms" className="text-sm">
-              <Scale className="h-4 w-4 mr-2" />
+            <TabsTrigger value="terms" className="text-xs sm:text-sm">
+              <Scale className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
               Terms & Conditions
+            </TabsTrigger>
+            <TabsTrigger value="refunds" className="text-xs sm:text-sm">
+              Refund Policy
+            </TabsTrigger>
+            <TabsTrigger value="cancellation" className="text-xs sm:text-sm">
+              Cancellation Policy
+            </TabsTrigger>
+            <TabsTrigger value="shipping" className="text-xs sm:text-sm">
+              Shipping & Delivery
+            </TabsTrigger>
+            <TabsTrigger value="returns" className="text-xs sm:text-sm">
+              Return Policy
+            </TabsTrigger>
+            <TabsTrigger value="disputes" className="text-xs sm:text-sm">
+              Dispute Resolution
             </TabsTrigger>
           </TabsList>
 
