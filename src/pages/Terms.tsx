@@ -28,29 +28,29 @@ const Terms = () => {
             </p>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-8 px-4 sm:px-6">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-              <h2 className="text-2xl font-semibold text-red-700 mb-4">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-red-700 mb-3 sm:mb-4">
                 ⚠️ IMPORTANT NOTICE
               </h2>
-              <p className="mb-4 text-red-800">
+              <p className="mb-3 sm:mb-4 text-red-800 text-sm sm:text-base">
                 <strong>This page has been moved!</strong> Our complete legal
                 documentation is now consolidated into a comprehensive policies
                 page that includes all Terms & Conditions, Privacy Policy,
                 Refund Policy, Cancellation Policy, Shipping & Delivery Policy,
                 and Returns & Disputes Policy.
               </p>
-              <p className="mb-4 text-red-700">
+              <p className="mb-3 sm:mb-4 text-red-700 text-sm sm:text-base">
                 All policies comply with South African consumer protection laws
                 (CPA, ECTA, POPIA) and provide detailed coverage of your rights
                 and our platform responsibilities.
               </p>
               <a
                 href="/policies"
-                className="inline-flex items-center bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                className="w-full sm:w-auto inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white px-4 sm:px-6 py-3 rounded-lg font-medium transition-colors text-sm sm:text-base"
               >
                 Go to Complete Policies & Terms →
               </a>
-              <p className="text-sm text-red-600 mt-3">
+              <p className="text-xs sm:text-sm text-red-600 mt-3">
                 You will be automatically redirected in 5 seconds...
               </p>
             </div>
