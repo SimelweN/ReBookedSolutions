@@ -46,6 +46,10 @@ class NotificationManager {
     this.notifyListeners();
   }
 
+  get listenersCount() {
+    return this.listeners.size;
+  }
+
   setupSubscription(userId: string, refreshCallback: () => Promise<void>) {
     // If we already have a subscription for this user, don't create another
     if (
@@ -398,7 +402,7 @@ export const useNotifications = (): NotificationHookReturn => {
       }
 
       // Clean up global manager when the last component unmounts
-      if (notificationManager.current.listeners.size === 0) {
+      if (notificationManager.current.listenersCount === 0) {
         notificationManager.current.cleanup();
       }
 
