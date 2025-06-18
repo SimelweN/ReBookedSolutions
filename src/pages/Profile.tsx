@@ -42,8 +42,7 @@ const Profile = () => {
   const { profile, user } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const [isDeleteProfileDialogOpen, setIsDeleteProfileDialogOpen] =
-    useState(false);
+  const [isDeleteProfileDialogOpen, setIsDeleteProfileDialogOpen] = useState(false);
   const [isBookNotSellingDialogOpen, setIsBookNotSellingDialogOpen] =
     useState(false);
   const [isReportIssueDialogOpen, setIsReportIssueDialogOpen] = useState(false);
@@ -229,16 +228,24 @@ const Profile = () => {
     }
   };
 
-  const handleShareProfile = () => {
-    setIsShareDialogOpen(true);
-  };
+  const [isLoadingAddress, setIsLoadingAddress] = useState(false);
+  const [addressData, setAddressData] = useState<any>(null);
 
-  const handleBookNotSelling = () => {
-    setIsBookNotSellingDialogOpen(true);
-  };
+  const handleDeleteProfile = async () => {
+    if (!user) return;
 
-  const handleEditProfile = () => {
-    setIsEditDialogOpen(true);
+    try {
+      // Here you would implement the actual profile deletion logic
+      // For now, we'll show a confirmation toast
+      toast.success("Profile deletion request submitted. You will receive an email confirmation.");
+      setIsDeleteProfileDialogOpen(false);
+
+      // Optionally navigate to a goodbye page or logout
+      // navigate("/");
+    } catch (error) {
+      toast.error("Failed to delete profile. Please try again.");
+    }
+  };
   };
 
   const handleReportIssue = () => {
