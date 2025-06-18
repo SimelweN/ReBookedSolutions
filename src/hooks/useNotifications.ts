@@ -333,18 +333,18 @@ export const useNotifications = (): NotificationHookReturn => {
 
       if (subscriptionRef.current) {
         try {
-          supabase.removeChannel(subscriptionRef.current);
-          console.log("[NotificationHook] Subscription cleaned up on unmount");
+          subscriptionRef.current.unsubscribe();
+          console.log(
+            "[NotificationHook] Final cleanup - unsubscribed from notification channel",
+          );
         } catch (error) {
           console.error(
-            "Error removing notification channel on unmount:",
+            "Error unsubscribing from notification channel on unmount:",
             error,
           );
         }
         subscriptionRef.current = null;
       }
-
-      // Reset flags
       refreshingRef.current = false;
       isInitialLoadRef.current = true;
       subscribingRef.current = false;
