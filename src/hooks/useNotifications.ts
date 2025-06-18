@@ -303,6 +303,8 @@ export const useNotifications = (): NotificationHookReturn => {
       console.error("Error setting up notification subscription:", error);
       subscriptionRef.current = null;
       subscribingRef.current = false;
+      setHasError(true);
+      setLastError(error as Error);
     }
   }, [user?.id, isAuthenticated]); // Only depend on user ID and auth status
 
