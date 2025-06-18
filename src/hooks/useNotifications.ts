@@ -106,16 +106,29 @@ export const useNotifications = (): NotificationHookReturn => {
           throw new Error("Invalid data format received");
         }
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Unknown error";
-        console.error(`[NotificationHook] Error fetching notifications:`, errorMessage);
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+        console.error(
+          `[NotificationHook] Error fetching notifications:`,
+          errorMessage,
+        );
 
         // Handle 403 errors with session refresh
-        if (errorMessage.includes("403") || errorMessage.includes("forbidden")) {
-          console.log("[NotificationHook] 403 error detected, attempting session refresh");
+        if (
+          errorMessage.includes("403") ||
+          errorMessage.includes("forbidden")
+        ) {
+          console.log(
+            "[NotificationHook] 403 error detected, attempting session refresh",
+          );
           try {
-            const { data: { session } } = await supabase.auth.refreshSession();
+            const {
+              data: { session },
+            } = await supabase.auth.refreshSession();
             if (session) {
-              console.log("[NotificationHook] Session refreshed, retrying notification fetch");
+              console.log(
+                "[NotificationHook] Session refreshed, retrying notification fetch",
+              );
               // Clear error and retry immediately
               setHasError(false);
               setLastError(undefined);
@@ -123,7 +136,10 @@ export const useNotifications = (): NotificationHookReturn => {
               return;
             }
           } catch (refreshError) {
-            console.error("[NotificationHook] Session refresh failed:", refreshError);
+            console.error(
+              "[NotificationHook] Session refresh failed:",
+              refreshError,
+            );
           }
         }
 
@@ -132,29 +148,34 @@ export const useNotifications = (): NotificationHookReturn => {
         setLastError(error instanceof Error ? error : new Error(errorMessage));
 
         // Only retry on network or temporary errors, not on auth errors
-        if (errorMessage.includes("network") || errorMessage.includes("timeout") || errorMessage.includes("Failed to fetch")) {
+        if (
+          errorMessage.includes("network") ||
+          errorMessage.includes("timeout") ||
+          errorMessage.includes("Failed to fetch")
+        ) {
           if (retryCountRef.current < MAX_RETRY_ATTEMPTS) {
             retryCountRef.current++;
-            const retryDelay = RETRY_DELAYS[retryCountRef.current - 1] || RETRY_DELAYS[RETRY_DELAYS.length - 1];
+            const retryDelay =
+              RETRY_DELAYS[retryCountRef.current - 1] ||
+              RETRY_DELAYS[RETRY_DELAYS.length - 1];
 
-            console.log(`[NotificationHook] Scheduling retry ${retryCountRef.current}/${MAX_RETRY_ATTEMPTS} in ${retryDelay}ms`);
+            console.log(
+              `[NotificationHook] Scheduling retry ${retryCountRef.current}/${MAX_RETRY_ATTEMPTS} in ${retryDelay}ms`,
+            );
 
             retryTimeoutRef.current = setTimeout(() => {
               refreshNotifications(true);
             }, retryDelay);
           } else {
-            console.warn(`[NotificationHook] Max retry attempts reached (${MAX_RETRY_ATTEMPTS})`);
+            console.warn(
+              `[NotificationHook] Max retry attempts reached (${MAX_RETRY_ATTEMPTS})`,
+            );
           }
         } else {
-          console.warn(`[NotificationHook] Non-retryable error: ${errorMessage}`);
+          console.warn(
+            `[NotificationHook] Non-retryable error: ${errorMessage}`,
+          );
         }
-              refreshNotifications(true);
-            }
-          }, delay);
-        }
-
-        // Keep existing notifications if we have them (don't clear on error)
-        // This provides better UX by showing stale data rather than empty state
       } finally {
         setIsLoading(false);
         refreshingRef.current = false;
