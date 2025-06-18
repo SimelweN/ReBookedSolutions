@@ -383,6 +383,7 @@ const Checkout = () => {
           bookTitle: firstBook.title,
           bookPrice: firstBook.price,
           buyerName: user.name || user.email || "Unknown Buyer",
+          buyerEmail: user.email || "",
           saleId: "sale_" + Date.now(), // Generate a simple sale ID
         });
         setShowSalePopup(true);
