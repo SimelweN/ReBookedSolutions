@@ -13,12 +13,9 @@ import {
   Truck,
   Bell,
   ArrowRight,
-  Mail,
-  Phone,
   DollarSign,
 } from "lucide-react";
 import { addNotification } from "@/services/notificationService";
-import BuyerContactService from "@/services/buyerContactService";
 import SellerPayoutService from "@/services/sellerPayoutService";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -54,9 +51,9 @@ const SaleSuccessPopup = ({
       description: `"${bookTitle}" sold for R${bookPrice}`,
     },
     {
-      icon: <Mail className="h-12 w-12 text-blue-500" />,
-      title: "📞 Contact Buyer & Arrange Delivery",
-      description: "Contact details and next steps",
+      icon: <Package className="h-12 w-12 text-blue-500" />,
+      title: "📦 Prepare Your Book for Delivery",
+      description: "Get your book ready for our courier service",
     },
     {
       icon: <DollarSign className="h-12 w-12 text-green-500" />,
@@ -67,12 +64,6 @@ const SaleSuccessPopup = ({
 
   const nextSteps = [
     {
-      icon: "📧",
-      title: "Contact Buyer Immediately",
-      description: `Email: ${buyerEmail || "Available in notifications"}`,
-      action: "Send email to arrange delivery",
-    },
-    {
       icon: "📦",
       title: "Prepare Your Book",
       description:
@@ -81,15 +72,22 @@ const SaleSuccessPopup = ({
     },
     {
       icon: "🚚",
-      title: "Arrange Delivery Method",
-      description: "Discuss pickup, courier, or meeting point with the buyer",
-      action: "Coordinate delivery logistics",
+      title: "Delivery Will Be Arranged",
+      description:
+        "Our system will handle all delivery logistics automatically",
+      action: "Wait for delivery notification",
+    },
+    {
+      icon: "📱",
+      title: "Track Progress",
+      description: "Monitor delivery status in your notifications",
+      action: "Check notification updates",
     },
     {
       icon: "💰",
-      title: "Confirm Delivery & Get Paid",
+      title: "Get Paid After Delivery",
       description: `You'll receive R${Math.round(bookPrice * 0.9)} (90%) after delivery confirmation`,
-      action: "Confirm delivery completion",
+      action: "Payment processed automatically",
     },
   ];
 
@@ -106,34 +104,14 @@ const SaleSuccessPopup = ({
 
     setIsAddingNotification(true);
     try {
-      // Save notification with buyer contact details
+      // Save notification WITHOUT any contact details
       await addNotification({
         userId: user.id,
-        title: "🎉 Book Sold - Contact Buyer!",
-        message: `Your book "${bookTitle}" sold for R${bookPrice}! Buyer: ${buyerName} (${buyerEmail}). Contact them immediately to arrange delivery. You'll receive R${Math.round(bookPrice * 0.9)} (90%) after delivery confirmation.`,
+        title: "🎉 Book Sold Successfully!",
+        message: `Your book "${bookTitle}" sold for R${bookPrice}! Delivery will be arranged automatically. You'll receive R${Math.round(bookPrice * 0.9)} (90%) after delivery confirmation.`,
         type: "success",
         read: false,
       });
-
-      // If we have buyer contact info, initiate contact process
-      if (buyerEmail && buyerName) {
-        try {
-          await BuyerContactService.initiateContact({
-            buyerId: "buyer_id_placeholder", // In real app, this would come from the purchase
-            buyerName,
-            buyerEmail,
-            sellerId: user.id,
-            sellerName: user.name || user.email || "Seller",
-            sellerEmail: user.email || "",
-            bookTitle,
-            bookPrice,
-            saleId: saleId || "sale_" + Date.now(),
-          });
-        } catch (contactError) {
-          console.error("Error initiating buyer contact:", contactError);
-          // Don't fail the notification if contact fails
-        }
-      }
     } catch (error) {
       console.error("Error saving sale notification:", error);
       // Don't show error to user as this is background operation
@@ -211,25 +189,16 @@ const SaleSuccessPopup = ({
                   {steps[step].description}
                 </p>
 
-                {/* Buyer Contact Information */}
                 <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
-                    <Mail className="h-4 w-4" />
-                    Buyer Contact Details
+                    <Package className="h-4 w-4" />
+                    Automated Delivery System
                   </h4>
                   <div className="space-y-1 text-sm text-blue-800">
-                    <p>
-                      <strong>Name:</strong>{" "}
-                      {buyerName || "Available in notifications"}
-                    </p>
-                    <p>
-                      <strong>Email:</strong>{" "}
-                      {buyerEmail || "Available in notifications"}
-                    </p>
+                    <p>• Our system handles all delivery arrangements</p>
+                    <p>• No need to contact the buyer directly</p>
+                    <p>• You'll be notified of delivery progress</p>
                   </div>
-                  <p className="text-xs text-blue-700 mt-2">
-                    ⏰ Contact within 24 hours to arrange delivery
-                  </p>
                 </div>
 
                 <div className="space-y-3">
