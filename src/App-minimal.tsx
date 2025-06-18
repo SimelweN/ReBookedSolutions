@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import BookListing from "./pages/BookListing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Policies from "./pages/Policies";
 import NotFound from "./pages/NotFound";
 
 import "./App.css";
@@ -26,6 +27,7 @@ function App() {
               <Route path="/books" element={<BookListing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/policies" element={<Policies />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Router>
