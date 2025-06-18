@@ -847,6 +847,23 @@ const Checkout = () => {
           </div>
         </div>
       </div>
+
+      {/* Sale Success Popup */}
+      {saleData && (
+        <SaleSuccessPopup
+          isOpen={showSalePopup}
+          onClose={() => {
+            setShowSalePopup(false);
+            setSaleData(null);
+            // Navigate to shipping page after popup closes
+            navigate("/shipping");
+          }}
+          bookTitle={saleData.bookTitle}
+          bookPrice={saleData.bookPrice}
+          buyerName={saleData.buyerName}
+          saleId={saleData.saleId}
+        />
+      )}
     </Layout>
   );
 };
