@@ -46,6 +46,7 @@ export const getUserProfileWithAddresses = async (
   userId: string,
 ): Promise<UserProfile | null> => {
   try {
+    // First, try to get the complete profile with addresses
     const { data, error } = await supabase
       .from("profiles")
       .select(
@@ -63,20 +64,29 @@ export const getUserProfileWithAddresses = async (
 
     if (error) {
       console.warn(
-        `[AutoShipment] User profile not found for ${userId}:`,
+        `[AutoShipment] Complete profile not found for ${userId}:`,
         error.message,
       );
-      // Return a basic profile if the user exists but doesn't have address info
+
+      // Fallback: Try to get basic profile information
+      // Use .maybeSingle() to handle cases where no record exists
       const { data: basicProfile, error: basicError } = await supabase
         .from("profiles")
         .select("id, name, email")
         .eq("id", userId)
-        .single();
+        .maybeSingle();
 
       if (basicError) {
         console.error(
           `[AutoShipment] Error fetching basic profile for ${userId}:`,
           basicError.message,
+        );
+        return null;
+      }
+
+      if (!basicProfile) {
+        console.warn(
+          `[AutoShipment] No profile record found for user ${userId}`,
         );
         return null;
       }
