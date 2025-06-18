@@ -16,51 +16,94 @@ const Policies = () => {
         keywords="policies, terms, privacy, POPIA, consumer protection, ReBooked Solutions"
       />
 
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+      <div className="container mx-auto px-4 py-4 sm:py-8 max-w-6xl">
+        <div className="mb-6 sm:mb-8 text-center">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
             ReBooked Solutions – Platform Policies
           </h1>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4 max-w-4xl mx-auto">
-            <p className="text-blue-800 text-sm">
-              <strong>Effective Date:</strong> 10 June 2025 <br />
-              <strong>Platform:</strong> www.rebookedsolutions.co.za <br />
-              <strong>Platform Operator:</strong> ReBooked Solutions (Pty) Ltd{" "}
-              <br />
-              <strong>
-                Support Contact:
-              </strong> support@rebookedsolutions.co.za <br />
-              <strong>Jurisdiction:</strong> Republic of South Africa
-            </p>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mt-4 max-w-4xl mx-auto">
+            <div className="text-blue-800 text-xs sm:text-sm space-y-1 sm:space-y-0">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-center flex-wrap gap-1 sm:gap-2">
+                <span>
+                  <strong>Effective Date:</strong> 10 June 2025
+                </span>
+                <span className="hidden sm:inline">•</span>
+                <span>
+                  <strong>Platform:</strong>{" "}
+                  <span className="break-all">www.rebookedsolutions.co.za</span>
+                </span>
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-center flex-wrap gap-1 sm:gap-2 mt-2 sm:mt-1">
+                <span>
+                  <strong>Platform Operator:</strong> ReBooked Solutions (Pty)
+                  Ltd
+                </span>
+                <span className="hidden sm:inline">•</span>
+                <span>
+                  <strong>Support:</strong>{" "}
+                  <span className="break-all">
+                    support@rebookedsolutions.co.za
+                  </span>
+                </span>
+              </div>
+              <div className="mt-2 sm:mt-1">
+                <span>
+                  <strong>Jurisdiction:</strong> Republic of South Africa
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-7 gap-1 mb-8">
-            <TabsTrigger value="privacy" className="text-xs sm:text-sm">
-              <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-              Privacy Policy
-            </TabsTrigger>
-            <TabsTrigger value="terms" className="text-xs sm:text-sm">
-              <Scale className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-              Terms & Conditions
-            </TabsTrigger>
-            <TabsTrigger value="refunds" className="text-xs sm:text-sm">
-              Refund Policy
-            </TabsTrigger>
-            <TabsTrigger value="cancellation" className="text-xs sm:text-sm">
-              Cancellation Policy
-            </TabsTrigger>
-            <TabsTrigger value="shipping" className="text-xs sm:text-sm">
-              Shipping & Delivery
-            </TabsTrigger>
-            <TabsTrigger value="returns" className="text-xs sm:text-sm">
-              Return Policy
-            </TabsTrigger>
-            <TabsTrigger value="disputes" className="text-xs sm:text-sm">
-              Dispute Resolution
-            </TabsTrigger>
-          </TabsList>
+          <div className="mb-6 sm:mb-8">
+            <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-1 p-1 bg-gray-100 rounded-lg overflow-x-auto">
+              <TabsTrigger
+                value="privacy"
+                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+              >
+                <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
+                <span className="truncate">Privacy Policy</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="terms"
+                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+              >
+                <Scale className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
+                <span className="truncate">Terms & Conditions</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="refunds"
+                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+              >
+                <span className="truncate">Refund Policy</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="cancellation"
+                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+              >
+                <span className="truncate">Cancellation Policy</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="shipping"
+                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+              >
+                <span className="truncate">Shipping & Delivery</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="returns"
+                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+              >
+                <span className="truncate">Return Policy</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="disputes"
+                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+              >
+                <span className="truncate">Dispute Resolution</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Privacy Policy Tab */}
           <TabsContent value="privacy" className="space-y-6">
