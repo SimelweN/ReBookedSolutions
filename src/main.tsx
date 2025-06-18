@@ -162,14 +162,16 @@ const initializeApp = () => {
     return;
   }
 
-  // Render the app with comprehensive error boundaries
+  // Render the app with comprehensive error boundaries and deployment safety
   root.render(
     <React.StrictMode>
-      <ErrorBoundary level="app">
-        <QueryClientProvider client={queryClient}>
-          <App />
-        </QueryClientProvider>
-      </ErrorBoundary>
+      <DeploymentSafetyWrapper>
+        <ErrorBoundary level="app">
+          <QueryClientProvider client={queryClient}>
+            <App />
+          </QueryClientProvider>
+        </ErrorBoundary>
+      </DeploymentSafetyWrapper>
     </React.StrictMode>,
   );
 
