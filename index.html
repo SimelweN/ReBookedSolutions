@@ -65,49 +65,6 @@
 
   <body>
     <div id="root"></div>
-
-    <!-- Simple error recovery script -->
-    <script>
-      // Prevent blank screens during deployment
-      (function () {
-        let loadTimeout;
-
-        function showFallback() {
-          const root = document.getElementById("root");
-          if (root && !root.innerHTML.trim()) {
-            root.innerHTML = `
-              <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:system-ui;background:#f9fafb">
-                <div style="text-align:center;padding:2rem">
-                  <div style="width:40px;height:40px;border:4px solid #e5e7eb;border-top:4px solid #3b82f6;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1rem"></div>
-                  <h2 style="color:#1f2937;margin-bottom:0.5rem">Loading ReBooked Solutions...</h2>
-                  <p style="color:#6b7280;font-size:0.875rem">Please wait while we load the application</p>
-                </div>
-              </div>
-              <style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>
-            `;
-          }
-        }
-
-        // Show fallback if app doesn't load in 8 seconds
-        loadTimeout = setTimeout(showFallback, 8000);
-
-        // Clear timeout when app loads
-        window.addEventListener("load", function () {
-          clearTimeout(loadTimeout);
-        });
-
-        // Handle chunk loading errors
-        window.addEventListener("error", function (e) {
-          if (e.message && e.message.includes("Loading chunk")) {
-            console.log("Chunk error detected, reloading...");
-            setTimeout(function () {
-              window.location.reload();
-            }, 1000);
-          }
-        });
-      })();
-    </script>
-
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
