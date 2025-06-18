@@ -395,6 +395,7 @@ export const useNotifications = (): NotificationHookReturn => {
 
       if (subscriptionRef.current) {
         try {
+          // Force unsubscription even if there are errors
           subscriptionRef.current.unsubscribe();
           console.log(
             "[NotificationHook] Final cleanup - unsubscribed from notification channel",
@@ -404,9 +405,13 @@ export const useNotifications = (): NotificationHookReturn => {
             "Error unsubscribing from notification channel on unmount:",
             error,
           );
+        } finally {
+          // Always clear the reference
+          subscriptionRef.current = null;
         }
-        subscriptionRef.current = null;
       }
+
+      // Reset all flags to initial state
       refreshingRef.current = false;
       isInitialLoadRef.current = true;
       subscribingRef.current = false;
