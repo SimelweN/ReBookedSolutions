@@ -545,7 +545,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Venda",
     location: "Thohoyandou",
     province: "Limpopo",
-    logo: "/logos/universities/uv.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/venda-03b8c7?format=webp&width=800",
     overview:
       "Comprehensive university serving the Venda region with focus on rural development.",
     website: "https://www.univen.ac.za",
@@ -571,7 +571,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Walter Sisulu University",
     location: "Mthatha",
     province: "Eastern Cape",
-    logo: "/logos/universities/wsu.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/wsu-a30990?format=webp&width=800",
     overview:
       "Comprehensive university serving the Eastern Cape with multiple campuses and diverse programs.",
     website: "https://www.wsu.ac.za",
@@ -599,7 +599,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Sefako Makgatho Health Sciences University",
     location: "Pretoria",
     province: "Gauteng",
-    logo: "/logos/universities/smu.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/sefako-7760a4?format=webp&width=800",
     overview:
       "Specialized health sciences university focusing on medical and health-related programs.",
     website: "https://www.smu.ac.za",
@@ -625,7 +625,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Sol Plaatje University",
     location: "Kimberley",
     province: "Northern Cape",
-    logo: "/logos/universities/spu.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/sol-plaatje-28cea9?format=webp&width=800",
     overview:
       "New university established to serve the Northern Cape region with innovative programs.",
     website: "https://www.spu.ac.za",
@@ -651,7 +651,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Mpumalanga",
     location: "Nelspruit",
     province: "Mpumalanga",
-    logo: "/logos/universities/ump.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/mpumalanga-b87746?format=webp&width=800",
     overview:
       "New university serving Mpumalanga province with focus on regional development needs.",
     website: "https://www.ump.ac.za",
