@@ -21,7 +21,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Cape Town",
     location: "Cape Town",
     province: "Western Cape",
-    logo: "/logos/universities/uct.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/uct-fff84c?format=webp&width=800",
     overview:
       "Africa's leading university, globally ranked for academic excellence and research innovation.",
     website: "https://www.uct.ac.za",
