@@ -50,6 +50,8 @@ import Policies from "./pages/Policies";
 import "./App.css";
 
 function App() {
+  console.log("🎯 App component rendering...");
+
   return (
     <ErrorBoundary level="app">
       <AuthErrorBoundary>
