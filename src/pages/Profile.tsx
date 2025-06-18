@@ -27,7 +27,6 @@ import {
   MoreHorizontal,
   Heart,
 } from "lucide-react";
-import ProfileEditDialog from "@/components/ProfileEditDialog";
 import UserProfileTabs from "@/components/profile/UserProfileTabs";
 import { saveUserAddresses, getUserAddresses } from "@/services/addressService";
 import { getUserBooks } from "@/services/book/bookQueries";
@@ -549,19 +548,6 @@ const Profile = () => {
         )}
 
         {/* Dialogs */}
-        <ProfileEditDialog
-          isOpen={isEditDialogOpen}
-          onClose={() => setIsEditDialogOpen(false)}
-        />
-
-        <ShareProfileDialog
-          isOpen={isShareDialogOpen}
-          onClose={() => setIsShareDialogOpen(false)}
-          userId={user.id}
-          userName={profile.name || "Anonymous User"}
-          isOwnProfile={true}
-        />
-
         <BookNotSellingDialog
           isOpen={isBookNotSellingDialogOpen}
           onClose={() => setIsBookNotSellingDialogOpen(false)}
