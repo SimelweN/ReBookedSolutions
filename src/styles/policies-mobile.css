@@ -1,0 +1,423 @@
+/* Policies Mobile-Responsive Styles */
+
+/* Base mobile-friendly adjustments for policy content */
+.policies-mobile-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Policy section headings mobile adjustments */
+.policies-section-heading {
+  font-size: 1.125rem; /* 18px on mobile */
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+@media (min-width: 640px) {
+  .policies-section-heading {
+    font-size: 1.25rem; /* 20px on sm+ */
+    margin-bottom: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .policies-section-heading {
+    font-size: 1.5rem; /* 24px on lg+ */
+  }
+}
+
+/* Policy content paragraphs */
+.policies-content-text {
+  font-size: 0.875rem; /* 14px on mobile */
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+@media (min-width: 640px) {
+  .policies-content-text {
+    font-size: 1rem; /* 16px on sm+ */
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Policy lists mobile styling */
+.policies-list {
+  padding-left: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .policies-list {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.policies-list-item {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+@media (min-width: 640px) {
+  .policies-list-item {
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Policy cards mobile responsiveness */
+.policies-card {
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .policies-card {
+    margin-bottom: 1.5rem;
+    border-radius: 0.75rem;
+  }
+}
+
+/* Policy card headers */
+.policies-card-header {
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+@media (min-width: 640px) {
+  .policies-card-header {
+    padding: 1.5rem;
+  }
+}
+
+/* Policy card content */
+.policies-card-content {
+  padding: 1rem;
+}
+
+@media (min-width: 640px) {
+  .policies-card-content {
+    padding: 1.5rem;
+  }
+}
+
+/* Email and URL breaking for mobile */
+.policies-email-break,
+.policies-url-break {
+  word-break: break-all;
+  overflow-wrap: break-word;
+  hyphens: none; /* Don't hyphenate emails/URLs */
+}
+
+/* Policy tabs mobile scrolling */
+.policies-tabs-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.policies-tabs-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Policy tab triggers mobile styling */
+.policies-tab-trigger {
+  white-space: nowrap;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  min-height: 44px; /* Touch-friendly */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+}
+
+@media (min-width: 640px) {
+  .policies-tab-trigger {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .policies-tab-trigger {
+    font-size: 1rem;
+    padding: 0.75rem 1.25rem;
+  }
+}
+
+/* Policy highlight boxes mobile styling */
+.policies-highlight-box {
+  padding: 0.75rem;
+  margin: 0.75rem 0;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+@media (min-width: 640px) {
+  .policies-highlight-box {
+    padding: 1rem;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+}
+
+@media (min-width: 1024px) {
+  .policies-highlight-box {
+    padding: 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+/* Special styling for legal references and technical terms */
+.policies-legal-text {
+  font-size: 0.75rem;
+  color: #6b7280;
+  line-height: 1.5;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+@media (min-width: 640px) {
+  .policies-legal-text {
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+}
+
+/* Policy contact information mobile styling */
+.policies-contact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .policies-contact-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+.policies-contact-item {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .policies-contact-item {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+}
+
+/* Better mobile readability for long legal documents */
+.policies-prose {
+  line-height: 1.6;
+  max-width: none;
+}
+
+@media (min-width: 640px) {
+  .policies-prose {
+    line-height: 1.7;
+  }
+}
+
+/* Improve spacing between policy sections */
+.policies-section-spacing {
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 640px) {
+  .policies-section-spacing {
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .policies-section-spacing {
+    margin-bottom: 2rem;
+  }
+}
+
+/* Better mobile button styling for policy pages */
+.policies-button {
+  width: 100%;
+  min-height: 44px;
+  font-size: 0.875rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+}
+
+@media (min-width: 640px) {
+  .policies-button {
+    width: auto;
+    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+  }
+}
+
+/* Fix for policy header information overflow */
+.policies-header-info {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.policies-header-info span {
+  display: inline-block;
+  margin-right: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+@media (min-width: 640px) {
+  .policies-header-info span {
+    margin-bottom: 0;
+  }
+}
+
+/* Mobile-friendly table styling for policy content */
+.policies-table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 1rem 0;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.policies-table {
+  width: 100%;
+  min-width: 600px; /* Ensure readability on mobile */
+  border-collapse: collapse;
+}
+
+.policies-table th,
+.policies-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+@media (min-width: 640px) {
+  .policies-table th,
+  .policies-table td {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+}
+
+/* Better mobile focus states for accessibility */
+.policies-focusable:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Mobile-specific print styles */
+@media print {
+  .policies-mobile-container {
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+
+  .policies-section-heading {
+    font-size: 14pt;
+    font-weight: bold;
+    margin-top: 20pt;
+    margin-bottom: 10pt;
+  }
+
+  .policies-content-text {
+    font-size: 12pt;
+    margin-bottom: 10pt;
+  }
+
+  .policies-highlight-box {
+    border: 1px solid #000;
+    padding: 10pt;
+    margin: 10pt 0;
+  }
+}
+
+/* Dark mode support for policy pages */
+@media (prefers-color-scheme: dark) {
+  .policies-card {
+    background-color: #1f2937;
+    border-color: #374151;
+    color: #f9fafb;
+  }
+
+  .policies-section-heading {
+    color: #f9fafb;
+  }
+
+  .policies-content-text {
+    color: #e5e7eb;
+  }
+
+  .policies-legal-text {
+    color: #9ca3af;
+  }
+
+  .policies-highlight-box {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+
+  .policies-tab-trigger {
+    color: #e5e7eb;
+    background-color: #374151;
+  }
+
+  .policies-tab-trigger[data-state="active"] {
+    background-color: #1f2937;
+    color: #f9fafb;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .policies-tab-trigger,
+  .policies-button {
+    transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .policies-highlight-box {
+    border: 2px solid;
+    background-color: transparent;
+  }
+
+  .policies-tab-trigger {
+    border: 1px solid;
+  }
+
+  .policies-section-heading {
+    font-weight: bold;
+  }
+}
