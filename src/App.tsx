@@ -52,17 +52,18 @@ import "./App.css";
 function App() {
   console.log("🎯 App component rendering...");
 
-  return (
-    <ErrorBoundary level="app">
-      <AuthErrorBoundary>
-        <AuthProvider>
-          <CartProvider>
-            <Router>
-              <ScrollToTop />
-              <OAuthRedirectHandler />
-              <div className="min-h-screen bg-gray-50">
-                <ErrorBoundary level="page">
-                  <Routes>
+  try {
+    return (
+      <ErrorBoundary level="app">
+        <AuthErrorBoundary>
+          <AuthProvider>
+            <CartProvider>
+              <Router>
+                <ScrollToTop />
+                <OAuthRedirectHandler />
+                <div className="min-h-screen bg-gray-50">
+                  <ErrorBoundary level="page">
+                    <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/books" element={<BookListing />} />
                     <Route path="/books/:id" element={<BookDetails />} />
@@ -194,6 +195,8 @@ function App() {
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </ErrorBoundary>
+                  </Routes>
+                </ErrorBoundary>
               </div>
               {/* TEMPORARY: Disabled to fix error spam */}
               {/* <BroadcastManager /> */}
@@ -205,7 +208,45 @@ function App() {
         </AuthProvider>
       </AuthErrorBoundary>
     </ErrorBoundary>
-  );
+    );
+  } catch (error) {
+    console.error("❌ Error in App component:", error);
+    return (
+      <div style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: "system-ui",
+        background: "#f9fafb"
+      }}>
+        <div style={{
+          textAlign: "center",
+          padding: "2rem",
+          background: "white",
+          borderRadius: "0.5rem",
+          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)"
+        }}>
+          <h1 style={{ color: "#dc2626", marginBottom: "1rem" }}>App Error</h1>
+          <p>The application failed to load properly.</p>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              background: "#3b82f6",
+              color: "white",
+              padding: "0.75rem 1.5rem",
+              border: "none",
+              borderRadius: "0.5rem",
+              cursor: "pointer",
+              marginTop: "1rem"
+            }}
+          >
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    );
+  }
 }
 
 export default App;
