@@ -25,8 +25,10 @@ const validateEnvironment = () => {
   return true;
 };
 
-// Simple initialization
-console.log("🚀 ReBooked Solutions - Starting application...");
+// Initialize application
+if (import.meta.env.DEV) {
+  console.log("🚀 ReBooked Solutions - Starting application...");
+}
 
 // Validate environment with graceful handling
 try {
@@ -52,17 +54,12 @@ const queryClient = new QueryClient({
 
 // Initialize the React app
 const initializeApp = () => {
-  console.log("🔍 Initializing React app...");
-
   const rootElement = document.getElementById("root");
   if (!rootElement) {
     throw new Error("Root element #root not found in DOM");
   }
 
-  console.log("✅ Root element found");
-
   const root = createRoot(rootElement);
-  console.log("✅ React root created");
 
   // Render the app with comprehensive error boundaries
   root.render(
@@ -75,17 +72,9 @@ const initializeApp = () => {
     </React.StrictMode>,
   );
 
-  console.log("✅ React app rendered successfully!");
-
-  // Verify content was actually rendered
-  setTimeout(() => {
-    const hasContent = rootElement.children.length > 0;
-    if (hasContent) {
-      console.log("✅ App content confirmed rendered");
-    } else {
-      console.error("❌ App mounted but no content rendered");
-    }
-  }, 1000);
+  if (import.meta.env.DEV) {
+    console.log("✅ ReBooked Solutions loaded successfully");
+  }
 };
 
 // Main execution with comprehensive error handling
@@ -130,23 +119,23 @@ try {
             font-size: 24px;
             font-weight: bold;
           ">!</div>
-          
+
           <h1 style="
             color: #1f2937;
             margin: 0 0 1rem;
             font-size: 1.5rem;
             font-weight: 600;
           ">App Loading Failed</h1>
-          
+
           <p style="
             color: #6b7280;
             margin: 0 0 1.5rem;
             line-height: 1.6;
           ">
-            ReBooked Solutions encountered an error while starting up. 
+            ReBooked Solutions encountered an error while starting up.
             This is usually a temporary issue.
           </p>
-          
+
           <button onclick="window.location.reload()" style="
             background: #3b82f6;
             color: white;
@@ -161,7 +150,7 @@ try {
           " onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">
             🔄 Refresh Page
           </button>
-          
+
           <button onclick="window.location.href='/'" style="
             background: #6b7280;
             color: white;
@@ -175,7 +164,7 @@ try {
           " onmouseover="this.style.background='#4b5563'" onmouseout="this.style.background='#6b7280'">
             🏠 Home
           </button>
-          
+
           <div style="
             margin-top: 2rem;
             padding-top: 1.5rem;
