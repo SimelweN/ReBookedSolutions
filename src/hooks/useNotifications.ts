@@ -32,6 +32,7 @@ export const useNotifications = (): NotificationHookReturn => {
   const subscriptionRef = useRef<{ unsubscribe: () => void } | null>(null);
   const refreshingRef = useRef(false); // Prevent concurrent refreshes
   const subscribingRef = useRef(false); // Prevent multiple subscription attempts
+  const subscriptionRetryRef = useRef<NodeJS.Timeout | null>(null);
 
   const MAX_RETRY_ATTEMPTS = 3;
   const RETRY_DELAYS = [5000, 15000, 30000]; // Progressive retry delays
@@ -203,6 +204,11 @@ export const useNotifications = (): NotificationHookReturn => {
         clearTimeout(retryTimeoutRef.current);
         retryTimeoutRef.current = null;
       }
+
+      if (subscriptionRetryRef.current) {
+        clearTimeout(subscriptionRetryRef.current);
+        subscriptionRetryRef.current = null;
+      }
     }
   }, [user?.id, isAuthenticated]); // Only depend on user ID and auth status
 
@@ -316,6 +322,18 @@ export const useNotifications = (): NotificationHookReturn => {
           // Reset flags on error
           subscriptionRef.current = null;
           subscribingRef.current = false;
+
+          // Retry subscription after a delay
+          if (subscriptionRetryRef.current) {
+            clearTimeout(subscriptionRetryRef.current);
+          }
+          subscriptionRetryRef.current = setTimeout(() => {
+            console.log("[NotificationHook] Retrying subscription setup...");
+            // Only retry if user is still authenticated
+            if (isAuthenticated && user?.id) {
+              subscribingRef.current = false; // Reset to allow retry
+            }
+          }, 5000); // Retry after 5 seconds
         } else if (status === "CLOSED") {
           console.log(
             "[NotificationHook] Subscription closed for user:",
@@ -346,6 +364,11 @@ export const useNotifications = (): NotificationHookReturn => {
       if (debounceTimeout) {
         clearTimeout(debounceTimeout);
         debounceTimeout = null;
+      }
+
+      if (subscriptionRetryRef.current) {
+        clearTimeout(subscriptionRetryRef.current);
+        subscriptionRetryRef.current = null;
       }
 
       if (channel) {
