@@ -33,6 +33,12 @@ const Register = () => {
         throw new Error("All fields are required");
       }
 
+      if (!termsAccepted) {
+        throw new Error(
+          "You must accept the Terms & Conditions and Privacy Policy",
+        );
+      }
+
       if (password !== confirmPassword) {
         throw new Error("Passwords do not match");
       }
