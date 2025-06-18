@@ -445,8 +445,6 @@ const Profile = () => {
               <ProfileHeader
                 userData={userData}
                 isOwnProfile={true}
-                onShareProfile={handleShareProfile}
-                onEditProfile={handleEditProfile}
                 onBookNotSelling={handleBookNotSelling}
               />
             </div>
