@@ -1261,16 +1261,16 @@ const Policies = () => {
           </TabsContent>
 
           {/* Return Policy Tab */}
-          <TabsContent value="returns" className="space-y-6">
+          <TabsContent value="returns" className="space-y-4 sm:space-y-6">
             <Card>
-              <CardHeader>
-                <CardTitle className="text-3xl flex items-center gap-2">
-                  <FileText className="h-8 w-8" />
-                  Return Policy
+              <CardHeader className="pb-4 sm:pb-6">
+                <CardTitle className="text-xl sm:text-2xl lg:text-3xl flex items-center gap-2 mb-2 sm:mb-3">
+                  <FileText className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 flex-shrink-0" />
+                  <span>Return Policy</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="prose max-w-none space-y-6">
+              <CardContent className="px-4 sm:px-6">
+                <div className="prose max-w-none space-y-4 sm:space-y-6">
                   <section>
                     <h3 className="text-xl font-semibold text-gray-900 mb-3">
                       4.1 Return Grounds
@@ -1315,7 +1315,7 @@ const Policies = () => {
                     </ul>
                     <p className="text-gray-700 leading-relaxed">
                       Upon successful return and inspection, ReBooked Solutions
-                      will process any applicable refund within 5��10 business
+                      will process any applicable refund within 5–10 business
                       days. Refunds will not include original shipping costs
                       unless otherwise specified.
                     </p>
