@@ -77,7 +77,7 @@ const queryClient = new QueryClient({
   },
 });
 
-// Initialize the React app
+// Initialize the React app with enhanced error handling
 const initializeApp = () => {
   const rootElement = document.getElementById("root");
   if (!rootElement) {
@@ -86,8 +86,8 @@ const initializeApp = () => {
 
   const root = createRoot(rootElement);
 
-  // Check if we should show environment error in production
-  if (import.meta.env.PROD && !environmentValidation.isValid) {
+  // Enhanced deployment safety: Check if we should show environment error
+  if (!environmentValidation.isValid && !environmentValidation.isDev) {
     // Dynamically import and render environment error component
     import("./components/EnvironmentError")
       .then((module) => {
