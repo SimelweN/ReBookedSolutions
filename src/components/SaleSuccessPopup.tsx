@@ -67,6 +67,12 @@ const SaleSuccessPopup = ({
 
   const nextSteps = [
     {
+      icon: "📧",
+      title: "Contact Buyer Immediately",
+      description: `Email: ${buyerEmail || "Available in notifications"}`,
+      action: "Send email to arrange delivery",
+    },
+    {
       icon: "📦",
       title: "Prepare Your Book",
       description:
@@ -74,22 +80,16 @@ const SaleSuccessPopup = ({
       action: "Clean and package the book",
     },
     {
-      icon: "📱",
-      title: "Contact the Buyer",
-      description: `Reach out to ${buyerName || "the buyer"} to arrange delivery`,
-      action: "Send message to buyer",
-    },
-    {
       icon: "🚚",
-      title: "Arrange Delivery",
-      description: "Use our integrated shipping partners or arrange pickup",
-      action: "Set up delivery",
+      title: "Arrange Delivery Method",
+      description: "Discuss pickup, courier, or meeting point with the buyer",
+      action: "Coordinate delivery logistics",
     },
     {
-      icon: "📍",
-      title: "Track Progress",
-      description: "Monitor the delivery status and confirm receipt",
-      action: "Track shipment",
+      icon: "💰",
+      title: "Confirm Delivery & Get Paid",
+      description: `You'll receive R${Math.round(bookPrice * 0.9)} (90%) after delivery confirmation`,
+      action: "Confirm delivery completion",
     },
   ];
 
