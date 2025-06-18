@@ -309,7 +309,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Tshwane University of Technology",
     location: "Pretoria",
     province: "Gauteng",
-    logo: "/logos/universities/tut.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/tut-502ab8?format=webp&width=800",
     overview:
       "Leading university of technology providing career-focused education and practical skills development.",
     website: "https://www.tut.ac.za",
