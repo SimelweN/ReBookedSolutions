@@ -56,7 +56,7 @@ function App() {
         <AuthErrorBoundary>
           <AuthProvider>
             <CartProvider>
-              <DeploymentSafeRouter>
+              <Router>
                 <ScrollToTop />
                 <OAuthRedirectHandler />
                 <div className="min-h-screen bg-gray-50">
