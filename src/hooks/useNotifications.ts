@@ -173,7 +173,7 @@ export const useNotifications = (): NotificationHookReturn => {
       // Clean up any existing subscription
       if (subscriptionRef.current) {
         try {
-          supabase.removeChannel(subscriptionRef.current);
+          subscriptionRef.current.unsubscribe();
           console.log(
             "[NotificationHook] Cleaned up subscription for logged out user",
           );
@@ -181,31 +181,22 @@ export const useNotifications = (): NotificationHookReturn => {
           console.error("Error removing notification channel:", error);
         }
         subscriptionRef.current = null;
+        subscribingRef.current = false;
       }
       return;
     }
 
-    // Always clean up existing subscription before creating new one
-    if (subscriptionRef.current) {
-      try {
-        supabase.removeChannel(subscriptionRef.current);
-        console.log("[NotificationHook] Cleaned up existing subscription");
-      } catch (error) {
-        console.error("Error removing existing notification channel:", error);
-      }
-      subscriptionRef.current = null;
-    }
-
-    let debounceTimeout: NodeJS.Timeout | null = null;
-    const channelName = `notifications_${user.id}_${Date.now()}`; // Add timestamp to ensure unique channel names
-
-    // Prevent multiple subscription attempts
-    if (subscribingRef.current) {
+    // Prevent multiple subscription attempts for the same user
+    if (subscribingRef.current || subscriptionRef.current) {
       console.log(
-        "[NotificationHook] Subscription already in progress, skipping",
+        "[NotificationHook] Subscription already exists or in progress, skipping",
       );
       return;
     }
+
+    let debounceTimeout: NodeJS.Timeout | null = null;
+
+    const channelName = `notifications_${user.id}`;
 
     subscribingRef.current = true;
     console.log(
@@ -286,7 +277,6 @@ export const useNotifications = (): NotificationHookReturn => {
 
       // Store the channel reference
       subscriptionRef.current = channel;
-
       // Cleanup function
       return () => {
         console.log(
