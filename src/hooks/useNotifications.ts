@@ -5,7 +5,6 @@ import {
   getNotifications,
   clearNotificationCache,
 } from "@/services/notificationService";
-import { supabase } from "@/integrations/supabase/client";
 import { Database } from "@/integrations/supabase/types";
 
 type Notification = Database["public"]["Tables"]["notifications"]["Row"];
