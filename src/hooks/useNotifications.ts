@@ -38,7 +38,7 @@ class NotificationManager {
   }
 
   private notifyListeners() {
-    this.listeners.forEach(callback => callback(this.notifications));
+    this.listeners.forEach((callback) => callback(this.notifications));
   }
 
   updateNotifications(notifications: Notification[]) {
@@ -48,14 +48,25 @@ class NotificationManager {
 
   setupSubscription(userId: string, refreshCallback: () => Promise<void>) {
     // If we already have a subscription for this user, don't create another
-    if (this.subscribingRef || (this.subscriptionRef && this.currentUserId === userId)) {
-      console.log("[NotificationManager] Subscription already exists for user:", userId);
+    if (
+      this.subscribingRef ||
+      (this.subscriptionRef && this.currentUserId === userId)
+    ) {
+      console.log(
+        "[NotificationManager] Subscription already exists for user:",
+        userId,
+      );
       return;
     }
 
     // Clean up any existing subscription for a different user
     if (this.subscriptionRef && this.currentUserId !== userId) {
-      console.log("[NotificationManager] Switching subscription from", this.currentUserId, "to", userId);
+      console.log(
+        "[NotificationManager] Switching subscription from",
+        this.currentUserId,
+        "to",
+        userId,
+      );
       this.cleanup();
     }
 
@@ -63,7 +74,12 @@ class NotificationManager {
     this.subscribingRef = true;
 
     const channelName = `notifications_${userId}_${Date.now()}`;
-    console.log("[NotificationManager] Setting up subscription for user:", userId, "channel:", channelName);
+    console.log(
+      "[NotificationManager] Setting up subscription for user:",
+      userId,
+      "channel:",
+      channelName,
+    );
 
     try {
       const channel = supabase.channel(channelName);
@@ -77,7 +93,10 @@ class NotificationManager {
           filter: `user_id=eq.${userId}`,
         },
         (payload) => {
-          console.log("[NotificationManager] Received event:", payload.eventType);
+          console.log(
+            "[NotificationManager] Received event:",
+            payload.eventType,
+          );
           if (payload.eventType === "INSERT") {
             clearNotificationCache(userId);
             refreshCallback().catch(console.error);
@@ -97,7 +116,10 @@ class NotificationManager {
 
       this.subscriptionRef = channel;
     } catch (error) {
-      console.error("[NotificationManager] Error setting up subscription:", error);
+      console.error(
+        "[NotificationManager] Error setting up subscription:",
+        error,
+      );
       this.subscriptionRef = null;
       this.subscribingRef = false;
     }
@@ -202,7 +224,9 @@ export const useNotifications = (): NotificationHookReturn => {
           if (hasChanges) {
             setNotifications(uniqueNotifications);
             // Update the global manager
-            notificationManager.current.updateNotifications(uniqueNotifications);
+            notificationManager.current.updateNotifications(
+              uniqueNotifications,
+            );
           }
           setHasError(false);
           setLastError(undefined);
@@ -218,16 +242,29 @@ export const useNotifications = (): NotificationHookReturn => {
           throw new Error("Invalid data format received");
         }
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Unknown error";
-        console.error(`[NotificationHook] Error fetching notifications:`, errorMessage);
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+        console.error(
+          `[NotificationHook] Error fetching notifications:`,
+          errorMessage,
+        );
 
         // Handle 403 errors with session refresh
-        if (errorMessage.includes("403") || errorMessage.includes("forbidden")) {
-          console.log("[NotificationHook] 403 error detected, attempting session refresh");
+        if (
+          errorMessage.includes("403") ||
+          errorMessage.includes("forbidden")
+        ) {
+          console.log(
+            "[NotificationHook] 403 error detected, attempting session refresh",
+          );
           try {
-            const { data: { session } } = await supabase.auth.refreshSession();
+            const {
+              data: { session },
+            } = await supabase.auth.refreshSession();
             if (session) {
-              console.log("[NotificationHook] Session refreshed, retrying notification fetch");
+              console.log(
+                "[NotificationHook] Session refreshed, retrying notification fetch",
+              );
               // Clear error and retry immediately
               setHasError(false);
               setLastError(undefined);
@@ -235,7 +272,10 @@ export const useNotifications = (): NotificationHookReturn => {
               return;
             }
           } catch (refreshError) {
-            console.error("[NotificationHook] Session refresh failed:", refreshError);
+            console.error(
+              "[NotificationHook] Session refresh failed:",
+              refreshError,
+            );
           }
         }
 
@@ -244,21 +284,33 @@ export const useNotifications = (): NotificationHookReturn => {
         setLastError(error instanceof Error ? error : new Error(errorMessage));
 
         // Only retry on network or temporary errors, not on auth errors
-        if (errorMessage.includes("network") || errorMessage.includes("timeout") || errorMessage.includes("Failed to fetch")) {
+        if (
+          errorMessage.includes("network") ||
+          errorMessage.includes("timeout") ||
+          errorMessage.includes("Failed to fetch")
+        ) {
           if (retryCountRef.current < MAX_RETRY_ATTEMPTS) {
             retryCountRef.current++;
-            const retryDelay = RETRY_DELAYS[retryCountRef.current - 1] || RETRY_DELAYS[RETRY_DELAYS.length - 1];
+            const retryDelay =
+              RETRY_DELAYS[retryCountRef.current - 1] ||
+              RETRY_DELAYS[RETRY_DELAYS.length - 1];
 
-            console.log(`[NotificationHook] Scheduling retry ${retryCountRef.current}/${MAX_RETRY_ATTEMPTS} in ${retryDelay}ms`);
+            console.log(
+              `[NotificationHook] Scheduling retry ${retryCountRef.current}/${MAX_RETRY_ATTEMPTS} in ${retryDelay}ms`,
+            );
 
             retryTimeoutRef.current = setTimeout(() => {
               refreshNotifications(true);
             }, retryDelay);
           } else {
-            console.warn(`[NotificationHook] Max retry attempts reached (${MAX_RETRY_ATTEMPTS})`);
+            console.warn(
+              `[NotificationHook] Max retry attempts reached (${MAX_RETRY_ATTEMPTS})`,
+            );
           }
         } else {
-          console.warn(`[NotificationHook] Non-retryable error: ${errorMessage}`);
+          console.warn(
+            `[NotificationHook] Non-retryable error: ${errorMessage}`,
+          );
         }
       } finally {
         setIsLoading(false);
@@ -353,6 +405,11 @@ export const useNotifications = (): NotificationHookReturn => {
       // Reset state
       refreshingRef.current = false;
       isInitialLoadRef.current = true;
+    };
+  }, [notifications.length]);
+
+  // Performance optimization: memoize computed values
+  const unreadCount = notifications.filter((n) => !n.read).length;
   const totalCount = notifications.length;
 
   return {
