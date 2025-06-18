@@ -108,51 +108,6 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <Link
-                  to="/contact"
-                  className="text-gray-600 hover:text-book-600 text-sm"
-                  onClick={handleLinkClick}
-                >
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/report"
-                  className="text-gray-600 hover:text-book-600 text-sm"
-                  onClick={handleLinkClick}
-                >
-                  Report an Issue
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/faq"
-                  className="text-gray-600 hover:text-book-600 text-sm"
-                  onClick={handleLinkClick}
-                >
-                  FAQ
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/policies"
-                  className="text-gray-600 hover:text-book-600 text-sm font-medium"
-                  onClick={handleLinkClick}
-                >
-                  All Policies
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/terms"
-                  className="text-gray-600 hover:text-book-600 text-sm"
-                  onClick={handleLinkClick}
-                >
-                  Terms & Conditions
-                </Link>
-              </li>
-              <li>
-                <Link
                   to="/privacy"
                   className="text-gray-600 hover:text-book-600 text-sm"
                   onClick={handleLinkClick}
@@ -162,38 +117,11 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/refund-policy"
-                  className="text-gray-600 hover:text-book-600 text-sm"
+                  to="/policies"
+                  className="text-gray-600 hover:text-book-600 text-sm font-medium"
                   onClick={handleLinkClick}
                 >
-                  Refund Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/cancellation-policy"
-                  className="text-gray-600 hover:text-book-600 text-sm"
-                  onClick={handleLinkClick}
-                >
-                  Cancellation Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/shipping-delivery-policy"
-                  className="text-gray-600 hover:text-book-600 text-sm"
-                  onClick={handleLinkClick}
-                >
-                  Shipping & Delivery
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/returns-disputes-policy"
-                  className="text-gray-600 hover:text-book-600 text-sm"
-                  onClick={handleLinkClick}
-                >
-                  Returns & Disputes
+                  All Policies & Terms
                 </Link>
               </li>
             </ul>
