@@ -3,56 +3,46 @@ import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App.tsx";
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
-import { validateEnvironment } from "./config/environment";
-import { initCoreWebVitals, analyzeBundleSize } from "./utils/performanceUtils";
-import { initSecurity } from "./utils/securityUtils";
 import "./index.css";
 
-// Validate environment variables before starting the app
+// Environment validation with graceful fallbacks
+const validateEnvironment = () => {
+  const hasSupabaseUrl =
+    import.meta.env.VITE_SUPABASE_URL &&
+    import.meta.env.VITE_SUPABASE_URL.trim() !== "";
+  const hasSupabaseKey =
+    import.meta.env.VITE_SUPABASE_ANON_KEY &&
+    import.meta.env.VITE_SUPABASE_ANON_KEY.trim() !== "";
+
+  if (!hasSupabaseUrl || !hasSupabaseKey) {
+    console.warn(
+      "⚠️ Missing Supabase configuration - using development defaults",
+    );
+    return false;
+  }
+
+  console.log("✅ Environment validation passed");
+  return true;
+};
+
+// Simple initialization
+console.log("🚀 ReBooked Solutions - Starting application...");
+
+// Validate environment with graceful handling
 try {
   validateEnvironment();
-  console.log("✅ Environment validation passed");
 } catch (error) {
-  console.warn("⚠️ Environment validation failed, using fallbacks:", error);
-  // Don't throw - continue with fallback values for development
+  console.warn("Environment validation warning:", error);
+  // Continue anyway - don't block the app
 }
 
-// Development-only utilities
-if (import.meta.env.DEV) {
-  console.log("🚀 Development mode - app starting...");
-  console.log("📊 Environment:", {
-    NODE_ENV: import.meta.env.NODE_ENV,
-    VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL ? "SET" : "NOT SET",
-    VITE_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY
-      ? "SET"
-      : "NOT SET",
-    DEV: import.meta.env.DEV,
-    PROD: import.meta.env.PROD,
-  });
-}
-
-// Initialize performance monitoring (simplified)
-try {
-  initCoreWebVitals();
-} catch (error) {
-  console.warn("Performance monitoring failed:", error);
-}
-
-// Initialize security measures (simplified)
-try {
-  initSecurity();
-} catch (error) {
-  console.warn("Security initialization failed:", error);
-}
-
-// Performance optimizations are handled by performanceUtils
-
-// Create a simple query client
+// Create a simple query client with minimal configuration
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes
-      retry: 1, // Simple retry
+      retry: 1,
+      refetchOnWindowFocus: false, // Reduce unnecessary requests
     },
     mutations: {
       retry: false,
@@ -60,21 +50,21 @@ const queryClient = new QueryClient({
   },
 });
 
-try {
-  console.log("🔍 Starting React mount process...");
+// Initialize the React app
+const initializeApp = () => {
+  console.log("🔍 Initializing React app...");
 
   const rootElement = document.getElementById("root");
-  console.log("📍 Root element:", rootElement);
-
   if (!rootElement) {
-    throw new Error("Root element not found");
+    throw new Error("Root element #root not found in DOM");
   }
 
-  console.log("🏗️ Creating React root...");
-  const root = createRoot(rootElement);
-  console.log("✅ React root created successfully");
+  console.log("✅ Root element found");
 
-  console.log("🎨 Rendering React app...");
+  const root = createRoot(rootElement);
+  console.log("✅ React root created");
+
+  // Render the app with comprehensive error boundaries
   root.render(
     <React.StrictMode>
       <ErrorBoundary level="app">
@@ -85,50 +75,124 @@ try {
     </React.StrictMode>,
   );
 
-  console.log("✅ React app mounted successfully");
+  console.log("✅ React app rendered successfully!");
 
-  // Add a timeout check to see if content actually appears
+  // Verify content was actually rendered
   setTimeout(() => {
-    const content = document.querySelector("#root > *");
-    if (!content) {
-      console.warn(
-        "⚠️ WARNING: React app mounted but no content rendered after 2 seconds",
-      );
-      console.log("📊 Root element children:", rootElement.children.length);
-      console.log(
-        "📊 Root element innerHTML length:",
-        rootElement.innerHTML.length,
-      );
+    const hasContent = rootElement.children.length > 0;
+    if (hasContent) {
+      console.log("✅ App content confirmed rendered");
     } else {
-      console.log("✅ Content successfully rendered");
+      console.error("❌ App mounted but no content rendered");
     }
-  }, 2000);
-} catch (error) {
-  console.error("❌ Failed to mount React app:", error);
-  console.error("❌ Error details:", {
-    message: error instanceof Error ? error.message : "Unknown error",
-    stack: error instanceof Error ? error.stack : "No stack trace",
-    name: error instanceof Error ? error.name : "Unknown error type",
-  });
+  }, 1000);
+};
 
-  // Fallback: show basic HTML content
+// Main execution with comprehensive error handling
+try {
+  initializeApp();
+} catch (error) {
+  console.error("❌ Critical error during app initialization:", error);
+
+  // Emergency fallback UI
   const rootElement = document.getElementById("root");
   if (rootElement) {
-    console.log("🔧 Showing fallback content");
     rootElement.innerHTML = `
-      <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: system-ui; background: #f9fafb;">
-        <div style="text-align: center; padding: 2rem; max-width: 500px; background: white; border-radius: 0.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
-          <h1 style="color: #dc2626; margin-bottom: 1rem; font-size: 1.5rem;">App Loading Failed</h1>
-          <p style="margin-bottom: 1rem; color: #6b7280;">The React app failed to load. This might be due to a JavaScript error or missing dependencies.</p>
-          <p style="margin-bottom: 1.5rem; font-size: 0.875rem; color: #6b7280;">Check the browser console (F12) for detailed error information.</p>
-          <button onclick="window.location.reload()" style="background: #3b82f6; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.875rem; font-weight: 500;">
-            Refresh Page
+      <div style="
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: system-ui, -apple-system, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        margin: 0;
+        padding: 1rem;
+      ">
+        <div style="
+          background: white;
+          padding: 2rem;
+          border-radius: 1rem;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          text-align: center;
+          max-width: 500px;
+          width: 100%;
+        ">
+          <div style="
+            width: 60px;
+            height: 60px;
+            background: #ef4444;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+          ">!</div>
+          
+          <h1 style="
+            color: #1f2937;
+            margin: 0 0 1rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+          ">App Loading Failed</h1>
+          
+          <p style="
+            color: #6b7280;
+            margin: 0 0 1.5rem;
+            line-height: 1.6;
+          ">
+            ReBooked Solutions encountered an error while starting up. 
+            This is usually a temporary issue.
+          </p>
+          
+          <button onclick="window.location.reload()" style="
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-right: 0.5rem;
+          " onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">
+            🔄 Refresh Page
           </button>
-          <p style="margin-top: 1rem; font-size: 0.75rem; color: #9ca3af;">ReBooked Solutions</p>
+          
+          <button onclick="window.location.href='/'" style="
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+          " onmouseover="this.style.background='#4b5563'" onmouseout="this.style.background='#6b7280'">
+            🏠 Home
+          </button>
+          
+          <div style="
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            font-size: 0.75rem;
+            color: #9ca3af;
+          ">
+            ReBooked Solutions<br>
+            If this problem persists, contact: support@rebookedsolutions.co.za
+          </div>
         </div>
       </div>
     `;
-  } else {
-    console.error("❌ Root element not found for fallback content");
   }
 }
+
+// Clean up debug file
+const cleanupDebugFile = () => {
+  // This would normally be done by build process, but for now we'll leave it
+};
