@@ -1,26 +1,42 @@
 [build]
-  command = "yarn build"
   publish = "dist"
+  command = "npm run build"
 
-# SPA routing - redirect all routes to index.html
+[build.environment]
+  NODE_VERSION = "18"
+
+# SPA redirect rules
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  conditions = {Role = ["admin"], Country = ["US"]}
+
+# Fallback for all other routes (SPA support)
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# Headers for optimal performance
+# Error pages
+[[redirects]]
+  from = "/404"
+  to = "/index.html"
+  status = 200
+
+# Asset caching
 [[headers]]
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
-  for = "/*.js"
+  for = "*.js"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
-  for = "/*.css"
+  for = "*.css"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
@@ -35,29 +51,9 @@
     Cache-Control = "public, max-age=2592000"
 
 [[headers]]
-  for = "/*.jpeg"
-  [headers.values]
-    Cache-Control = "public, max-age=2592000"
-
-[[headers]]
-  for = "/*.webp"
-  [headers.values]
-    Cache-Control = "public, max-age=2592000"
-
-[[headers]]
   for = "/*.svg"
   [headers.values]
     Cache-Control = "public, max-age=2592000"
-
-[[headers]]
-  for = "/*.ico"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "/"
-  [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
 
 # Security headers
 [[headers]]
@@ -67,4 +63,29 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+# Environment variable examples (configure in Netlify dashboard)
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  bundle = true
+  minify = true
+
+[build.processing.html]
+  pretty_urls = true
+
+# Development context
+[context.deploy-preview]
+  command = "npm run build"
+
+[context.branch-deploy]
+  command = "npm run build"
+
+# Production optimizations
+[context.production]
+  command = "npm run build"
