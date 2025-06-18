@@ -125,7 +125,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of KwaZulu-Natal",
     location: "Durban",
     province: "KwaZulu-Natal",
-    logo: "/logos/universities/ukzn.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/ukzn-6666c2?format=webp&width=800",
     overview:
       "Leading research university with strong community engagement and academic excellence.",
     website: "https://www.ukzn.ac.za",
