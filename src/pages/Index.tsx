@@ -295,8 +295,46 @@ const Index = () => {
                       loading="lazy"
                       decoding="async"
                       onError={(e) => {
-                        e.currentTarget.src =
-                          "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&h=300&fit=crop&auto=format&q=80";
+                      e.currentTarget.src =
+                        "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&h=300&fit=crop&auto=format&q=80";
+                    }}
+                  >
+                    {book.status === "sold" && (
+                      <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">
+                        SOLD
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-3 sm:p-4">
+                    <h3 className="font-semibold text-book-800 mb-1 sm:mb-2 text-sm sm:text-base leading-tight line-clamp-2">
+                      {book.title}
+                    </h3>
+                    <p className="text-gray-600 text-xs sm:text-sm mb-2 sm:mb-3 line-clamp-1">
+                      by {book.author}
+                    </p>
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg sm:text-xl font-bold text-book-600">
+                        R{book.price}
+                      </span>
+                      <div className="flex items-center text-xs sm:text-sm text-gray-500">
+                        <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-current text-yellow-400 mr-1" />
+                        <span>
+                          {book.averageRating?.toFixed(1) || "New"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </Layout>
+  );
+};
+
+export default Index;
                       }}
                     />
                     <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded-full text-xs sm:text-sm font-semibold text-book-800">
