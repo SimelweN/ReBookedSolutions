@@ -84,6 +84,7 @@ const Checkout = () => {
     useState<DeliveryQuote | null>(null);
   const [loadingQuotes, setLoadingQuotes] = useState(false);
   const [showSalePopup, setShowSalePopup] = useState(false);
+  const [showCommitReminderModal, setShowCommitReminderModal] = useState(false);
   const [saleData, setSaleData] = useState<{
     bookTitle: string;
     bookPrice: number;
@@ -290,6 +291,9 @@ const Checkout = () => {
       toast.success("Payment successful! Processing shipment...", {
         id: "payment",
       });
+
+      // Show commit reminder modal first
+      setShowCommitReminderModal(true);
 
       // Create automatic shipments for purchased books
       const purchasedBooks = isCartCheckout ? cartData : book ? [book] : [];
