@@ -1326,16 +1326,16 @@ const Policies = () => {
           </TabsContent>
 
           {/* Dispute Resolution Policy Tab */}
-          <TabsContent value="disputes" className="space-y-6">
+          <TabsContent value="disputes" className="space-y-4 sm:space-y-6">
             <Card>
-              <CardHeader>
-                <CardTitle className="text-3xl flex items-center gap-2">
-                  <FileText className="h-8 w-8" />
-                  Dispute Resolution Policy
+              <CardHeader className="pb-4 sm:pb-6">
+                <CardTitle className="text-xl sm:text-2xl lg:text-3xl flex items-center gap-2 mb-2 sm:mb-3">
+                  <FileText className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 flex-shrink-0" />
+                  <span>Dispute Resolution Policy</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="prose max-w-none space-y-6">
+              <CardContent className="px-4 sm:px-6">
+                <div className="prose max-w-none space-y-4 sm:space-y-6">
                   <section>
                     <h3 className="text-xl font-semibold text-gray-900 mb-3">
                       5.1 Dispute Submission
