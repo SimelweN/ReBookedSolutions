@@ -177,7 +177,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Rhodes University",
     location: "Makhanda",
     province: "Eastern Cape",
-    logo: "/logos/universities/rhodes.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/rhodes-59a57e?format=webp&width=800",
     overview:
       "Prestigious small university known for academic excellence and high-quality research output.",
     website: "https://www.ru.ac.za",
