@@ -203,7 +203,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "North-West University",
     location: "Potchefstroom",
     province: "North West",
-    logo: "/logos/universities/nwu.svg",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/nwu-071a25?format=webp&width=800",
     overview:
       "Multi-campus university offering diverse academic programs with strong research focus.",
     website: "https://www.nwu.ac.za",
