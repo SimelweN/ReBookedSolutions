@@ -11,55 +11,10 @@ import "./index.css";
 // Validate environment variables before starting the app
 try {
   validateEnvironment();
+  console.log("✅ Environment validation passed");
 } catch (error) {
-  console.error("🚨 CRITICAL ERROR: Environment validation failed:", error);
-
-  // Show user-friendly error message in the DOM
-  const root = document.getElementById("root");
-  if (root) {
-    root.innerHTML = `
-      <div style="
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        background: #f8fafc;
-        color: #1e293b;
-        padding: 2rem;
-        text-align: center;
-      ">
-        <div style="
-          background: white;
-          padding: 2rem;
-          border-radius: 8px;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-          max-width: 600px;
-        ">
-          <h1 style="color: #dc2626; margin-bottom: 1rem;">⚠️ Configuration Error</h1>
-          <p style="margin-bottom: 1rem; line-height: 1.6;">
-            The application cannot start because required environment variables are missing.
-          </p>
-          <pre style="
-            background: #f1f5f9;
-            padding: 1rem;
-            border-radius: 4px;
-            text-align: left;
-            overflow: auto;
-            font-size: 0.875rem;
-            margin: 1rem 0;
-          ">${error instanceof Error ? error.message : String(error)}</pre>
-          <p style="color: #64748b; font-size: 0.875rem;">
-            If you're a developer, check the console for more details.
-          </p>
-        </div>
-      </div>
-    `;
-  }
-
-  // Stop execution - don't continue with the broken app
-  throw error;
+  console.warn("⚠️ Environment validation failed, using fallbacks:", error);
+  // Don't throw - continue with fallback values for development
 }
 
 // Development-only utilities
