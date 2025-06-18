@@ -265,10 +265,6 @@ const Profile = () => {
     setIsBookNotSellingDialogOpen(true);
   };
 
-  const handleReportIssue = () => {
-    setIsReportIssueDialogOpen(true);
-  };
-
   if (!profile || !user) {
     return (
       <Layout>
