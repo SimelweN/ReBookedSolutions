@@ -318,9 +318,7 @@ const Index = () => {
                       </span>
                       <div className="flex items-center text-xs sm:text-sm text-gray-500">
                         <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-current text-yellow-400 mr-1" />
-                        <span>
-                          {book.averageRating?.toFixed(1) || "New"}
-                        </span>
+                        <span>{book.averageRating?.toFixed(1) || "New"}</span>
                       </div>
                     </div>
                   </div>
@@ -328,116 +326,6 @@ const Index = () => {
               ))}
             </div>
           )}
-        </div>
-      </section>
-    </Layout>
-  );
-};
-
-export default Index;
-                      }}
-                    />
-                    <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded-full text-xs sm:text-sm font-semibold text-book-800">
-                      R{book.price}
-                    </div>
-                  </div>
-                  <div className="p-3 sm:p-4">
-                    <h3 className="font-bold text-base sm:text-lg mb-1 text-book-800 line-clamp-2">
-                      {book.title}
-                    </h3>
-                    <p className="text-gray-600 mb-2 text-sm sm:text-base truncate">
-                      {book.author}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <span className="bg-book-100 text-book-800 px-2 py-1 rounded text-xs font-medium">
-                        {book.condition}
-                      </span>
-                      <span className="text-gray-500 text-xs sm:text-sm truncate">
-                        {book.category}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Mobile-Optimized How It Works Section */}
-      <section className="py-8 sm:py-12 bg-book-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12 text-book-800">
-            How It Works
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            <div className="text-center">
-              <div className="bg-white rounded-full w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center mx-auto mb-4 shadow-md">
-                <BookOpen className="h-8 w-8 sm:h-10 sm:w-10 text-book-600" />
-              </div>
-              <h3 className="text-lg sm:text-xl font-semibold mb-2 text-book-800">
-                List Your Books
-              </h3>
-              <p className="text-gray-600 text-sm sm:text-base px-2">
-                Create listings for your used textbooks in minutes. Add details,
-                photos, and set your price.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="bg-white rounded-full w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center mx-auto mb-4 shadow-md">
-                <Search className="h-8 w-8 sm:h-10 sm:w-10 text-book-600" />
-              </div>
-              <h3 className="text-lg sm:text-xl font-semibold mb-2 text-book-800">
-                List your books for sale
-              </h3>
-              <p className="text-gray-600 text-sm sm:text-base px-2">
-                List your books for sale and let ReBooked Solutions handle the
-                rest.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="bg-white rounded-full w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center mx-auto mb-4 shadow-md">
-                <Star className="h-8 w-8 sm:h-10 sm:w-10 text-book-600" />
-              </div>
-              <h3 className="text-lg sm:text-xl font-semibold mb-2 text-book-800">
-                Save Money
-              </h3>
-              <p className="text-gray-600 text-sm sm:text-base px-2">
-                Buyers save on textbook costs, and sellers earn money on books
-                they no longer need.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Mobile-Optimized CTA Section */}
-      <section className="py-12 sm:py-16 bg-book-600 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-            Ready to Get Started?
-          </h2>
-          <p className="text-lg sm:text-xl mb-6 sm:mb-8 max-w-3xl mx-auto px-4">
-            Join ReBooked Solutions to buy and sell textbooks securely. Save
-            money and help others do the same!
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
-            <Button
-              size="lg"
-              className="bg-white text-book-600 hover:bg-gray-100 border-2 border-white w-full sm:w-auto"
-              onClick={() => navigate("/register")}
-            >
-              Sign Up Now
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-book-600 w-full sm:w-auto"
-              onClick={() => navigate("/books")}
-            >
-              Browse Books
-            </Button>
-          </div>
         </div>
       </section>
     </Layout>
