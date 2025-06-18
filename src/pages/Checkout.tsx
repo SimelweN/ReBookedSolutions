@@ -87,6 +87,7 @@ const Checkout = () => {
     bookTitle: string;
     bookPrice: number;
     buyerName: string;
+    buyerEmail: string;
     saleId?: string;
   } | null>(null);
 
