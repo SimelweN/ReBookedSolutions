@@ -330,6 +330,47 @@ const Profile = () => {
                 </CardContent>
               </Card>
 
+              {/* Pickup Address Warning - Only show if user has active listings but no pickup address */}
+              {activeListings &&
+                activeListings.some(
+                  (book) =>
+                    !book.availability || book.availability === "unavailable",
+                ) &&
+                addressData &&
+                (!addressData.pickup_address ||
+                  !addressData.pickup_address.streetAddress ||
+                  !addressData.pickup_address.city) && (
+                  <Alert className="border-orange-200 bg-orange-50">
+                    <AlertTriangle className="h-4 w-4 text-orange-600" />
+                    <AlertDescription className="text-orange-800">
+                      <div className="space-y-2">
+                        <div className="font-medium">⚠️ Action Required</div>
+                        <p className="text-sm">
+                          You need a valid pickup address for your listings to
+                          remain active. Your books are currently unavailable to
+                          buyers.
+                        </p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            // Scroll to address tab - this will depend on the tabs implementation
+                            const addressTab = document.querySelector(
+                              '[data-tab="addresses"]',
+                            );
+                            if (addressTab) {
+                              addressTab.scrollIntoView({ behavior: "smooth" });
+                            }
+                          }}
+                          className="border-orange-300 text-orange-700 hover:bg-orange-100 mt-2"
+                        >
+                          Add Pickup Address
+                        </Button>
+                      </div>
+                    </AlertDescription>
+                  </Alert>
+                )}
+
               {/* Primary Actions */}
               <Card>
                 <CardHeader>
