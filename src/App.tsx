@@ -41,6 +41,7 @@ import Report from "./pages/Report";
 import Shipping from "./pages/Shipping";
 import UniversityInfo from "./pages/UniversityInfo";
 import ModernUniversityProfile from "./pages/ModernUniversityProfile";
+import UniversityProfile from "./pages/UniversityProfile";
 import FacultyDetail from "./pages/FacultyDetail";
 import CourseDetail from "./pages/CourseDetail";
 import StudyResources from "./pages/StudyResources";
@@ -95,6 +96,10 @@ function App() {
                       <Route
                         path="/university-profile"
                         element={<ModernUniversityProfile />}
+                      />
+                      <Route
+                        path="/university-profile-legacy"
+                        element={<UniversityProfile />}
                       />
                       <Route
                         path="/university/:universityId"
