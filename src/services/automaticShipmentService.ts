@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { logError } from "@/utils/errorUtils";
+import { getUserProfile } from "@/utils/profileUtils";
 import {
   createCourierGuyShipment,
   CourierGuyShipmentData,
@@ -46,60 +47,25 @@ export const getUserProfileWithAddresses = async (
   userId: string,
 ): Promise<UserProfile | null> => {
   try {
-    // First, try to get the complete profile with addresses
-    const { data, error } = await supabase
-      .from("profiles")
-      .select(
-        `
-        id,
-        name,
-        email,
-        pickup_address,
-        shipping_address,
-        addresses_same
-      `,
-      )
-      .eq("id", userId)
-      .single();
+    // Try to get the complete profile with addresses using the safe utility
+    const profile = await getUserProfile<UserProfile>(
+      userId,
+      `id, name, email, pickup_address, shipping_address, addresses_same`,
+      false,
+    );
 
-    if (error) {
-      console.warn(
-        `[AutoShipment] Complete profile not found for ${userId}:`,
-        error.message,
-      );
-
-      // Fallback: Try to get basic profile information
-      // Use .maybeSingle() to handle cases where no record exists
-      const { data: basicProfile, error: basicError } = await supabase
-        .from("profiles")
-        .select("id, name, email")
-        .eq("id", userId)
-        .maybeSingle();
-
-      if (basicError) {
-        console.error(
-          `[AutoShipment] Error fetching basic profile for ${userId}:`,
-          basicError.message,
-        );
-        return null;
-      }
-
-      if (!basicProfile) {
-        console.warn(
-          `[AutoShipment] No profile record found for user ${userId}`,
-        );
-        return null;
-      }
-
-      return {
-        ...basicProfile,
-        pickup_address: null,
-        shipping_address: null,
-        addresses_same: false,
-      };
+    if (!profile) {
+      console.warn(`[AutoShipment] No profile found for user ${userId}`);
+      return null;
     }
 
-    return data;
+    // If profile exists but missing address fields, ensure they're set to null
+    return {
+      ...profile,
+      pickup_address: profile.pickup_address || null,
+      shipping_address: profile.shipping_address || null,
+      addresses_same: profile.addresses_same || false,
+    };
   } catch (error) {
     console.error(
       `[AutoShipment] Unexpected error fetching profile for ${userId}:`,
