@@ -170,7 +170,7 @@ const initializeApp = () => {
     <React.StrictMode>
       <ErrorBoundary level="app">
         <QueryClientProvider client={queryClient}>
-          <TestApp />
+          <App />
         </QueryClientProvider>
       </ErrorBoundary>
     </React.StrictMode>,
