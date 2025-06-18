@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import SaleSuccessPopup from "@/components/SaleSuccessPopup";
+import CommitReminderModal from "@/components/CommitReminderModal";
 
 interface AddressData {
   complex?: string;
