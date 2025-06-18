@@ -9,9 +9,11 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(
-    Boolean,
-  ),
+  plugins: [
+    react(),
+    // Only enable component tagger in development
+    ...(mode === "development" ? [componentTagger()] : []),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -41,12 +43,14 @@ export default defineConfig(({ mode }) => ({
     },
     // Optimize chunk size warning limit
     chunkSizeWarningLimit: 1000,
-    // Enable source maps for debugging
+    // Enable source maps for debugging in development only
     sourcemap: mode === "development",
-    // Minify in production
-    minify: mode === "production" ? "esbuild" : false,
-    // Target modern browsers for better performance
-    target: "esnext",
+    // Always minify in production
+    minify: mode === "production",
+    // Target ES2020 for broader compatibility
+    target: "es2020",
+    // Ensure consistent builds
+    emptyOutDir: true,
   },
   // Optimize dependencies
   optimizeDeps: {
