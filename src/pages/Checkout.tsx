@@ -376,6 +376,18 @@ const Checkout = () => {
         }
       }
 
+      // Show sale success popup immediately
+      const firstBook = purchasedBooks[0];
+      if (firstBook) {
+        setSaleData({
+          bookTitle: firstBook.title,
+          bookPrice: firstBook.price,
+          buyerName: user.name || user.email || "Unknown Buyer",
+          saleId: "sale_" + Date.now(), // Generate a simple sale ID
+        });
+        setShowSalePopup(true);
+      }
+
       toast.success(
         "Order completed successfully! Check the shipping page for tracking information.",
         {
@@ -388,8 +400,8 @@ const Checkout = () => {
         clearCart();
       }
 
-      // Redirect to shipping page instead of home to show tracking info
-      navigate("/shipping");
+      // Note: Don't auto-redirect so user can see the popup
+      // navigate("/shipping"); - removed
     } catch (error) {
       console.error("Payment error:", error);
       toast.error("Payment failed. Please try again.", { id: "payment" });
