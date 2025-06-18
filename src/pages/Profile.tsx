@@ -559,6 +559,11 @@ const Profile = () => {
           onClose={() => setIsBookNotSellingDialogOpen(false)}
         />
 
+        <DeleteProfileDialog
+          isOpen={isDeleteProfileDialogOpen}
+          onClose={() => setIsDeleteProfileDialogOpen(false)}
+        />
+
         <ReportIssueDialog
           isOpen={isReportIssueDialogOpen}
           onClose={() => setIsReportIssueDialogOpen(false)}
