@@ -1,60 +1,13 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
-import { getBooks } from "@/services/book/bookQueries";
-import { Book } from "@/types/book";
-import { BookOpen, Search, Star } from "lucide-react";
-import { toast } from "sonner";
+import { Search, BookOpen } from "lucide-react";
 
 const Index = () => {
-  const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-
-  useEffect(() => {
-    loadFeaturedBooks();
-  }, []);
-
-  const loadFeaturedBooks = async () => {
-    try {
-      setIsLoading(true);
-      console.log("[Index] Loading books...");
-
-      const allBooks = await getBooks();
-      console.log("[Index] Received books:", {
-        isArray: Array.isArray(allBooks),
-        length: allBooks?.length || 0,
-        firstFew: allBooks?.slice(0, 2) || [],
-      });
-
-      const booksToShow = Array.isArray(allBooks) ? allBooks.slice(0, 4) : [];
-      setFeaturedBooks(booksToShow);
-
-      console.log("[Index] Set featured books:", booksToShow.length);
-    } catch (error) {
-      const errorDetails = {
-        message: error instanceof Error ? error.message : String(error),
-        name: error instanceof Error ? error.name : "Unknown",
-        stack: error instanceof Error ? error.stack : undefined,
-        timestamp: new Date().toISOString(),
-      };
-
-      console.error("[Index] Error loading featured books:", errorDetails);
-
-      const userMessage =
-        error instanceof Error && error.message.includes("Failed to fetch")
-          ? "Unable to load featured books. Please check your internet connection and try refreshing the page."
-          : "Failed to load featured books. Please try again later.";
-
-      toast.error(userMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -117,8 +70,8 @@ const Index = () => {
           </div>
           <div className="md:w-1/2 flex justify-center">
             <img
-              src="/lovable-uploads/5a675a2a-36d0-4fce-a3dd-1fc8d877a335.png"
-              alt="Students studying with textbooks in library"
+              src="https://cdn.builder.io/api/v1/assets/4b236342bc954bc3a0760c75cd3f3881/pexels-yankrukov-8199706-ad0e6d?format=webp&width=800"
+              alt="Three diverse students smiling with stacks of textbooks in library"
               width="600"
               height="400"
               className="rounded-lg shadow-xl max-w-full h-auto w-full max-w-sm md:max-w-full"
@@ -247,96 +200,6 @@ const Index = () => {
               </Link>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Mobile-Optimized Featured Books Section */}
-      <section className="py-8 sm:py-12 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-6 sm:mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-book-800">
-              Featured Textbooks
-            </h2>
-            <Link
-              to="/books"
-              className="text-book-600 hover:text-book-800 transition-colors duration-200 text-sm sm:text-base"
-            >
-              View all →
-            </Link>
-          </div>
-
-          {isLoading ? (
-            <div className="flex justify-center items-center h-48 sm:h-64">
-              <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-t-2 border-b-2 border-book-600"></div>
-            </div>
-          ) : featuredBooks.length === 0 ? (
-            <div className="text-center py-8 sm:py-10">
-              <BookOpen className="mx-auto h-8 w-8 sm:h-12 sm:w-12 text-book-300 mb-4" />
-              <h3 className="text-lg sm:text-xl font-semibold mb-2">
-                No books available yet
-              </h3>
-              <p className="text-gray-500 mb-4 sm:mb-6 text-sm sm:text-base">
-                Be the first to list your textbooks!
-              </p>
-              <Button
-                onClick={() => navigate("/create-listing")}
-                className="bg-book-600 hover:bg-book-700"
-              >
-                Sell Your Books
-              </Button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-              {featuredBooks.map((book) => (
-                <Link
-                  key={book.id}
-                  to={`/books/${book.id}`}
-                  className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-200 book-card-hover"
-                  onClick={() =>
-                    console.log("Clicking featured book:", book.id)
-                  }
-                >
-                  <div className="relative h-40 sm:h-48 overflow-hidden">
-                    <img
-                      src={book.imageUrl}
-                      alt={book.title}
-                      width="400"
-                      height="300"
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                      loading="lazy"
-                      decoding="async"
-                      onError={(e) => {
-                        e.currentTarget.src =
-                          "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&h=300&fit=crop&auto=format&q=80";
-                      }}
-                    />
-                    {book.status === "sold" && (
-                      <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">
-                        SOLD
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-3 sm:p-4">
-                    <h3 className="font-semibold text-book-800 mb-1 sm:mb-2 text-sm sm:text-base leading-tight line-clamp-2">
-                      {book.title}
-                    </h3>
-                    <p className="text-gray-600 text-xs sm:text-sm mb-2 sm:mb-3 line-clamp-1">
-                      by {book.author}
-                    </p>
-                    <div className="flex justify-between items-center">
-                      <span className="text-lg sm:text-xl font-bold text-book-600">
-                        R{book.price}
-                      </span>
-                      <div className="flex items-center text-xs sm:text-sm text-gray-500">
-                        <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-current text-yellow-400 mr-1" />
-                        <span>{book.averageRating?.toFixed(1) || "New"}</span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
         </div>
       </section>
     </Layout>

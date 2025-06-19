@@ -3,16 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import {
-  Loader2,
-  Calculator,
-  Package,
-  Truck,
-  Clock,
-  DollarSign,
-} from "lucide-react";
+import { ProvinceSelector } from "@/components/ui/province-selector";
+import { Calculator, Package, Truck, Clock, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 import {
   getShipLogicRates,
@@ -135,9 +128,32 @@ const ShipLogicRateQuote = ({
       }
     } catch (error) {
       console.error("Error getting rates:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to get shipping rates";
-      toast.error(errorMessage);
+
+      let userFriendlyMessage =
+        "Failed to get shipping rates. Please try again.";
+
+      if (error instanceof Error) {
+        if (error.message.includes("Request validation failed")) {
+          userFriendlyMessage =
+            "Please check that all address fields are properly filled out.";
+        } else if (error.message.includes("Authentication failed")) {
+          userFriendlyMessage =
+            "Shipping service temporarily unavailable. Fallback rates will be used.";
+        } else if (error.message.includes("server error")) {
+          userFriendlyMessage =
+            "Shipping service is experiencing issues. Please try again later.";
+        } else if (
+          error.message.includes("network") ||
+          error.message.includes("timeout")
+        ) {
+          userFriendlyMessage =
+            "Network connection issue. Please check your internet and try again.";
+        } else {
+          userFriendlyMessage = error.message;
+        }
+      }
+
+      toast.error(userFriendlyMessage);
     } finally {
       setIsLoading(false);
     }
@@ -214,18 +230,13 @@ const ShipLogicRateQuote = ({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="fromProvince">Province *</Label>
-                  <Input
-                    id="fromProvince"
+                  <ProvinceSelector
+                    label="Province"
                     value={formData.fromAddress.province}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "fromAddress",
-                        "province",
-                        e.target.value,
-                      )
+                    onValueChange={(value) =>
+                      handleInputChange("fromAddress", "province", value)
                     }
-                    placeholder="Province"
+                    placeholder="Select province"
                     required
                   />
                 </div>
@@ -295,14 +306,13 @@ const ShipLogicRateQuote = ({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="toProvince">Province *</Label>
-                  <Input
-                    id="toProvince"
+                  <ProvinceSelector
+                    label="Province"
                     value={formData.toAddress.province}
-                    onChange={(e) =>
-                      handleInputChange("toAddress", "province", e.target.value)
+                    onValueChange={(value) =>
+                      handleInputChange("toAddress", "province", value)
                     }
-                    placeholder="Province"
+                    placeholder="Select province"
                     required
                   />
                 </div>

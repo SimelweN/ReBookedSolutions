@@ -12,9 +12,31 @@ import {
   ShipLogicParcel,
   ShipLogicContact,
 } from "@/types/shiplogic";
+import { debugEnvironmentVariables } from "@/utils/debugEnvVars";
 
 const SHIPLOGIC_BASE_URL = "https://api.shiplogic.com/v2";
 const SHIPLOGIC_API_KEY = import.meta.env.VITE_SHIPLOGIC_API_KEY || "";
+
+// Debug environment variables (only in development)
+if (import.meta.env.MODE === "development") {
+  debugEnvironmentVariables();
+}
+
+// Validate API key is configured
+if (!SHIPLOGIC_API_KEY) {
+  console.warn(
+    "⚠️ ShipLogic API key is not configured. ShipLogic services will return fallback data.",
+  );
+  console.warn(
+    "💡 To fix this, add VITE_SHIPLOGIC_API_KEY to your environment variables.",
+  );
+  console.warn("📋 Copy .env.example to .env and add your ShipLogic API key");
+} else {
+  console.log(
+    "✅ ShipLogic API key configured:",
+    SHIPLOGIC_API_KEY.substring(0, 10) + "...",
+  );
+}
 
 // Create axios client for ShipLogic API
 const shiplogicClient: AxiosInstance = axios.create({
@@ -52,12 +74,15 @@ shiplogicClient.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error("ShipLogic API Response Error:", {
+    const errorDetails = {
       url: error.config?.url,
       status: error.response?.status,
-      data: error.response?.data,
+      data: error.response?.data
+        ? JSON.stringify(error.response.data, null, 2)
+        : "No data",
       message: error.message,
-    });
+    };
+    console.error("ShipLogic API Response Error:", errorDetails);
     return Promise.reject(error);
   },
 );
@@ -145,12 +170,44 @@ const convertToShipLogicParcel = (
 });
 
 /**
+ * Generate fallback rates when API is unavailable
+ */
+const getFallbackRates = (): ShipLogicRate[] => {
+  const today = new Date();
+  const collectionDate = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+  const deliveryDate = new Date(today.getTime() + 4 * 24 * 60 * 60 * 1000);
+
+  return [
+    {
+      service_level_code: "ECO",
+      service_level_name: "Economy",
+      service_level_description:
+        "Standard delivery service (3-5 business days)",
+      rate_value: 85,
+      rate_currency: "ZAR",
+      total_charge_value: 95,
+      estimated_collection_date: collectionDate.toISOString(),
+      estimated_delivery_date: deliveryDate.toISOString(),
+      transit_days: 4,
+    },
+  ];
+};
+
+/**
  * Get shipping rate quotes from ShipLogic with proper validation and error handling
  */
 export const getShipLogicRates = async (
   request: ShipLogicQuoteRequest,
 ): Promise<ShipLogicRate[]> => {
   try {
+    // Check if API key is configured
+    if (!SHIPLOGIC_API_KEY) {
+      console.warn(
+        "ShipLogic API key not configured, returning fallback rates",
+      );
+      return getFallbackRates();
+    }
+
     // Validate input parameters
     if (!request.fromAddress || !request.toAddress || !request.parcel) {
       throw new Error("Missing required address or parcel information");
@@ -230,7 +287,10 @@ export const getShipLogicRates = async (
       service_level_code: "ECO", // Default service level for quotes
     };
 
-    console.log("Getting ShipLogic rates with validated request:", rateRequest);
+    console.log(
+      "Getting ShipLogic rates with validated request:",
+      JSON.stringify(rateRequest, null, 2),
+    );
 
     const response = await shiplogicClient.post<ShipLogicRateResponse>(
       "/rates",
@@ -245,23 +305,7 @@ export const getShipLogicRates = async (
 
     if (!response.data.rates || response.data.rates.length === 0) {
       console.warn("No rates returned from ShipLogic API");
-      // Return fallback rates if no rates available
-      return [
-        {
-          service_level_code: "ECO",
-          service_level_name: "Economy",
-          service_level_description:
-            "Standard delivery service (3-5 business days)",
-          rate_value: 85,
-          rate_currency: "ZAR",
-          total_charge_value: 95,
-          estimated_collection_date: collectionDate,
-          estimated_delivery_date: new Date(
-            Date.now() + 4 * 24 * 60 * 60 * 1000,
-          ).toISOString(),
-          transit_days: 4,
-        },
-      ];
+      return getFallbackRates();
     }
 
     console.log(
@@ -277,25 +321,41 @@ export const getShipLogicRates = async (
       const status = error.response?.status;
       const errorData = error.response?.data;
 
+      // Extract error message from various possible error response formats
+      let errorMessage = "Unknown error";
+      if (errorData) {
+        if (typeof errorData === "string") {
+          errorMessage = errorData;
+        } else if (errorData.message) {
+          errorMessage = errorData.message;
+        } else if (errorData.error) {
+          errorMessage = errorData.error;
+        } else if (errorData.errors && Array.isArray(errorData.errors)) {
+          errorMessage = errorData.errors.join(", ");
+        } else if (typeof errorData === "object") {
+          errorMessage = JSON.stringify(errorData);
+        }
+      }
+
       if (status === 400) {
-        const errorMessage =
-          errorData?.message ||
-          errorData?.error ||
-          "Invalid request parameters";
+        console.error(`ShipLogic API validation error: ${errorMessage}`);
         throw new Error(`Request validation failed: ${errorMessage}`);
       } else if (status === 401) {
+        console.error("ShipLogic API authentication failed");
         throw new Error("Authentication failed. Please check API credentials.");
       } else if (status === 403) {
+        console.error("ShipLogic API access denied");
         throw new Error("Access denied. Insufficient permissions.");
       } else if (status === 404) {
-        throw new Error(
-          "ShipLogic service not available. Please try again later.",
+        console.warn(
+          "ShipLogic service not available, returning fallback rates",
         );
+        return getFallbackRates();
       } else if (status >= 500) {
-        throw new Error("ShipLogic server error. Please try again later.");
+        console.warn("ShipLogic server error, returning fallback rates");
+        return getFallbackRates();
       } else {
-        const errorMessage =
-          errorData?.message || errorData?.error || error.message;
+        console.error(`ShipLogic API error (${status}): ${errorMessage}`);
         throw new Error(`Failed to get shipping rates: ${errorMessage}`);
       }
     }

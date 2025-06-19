@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -210,6 +212,20 @@ function App() {
               </Router>
             </CartProvider>
           </AuthProvider>
+          {/* Vercel Analytics and Speed Insights */}
+          {(() => {
+            try {
+              return (
+                <>
+                  <Analytics />
+                  <SpeedInsights />
+                </>
+              );
+            } catch (error) {
+              console.warn("Vercel components failed to load:", error);
+              return null;
+            }
+          })()}
         </AuthErrorBoundary>
       </ErrorBoundary>
     );

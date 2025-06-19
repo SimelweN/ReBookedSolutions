@@ -47,7 +47,6 @@ const BookListing = () => {
       const category = searchParams.get("category") || "";
       const grade = searchParams.get("grade") || "";
       const universityYear = searchParams.get("universityYear") || "";
-      const university = searchParams.get("university") || "";
 
       const filters: {
         search?: string;
@@ -99,6 +98,7 @@ const BookListing = () => {
 
       toast.error(userMessage);
       setBooks([]);
+      setError(error instanceof Error ? error.message : String(error));
     } finally {
       setIsLoading(false);
     }
@@ -117,28 +117,31 @@ const BookListing = () => {
   };
 
   const updateFilters = useCallback(() => {
-    console.log("Updating filters...");
-    const params = new URLSearchParams();
+    const newSearchParams = new URLSearchParams();
 
-    if (searchQuery) params.set("search", searchQuery);
-    if (selectedCategory) params.set("category", selectedCategory);
-    if (selectedGrade) params.set("grade", selectedGrade);
-    if (selectedUniversityYear)
-      params.set("universityYear", selectedUniversityYear);
-    if (selectedUniversity) params.set("university", selectedUniversity);
+    if (searchQuery.trim()) {
+      newSearchParams.set("search", searchQuery.trim());
+    }
+    if (selectedCategory) {
+      newSearchParams.set("category", selectedCategory);
+    }
+    if (selectedGrade) {
+      newSearchParams.set("grade", selectedGrade);
+    }
+    if (selectedUniversityYear) {
+      newSearchParams.set("universityYear", selectedUniversityYear);
+    }
 
-    setSearchParams(params);
+    setSearchParams(newSearchParams);
   }, [
     searchQuery,
     selectedCategory,
     selectedGrade,
     selectedUniversityYear,
-    selectedUniversity,
     setSearchParams,
   ]);
 
   const clearFilters = useCallback(() => {
-    console.log("Clearing all filters");
     setSearchQuery("");
     setSelectedCategory("");
     setSelectedCondition("");
@@ -147,56 +150,31 @@ const BookListing = () => {
     setSelectedUniversity("");
     setPriceRange([0, 1000]);
     setBookType("all");
-
-    // Clear URL params
-    setSearchParams({});
+    setSearchParams(new URLSearchParams());
   }, [setSearchParams]);
 
-  const handleCommitBook = useCallback(
-    async (bookId: string) => {
-      try {
-        await commitBook(bookId);
-        // Reload books to reflect the status change
-        await loadBooks();
-      } catch (error) {
-        console.error("Failed to commit book:", error);
-      }
-    },
-    [commitBook, loadBooks],
-  );
-
-  if (error) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-8">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-            <h2 className="text-xl font-semibold text-red-800 mb-2">
-              Error Loading Books
-            </h2>
-            <p className="text-red-600 mb-4">{error}</p>
-            <button
-              onClick={() => {
-                setError(null);
-                loadBooks();
-              }}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
+  const handleCommitBook = async (bookId: string) => {
+    try {
+      await commitBook(bookId);
+      toast.success("Book committed for sale successfully!");
+      // Reload books to reflect the status change
+      loadBooks();
+    } catch (error) {
+      console.error("Failed to commit book:", error);
+      toast.error("Failed to commit book for sale. Please try again.");
+      throw error;
+    }
+  };
 
   return (
     <Layout>
       <SEO
         title="Browse Textbooks - ReBooked Solutions"
-        description="Browse thousands of used textbooks from students across South Africa. Find affordable academic books for university, college, and high school."
-        keywords="browse textbooks, used books, academic books, student books, textbook marketplace"
+        description="Find affordable used textbooks for your studies. Browse our collection of university and school books from verified sellers."
+        keywords="textbooks, used books, university books, school books, study materials"
         url="https://www.rebookedsolutions.co.za/books"
       />
+
       <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-book-800 mb-4 sm:mb-8 px-2 sm:px-0">
           Browse Books
