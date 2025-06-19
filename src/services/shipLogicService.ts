@@ -12,21 +12,28 @@ import {
   ShipLogicParcel,
   ShipLogicContact,
 } from "@/types/shiplogic";
+import { debugEnvironmentVariables } from "@/utils/debugEnvVars";
 
 const SHIPLOGIC_BASE_URL = "https://api.shiplogic.com/v2";
 const SHIPLOGIC_API_KEY = import.meta.env.VITE_SHIPLOGIC_API_KEY || "";
 
+// Debug environment variables (only in development)
+if (import.meta.env.MODE === "development") {
+  debugEnvironmentVariables();
+}
+
 // Validate API key is configured
 if (!SHIPLOGIC_API_KEY) {
   console.warn(
-    "ShipLogic API key is not configured. ShipLogic services will return fallback data.",
+    "⚠️ ShipLogic API key is not configured. ShipLogic services will return fallback data.",
   );
   console.warn(
-    "To fix this, add VITE_SHIPLOGIC_API_KEY to your environment variables.",
+    "💡 To fix this, add VITE_SHIPLOGIC_API_KEY to your environment variables.",
   );
+  console.warn("📋 Copy .env.example to .env and add your ShipLogic API key");
 } else {
   console.log(
-    "ShipLogic API key configured:",
+    "✅ ShipLogic API key configured:",
     SHIPLOGIC_API_KEY.substring(0, 10) + "...",
   );
 }
