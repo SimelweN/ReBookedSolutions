@@ -88,11 +88,15 @@ const UniversityInfo = () => {
     }
   }, [selectedUniversityId, navigate]);
 
-  const handleTabChange = (value: string) => {
-    const newParams = new URLSearchParams();
-    newParams.set("tool", value);
-    setSearchParams(newParams);
-  };
+  const handleTabChange = useCallback(
+    (value: string) => {
+      // Immediate state update for instant visual feedback
+      const newParams = new URLSearchParams();
+      newParams.set("tool", value);
+      setSearchParams(newParams);
+    },
+    [setSearchParams],
+  );
 
   // Memoized statistics calculation for better performance
   const stats = useMemo(() => {
