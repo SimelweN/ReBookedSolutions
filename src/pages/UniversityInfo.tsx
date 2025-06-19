@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   University,
   GraduationCap,
@@ -20,23 +21,27 @@ import {
   Calculator,
   DollarSign,
   TrendingUp,
+  Calendar,
+  Clock,
+  CreditCard,
+  Info,
+  ChevronDown,
+  ChevronUp,
+  ExternalLink,
 } from "lucide-react";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES as SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/index";
-import UniversityHero from "@/components/university-info/UniversityHero";
-import PopularUniversities from "@/components/university-info/PopularUniversities";
+import {
+  UNIVERSITY_APPLICATIONS_2025,
+  getApplicationInfo,
+} from "@/constants/universities/university-applications-2025";
 import SEO from "@/components/SEO";
 import CampusNavbar from "@/components/CampusNavbar";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { logProgramVerification } from "@/utils/program-verification";
-import { logCriticalIssuesVerification } from "@/utils/critical-issues-verification";
 
 // Direct import for APS calculator to fix loading issues
 import APSCalculatorSection from "@/components/university-info/APSCalculatorSection";
 
 // Keep lazy loading for other components
-const LazyAPSCalculatorSection = lazy(
-  () => import("@/components/university-info/APSCalculatorSection"),
-);
 const BursaryExplorerSection = lazy(
   () => import("@/components/university-info/BursaryExplorerSection"),
 );
@@ -49,6 +54,7 @@ const UniversityInfo = () => {
   const navigate = useNavigate();
   const currentTool = searchParams.get("tool") || "overview";
   const selectedUniversityId = searchParams.get("university");
+  const [showAllUniversities, setShowAllUniversities] = useState(false);
 
   // Find selected university if one is specified
   const selectedUniversity = useMemo(() => {
@@ -73,14 +79,6 @@ const UniversityInfo = () => {
     }
   }, [setSearchParams]);
 
-  // Run program verification in development
-  useEffect(() => {
-    if (import.meta.env.DEV) {
-      logProgramVerification();
-      logCriticalIssuesVerification();
-    }
-  }, []);
-
   // Redirect to new university profile route if university parameter is present
   useEffect(() => {
     if (selectedUniversityId) {
@@ -93,12 +91,6 @@ const UniversityInfo = () => {
   const handleTabChange = (value: string) => {
     const newParams = new URLSearchParams();
     newParams.set("tool", value);
-    setSearchParams(newParams);
-  };
-
-  const handleBackToUniversities = () => {
-    const newParams = new URLSearchParams();
-    newParams.set("tool", "overview");
     setSearchParams(newParams);
   };
 
@@ -166,7 +158,216 @@ const UniversityInfo = () => {
     </div>
   );
 
-  // University details are now handled by redirection to /university-profile
+  // Simple Hero Component to replace the potentially problematic UniversityHero
+  const SimpleHero = () => (
+    <div className="bg-gradient-to-br from-blue-900 to-purple-900 text-white py-16">
+      <div className="container mx-auto px-4 text-center">
+        <h1 className="text-4xl md:text-6xl font-bold mb-6">
+          Discover Your Perfect University
+        </h1>
+        <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
+          Explore {stats.universities} South African universities, calculate
+          your APS, find bursaries, and discover {stats.programs} programs.
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+            <Building className="w-8 h-8 mx-auto mb-2 text-blue-300" />
+            <div className="text-2xl font-bold">{stats.universities}</div>
+            <div className="text-sm text-blue-200">Universities</div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+            <BookOpen className="w-8 h-8 mx-auto mb-2 text-purple-300" />
+            <div className="text-2xl font-bold">{stats.programs}</div>
+            <div className="text-sm text-blue-200">Programs</div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+            <Users className="w-8 h-8 mx-auto mb-2 text-green-300" />
+            <div className="text-2xl font-bold">{stats.students}</div>
+            <div className="text-sm text-blue-200">Students</div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+            <Award className="w-8 h-8 mx-auto mb-2 text-yellow-300" />
+            <div className="text-2xl font-bold">40+</div>
+            <div className="text-sm text-blue-200">Bursaries</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // University Application Card Component
+  const UniversityApplicationCard = ({
+    applicationInfo,
+  }: {
+    applicationInfo: any;
+  }) => (
+    <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer group border-0 shadow-md">
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">
+              {applicationInfo.abbreviation}
+            </div>
+            <div>
+              <CardTitle className="text-lg group-hover:text-blue-600 transition-colors">
+                {applicationInfo.name}
+              </CardTitle>
+              <CardDescription className="flex items-center gap-1 mt-1">
+                <Building className="w-4 h-4" />
+                {applicationInfo.type}
+              </CardDescription>
+            </div>
+          </div>
+          {applicationInfo.isFree && (
+            <Badge className="bg-green-100 text-green-800 border-green-200 font-semibold">
+              No Fee
+            </Badge>
+          )}
+        </div>
+      </CardHeader>
+
+      <CardContent className="space-y-4">
+        {/* Opening Date */}
+        <div className="flex items-start gap-3">
+          <Calendar className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="font-semibold text-sm text-gray-900">Opens</p>
+            <p className="text-sm text-gray-600">
+              {applicationInfo.openingDate}
+            </p>
+          </div>
+        </div>
+
+        {/* Closing Date */}
+        <div className="flex items-start gap-3">
+          <Clock className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="font-semibold text-sm text-gray-900">Closes</p>
+            <p className="text-sm text-gray-600">
+              {applicationInfo.closingDate}
+            </p>
+            {applicationInfo.closingDateNotes && (
+              <p className="text-xs text-gray-500 mt-1 italic">
+                {applicationInfo.closingDateNotes}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Application Fee */}
+        <div className="flex items-start gap-3">
+          <CreditCard className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="font-semibold text-sm text-gray-900">
+              Application Fee
+            </p>
+            <p className="text-sm font-medium text-gray-800">
+              {applicationInfo.applicationFee}
+            </p>
+            {applicationInfo.feeNotes && (
+              <p className="text-xs text-gray-500 mt-1">
+                {applicationInfo.feeNotes}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Special Notes */}
+        {applicationInfo.specialNotes && (
+          <div className="flex items-start gap-3">
+            <Info className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="font-semibold text-sm text-gray-900">
+                Special Notes
+              </p>
+              <p className="text-sm text-gray-600">
+                {applicationInfo.specialNotes}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="flex gap-2 pt-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex-1 hover:bg-blue-50 hover:border-blue-200"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/university-profile?id=${applicationInfo.id}`);
+            }}
+          >
+            <ExternalLink className="w-4 h-4 mr-2" />
+            View Details
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  // Universities Grid with Application Information
+  const UniversitiesApplicationGrid = () => {
+    const displayedUniversities = showAllUniversities
+      ? UNIVERSITY_APPLICATIONS_2025
+      : UNIVERSITY_APPLICATIONS_2025.slice(0, 6);
+
+    return (
+      <div className="py-12">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-2">
+              🇿🇦 South African Public Universities – 2025 Application Info
+            </h2>
+            <p className="text-gray-600">
+              Complete application information for all{" "}
+              {UNIVERSITY_APPLICATIONS_2025.length} public universities
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {displayedUniversities.map((applicationInfo) => (
+              <UniversityApplicationCard
+                key={applicationInfo.id}
+                applicationInfo={applicationInfo}
+              />
+            ))}
+          </div>
+
+          {/* View More / View Less Button */}
+          {UNIVERSITY_APPLICATIONS_2025.length > 6 && (
+            <div className="text-center">
+              <Button
+                onClick={() => setShowAllUniversities(!showAllUniversities)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg"
+                size="lg"
+              >
+                {showAllUniversities ? (
+                  <>
+                    <ChevronUp className="w-5 h-5 mr-2" />
+                    View Less Universities
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-5 h-5 mr-2" />
+                    View More Universities (
+                    {UNIVERSITY_APPLICATIONS_2025.length - 6} more)
+                  </>
+                )}
+              </Button>
+
+              {!showAllUniversities && (
+                <p className="text-sm text-gray-500 mt-3">
+                  Showing 6 of {UNIVERSITY_APPLICATIONS_2025.length}{" "}
+                  universities
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <>
@@ -180,6 +381,17 @@ const UniversityInfo = () => {
       <CampusNavbar />
 
       <div className="min-h-screen bg-gray-50">
+        {/* Debug information */}
+        {import.meta.env.DEV && (
+          <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 m-4">
+            <div className="text-sm">
+              <strong>Debug Info:</strong> Universities loaded:{" "}
+              {SOUTH_AFRICAN_UNIVERSITIES?.length || 0}, Current tool:{" "}
+              {currentTool}, University ID: {selectedUniversityId || "none"}
+            </div>
+          </div>
+        )}
+
         {/* Main Content with Tabs */}
         <div className="container mx-auto px-4 py-6">
           <Tabs
@@ -227,10 +439,10 @@ const UniversityInfo = () => {
 
             <TabsContent value="overview" className="space-y-6">
               {/* Hero Section */}
-              <UniversityHero onNavigateToTool={handleTabChange} />
+              <SimpleHero />
 
-              {/* Popular Universities */}
-              <PopularUniversities />
+              {/* Universities with Application Information */}
+              <UniversitiesApplicationGrid />
 
               {/* Quick Tools Section */}
               <div className="grid md:grid-cols-2 gap-6">

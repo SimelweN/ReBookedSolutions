@@ -40,11 +40,64 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SOUTH_AFRICAN_SUBJECTS } from "@/constants/subjects";
+import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities";
 import { toast } from "sonner";
 
-// Simplified but comprehensive program data
-const UNIVERSITY_PROGRAMS = [
-  // UCT
+// Extract all programs from real university data
+const extractUniversityPrograms = () => {
+  const programs: any[] = [];
+
+  try {
+    if (
+      !ALL_SOUTH_AFRICAN_UNIVERSITIES ||
+      !Array.isArray(ALL_SOUTH_AFRICAN_UNIVERSITIES)
+    ) {
+      return programs;
+    }
+
+    ALL_SOUTH_AFRICAN_UNIVERSITIES.forEach((university) => {
+      if (university.faculties && Array.isArray(university.faculties)) {
+        university.faculties.forEach((faculty) => {
+          if (faculty.degrees && Array.isArray(faculty.degrees)) {
+            faculty.degrees.forEach((degree) => {
+              programs.push({
+                university: university.fullName || university.name,
+                abbreviation: university.abbreviation || university.name,
+                location: `${university.location}, ${university.province}`,
+                program: degree.name,
+                faculty: faculty.name,
+                aps: degree.apsRequirement || 0,
+                duration: degree.duration || "Not specified",
+                description:
+                  degree.description ||
+                  `Study ${degree.name} at ${university.name}`,
+              });
+            });
+          }
+        });
+      }
+    });
+
+    if (import.meta.env.DEV && programs.length > 0) {
+      console.log(
+        `✅ Extracted ${programs.length} programs from ${ALL_SOUTH_AFRICAN_UNIVERSITIES.length} universities`,
+      );
+    }
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.error("Error in extractUniversityPrograms:", error);
+    }
+  }
+
+  return programs;
+};
+
+// Get real university programs data
+const UNIVERSITY_PROGRAMS = extractUniversityPrograms();
+
+// Comprehensive fallback data to ensure page renders
+const FALLBACK_PROGRAMS = [
+  // UCT Programs
   {
     university: "University of Cape Town",
     abbreviation: "UCT",
@@ -54,6 +107,154 @@ const UNIVERSITY_PROGRAMS = [
     aps: 42,
     duration: "6 years",
     description: "Comprehensive medical training to become a qualified doctor.",
+  },
+  {
+    university: "University of Cape Town",
+    abbreviation: "UCT",
+    location: "Cape Town, Western Cape",
+    program: "Civil Engineering",
+    faculty: "Engineering",
+    aps: 38,
+    duration: "4 years",
+    description: "Design, construct and maintain civil infrastructure.",
+  },
+  {
+    university: "University of Cape Town",
+    abbreviation: "UCT",
+    location: "Cape Town, Western Cape",
+    program: "Computer Science",
+    faculty: "Science",
+    aps: 34,
+    duration: "3 years",
+    description: "Programming, algorithms, and computational theory.",
+  },
+  {
+    university: "University of Cape Town",
+    abbreviation: "UCT",
+    location: "Cape Town, Western Cape",
+    program: "Bachelor of Commerce",
+    faculty: "Commerce",
+    aps: 33,
+    duration: "3 years",
+    description: "Business and commerce studies.",
+  },
+  {
+    university: "University of Cape Town",
+    abbreviation: "UCT",
+    location: "Cape Town, Western Cape",
+    program: "Law (LLB)",
+    faculty: "Law",
+    aps: 36,
+    duration: "4 years",
+    description: "Comprehensive legal education.",
+  },
+
+  // Wits Programs
+  {
+    university: "University of the Witwatersrand",
+    abbreviation: "Wits",
+    location: "Johannesburg, Gauteng",
+    program: "Medicine",
+    faculty: "Health Sciences",
+    aps: 40,
+    duration: "6 years",
+    description: "Medical training at Africa's leading research university.",
+  },
+  {
+    university: "University of the Witwatersrand",
+    abbreviation: "Wits",
+    location: "Johannesburg, Gauteng",
+    program: "Mining Engineering",
+    faculty: "Engineering",
+    aps: 37,
+    duration: "4 years",
+    description: "Leading mining engineering program in Africa.",
+  },
+  {
+    university: "University of the Witwatersrand",
+    abbreviation: "Wits",
+    location: "Johannesburg, Gauteng",
+    program: "Actuarial Science",
+    faculty: "Commerce",
+    aps: 40,
+    duration: "3 years",
+    description: "Mathematical analysis of financial risk.",
+  },
+
+  // Stellenbosch Programs
+  {
+    university: "Stellenbosch University",
+    abbreviation: "SU",
+    location: "Stellenbosch, Western Cape",
+    program: "Medicine",
+    faculty: "Health Sciences",
+    aps: 39,
+    duration: "6 years",
+    description: "Medical program at prestigious research university.",
+  },
+  {
+    university: "Stellenbosch University",
+    abbreviation: "SU",
+    location: "Stellenbosch, Western Cape",
+    program: "Engineering",
+    faculty: "Engineering",
+    aps: 36,
+    duration: "4 years",
+    description: "Comprehensive engineering programs.",
+  },
+
+  // UP Programs
+  {
+    university: "University of Pretoria",
+    abbreviation: "UP",
+    location: "Pretoria, Gauteng",
+    program: "Veterinary Science",
+    faculty: "Veterinary Science",
+    aps: 38,
+    duration: "6 years",
+    description: "Leading veterinary program in Africa.",
+  },
+  {
+    university: "University of Pretoria",
+    abbreviation: "UP",
+    location: "Pretoria, Gauteng",
+    program: "Engineering",
+    faculty: "Engineering",
+    aps: 35,
+    duration: "4 years",
+    description: "Diverse engineering disciplines.",
+  },
+
+  // Additional programs for variety
+  {
+    university: "University of KwaZulu-Natal",
+    abbreviation: "UKZN",
+    location: "Durban, KwaZulu-Natal",
+    program: "Medicine",
+    faculty: "Health Sciences",
+    aps: 38,
+    duration: "6 years",
+    description: "Medical training in coastal setting.",
+  },
+  {
+    university: "Rhodes University",
+    abbreviation: "RU",
+    location: "Grahamstown, Eastern Cape",
+    program: "Pharmacy",
+    faculty: "Pharmacy",
+    aps: 35,
+    duration: "4 years",
+    description: "Pharmaceutical sciences and practice.",
+  },
+  {
+    university: "University of the Western Cape",
+    abbreviation: "UWC",
+    location: "Cape Town, Western Cape",
+    program: "Dentistry",
+    faculty: "Dentistry",
+    aps: 36,
+    duration: "5 years",
+    description: "Comprehensive dental training.",
   },
   {
     university: "University of Cape Town",
@@ -1570,6 +1771,24 @@ const UNIVERSITY_PROGRAMS = [
   },
 ];
 
+// Use real data if available, otherwise fallback - ensure we always have data
+const FINAL_UNIVERSITY_PROGRAMS =
+  UNIVERSITY_PROGRAMS.length > 0 ? UNIVERSITY_PROGRAMS : FALLBACK_PROGRAMS;
+
+// Safety check - ensure we have at least some programs
+if (FINAL_UNIVERSITY_PROGRAMS.length === 0) {
+  console.error(
+    "No university programs available - this will cause a blank screen",
+  );
+}
+
+// Debug logging in development
+if (import.meta.env.DEV) {
+  console.log(
+    `🎓 APS Calculator: Using ${FINAL_UNIVERSITY_PROGRAMS.length} programs from ${UNIVERSITY_PROGRAMS.length > 0 ? "real" : "fallback"} data`,
+  );
+}
+
 // Types
 interface APSSubject {
   name: string;
@@ -1667,9 +1886,9 @@ const SimpleAPSCalculator: React.FC = () => {
 
   // State
   const [subjects, setSubjects] = useState<APSSubject[]>(CORE_SUBJECTS);
-  const [activeInsight, setActiveInsight] = useState<
-    "overview" | "universities" | "programs"
-  >("programs");
+  const [activeInsight, setActiveInsight] = useState<"overview" | "programs">(
+    "programs",
+  );
   const [selectedFilter, setSelectedFilter] = useState<
     "all" | "eligible" | "competitive"
   >("all");
@@ -1718,7 +1937,7 @@ const SimpleAPSCalculator: React.FC = () => {
   const degreeAnalysis = useMemo(() => {
     const degrees: DegreeInsight[] = [];
 
-    UNIVERSITY_PROGRAMS.forEach((prog) => {
+    FINAL_UNIVERSITY_PROGRAMS.forEach((prog) => {
       const eligible = totalAPS >= prog.aps;
       const apsGap = eligible ? 0 : prog.aps - totalAPS;
 
@@ -1750,7 +1969,7 @@ const SimpleAPSCalculator: React.FC = () => {
   const universityMatches = useMemo(() => {
     const universityMap = new Map();
 
-    UNIVERSITY_PROGRAMS.forEach((prog) => {
+    FINAL_UNIVERSITY_PROGRAMS.forEach((prog) => {
       const key = prog.abbreviation;
       if (!universityMap.has(key)) {
         universityMap.set(key, {
@@ -2020,7 +2239,7 @@ const SimpleAPSCalculator: React.FC = () => {
                             type="number"
                             min="0"
                             max="100"
-                            value={subject.marks}
+                            value={subject.marks || ""}
                             onChange={(e) =>
                               updateSubjectMarks(
                                 index,
@@ -2028,7 +2247,7 @@ const SimpleAPSCalculator: React.FC = () => {
                               )
                             }
                             className="bg-slate-50 border-slate-200 text-center font-medium"
-                            placeholder="0"
+                            placeholder="Enter marks"
                           />
                         </div>
                         <div className="flex-shrink-0">
@@ -2118,20 +2337,13 @@ const SimpleAPSCalculator: React.FC = () => {
               onValueChange={(value: string) => setActiveInsight(value)}
               className="w-full"
             >
-              <TabsList className="grid grid-cols-1 sm:grid-cols-3 w-full mb-6 bg-white border border-slate-200 h-auto sm:h-10">
+              <TabsList className="grid grid-cols-1 sm:grid-cols-2 w-full mb-6 bg-white border border-slate-200 h-auto sm:h-10">
                 <TabsTrigger
                   value="overview"
                   className="data-[state=active]:bg-slate-900 data-[state=active]:text-white"
                 >
                   <BarChart3 className="h-4 w-4 mr-2" />
-                  Overview
-                </TabsTrigger>
-                <TabsTrigger
-                  value="universities"
-                  className="data-[state=active]:bg-slate-900 data-[state=active]:text-white"
-                >
-                  <Building className="h-4 w-4 mr-2" />
-                  Universities
+                  Program Overview
                 </TabsTrigger>
                 <TabsTrigger
                   value="programs"
@@ -2396,89 +2608,6 @@ const SimpleAPSCalculator: React.FC = () => {
                         )}
                       </div>
                     )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="universities" className="space-y-6">
-                <Card className="bg-white border-0 shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between text-slate-900">
-                      <div className="flex items-center gap-2">
-                        <Building className="h-5 w-5 text-blue-500" />
-                        University Matches
-                      </div>
-                      <Badge variant="outline">
-                        {
-                          universityMatches.filter(
-                            (u) => u.eligiblePrograms > 0,
-                          ).length
-                        }{" "}
-                        matches
-                      </Badge>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {universityMatches
-                        .filter((u) => u.eligiblePrograms > 0)
-                        .slice(0, 8)
-                        .map((university, index) => (
-                          <div
-                            key={index}
-                            className="p-4 border border-slate-200 rounded-lg hover:shadow-md transition-shadow cursor-pointer"
-                          >
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-2">
-                                  <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <Building className="h-5 w-5 text-slate-600" />
-                                  </div>
-                                  <div className="min-w-0 flex-1">
-                                    <h4 className="font-semibold text-slate-900 truncate">
-                                      {university.university}
-                                    </h4>
-                                    <p className="text-sm text-slate-600 flex items-center gap-1">
-                                      <span className="truncate">
-                                        {university.location}
-                                      </span>
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm">
-                                  <span className="text-slate-600">
-                                    <span className="font-medium text-emerald-600">
-                                      {university.eligiblePrograms}
-                                    </span>{" "}
-                                    of {university.totalPrograms} programs
-                                  </span>
-                                  <span className="text-slate-600">
-                                    Avg APS:{" "}
-                                    <span className="font-medium">
-                                      {university.averageAPS}
-                                    </span>
-                                  </span>
-                                  <Badge
-                                    variant="outline"
-                                    className={cn(
-                                      "w-fit",
-                                      university.competitiveness === "High"
-                                        ? "border-red-200 text-red-700 bg-red-50"
-                                        : university.competitiveness ===
-                                            "Moderate"
-                                          ? "border-orange-200 text-orange-700 bg-orange-50"
-                                          : "border-green-200 text-green-700 bg-green-50",
-                                    )}
-                                  >
-                                    {university.competitiveness}
-                                  </Badge>
-                                </div>
-                              </div>
-                              <ChevronRight className="h-5 w-5 text-slate-400 flex-shrink-0 self-start sm:self-center" />
-                            </div>
-                          </div>
-                        ))}
-                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
