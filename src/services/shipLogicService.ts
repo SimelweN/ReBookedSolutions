@@ -323,18 +323,24 @@ export const getShipLogicRates = async (
       }
 
       if (status === 400) {
+        console.error(`ShipLogic API validation error: ${errorMessage}`);
         throw new Error(`Request validation failed: ${errorMessage}`);
       } else if (status === 401) {
+        console.error("ShipLogic API authentication failed");
         throw new Error("Authentication failed. Please check API credentials.");
       } else if (status === 403) {
+        console.error("ShipLogic API access denied");
         throw new Error("Access denied. Insufficient permissions.");
       } else if (status === 404) {
-        throw new Error(
-          "ShipLogic service not available. Please try again later.",
+        console.warn(
+          "ShipLogic service not available, returning fallback rates",
         );
+        return getFallbackRates();
       } else if (status >= 500) {
-        throw new Error("ShipLogic server error. Please try again later.");
+        console.warn("ShipLogic server error, returning fallback rates");
+        return getFallbackRates();
       } else {
+        console.error(`ShipLogic API error (${status}): ${errorMessage}`);
         throw new Error(`Failed to get shipping rates: ${errorMessage}`);
       }
     }
