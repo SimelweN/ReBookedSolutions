@@ -555,6 +555,22 @@ const UniversityInfo = () => {
 
       <CampusNavbar />
 
+      {/* Test div to check if component renders */}
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          background: "red",
+          color: "white",
+          padding: "4px",
+          zIndex: 9999,
+          fontSize: "12px",
+        }}
+      >
+        UniversityInfo Loading - {SOUTH_AFRICAN_UNIVERSITIES?.length || 0} unis
+      </div>
+
       <div className="min-h-screen bg-gray-50">
         {/* Debug information */}
         {import.meta.env.DEV && (
