@@ -62,6 +62,11 @@ function App() {
                     element={<ModernUniversityProfile />}
                   />
 
+                  {/* Policy Pages */}
+                  <Route path="/policies" element={<Policies />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/terms" element={<Terms />} />
+
                   {/* Protected Routes */}
                   <Route
                     path="/profile"
