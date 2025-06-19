@@ -161,6 +161,15 @@ export class AdminUtilityService {
         .select("id, title, author, isbn");
 
       if (fetchError) {
+        console.error(
+          "AdminUtilityService.deleteDemoBooks - fetch all books error:",
+          {
+            message: fetchError.message,
+            code: fetchError.code,
+            details: fetchError.details,
+            hint: fetchError.hint,
+          },
+        );
         logError(
           "AdminUtilityService.deleteDemoBooks - fetch all books",
           fetchError,
@@ -168,7 +177,7 @@ export class AdminUtilityService {
         return {
           success: false,
           deletedCount: 0,
-          message: "Failed to fetch books for demo detection",
+          message: `Failed to fetch books for demo detection: ${fetchError.message || fetchError.code || "Unknown error"}`,
         };
       }
 
@@ -220,11 +229,17 @@ export class AdminUtilityService {
         .in("id", bookIds);
 
       if (deleteError) {
+        console.error("AdminUtilityService.deleteDemoBooks - delete error:", {
+          message: deleteError.message,
+          code: deleteError.code,
+          details: deleteError.details,
+          hint: deleteError.hint,
+        });
         logError("AdminUtilityService.deleteDemoBooks - delete", deleteError);
         return {
           success: false,
           deletedCount: 0,
-          message: "Failed to delete demo books",
+          message: `Failed to delete demo books: ${deleteError.message || deleteError.code || "Unknown error"}`,
         };
       }
 
@@ -236,6 +251,14 @@ export class AdminUtilityService {
         message: `Successfully deleted ${demoBooks.length} demo books`,
       };
     } catch (error) {
+      console.error(
+        "AdminUtilityService.deleteDemoBooks - catch block error:",
+        {
+          error,
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        },
+      );
       logError("AdminUtilityService.deleteDemoBooks", error);
       return {
         success: false,
