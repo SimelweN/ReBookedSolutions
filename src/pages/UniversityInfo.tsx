@@ -155,28 +155,34 @@ const UniversityInfo = () => {
         };
       }
 
-      const totalPrograms = SOUTH_AFRICAN_UNIVERSITIES.reduce((total, uni) => {
-        // Safely handle undefined or null universities
-        if (!uni) {
-          return total;
-        }
+      let totalPrograms = 0;
+      try {
+        totalPrograms = SOUTH_AFRICAN_UNIVERSITIES.reduce((total, uni) => {
+          // Safely handle undefined or null universities
+          if (!uni) {
+            return total;
+          }
 
-        // Safely handle undefined or null faculties
-        if (!uni.faculties || !Array.isArray(uni.faculties)) {
-          return total;
-        }
+          // Safely handle undefined or null faculties
+          if (!uni.faculties || !Array.isArray(uni.faculties)) {
+            return total;
+          }
 
-        return (
-          total +
-          uni.faculties.reduce((facTotal, fac) => {
-            // Safely handle undefined or null degrees
-            if (!fac || !fac.degrees || !Array.isArray(fac.degrees)) {
-              return facTotal;
-            }
-            return facTotal + fac.degrees.length;
-          }, 0)
-        );
-      }, 0);
+          return (
+            total +
+            uni.faculties.reduce((facTotal, fac) => {
+              // Safely handle undefined or null degrees
+              if (!fac || !fac.degrees || !Array.isArray(fac.degrees)) {
+                return facTotal;
+              }
+              return facTotal + fac.degrees.length;
+            }, 0)
+          );
+        }, 0);
+      } catch (programError) {
+        console.error("Error calculating programs:", programError);
+        totalPrograms = 0;
+      }
 
       return {
         universities: SOUTH_AFRICAN_UNIVERSITIES.length,
