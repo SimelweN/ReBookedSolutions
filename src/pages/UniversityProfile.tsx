@@ -102,7 +102,9 @@ const UniversityProfile: React.FC = () => {
   };
 
   // Handle program expansion
-  const toggleProgram = (programId: string) => {
+  const toggleProgram = (programId: string | undefined) => {
+    if (!programId) return;
+
     const newExpanded = new Set(expandedPrograms);
     if (newExpanded.has(programId)) {
       newExpanded.delete(programId);
