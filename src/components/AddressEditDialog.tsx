@@ -293,17 +293,16 @@ const AddressEditDialog = ({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="shipping-province">Province</Label>
-                  <Input
-                    id="shipping-province"
+                  <ProvinceSelector
+                    label="Province"
                     value={shippingAddress.province || ""}
-                    onChange={(e) =>
+                    onValueChange={(value) =>
                       setShippingAddress((prev) => ({
                         ...prev,
-                        province: e.target.value,
+                        province: value,
                       }))
                     }
-                    placeholder="Enter province"
+                    placeholder="Select province"
                     required
                     disabled={isLoading}
                   />
