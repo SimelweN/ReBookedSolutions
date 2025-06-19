@@ -1791,7 +1791,7 @@ const SimpleAPSCalculator: React.FC = () => {
   const universityMatches = useMemo(() => {
     const universityMap = new Map();
 
-    UNIVERSITY_PROGRAMS.forEach((prog) => {
+    FINAL_UNIVERSITY_PROGRAMS.forEach((prog) => {
       const key = prog.abbreviation;
       if (!universityMap.has(key)) {
         universityMap.set(key, {
