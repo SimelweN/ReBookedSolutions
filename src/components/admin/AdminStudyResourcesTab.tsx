@@ -125,15 +125,19 @@ const AdminStudyResourcesTab = () => {
     setIsLoading(true);
     setError(null);
     try {
-      // Simplified loading with better error handling
-      setResources([]);
-      setTips([]);
-      setError(
-        "Study resources functionality is being updated. Please check back later.",
-      );
+      const [resourcesData, tipsData] = await Promise.all([
+        studyResourcesService.getStudyResources(),
+        studyResourcesService.getStudyTips(),
+      ]);
+      setResources(resourcesData);
+      setTips(tipsData);
     } catch (error) {
       console.error("Error loading study resources:", error);
-      setError("Failed to load study resources");
+      setError(
+        "Failed to load study resources. Please check if the database tables exist.",
+      );
+      setResources([]);
+      setTips([]);
     } finally {
       setIsLoading(false);
     }
