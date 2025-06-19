@@ -73,9 +73,9 @@ const AdminDashboard = () => {
 
       // Load data with individual error handling to prevent cascading failures
       const results = await Promise.allSettled([
-        getAdminStats(),
-        getAllUsers(),
-        getAllListings(),
+        getAdminStats().catch((e) => ({ error: e })),
+        getAllUsers().catch((e) => ({ error: e })),
+        getAllListings().catch((e) => ({ error: e })),
       ]);
 
       // Handle stats
