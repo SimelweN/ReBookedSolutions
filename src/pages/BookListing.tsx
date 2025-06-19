@@ -180,17 +180,6 @@ const BookListing = () => {
           Browse Books
         </h1>
 
-        {/* Debug info - temporary for troubleshooting */}
-        <div className="bg-blue-100 p-4 mb-4 rounded-lg">
-          <p>
-            <strong>Debug Info:</strong>
-          </p>
-          <p>Loading: {isLoading.toString()}</p>
-          <p>Books count: {books.length}</p>
-          <p>Error: {error || "None"}</p>
-          <p>Component is rendering!</p>
-        </div>
-
         <div className="flex flex-col lg:flex-row gap-4 sm:gap-8">
           <BookFilters
             searchQuery={searchQuery}
