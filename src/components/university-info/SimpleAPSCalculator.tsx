@@ -43,9 +43,45 @@ import { SOUTH_AFRICAN_SUBJECTS } from "@/constants/subjects";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities";
 import { toast } from "sonner";
 
-// Simplified but comprehensive program data
-const UNIVERSITY_PROGRAMS = [
-  // UCT
+// Extract all programs from real university data
+const extractUniversityPrograms = () => {
+  const programs: any[] = [];
+
+  try {
+    ALL_SOUTH_AFRICAN_UNIVERSITIES.forEach((university) => {
+      if (university.faculties && Array.isArray(university.faculties)) {
+        university.faculties.forEach((faculty) => {
+          if (faculty.degrees && Array.isArray(faculty.degrees)) {
+            faculty.degrees.forEach((degree) => {
+              programs.push({
+                university: university.fullName || university.name,
+                abbreviation: university.abbreviation || university.name,
+                location: `${university.location}, ${university.province}`,
+                program: degree.name,
+                faculty: faculty.name,
+                aps: degree.apsRequirement || 0,
+                duration: degree.duration || "Not specified",
+                description:
+                  degree.description ||
+                  `Study ${degree.name} at ${university.name}`,
+              });
+            });
+          }
+        });
+      }
+    });
+  } catch (error) {
+    console.error("Error extracting university programs:", error);
+  }
+
+  return programs;
+};
+
+// Get real university programs data
+const UNIVERSITY_PROGRAMS = extractUniversityPrograms();
+
+// Fallback data in case extraction fails
+const FALLBACK_PROGRAMS = [
   {
     university: "University of Cape Town",
     abbreviation: "UCT",
