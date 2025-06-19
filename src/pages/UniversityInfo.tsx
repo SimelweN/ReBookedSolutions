@@ -424,6 +424,14 @@ const UniversityInfo = () => {
 
   // Universities Grid with Application Information
   const UniversitiesApplicationGrid = () => {
+    if (
+      !UNIVERSITY_APPLICATIONS_2025 ||
+      !Array.isArray(UNIVERSITY_APPLICATIONS_2025)
+    ) {
+      setError("University applications data failed to load");
+      return null;
+    }
+
     const displayedUniversities = showAllUniversities
       ? UNIVERSITY_APPLICATIONS_2025
       : UNIVERSITY_APPLICATIONS_2025.slice(0, 6);
