@@ -158,37 +158,86 @@ const UniversityInfo = () => {
     </div>
   );
 
-  // Simple Hero Component to replace the potentially problematic UniversityHero
-  const SimpleHero = () => (
-    <div className="bg-gradient-to-br from-blue-900 to-purple-900 text-white py-16">
-      <div className="container mx-auto px-4 text-center">
-        <h1 className="text-4xl md:text-6xl font-bold mb-6">
-          Discover Your Perfect University
-        </h1>
-        <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
-          Explore {stats.universities} South African universities, calculate
-          your APS, find bursaries, and discover {stats.programs} programs.
-        </p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-            <Building className="w-8 h-8 mx-auto mb-2 text-blue-300" />
-            <div className="text-2xl font-bold">{stats.universities}</div>
-            <div className="text-sm text-blue-200">Universities</div>
+  // Modern Hero Component with subtle green theming
+  const ModernHero = () => (
+    <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-book-50">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div
+          className={
+            'absolute inset-0 bg-[url(\'data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%2344ab83" fill-opacity="0.3"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\')]'
+          }
+        />
+      </div>
+
+      <div className="relative container mx-auto px-4 py-16 lg:py-24">
+        <div className="text-center space-y-8">
+          {/* Main Heading */}
+          <div className="space-y-4">
+            <div className="inline-flex items-center gap-2 bg-book-100 text-book-800 px-4 py-2 rounded-full text-sm font-medium">
+              <GraduationCap className="w-4 h-4" />
+              Your Educational Journey Starts Here
+            </div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+              Find Your
+              <span className="block text-book-600">Perfect University</span>
+            </h1>
+            <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Explore all {stats.universities} South African public
+              universities, calculate your APS score, discover {stats.programs}{" "}
+              programs, and find the perfect path to your future.
+            </p>
           </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-            <BookOpen className="w-8 h-8 mx-auto mb-2 text-purple-300" />
-            <div className="text-2xl font-bold">{stats.programs}</div>
-            <div className="text-sm text-blue-200">Programs</div>
+
+          {/* Quick Stats Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-4xl mx-auto">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 hover:shadow-md transition-shadow">
+              <Building className="w-8 h-8 mx-auto mb-3 text-book-600" />
+              <div className="text-2xl md:text-3xl font-bold text-gray-900">
+                {stats.universities}
+              </div>
+              <div className="text-sm text-gray-600">Universities</div>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 hover:shadow-md transition-shadow">
+              <BookOpen className="w-8 h-8 mx-auto mb-3 text-book-600" />
+              <div className="text-2xl md:text-3xl font-bold text-gray-900">
+                {stats.programs}
+              </div>
+              <div className="text-sm text-gray-600">Programs</div>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 hover:shadow-md transition-shadow">
+              <Users className="w-8 h-8 mx-auto mb-3 text-book-600" />
+              <div className="text-2xl md:text-3xl font-bold text-gray-900">
+                {stats.students}
+              </div>
+              <div className="text-sm text-gray-600">Students</div>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 hover:shadow-md transition-shadow">
+              <Award className="w-8 h-8 mx-auto mb-3 text-book-600" />
+              <div className="text-2xl md:text-3xl font-bold text-gray-900">
+                40+
+              </div>
+              <div className="text-sm text-gray-600">Bursaries</div>
+            </div>
           </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-            <Users className="w-8 h-8 mx-auto mb-2 text-green-300" />
-            <div className="text-2xl font-bold">{stats.students}</div>
-            <div className="text-sm text-blue-200">Students</div>
-          </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-            <Award className="w-8 h-8 mx-auto mb-2 text-yellow-300" />
-            <div className="text-2xl font-bold">40+</div>
-            <div className="text-sm text-blue-200">Bursaries</div>
+
+          {/* Call to Action */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md mx-auto">
+            <Button
+              onClick={() => handleTabChange("aps-calculator")}
+              className="w-full sm:w-auto bg-book-600 hover:bg-book-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+            >
+              <Calculator className="w-4 h-4 mr-2" />
+              Calculate APS Score
+            </Button>
+            <Button
+              onClick={() => handleTabChange("bursaries")}
+              variant="outline"
+              className="w-full sm:w-auto border-book-300 text-book-700 hover:bg-book-50 px-6 py-3 rounded-lg font-semibold transition-colors"
+            >
+              <DollarSign className="w-4 h-4 mr-2" />
+              Find Bursaries
+            </Button>
           </div>
         </div>
       </div>
