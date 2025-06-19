@@ -2,7 +2,7 @@ import { getCourierGuyQuote } from "@/services/courierGuyService";
 import { getShipLogicQuickQuote } from "@/services/shipLogicService";
 
 export interface ShippingProvider {
-  id: "courierGuy" | "shipLogic";
+  id: "courierGuy" | "shipLogic" | "fastway" | "unified";
   name: string;
   description: string;
   logo: string;
