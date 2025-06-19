@@ -281,8 +281,19 @@ export const markNotificationAsRead = async (
       .eq("id", notificationId);
 
     if (error) {
-      console.error("Error marking notification as read:", error);
-      throw error;
+      console.error("Error marking notification as read:", {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+      });
+
+      if (error.code === "42P01") {
+        throw new Error(
+          "Notifications table does not exist. Please run database migrations.",
+        );
+      }
+
+      throw new Error(`Failed to mark notification as read: ${error.message}`);
     }
 
     // Update cache for all users (simple approach - clear all cache)
@@ -303,8 +314,19 @@ export const deleteNotification = async (
       .eq("id", notificationId);
 
     if (error) {
-      console.error("Error deleting notification:", error);
-      throw error;
+      console.error("Error deleting notification:", {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+      });
+
+      if (error.code === "42P01") {
+        throw new Error(
+          "Notifications table does not exist. Please run database migrations.",
+        );
+      }
+
+      throw new Error(`Failed to delete notification: ${error.message}`);
     }
 
     // Clear cache after deletion
@@ -328,8 +350,19 @@ export const markMultipleAsRead = async (
       .in("id", notificationIds);
 
     if (error) {
-      console.error("Error marking multiple notifications as read:", error);
-      throw error;
+      console.error("Error marking multiple notifications as read:", {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+      });
+
+      if (error.code === "42P01") {
+        throw new Error(
+          "Notifications table does not exist. Please run database migrations.",
+        );
+      }
+
+      throw new Error(`Failed to mark notifications as read: ${error.message}`);
     }
 
     notificationCache.clear();
