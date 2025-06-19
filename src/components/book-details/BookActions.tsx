@@ -1,7 +1,6 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ShoppingCart, CreditCard, Edit, User } from "lucide-react";
+import { ShoppingCart, CreditCard, Edit, User, Clock } from "lucide-react";
 import { Book } from "@/types/book";
 import { UserProfile } from "@/types/address"; // UserProfile includes id
 import { toast } from "sonner";
@@ -12,8 +11,10 @@ interface BookActionsProps {
   onBuyNow: () => void;
   onAddToCart: () => void;
   onEditBook: () => void;
+  onCommit?: () => void; // New commit action
   onShare: () => void; // This prop seems unused in the component
   onViewSellerProfile: () => void; // This prop seems unused in the component
+  showCommitButton?: boolean; // Flag to show commit button
 }
 
 const BookActions = ({
@@ -83,13 +84,15 @@ const BookActions = ({
               onClick={() => {
                 // seller_id on book type might be string | undefined or seller object.
                 // Assuming seller object exists from `isOwner` check
-                const sellerId = book.seller?.id; 
+                const sellerId = book.seller?.id;
                 if (sellerId) {
                   const listingsUrl = `${window.location.origin}/books?seller=${sellerId}`;
                   navigator.clipboard.writeText(listingsUrl);
                   toast.success("Seller listings link copied to clipboard!"); // Using toast for better UX
                 } else {
-                  toast.error("Could not find seller information for this book.");
+                  toast.error(
+                    "Could not find seller information for this book.",
+                  );
                 }
               }}
               variant="outline"
