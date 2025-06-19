@@ -10,7 +10,6 @@ import ScrollToTop from "./components/ScrollToTop";
 import ErrorBoundary from "./components/ErrorBoundary";
 import AuthErrorBoundary from "./components/AuthErrorBoundary";
 import OAuthRedirectHandler from "./components/OAuthRedirectHandler";
-import VercelDebug from "./components/VercelDebug";
 // TEMPORARY: Disabled to fix error spam
 // import BroadcastManager from "./components/BroadcastManager";
 
@@ -216,7 +215,6 @@ function App() {
           {/* Vercel Analytics and Speed Insights */}
           <Analytics />
           <SpeedInsights />
-          <VercelDebug />
         </AuthErrorBoundary>
       </ErrorBoundary>
     );
