@@ -490,6 +490,21 @@ const UniversityInfo = () => {
     );
   };
 
+  // Error boundary for debugging
+  if (error) {
+    return (
+      <div className="min-h-screen bg-red-50 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-lg shadow-md max-w-md text-center">
+          <h2 className="text-xl font-bold text-red-800 mb-4">
+            Error Loading Page
+          </h2>
+          <p className="text-red-600 mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>Reload Page</Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <SEO
