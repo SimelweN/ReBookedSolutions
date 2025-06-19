@@ -155,6 +155,23 @@ export class AdminUtilityService {
 
       console.log("Searching for demo books with patterns:", demoPatterns);
 
+      // First check if we can access the books table
+      try {
+        const { count, error: testError } = await supabase
+          .from("books")
+          .select("*", { count: "exact", head: true });
+
+        if (testError) {
+          console.error("Cannot access books table:", testError);
+          throw testError;
+        }
+
+        console.log(`Books table accessible, found ${count || 0} total books`);
+      } catch (accessError) {
+        console.error("Books table access test failed:", accessError);
+        throw accessError;
+      }
+
       // Get all books first, then filter on the frontend for more aggressive matching
       const { data: allBooks, error: fetchError } = await supabase
         .from("books")
