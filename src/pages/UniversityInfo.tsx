@@ -261,12 +261,12 @@ const UniversityInfo = () => {
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
               {/* University Logo */}
-              <div className="w-14 h-14 bg-white border-2 border-book-200 rounded-xl flex items-center justify-center overflow-hidden">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white border-2 border-book-200 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0">
                 {universityData?.logo ? (
                   <img
                     src={universityData.logo}
                     alt={`${applicationInfo.name} logo`}
-                    className="w-12 h-12 object-contain"
+                    className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
                     onError={(e) => {
                       e.currentTarget.style.display = "none";
                       e.currentTarget.nextElementSibling.style.display =
@@ -275,18 +275,18 @@ const UniversityInfo = () => {
                   />
                 ) : null}
                 <div
-                  className={`w-12 h-12 bg-gradient-to-br from-book-500 to-book-600 rounded-lg flex items-center justify-center text-white font-bold text-sm ${universityData?.logo ? "hidden" : "block"}`}
+                  className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-book-500 to-book-600 rounded-lg flex items-center justify-center text-white font-bold text-xs sm:text-sm ${universityData?.logo ? "hidden" : "block"}`}
                 >
                   {applicationInfo.abbreviation}
                 </div>
               </div>
-              <div>
-                <CardTitle className="text-lg group-hover:text-book-600 transition-colors">
+              <div className="min-w-0 flex-1">
+                <CardTitle className="text-base sm:text-lg group-hover:text-book-600 transition-colors line-clamp-2">
                   {applicationInfo.name}
                 </CardTitle>
-                <CardDescription className="flex items-center gap-1 mt-1">
-                  <Building className="w-4 h-4" />
-                  {applicationInfo.type}
+                <CardDescription className="flex items-center gap-1 mt-1 text-xs sm:text-sm">
+                  <Building className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                  <span className="truncate">{applicationInfo.type}</span>
                 </CardDescription>
               </div>
             </div>
