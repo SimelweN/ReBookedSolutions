@@ -70,8 +70,8 @@ const Index = () => {
           </div>
           <div className="md:w-1/2 flex justify-center">
             <img
-              src="/placeholder.svg"
-              alt="Students studying with textbooks in library"
+              src="https://cdn.builder.io/api/v1/assets/4b236342bc954bc3a0760c75cd3f3881/pexels-yankrukov-8199706-ad0e6d?format=webp&width=800"
+              alt="Three diverse students smiling with stacks of textbooks in library"
               width="600"
               height="400"
               className="rounded-lg shadow-xl max-w-full h-auto w-full max-w-sm md:max-w-full"
