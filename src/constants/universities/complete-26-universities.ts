@@ -77,7 +77,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Stellenbosch University",
     location: "Stellenbosch",
     province: "Western Cape",
-    logo: "https://cdn.builder.io/api/v1/assets/34dfccd6d7ce41b8bf7ca3d8b60d0eeb/stellenbosh-a6e1ea?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/0f22b19c46fe46488c6c8c5a3c15b7b9/stellenbosh-c8c737?format=webp&width=800",
     overview:
       "Research-intensive university with a tradition of academic excellence and innovation in South Africa.",
     website: "https://www.sun.ac.za",
@@ -233,7 +233,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of the Western Cape",
     location: "Cape Town",
     province: "Western Cape",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/cape-peninusla-499c5e?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/0f22b19c46fe46488c6c8c5a3c15b7b9/uwc-3ee0b9?format=webp&width=800",
     overview:
       "University with strong community focus and commitment to social justice and transformation.",
     website: "https://www.uwc.ac.za",
@@ -523,7 +523,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Zululand",
     location: "Richards Bay",
     province: "KwaZulu-Natal",
-    logo: "https://cdn.builder.io/api/v1/assets/34dfccd6d7ce41b8bf7ca3d8b60d0eeb/zululand-43783b?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/0f22b19c46fe46488c6c8c5a3c15b7b9/zululand-5277f0?format=webp&width=800",
     overview:
       "Comprehensive university serving rural KwaZulu-Natal with focus on community development.",
     website: "https://www.unizulu.ac.za",
@@ -549,7 +549,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Venda",
     location: "Thohoyandou",
     province: "Limpopo",
-    logo: "https://cdn.builder.io/api/v1/assets/34dfccd6d7ce41b8bf7ca3d8b60d0eeb/venda-1be0a7?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/0f22b19c46fe46488c6c8c5a3c15b7b9/venda-3717a6?format=webp&width=800",
     overview:
       "Comprehensive university serving the Venda region with focus on rural development.",
     website: "https://www.univen.ac.za",
@@ -575,7 +575,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Nelson Mandela University",
     location: "Port Elizabeth",
     province: "Eastern Cape",
-    logo: "https://cdn.builder.io/api/v1/assets/34dfccd6d7ce41b8bf7ca3d8b60d0eeb/nelson-a2ae62?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/0f22b19c46fe46488c6c8c5a3c15b7b9/nelson-2adb35?format=webp&width=800",
     overview:
       "Comprehensive university known for academic excellence and community engagement in the Eastern Cape.",
     website: "https://www.mandela.ac.za",
