@@ -97,35 +97,44 @@ export class BookDeletionService {
         throw new Error("Book not found");
       }
 
-      // Use stored procedure for atomic deletion + notification
-      const { error: transactionError } = await supabase.rpc(
-        "delete_book_with_notification",
-        {
-          p_book_id: bookId,
-          p_reason: reason,
-          p_admin_id: adminId || null,
-        },
-      );
+      // Delete the book directly
+      const { error: deleteError } = await supabase
+        .from("books")
+        .delete()
+        .eq("id", bookId);
 
-      if (transactionError) {
+      if (deleteError) {
         logError(
-          "BookDeletionService.deleteBookWithNotification - transaction",
-          transactionError,
+          "BookDeletionService.deleteBookWithNotification - delete",
+          deleteError,
         );
-        throw new Error("Failed to delete book with notification");
+        throw new Error(`Failed to delete book: ${deleteError.message}`);
+      }
+
+      // Send notification to the seller
+      try {
+        await BookDeletionService.notifyBookDeletion({
+          bookId: book.id,
+          bookTitle: book.title,
+          sellerId: book.seller_id,
+          reason,
+          adminId,
+        });
+      } catch (notificationError) {
+        console.warn(
+          "Book deleted but notification failed:",
+          notificationError,
+        );
+        // Don't fail the entire operation if notification fails
       }
 
       console.log("Book deleted and notification sent successfully:", bookId);
     } catch (error) {
-      logError(
-        "BookDeletionService.deleteBookWithNotification",
-        error,
-        {
-          bookId,
-          reason,
-          adminId,
-        },
-      );
+      logError("BookDeletionService.deleteBookWithNotification", error, {
+        bookId,
+        reason,
+        adminId,
+      });
       throw error;
     }
   }
@@ -145,11 +154,9 @@ export class BookDeletionService {
         .single();
 
       if (error) {
-        logError(
-          "BookDeletionService.validateUserCanListBooks",
-          error,
-          { userId },
-        );
+        logError("BookDeletionService.validateUserCanListBooks", error, {
+          userId,
+        });
         return {
           canList: false,
           message: "Unable to verify profile information",
