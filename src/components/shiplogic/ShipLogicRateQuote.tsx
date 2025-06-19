@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import {
-  Loader2,
+import { ProvinceSelector } from "@/components/ui/province-selector";
   Calculator,
   Package,
   Truck,
@@ -136,25 +137,17 @@ const ShipLogicRateQuote = ({
     } catch (error) {
       console.error("Error getting rates:", error);
 
-      let userFriendlyMessage =
-        "Failed to get shipping rates. Please try again.";
+      let userFriendlyMessage = "Failed to get shipping rates. Please try again.";
 
       if (error instanceof Error) {
         if (error.message.includes("Request validation failed")) {
-          userFriendlyMessage =
-            "Please check that all address fields are properly filled out.";
+          userFriendlyMessage = "Please check that all address fields are properly filled out.";
         } else if (error.message.includes("Authentication failed")) {
-          userFriendlyMessage =
-            "Shipping service temporarily unavailable. Fallback rates will be used.";
+          userFriendlyMessage = "Shipping service temporarily unavailable. Fallback rates will be used.";
         } else if (error.message.includes("server error")) {
-          userFriendlyMessage =
-            "Shipping service is experiencing issues. Please try again later.";
-        } else if (
-          error.message.includes("network") ||
-          error.message.includes("timeout")
-        ) {
-          userFriendlyMessage =
-            "Network connection issue. Please check your internet and try again.";
+          userFriendlyMessage = "Shipping service is experiencing issues. Please try again later.";
+        } else if (error.message.includes("network") || error.message.includes("timeout")) {
+          userFriendlyMessage = "Network connection issue. Please check your internet and try again.";
         } else {
           userFriendlyMessage = error.message;
         }
