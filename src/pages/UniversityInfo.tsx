@@ -360,12 +360,12 @@ const UniversityInfo = () => {
           )}
 
           {/* Action Buttons */}
-          <div className="flex gap-2 pt-2">
+          <div className="flex flex-col sm:flex-row gap-2 pt-2">
             {applicationInfo.specialNotes && (
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-book-600 hover:bg-book-50"
+                className="w-full sm:w-auto text-book-600 hover:bg-book-50 text-xs sm:text-sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowMore(!showMore);
@@ -373,13 +373,13 @@ const UniversityInfo = () => {
               >
                 {showMore ? (
                   <>
-                    <ChevronUp className="w-4 h-4 mr-1" />
-                    View Less
+                    <ChevronUp className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                    <span className="truncate">View Less</span>
                   </>
                 ) : (
                   <>
-                    <ChevronDown className="w-4 h-4 mr-1" />
-                    View More
+                    <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                    <span className="truncate">View More</span>
                   </>
                 )}
               </Button>
@@ -387,14 +387,14 @@ const UniversityInfo = () => {
             <Button
               variant="outline"
               size="sm"
-              className="flex-1 hover:bg-book-50 hover:border-book-300 text-book-600 border-book-200"
+              className="flex-1 hover:bg-book-50 hover:border-book-300 text-book-600 border-book-200 text-xs sm:text-sm min-h-[36px]"
               onClick={(e) => {
                 e.stopPropagation();
                 navigate(`/university-profile?id=${applicationInfo.id}`);
               }}
             >
-              <ExternalLink className="w-4 h-4 mr-2" />
-              University Profile
+              <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
+              <span className="truncate">University Profile</span>
             </Button>
           </div>
         </CardContent>
