@@ -507,38 +507,42 @@ const UniversityInfo = () => {
             <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 mb-8 h-auto bg-gray-200 p-1">
               <TabsTrigger
                 value="overview"
-                className="flex flex-col items-center gap-1 py-2.5 px-2 text-center data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                className="flex flex-col items-center gap-1 py-2.5 px-2 text-center data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all duration-200 hover:bg-gray-100 data-[state=active]:scale-105"
               >
-                <University className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="text-xs sm:text-sm">Overview</span>
+                <University className="h-3 w-3 sm:h-4 sm:w-4 transition-colors" />
+                <span className="text-xs sm:text-sm font-medium">Overview</span>
               </TabsTrigger>
               <TabsTrigger
                 value="aps-calculator"
-                className="flex flex-col items-center gap-1 py-2.5 px-2 text-center data-[state=active]:bg-book-50 data-[state=active]:shadow-sm data-[state=active]:text-book-800"
+                className="flex flex-col items-center gap-1 py-2.5 px-2 text-center data-[state=active]:bg-book-50 data-[state=active]:shadow-sm data-[state=active]:text-book-800 transition-all duration-200 hover:bg-gray-100 data-[state=active]:scale-105"
               >
-                <Calculator className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="text-xs sm:text-sm">APS</span>
+                <Calculator className="h-3 w-3 sm:h-4 sm:w-4 transition-colors" />
+                <span className="text-xs sm:text-sm font-medium">APS</span>
               </TabsTrigger>
               <TabsTrigger
                 value="bursaries"
-                className="flex flex-col items-center gap-1 py-2.5 px-2 text-center data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                className="flex flex-col items-center gap-1 py-2.5 px-2 text-center data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all duration-200 hover:bg-gray-100 data-[state=active]:scale-105"
               >
-                <DollarSign className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="text-xs sm:text-sm">Bursaries</span>
+                <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 transition-colors" />
+                <span className="text-xs sm:text-sm font-medium">
+                  Bursaries
+                </span>
               </TabsTrigger>
               <TabsTrigger
                 value="books"
-                className="flex flex-col items-center gap-1 py-2.5 px-2 text-center data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                className="flex flex-col items-center gap-1 py-2.5 px-2 text-center data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all duration-200 hover:bg-gray-100 data-[state=active]:scale-105"
               >
-                <BookOpen className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="text-xs sm:text-sm">Books</span>
+                <BookOpen className="h-3 w-3 sm:h-4 sm:w-4 transition-colors" />
+                <span className="text-xs sm:text-sm font-medium">Books</span>
               </TabsTrigger>
               <TabsTrigger
                 value="accommodation"
-                className="flex flex-col items-center gap-1 py-2.5 px-2 text-center data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                className="flex flex-col items-center gap-1 py-2.5 px-2 text-center data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all duration-200 hover:bg-gray-100 data-[state=active]:scale-105"
               >
-                <Building className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="text-xs sm:text-sm">Accommodation</span>
+                <Building className="h-3 w-3 sm:h-4 sm:w-4 transition-colors" />
+                <span className="text-xs sm:text-sm font-medium">
+                  Accommodation
+                </span>
               </TabsTrigger>
             </TabsList>
 
