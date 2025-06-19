@@ -193,14 +193,23 @@ const BookListing = () => {
     <Layout>
       <SEO
         title="Browse Textbooks - ReBooked Solutions"
-        description="Browse thousands of used textbooks from students across South Africa. Find affordable academic books for university, college, and high school."
-        keywords="browse textbooks, used books, academic books, student books, textbook marketplace"
+        description="Find affordable used textbooks for your studies. Browse our collection of university and school books from verified sellers."
+        keywords="textbooks, used books, university books, school books, study materials"
         url="https://www.rebookedsolutions.co.za/books"
       />
+
       <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-book-800 mb-4 sm:mb-8 px-2 sm:px-0">
           Browse Books
         </h1>
+
+        {/* Debug info */}
+        <div className="bg-blue-100 p-4 mb-4 rounded-lg">
+          <p>Debug Info:</p>
+          <p>Loading: {isLoading.toString()}</p>
+          <p>Books count: {books.length}</p>
+          <p>Error: {error || 'None'}</p>
+        </div>
 
         <div className="flex flex-col lg:flex-row gap-4 sm:gap-8">
           <BookFilters
@@ -238,6 +247,5 @@ const BookListing = () => {
       </div>
     </Layout>
   );
-};
 
 export default BookListing;
