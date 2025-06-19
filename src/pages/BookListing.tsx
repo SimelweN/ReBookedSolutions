@@ -17,6 +17,10 @@ const BookListing = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Commit functionality
+  const { commitBook } = useCommit();
+  const { user } = useAuth();
+
   // Filter states
   const [searchQuery, setSearchQuery] = useState(
     searchParams.get("search") || "",
