@@ -200,111 +200,158 @@ const UniversityInfo = () => {
     applicationInfo,
   }: {
     applicationInfo: any;
-  }) => (
-    <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer group border-0 shadow-md">
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">
-              {applicationInfo.abbreviation}
-            </div>
-            <div>
-              <CardTitle className="text-lg group-hover:text-blue-600 transition-colors">
-                {applicationInfo.name}
-              </CardTitle>
-              <CardDescription className="flex items-center gap-1 mt-1">
-                <Building className="w-4 h-4" />
-                {applicationInfo.type}
-              </CardDescription>
-            </div>
-          </div>
-          {applicationInfo.isFree && (
-            <Badge className="bg-green-100 text-green-800 border-green-200 font-semibold">
-              No Fee
-            </Badge>
-          )}
-        </div>
-      </CardHeader>
+  }) => {
+    const [showMore, setShowMore] = useState(false);
+    const universityData = SOUTH_AFRICAN_UNIVERSITIES.find(
+      (uni) => uni.id === applicationInfo.id,
+    );
 
-      <CardContent className="space-y-4">
-        {/* Opening Date */}
-        <div className="flex items-start gap-3">
-          <Calendar className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-          <div>
-            <p className="font-semibold text-sm text-gray-900">Opens</p>
-            <p className="text-sm text-gray-600">
-              {applicationInfo.openingDate}
-            </p>
-          </div>
-        </div>
-
-        {/* Closing Date */}
-        <div className="flex items-start gap-3">
-          <Clock className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
-          <div>
-            <p className="font-semibold text-sm text-gray-900">Closes</p>
-            <p className="text-sm text-gray-600">
-              {applicationInfo.closingDate}
-            </p>
-            {applicationInfo.closingDateNotes && (
-              <p className="text-xs text-gray-500 mt-1 italic">
-                {applicationInfo.closingDateNotes}
-              </p>
+    return (
+      <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer group border-0 shadow-md">
+        <CardHeader className="pb-3">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-3">
+              {/* University Logo */}
+              <div className="w-14 h-14 bg-white border-2 border-book-200 rounded-xl flex items-center justify-center overflow-hidden">
+                {universityData?.logo ? (
+                  <img
+                    src={universityData.logo}
+                    alt={`${applicationInfo.name} logo`}
+                    className="w-12 h-12 object-contain"
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                      e.currentTarget.nextElementSibling.style.display =
+                        "block";
+                    }}
+                  />
+                ) : null}
+                <div
+                  className={`w-12 h-12 bg-gradient-to-br from-book-500 to-book-600 rounded-lg flex items-center justify-center text-white font-bold text-sm ${universityData?.logo ? "hidden" : "block"}`}
+                >
+                  {applicationInfo.abbreviation}
+                </div>
+              </div>
+              <div>
+                <CardTitle className="text-lg group-hover:text-book-600 transition-colors">
+                  {applicationInfo.name}
+                </CardTitle>
+                <CardDescription className="flex items-center gap-1 mt-1">
+                  <Building className="w-4 h-4" />
+                  {applicationInfo.type}
+                </CardDescription>
+              </div>
+            </div>
+            {applicationInfo.isFree && (
+              <Badge className="bg-book-100 text-book-800 border-book-200 font-semibold">
+                No Fee
+              </Badge>
             )}
           </div>
-        </div>
+        </CardHeader>
 
-        {/* Application Fee */}
-        <div className="flex items-start gap-3">
-          <CreditCard className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-          <div>
-            <p className="font-semibold text-sm text-gray-900">
-              Application Fee
-            </p>
-            <p className="text-sm font-medium text-gray-800">
-              {applicationInfo.applicationFee}
-            </p>
-            {applicationInfo.feeNotes && (
-              <p className="text-xs text-gray-500 mt-1">
-                {applicationInfo.feeNotes}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Special Notes */}
-        {applicationInfo.specialNotes && (
+        <CardContent className="space-y-4">
+          {/* Opening Date */}
           <div className="flex items-start gap-3">
-            <Info className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
+            <Calendar className="w-5 h-5 text-book-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="font-semibold text-sm text-gray-900">Opens</p>
+              <p className="text-sm text-gray-600">
+                {applicationInfo.openingDate}
+              </p>
+            </div>
+          </div>
+
+          {/* Closing Date */}
+          <div className="flex items-start gap-3">
+            <Clock className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="font-semibold text-sm text-gray-900">Closes</p>
+              <p className="text-sm text-gray-600">
+                {applicationInfo.closingDate}
+              </p>
+              {applicationInfo.closingDateNotes && (
+                <p className="text-xs text-gray-500 mt-1 italic">
+                  {applicationInfo.closingDateNotes}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Application Fee */}
+          <div className="flex items-start gap-3">
+            <CreditCard className="w-5 h-5 text-book-600 mt-0.5 flex-shrink-0" />
             <div>
               <p className="font-semibold text-sm text-gray-900">
-                Special Notes
+                Application Fee
               </p>
-              <p className="text-sm text-gray-600">
-                {applicationInfo.specialNotes}
+              <p className="text-sm font-medium text-book-700">
+                {applicationInfo.applicationFee}
               </p>
+              {applicationInfo.feeNotes && (
+                <p className="text-xs text-gray-500 mt-1">
+                  {applicationInfo.feeNotes}
+                </p>
+              )}
             </div>
           </div>
-        )}
 
-        {/* Action Buttons */}
-        <div className="flex gap-2 pt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1 hover:bg-blue-50 hover:border-blue-200"
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/university-profile?id=${applicationInfo.id}`);
-            }}
-          >
-            <ExternalLink className="w-4 h-4 mr-2" />
-            View Details
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
+          {/* Special Notes - Only show when expanded */}
+          {showMore && applicationInfo.specialNotes && (
+            <div className="flex items-start gap-3">
+              <Info className="w-5 h-5 text-book-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-semibold text-sm text-gray-900">
+                  Special Notes
+                </p>
+                <p className="text-sm text-gray-600">
+                  {applicationInfo.specialNotes}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex gap-2 pt-2">
+            {applicationInfo.specialNotes && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-book-600 hover:bg-book-50"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMore(!showMore);
+                }}
+              >
+                {showMore ? (
+                  <>
+                    <ChevronUp className="w-4 h-4 mr-1" />
+                    View Less
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-4 h-4 mr-1" />
+                    View More
+                  </>
+                )}
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 hover:bg-book-50 hover:border-book-300 text-book-600 border-book-200"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/university-profile?id=${applicationInfo.id}`);
+              }}
+            >
+              <ExternalLink className="w-4 h-4 mr-2" />
+              University Profile
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
 
   // Universities Grid with Application Information
   const UniversitiesApplicationGrid = () => {
