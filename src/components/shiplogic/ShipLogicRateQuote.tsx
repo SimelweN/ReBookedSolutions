@@ -135,9 +135,32 @@ const ShipLogicRateQuote = ({
       }
     } catch (error) {
       console.error("Error getting rates:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to get shipping rates";
-      toast.error(errorMessage);
+
+      let userFriendlyMessage =
+        "Failed to get shipping rates. Please try again.";
+
+      if (error instanceof Error) {
+        if (error.message.includes("Request validation failed")) {
+          userFriendlyMessage =
+            "Please check that all address fields are properly filled out.";
+        } else if (error.message.includes("Authentication failed")) {
+          userFriendlyMessage =
+            "Shipping service temporarily unavailable. Fallback rates will be used.";
+        } else if (error.message.includes("server error")) {
+          userFriendlyMessage =
+            "Shipping service is experiencing issues. Please try again later.";
+        } else if (
+          error.message.includes("network") ||
+          error.message.includes("timeout")
+        ) {
+          userFriendlyMessage =
+            "Network connection issue. Please check your internet and try again.";
+        } else {
+          userFriendlyMessage = error.message;
+        }
+      }
+
+      toast.error(userFriendlyMessage);
     } finally {
       setIsLoading(false);
     }
