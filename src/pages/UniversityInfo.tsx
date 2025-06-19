@@ -432,22 +432,27 @@ const UniversityInfo = () => {
 
           {/* View More / View Less Button */}
           {UNIVERSITY_APPLICATIONS_2025.length > 6 && (
-            <div className="text-center">
+            <div className="text-center px-4">
               <Button
                 onClick={() => setShowAllUniversities(!showAllUniversities)}
-                className="bg-book-600 hover:bg-book-700 text-white px-8 py-3 text-lg"
+                className="bg-book-600 hover:bg-book-700 text-white px-6 sm:px-8 py-3 text-base sm:text-lg w-full sm:w-auto max-w-sm mx-auto"
                 size="lg"
               >
                 {showAllUniversities ? (
                   <>
-                    <ChevronUp className="w-5 h-5 mr-2" />
-                    View Less Universities
+                    <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0" />
+                    <span className="truncate">View Less Universities</span>
                   </>
                 ) : (
                   <>
-                    <ChevronDown className="w-5 h-5 mr-2" />
-                    View More Universities (
-                    {UNIVERSITY_APPLICATIONS_2025.length - 6} more)
+                    <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0" />
+                    <span className="truncate">
+                      <span className="hidden sm:inline">
+                        View More Universities (
+                      </span>
+                      <span className="sm:hidden">View More (</span>
+                      {UNIVERSITY_APPLICATIONS_2025.length - 6} more)
+                    </span>
                   </>
                 )}
               </Button>
