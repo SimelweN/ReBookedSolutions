@@ -51,6 +51,35 @@ const BookActions = ({
                 This book has been sold
               </p>
             </div>
+          ) : isPendingCommit && isOwner && onCommit ? (
+            <div className="space-y-3">
+              <div className="text-center p-3 bg-orange-50 rounded-lg border border-orange-200">
+                <Clock className="mx-auto h-5 w-5 text-orange-600 mb-2" />
+                <p className="text-sm text-orange-800 font-medium">
+                  Commit Required
+                </p>
+                <p className="text-xs text-orange-600">
+                  Please confirm this sale within 48 hours
+                </p>
+              </div>
+              <Button
+                onClick={onCommit}
+                className="w-full bg-book-600 hover:bg-book-700"
+                size="lg"
+              >
+                <Clock className="mr-2 h-4 w-4" />
+                Commit Sale
+              </Button>
+              <Button
+                onClick={onEditBook}
+                variant="outline"
+                className="w-full border-book-600 text-book-600 hover:bg-book-50"
+                size="sm"
+              >
+                <Edit className="mr-2 h-4 w-4" />
+                Edit Book
+              </Button>
+            </div>
           ) : isOwner ? (
             <Button
               onClick={onEditBook}
