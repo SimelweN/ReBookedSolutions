@@ -35,10 +35,10 @@ export interface Degree {
 
 export const UNIVERSITY_YEARS = [
   "1st Year",
-  "2nd Year", 
+  "2nd Year",
   "3rd Year",
   "4th Year",
-  "Postgraduate"
+  "Postgraduate",
 ];
 
 export const SOUTH_AFRICAN_UNIVERSITIES: University[] = [
@@ -288,7 +288,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES: University[] = [
     name: "University of the Western Cape",
     abbreviation: "UWC",
     fullName: "University of the Western Cape",
-    logo: "/university-logos/uwc.png",
+    logo: "/university-logos/uwc.svg",
     location: "Cape Town",
     province: "Western Cape",
     website: "http://www.uwc.ac.za/",
@@ -362,11 +362,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES: University[] = [
     overview:
       "Mangosuthu University of Technology is a university of technology in Umlazi, KwaZulu-Natal, South Africa. It was established in 1979.",
     studentPopulation: 12000,
-    faculties: [
-      "Engineering",
-      "Management Sciences",
-      "Natural Sciences",
-    ],
+    faculties: ["Engineering", "Management Sciences", "Natural Sciences"],
     establishedYear: 1979,
     type: "University of Technology",
   },
@@ -404,23 +400,23 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     abbreviation: "UCT",
     fullName: "University of Cape Town",
     logo: "/university-logos/uct.png",
-    code: "uct"
+    code: "uct",
   },
   {
     id: "wits",
-    name: "University of the Witwatersrand", 
+    name: "University of the Witwatersrand",
     abbreviation: "Wits",
     fullName: "University of the Witwatersrand",
     logo: "/university-logos/wits.png",
-    code: "wits"
+    code: "wits",
   },
   {
     id: "up",
     name: "University of Pretoria",
-    abbreviation: "UP", 
+    abbreviation: "UP",
     fullName: "University of Pretoria",
     logo: "/university-logos/up.png",
-    code: "up"
+    code: "up",
   },
   {
     id: "stellenbosch",
@@ -428,7 +424,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     abbreviation: "SU",
     fullName: "Stellenbosch University",
     logo: "/university-logos/stellenbosch.png",
-    code: "su"
+    code: "su",
   },
   {
     id: "ukzn",
@@ -436,7 +432,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     abbreviation: "UKZN",
     fullName: "University of KwaZulu-Natal",
     logo: "/university-logos/ukzn.png",
-    code: "ukzn"
+    code: "ukzn",
   },
   {
     id: "uj",
@@ -444,7 +440,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     abbreviation: "UJ",
     fullName: "University of Johannesburg",
     logo: "/university-logos/uj.png",
-    code: "uj"
+    code: "uj",
   },
   {
     id: "ru",
@@ -452,7 +448,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     abbreviation: "RU",
     fullName: "Rhodes University",
     logo: "/university-logos/rhodes.png",
-    code: "ru"
+    code: "ru",
   },
   {
     id: "nwu",
@@ -460,7 +456,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     abbreviation: "NWU",
     fullName: "North-West University",
     logo: "/university-logos/nwu.png",
-    code: "nwu"
+    code: "nwu",
   },
   {
     id: "ufs",
@@ -468,15 +464,15 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     abbreviation: "UFS",
     fullName: "University of the Free State",
     logo: "/university-logos/ufs.png",
-    code: "ufs"
+    code: "ufs",
   },
-    {
+  {
     id: "unisa",
     name: "University of South Africa",
     abbreviation: "UNISA",
     fullName: "University of South Africa",
     logo: "/university-logos/unisa.png",
-    code: "unisa"
+    code: "unisa",
   },
   {
     id: "uwc",
@@ -484,7 +480,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     abbreviation: "UWC",
     fullName: "University of the Western Cape",
     logo: "/university-logos/uwc.png",
-    code: "uwc"
+    code: "uwc",
   },
   {
     id: "univen",
@@ -492,7 +488,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     abbreviation: "UNIVEN",
     fullName: "University of Venda",
     logo: "/university-logos/univen.png",
-    code: "univen"
+    code: "univen",
   },
   {
     id: "ul",
@@ -500,7 +496,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     abbreviation: "UL",
     fullName: "University of Limpopo",
     logo: "/university-logos/ul.png",
-    code: "ul"
+    code: "ul",
   },
   {
     id: "mut",
@@ -508,7 +504,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     abbreviation: "MUT",
     fullName: "Mangosuthu University of Technology",
     logo: "/university-logos/mut.png",
-    code: "mut"
+    code: "mut",
   },
   {
     id: "cput",
@@ -516,7 +512,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     abbreviation: "CPUT",
     fullName: "Cape Peninsula University of Technology",
     logo: "/university-logos/cput.png",
-    code: "cput"
+    code: "cput",
   },
 ];
 
@@ -527,15 +523,15 @@ export const COMMON_DEGREES: Degree[] = [
     code: "bcom",
     category: "Business",
     description: "Business and commerce degree",
-    subjects: ["Accounting", "Economics", "Business Management"]
+    subjects: ["Accounting", "Economics", "Business Management"],
   },
   {
     id: "bsc",
-    name: "Bachelor of Science", 
+    name: "Bachelor of Science",
     code: "bsc",
     category: "Science",
     description: "Science degree",
-    subjects: ["Mathematics", "Physics", "Chemistry"]
+    subjects: ["Mathematics", "Physics", "Chemistry"],
   },
   {
     id: "ba",
@@ -543,7 +539,7 @@ export const COMMON_DEGREES: Degree[] = [
     code: "ba",
     category: "Humanities",
     description: "Arts degree",
-    subjects: ["Literature", "History", "Philosophy"]
+    subjects: ["Literature", "History", "Philosophy"],
   },
   {
     id: "bed",
@@ -551,7 +547,11 @@ export const COMMON_DEGREES: Degree[] = [
     code: "bed",
     category: "Education",
     description: "Education degree",
-    subjects: ["Curriculum Studies", "Educational Psychology", "Teaching Practice"]
+    subjects: [
+      "Curriculum Studies",
+      "Educational Psychology",
+      "Teaching Practice",
+    ],
   },
   {
     id: "llb",
@@ -559,7 +559,7 @@ export const COMMON_DEGREES: Degree[] = [
     code: "llb",
     category: "Law",
     description: "Law degree",
-    subjects: ["Constitutional Law", "Criminal Law", "Contract Law"]
+    subjects: ["Constitutional Law", "Criminal Law", "Contract Law"],
   },
   {
     id: "meng",
@@ -567,7 +567,11 @@ export const COMMON_DEGREES: Degree[] = [
     code: "meng",
     category: "Engineering",
     description: "Engineering degree",
-    subjects: ["Civil Engineering", "Electrical Engineering", "Mechanical Engineering"]
+    subjects: [
+      "Civil Engineering",
+      "Electrical Engineering",
+      "Mechanical Engineering",
+    ],
   },
   {
     id: "msc",
@@ -575,7 +579,7 @@ export const COMMON_DEGREES: Degree[] = [
     code: "msc",
     category: "Science",
     description: "Science degree",
-    subjects: ["Biology", "Chemistry", "Physics"]
+    subjects: ["Biology", "Chemistry", "Physics"],
   },
   {
     id: "mba",
@@ -583,7 +587,7 @@ export const COMMON_DEGREES: Degree[] = [
     code: "mba",
     category: "Business",
     description: "Business degree",
-    subjects: ["Finance", "Marketing", "Human Resources"]
+    subjects: ["Finance", "Marketing", "Human Resources"],
   },
   {
     id: "phd",
@@ -591,6 +595,6 @@ export const COMMON_DEGREES: Degree[] = [
     code: "phd",
     category: "Academia",
     description: "Doctoral degree",
-    subjects: ["Research", "Thesis", "Dissertation"]
+    subjects: ["Research", "Thesis", "Dissertation"],
   },
 ];
