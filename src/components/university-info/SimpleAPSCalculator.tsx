@@ -1756,9 +1756,16 @@ const FALLBACK_PROGRAMS = [
   },
 ];
 
-// Use real data if available, otherwise fallback
+// Use real data if available, otherwise fallback - ensure we always have data
 const FINAL_UNIVERSITY_PROGRAMS =
   UNIVERSITY_PROGRAMS.length > 0 ? UNIVERSITY_PROGRAMS : FALLBACK_PROGRAMS;
+
+// Safety check - ensure we have at least some programs
+if (FINAL_UNIVERSITY_PROGRAMS.length === 0) {
+  console.error(
+    "No university programs available - this will cause a blank screen",
+  );
+}
 
 // Debug logging in development
 if (import.meta.env.DEV) {
