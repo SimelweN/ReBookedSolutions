@@ -306,14 +306,13 @@ const ShipLogicRateQuote = ({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="toProvince">Province *</Label>
-                  <Input
-                    id="toProvince"
+                  <ProvinceSelector
+                    label="Province"
                     value={formData.toAddress.province}
-                    onChange={(e) =>
-                      handleInputChange("toAddress", "province", e.target.value)
+                    onValueChange={(value) =>
+                      handleInputChange("toAddress", "province", value)
                     }
-                    placeholder="Province"
+                    placeholder="Select province"
                     required
                   />
                 </div>
