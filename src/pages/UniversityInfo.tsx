@@ -494,15 +494,12 @@ const UniversityInfo = () => {
               {/* Quick Tools Section */}
               <div className="grid md:grid-cols-2 gap-6">
                 <Card
-                  className="hover:shadow-lg transition-shadow cursor-pointer border-0 shadow-sm"
+                  className="hover:shadow-lg transition-shadow cursor-pointer border-0 shadow-sm hover:border-book-200"
                   onClick={() => handleTabChange("aps-calculator")}
                 >
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Calculator
-                        className="h-5 w-5"
-                        style={{ color: "rgb(68, 171, 131)" }}
-                      />
+                      <Calculator className="h-5 w-5 text-book-600" />
                       APS Calculator
                     </CardTitle>
                     <CardDescription>
@@ -513,7 +510,7 @@ const UniversityInfo = () => {
                   <CardContent>
                     <Badge
                       variant="secondary"
-                      className="bg-green-50 text-green-700 border-green-200"
+                      className="bg-book-100 text-book-700 border-book-200"
                     >
                       Most Popular
                     </Badge>
@@ -521,15 +518,12 @@ const UniversityInfo = () => {
                 </Card>
 
                 <Card
-                  className="hover:shadow-lg transition-shadow cursor-pointer border-0 shadow-sm"
+                  className="hover:shadow-lg transition-shadow cursor-pointer border-0 shadow-sm hover:border-book-200"
                   onClick={() => handleTabChange("bursaries")}
                 >
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <DollarSign
-                        className="h-5 w-5"
-                        style={{ color: "rgb(68, 171, 131)" }}
-                      />
+                      <DollarSign className="h-5 w-5 text-book-600" />
                       Find Bursaries
                     </CardTitle>
                     <CardDescription>
@@ -539,7 +533,7 @@ const UniversityInfo = () => {
                   <CardContent>
                     <Badge
                       variant="outline"
-                      className="border-green-200 text-green-700 bg-green-50"
+                      className="border-book-200 text-book-700 bg-book-50"
                     >
                       40+ Available
                     </Badge>
