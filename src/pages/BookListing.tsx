@@ -9,6 +9,8 @@ import { Book } from "@/types/book";
 import { toast } from "sonner";
 import { useCommit } from "@/hooks/useCommit";
 import { useAuth } from "@/contexts/AuthContext";
+import { clearAllBrowseBooks } from "@/utils/clearBrowseBooks";
+import { Button } from "@/components/ui/button";
 
 const BookListing = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -16,6 +18,7 @@ const BookListing = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isClearingBooks, setIsClearingBooks] = useState(false);
 
   // Commit functionality
   const { commitBook } = useCommit();
@@ -156,13 +159,35 @@ const BookListing = () => {
   const handleCommitBook = async (bookId: string) => {
     try {
       await commitBook(bookId);
-      toast.success("Book committed for sale successfully!");
-      // Reload books to reflect the status change
+      // Reload books after commit
       loadBooks();
     } catch (error) {
       console.error("Failed to commit book:", error);
-      toast.error("Failed to commit book for sale. Please try again.");
-      throw error;
+      toast.error("Failed to commit sale. Please try again.");
+    }
+  };
+
+  const handleClearAllBooks = async () => {
+    if (!window.confirm("Are you sure you want to clear ALL books from Browse Books? This action cannot be undone.")) {
+      return;
+    }
+
+    setIsClearingBooks(true);
+    try {
+      const result = await clearAllBrowseBooks();
+      if (result.success) {
+        toast.success(result.message);
+        setBooks([]); // Clear the local state
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error("Failed to clear books:", error);
+      toast.error("Failed to clear books");
+    } finally {
+      setIsClearingBooks(false);
+    }
+  };
     }
   };
 
@@ -176,9 +201,21 @@ const BookListing = () => {
       />
 
       <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-book-800 mb-4 sm:mb-8 px-2 sm:px-0">
-          Browse Books
-        </h1>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-8 px-2 sm:px-0">
+          <h1 className="text-2xl sm:text-3xl font-bold text-book-800 mb-4 sm:mb-0">
+            Browse Books
+          </h1>
+          {user?.email === "admin@rebookedsolutions.co.za" && (
+            <Button
+              onClick={handleClearAllBooks}
+              disabled={isClearingBooks}
+              variant="destructive"
+              size="sm"
+            >
+              {isClearingBooks ? "Clearing..." : "Clear All Books"}
+            </Button>
+          )}
+        </div>
 
         <div className="flex flex-col lg:flex-row gap-4 sm:gap-8">
           <BookFilters
