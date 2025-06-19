@@ -536,6 +536,7 @@ const UniversityInfo = () => {
               <TabsTrigger
                 value="bursaries"
                 className="flex flex-col items-center gap-1 py-2.5 px-2 text-center data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all duration-200 hover:bg-gray-100 data-[state=active]:scale-105"
+                onMouseEnter={preloadBursarySection}
               >
                 <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 transition-colors" />
                 <span className="text-xs sm:text-sm font-medium">
