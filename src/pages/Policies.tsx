@@ -1360,10 +1360,12 @@ const Policies = () => {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+            </div>
+          )}
 
           {/* Dispute Resolution Policy Tab */}
-          <TabsContent value="disputes" className="space-y-4 sm:space-y-6">
+          {activeTab === "disputes" && (
+            <div className="space-y-4 sm:space-y-6">
             <Card>
               <CardHeader className="pb-4 sm:pb-6">
                 <CardTitle className="text-xl sm:text-2xl lg:text-3xl flex items-center gap-2 mb-2 sm:mb-3">
