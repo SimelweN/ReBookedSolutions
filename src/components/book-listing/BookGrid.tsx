@@ -1,16 +1,39 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, School, GraduationCap, MapPin } from "lucide-react";
+import { BookOpen, School, GraduationCap, MapPin, Clock } from "lucide-react";
 import { Book } from "@/types/book";
+import { toast } from "sonner";
 
 interface BookGridProps {
   books: Book[];
   isLoading: boolean;
   onClearFilters: () => void;
+  currentUserId?: string | null;
+  onCommitBook?: (bookId: string) => Promise<void>;
 }
 
-const BookGrid = ({ books, isLoading, onClearFilters }: BookGridProps) => {
+const BookGrid = ({
+  books,
+  isLoading,
+  onClearFilters,
+  currentUserId,
+  onCommitBook,
+}: BookGridProps) => {
+  const handleCommit = async (bookId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!onCommitBook) return;
+
+    try {
+      await onCommitBook(bookId);
+      toast.success("Sale committed successfully!");
+    } catch (error) {
+      console.error("Failed to commit sale:", error);
+      toast.error("Failed to commit sale. Please try again.");
+    }
+  };
   if (isLoading) {
     return (
       <div className="lg:w-3/4">
@@ -54,6 +77,9 @@ const BookGrid = ({ books, isLoading, onClearFilters }: BookGridProps) => {
           console.log("Rendering book:", book.id, book.title);
           const isUnavailable =
             (book as Book & { status?: string }).status === "unavailable";
+          const isPendingCommit =
+            (book as Book & { status?: string }).status === "pending_commit";
+          const isOwner = currentUserId && book.seller?.id === currentUserId;
 
           return (
             <div
@@ -138,6 +164,20 @@ const BookGrid = ({ books, isLoading, onClearFilters }: BookGridProps) => {
                         {book.category}
                       </span>
                     </div>
+
+                    {/* Commit Button for Seller - even for unavailable books */}
+                    {isPendingCommit && isOwner && onCommitBook && (
+                      <div className="mt-3 pt-3 border-t border-gray-200">
+                        <Button
+                          onClick={(e) => handleCommit(book.id, e)}
+                          className="w-full bg-book-600 hover:bg-book-700 text-white"
+                          size="sm"
+                        >
+                          <Clock className="h-3 w-3 mr-2" />
+                          Commit Sale
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (
@@ -207,6 +247,20 @@ const BookGrid = ({ books, isLoading, onClearFilters }: BookGridProps) => {
                         {book.category}
                       </span>
                     </div>
+
+                    {/* Commit Button for Seller */}
+                    {isPendingCommit && isOwner && onCommitBook && (
+                      <div className="mt-3 pt-3 border-t border-gray-200">
+                        <Button
+                          onClick={(e) => handleCommit(book.id, e)}
+                          className="w-full bg-book-600 hover:bg-book-700 text-white"
+                          size="sm"
+                        >
+                          <Clock className="h-3 w-3 mr-2" />
+                          Commit Sale
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </Link>
               )}

@@ -77,7 +77,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Stellenbosch University",
     location: "Stellenbosch",
     province: "Western Cape",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/stellenbosh-f2423b?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/34dfccd6d7ce41b8bf7ca3d8b60d0eeb/stellenbosh-a6e1ea?format=webp&width=800",
     overview:
       "Research-intensive university with a tradition of academic excellence and innovation in South Africa.",
     website: "https://www.sun.ac.za",
@@ -523,7 +523,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Zululand",
     location: "Richards Bay",
     province: "KwaZulu-Natal",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/zululand-aed843?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/34dfccd6d7ce41b8bf7ca3d8b60d0eeb/zululand-43783b?format=webp&width=800",
     overview:
       "Comprehensive university serving rural KwaZulu-Natal with focus on community development.",
     website: "https://www.unizulu.ac.za",
@@ -549,7 +549,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Venda",
     location: "Thohoyandou",
     province: "Limpopo",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/venda-03b8c7?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/34dfccd6d7ce41b8bf7ca3d8b60d0eeb/venda-1be0a7?format=webp&width=800",
     overview:
       "Comprehensive university serving the Venda region with focus on rural development.",
     website: "https://www.univen.ac.za",
@@ -566,6 +566,32 @@ const BASE_UNIVERSITIES: University[] = [
       academicYear: "2026",
       applicationFee: "R100",
       applicationMethod: "Online via UV Student Portal",
+    },
+  },
+  {
+    id: "nmu",
+    name: "NMU",
+    abbreviation: "NMU",
+    fullName: "Nelson Mandela University",
+    location: "Port Elizabeth",
+    province: "Eastern Cape",
+    logo: "https://cdn.builder.io/api/v1/assets/34dfccd6d7ce41b8bf7ca3d8b60d0eeb/nelson-a2ae62?format=webp&width=800",
+    overview:
+      "Comprehensive university known for academic excellence and community engagement in the Eastern Cape.",
+    website: "https://www.mandela.ac.za",
+    studentPortal: "https://www.mandela.ac.za/students",
+    admissionsContact: "admissions@mandela.ac.za",
+    faculties: [], // Will be populated by comprehensive assignment
+    establishedYear: 2005,
+    studentPopulation: 27000,
+    type: "Comprehensive University",
+    applicationInfo: {
+      isOpen: true,
+      openingDate: "1 April 2025",
+      closingDate: "30 June (Health), 30 Sept (others)",
+      academicYear: "2026",
+      applicationFee: "Free SA",
+      applicationMethod: "Online via NMU Student Portal",
     },
   },
   {

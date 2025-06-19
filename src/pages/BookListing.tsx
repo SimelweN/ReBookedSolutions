@@ -7,6 +7,8 @@ import BookGrid from "@/components/book-listing/BookGrid";
 import { getBooks } from "@/services/book/bookQueries";
 import { Book } from "@/types/book";
 import { toast } from "sonner";
+import { useCommit } from "@/hooks/useCommit";
+import { useAuth } from "@/contexts/AuthContext";
 
 const BookListing = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -14,6 +16,10 @@ const BookListing = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Commit functionality
+  const { commitBook } = useCommit();
+  const { user } = useAuth();
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState(
@@ -141,8 +147,23 @@ const BookListing = () => {
     setSelectedUniversity("");
     setPriceRange([0, 1000]);
     setBookType("all");
+
+    // Clear URL params
     setSearchParams({});
   }, [setSearchParams]);
+
+  const handleCommitBook = useCallback(
+    async (bookId: string) => {
+      try {
+        await commitBook(bookId);
+        // Reload books to reflect the status change
+        await loadBooks();
+      } catch (error) {
+        console.error("Failed to commit book:", error);
+      }
+    },
+    [commitBook, loadBooks],
+  );
 
   if (error) {
     return (
@@ -210,6 +231,8 @@ const BookListing = () => {
             books={books}
             isLoading={isLoading}
             onClearFilters={clearFilters}
+            currentUserId={user?.id}
+            onCommitBook={handleCommitBook}
           />
         </div>
       </div>
