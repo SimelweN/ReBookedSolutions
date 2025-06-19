@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +27,7 @@ interface MobileShippingDashboardProps {
 const MobileShippingDashboard = ({
   defaultProvider = "courierGuy",
 }: MobileShippingDashboardProps) => {
+  const navigate = useNavigate();
   const [selectedProvider, setSelectedProvider] = useState<
     "courierGuy" | "shipLogic"
   >(defaultProvider);
