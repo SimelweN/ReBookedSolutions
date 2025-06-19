@@ -569,6 +569,32 @@ const BASE_UNIVERSITIES: University[] = [
     },
   },
   {
+    id: "nmu",
+    name: "NMU",
+    abbreviation: "NMU",
+    fullName: "Nelson Mandela University",
+    location: "Port Elizabeth",
+    province: "Eastern Cape",
+    logo: "https://cdn.builder.io/api/v1/assets/34dfccd6d7ce41b8bf7ca3d8b60d0eeb/nelson-a2ae62?format=webp&width=800",
+    overview:
+      "Comprehensive university known for academic excellence and community engagement in the Eastern Cape.",
+    website: "https://www.mandela.ac.za",
+    studentPortal: "https://www.mandela.ac.za/students",
+    admissionsContact: "admissions@mandela.ac.za",
+    faculties: [], // Will be populated by comprehensive assignment
+    establishedYear: 2005,
+    studentPopulation: 27000,
+    type: "Comprehensive University",
+    applicationInfo: {
+      isOpen: true,
+      openingDate: "1 April 2025",
+      closingDate: "30 June (Health), 30 Sept (others)",
+      academicYear: "2026",
+      applicationFee: "Free SA",
+      applicationMethod: "Online via NMU Student Portal",
+    },
+  },
+  {
     id: "wsu",
     name: "WSU",
     abbreviation: "WSU",
