@@ -22,15 +22,17 @@ interface StudyResource {
   id: string;
   title: string;
   description: string;
-  type: "guide" | "template" | "tip";
-  difficulty: "beginner" | "intermediate" | "advanced";
+  type: "pdf" | "video" | "website" | "tool" | "course";
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
   category: string;
   tags: string[];
-  content: string;
-  author: string;
-  featured: boolean;
-  views: number;
-  likes: number;
+  url?: string;
+  provider?: string;
+  duration?: string;
+  rating?: number;
+  downloadUrl?: string;
+  isActive: boolean;
+  isFeatured: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -40,12 +42,10 @@ interface StudyTip {
   title: string;
   content: string;
   category: string;
-  difficulty: "beginner" | "intermediate" | "advanced";
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
   tags: string[];
-  featured: boolean;
-  views: number;
-  likes: number;
   author: string;
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
 }
