@@ -19,6 +19,9 @@ import CreateListing from "./pages/CreateListing";
 import Admin from "./pages/Admin";
 import UniversityInfo from "./pages/UniversityInfo";
 import ModernUniversityProfile from "./pages/ModernUniversityProfile";
+import Policies from "./pages/Policies";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 import "./App.css";
 
