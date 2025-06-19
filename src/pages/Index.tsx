@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Search, BookOpen } from "lucide-react";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
