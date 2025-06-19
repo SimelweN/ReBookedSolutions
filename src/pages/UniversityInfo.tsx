@@ -164,8 +164,9 @@ const UniversityInfo = () => {
 
   // Loading component for lazy-loaded sections
   const LoadingSection = () => (
-    <div className="flex justify-center items-center py-12">
+    <div className="flex flex-col justify-center items-center py-12 space-y-4">
       <LoadingSpinner />
+      <p className="text-sm text-gray-500 animate-pulse">Loading content...</p>
     </div>
   );
 
