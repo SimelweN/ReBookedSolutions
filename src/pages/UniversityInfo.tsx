@@ -298,7 +298,7 @@ const UniversityInfo = () => {
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 sm:space-y-4 px-4 sm:px-6">
           {/* Opening Date */}
           <div className="flex items-start gap-3">
             <Calendar className="w-5 h-5 text-book-600 mt-0.5 flex-shrink-0" />
