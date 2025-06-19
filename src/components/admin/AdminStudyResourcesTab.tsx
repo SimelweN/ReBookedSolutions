@@ -1,11 +1,16 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,8 +22,8 @@ interface StudyResource {
   id: string;
   title: string;
   description: string;
-  type: 'guide' | 'template' | 'tip';
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  type: "guide" | "template" | "tip";
+  difficulty: "beginner" | "intermediate" | "advanced";
   category: string;
   tags: string[];
   content: string;
@@ -35,7 +40,7 @@ interface StudyTip {
   title: string;
   content: string;
   category: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  difficulty: "beginner" | "intermediate" | "advanced";
   tags: string[];
   featured: boolean;
   views: number;
@@ -46,9 +51,9 @@ interface StudyTip {
 }
 
 // Define specific types for form data to ensure proper type checking
-type ResourceFormType = 'guide' | 'template' | 'tip';
-type ResourceFormDifficulty = 'beginner' | 'intermediate' | 'advanced';
-type TipFormDifficulty = 'beginner' | 'intermediate' | 'advanced';
+type ResourceFormType = "guide" | "template" | "tip";
+type ResourceFormDifficulty = "beginner" | "intermediate" | "advanced";
+type TipFormDifficulty = "beginner" | "intermediate" | "advanced";
 
 interface ResourceFormData {
   title: string;
@@ -72,41 +77,44 @@ interface TipFormData {
   author: string;
 }
 
-
 const AdminStudyResourcesTab = () => {
   const [resources, setResources] = useState<StudyResource[]>([]);
   const [tips, setTips] = useState<StudyTip[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const [showResourceForm, setShowResourceForm] = useState(false);
   const [showTipForm, setShowTipForm] = useState(false);
-  const [editingResource, setEditingResource] = useState<StudyResource | null>(null);
+  const [editingResource, setEditingResource] = useState<StudyResource | null>(
+    null,
+  );
   const [editingTip, setEditingTip] = useState<StudyTip | null>(null);
 
   const initialResourceFormState: ResourceFormData = {
-    title: '',
-    description: '',
-    type: 'guide',
-    difficulty: 'beginner',
-    category: '',
-    tags: '',
-    content: '',
-    author: '',
+    title: "",
+    description: "",
+    type: "guide",
+    difficulty: "beginner",
+    category: "",
+    tags: "",
+    content: "",
+    author: "",
     featured: false,
   };
 
   const initialTipFormState: TipFormData = {
-    title: '',
-    content: '',
-    category: '',
-    difficulty: 'beginner',
-    tags: '',
+    title: "",
+    content: "",
+    category: "",
+    difficulty: "beginner",
+    tags: "",
     featured: false,
-    author: '',
+    author: "",
   };
 
-  const [resourceForm, setResourceForm] = useState<ResourceFormData>(initialResourceFormState);
+  const [resourceForm, setResourceForm] = useState<ResourceFormData>(
+    initialResourceFormState,
+  );
   const [tipForm, setTipForm] = useState<TipFormData>(initialTipFormState);
 
   useEffect(() => {
@@ -124,9 +132,9 @@ const AdminStudyResourcesTab = () => {
       setResources(resourcesData as StudyResource[]); // Cast if service returns 'any'
       setTips(tipsData as StudyTip[]); // Cast if service returns 'any'
     } catch (error) {
-      console.error('Error loading study resources:', error);
-      setError('Failed to load study resources');
-      toast.error('Failed to load study resources');
+      console.error("Error loading study resources:", error);
+      setError("Failed to load study resources");
+      toast.error("Failed to load study resources");
     } finally {
       setIsLoading(false);
     }
@@ -134,49 +142,117 @@ const AdminStudyResourcesTab = () => {
 
   const handleResourceSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate required fields
+    if (!resourceForm.title?.trim()) {
+      toast.error("Title is required");
+      return;
+    }
+    if (!resourceForm.description?.trim()) {
+      toast.error("Description is required");
+      return;
+    }
+    if (!resourceForm.content?.trim()) {
+      toast.error("Content is required");
+      return;
+    }
+    if (!resourceForm.category?.trim()) {
+      toast.error("Category is required");
+      return;
+    }
+    if (!resourceForm.author?.trim()) {
+      toast.error("Author is required");
+      return;
+    }
+
     try {
       const resourcePayload = {
-        ...resourceForm,
-        tags: resourceForm.tags.split(',').map(tag => tag.trim()).filter(Boolean),
+        title: resourceForm.title.trim(),
+        description: resourceForm.description.trim(),
+        type: resourceForm.type,
+        difficulty: resourceForm.difficulty,
+        category: resourceForm.category.trim(),
+        tags: resourceForm.tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter(Boolean),
+        content: resourceForm.content.trim(),
+        author: resourceForm.author.trim(),
+        isActive: true,
+        isFeatured: resourceForm.featured,
       };
 
       if (editingResource) {
-        await studyResourcesService.updateStudyResource(editingResource.id, resourcePayload);
-        toast.success('Resource updated successfully');
+        await studyResourcesService.updateStudyResource(
+          editingResource.id,
+          resourcePayload,
+        );
+        toast.success("Resource updated successfully");
       } else {
         await studyResourcesService.createStudyResource(resourcePayload);
-        toast.success('Resource created successfully');
+        toast.success("Resource created successfully");
       }
 
       resetResourceForm();
       loadData();
     } catch (error) {
-      console.error('Error saving resource:', error);
-      toast.error('Failed to save resource');
+      console.error("Error saving resource:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to save resource";
+      toast.error(errorMessage);
     }
   };
 
   const handleTipSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate required fields
+    if (!tipForm.title?.trim()) {
+      toast.error("Title is required");
+      return;
+    }
+    if (!tipForm.content?.trim()) {
+      toast.error("Content is required");
+      return;
+    }
+    if (!tipForm.category?.trim()) {
+      toast.error("Category is required");
+      return;
+    }
+    if (!tipForm.author?.trim()) {
+      toast.error("Author is required");
+      return;
+    }
+
     try {
       const tipPayload = {
-        ...tipForm,
-        tags: tipForm.tags.split(',').map(tag => tag.trim()).filter(Boolean),
+        title: tipForm.title.trim(),
+        content: tipForm.content.trim(),
+        category: tipForm.category.trim(),
+        difficulty: tipForm.difficulty,
+        tags: tipForm.tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter(Boolean),
+        author: tipForm.author.trim(),
+        isActive: true,
       };
 
       if (editingTip) {
         await studyResourcesService.updateStudyTip(editingTip.id, tipPayload);
-        toast.success('Tip updated successfully');
+        toast.success("Tip updated successfully");
       } else {
         await studyResourcesService.createStudyTip(tipPayload);
-        toast.success('Tip created successfully');
+        toast.success("Tip created successfully");
       }
 
       resetTipForm();
       loadData();
     } catch (error) {
-      console.error('Error saving tip:', error);
-      toast.error('Failed to save tip');
+      console.error("Error saving tip:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to save tip";
+      toast.error(errorMessage);
     }
   };
 
@@ -199,7 +275,7 @@ const AdminStudyResourcesTab = () => {
       type: resource.type,
       difficulty: resource.difficulty,
       category: resource.category,
-      tags: resource.tags.join(', '), // This line had error TS2322, should be fine with ResourceFormData.tags as string
+      tags: resource.tags.join(", "), // This line had error TS2322, should be fine with ResourceFormData.tags as string
       content: resource.content,
       author: resource.author,
       featured: resource.featured,
@@ -214,7 +290,7 @@ const AdminStudyResourcesTab = () => {
       content: tip.content,
       category: tip.category,
       difficulty: tip.difficulty,
-      tags: tip.tags.join(', '),
+      tags: tip.tags.join(", "),
       featured: tip.featured,
       author: tip.author,
     });
@@ -223,28 +299,28 @@ const AdminStudyResourcesTab = () => {
   };
 
   const deleteResource = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this resource?')) return;
-    
+    if (!confirm("Are you sure you want to delete this resource?")) return;
+
     try {
       await studyResourcesService.deleteStudyResource(id);
-      toast.success('Resource deleted successfully');
+      toast.success("Resource deleted successfully");
       loadData();
     } catch (error) {
-      console.error('Error deleting resource:', error);
-      toast.error('Failed to delete resource');
+      console.error("Error deleting resource:", error);
+      toast.error("Failed to delete resource");
     }
   };
 
   const deleteTip = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this tip?')) return;
-    
+    if (!confirm("Are you sure you want to delete this tip?")) return;
+
     try {
       await studyResourcesService.deleteStudyTip(id);
-      toast.success('Tip deleted successfully');
+      toast.success("Tip deleted successfully");
       loadData();
     } catch (error) {
-      console.error('Error deleting tip:', error);
-      toast.error('Failed to delete tip');
+      console.error("Error deleting tip:", error);
+      toast.error("Failed to delete tip");
     }
   };
 
@@ -265,11 +341,23 @@ const AdminStudyResourcesTab = () => {
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Study Resources Management</h2>
         <div className="flex gap-2">
-          <Button onClick={() => { setShowResourceForm(true); setEditingResource(null); setResourceForm(initialResourceFormState); }}>
+          <Button
+            onClick={() => {
+              setShowResourceForm(true);
+              setEditingResource(null);
+              setResourceForm(initialResourceFormState);
+            }}
+          >
             <Plus className="h-4 w-4 mr-2" />
             Add Resource
           </Button>
-          <Button onClick={() => { setShowTipForm(true); setEditingTip(null); setTipForm(initialTipFormState); }}>
+          <Button
+            onClick={() => {
+              setShowTipForm(true);
+              setEditingTip(null);
+              setTipForm(initialTipFormState);
+            }}
+          >
             <Plus className="h-4 w-4 mr-2" />
             Add Tip
           </Button>
@@ -278,7 +366,9 @@ const AdminStudyResourcesTab = () => {
 
       <Tabs defaultValue="resources" className="space-y-6">
         <TabsList>
-          <TabsTrigger value="resources">Study Resources ({resources.length})</TabsTrigger>
+          <TabsTrigger value="resources">
+            Study Resources ({resources.length})
+          </TabsTrigger>
           <TabsTrigger value="tips">Study Tips ({tips.length})</TabsTrigger>
         </TabsList>
 
@@ -287,7 +377,7 @@ const AdminStudyResourcesTab = () => {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {editingResource ? 'Edit Resource' : 'Create New Resource'}
+                  {editingResource ? "Edit Resource" : "Create New Resource"}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -299,7 +389,12 @@ const AdminStudyResourcesTab = () => {
                       <Input
                         id="resource-title"
                         value={resourceForm.title}
-                        onChange={(e) => setResourceForm(prev => ({ ...prev, title: e.target.value }))}
+                        onChange={(e) =>
+                          setResourceForm((prev) => ({
+                            ...prev,
+                            title: e.target.value,
+                          }))
+                        }
                         required
                       />
                     </div>
@@ -308,7 +403,12 @@ const AdminStudyResourcesTab = () => {
                       <Input
                         id="resource-author"
                         value={resourceForm.author}
-                        onChange={(e) => setResourceForm(prev => ({ ...prev, author: e.target.value }))}
+                        onChange={(e) =>
+                          setResourceForm((prev) => ({
+                            ...prev,
+                            author: e.target.value,
+                          }))
+                        }
                         required
                       />
                     </div>
@@ -319,7 +419,12 @@ const AdminStudyResourcesTab = () => {
                     <Textarea
                       id="resource-description"
                       value={resourceForm.description}
-                      onChange={(e) => setResourceForm(prev => ({ ...prev, description: e.target.value }))}
+                      onChange={(e) =>
+                        setResourceForm((prev) => ({
+                          ...prev,
+                          description: e.target.value,
+                        }))
+                      }
                       required
                     />
                   </div>
@@ -329,8 +434,10 @@ const AdminStudyResourcesTab = () => {
                       <Label htmlFor="resource-type">Type</Label>
                       <Select
                         value={resourceForm.type}
-                        onValueChange={(value: ResourceFormType) => // Use specific form type
-                          setResourceForm(prev => ({ ...prev, type: value }))
+                        onValueChange={(
+                          value: ResourceFormType, // Use specific form type
+                        ) =>
+                          setResourceForm((prev) => ({ ...prev, type: value }))
                         }
                       >
                         <SelectTrigger>
@@ -347,8 +454,13 @@ const AdminStudyResourcesTab = () => {
                       <Label htmlFor="resource-difficulty">Difficulty</Label>
                       <Select
                         value={resourceForm.difficulty}
-                        onValueChange={(value: ResourceFormDifficulty) => // Use specific form type
-                          setResourceForm(prev => ({ ...prev, difficulty: value }))
+                        onValueChange={(
+                          value: ResourceFormDifficulty, // Use specific form type
+                        ) =>
+                          setResourceForm((prev) => ({
+                            ...prev,
+                            difficulty: value,
+                          }))
                         }
                       >
                         <SelectTrigger>
@@ -356,7 +468,9 @@ const AdminStudyResourcesTab = () => {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="beginner">Beginner</SelectItem>
-                          <SelectItem value="intermediate">Intermediate</SelectItem>
+                          <SelectItem value="intermediate">
+                            Intermediate
+                          </SelectItem>
                           <SelectItem value="advanced">Advanced</SelectItem>
                         </SelectContent>
                       </Select>
@@ -366,18 +480,30 @@ const AdminStudyResourcesTab = () => {
                       <Input
                         id="resource-category"
                         value={resourceForm.category}
-                        onChange={(e) => setResourceForm(prev => ({ ...prev, category: e.target.value }))}
+                        onChange={(e) =>
+                          setResourceForm((prev) => ({
+                            ...prev,
+                            category: e.target.value,
+                          }))
+                        }
                         required
                       />
                     </div>
                   </div>
 
                   <div>
-                    <Label htmlFor="resource-tags">Tags (comma separated)</Label>
+                    <Label htmlFor="resource-tags">
+                      Tags (comma separated)
+                    </Label>
                     <Input
                       id="resource-tags"
                       value={resourceForm.tags}
-                      onChange={(e) => setResourceForm(prev => ({ ...prev, tags: e.target.value }))}
+                      onChange={(e) =>
+                        setResourceForm((prev) => ({
+                          ...prev,
+                          tags: e.target.value,
+                        }))
+                      }
                       placeholder="study tips, university, guide"
                     />
                   </div>
@@ -387,7 +513,12 @@ const AdminStudyResourcesTab = () => {
                     <Textarea
                       id="resource-content"
                       value={resourceForm.content}
-                      onChange={(e) => setResourceForm(prev => ({ ...prev, content: e.target.value }))}
+                      onChange={(e) =>
+                        setResourceForm((prev) => ({
+                          ...prev,
+                          content: e.target.value,
+                        }))
+                      }
                       rows={10}
                       required
                     />
@@ -398,16 +529,25 @@ const AdminStudyResourcesTab = () => {
                       type="checkbox"
                       id="resource-featured"
                       checked={resourceForm.featured}
-                      onChange={(e) => setResourceForm(prev => ({ ...prev, featured: e.target.checked }))}
+                      onChange={(e) =>
+                        setResourceForm((prev) => ({
+                          ...prev,
+                          featured: e.target.checked,
+                        }))
+                      }
                     />
                     <Label htmlFor="resource-featured">Featured Resource</Label>
                   </div>
 
                   <div className="flex gap-2">
                     <Button type="submit">
-                      {editingResource ? 'Update Resource' : 'Create Resource'}
+                      {editingResource ? "Update Resource" : "Create Resource"}
                     </Button>
-                    <Button type="button" variant="outline" onClick={resetResourceForm}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={resetResourceForm}
+                    >
                       Cancel
                     </Button>
                   </div>
@@ -431,7 +571,9 @@ const AdminStudyResourcesTab = () => {
                           </Badge>
                         )}
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{resource.description}</p>
+                      <p className="text-sm text-gray-600 mb-2">
+                        {resource.description}
+                      </p>
                       <div className="flex flex-wrap gap-2 mb-2">
                         <Badge variant="outline">
                           <span className="text-xs">{resource.type}</span>
@@ -453,12 +595,16 @@ const AdminStudyResourcesTab = () => {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline" onClick={() => editResource(resource)}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => editResource(resource)}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
+                      <Button
+                        size="sm"
+                        variant="outline"
                         onClick={() => deleteResource(resource.id)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -476,19 +622,24 @@ const AdminStudyResourcesTab = () => {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {editingTip ? 'Edit Study Tip' : 'Create New Study Tip'}
+                  {editingTip ? "Edit Study Tip" : "Create New Study Tip"}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleTipSubmit} className="space-y-4">
-                 {/* ... form fields ... */}
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* ... form fields ... */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="tip-title">Title</Label>
                       <Input
                         id="tip-title"
                         value={tipForm.title}
-                        onChange={(e) => setTipForm(prev => ({ ...prev, title: e.target.value }))}
+                        onChange={(e) =>
+                          setTipForm((prev) => ({
+                            ...prev,
+                            title: e.target.value,
+                          }))
+                        }
                         required
                       />
                     </div>
@@ -497,7 +648,12 @@ const AdminStudyResourcesTab = () => {
                       <Input
                         id="tip-author"
                         value={tipForm.author}
-                        onChange={(e) => setTipForm(prev => ({ ...prev, author: e.target.value }))}
+                        onChange={(e) =>
+                          setTipForm((prev) => ({
+                            ...prev,
+                            author: e.target.value,
+                          }))
+                        }
                         required
                       />
                     </div>
@@ -508,7 +664,12 @@ const AdminStudyResourcesTab = () => {
                     <Textarea
                       id="tip-content"
                       value={tipForm.content}
-                      onChange={(e) => setTipForm(prev => ({ ...prev, content: e.target.value }))}
+                      onChange={(e) =>
+                        setTipForm((prev) => ({
+                          ...prev,
+                          content: e.target.value,
+                        }))
+                      }
                       rows={6}
                       required
                     />
@@ -519,8 +680,10 @@ const AdminStudyResourcesTab = () => {
                       <Label htmlFor="tip-difficulty">Difficulty</Label>
                       <Select
                         value={tipForm.difficulty}
-                        onValueChange={(value: TipFormDifficulty) => // Use specific form type
-                          setTipForm(prev => ({ ...prev, difficulty: value }))
+                        onValueChange={(
+                          value: TipFormDifficulty, // Use specific form type
+                        ) =>
+                          setTipForm((prev) => ({ ...prev, difficulty: value }))
                         }
                       >
                         <SelectTrigger>
@@ -528,7 +691,9 @@ const AdminStudyResourcesTab = () => {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="beginner">Beginner</SelectItem>
-                          <SelectItem value="intermediate">Intermediate</SelectItem>
+                          <SelectItem value="intermediate">
+                            Intermediate
+                          </SelectItem>
                           <SelectItem value="advanced">Advanced</SelectItem>
                         </SelectContent>
                       </Select>
@@ -538,7 +703,12 @@ const AdminStudyResourcesTab = () => {
                       <Input
                         id="tip-category"
                         value={tipForm.category}
-                        onChange={(e) => setTipForm(prev => ({ ...prev, category: e.target.value }))}
+                        onChange={(e) =>
+                          setTipForm((prev) => ({
+                            ...prev,
+                            category: e.target.value,
+                          }))
+                        }
                         required
                       />
                     </div>
@@ -549,7 +719,12 @@ const AdminStudyResourcesTab = () => {
                     <Input
                       id="tip-tags"
                       value={tipForm.tags}
-                      onChange={(e) => setTipForm(prev => ({ ...prev, tags: e.target.value }))}
+                      onChange={(e) =>
+                        setTipForm((prev) => ({
+                          ...prev,
+                          tags: e.target.value,
+                        }))
+                      }
                       placeholder="productivity, time management, study methods"
                     />
                   </div>
@@ -559,16 +734,25 @@ const AdminStudyResourcesTab = () => {
                       type="checkbox"
                       id="tip-featured"
                       checked={tipForm.featured}
-                      onChange={(e) => setTipForm(prev => ({ ...prev, featured: e.target.checked }))}
+                      onChange={(e) =>
+                        setTipForm((prev) => ({
+                          ...prev,
+                          featured: e.target.checked,
+                        }))
+                      }
                     />
                     <Label htmlFor="tip-featured">Featured Tip</Label>
                   </div>
 
                   <div className="flex gap-2">
                     <Button type="submit">
-                      {editingTip ? 'Update Tip' : 'Create Tip'}
+                      {editingTip ? "Update Tip" : "Create Tip"}
                     </Button>
-                    <Button type="button" variant="outline" onClick={resetTipForm}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={resetTipForm}
+                    >
                       Cancel
                     </Button>
                   </div>
@@ -592,7 +776,9 @@ const AdminStudyResourcesTab = () => {
                           </Badge>
                         )}
                       </div>
-                      <p className="text-sm text-gray-600 mb-2 line-clamp-3">{tip.content}</p>
+                      <p className="text-sm text-gray-600 mb-2 line-clamp-3">
+                        {tip.content}
+                      </p>
                       <div className="flex flex-wrap gap-2 mb-2">
                         <Badge variant="outline">
                           <span className="text-xs">{tip.difficulty}</span>
@@ -611,12 +797,16 @@ const AdminStudyResourcesTab = () => {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline" onClick={() => editTip(tip)}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => editTip(tip)}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
+                      <Button
+                        size="sm"
+                        variant="outline"
                         onClick={() => deleteTip(tip.id)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -634,4 +824,3 @@ const AdminStudyResourcesTab = () => {
 };
 
 export default AdminStudyResourcesTab;
-
