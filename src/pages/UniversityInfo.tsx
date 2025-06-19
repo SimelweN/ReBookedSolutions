@@ -22,21 +22,14 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES as SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/index";
-import UniversityHero from "@/components/university-info/UniversityHero";
-import PopularUniversities from "@/components/university-info/PopularUniversities";
 import SEO from "@/components/SEO";
 import CampusNavbar from "@/components/CampusNavbar";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { logProgramVerification } from "@/utils/program-verification";
-import { logCriticalIssuesVerification } from "@/utils/critical-issues-verification";
 
 // Direct import for APS calculator to fix loading issues
 import APSCalculatorSection from "@/components/university-info/APSCalculatorSection";
 
 // Keep lazy loading for other components
-const LazyAPSCalculatorSection = lazy(
-  () => import("@/components/university-info/APSCalculatorSection"),
-);
 const BursaryExplorerSection = lazy(
   () => import("@/components/university-info/BursaryExplorerSection"),
 );
@@ -73,14 +66,6 @@ const UniversityInfo = () => {
     }
   }, [setSearchParams]);
 
-  // Run program verification in development
-  useEffect(() => {
-    if (import.meta.env.DEV) {
-      logProgramVerification();
-      logCriticalIssuesVerification();
-    }
-  }, []);
-
   // Redirect to new university profile route if university parameter is present
   useEffect(() => {
     if (selectedUniversityId) {
@@ -93,12 +78,6 @@ const UniversityInfo = () => {
   const handleTabChange = (value: string) => {
     const newParams = new URLSearchParams();
     newParams.set("tool", value);
-    setSearchParams(newParams);
-  };
-
-  const handleBackToUniversities = () => {
-    const newParams = new URLSearchParams();
-    newParams.set("tool", "overview");
     setSearchParams(newParams);
   };
 
@@ -166,7 +145,87 @@ const UniversityInfo = () => {
     </div>
   );
 
-  // University details are now handled by redirection to /university-profile
+  // Simple Hero Component to replace the potentially problematic UniversityHero
+  const SimpleHero = () => (
+    <div className="bg-gradient-to-br from-blue-900 to-purple-900 text-white py-16">
+      <div className="container mx-auto px-4 text-center">
+        <h1 className="text-4xl md:text-6xl font-bold mb-6">
+          Discover Your Perfect University
+        </h1>
+        <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
+          Explore {stats.universities} South African universities, calculate
+          your APS, find bursaries, and discover {stats.programs} programs.
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+            <Building className="w-8 h-8 mx-auto mb-2 text-blue-300" />
+            <div className="text-2xl font-bold">{stats.universities}</div>
+            <div className="text-sm text-blue-200">Universities</div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+            <BookOpen className="w-8 h-8 mx-auto mb-2 text-purple-300" />
+            <div className="text-2xl font-bold">{stats.programs}</div>
+            <div className="text-sm text-blue-200">Programs</div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+            <Users className="w-8 h-8 mx-auto mb-2 text-green-300" />
+            <div className="text-2xl font-bold">{stats.students}</div>
+            <div className="text-sm text-blue-200">Students</div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+            <Award className="w-8 h-8 mx-auto mb-2 text-yellow-300" />
+            <div className="text-2xl font-bold">40+</div>
+            <div className="text-sm text-blue-200">Bursaries</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Simple Universities Grid to replace PopularUniversities
+  const SimpleUniversitiesGrid = () => (
+    <div className="py-12">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-bold text-center mb-8">
+          Popular Universities
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {SOUTH_AFRICAN_UNIVERSITIES.slice(0, 6).map((university) => (
+            <Card
+              key={university.id}
+              className="hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() =>
+                navigate(`/university-profile?id=${university.id}`)
+              }
+            >
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <University className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">{university.name}</CardTitle>
+                    <CardDescription className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      {university.location}
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Badge variant="outline" className="mb-2">
+                  {university.type}
+                </Badge>
+                <p className="text-sm text-gray-600">
+                  {university.overview || "Leading South African institution"}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -180,6 +239,17 @@ const UniversityInfo = () => {
       <CampusNavbar />
 
       <div className="min-h-screen bg-gray-50">
+        {/* Debug information */}
+        {import.meta.env.DEV && (
+          <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 m-4">
+            <div className="text-sm">
+              <strong>Debug Info:</strong> Universities loaded:{" "}
+              {SOUTH_AFRICAN_UNIVERSITIES?.length || 0}, Current tool:{" "}
+              {currentTool}, University ID: {selectedUniversityId || "none"}
+            </div>
+          </div>
+        )}
+
         {/* Main Content with Tabs */}
         <div className="container mx-auto px-4 py-6">
           <Tabs
@@ -227,10 +297,10 @@ const UniversityInfo = () => {
 
             <TabsContent value="overview" className="space-y-6">
               {/* Hero Section */}
-              <UniversityHero onNavigateToTool={handleTabChange} />
+              <SimpleHero />
 
               {/* Popular Universities */}
-              <PopularUniversities />
+              <SimpleUniversitiesGrid />
 
               {/* Quick Tools Section */}
               <div className="grid md:grid-cols-2 gap-6">
