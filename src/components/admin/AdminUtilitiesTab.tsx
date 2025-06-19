@@ -23,6 +23,7 @@ import {
   BulkDeleteResult,
 } from "@/services/admin/adminUtilityService";
 import { DatabaseInitService } from "@/services/admin/databaseInitService";
+import { clearAllBooks } from "@/utils/clearAllBooks";
 import { toast } from "sonner";
 import {
   Trash2,
