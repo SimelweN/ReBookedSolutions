@@ -51,9 +51,9 @@ interface StudyTip {
 }
 
 // Define specific types for form data to ensure proper type checking
-type ResourceFormType = "guide" | "template" | "tip";
-type ResourceFormDifficulty = "beginner" | "intermediate" | "advanced";
-type TipFormDifficulty = "beginner" | "intermediate" | "advanced";
+type ResourceFormType = "pdf" | "video" | "website" | "tool" | "course";
+type ResourceFormDifficulty = "Beginner" | "Intermediate" | "Advanced";
+type TipFormDifficulty = "Beginner" | "Intermediate" | "Advanced";
 
 interface ResourceFormData {
   title: string;
@@ -93,8 +93,8 @@ const AdminStudyResourcesTab = () => {
   const initialResourceFormState: ResourceFormData = {
     title: "",
     description: "",
-    type: "guide",
-    difficulty: "beginner",
+    type: "pdf",
+    difficulty: "Beginner",
     category: "",
     tags: "",
     content: "",
@@ -106,7 +106,7 @@ const AdminStudyResourcesTab = () => {
     title: "",
     content: "",
     category: "",
-    difficulty: "beginner",
+    difficulty: "Beginner",
     tags: "",
     featured: false,
     author: "",
