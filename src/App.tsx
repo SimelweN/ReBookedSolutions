@@ -1,6 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
@@ -34,81 +36,7 @@ const queryClient = new QueryClient({
   },
 });
 
-// Test basic page component
-const TestHomePage = () => (
-  <div
-    style={{
-      minHeight: "100vh",
-      backgroundColor: "#f9fafb",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      fontFamily: "system-ui",
-    }}
-  >
-    <div
-      style={{
-        backgroundColor: "white",
-        padding: "2rem",
-        borderRadius: "0.5rem",
-        boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-        textAlign: "center",
-        maxWidth: "500px",
-      }}
-    >
-      <h1
-        style={{
-          color: "#10b981",
-          marginBottom: "1rem",
-          fontSize: "1.875rem",
-          fontWeight: "bold",
-        }}
-      >
-        🎉 ReBooked Solutions
-      </h1>
-      <p
-        style={{ color: "#6b7280", marginBottom: "1.5rem", lineHeight: "1.6" }}
-      >
-        🎉 FULL APP RESTORED! All components working!
-      </p>
-      <div
-        style={{
-          backgroundColor: "#f0fdf4",
-          border: "1px solid #22c55e",
-          borderRadius: "0.375rem",
-          padding: "1rem",
-          marginBottom: "1.5rem",
-        }}
-      >
-        <p style={{ color: "#15803d", fontSize: "0.875rem", margin: 0 }}>
-          ✅ All pages restored and working
-          <br />
-          ✅ Protected routes functional
-          <br />
-          ✅ Admin dashboard accessible
-          <br />
-          ✅ University system working
-          <br />✅ Authentication & context providers active
-        </p>
-      </div>
-      <button
-        onClick={() => console.log("Router test successful")}
-        style={{
-          backgroundColor: "#3b82f6",
-          color: "white",
-          padding: "0.75rem 1.5rem",
-          border: "none",
-          borderRadius: "0.375rem",
-          fontSize: "0.875rem",
-          fontWeight: "500",
-          cursor: "pointer",
-        }}
-      >
-        🔄 Test Router
-      </button>
-    </div>
-  </div>
-);
+// Full app is now restored!
 
 function App() {
   try {
@@ -163,13 +91,15 @@ function App() {
                       }
                     />
 
-                    <Route path="/test" element={<TestHomePage />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </div>
               </Router>
             </CartProvider>
           </AuthProvider>
+          {/* Vercel Analytics and Speed Insights */}
+          <Analytics />
+          <SpeedInsights />
         </QueryClientProvider>
       </ErrorBoundary>
     );
