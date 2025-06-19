@@ -212,6 +212,9 @@ function App() {
               </Router>
             </CartProvider>
           </AuthProvider>
+          {/* Vercel Analytics and Speed Insights */}
+          <Analytics />
+          <SpeedInsights />
         </AuthErrorBoundary>
       </ErrorBoundary>
     );
