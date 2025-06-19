@@ -535,7 +535,7 @@ const UniversityInfo = () => {
 
             <TabsContent value="overview" className="space-y-6">
               {/* Hero Section */}
-              <SimpleHero />
+              <ModernHero />
 
               {/* Universities with Application Information */}
               <UniversitiesApplicationGrid />
