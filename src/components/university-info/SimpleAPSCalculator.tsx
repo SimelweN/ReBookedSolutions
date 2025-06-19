@@ -1784,13 +1784,9 @@ if (FINAL_UNIVERSITY_PROGRAMS.length === 0) {
 
 // Debug logging in development
 if (import.meta.env.DEV) {
-  console.log("University programs debug:", {
-    extractedPrograms: UNIVERSITY_PROGRAMS.length,
-    fallbackPrograms: FALLBACK_PROGRAMS.length,
-    finalPrograms: FINAL_UNIVERSITY_PROGRAMS.length,
-    universitiesLoaded: ALL_SOUTH_AFRICAN_UNIVERSITIES.length,
-    sampleUniversity: ALL_SOUTH_AFRICAN_UNIVERSITIES[0],
-  });
+  console.log(
+    `🎓 APS Calculator: Using ${FINAL_UNIVERSITY_PROGRAMS.length} programs from ${UNIVERSITY_PROGRAMS.length > 0 ? "real" : "fallback"} data`,
+  );
 }
 
 // Types
