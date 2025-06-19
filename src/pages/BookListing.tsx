@@ -168,7 +168,11 @@ const BookListing = () => {
   };
 
   const handleClearAllBooks = async () => {
-    if (!window.confirm("Are you sure you want to clear ALL books from Browse Books? This action cannot be undone.")) {
+    if (
+      !window.confirm(
+        "Are you sure you want to clear ALL books from Browse Books? This action cannot be undone.",
+      )
+    ) {
       return;
     }
 
@@ -186,8 +190,6 @@ const BookListing = () => {
       toast.error("Failed to clear books");
     } finally {
       setIsClearingBooks(false);
-    }
-  };
     }
   };
 
