@@ -1532,8 +1532,8 @@ export const ALL_BURSARIES: Bursary[] = [
 export const BURSARIES = ALL_BURSARIES;
 
 export const BURSARY_CATEGORIES = [
-  "Government Bursaries",
-  "Corporate Bursaries",
+  "Government & Public Sector",
+  "Corporate & Industry",
   "Banking & Finance",
   "Mining & Resources",
   "Technology & Telecommunications",
@@ -1542,6 +1542,12 @@ export const BURSARY_CATEGORIES = [
   "Engineering & Technical",
   "Agriculture & Environment",
   "Professional Organizations",
+  "STEM & Science",
+  "Insurance & Actuarial",
+  "Construction & Infrastructure",
+  "Retail & Consumer",
+  "Arts & Humanities",
+  "Prestigious & Leadership",
 ];
 
 // Use comprehensive fields of study
