@@ -13,7 +13,27 @@ interface BookGridProps {
   onCommitBook?: (bookId: string) => Promise<void>;
 }
 
-const BookGrid = ({ books, isLoading, onClearFilters }: BookGridProps) => {
+const BookGrid = ({
+  books,
+  isLoading,
+  onClearFilters,
+  currentUserId,
+  onCommitBook,
+}: BookGridProps) => {
+  const handleCommit = async (bookId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!onCommitBook) return;
+
+    try {
+      await onCommitBook(bookId);
+      toast.success("Sale committed successfully!");
+    } catch (error) {
+      console.error("Failed to commit sale:", error);
+      toast.error("Failed to commit sale. Please try again.");
+    }
+  };
   if (isLoading) {
     return (
       <div className="lg:w-3/4">
