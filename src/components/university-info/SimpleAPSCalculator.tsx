@@ -40,6 +40,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SOUTH_AFRICAN_SUBJECTS } from "@/constants/subjects";
+import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities";
 import { toast } from "sonner";
 
 // Simplified but comprehensive program data
