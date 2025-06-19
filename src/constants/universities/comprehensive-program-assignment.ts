@@ -355,7 +355,6 @@ const COMPREHENSIVE_PROGRAMS_PART3: ProgramDefinition[] = [
 // Combine all program definitions
 export const ALL_COMPREHENSIVE_PROGRAMS: ProgramDefinition[] = [
   ...COMPREHENSIVE_PROGRAMS,
-  ...COMPREHENSIVE_PROGRAMS_PART2,
   ...COMPREHENSIVE_PROGRAMS_PART3,
 ];
 
