@@ -21,6 +21,14 @@ if (!SHIPLOGIC_API_KEY) {
   console.warn(
     "ShipLogic API key is not configured. ShipLogic services will return fallback data.",
   );
+  console.warn(
+    "To fix this, add VITE_SHIPLOGIC_API_KEY to your environment variables.",
+  );
+} else {
+  console.log(
+    "ShipLogic API key configured:",
+    SHIPLOGIC_API_KEY.substring(0, 10) + "...",
+  );
 }
 
 // Create axios client for ShipLogic API
