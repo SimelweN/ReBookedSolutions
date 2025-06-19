@@ -77,6 +77,9 @@ const BookGrid = ({
           console.log("Rendering book:", book.id, book.title);
           const isUnavailable =
             (book as Book & { status?: string }).status === "unavailable";
+          const isPendingCommit =
+            (book as Book & { status?: string }).status === "pending_commit";
+          const isOwner = currentUserId && book.seller?.id === currentUserId;
 
           return (
             <div
