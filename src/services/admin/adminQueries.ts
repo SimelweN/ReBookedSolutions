@@ -205,8 +205,14 @@ export const getAllUsers = async (): Promise<AdminUser[]> => {
 
     return usersWithCounts;
   } catch (error) {
-    console.error("Error in getAllUsers:", error);
-    throw new Error("Failed to fetch users");
+    console.error("Error in getAllUsers:", {
+      error,
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    throw new Error(
+      `Failed to fetch users: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 };
 
