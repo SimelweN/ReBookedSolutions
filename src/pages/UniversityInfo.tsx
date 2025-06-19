@@ -68,6 +68,7 @@ const UniversityInfo = () => {
   const currentTool = searchParams.get("tool") || "overview";
   const selectedUniversityId = searchParams.get("university");
   const [showAllUniversities, setShowAllUniversities] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Find selected university if one is specified
   const selectedUniversity = useMemo(() => {
