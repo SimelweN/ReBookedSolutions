@@ -80,7 +80,7 @@ interface TipFormData {
 const AdminStudyResourcesTab = () => {
   const [resources, setResources] = useState<StudyResource[]>([]);
   const [tips, setTips] = useState<StudyTip[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [showResourceForm, setShowResourceForm] = useState(false);
