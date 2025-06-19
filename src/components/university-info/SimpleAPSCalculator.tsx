@@ -2118,20 +2118,13 @@ const SimpleAPSCalculator: React.FC = () => {
               onValueChange={(value: string) => setActiveInsight(value)}
               className="w-full"
             >
-              <TabsList className="grid grid-cols-1 sm:grid-cols-3 w-full mb-6 bg-white border border-slate-200 h-auto sm:h-10">
+              <TabsList className="grid grid-cols-1 sm:grid-cols-2 w-full mb-6 bg-white border border-slate-200 h-auto sm:h-10">
                 <TabsTrigger
                   value="overview"
                   className="data-[state=active]:bg-slate-900 data-[state=active]:text-white"
                 >
                   <BarChart3 className="h-4 w-4 mr-2" />
-                  Overview
-                </TabsTrigger>
-                <TabsTrigger
-                  value="universities"
-                  className="data-[state=active]:bg-slate-900 data-[state=active]:text-white"
-                >
-                  <Building className="h-4 w-4 mr-2" />
-                  Universities
+                  Program Overview
                 </TabsTrigger>
                 <TabsTrigger
                   value="programs"
