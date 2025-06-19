@@ -72,11 +72,11 @@ const BookListing = () => {
 
       console.log("Applied filters:", filters);
 
-      // Removed all books from display
-      console.log("Books removed from display");
+      const loadedBooks = await getBooks(filters);
+      console.log("Loaded books count:", loadedBooks.length);
 
-      // Set empty array to remove all books
-      const booksArray: Book[] = [];
+      // Ensure we have an array
+      const booksArray = Array.isArray(loadedBooks) ? loadedBooks : [];
       setBooks(booksArray);
 
       if (booksArray.length === 0) {
