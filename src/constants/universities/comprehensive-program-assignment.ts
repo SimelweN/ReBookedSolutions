@@ -1,4 +1,4 @@
-import { University, Faculty, Degree } from "@/types/university";
+import { University, Faculty, Degree, Subject } from "@/types/university";
 import {
   COMPREHENSIVE_PROGRAMS,
   UNIVERSITY_ABBREVIATIONS,
