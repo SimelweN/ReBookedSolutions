@@ -214,20 +214,14 @@ const UniversityProfile: React.FC = () => {
             <div className="flex items-start">
               {/* University Logo */}
               <div className="bg-white border border-gray-200 rounded-lg p-4 w-20 h-20 flex items-center justify-center flex-shrink-0">
-                {university.logo ? (
-                  <img
-                    src={university.logo}
-                    alt={`${university.name} logo`}
-                    className="w-16 h-16 object-contain"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = "none";
-                      target.nextElementSibling?.classList.remove("hidden");
-                    }}
-                  />
-                ) : null}
-                <Building
-                  className={`h-12 w-12 text-gray-400 ${university.logo && !document.querySelector(`img[alt="${university.name} logo"][style*="display: none"]`) ? "hidden" : ""}`}
+                <img
+                  src={university.logo || "/university-logos/default.svg"}
+                  alt={`${university.name} logo`}
+                  className="w-16 h-16 object-contain"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "/university-logos/default.svg";
+                  }}
                 />
               </div>
 

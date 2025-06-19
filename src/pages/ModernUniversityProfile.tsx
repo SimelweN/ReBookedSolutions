@@ -165,20 +165,14 @@ const ModernUniversityProfile: React.FC = () => {
             <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-8">
               {/* Logo */}
               <div className="bg-white rounded-2xl p-4 w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center flex-shrink-0 shadow-xl mx-auto sm:mx-0">
-                {university.logo ? (
-                  <img
-                    src={university.logo}
-                    alt={`${university.name} logo`}
-                    className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = "none";
-                      target.nextElementSibling?.classList.remove("hidden");
-                    }}
-                  />
-                ) : null}
-                <Building
-                  className={`h-10 w-10 sm:h-12 sm:w-12 text-slate-400 ${university.logo && !document.querySelector(`img[alt="${university.name} logo"][style*="display: none"]`) ? "hidden" : ""}`}
+                <img
+                  src={university.logo || "/university-logos/default.svg"}
+                  alt={`${university.name} logo`}
+                  className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "/university-logos/default.svg";
+                  }}
                 />
               </div>
 
