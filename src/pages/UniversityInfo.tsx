@@ -88,6 +88,17 @@ const UniversityInfo = () => {
     if (!selectedUniversityId) return null;
 
     try {
+      if (
+        !SOUTH_AFRICAN_UNIVERSITIES ||
+        !Array.isArray(SOUTH_AFRICAN_UNIVERSITIES)
+      ) {
+        console.error(
+          "SOUTH_AFRICAN_UNIVERSITIES is not an array:",
+          typeof SOUTH_AFRICAN_UNIVERSITIES,
+        );
+        setError("University data is corrupted");
+        return null;
+      }
       return (
         SOUTH_AFRICAN_UNIVERSITIES.find(
           (uni) => uni.id === selectedUniversityId,
@@ -95,6 +106,7 @@ const UniversityInfo = () => {
       );
     } catch (error) {
       console.error("Error finding university:", error);
+      setError(`Error processing university data: ${error}`);
       return null;
     }
   }, [selectedUniversityId]);
