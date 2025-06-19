@@ -274,7 +274,7 @@ const UniversityExplorer = ({
                               handleUniversitySelect(university);
                             }}
                           >
-                            View Details
+                            Learn More
                           </Button>
                           <Button
                             variant="outline"
