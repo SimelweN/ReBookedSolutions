@@ -16,6 +16,13 @@ import {
 const SHIPLOGIC_BASE_URL = "https://api.shiplogic.com/v2";
 const SHIPLOGIC_API_KEY = import.meta.env.VITE_SHIPLOGIC_API_KEY || "";
 
+// Validate API key is configured
+if (!SHIPLOGIC_API_KEY) {
+  console.warn(
+    "ShipLogic API key is not configured. ShipLogic services will return fallback data.",
+  );
+}
+
 // Create axios client for ShipLogic API
 const shiplogicClient: AxiosInstance = axios.create({
   baseURL: SHIPLOGIC_BASE_URL,
@@ -52,12 +59,15 @@ shiplogicClient.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error("ShipLogic API Response Error:", {
+    const errorDetails = {
       url: error.config?.url,
       status: error.response?.status,
-      data: error.response?.data,
+      data: error.response?.data
+        ? JSON.stringify(error.response.data, null, 2)
+        : "No data",
       message: error.message,
-    });
+    };
+    console.error("ShipLogic API Response Error:", errorDetails);
     return Promise.reject(error);
   },
 );
@@ -151,6 +161,14 @@ export const getShipLogicRates = async (
   request: ShipLogicQuoteRequest,
 ): Promise<ShipLogicRate[]> => {
   try {
+    // Check if API key is configured
+    if (!SHIPLOGIC_API_KEY) {
+      console.warn(
+        "ShipLogic API key not configured, returning fallback rates",
+      );
+      return getFallbackRates();
+    }
+
     // Validate input parameters
     if (!request.fromAddress || !request.toAddress || !request.parcel) {
       throw new Error("Missing required address or parcel information");
@@ -277,11 +295,23 @@ export const getShipLogicRates = async (
       const status = error.response?.status;
       const errorData = error.response?.data;
 
+      // Extract error message from various possible error response formats
+      let errorMessage = "Unknown error";
+      if (errorData) {
+        if (typeof errorData === "string") {
+          errorMessage = errorData;
+        } else if (errorData.message) {
+          errorMessage = errorData.message;
+        } else if (errorData.error) {
+          errorMessage = errorData.error;
+        } else if (errorData.errors && Array.isArray(errorData.errors)) {
+          errorMessage = errorData.errors.join(", ");
+        } else if (typeof errorData === "object") {
+          errorMessage = JSON.stringify(errorData);
+        }
+      }
+
       if (status === 400) {
-        const errorMessage =
-          errorData?.message ||
-          errorData?.error ||
-          "Invalid request parameters";
         throw new Error(`Request validation failed: ${errorMessage}`);
       } else if (status === 401) {
         throw new Error("Authentication failed. Please check API credentials.");
@@ -294,8 +324,6 @@ export const getShipLogicRates = async (
       } else if (status >= 500) {
         throw new Error("ShipLogic server error. Please try again later.");
       } else {
-        const errorMessage =
-          errorData?.message || errorData?.error || error.message;
         throw new Error(`Failed to get shipping rates: ${errorMessage}`);
       }
     }
