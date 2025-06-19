@@ -51,8 +51,12 @@ import AddProgram from "./pages/AddProgram";
 import Policies from "./pages/Policies";
 
 import "./App.css";
+import EmergencyFallback from "./components/EmergencyFallback";
 
 function App() {
+  // Temporary debug mode - uncomment the line below if needed
+  // return <EmergencyFallback />;
+
   try {
     return (
       <ErrorBoundary level="app">
