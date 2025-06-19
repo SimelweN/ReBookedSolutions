@@ -524,7 +524,7 @@ const UniversityProfile: React.FC = () => {
                                   >
                                     {faculty.degrees?.length || 0} Programs
                                   </Badge>
-                                  {expandedFaculties.has(faculty.id) ? (
+                                  {expandedFaculties.has(facultyId) ? (
                                     <ChevronUp className="h-5 w-5 text-gray-400" />
                                   ) : (
                                     <ChevronDown className="h-5 w-5 text-gray-400" />
@@ -534,7 +534,7 @@ const UniversityProfile: React.FC = () => {
                             </CardHeader>
                           </div>
 
-                          {expandedFaculties.has(faculty.id) && (
+                          {expandedFaculties.has(facultyId) && (
                             <CardContent className="pt-0">
                               <p className="text-gray-700 mb-6 text-lg leading-relaxed">
                                 {faculty.description}
