@@ -10,7 +10,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ProvinceSelector } from "@/components/ui/province-selector";
-} from "@/components/ui/dialog";
 import { MapPin, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Address, AddressData } from "@/types/address";
