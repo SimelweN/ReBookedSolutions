@@ -1759,7 +1759,7 @@ const SimpleAPSCalculator: React.FC = () => {
   const degreeAnalysis = useMemo(() => {
     const degrees: DegreeInsight[] = [];
 
-    UNIVERSITY_PROGRAMS.forEach((prog) => {
+    FINAL_UNIVERSITY_PROGRAMS.forEach((prog) => {
       const eligible = totalAPS >= prog.aps;
       const apsGap = eligible ? 0 : prog.aps - totalAPS;
 
