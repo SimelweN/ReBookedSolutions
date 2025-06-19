@@ -228,6 +228,19 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
 
         <div className="flex gap-2">
           <Button
+            onClick={() => setShowClearBooksDialog(true)}
+            disabled={isLoading}
+            variant="destructive"
+            size="sm"
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Trash2 className="h-4 w-4 mr-2" />
+            )}
+            Clear All Books
+          </Button>
+          <Button
             onClick={handleDeleteDemoBooks}
             disabled={isLoading}
             variant="destructive"
