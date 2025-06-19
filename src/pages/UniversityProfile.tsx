@@ -479,14 +479,16 @@ const UniversityProfile: React.FC = () => {
 
                 {university.faculties && university.faculties.length > 0 ? (
                   <div className="space-y-6">
-                    {university.faculties.map((faculty, index) => (
+                    {university.faculties.map((faculty, index) => {
+                      const facultyId = faculty.id || `faculty-${index}`;
+                      return (
                       <Card
-                        key={faculty.id || index}
+                        key={facultyId}
                         className="bg-white border border-gray-200 shadow-sm"
                       >
                         <div
                           className="cursor-pointer"
-                          onClick={() => toggleFaculty(faculty.id)}
+                          onClick={() => toggleFaculty(facultyId)}
                         >
                           <CardHeader className="pb-4">
                             <div className="flex items-center justify-between">
