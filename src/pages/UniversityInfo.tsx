@@ -70,6 +70,19 @@ const UniversityInfo = () => {
   const [showAllUniversities, setShowAllUniversities] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Early return for testing
+  if (import.meta.env.DEV) {
+    console.log("UniversityInfo component loading...");
+    console.log(
+      "SOUTH_AFRICAN_UNIVERSITIES length:",
+      SOUTH_AFRICAN_UNIVERSITIES?.length,
+    );
+    console.log(
+      "UNIVERSITY_APPLICATIONS_2025 length:",
+      UNIVERSITY_APPLICATIONS_2025?.length,
+    );
+  }
+
   // Find selected university if one is specified
   const selectedUniversity = useMemo(() => {
     if (!selectedUniversityId) return null;
