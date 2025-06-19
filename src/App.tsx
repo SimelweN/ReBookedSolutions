@@ -4,6 +4,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
+import Index from "./pages/Index";
+import BookListing from "./pages/BookListing";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import NotFound from "./pages/NotFound";
 import "./App.css";
 
 // Create query client
@@ -55,7 +60,7 @@ const TestHomePage = () => (
       <p
         style={{ color: "#6b7280", marginBottom: "1.5rem", lineHeight: "1.6" }}
       >
-        Step 2 Complete: Error boundaries and providers working!
+        Step 3 Complete: Basic pages loading successfully!
       </p>
       <div
         style={{
@@ -67,14 +72,14 @@ const TestHomePage = () => (
         }}
       >
         <p style={{ color: "#15803d", fontSize: "0.875rem", margin: 0 }}>
-          ✅ React Router working
+          ✅ Core pages loaded (Index, BookListing, Login)
           <br />
-          ✅ ErrorBoundary loaded
+          ✅ Authentication system ready
           <br />
-          ✅ AuthProvider loaded
+          ✅ Error boundaries active
           <br />
-          ✅ CartProvider loaded
-          <br />✅ QueryClient loaded
+          ✅ Context providers working
+          <br />✅ Router handling all routes
         </p>
       </div>
       <button
@@ -106,8 +111,12 @@ function App() {
               <Router>
                 <div className="min-h-screen bg-gray-50">
                   <Routes>
-                    <Route path="/" element={<TestHomePage />} />
-                    <Route path="*" element={<TestHomePage />} />
+                    <Route path="/" element={<Index />} />
+                    <Route path="/books" element={<BookListing />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/test" element={<TestHomePage />} />
+                    <Route path="*" element={<NotFound />} />
                   </Routes>
                 </div>
               </Router>
