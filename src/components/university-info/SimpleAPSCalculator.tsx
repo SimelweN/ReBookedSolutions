@@ -1611,6 +1611,17 @@ const FALLBACK_PROGRAMS = [
 const FINAL_UNIVERSITY_PROGRAMS =
   UNIVERSITY_PROGRAMS.length > 0 ? UNIVERSITY_PROGRAMS : FALLBACK_PROGRAMS;
 
+// Debug logging in development
+if (import.meta.env.DEV) {
+  console.log("University programs debug:", {
+    extractedPrograms: UNIVERSITY_PROGRAMS.length,
+    fallbackPrograms: FALLBACK_PROGRAMS.length,
+    finalPrograms: FINAL_UNIVERSITY_PROGRAMS.length,
+    universitiesLoaded: ALL_SOUTH_AFRICAN_UNIVERSITIES.length,
+    sampleUniversity: ALL_SOUTH_AFRICAN_UNIVERSITIES[0],
+  });
+}
+
 // Types
 interface APSSubject {
   name: string;
