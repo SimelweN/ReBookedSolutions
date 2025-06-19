@@ -47,7 +47,6 @@ const BookListing = () => {
       const category = searchParams.get("category") || "";
       const grade = searchParams.get("grade") || "";
       const universityYear = searchParams.get("universityYear") || "";
-      const university = searchParams.get("university") || "";
 
       const filters: {
         search?: string;
@@ -99,6 +98,7 @@ const BookListing = () => {
 
       toast.error(userMessage);
       setBooks([]);
+      setError(error instanceof Error ? error.message : String(error));
     } finally {
       setIsLoading(false);
     }
@@ -117,28 +117,31 @@ const BookListing = () => {
   };
 
   const updateFilters = useCallback(() => {
-    console.log("Updating filters...");
-    const params = new URLSearchParams();
+    const newSearchParams = new URLSearchParams();
 
-    if (searchQuery) params.set("search", searchQuery);
-    if (selectedCategory) params.set("category", selectedCategory);
-    if (selectedGrade) params.set("grade", selectedGrade);
-    if (selectedUniversityYear)
-      params.set("universityYear", selectedUniversityYear);
-    if (selectedUniversity) params.set("university", selectedUniversity);
+    if (searchQuery.trim()) {
+      newSearchParams.set("search", searchQuery.trim());
+    }
+    if (selectedCategory) {
+      newSearchParams.set("category", selectedCategory);
+    }
+    if (selectedGrade) {
+      newSearchParams.set("grade", selectedGrade);
+    }
+    if (selectedUniversityYear) {
+      newSearchParams.set("universityYear", selectedUniversityYear);
+    }
 
-    setSearchParams(params);
+    setSearchParams(newSearchParams);
   }, [
     searchQuery,
     selectedCategory,
     selectedGrade,
     selectedUniversityYear,
-    selectedUniversity,
     setSearchParams,
   ]);
 
   const clearFilters = useCallback(() => {
-    console.log("Clearing all filters");
     setSearchQuery("");
     setSelectedCategory("");
     setSelectedCondition("");
@@ -147,47 +150,21 @@ const BookListing = () => {
     setSelectedUniversity("");
     setPriceRange([0, 1000]);
     setBookType("all");
-
-    // Clear URL params
-    setSearchParams({});
+    setSearchParams(new URLSearchParams());
   }, [setSearchParams]);
 
-  const handleCommitBook = useCallback(
-    async (bookId: string) => {
-      try {
-        await commitBook(bookId);
-        // Reload books to reflect the status change
-        await loadBooks();
-      } catch (error) {
-        console.error("Failed to commit book:", error);
-      }
-    },
-    [commitBook, loadBooks],
-  );
-
-  if (error) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-8">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-            <h2 className="text-xl font-semibold text-red-800 mb-2">
-              Error Loading Books
-            </h2>
-            <p className="text-red-600 mb-4">{error}</p>
-            <button
-              onClick={() => {
-                setError(null);
-                loadBooks();
-              }}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
+  const handleCommitBook = async (bookId: string) => {
+    try {
+      await commitBook(bookId);
+      toast.success("Book committed for sale successfully!");
+      // Reload books to reflect the status change
+      loadBooks();
+    } catch (error) {
+      console.error("Failed to commit book:", error);
+      toast.error("Failed to commit book for sale. Please try again.");
+      throw error;
+    }
+  };
 
   return (
     <Layout>
@@ -203,12 +180,15 @@ const BookListing = () => {
           Browse Books
         </h1>
 
-        {/* Debug info */}
+        {/* Debug info - temporary for troubleshooting */}
         <div className="bg-blue-100 p-4 mb-4 rounded-lg">
-          <p>Debug Info:</p>
+          <p>
+            <strong>Debug Info:</strong>
+          </p>
           <p>Loading: {isLoading.toString()}</p>
           <p>Books count: {books.length}</p>
-          <p>Error: {error || 'None'}</p>
+          <p>Error: {error || "None"}</p>
+          <p>Component is rendering!</p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-4 sm:gap-8">
@@ -247,5 +227,6 @@ const BookListing = () => {
       </div>
     </Layout>
   );
+};
 
 export default BookListing;
