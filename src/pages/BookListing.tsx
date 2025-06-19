@@ -231,6 +231,8 @@ const BookListing = () => {
             books={books}
             isLoading={isLoading}
             onClearFilters={clearFilters}
+            currentUserId={user?.id}
+            onCommitBook={handleCommitBook}
           />
         </div>
       </div>
