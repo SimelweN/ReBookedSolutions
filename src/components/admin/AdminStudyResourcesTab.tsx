@@ -152,16 +152,8 @@ const AdminStudyResourcesTab = () => {
       toast.error("Description is required");
       return;
     }
-    if (!resourceForm.content?.trim()) {
-      toast.error("Content is required");
-      return;
-    }
     if (!resourceForm.category?.trim()) {
       toast.error("Category is required");
-      return;
-    }
-    if (!resourceForm.author?.trim()) {
-      toast.error("Author is required");
       return;
     }
 
@@ -176,8 +168,7 @@ const AdminStudyResourcesTab = () => {
           .split(",")
           .map((tag) => tag.trim())
           .filter(Boolean),
-        content: resourceForm.content.trim(),
-        author: resourceForm.author.trim(),
+        url: resourceForm.content?.trim() || "", // Use content field as URL for now
         isActive: true,
         isFeatured: resourceForm.featured,
       };

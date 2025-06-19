@@ -5,12 +5,10 @@ import { StudyTip, StudyResource } from "@/types/university";
 interface StudyResourcePayload {
   title: string;
   description: string;
-  type: "guide" | "template" | "tip";
-  difficulty: "beginner" | "intermediate" | "advanced";
+  type: "pdf" | "video" | "website" | "tool" | "course";
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
   category: string;
   tags: string[];
-  content?: string;
-  author?: string;
   url?: string;
   provider?: string;
   duration?: string;
@@ -29,7 +27,7 @@ interface StudyTipPayload {
   title: string;
   content: string;
   category: string;
-  difficulty: "beginner" | "intermediate" | "advanced";
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
   tags: string[];
   isActive: boolean;
   author?: string;
