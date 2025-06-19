@@ -63,54 +63,68 @@ const Policies = () => {
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <div className="w-full">
           <div className="mb-6 sm:mb-8">
-            <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-1 p-1 bg-gray-100 rounded-lg overflow-x-auto">
-              <TabsTrigger
-                value="privacy"
-                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+            <div className="flex flex-wrap gap-2 sm:gap-3 p-3 sm:p-4 bg-gray-100 rounded-lg">
+              <Button
+                onClick={() => setActiveTab("privacy")}
+                variant={activeTab === "privacy" ? "default" : "outline"}
+                size="sm"
+                className="text-xs sm:text-sm flex-shrink-0"
               >
-                <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
-                <span className="truncate">Privacy Policy</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="terms"
-                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+                <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span>Privacy Policy</span>
+              </Button>
+              <Button
+                onClick={() => setActiveTab("terms")}
+                variant={activeTab === "terms" ? "default" : "outline"}
+                size="sm"
+                className="text-xs sm:text-sm flex-shrink-0"
               >
-                <Scale className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
-                <span className="truncate">Terms & Conditions</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="refunds"
-                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+                <Scale className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span>Terms & Conditions</span>
+              </Button>
+              <Button
+                onClick={() => setActiveTab("refunds")}
+                variant={activeTab === "refunds" ? "default" : "outline"}
+                size="sm"
+                className="text-xs sm:text-sm flex-shrink-0"
               >
-                <span className="truncate">Refund Policy</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="cancellation"
-                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+                <span>Refund Policy</span>
+              </Button>
+              <Button
+                onClick={() => setActiveTab("cancellation")}
+                variant={activeTab === "cancellation" ? "default" : "outline"}
+                size="sm"
+                className="text-xs sm:text-sm flex-shrink-0"
               >
-                <span className="truncate">Cancellation Policy</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="shipping"
-                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+                <span>Cancellation Policy</span>
+              </Button>
+              <Button
+                onClick={() => setActiveTab("shipping")}
+                variant={activeTab === "shipping" ? "default" : "outline"}
+                size="sm"
+                className="text-xs sm:text-sm flex-shrink-0"
               >
-                <span className="truncate">Shipping & Delivery</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="returns"
-                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+                <span>Shipping & Delivery</span>
+              </Button>
+              <Button
+                onClick={() => setActiveTab("returns")}
+                variant={activeTab === "returns" ? "default" : "outline"}
+                size="sm"
+                className="text-xs sm:text-sm flex-shrink-0"
               >
-                <span className="truncate">Return Policy</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="disputes"
-                className="text-xs sm:text-sm py-2 px-2 sm:px-3 whitespace-nowrap"
+                <span>Return Policy</span>
+              </Button>
+              <Button
+                onClick={() => setActiveTab("disputes")}
+                variant={activeTab === "disputes" ? "default" : "outline"}
+                size="sm"
+                className="text-xs sm:text-sm flex-shrink-0"
               >
-                <span className="truncate">Dispute Resolution</span>
-              </TabsTrigger>
-            </TabsList>
+                <span>Dispute Resolution</span>
+              </Button>
+            </div>
           </div>
 
           {/* Privacy Policy Tab */}
@@ -148,7 +162,10 @@ const Policies = () => {
                   </div>
                   <strong>Jurisdiction:</strong>
                   <div>
-                    <span> Republic of South Africa</span>
+                    <span>
+                      {" "}
+                      Republic of South Africa
+                    </span>
                   </div>
                 </div>
               </CardHeader>
