@@ -417,10 +417,13 @@ export function applyAssignmentRules(
       const degree: Degree = {
         id: `${university.id}-${program.name.toLowerCase().replace(/\s+/g, "-")}`,
         name: program.name,
+        code: generateDegreeCode(program.name),
         description: program.description,
         duration: program.duration,
         apsRequirement,
         faculty: program.faculty,
+        subjects: getDefaultSubjects(program.faculty),
+        careerProspects: getCareerProspects(program.name, program.faculty),
       };
 
       faculty.degrees.push(degree);
