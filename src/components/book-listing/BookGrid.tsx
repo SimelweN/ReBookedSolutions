@@ -9,6 +9,8 @@ interface BookGridProps {
   books: Book[];
   isLoading: boolean;
   onClearFilters: () => void;
+  currentUserId?: string | null;
+  onCommitBook?: (bookId: string) => Promise<void>;
 }
 
 const BookGrid = ({ books, isLoading, onClearFilters }: BookGridProps) => {
