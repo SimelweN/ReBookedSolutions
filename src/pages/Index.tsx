@@ -1,60 +1,13 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
-import { getBooks } from "@/services/book/bookQueries";
-import { Book } from "@/types/book";
-import { BookOpen, Search, Star } from "lucide-react";
-import { toast } from "sonner";
+import { Search } from "lucide-react";
 
 const Index = () => {
-  const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-
-  useEffect(() => {
-    loadFeaturedBooks();
-  }, []);
-
-  const loadFeaturedBooks = async () => {
-    try {
-      setIsLoading(true);
-      console.log("[Index] Loading books...");
-
-      const allBooks = await getBooks();
-      console.log("[Index] Received books:", {
-        isArray: Array.isArray(allBooks),
-        length: allBooks?.length || 0,
-        firstFew: allBooks?.slice(0, 2) || [],
-      });
-
-      const booksToShow = Array.isArray(allBooks) ? allBooks.slice(0, 4) : [];
-      setFeaturedBooks(booksToShow);
-
-      console.log("[Index] Set featured books:", booksToShow.length);
-    } catch (error) {
-      const errorDetails = {
-        message: error instanceof Error ? error.message : String(error),
-        name: error instanceof Error ? error.name : "Unknown",
-        stack: error instanceof Error ? error.stack : undefined,
-        timestamp: new Date().toISOString(),
-      };
-
-      console.error("[Index] Error loading featured books:", errorDetails);
-
-      const userMessage =
-        error instanceof Error && error.message.includes("Failed to fetch")
-          ? "Unable to load featured books. Please check your internet connection and try refreshing the page."
-          : "Failed to load featured books. Please try again later.";
-
-      toast.error(userMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
