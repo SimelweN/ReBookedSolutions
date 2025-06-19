@@ -23,11 +23,14 @@ const BookActions = ({
   onBuyNow,
   onAddToCart,
   onEditBook,
+  onCommit,
+  showCommitButton = false,
   // onShare, // Prop was unused
   // onViewSellerProfile, // Prop was unused
 }: BookActionsProps) => {
   const isOwner = user?.id === book.seller?.id; // seller is an object with id
   const isSold = book.sold;
+  const isPendingCommit = book.status === "pending_commit" || showCommitButton;
 
   return (
     <Card className="sticky top-4">
