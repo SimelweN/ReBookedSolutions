@@ -2020,7 +2020,7 @@ const SimpleAPSCalculator: React.FC = () => {
                             type="number"
                             min="0"
                             max="100"
-                            value={subject.marks}
+                            value={subject.marks || ""}
                             onChange={(e) =>
                               updateSubjectMarks(
                                 index,
@@ -2028,7 +2028,7 @@ const SimpleAPSCalculator: React.FC = () => {
                               )
                             }
                             className="bg-slate-50 border-slate-200 text-center font-medium"
-                            placeholder="0"
+                            placeholder="Enter marks"
                           />
                         </div>
                         <div className="flex-shrink-0">
