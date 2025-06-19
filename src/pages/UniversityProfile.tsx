@@ -79,7 +79,9 @@ const UniversityProfile: React.FC = () => {
   };
 
   // Handle faculty expansion
-  const toggleFaculty = (facultyId: string) => {
+  const toggleFaculty = (facultyId: string | undefined) => {
+    if (!facultyId) return;
+
     const newExpanded = new Set(expandedFaculties);
     if (newExpanded.has(facultyId)) {
       newExpanded.delete(facultyId);
@@ -88,7 +90,9 @@ const UniversityProfile: React.FC = () => {
       university?.faculties
         ?.find((f) => f.id === facultyId)
         ?.degrees?.forEach((degree) => {
-          newExpandedPrograms.delete(degree.id);
+          if (degree.id) {
+            newExpandedPrograms.delete(degree.id);
+          }
         });
       setExpandedPrograms(newExpandedPrograms);
     } else {
