@@ -227,7 +227,7 @@ const UniversityProfile: React.FC = () => {
                   />
                 ) : null}
                 <Building
-                  className={`h-12 w-12 text-gray-400 ${university.logo ? "hidden" : ""}`}
+                  className={`h-12 w-12 text-gray-400 ${university.logo && !document.querySelector(`img[alt="${university.name} logo"][style*="display: none"]`) ? "hidden" : ""}`}
                 />
               </div>
 
