@@ -403,7 +403,7 @@ const PopularUniversities = () => {
                 }}
               >
                 <UniversityIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                View Details
+                Explore University
               </Button>
 
               <div className="flex gap-2 justify-end">
