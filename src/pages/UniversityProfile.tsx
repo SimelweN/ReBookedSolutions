@@ -482,193 +482,212 @@ const UniversityProfile: React.FC = () => {
                     {university.faculties.map((faculty, index) => {
                       const facultyId = faculty.id || `faculty-${index}`;
                       return (
-                      <Card
-                        key={facultyId}
-                        className="bg-white border border-gray-200 shadow-sm"
-                      >
-                        <div
-                          className="cursor-pointer"
-                          onClick={() => toggleFaculty(facultyId)}
+                        <Card
+                          key={facultyId}
+                          className="bg-white border border-gray-200 shadow-sm"
                         >
-                          <CardHeader className="pb-4">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-4">
-                                <div
-                                  className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg"
-                                  style={{
-                                    backgroundColor: "rgba(68, 171, 131, 0.1)",
-                                  }}
-                                >
-                                  <Building
-                                    className="h-8 w-8"
-                                    style={{ color: "rgb(68, 171, 131)" }}
-                                  />
+                          <div
+                            className="cursor-pointer"
+                            onClick={() => toggleFaculty(facultyId)}
+                          >
+                            <CardHeader className="pb-4">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                  <div
+                                    className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg"
+                                    style={{
+                                      backgroundColor:
+                                        "rgba(68, 171, 131, 0.1)",
+                                    }}
+                                  >
+                                    <Building
+                                      className="h-8 w-8"
+                                      style={{ color: "rgb(68, 171, 131)" }}
+                                    />
+                                  </div>
+                                  <div>
+                                    <h3 className="text-2xl font-bold text-gray-900">
+                                      {faculty.name}
+                                    </h3>
+                                    <p className="text-gray-600">
+                                      {faculty.degrees?.length || 0} programs
+                                      available
+                                    </p>
+                                  </div>
                                 </div>
-                                <div>
-                                  <h3 className="text-2xl font-bold text-gray-900">
-                                    {faculty.name}
-                                  </h3>
-                                  <p className="text-gray-600">
-                                    {faculty.degrees?.length || 0} programs
-                                    available
+                                <div className="flex items-center gap-4">
+                                  <Badge
+                                    className="px-3 py-1 text-white"
+                                    style={{
+                                      backgroundColor: "rgb(68, 171, 131)",
+                                    }}
+                                  >
+                                    {faculty.degrees?.length || 0} Programs
+                                  </Badge>
+                                  {expandedFaculties.has(facultyId) ? (
+                                    <ChevronUp className="h-5 w-5 text-gray-400" />
+                                  ) : (
+                                    <ChevronDown className="h-5 w-5 text-gray-400" />
+                                  )}
+                                </div>
+                              </div>
+                            </CardHeader>
+                          </div>
+
+                          {expandedFaculties.has(facultyId) && (
+                            <CardContent className="pt-0">
+                              <p className="text-gray-700 mb-6 text-lg leading-relaxed">
+                                {faculty.description}
+                              </p>
+
+                              {faculty.degrees && faculty.degrees.length > 0 ? (
+                                <div className="space-y-4">
+                                  <h4 className="text-xl font-semibold text-gray-900 mb-4">
+                                    Available Programs
+                                  </h4>
+                                  {faculty.degrees.map(
+                                    (degree, degreeIndex) => {
+                                      const degreeId =
+                                        degree.id ||
+                                        `degree-${facultyId}-${degreeIndex}`;
+                                      return (
+                                        <div
+                                          key={degreeId}
+                                          className="border border-gray-200 rounded-lg overflow-hidden"
+                                        >
+                                          <div
+                                            className="p-4 cursor-pointer hover:bg-gray-50"
+                                            onClick={() =>
+                                              toggleProgram(degreeId)
+                                            }
+                                          >
+                                            <div className="flex items-center justify-between">
+                                              <div className="flex-1">
+                                                <h5 className="text-lg font-semibold text-gray-900 mb-2">
+                                                  {degree.name}
+                                                </h5>
+                                                <div className="flex flex-wrap gap-3">
+                                                  <Badge
+                                                    variant="outline"
+                                                    className="bg-gray-50 border-gray-200 text-gray-700 px-3 py-1"
+                                                  >
+                                                    <Calendar className="h-3 w-3 mr-1" />
+                                                    {degree.duration}
+                                                  </Badge>
+                                                  <Badge
+                                                    className="px-3 py-1 text-white"
+                                                    style={{
+                                                      backgroundColor:
+                                                        "rgb(68, 171, 131)",
+                                                    }}
+                                                  >
+                                                    <Award className="h-3 w-3 mr-1" />
+                                                    APS: {degree.apsRequirement}
+                                                  </Badge>
+                                                </div>
+                                              </div>
+                                              {expandedPrograms.has(
+                                                degree.id,
+                                              ) ? (
+                                                <ChevronUp className="h-5 w-5 text-gray-400" />
+                                              ) : (
+                                                <ChevronDown className="h-5 w-5 text-gray-400" />
+                                              )}
+                                            </div>
+                                          </div>
+
+                                          {expandedPrograms.has(degree.id) && (
+                                            <div className="px-4 pb-4 border-t border-gray-100 bg-gray-50">
+                                              <div className="pt-4 space-y-4">
+                                                <div>
+                                                  <h6 className="font-semibold text-gray-900 mb-2">
+                                                    Description
+                                                  </h6>
+                                                  <p className="text-gray-600">
+                                                    {degree.description}
+                                                  </p>
+                                                </div>
+
+                                                {degree.careerProspects &&
+                                                  degree.careerProspects
+                                                    .length > 0 && (
+                                                    <div>
+                                                      <h6 className="font-semibold text-gray-900 mb-2">
+                                                        Career Prospects
+                                                      </h6>
+                                                      <div className="flex flex-wrap gap-2">
+                                                        {degree.careerProspects.map(
+                                                          (
+                                                            career,
+                                                            careerIndex,
+                                                          ) => (
+                                                            <Badge
+                                                              key={careerIndex}
+                                                              variant="secondary"
+                                                              className="bg-blue-50 text-blue-700 border-blue-200"
+                                                            >
+                                                              {career}
+                                                            </Badge>
+                                                          ),
+                                                        )}
+                                                      </div>
+                                                    </div>
+                                                  )}
+
+                                                {degree.subjects &&
+                                                  degree.subjects.length >
+                                                    0 && (
+                                                    <div>
+                                                      <h6 className="font-semibold text-gray-900 mb-2">
+                                                        Subject Requirements
+                                                      </h6>
+                                                      <div className="space-y-2">
+                                                        {degree.subjects.map(
+                                                          (
+                                                            subject,
+                                                            subjectIndex,
+                                                          ) => (
+                                                            <div
+                                                              key={subjectIndex}
+                                                              className="flex items-center justify-between py-2 px-3 bg-white rounded border"
+                                                            >
+                                                              <span className="text-gray-700">
+                                                                {subject.name}
+                                                              </span>
+                                                              <Badge variant="outline">
+                                                                Level{" "}
+                                                                {subject.level}{" "}
+                                                                {subject.isRequired
+                                                                  ? "(Required)"
+                                                                  : "(Recommended)"}
+                                                              </Badge>
+                                                            </div>
+                                                          ),
+                                                        )}
+                                                      </div>
+                                                    </div>
+                                                  )}
+                                              </div>
+                                            </div>
+                                          )}
+                                        </div>
+                                      );
+                                    },
+                                  )}
+                                </div>
+                              ) : (
+                                <div className="text-center py-12 text-gray-500">
+                                  <BookOpen className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                                  <p className="text-lg">
+                                    No specific programs listed for this
+                                    faculty.
                                   </p>
                                 </div>
-                              </div>
-                              <div className="flex items-center gap-4">
-                                <Badge
-                                  className="px-3 py-1 text-white"
-                                  style={{
-                                    backgroundColor: "rgb(68, 171, 131)",
-                                  }}
-                                >
-                                  {faculty.degrees?.length || 0} Programs
-                                </Badge>
-                                {expandedFaculties.has(facultyId) ? (
-                                  <ChevronUp className="h-5 w-5 text-gray-400" />
-                                ) : (
-                                  <ChevronDown className="h-5 w-5 text-gray-400" />
-                                )}
-                              </div>
-                            </div>
-                          </CardHeader>
-                        </div>
-
-                        {expandedFaculties.has(facultyId) && (
-                          <CardContent className="pt-0">
-                            <p className="text-gray-700 mb-6 text-lg leading-relaxed">
-                              {faculty.description}
-                            </p>
-
-                            {faculty.degrees && faculty.degrees.length > 0 ? (
-                              <div className="space-y-4">
-                                <h4 className="text-xl font-semibold text-gray-900 mb-4">
-                                  Available Programs
-                                </h4>
-                                {faculty.degrees.map((degree, degreeIndex) => {
-                                  const degreeId = degree.id || `degree-${facultyId}-${degreeIndex}`;
-                                  return (
-                                  <div
-                                    key={degreeId}
-                                    className="border border-gray-200 rounded-lg overflow-hidden"
-                                  >
-                                    <div
-                                      className="p-4 cursor-pointer hover:bg-gray-50"
-                                      onClick={() => toggleProgram(degreeId)}
-                                    >
-                                      <div className="flex items-center justify-between">
-                                        <div className="flex-1">
-                                          <h5 className="text-lg font-semibold text-gray-900 mb-2">
-                                            {degree.name}
-                                          </h5>
-                                          <div className="flex flex-wrap gap-3">
-                                            <Badge
-                                              variant="outline"
-                                              className="bg-gray-50 border-gray-200 text-gray-700 px-3 py-1"
-                                            >
-                                              <Calendar className="h-3 w-3 mr-1" />
-                                              {degree.duration}
-                                            </Badge>
-                                            <Badge
-                                              className="px-3 py-1 text-white"
-                                              style={{
-                                                backgroundColor:
-                                                  "rgb(68, 171, 131)",
-                                              }}
-                                            >
-                                              <Award className="h-3 w-3 mr-1" />
-                                              APS: {degree.apsRequirement}
-                                            </Badge>
-                                          </div>
-                                        </div>
-                                        {expandedPrograms.has(degree.id) ? (
-                                          <ChevronUp className="h-5 w-5 text-gray-400" />
-                                        ) : (
-                                          <ChevronDown className="h-5 w-5 text-gray-400" />
-                                        )}
-                                      </div>
-                                    </div>
-
-                                    {expandedPrograms.has(degree.id) && (
-                                      <div className="px-4 pb-4 border-t border-gray-100 bg-gray-50">
-                                        <div className="pt-4 space-y-4">
-                                          <div>
-                                            <h6 className="font-semibold text-gray-900 mb-2">
-                                              Description
-                                            </h6>
-                                            <p className="text-gray-600">
-                                              {degree.description}
-                                            </p>
-                                          </div>
-
-                                          {degree.careerProspects &&
-                                            degree.careerProspects.length >
-                                              0 && (
-                                              <div>
-                                                <h6 className="font-semibold text-gray-900 mb-2">
-                                                  Career Prospects
-                                                </h6>
-                                                <div className="flex flex-wrap gap-2">
-                                                  {degree.careerProspects.map(
-                                                    (career, careerIndex) => (
-                                                      <Badge
-                                                        key={careerIndex}
-                                                        variant="secondary"
-                                                        className="bg-blue-50 text-blue-700 border-blue-200"
-                                                      >
-                                                        {career}
-                                                      </Badge>
-                                                    ),
-                                                  )}
-                                                </div>
-                                              </div>
-                                            )}
-
-                                          {degree.subjects &&
-                                            degree.subjects.length > 0 && (
-                                              <div>
-                                                <h6 className="font-semibold text-gray-900 mb-2">
-                                                  Subject Requirements
-                                                </h6>
-                                                <div className="space-y-2">
-                                                  {degree.subjects.map(
-                                                    (subject, subjectIndex) => (
-                                                      <div
-                                                        key={subjectIndex}
-                                                        className="flex items-center justify-between py-2 px-3 bg-white rounded border"
-                                                      >
-                                                        <span className="text-gray-700">
-                                                          {subject.name}
-                                                        </span>
-                                                        <Badge variant="outline">
-                                                          Level {subject.level}{" "}
-                                                          {subject.isRequired
-                                                            ? "(Required)"
-                                                            : "(Recommended)"}
-                                                        </Badge>
-                                                      </div>
-                                                    ),
-                                                  )}
-                                                </div>
-                                              </div>
-                                            )}
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            ) : (
-                              <div className="text-center py-12 text-gray-500">
-                                <BookOpen className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-                                <p className="text-lg">
-                                  No specific programs listed for this faculty.
-                                </p>
-                              </div>
-                            )}
-                          </CardContent>
-                        )}
-                      </Card>
-                    );
+                              )}
+                            </CardContent>
+                          )}
+                        </Card>
+                      );
                     })}
                   </div>
                 ) : (
