@@ -402,7 +402,9 @@ export function applyAssignmentRules(
       );
       if (!faculty) {
         faculty = {
+          id: `${university.id}-${program.faculty.toLowerCase().replace(/\s+/g, "-")}`,
           name: program.faculty,
+          description: getFacultyDescription(program.faculty),
           degrees: [],
         };
         university.faculties.push(faculty);
