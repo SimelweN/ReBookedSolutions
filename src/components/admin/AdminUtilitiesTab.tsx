@@ -46,7 +46,13 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showDeleteAllDialog, setShowDeleteAllDialog] = useState(false);
   const [showDeleteDemoDialog, setShowDeleteDemoDialog] = useState(false);
+  const [showClearBooksDialog, setShowClearBooksDialog] = useState(false);
   const [lastResult, setLastResult] = useState<BulkDeleteResult | null>(null);
+  const [clearBooksResult, setClearBooksResult] = useState<{
+    success: boolean;
+    message: string;
+    deletedCount: number;
+  } | null>(null);
   const [dbStats, setDbStats] = useState({
     totalBooks: 0,
     totalUsers: 0,
@@ -177,6 +183,30 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
     } finally {
       setIsLoading(false);
       setShowDeleteDemoDialog(false);
+    }
+  };
+
+  // Handle clear all books
+  const handleClearAllBooks = async () => {
+    setIsLoading(true);
+    try {
+      const result = await clearAllBooks();
+      setClearBooksResult(result);
+
+      if (result.success) {
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+
+      // Refresh stats
+      await loadDatabaseStats();
+    } catch (error) {
+      console.error("Error clearing all books:", error);
+      toast.error("Failed to clear all books");
+    } finally {
+      setIsLoading(false);
+      setShowClearBooksDialog(false);
     }
   };
 
