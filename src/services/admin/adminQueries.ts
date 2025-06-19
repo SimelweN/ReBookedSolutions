@@ -150,6 +150,25 @@ export const getAdminStats = async (): Promise<AdminStats> => {
 
 export const getAllUsers = async (): Promise<AdminUser[]> => {
   try {
+    // First check if we can access the profiles table
+    const { count: testCount, error: testError } = await supabase
+      .from("profiles")
+      .select("*", { count: "exact", head: true });
+
+    if (testError) {
+      console.error("Cannot access profiles table:", {
+        message: testError.message,
+        code: testError.code,
+        details: testError.details,
+      });
+      if (testError.code === "42P01") {
+        throw new Error(
+          "Profiles table does not exist. Please run database migrations.",
+        );
+      }
+      throw new Error(`Cannot access profiles table: ${testError.message}`);
+    }
+
     const { data: users, error: usersError } = await supabase
       .from("profiles")
       .select("id, name, email, status, created_at")
@@ -237,7 +256,26 @@ export const getAllListings = async (): Promise<AdminListing[]> => {
 // Fallback function for when the join query fails
 const getAllListingsFallback = async (): Promise<AdminListing[]> => {
   try {
-    // First, get all books
+    // First check if we can access the books table
+    const { count: testCount, error: testError } = await supabase
+      .from("books")
+      .select("*", { count: "exact", head: true });
+
+    if (testError) {
+      console.error("Cannot access books table:", {
+        message: testError.message,
+        code: testError.code,
+        details: testError.details,
+      });
+      if (testError.code === "42P01") {
+        throw new Error(
+          "Books table does not exist. Please run database migrations.",
+        );
+      }
+      throw new Error(`Cannot access books table: ${testError.message}`);
+    }
+
+    // Get all books
     const { data: books, error: booksError } = await supabase
       .from("books")
       .select("id, title, author, price, sold, seller_id")
