@@ -628,123 +628,13 @@ function getDefaultSubjects(facultyName: string) {
 }
 
 /**
- * Get career prospects based on program name and faculty
+ * Get career prospects (simplified)
  */
 function getCareerProspects(
   programName: string,
   facultyName: string,
 ): string[] {
-  // Specific program career prospects
-  const specificCareers: Record<string, string[]> = {
-    "Civil Engineering": [
-      "Civil Engineer",
-      "Structural Engineer",
-      "Project Manager",
-      "Construction Manager",
-    ],
-    Medicine: [
-      "Medical Doctor",
-      "Surgeon",
-      "General Practitioner",
-      "Specialist Physician",
-    ],
-    Law: [
-      "Advocate",
-      "Attorney",
-      "Legal Advisor",
-      "Magistrate",
-      "Corporate Lawyer",
-    ],
-    Accounting: [
-      "Chartered Accountant",
-      "Financial Manager",
-      "Auditor",
-      "Tax Consultant",
-    ],
-    "Computer Science": [
-      "Software Developer",
-      "Data Scientist",
-      "Systems Analyst",
-      "IT Consultant",
-    ],
-    Psychology: [
-      "Clinical Psychologist",
-      "Counselor",
-      "Research Psychologist",
-      "Educational Psychologist",
-    ],
-  };
-
-  if (specificCareers[programName]) {
-    return specificCareers[programName];
-  }
-
-  // Faculty-based general career prospects
-  const facultyCareers: Record<string, string[]> = {
-    Engineering: [
-      "Engineer",
-      "Project Manager",
-      "Technical Consultant",
-      "Research and Development",
-    ],
-    "Health Sciences": [
-      "Healthcare Professional",
-      "Clinical Practitioner",
-      "Health Researcher",
-      "Public Health Officer",
-    ],
-    Commerce: [
-      "Business Manager",
-      "Financial Analyst",
-      "Marketing Specialist",
-      "Entrepreneur",
-    ],
-    Humanities: [
-      "Researcher",
-      "Educator",
-      "Cultural Officer",
-      "Communications Specialist",
-    ],
-    Science: [
-      "Research Scientist",
-      "Laboratory Technician",
-      "Environmental Consultant",
-      "Data Analyst",
-    ],
-    Education: [
-      "Teacher",
-      "Educational Administrator",
-      "Curriculum Developer",
-      "Educational Researcher",
-    ],
-    Law: [
-      "Legal Practitioner",
-      "Legal Advisor",
-      "Court Official",
-      "Legal Researcher",
-    ],
-    Agriculture: [
-      "Agricultural Officer",
-      "Farm Manager",
-      "Agricultural Researcher",
-      "Environmental Specialist",
-    ],
-    "Information Technology": [
-      "IT Professional",
-      "Software Developer",
-      "Systems Administrator",
-      "Cybersecurity Specialist",
-    ],
-  };
-
-  return (
-    facultyCareers[facultyName] || [
-      "Professional",
-      "Specialist",
-      "Consultant",
-      "Manager",
-    ]
-  );
+  return ["Professional", "Specialist", "Researcher", "Manager"];
 }
 
 // Debug logging function
