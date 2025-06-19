@@ -1667,9 +1667,9 @@ const SimpleAPSCalculator: React.FC = () => {
 
   // State
   const [subjects, setSubjects] = useState<APSSubject[]>(CORE_SUBJECTS);
-  const [activeInsight, setActiveInsight] = useState<
-    "overview" | "universities" | "programs"
-  >("programs");
+  const [activeInsight, setActiveInsight] = useState<"overview" | "programs">(
+    "programs",
+  );
   const [selectedFilter, setSelectedFilter] = useState<
     "all" | "eligible" | "competitive"
   >("all");
