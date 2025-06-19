@@ -26,7 +26,7 @@ export interface QuickQuoteRequest {
 }
 
 export interface QuickQuoteResponse {
-  provider: "courierGuy" | "shipLogic";
+  provider: "courierGuy" | "shipLogic" | "fastway" | "unified";
   price: number;
   estimatedDays: number;
   serviceName: string;
