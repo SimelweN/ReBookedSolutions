@@ -257,9 +257,9 @@ const UniversityInfo = () => {
 
     return (
       <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer group border-0 shadow-md">
-        <CardHeader className="pb-3">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
+        <CardHeader className="pb-3 px-4 sm:px-6">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
               {/* University Logo */}
               <div className="w-14 h-14 bg-white border-2 border-book-200 rounded-xl flex items-center justify-center overflow-hidden">
                 {universityData?.logo ? (
