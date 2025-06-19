@@ -56,6 +56,12 @@ const CampusBooksSection = lazy(
   () => import("@/components/university-info/CampusBooksSection"),
 );
 
+// Preload components for better performance
+const preloadBursarySection = () =>
+  import("@/components/university-info/BursaryExplorerSection");
+const preloadBooksSection = () =>
+  import("@/components/university-info/CampusBooksSection");
+
 const UniversityInfo = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
