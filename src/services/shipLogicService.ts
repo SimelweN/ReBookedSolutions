@@ -155,6 +155,30 @@ const convertToShipLogicParcel = (
 });
 
 /**
+ * Generate fallback rates when API is unavailable
+ */
+const getFallbackRates = (): ShipLogicRate[] => {
+  const today = new Date();
+  const collectionDate = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+  const deliveryDate = new Date(today.getTime() + 4 * 24 * 60 * 60 * 1000);
+
+  return [
+    {
+      service_level_code: "ECO",
+      service_level_name: "Economy",
+      service_level_description:
+        "Standard delivery service (3-5 business days)",
+      rate_value: 85,
+      rate_currency: "ZAR",
+      total_charge_value: 95,
+      estimated_collection_date: collectionDate.toISOString(),
+      estimated_delivery_date: deliveryDate.toISOString(),
+      transit_days: 4,
+    },
+  ];
+};
+
+/**
  * Get shipping rate quotes from ShipLogic with proper validation and error handling
  */
 export const getShipLogicRates = async (
@@ -248,7 +272,10 @@ export const getShipLogicRates = async (
       service_level_code: "ECO", // Default service level for quotes
     };
 
-    console.log("Getting ShipLogic rates with validated request:", rateRequest);
+    console.log(
+      "Getting ShipLogic rates with validated request:",
+      JSON.stringify(rateRequest, null, 2),
+    );
 
     const response = await shiplogicClient.post<ShipLogicRateResponse>(
       "/rates",
@@ -263,23 +290,7 @@ export const getShipLogicRates = async (
 
     if (!response.data.rates || response.data.rates.length === 0) {
       console.warn("No rates returned from ShipLogic API");
-      // Return fallback rates if no rates available
-      return [
-        {
-          service_level_code: "ECO",
-          service_level_name: "Economy",
-          service_level_description:
-            "Standard delivery service (3-5 business days)",
-          rate_value: 85,
-          rate_currency: "ZAR",
-          total_charge_value: 95,
-          estimated_collection_date: collectionDate,
-          estimated_delivery_date: new Date(
-            Date.now() + 4 * 24 * 60 * 60 * 1000,
-          ).toISOString(),
-          transit_days: 4,
-        },
-      ];
+      return getFallbackRates();
     }
 
     console.log(
