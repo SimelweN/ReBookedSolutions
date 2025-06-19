@@ -150,6 +150,25 @@ export const getAdminStats = async (): Promise<AdminStats> => {
 
 export const getAllUsers = async (): Promise<AdminUser[]> => {
   try {
+    // First check if we can access the profiles table
+    const { count: testCount, error: testError } = await supabase
+      .from("profiles")
+      .select("*", { count: "exact", head: true });
+
+    if (testError) {
+      console.error("Cannot access profiles table:", {
+        message: testError.message,
+        code: testError.code,
+        details: testError.details,
+      });
+      if (testError.code === "42P01") {
+        throw new Error(
+          "Profiles table does not exist. Please run database migrations.",
+        );
+      }
+      throw new Error(`Cannot access profiles table: ${testError.message}`);
+    }
+
     const { data: users, error: usersError } = await supabase
       .from("profiles")
       .select("id, name, email, status, created_at")
@@ -157,8 +176,14 @@ export const getAllUsers = async (): Promise<AdminUser[]> => {
       .order("created_at", { ascending: false });
 
     if (usersError) {
-      console.error("Error fetching users:", usersError);
-      throw usersError;
+      console.error("Error fetching users:", {
+        message: usersError.message,
+        code: usersError.code,
+        details: usersError.details,
+      });
+      throw new Error(
+        `Failed to fetch users: ${usersError.message || usersError.code || "Unknown error"}`,
+      );
     }
 
     if (!users) return [];
@@ -199,8 +224,14 @@ export const getAllUsers = async (): Promise<AdminUser[]> => {
 
     return usersWithCounts;
   } catch (error) {
-    console.error("Error in getAllUsers:", error);
-    throw new Error("Failed to fetch users");
+    console.error("Error in getAllUsers:", {
+      error,
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    throw new Error(
+      `Failed to fetch users: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 };
 
@@ -213,24 +244,52 @@ export const getAllListings = async (): Promise<AdminListing[]> => {
     // Since there's no foreign key relationship, use separate queries directly
     return await getAllListingsFallback();
   } catch (error) {
-    console.error("Error in getAllListings:", error);
-    // Fallback to separate queries
-    return await getAllListingsFallback();
+    console.error("Error in getAllListings:", {
+      error,
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    throw error; // Re-throw the error instead of calling fallback again
   }
 };
 
 // Fallback function for when the join query fails
 const getAllListingsFallback = async (): Promise<AdminListing[]> => {
   try {
-    // First, get all books
+    // First check if we can access the books table
+    const { count: testCount, error: testError } = await supabase
+      .from("books")
+      .select("*", { count: "exact", head: true });
+
+    if (testError) {
+      console.error("Cannot access books table:", {
+        message: testError.message,
+        code: testError.code,
+        details: testError.details,
+      });
+      if (testError.code === "42P01") {
+        throw new Error(
+          "Books table does not exist. Please run database migrations.",
+        );
+      }
+      throw new Error(`Cannot access books table: ${testError.message}`);
+    }
+
+    // Get all books
     const { data: books, error: booksError } = await supabase
       .from("books")
       .select("id, title, author, price, sold, seller_id")
       .order("created_at", { ascending: false });
 
     if (booksError) {
-      logDatabaseError("getAllListingsFallback - books query", booksError);
-      throw booksError;
+      console.error("getAllListingsFallback - books query error:", {
+        message: booksError.message,
+        code: booksError.code,
+        details: booksError.details,
+      });
+      throw new Error(
+        `Failed to fetch books: ${booksError.message || booksError.code || "Unknown error"}`,
+      );
     }
 
     if (!books || books.length === 0) return [];
@@ -245,10 +304,11 @@ const getAllListingsFallback = async (): Promise<AdminListing[]> => {
       .in("id", sellerIds);
 
     if (profilesError) {
-      logDatabaseError(
-        "getAllListingsFallback - profiles query",
-        profilesError,
-      );
+      console.error("getAllListingsFallback - profiles query error:", {
+        message: profilesError.message,
+        code: profilesError.code,
+        details: profilesError.details,
+      });
       // Continue without profiles rather than failing completely
     }
 
@@ -271,7 +331,13 @@ const getAllListingsFallback = async (): Promise<AdminListing[]> => {
       sellerId: book.seller_id,
     }));
   } catch (error) {
-    console.error("Error in getAllListingsFallback:", error);
-    throw new Error("Failed to fetch listings");
+    console.error("Error in getAllListingsFallback:", {
+      error,
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    throw new Error(
+      `Failed to fetch listings: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 };

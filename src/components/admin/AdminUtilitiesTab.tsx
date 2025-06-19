@@ -23,6 +23,7 @@ import {
   BulkDeleteResult,
 } from "@/services/admin/adminUtilityService";
 import { DatabaseInitService } from "@/services/admin/databaseInitService";
+import { clearAllBooks } from "@/utils/clearAllBooks";
 import { toast } from "sonner";
 import {
   Trash2,
@@ -45,7 +46,13 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showDeleteAllDialog, setShowDeleteAllDialog] = useState(false);
   const [showDeleteDemoDialog, setShowDeleteDemoDialog] = useState(false);
+  const [showClearBooksDialog, setShowClearBooksDialog] = useState(false);
   const [lastResult, setLastResult] = useState<BulkDeleteResult | null>(null);
+  const [clearBooksResult, setClearBooksResult] = useState<{
+    success: boolean;
+    message: string;
+    deletedCount: number;
+  } | null>(null);
   const [dbStats, setDbStats] = useState({
     totalBooks: 0,
     totalUsers: 0,
@@ -179,6 +186,30 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
     }
   };
 
+  // Handle clear all books
+  const handleClearAllBooks = async () => {
+    setIsLoading(true);
+    try {
+      const result = await clearAllBooks();
+      setClearBooksResult(result);
+
+      if (result.success) {
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+
+      // Refresh stats
+      await loadDatabaseStats();
+    } catch (error) {
+      console.error("Error clearing all books:", error);
+      toast.error("Failed to clear all books");
+    } finally {
+      setIsLoading(false);
+      setShowClearBooksDialog(false);
+    }
+  };
+
   // Load stats on component mount
   useEffect(() => {
     loadDatabaseStats();
@@ -196,6 +227,19 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
         </div>
 
         <div className="flex gap-2">
+          <Button
+            onClick={() => setShowClearBooksDialog(true)}
+            disabled={isLoading}
+            variant="destructive"
+            size="sm"
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Trash2 className="h-4 w-4 mr-2" />
+            )}
+            Clear All Books
+          </Button>
           <Button
             onClick={handleDeleteDemoBooks}
             disabled={isLoading}
@@ -680,6 +724,105 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Clear All Books Confirmation Dialog */}
+      <Dialog
+        open={showClearBooksDialog}
+        onOpenChange={setShowClearBooksDialog}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-700">
+              <AlertTriangle className="h-5 w-5" />
+              Clear All Books
+            </DialogTitle>
+            <DialogDescription>
+              <div className="space-y-3 mt-2">
+                <p className="font-medium text-red-600">
+                  This will permanently remove ALL {dbStats.totalBooks} books
+                  from the Browse Books section.
+                </p>
+                <div className="bg-red-100 p-3 rounded-lg">
+                  <ul className="text-sm text-red-800 space-y-1">
+                    <li>• All book listings will be removed</li>
+                    <li>• Users will no longer see any books to purchase</li>
+                    <li>• This action cannot be undone</li>
+                    <li>• The Browse Books section will be empty</li>
+                  </ul>
+                </div>
+                <p className="text-sm text-gray-600">
+                  This action is requested to clear the Browse Books section
+                  completely.
+                </p>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowClearBooksDialog(false)}
+              disabled={isLoading}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleClearAllBooks}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4 mr-2" />
+              )}
+              Clear All Books
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Clear Books Result */}
+      {clearBooksResult && (
+        <Card
+          className={
+            clearBooksResult.success
+              ? "border-green-200 bg-green-50"
+              : "border-red-200 bg-red-50"
+          }
+        >
+          <CardHeader>
+            <CardTitle
+              className={`flex items-center gap-2 ${clearBooksResult.success ? "text-green-700" : "text-red-700"}`}
+            >
+              {clearBooksResult.success ? (
+                <CheckCircle className="h-5 w-5" />
+              ) : (
+                <XCircle className="h-5 w-5" />
+              )}
+              Clear Books Result
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <p
+                className={
+                  clearBooksResult.success ? "text-green-800" : "text-red-800"
+                }
+              >
+                {clearBooksResult.message}
+              </p>
+              {clearBooksResult.deletedCount > 0 && (
+                <p className="text-sm text-gray-600">
+                  Books deleted:{" "}
+                  <Badge variant="outline">
+                    {clearBooksResult.deletedCount}
+                  </Badge>
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

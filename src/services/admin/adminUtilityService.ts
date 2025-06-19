@@ -155,12 +155,38 @@ export class AdminUtilityService {
 
       console.log("Searching for demo books with patterns:", demoPatterns);
 
+      // First check if we can access the books table
+      try {
+        const { count, error: testError } = await supabase
+          .from("books")
+          .select("*", { count: "exact", head: true });
+
+        if (testError) {
+          console.error("Cannot access books table:", testError);
+          throw testError;
+        }
+
+        console.log(`Books table accessible, found ${count || 0} total books`);
+      } catch (accessError) {
+        console.error("Books table access test failed:", accessError);
+        throw accessError;
+      }
+
       // Get all books first, then filter on the frontend for more aggressive matching
       const { data: allBooks, error: fetchError } = await supabase
         .from("books")
         .select("id, title, author, isbn");
 
       if (fetchError) {
+        console.error(
+          "AdminUtilityService.deleteDemoBooks - fetch all books error:",
+          {
+            message: fetchError.message,
+            code: fetchError.code,
+            details: fetchError.details,
+            hint: fetchError.hint,
+          },
+        );
         logError(
           "AdminUtilityService.deleteDemoBooks - fetch all books",
           fetchError,
@@ -168,7 +194,7 @@ export class AdminUtilityService {
         return {
           success: false,
           deletedCount: 0,
-          message: "Failed to fetch books for demo detection",
+          message: `Failed to fetch books for demo detection: ${fetchError.message || fetchError.code || "Unknown error"}`,
         };
       }
 
@@ -220,11 +246,17 @@ export class AdminUtilityService {
         .in("id", bookIds);
 
       if (deleteError) {
+        console.error("AdminUtilityService.deleteDemoBooks - delete error:", {
+          message: deleteError.message,
+          code: deleteError.code,
+          details: deleteError.details,
+          hint: deleteError.hint,
+        });
         logError("AdminUtilityService.deleteDemoBooks - delete", deleteError);
         return {
           success: false,
           deletedCount: 0,
-          message: "Failed to delete demo books",
+          message: `Failed to delete demo books: ${deleteError.message || deleteError.code || "Unknown error"}`,
         };
       }
 
@@ -236,6 +268,14 @@ export class AdminUtilityService {
         message: `Successfully deleted ${demoBooks.length} demo books`,
       };
     } catch (error) {
+      console.error(
+        "AdminUtilityService.deleteDemoBooks - catch block error:",
+        {
+          error,
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        },
+      );
       logError("AdminUtilityService.deleteDemoBooks", error);
       return {
         success: false,

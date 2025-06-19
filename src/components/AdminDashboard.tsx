@@ -15,6 +15,7 @@ import {
   sendBroadcastMessage,
 } from "@/services/admin/adminMutations";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/contexts/AuthContext";
 import AdminStats from "@/components/admin/AdminStats";
 import AdminEarningsTab from "@/components/admin/AdminEarningsTab";
 import AdminUsersTab from "@/components/admin/AdminUsersTab";
@@ -23,7 +24,6 @@ import AdminSettingsTab from "@/components/admin/AdminSettingsTab";
 import AdminContactTab from "@/components/admin/AdminContactTab";
 import AdminResourcesTab from "@/components/admin/AdminResourcesTab";
 import AdminProgramsTab from "@/components/admin/AdminProgramsTab";
-import AdminUtilitiesTab from "@/components/admin/AdminUtilitiesTab";
 
 import ErrorFallback from "@/components/ErrorFallback";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -42,6 +42,7 @@ import {
 const AdminDashboard = () => {
   const isMobile = useIsMobile();
   const { handleError } = useErrorHandler();
+  const { user } = useAuth();
 
   const [stats, setStats] = useState<AdminStatsType>({
     totalUsers: 0,
@@ -72,9 +73,9 @@ const AdminDashboard = () => {
 
       // Load data with individual error handling to prevent cascading failures
       const results = await Promise.allSettled([
-        getAdminStats(),
-        getAllUsers(),
-        getAllListings(),
+        getAdminStats().catch((e) => ({ error: e })),
+        getAllUsers().catch((e) => ({ error: e })),
+        getAllListings().catch((e) => ({ error: e })),
       ]);
 
       // Handle stats
@@ -312,13 +313,7 @@ const AdminDashboard = () => {
       color: "text-amber-600",
       description: "Study resources and tips",
     },
-    {
-      value: "utilities",
-      label: "Utilities",
-      icon: Settings,
-      color: "text-red-600",
-      description: "Bulk operations and data management",
-    },
+
     {
       value: "contact",
       label: "Messages",
@@ -438,12 +433,6 @@ const AdminDashboard = () => {
           <TabsContent value="resources" className="space-y-4 mt-0">
             <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 md:p-6">
               <AdminResourcesTab />
-            </div>
-          </TabsContent>
-
-          <TabsContent value="utilities" className="space-y-4 mt-0">
-            <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 md:p-6">
-              <AdminUtilitiesTab />
             </div>
           </TabsContent>
 
