@@ -77,7 +77,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Stellenbosch University",
     location: "Stellenbosch",
     province: "Western Cape",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/stellenbosh-f2423b?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/34dfccd6d7ce41b8bf7ca3d8b60d0eeb/stellenbosh-a6e1ea?format=webp&width=800",
     overview:
       "Research-intensive university with a tradition of academic excellence and innovation in South Africa.",
     website: "https://www.sun.ac.za",
