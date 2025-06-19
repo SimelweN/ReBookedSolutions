@@ -2,12 +2,14 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
 import ProfileHeader from "@/components/ProfileHeader";
-import ShareProfileDialog from "@/components/ShareProfileDialog";
 import BookNotSellingDialog from "@/components/BookNotSellingDialog";
+import DeleteProfileDialog from "@/components/DeleteProfileDialog";
 import ReportIssueDialog from "@/components/ReportIssueDialog";
 import HowItWorksDialog from "@/components/HowItWorksDialog";
+import CommitSystemExplainer from "@/components/CommitSystemExplainer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,12 +24,10 @@ import {
   ShoppingCart,
   Settings,
   User,
-  Share2,
   HelpCircle,
   MoreHorizontal,
   Heart,
 } from "lucide-react";
-import ProfileEditDialog from "@/components/ProfileEditDialog";
 import UserProfileTabs from "@/components/profile/UserProfileTabs";
 import { saveUserAddresses, getUserAddresses } from "@/services/addressService";
 import { getUserBooks } from "@/services/book/bookQueries";
@@ -42,8 +42,10 @@ const Profile = () => {
   const { profile, user } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [isDeleteProfileDialogOpen, setIsDeleteProfileDialogOpen] =
+    useState(false);
+  const [isCommitSystemDialogOpen, setIsCommitSystemDialogOpen] =
+    useState(false);
   const [isBookNotSellingDialogOpen, setIsBookNotSellingDialogOpen] =
     useState(false);
   const [isReportIssueDialogOpen, setIsReportIssueDialogOpen] = useState(false);
@@ -229,16 +231,22 @@ const Profile = () => {
     }
   };
 
-  const handleShareProfile = () => {
-    setIsShareDialogOpen(true);
-  };
+  const handleDeleteProfile = async () => {
+    if (!user) return;
 
-  const handleBookNotSelling = () => {
-    setIsBookNotSellingDialogOpen(true);
-  };
+    try {
+      // Here you would implement the actual profile deletion logic
+      // For now, we'll show a confirmation toast
+      toast.success(
+        "Profile deletion request submitted. You will receive an email confirmation.",
+      );
+      setIsDeleteProfileDialogOpen(false);
 
-  const handleEditProfile = () => {
-    setIsEditDialogOpen(true);
+      // Optionally navigate to a goodbye page or logout
+      // navigate("/");
+    } catch (error) {
+      toast.error("Failed to delete profile. Please try again.");
+    }
   };
 
   const handleReportIssue = () => {
@@ -251,6 +259,10 @@ const Profile = () => {
 
   const handleBuyerHowItWorks = () => {
     setIsBuyerHowItWorksOpen(true);
+  };
+
+  const handleBookNotSelling = () => {
+    setIsBookNotSellingDialogOpen(true);
   };
 
   if (!profile || !user) {
@@ -319,6 +331,47 @@ const Profile = () => {
                 </CardContent>
               </Card>
 
+              {/* Pickup Address Warning - Only show if user has active listings but no pickup address */}
+              {activeListings &&
+                activeListings.some(
+                  (book) =>
+                    !book.availability || book.availability === "unavailable",
+                ) &&
+                addressData &&
+                (!addressData.pickup_address ||
+                  !addressData.pickup_address.streetAddress ||
+                  !addressData.pickup_address.city) && (
+                  <Alert className="border-orange-200 bg-orange-50">
+                    <AlertTriangle className="h-4 w-4 text-orange-600" />
+                    <AlertDescription className="text-orange-800">
+                      <div className="space-y-2">
+                        <div className="font-medium">⚠️ Action Required</div>
+                        <p className="text-sm">
+                          You need a valid pickup address for your listings to
+                          remain active. Your books are currently unavailable to
+                          buyers.
+                        </p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            // Scroll to address tab - this will depend on the tabs implementation
+                            const addressTab = document.querySelector(
+                              '[data-tab="addresses"]',
+                            );
+                            if (addressTab) {
+                              addressTab.scrollIntoView({ behavior: "smooth" });
+                            }
+                          }}
+                          className="border-orange-300 text-orange-700 hover:bg-orange-100 mt-2"
+                        >
+                          Add Pickup Address
+                        </Button>
+                      </div>
+                    </AlertDescription>
+                  </Alert>
+                )}
+
               {/* Primary Actions */}
               <Card>
                 <CardHeader>
@@ -335,12 +388,12 @@ const Profile = () => {
                   </Button>
 
                   <Button
-                    onClick={handleShareProfile}
-                    variant="outline"
-                    className="w-full border-book-600 text-book-600 hover:bg-book-50"
+                    onClick={() => setIsDeleteProfileDialogOpen(true)}
+                    variant="destructive"
+                    className="w-full"
                   >
-                    <Share2 className="h-4 w-4 mr-2" />
-                    Share Profile
+                    <AlertTriangle className="h-4 w-4 mr-2" />
+                    Delete Profile
                   </Button>
                 </CardContent>
               </Card>
@@ -359,11 +412,6 @@ const Profile = () => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end">
-                      <DropdownMenuItem onClick={handleEditProfile}>
-                        <User className="h-4 w-4 mr-2" />
-                        Edit Profile
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={() => navigate("/notifications")}
                       >
@@ -410,6 +458,12 @@ const Profile = () => {
                         <ShoppingCart className="h-4 w-4 mr-2" />
                         How Being A Buyer Works
                       </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => setIsCommitSystemDialogOpen(true)}
+                      >
+                        <AlertTriangle className="h-4 w-4 mr-2" />
+                        48-Hour Commit System
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </CardContent>
@@ -442,8 +496,6 @@ const Profile = () => {
               <ProfileHeader
                 userData={userData}
                 isOwnProfile={true}
-                onShareProfile={handleShareProfile}
-                onEditProfile={handleEditProfile}
                 onBookNotSelling={handleBookNotSelling}
               />
             </div>
@@ -491,11 +543,6 @@ const Profile = () => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56">
-                      <DropdownMenuItem onClick={handleEditProfile}>
-                        <User className="h-4 w-4 mr-2" />
-                        Edit Profile
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={() => navigate("/notifications")}
                       >
@@ -538,22 +585,19 @@ const Profile = () => {
         )}
 
         {/* Dialogs */}
-        <ProfileEditDialog
-          isOpen={isEditDialogOpen}
-          onClose={() => setIsEditDialogOpen(false)}
-        />
-
-        <ShareProfileDialog
-          isOpen={isShareDialogOpen}
-          onClose={() => setIsShareDialogOpen(false)}
-          userId={user.id}
-          userName={profile.name || "Anonymous User"}
-          isOwnProfile={true}
-        />
-
         <BookNotSellingDialog
           isOpen={isBookNotSellingDialogOpen}
           onClose={() => setIsBookNotSellingDialogOpen(false)}
+        />
+
+        <DeleteProfileDialog
+          isOpen={isDeleteProfileDialogOpen}
+          onClose={() => setIsDeleteProfileDialogOpen(false)}
+        />
+
+        <CommitSystemExplainer
+          isOpen={isCommitSystemDialogOpen}
+          onClose={() => setIsCommitSystemDialogOpen(false)}
         />
 
         <ReportIssueDialog

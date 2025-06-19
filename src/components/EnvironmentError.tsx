@@ -1,4 +1,5 @@
 import { AlertTriangle, RefreshCw, Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import {
   Card,
@@ -17,12 +18,14 @@ export default function EnvironmentError({
   missingVariables = [],
   error,
 }: EnvironmentErrorProps) {
+  const navigate = useNavigate();
+
   const handleRefresh = () => {
     window.location.reload();
   };
 
   const handleHome = () => {
-    window.location.href = "/";
+    navigate("/");
   };
 
   return (

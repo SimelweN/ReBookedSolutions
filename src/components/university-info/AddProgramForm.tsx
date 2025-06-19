@@ -34,6 +34,7 @@ import {
 import { UserSubmittedProgram, Subject } from "@/types/university";
 import { SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const FACULTY_OPTIONS = [
   "Faculty of Science",
@@ -62,6 +63,7 @@ const DURATION_OPTIONS = [
 
 const AddProgramForm = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -295,9 +297,7 @@ const AddProgramForm = () => {
           <p className="text-gray-600 mb-6">
             You need to be logged in to submit new programs to our database.
           </p>
-          <Button onClick={() => (window.location.href = "/login")}>
-            Log In
-          </Button>
+          <Button onClick={() => navigate("/login")}>Log In</Button>
         </CardContent>
       </Card>
     );

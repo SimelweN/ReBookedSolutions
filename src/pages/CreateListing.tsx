@@ -4,6 +4,7 @@ import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { createBook } from "@/services/book/bookMutations";
 import { BookFormData } from "@/types/book";
 import { toast } from "sonner";
@@ -12,6 +13,8 @@ import MultiImageUpload from "@/components/MultiImageUpload";
 import FirstUploadSuccessDialog from "@/components/FirstUploadSuccessDialog";
 import PostListingSuccessDialog from "@/components/PostListingSuccessDialog";
 import ShareProfileDialog from "@/components/ShareProfileDialog";
+import SellerPolicyModal from "@/components/SellerPolicyModal";
+import CommitReminderModal from "@/components/CommitReminderModal";
 import {
   hasCompletedFirstUpload,
   markFirstUploadCompleted,
@@ -55,6 +58,9 @@ const CreateListing = () => {
   const [showFirstUploadDialog, setShowFirstUploadDialog] = useState(false);
   const [showPostListingDialog, setShowPostListingDialog] = useState(false);
   const [showShareProfileDialog, setShowShareProfileDialog] = useState(false);
+  const [showSellerPolicyModal, setShowSellerPolicyModal] = useState(false);
+  const [showCommitReminderModal, setShowCommitReminderModal] = useState(false);
+  const [sellerPolicyAccepted, setSellerPolicyAccepted] = useState(false);
   const [canListBooks, setCanListBooks] = useState<boolean | null>(null);
   const [isCheckingAddress, setIsCheckingAddress] = useState(true);
 
@@ -150,6 +156,10 @@ const CreateListing = () => {
     if (!bookImages.insidePages)
       newErrors.insidePages = "Inside pages photo is required";
 
+    if (!sellerPolicyAccepted)
+      newErrors.sellerPolicy =
+        "You must accept the Seller Policy and platform rules";
+
     setErrors(newErrors);
 
     return Object.keys(newErrors).length === 0;
@@ -168,9 +178,7 @@ const CreateListing = () => {
 
     // Check if user can list books before validating form
     if (canListBooks === false) {
-      toast.error(
-        "Please add a pickup address in your profile before listing books",
-      );
+      toast.error("❌ Please add a pickup address before listing your book.");
       navigate("/profile");
       return;
     }
@@ -217,19 +225,18 @@ const CreateListing = () => {
         duration: 5000,
       });
 
-      // Handle first upload workflow
+      // Show commit reminder modal first
+      setShowCommitReminderModal(true);
+
+      // Handle first upload workflow after commit reminder
       try {
         const hasCompleted = await hasCompletedFirstUpload(user.id);
         if (!hasCompleted) {
           await markFirstUploadCompleted(user.id);
-          setShowFirstUploadDialog(true);
-        } else {
-          setShowPostListingDialog(true);
         }
       } catch (prefError) {
         // Don't fail the whole process if preference tracking fails
         console.warn("Could not track first upload preference:", prefError);
-        setShowPostListingDialog(true);
       }
 
       // Reset form
@@ -405,12 +412,51 @@ const CreateListing = () => {
               )}
             </div>
 
+            <div className="flex items-start space-x-3">
+              <Checkbox
+                id="sellerPolicy"
+                checked={sellerPolicyAccepted}
+                onCheckedChange={(checked) =>
+                  setSellerPolicyAccepted(checked === true)
+                }
+                className="mt-1 h-4 w-4"
+                required
+              />
+              <div className="space-y-1">
+                <Label
+                  htmlFor="sellerPolicy"
+                  className="text-sm text-gray-600 leading-relaxed cursor-pointer"
+                >
+                  I agree to the{" "}
+                  <button
+                    type="button"
+                    onClick={() => setShowSellerPolicyModal(true)}
+                    className="text-book-600 hover:text-book-800 underline font-medium"
+                  >
+                    Seller Policy and ReBooked's platform rules
+                  </button>
+                </Label>
+                {errors.sellerPolicy && (
+                  <p className="text-xs text-red-500">{errors.sellerPolicy}</p>
+                )}
+              </div>
+            </div>
+
             <Button
               type="submit"
               disabled={
-                isSubmitting || isCheckingAddress || canListBooks === false
+                isSubmitting ||
+                isCheckingAddress ||
+                canListBooks === false ||
+                !sellerPolicyAccepted
               }
-              className={`w-full ${canListBooks === false ? "bg-gray-400 cursor-not-allowed" : "bg-book-600 hover:bg-book-700"} text-white ${isMobile ? "py-3 h-12 text-base" : "py-3 text-lg"} touch-manipulation`}
+              className={`w-full transition-all duration-200 font-semibold ${
+                canListBooks === false || !sellerPolicyAccepted
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-book-600 hover:bg-book-700 hover:shadow-lg active:scale-[0.98]"
+              } text-white ${
+                isMobile ? "py-4 h-12 text-base" : "py-4 text-lg"
+              } touch-manipulation rounded-lg`}
             >
               {isSubmitting ? (
                 <>
@@ -423,9 +469,11 @@ const CreateListing = () => {
                   Checking Address...
                 </>
               ) : canListBooks === false ? (
-                "Pickup Address Required"
+                "❌ Pickup Address Required"
+              ) : !sellerPolicyAccepted ? (
+                "Accept Policy to Continue"
               ) : (
-                "Create Listing"
+                "📚 Create Listing"
               )}
             </Button>
           </form>
@@ -453,6 +501,37 @@ const CreateListing = () => {
           onClose={() => setShowShareProfileDialog(false)}
           userId={user?.id}
           userProfile={profile}
+        />
+
+        <SellerPolicyModal
+          isOpen={showSellerPolicyModal}
+          onClose={() => setShowSellerPolicyModal(false)}
+        />
+
+        <CommitReminderModal
+          isOpen={showCommitReminderModal}
+          onClose={() => {
+            setShowCommitReminderModal(false);
+            // Handle first upload workflow after commit reminder
+            const handlePostCommitFlow = async () => {
+              try {
+                const hasCompleted = await hasCompletedFirstUpload(user.id);
+                if (!hasCompleted) {
+                  setShowFirstUploadDialog(true);
+                } else {
+                  setShowPostListingDialog(true);
+                }
+              } catch (prefError) {
+                console.warn(
+                  "Could not track first upload preference:",
+                  prefError,
+                );
+                setShowPostListingDialog(true);
+              }
+            };
+            handlePostCommitFlow();
+          }}
+          type="seller"
         />
       </div>
     </Layout>

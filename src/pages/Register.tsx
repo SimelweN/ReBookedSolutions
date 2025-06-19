@@ -5,6 +5,7 @@ import Layout from "@/components/Layout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { Mail, Lock, User, Loader2 } from "lucide-react";
 
@@ -13,6 +14,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { register, isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -30,6 +32,12 @@ const Register = () => {
     try {
       if (!name.trim() || !email.trim() || !password.trim()) {
         throw new Error("All fields are required");
+      }
+
+      if (!termsAccepted) {
+        throw new Error(
+          "You must accept the Terms & Conditions and Privacy Policy",
+        );
       }
 
       if (password !== confirmPassword) {
@@ -146,10 +154,35 @@ const Register = () => {
                   </div>
                 </div>
 
+                <div className="flex items-start space-x-3">
+                  <Checkbox
+                    id="terms"
+                    checked={termsAccepted}
+                    onCheckedChange={(checked) =>
+                      setTermsAccepted(checked === true)
+                    }
+                    className="mt-1"
+                    required
+                  />
+                  <Label
+                    htmlFor="terms"
+                    className="text-sm text-gray-600 leading-relaxed"
+                  >
+                    I agree to the{" "}
+                    <Link
+                      to="/policies"
+                      target="_blank"
+                      className="text-book-600 hover:text-book-800 underline"
+                    >
+                      Terms & Conditions and Privacy Policy
+                    </Link>
+                  </Label>
+                </div>
+
                 <Button
                   type="submit"
                   className="w-full bg-book-600 hover:bg-book-700"
-                  disabled={isLoading}
+                  disabled={isLoading || !termsAccepted}
                 >
                   {isLoading ? (
                     <>

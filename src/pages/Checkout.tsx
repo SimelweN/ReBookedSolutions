@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import SaleSuccessPopup from "@/components/SaleSuccessPopup";
+import CommitReminderModal from "@/components/CommitReminderModal";
 
 interface AddressData {
   complex?: string;
@@ -83,6 +84,7 @@ const Checkout = () => {
     useState<DeliveryQuote | null>(null);
   const [loadingQuotes, setLoadingQuotes] = useState(false);
   const [showSalePopup, setShowSalePopup] = useState(false);
+  const [showCommitReminderModal, setShowCommitReminderModal] = useState(false);
   const [saleData, setSaleData] = useState<{
     bookTitle: string;
     bookPrice: number;
@@ -290,6 +292,9 @@ const Checkout = () => {
         id: "payment",
       });
 
+      // Show commit reminder modal first
+      setShowCommitReminderModal(true);
+
       // Create automatic shipments for purchased books
       const purchasedBooks = isCartCheckout ? cartData : book ? [book] : [];
 
@@ -380,7 +385,7 @@ const Checkout = () => {
         }
       }
 
-      // Show sale success popup immediately
+      // Set sale data but don't show popup immediately - will show after commit reminder
       const firstBook = purchasedBooks[0];
       if (firstBook) {
         setSaleData({
@@ -390,7 +395,7 @@ const Checkout = () => {
           buyerEmail: user.email || "",
           saleId: "sale_" + Date.now(), // Generate a simple sale ID
         });
-        setShowSalePopup(true);
+        // setShowSalePopup(true); - Removed: will show after commit reminder
       }
 
       toast.success(
@@ -870,6 +875,19 @@ const Checkout = () => {
           saleId={saleData.saleId}
         />
       )}
+
+      {/* Commit Reminder Modal for Buyers */}
+      <CommitReminderModal
+        isOpen={showCommitReminderModal}
+        onClose={() => {
+          setShowCommitReminderModal(false);
+          // Show the sale success popup after commit reminder
+          if (saleData) {
+            setShowSalePopup(true);
+          }
+        }}
+        type="buyer"
+      />
     </Layout>
   );
 };

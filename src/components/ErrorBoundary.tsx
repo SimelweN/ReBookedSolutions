@@ -11,164 +11,134 @@ import { AlertTriangle, RefreshCw, Home, Bug } from "lucide-react";
 
 interface Props {
   children: ReactNode;
-  fallback?: ReactNode;
-  onError?: (error: Error, errorInfo: ErrorInfo) => void;
-  level?: "app" | "page" | "component";
+  level?: string;
 }
 
 interface State {
   hasError: boolean;
   error?: Error;
   errorInfo?: ErrorInfo;
-  retryCount: number;
 }
 
 class ErrorBoundary extends Component<Props, State> {
-  public state: State = {
-    hasError: false,
-    retryCount: 0,
-  };
-
-  public static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error, retryCount: 0 };
+  constructor(props: Props) {
+    super(props);
+    this.state = { hasError: false };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    const { level = "component", onError } = this.props;
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
 
-    // Use proper error serialization to prevent [object Object] logging
-    console.error(`[${level.toUpperCase()} ERROR BOUNDARY] Error:`, {
-      message: error.message,
-      stack: error.stack,
-      name: error.name,
-      type: error.constructor.name,
-    });
-
-    console.error(`[${level.toUpperCase()} ERROR BOUNDARY] Error Info:`, {
-      componentStack: errorInfo.componentStack,
-      errorBoundary: `${level}ErrorBoundary`,
-      timestamp: new Date().toISOString(),
-    });
-
-    // Log to external service in production
-    if (process.env.NODE_ENV === "production") {
-      this.logErrorToService(error, errorInfo, level);
-    }
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
 
     this.setState({
       error,
       errorInfo,
-      retryCount: this.state.retryCount + 1,
     });
 
-    if (onError) {
-      onError(error, errorInfo);
-    }
-  }
-
-  private logErrorToService(error: Error, errorInfo: ErrorInfo, level: string) {
-    // In a real app, you'd send this to your error tracking service
-    console.error("Production error logged:", {
+    // Log error details for debugging
+    console.error("Error details:", {
       message: error.message,
       stack: error.stack,
       componentStack: errorInfo.componentStack,
-      level,
+      level: this.props.level || "unknown",
       timestamp: new Date().toISOString(),
       url: window.location.href,
     });
   }
 
-  private handleRetry = () => {
-    this.setState({
-      hasError: false,
-      error: undefined,
-      errorInfo: undefined,
-    });
+  private handleReset = () => {
+    this.setState({ hasError: false, error: undefined, errorInfo: undefined });
+  };
+
+  private handleReload = () => {
+    window.location.reload();
   };
 
   private handleGoHome = () => {
+    // Use window.location as fallback since router might be broken in error state
     window.location.href = "/";
   };
 
   public render() {
     if (this.state.hasError) {
-      if (this.props.fallback) {
-        return this.props.fallback;
-      }
-
-      const { level = "component" } = this.props;
-      const { error, retryCount } = this.state;
-
       return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-lg">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+          <Card className="w-full max-w-md">
             <CardHeader className="text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
-                <AlertTriangle className="h-6 w-6 text-red-600" />
+              <div className="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                <AlertTriangle className="w-6 h-6 text-red-600" />
               </div>
-              <CardTitle className="text-xl">
-                {level === "app"
-                  ? "Application Error"
-                  : level === "page"
-                    ? "Page Error"
-                    : "Something went wrong"}
+              <CardTitle className="text-xl font-semibold text-gray-900">
+                Something went wrong
               </CardTitle>
-              <CardDescription>
-                {level === "app"
-                  ? "The application encountered an unexpected error. Our team has been notified."
-                  : "An error occurred while loading this content. Please try refreshing the page."}
+              <CardDescription className="text-gray-600">
+                An unexpected error occurred. We apologize for the
+                inconvenience.
               </CardDescription>
             </CardHeader>
-            <CardContent className="text-center space-y-4">
-              {process.env.NODE_ENV === "development" && error && (
-                <details className="text-left">
-                  <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-800">
-                    <Bug className="inline h-4 w-4 mr-1" />
-                    Error Details (Development)
+            <CardContent className="space-y-4">
+              {this.state.error && process.env.NODE_ENV === "development" && (
+                <details className="text-sm bg-gray-100 p-3 rounded-md">
+                  <summary className="cursor-pointer font-medium text-gray-700 mb-2">
+                    <Bug className="w-4 h-4 inline mr-1" />
+                    Error Details (Dev Mode)
                   </summary>
-                  <div className="mt-2 p-3 bg-gray-100 rounded text-xs font-mono">
-                    <div className="font-semibold text-red-600 mb-2">
-                      {error.message}
+                  <div className="mt-2 space-y-2">
+                    <div>
+                      <strong>Message:</strong>
+                      <pre className="text-xs text-gray-600 whitespace-pre-wrap break-words mt-1">
+                        {this.state.error.message}
+                      </pre>
                     </div>
-                    <pre className="whitespace-pre-wrap text-gray-700">
-                      {error.stack}
-                    </pre>
+                    {this.state.error.stack && (
+                      <div>
+                        <strong>Stack:</strong>
+                        <pre className="text-xs text-gray-600 whitespace-pre-wrap break-words mt-1 max-h-32 overflow-y-auto">
+                          {this.state.error.stack}
+                        </pre>
+                      </div>
+                    )}
+                    {this.state.errorInfo?.componentStack && (
+                      <div>
+                        <strong>Component Stack:</strong>
+                        <pre className="text-xs text-gray-600 whitespace-pre-wrap break-words mt-1 max-h-32 overflow-y-auto">
+                          {this.state.errorInfo.componentStack}
+                        </pre>
+                      </div>
+                    )}
                   </div>
                 </details>
               )}
 
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                {retryCount < 3 && (
-                  <Button
-                    onClick={this.handleRetry}
-                    variant="default"
-                    className="flex-1 sm:flex-none"
-                  >
-                    <RefreshCw className="mr-2 h-4 w-4" />
-                    Try Again
-                  </Button>
-                )}
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button
+                  onClick={this.handleReset}
+                  className="flex-1"
+                  variant="default"
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Try Again
+                </Button>
+                <Button
+                  onClick={this.handleReload}
+                  className="flex-1"
+                  variant="outline"
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Reload Page
+                </Button>
                 <Button
                   onClick={this.handleGoHome}
-                  variant={retryCount >= 3 ? "default" : "outline"}
-                  className="flex-1 sm:flex-none"
+                  className="flex-1"
+                  variant="outline"
                 >
-                  <Home className="mr-2 h-4 w-4" />
+                  <Home className="w-4 h-4 mr-2" />
                   Go Home
                 </Button>
               </div>
-
-              {retryCount >= 3 && (
-                <p className="text-sm text-gray-600 mt-4">
-                  If this problem persists, please contact support at{" "}
-                  <a
-                    href="mailto:support@rebookedsolutions.co.za"
-                    className="text-blue-600 hover:underline"
-                  >
-                    support@rebookedsolutions.co.za
-                  </a>
-                </p>
-              )}
             </CardContent>
           </Card>
         </div>

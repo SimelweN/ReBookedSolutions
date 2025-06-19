@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { logError } from "@/utils/errorUtils";
+import { getUserProfile } from "@/utils/profileUtils";
 import {
   createCourierGuyShipment,
   CourierGuyShipmentData,
@@ -46,50 +47,25 @@ export const getUserProfileWithAddresses = async (
   userId: string,
 ): Promise<UserProfile | null> => {
   try {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select(
-        `
-        id,
-        name,
-        email,
-        pickup_address,
-        shipping_address,
-        addresses_same
-      `,
-      )
-      .eq("id", userId)
-      .single();
+    // Try to get the complete profile with addresses using the safe utility
+    const profile = await getUserProfile<UserProfile>(
+      userId,
+      `id, name, email, pickup_address, shipping_address, addresses_same`,
+      false,
+    );
 
-    if (error) {
-      console.warn(
-        `[AutoShipment] User profile not found for ${userId}:`,
-        error.message,
-      );
-      // Return a basic profile if the user exists but doesn't have address info
-      const { data: basicProfile, error: basicError } = await supabase
-        .from("profiles")
-        .select("id, name, email")
-        .eq("id", userId)
-        .single();
-
-      if (basicError) {
-        console.error(
-          `[AutoShipment] Error fetching basic profile for ${userId}:`,
-          basicError.message,
-        );
-        return null;
-      }
-
-      return {
-        ...basicProfile,
-        pickup_address: null,
-        shipping_address: null,
-        addresses_same: false,
-      };
+    if (!profile) {
+      console.warn(`[AutoShipment] No profile found for user ${userId}`);
+      return null;
     }
 
-    return data;
+    // If profile exists but missing address fields, ensure they're set to null
+    return {
+      ...profile,
+      pickup_address: profile.pickup_address || null,
+      shipping_address: profile.shipping_address || null,
+      addresses_same: profile.addresses_same || false,
+    };
   } catch (error) {
     console.error(
       `[AutoShipment] Unexpected error fetching profile for ${userId}:`,
@@ -153,11 +129,21 @@ export const createAutomaticShipment = async (
       buyerId,
     });
 
+    // Validate input parameters
+    if (!bookDetails?.sellerId || !buyerId) {
+      console.error("[AutoShipment] Invalid parameters:", {
+        sellerId: bookDetails?.sellerId,
+        buyerId,
+      });
+      return null;
+    }
+
     // Get seller information (sender)
     const seller = await getUserProfileWithAddresses(bookDetails.sellerId);
     if (!seller) {
       console.warn(
         "[AutoShipment] Seller profile not found - shipment will be manual",
+        { sellerId: bookDetails.sellerId },
       );
       return null;
     }
@@ -174,6 +160,7 @@ export const createAutomaticShipment = async (
     if (!buyer) {
       console.warn(
         "[AutoShipment] Buyer profile not found - shipment will be manual",
+        { buyerId },
       );
       return null;
     }

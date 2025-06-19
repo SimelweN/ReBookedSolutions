@@ -193,19 +193,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           if (event === "SIGNED_IN" && !isInitializing) {
             try {
               const sessionKey = `loginNotification_${session.user.id}`;
+              const localStorageKey = `lastLoginNotif_${session.user.id}`;
               const lastNotificationTime = sessionStorage.getItem(sessionKey);
+              const lastLocalNotificationTime =
+                localStorage.getItem(localStorageKey);
               const now = Date.now();
 
-              // Only send notification if:
-              // 1. No previous notification was sent in this session
-              // 2. OR last notification was more than 1 hour ago
+              // Enhanced duplicate prevention:
+              // 1. Check session storage for this browser session
+              // 2. Check local storage for persistent checking across sessions
+              // 3. Require at least 30 minutes between notifications
               const shouldSendNotification =
-                !lastNotificationTime ||
-                now - parseInt(lastNotificationTime) > 3600000; // 1 hour
+                !lastNotificationTime &&
+                (!lastLocalNotificationTime ||
+                  now - parseInt(lastLocalNotificationTime) > 1800000); // 30 minutes
 
               if (shouldSendNotification) {
-                // Prevent race conditions by setting the timestamp immediately
+                // Prevent race conditions by setting both timestamps immediately
                 sessionStorage.setItem(sessionKey, now.toString());
+                localStorage.setItem(localStorageKey, now.toString());
 
                 addNotification({
                   userId: session.user.id,
@@ -218,12 +224,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                     "[AuthContext] Login notification failed:",
                     notifError,
                   );
-                  // Remove the timestamp if notification failed
+                  // Remove the timestamps if notification failed
                   sessionStorage.removeItem(sessionKey);
+                  localStorage.removeItem(localStorageKey);
                 });
               } else {
                 console.log(
-                  "[AuthContext] Skipping duplicate login notification",
+                  "[AuthContext] Skipping duplicate login notification - recent notification exists",
                 );
               }
             } catch (notifError) {

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -80,6 +79,7 @@ const ProfileEditDialog = ({ isOpen, onClose }: ProfileEditDialogProps) => {
 
       onClose();
 
+      // TODO: Consider implementing proper state management instead of page reload
       // Use setTimeout to prevent the loading state from being visible during reload
       setTimeout(() => {
         window.location.reload();

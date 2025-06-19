@@ -169,11 +169,17 @@ export const addNotification = async (
     const notificationKey = `${notification.userId}-${notification.title}-${notification.type}-${messageHash}`;
     const now = Date.now();
 
+    // Enhanced duplicate prevention for "Welcome back!" notifications
+    let duplicateWindow = DUPLICATE_PREVENTION_WINDOW; // Default 1 minute
+    if (notification.title.includes("Welcome back")) {
+      duplicateWindow = 1800000; // 30 minutes for welcome back notifications
+    }
+
     // Check if we recently sent a similar notification
     const lastSent = recentNotifications.get(notificationKey);
-    if (lastSent && now - lastSent < DUPLICATE_PREVENTION_WINDOW) {
+    if (lastSent && now - lastSent < duplicateWindow) {
       console.log(
-        `[NotificationService] Preventing duplicate notification: ${notification.title}`,
+        `[NotificationService] Preventing duplicate notification: ${notification.title} (within ${duplicateWindow / 1000}s window)`,
       );
       return; // Skip sending duplicate notification
     }
@@ -185,10 +191,7 @@ export const addNotification = async (
       .eq("user_id", notification.userId)
       .eq("title", notification.title)
       .eq("type", notification.type)
-      .gte(
-        "created_at",
-        new Date(now - DUPLICATE_PREVENTION_WINDOW).toISOString(),
-      )
+      .gte("created_at", new Date(now - duplicateWindow).toISOString())
       .limit(1);
 
     if (checkError) {

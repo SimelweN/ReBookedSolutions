@@ -277,7 +277,7 @@ const MobileShippingDashboard = ({
               size="sm"
               variant="outline"
               className="text-xs"
-              onClick={() => (window.location.href = "/contact")}
+              onClick={() => navigate("/contact")}
             >
               Contact Support
             </Button>
