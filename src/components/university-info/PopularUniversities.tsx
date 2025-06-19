@@ -391,16 +391,7 @@ const PopularUniversities = () => {
                   navigate(`/university-profile?id=${university.id}`)
                 }
                 className="flex-1 text-white text-xs sm:text-sm transition-all duration-200"
-                style={{
-                  backgroundColor: "rgb(68, 171, 131)",
-                  borderColor: "rgb(68, 171, 131)",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "rgb(56, 142, 108)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "rgb(68, 171, 131)";
-                }}
+                className="bg-book-600 border-book-600 text-white hover:bg-book-700"
               >
                 <UniversityIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Explore University
