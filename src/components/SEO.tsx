@@ -13,7 +13,7 @@ const SEO = ({
   title,
   description,
   keywords,
-  image = "https://lovable.dev/opengraph-image-p98pqg.png",
+  image = "/placeholder.svg",
   url,
   type = "website",
 }: SEOProps) => {

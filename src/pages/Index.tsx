@@ -117,7 +117,7 @@ const Index = () => {
           </div>
           <div className="md:w-1/2 flex justify-center">
             <img
-              src="/lovable-uploads/5a675a2a-36d0-4fce-a3dd-1fc8d877a335.png"
+              src="/placeholder.svg"
               alt="Students studying with textbooks in library"
               width="600"
               height="400"
