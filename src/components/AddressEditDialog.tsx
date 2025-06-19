@@ -209,17 +209,16 @@ const AddressEditDialog = ({
                 />
               </div>
               <div>
-                <Label htmlFor="pickup-province">Province</Label>
-                <Input
-                  id="pickup-province"
+                <ProvinceSelector
+                  label="Province"
                   value={pickupAddress.province || ""}
-                  onChange={(e) =>
+                  onValueChange={(value) =>
                     setPickupAddress((prev) => ({
                       ...prev,
-                      province: e.target.value,
+                      province: value,
                     }))
                   }
-                  placeholder="Enter province"
+                  placeholder="Select province"
                   required
                   disabled={isLoading}
                 />
