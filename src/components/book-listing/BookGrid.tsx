@@ -233,6 +233,20 @@ const BookGrid = ({
                         {book.category}
                       </span>
                     </div>
+
+                    {/* Commit Button for Seller */}
+                    {isPendingCommit && isOwner && onCommitBook && (
+                      <div className="mt-3 pt-3 border-t border-gray-200">
+                        <Button
+                          onClick={(e) => handleCommit(book.id, e)}
+                          className="w-full bg-book-600 hover:bg-book-700 text-white"
+                          size="sm"
+                        >
+                          <Clock className="h-3 w-3 mr-2" />
+                          Commit Sale
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </Link>
               )}
