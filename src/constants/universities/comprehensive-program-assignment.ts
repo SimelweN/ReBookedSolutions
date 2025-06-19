@@ -530,6 +530,257 @@ export function validateAssignments(universities: University[]): string[] {
   return issues;
 }
 
+/**
+ * Get faculty description based on faculty name
+ */
+function getFacultyDescription(facultyName: string): string {
+  const descriptions: Record<string, string> = {
+    Engineering:
+      "Develop technical solutions to real-world problems through engineering design and innovation.",
+    "Built Environment":
+      "Shape the spaces where people live, work, and play through design and planning.",
+    "Health Sciences":
+      "Advance human health through medical practice, research, and healthcare innovation.",
+    Humanities:
+      "Explore human culture, language, arts, and social sciences for a deeper understanding of society.",
+    Commerce:
+      "Master business principles, economics, and management for organizational success.",
+    Law: "Study legal systems, rights, and justice to advocate for individuals and society.",
+    Science:
+      "Investigate natural phenomena and develop scientific knowledge to benefit humanity.",
+    Education:
+      "Prepare educators and educational leaders to inspire learning and development.",
+    Agriculture:
+      "Apply scientific principles to food production, environmental sustainability, and rural development.",
+    "Information Technology":
+      "Design and develop technological solutions for the digital age.",
+    "Arts and Design":
+      "Express creativity and innovation through visual arts, design, and multimedia.",
+    "Engineering Technology":
+      "Apply engineering principles to practical technical challenges and solutions.",
+  };
+
+  return (
+    descriptions[facultyName] ||
+    `Explore diverse academic programs in ${facultyName}.`
+  );
+}
+
+/**
+ * Generate degree code based on program name
+ */
+function generateDegreeCode(programName: string): string {
+  // Common degree code mappings
+  const codeMappings: Record<string, string> = {
+    "Bachelor of Medicine and Bachelor of Surgery (MBChB)": "MBChB",
+    "Bachelor of Dental Surgery (BDS)": "BDS",
+    "Bachelor of Pharmacy (BPharm)": "BPharm",
+    "Bachelor of Laws (LLB)": "LLB",
+    "Bachelor of Education (BEd)": "BEd",
+    "Bachelor of Commerce (BCom)": "BCom",
+    "Bachelor of Science (BSc)": "BSc",
+    "Bachelor of Arts (BA)": "BA",
+  };
+
+  // Check for exact matches first
+  if (codeMappings[programName]) {
+    return codeMappings[programName];
+  }
+
+  // For bachelor's degrees
+  if (programName.includes("Bachelor of")) {
+    if (programName.includes("Engineering")) return "BEng";
+    if (programName.includes("Architecture")) return "BArch";
+    if (programName.includes("Technology")) return "BTech";
+    if (programName.includes("Information")) return "BIT";
+    if (programName.includes("Agriculture")) return "BAgric";
+  }
+
+  // For diplomas
+  if (programName.includes("National Diploma")) {
+    return "NDip";
+  }
+
+  // Generate from first letters of significant words
+  const words = programName
+    .replace(/\(.*?\)/g, "") // Remove parentheses content
+    .split(" ")
+    .filter(
+      (word) =>
+        word.length > 2 &&
+        !["and", "in", "of", "the"].includes(word.toLowerCase()),
+    );
+
+  return words
+    .slice(0, 3)
+    .map((word) => word[0].toUpperCase())
+    .join("");
+}
+
+/**
+ * Get default subjects for a faculty
+ */
+function getDefaultSubjects(facultyName: string) {
+  const subjectMappings: Record<
+    string,
+    Array<{ name: string; level: number; isRequired: boolean }>
+  > = {
+    Engineering: [
+      { name: "Mathematics", level: 4, isRequired: true },
+      { name: "Physical Sciences", level: 4, isRequired: true },
+      { name: "English Home Language", level: 4, isRequired: true },
+    ],
+    "Health Sciences": [
+      { name: "Life Sciences", level: 4, isRequired: true },
+      { name: "Physical Sciences", level: 4, isRequired: true },
+      { name: "Mathematics", level: 4, isRequired: true },
+      { name: "English Home Language", level: 4, isRequired: true },
+    ],
+    Science: [
+      { name: "Mathematics", level: 4, isRequired: true },
+      { name: "Physical Sciences", level: 4, isRequired: true },
+      { name: "English Home Language", level: 4, isRequired: true },
+    ],
+    Commerce: [
+      { name: "Mathematics", level: 4, isRequired: true },
+      { name: "English Home Language", level: 4, isRequired: true },
+      { name: "Accounting", level: 4, isRequired: false },
+    ],
+    "Information Technology": [
+      { name: "Mathematics", level: 4, isRequired: true },
+      { name: "Physical Sciences", level: 4, isRequired: false },
+      { name: "English Home Language", level: 4, isRequired: true },
+    ],
+  };
+
+  return (
+    subjectMappings[facultyName] || [
+      { name: "English Home Language", level: 4, isRequired: true },
+      { name: "Mathematics", level: 4, isRequired: false },
+    ]
+  );
+}
+
+/**
+ * Get career prospects based on program name and faculty
+ */
+function getCareerProspects(
+  programName: string,
+  facultyName: string,
+): string[] {
+  // Specific program career prospects
+  const specificCareers: Record<string, string[]> = {
+    "Civil Engineering": [
+      "Civil Engineer",
+      "Structural Engineer",
+      "Project Manager",
+      "Construction Manager",
+    ],
+    Medicine: [
+      "Medical Doctor",
+      "Surgeon",
+      "General Practitioner",
+      "Specialist Physician",
+    ],
+    Law: [
+      "Advocate",
+      "Attorney",
+      "Legal Advisor",
+      "Magistrate",
+      "Corporate Lawyer",
+    ],
+    Accounting: [
+      "Chartered Accountant",
+      "Financial Manager",
+      "Auditor",
+      "Tax Consultant",
+    ],
+    "Computer Science": [
+      "Software Developer",
+      "Data Scientist",
+      "Systems Analyst",
+      "IT Consultant",
+    ],
+    Psychology: [
+      "Clinical Psychologist",
+      "Counselor",
+      "Research Psychologist",
+      "Educational Psychologist",
+    ],
+  };
+
+  if (specificCareers[programName]) {
+    return specificCareers[programName];
+  }
+
+  // Faculty-based general career prospects
+  const facultyCareers: Record<string, string[]> = {
+    Engineering: [
+      "Engineer",
+      "Project Manager",
+      "Technical Consultant",
+      "Research and Development",
+    ],
+    "Health Sciences": [
+      "Healthcare Professional",
+      "Clinical Practitioner",
+      "Health Researcher",
+      "Public Health Officer",
+    ],
+    Commerce: [
+      "Business Manager",
+      "Financial Analyst",
+      "Marketing Specialist",
+      "Entrepreneur",
+    ],
+    Humanities: [
+      "Researcher",
+      "Educator",
+      "Cultural Officer",
+      "Communications Specialist",
+    ],
+    Science: [
+      "Research Scientist",
+      "Laboratory Technician",
+      "Environmental Consultant",
+      "Data Analyst",
+    ],
+    Education: [
+      "Teacher",
+      "Educational Administrator",
+      "Curriculum Developer",
+      "Educational Researcher",
+    ],
+    Law: [
+      "Legal Practitioner",
+      "Legal Advisor",
+      "Court Official",
+      "Legal Researcher",
+    ],
+    Agriculture: [
+      "Agricultural Officer",
+      "Farm Manager",
+      "Agricultural Researcher",
+      "Environmental Specialist",
+    ],
+    "Information Technology": [
+      "IT Professional",
+      "Software Developer",
+      "Systems Administrator",
+      "Cybersecurity Specialist",
+    ],
+  };
+
+  return (
+    facultyCareers[facultyName] || [
+      "Professional",
+      "Specialist",
+      "Consultant",
+      "Manager",
+    ]
+  );
+}
+
 // Debug logging function
 export function logAssignmentResults(universities: University[]) {
   if (import.meta.env.DEV) {
