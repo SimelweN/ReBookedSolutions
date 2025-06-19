@@ -587,7 +587,7 @@ const UniversityProfile: React.FC = () => {
                                                 </div>
                                               </div>
                                               {expandedPrograms.has(
-                                                degree.id,
+                                                degreeId,
                                               ) ? (
                                                 <ChevronUp className="h-5 w-5 text-gray-400" />
                                               ) : (
@@ -596,7 +596,7 @@ const UniversityProfile: React.FC = () => {
                                             </div>
                                           </div>
 
-                                          {expandedPrograms.has(degree.id) && (
+                                          {expandedPrograms.has(degreeId) && (
                                             <div className="px-4 pb-4 border-t border-gray-100 bg-gray-50">
                                               <div className="pt-4 space-y-4">
                                                 <div>
