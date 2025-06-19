@@ -6,7 +6,6 @@ import {
   ProgramDefinition,
   AssignmentRule,
 } from "./comprehensive-program-rules";
-import { COMPREHENSIVE_PROGRAMS_PART2 } from "./comprehensive-program-rules-continued";
 
 // Final programs from Agriculture, IT, and Technical fields
 const COMPREHENSIVE_PROGRAMS_PART3: ProgramDefinition[] = [
