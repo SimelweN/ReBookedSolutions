@@ -456,7 +456,7 @@ const UniversityInfo = () => {
               </TabsTrigger>
               <TabsTrigger
                 value="aps-calculator"
-                className="flex flex-col items-center gap-1 py-2.5 px-2 text-center data-[state=active]:bg-green-50 data-[state=active]:shadow-sm data-[state=active]:text-green-800"
+                className="flex flex-col items-center gap-1 py-2.5 px-2 text-center data-[state=active]:bg-book-50 data-[state=active]:shadow-sm data-[state=active]:text-book-800"
               >
                 <Calculator className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="text-xs sm:text-sm">APS</span>
