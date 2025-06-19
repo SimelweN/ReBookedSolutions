@@ -48,30 +48,83 @@ const extractUniversityPrograms = () => {
   const programs: any[] = [];
 
   try {
-    ALL_SOUTH_AFRICAN_UNIVERSITIES.forEach((university) => {
-      if (university.faculties && Array.isArray(university.faculties)) {
-        university.faculties.forEach((faculty) => {
-          if (faculty.degrees && Array.isArray(faculty.degrees)) {
-            faculty.degrees.forEach((degree) => {
-              programs.push({
-                university: university.fullName || university.name,
-                abbreviation: university.abbreviation || university.name,
-                location: `${university.location}, ${university.province}`,
-                program: degree.name,
-                faculty: faculty.name,
-                aps: degree.apsRequirement || 0,
-                duration: degree.duration || "Not specified",
-                description:
-                  degree.description ||
-                  `Study ${degree.name} at ${university.name}`,
-              });
-            });
-          }
-        });
+    if (
+      !ALL_SOUTH_AFRICAN_UNIVERSITIES ||
+      !Array.isArray(ALL_SOUTH_AFRICAN_UNIVERSITIES)
+    ) {
+      console.warn("University data not available or invalid");
+      return programs;
+    }
+
+    console.log(
+      `Attempting to extract programs from ${ALL_SOUTH_AFRICAN_UNIVERSITIES.length} universities`,
+    );
+
+    ALL_SOUTH_AFRICAN_UNIVERSITIES.forEach((university, uniIndex) => {
+      try {
+        if (
+          university.faculties &&
+          Array.isArray(university.faculties) &&
+          university.faculties.length > 0
+        ) {
+          university.faculties.forEach((faculty, facIndex) => {
+            try {
+              if (
+                faculty.degrees &&
+                Array.isArray(faculty.degrees) &&
+                faculty.degrees.length > 0
+              ) {
+                faculty.degrees.forEach((degree, degIndex) => {
+                  try {
+                    programs.push({
+                      university: university.fullName || university.name,
+                      abbreviation: university.abbreviation || university.name,
+                      location: `${university.location}, ${university.province}`,
+                      program: degree.name,
+                      faculty: faculty.name,
+                      aps: degree.apsRequirement || 0,
+                      duration: degree.duration || "Not specified",
+                      description:
+                        degree.description ||
+                        `Study ${degree.name} at ${university.name}`,
+                    });
+                  } catch (degreeError) {
+                    console.warn(
+                      `Error processing degree ${degIndex} in faculty ${facIndex} of university ${uniIndex}:`,
+                      degreeError,
+                    );
+                  }
+                });
+              } else {
+                console.warn(
+                  `University ${university.name} faculty ${faculty.name} has no degrees`,
+                );
+              }
+            } catch (facultyError) {
+              console.warn(
+                `Error processing faculty ${facIndex} of university ${uniIndex}:`,
+                facultyError,
+              );
+            }
+          });
+        } else {
+          console.warn(
+            `University ${university.name} has no faculties or empty faculties array`,
+          );
+        }
+      } catch (universityError) {
+        console.warn(
+          `Error processing university ${uniIndex}:`,
+          universityError,
+        );
       }
     });
+
+    console.log(
+      `Successfully extracted ${programs.length} programs from university data`,
+    );
   } catch (error) {
-    console.error("Error extracting university programs:", error);
+    console.error("Error in extractUniversityPrograms:", error);
   }
 
   return programs;
