@@ -15,6 +15,7 @@ import {
   sendBroadcastMessage,
 } from "@/services/admin/adminMutations";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/contexts/AuthContext";
 import AdminStats from "@/components/admin/AdminStats";
 import AdminEarningsTab from "@/components/admin/AdminEarningsTab";
 import AdminUsersTab from "@/components/admin/AdminUsersTab";
@@ -41,6 +42,7 @@ import {
 const AdminDashboard = () => {
   const isMobile = useIsMobile();
   const { handleError } = useErrorHandler();
+  const { user } = useAuth();
 
   const [stats, setStats] = useState<AdminStatsType>({
     totalUsers: 0,
