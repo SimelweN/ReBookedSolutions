@@ -146,10 +146,9 @@ const Policies = () => {
                       </span>
                     </span>
                   </div>
+                  <strong>Jurisdiction:</strong>
                   <div>
-                    <span>
-                      <strong>Jurisdiction:</strong> Republic of South Africa
-                    </span>
+                    <span> Republic of South Africa</span>
                   </div>
                 </div>
               </CardHeader>
