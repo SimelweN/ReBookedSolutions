@@ -618,47 +618,13 @@ function generateDegreeCode(programName: string): string {
 }
 
 /**
- * Get default subjects for a faculty
+ * Get default subjects for a faculty (simplified)
  */
 function getDefaultSubjects(facultyName: string) {
-  const subjectMappings: Record<
-    string,
-    Array<{ name: string; level: number; isRequired: boolean }>
-  > = {
-    Engineering: [
-      { name: "Mathematics", level: 4, isRequired: true },
-      { name: "Physical Sciences", level: 4, isRequired: true },
-      { name: "English Home Language", level: 4, isRequired: true },
-    ],
-    "Health Sciences": [
-      { name: "Life Sciences", level: 4, isRequired: true },
-      { name: "Physical Sciences", level: 4, isRequired: true },
-      { name: "Mathematics", level: 4, isRequired: true },
-      { name: "English Home Language", level: 4, isRequired: true },
-    ],
-    Science: [
-      { name: "Mathematics", level: 4, isRequired: true },
-      { name: "Physical Sciences", level: 4, isRequired: true },
-      { name: "English Home Language", level: 4, isRequired: true },
-    ],
-    Commerce: [
-      { name: "Mathematics", level: 4, isRequired: true },
-      { name: "English Home Language", level: 4, isRequired: true },
-      { name: "Accounting", level: 4, isRequired: false },
-    ],
-    "Information Technology": [
-      { name: "Mathematics", level: 4, isRequired: true },
-      { name: "Physical Sciences", level: 4, isRequired: false },
-      { name: "English Home Language", level: 4, isRequired: true },
-    ],
-  };
-
-  return (
-    subjectMappings[facultyName] || [
-      { name: "English Home Language", level: 4, isRequired: true },
-      { name: "Mathematics", level: 4, isRequired: false },
-    ]
-  );
+  return [
+    { name: "English Home Language", level: 4, isRequired: true },
+    { name: "Mathematics", level: 4, isRequired: true },
+  ];
 }
 
 /**
