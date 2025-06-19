@@ -60,7 +60,9 @@ const CampusNavbar = () => {
                 ReBooked Campus
               </span>
               <span className="text-sm font-bold text-book-600 xs:hidden">
-                ReBooked
+                ReBooked&nbsp;
+                <br />
+                <br />
               </span>
             </button>
           </div>
