@@ -39,103 +39,65 @@ const queryClient = new QueryClient({
 // Full app is now restored!
 
 function App() {
-  try {
-    return (
-      <ErrorBoundary level="app">
-        <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <CartProvider>
-              <Router>
-                <ScrollToTop />
-                <div className="min-h-screen bg-gray-50">
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/books" element={<BookListing />} />
-                    <Route path="/books/:id" element={<BookDetails />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route
-                      path="/university-info"
-                      element={<UniversityInfo />}
-                    />
-                    <Route
-                      path="/university-profile"
-                      element={<ModernUniversityProfile />}
-                    />
+  return (
+    <ErrorBoundary level="app">
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <CartProvider>
+            <Router>
+              <ScrollToTop />
+              <div className="min-h-screen bg-gray-50">
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/books" element={<BookListing />} />
+                  <Route path="/books/:id" element={<BookDetails />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/university-info" element={<UniversityInfo />} />
+                  <Route
+                    path="/university-profile"
+                    element={<ModernUniversityProfile />}
+                  />
 
-                    {/* Protected Routes */}
-                    <Route
-                      path="/profile"
-                      element={
-                        <ProtectedRoute>
-                          <Profile />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/create-listing"
-                      element={
-                        <ProtectedRoute>
-                          <CreateListing />
-                        </ProtectedRoute>
-                      }
-                    />
+                  {/* Protected Routes */}
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute>
+                        <Profile />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/create-listing"
+                    element={
+                      <ProtectedRoute>
+                        <CreateListing />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                    {/* Admin Routes */}
-                    <Route
-                      path="/admin"
-                      element={
-                        <AdminProtectedRoute>
-                          <Admin />
-                        </AdminProtectedRoute>
-                      }
-                    />
+                  {/* Admin Routes */}
+                  <Route
+                    path="/admin"
+                    element={
+                      <AdminProtectedRoute>
+                        <Admin />
+                      </AdminProtectedRoute>
+                    }
+                  />
 
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </div>
-              </Router>
-            </CartProvider>
-          </AuthProvider>
-          {/* Vercel Analytics and Speed Insights */}
-          <Analytics />
-          <SpeedInsights />
-        </QueryClientProvider>
-      </ErrorBoundary>
-    );
-  } catch (error) {
-    console.error("Error in App:", error);
-    return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#fef2f2",
-          fontFamily: "system-ui",
-        }}
-      >
-        <div
-          style={{
-            backgroundColor: "white",
-            padding: "2rem",
-            borderRadius: "0.5rem",
-            border: "1px solid #fca5a5",
-            textAlign: "center",
-          }}
-        >
-          <h1 style={{ color: "#dc2626", marginBottom: "1rem" }}>
-            Step 1 Failed
-          </h1>
-          <p style={{ color: "#6b7280" }}>
-            Error in Router/CSS setup:{" "}
-            {error instanceof Error ? error.message : String(error)}
-          </p>
-        </div>
-      </div>
-    );
-  }
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </div>
+            </Router>
+          </CartProvider>
+        </AuthProvider>
+        {/* Vercel Analytics and Speed Insights */}
+        <Analytics />
+        <SpeedInsights />
+      </QueryClientProvider>
+    </ErrorBoundary>
+  );
 }
-
 export default App;
