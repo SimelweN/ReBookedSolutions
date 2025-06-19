@@ -291,7 +291,7 @@ const UniversityInfo = () => {
               </div>
             </div>
             {applicationInfo.isFree && (
-              <Badge className="bg-book-100 text-book-800 border-book-200 font-semibold">
+              <Badge className="bg-book-100 text-book-800 border-book-200 font-semibold text-xs flex-shrink-0">
                 No Fee
               </Badge>
             )}
