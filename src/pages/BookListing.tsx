@@ -147,10 +147,20 @@ const BookListing = () => {
     setSelectedUniversity("");
     setPriceRange([0, 1000]);
     setBookType("all");
+
+    // Clear URL params
     setSearchParams({});
   }, [setSearchParams]);
 
-  if (error) {
+  const handleCommitBook = useCallback(async (bookId: string) => {
+    try {
+      await commitBook(bookId);
+      // Reload books to reflect the status change
+      await loadBooks();
+    } catch (error) {
+      console.error("Failed to commit book:", error);
+    }
+  }, [commitBook, loadBooks]);
     return (
       <Layout>
         <div className="container mx-auto px-4 py-8">
