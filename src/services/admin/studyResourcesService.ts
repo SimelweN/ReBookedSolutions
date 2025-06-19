@@ -5,10 +5,12 @@ import { StudyTip, StudyResource } from "@/types/university";
 interface StudyResourcePayload {
   title: string;
   description: string;
-  type: "pdf" | "video" | "website" | "tool" | "course";
-  difficulty: "Beginner" | "Intermediate" | "Advanced";
+  type: "guide" | "template" | "tip";
+  difficulty: "beginner" | "intermediate" | "advanced";
   category: string;
   tags: string[];
+  content?: string;
+  author?: string;
   url?: string;
   provider?: string;
   duration?: string;
@@ -27,7 +29,7 @@ interface StudyTipPayload {
   title: string;
   content: string;
   category: string;
-  difficulty: "Beginner" | "Intermediate" | "Advanced";
+  difficulty: "beginner" | "intermediate" | "advanced";
   tags: string[];
   isActive: boolean;
   author?: string;
@@ -61,6 +63,8 @@ export const createStudyResource = async (
       type: data.type,
       difficulty: data.difficulty,
       category: data.category,
+      content: data.content || "",
+      author: data.author || "",
       tags: data.tags,
       url: data.url,
       provider: data.provider,
