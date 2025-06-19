@@ -182,15 +182,15 @@ const UniversityInfo = () => {
     </div>
   );
 
-  // Simple Universities Grid to replace PopularUniversities
-  const SimpleUniversitiesGrid = () => (
+  // All Universities Grid - showing ALL 26 universities
+  const AllUniversitiesGrid = () => (
     <div className="py-12">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-center mb-8">
-          Popular Universities
+          All South African Universities ({SOUTH_AFRICAN_UNIVERSITIES.length})
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {SOUTH_AFRICAN_UNIVERSITIES.slice(0, 6).map((university) => (
+          {SOUTH_AFRICAN_UNIVERSITIES.map((university) => (
             <Card
               key={university.id}
               className="hover:shadow-lg transition-shadow cursor-pointer"
@@ -299,8 +299,8 @@ const UniversityInfo = () => {
               {/* Hero Section */}
               <SimpleHero />
 
-              {/* Popular Universities */}
-              <SimpleUniversitiesGrid />
+              {/* All Universities */}
+              <AllUniversitiesGrid />
 
               {/* Quick Tools Section */}
               <div className="grid md:grid-cols-2 gap-6">
