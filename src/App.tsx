@@ -55,7 +55,7 @@ import EmergencyFallback from "./components/EmergencyFallback";
 
 function App() {
   // Temporary debug mode - uncomment the line below if needed
-  // return <EmergencyFallback />;
+  return <EmergencyFallback />;
 
   try {
     return (
