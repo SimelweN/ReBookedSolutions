@@ -225,9 +225,12 @@ export const getAllListings = async (): Promise<AdminListing[]> => {
     // Since there's no foreign key relationship, use separate queries directly
     return await getAllListingsFallback();
   } catch (error) {
-    console.error("Error in getAllListings:", error);
-    // Fallback to separate queries
-    return await getAllListingsFallback();
+    console.error("Error in getAllListings:", {
+      error,
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    throw error; // Re-throw the error instead of calling fallback again
   }
 };
 
