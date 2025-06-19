@@ -1607,6 +1607,10 @@ const FALLBACK_PROGRAMS = [
   },
 ];
 
+// Use real data if available, otherwise fallback
+const FINAL_UNIVERSITY_PROGRAMS =
+  UNIVERSITY_PROGRAMS.length > 0 ? UNIVERSITY_PROGRAMS : FALLBACK_PROGRAMS;
+
 // Types
 interface APSSubject {
   name: string;
