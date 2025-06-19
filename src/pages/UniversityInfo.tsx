@@ -121,11 +121,12 @@ const UniversityInfo = () => {
         !Array.isArray(SOUTH_AFRICAN_UNIVERSITIES)
       ) {
         console.warn("SOUTH_AFRICAN_UNIVERSITIES is not properly defined");
+        setError("University data failed to load");
         return {
           universities: 0,
           students: "0",
           programs: "0",
-          resources: "Loading...",
+          resources: "Error loading data",
         };
       }
 
