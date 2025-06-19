@@ -1,64 +1,44 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useEffect } from "react";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/react";
-import { AuthProvider } from "./contexts/AuthContext";
-import { CartProvider } from "./contexts/CartContext";
-import ProtectedRoute from "./components/ProtectedRoute";
-import AdminProtectedRoute from "./components/AdminProtectedRoute";
-import ScrollToTop from "./components/ScrollToTop";
-import ErrorBoundary from "./components/ErrorBoundary";
-import AuthErrorBoundary from "./components/AuthErrorBoundary";
-import OAuthRedirectHandler from "./components/OAuthRedirectHandler";
-// TEMPORARY: Disabled to fix error spam
-// import BroadcastManager from "./components/BroadcastManager";
-
-// Pages
-import Index from "./pages/Index";
-import BookListing from "./pages/BookListing";
-import BookDetails from "./pages/BookDetails";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import Profile from "./pages/Profile";
-import UserProfile from "./pages/UserProfile";
-import NotFound from "./pages/NotFound";
-import CreateListing from "./pages/CreateListing";
-import Checkout from "./pages/Checkout";
-import Admin from "./pages/Admin";
-import ContactUs from "./pages/ContactUs";
-import ActivityLog from "./pages/ActivityLog";
-import FAQ from "./pages/FAQ";
-import Terms from "./pages/Terms";
-import Privacy from "./pages/Privacy";
-import AdminReports from "./pages/AdminReports";
-import Notifications from "./pages/Notifications";
-import Confirm from "./pages/Confirm";
-import Verify from "./pages/Verify";
-import ConfirmEmailChange from "./pages/ConfirmEmailChange";
-import EditBook from "./pages/EditBook";
-import Cart from "./pages/Cart";
-import Report from "./pages/Report";
-import Shipping from "./pages/Shipping";
-import UniversityInfo from "./pages/UniversityInfo";
-import ModernUniversityProfile from "./pages/ModernUniversityProfile";
-import UniversityProfile from "./pages/UniversityProfile";
-import FacultyDetail from "./pages/FacultyDetail";
-import CourseDetail from "./pages/CourseDetail";
-import StudyResources from "./pages/StudyResources";
-import AddProgram from "./pages/AddProgram";
-import Policies from "./pages/Policies";
-
-import "./App.css";
-import EmergencyFallback from "./components/EmergencyFallback";
+import React from "react";
 
 function App() {
-  // Temporary debug mode - uncomment the line below if needed
-  return <EmergencyFallback />;
-
-  try {
-    return (
+  return (
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#f3f4f6',
+      fontFamily: 'system-ui'
+    }}>
+      <div style={{
+        backgroundColor: 'white',
+        padding: '2rem',
+        borderRadius: '0.5rem',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+        textAlign: 'center'
+      }}>
+        <h1 style={{ color: '#059669', marginBottom: '1rem' }}>
+          ✅ React is Working!
+        </h1>
+        <p style={{ color: '#6b7280', marginBottom: '1rem' }}>
+          Basic React component is rendering successfully.
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          style={{
+            backgroundColor: '#3b82f6',
+            color: 'white',
+            padding: '0.5rem 1rem',
+            border: 'none',
+            borderRadius: '0.25rem',
+            cursor: 'pointer'
+          }}
+        >
+          Refresh
+        </button>
+      </div>
+    </div>
+  );
       <ErrorBoundary level="app">
         <AuthErrorBoundary>
           <AuthProvider>
