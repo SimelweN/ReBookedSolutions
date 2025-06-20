@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { ProvinceSelector } from "@/components/ui/province-selector";
 import { MapPin, Loader2 } from "lucide-react";
