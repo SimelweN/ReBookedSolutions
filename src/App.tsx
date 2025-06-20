@@ -19,10 +19,27 @@ import CreateListing from "./pages/CreateListing";
 import Admin from "./pages/Admin";
 import UniversityInfo from "./pages/UniversityInfo";
 import ModernUniversityProfile from "./pages/ModernUniversityProfile";
+import UniversityProfile from "./pages/UniversityProfile";
 import Policies from "./pages/Policies";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Notifications from "./pages/Notifications";
+import Shipping from "./pages/Shipping";
+import ActivityLog from "./pages/ActivityLog";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import Verify from "./pages/Verify";
+import ContactUs from "./pages/ContactUs";
+import EditBook from "./pages/EditBook";
+import StudyResources from "./pages/StudyResources";
+import Confirm from "./pages/Confirm";
+import ConfirmEmailChange from "./pages/ConfirmEmailChange";
+import Report from "./pages/Report";
+import UserProfile from "./pages/UserProfile";
+import FAQ from "./pages/FAQ";
 import "./App.css";
 
 // Create query client
