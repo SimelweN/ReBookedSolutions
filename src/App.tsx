@@ -63,11 +63,12 @@ function App() {
   return (
     <ErrorBoundary level="app">
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <CartProvider>
-            <Router>
-              <ScrollToTop />
-              <div className="min-h-screen bg-gray-50">
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <AuthProvider>
+            <CartProvider>
+              <Router>
+                <ScrollToTop />
+                <div className="min-h-screen bg-gray-50">
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/books" element={<BookListing />} />
@@ -79,21 +80,12 @@ function App() {
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/verify" element={<Verify />} />
                   <Route path="/confirm" element={<Confirm />} />
-                  <Route
-                    path="/confirm-email-change"
-                    element={<ConfirmEmailChange />}
-                  />
+                  <Route path="/confirm-email-change" element={<ConfirmEmailChange />} />
 
                   {/* University and Campus Routes */}
                   <Route path="/university-info" element={<UniversityInfo />} />
-                  <Route
-                    path="/university-profile"
-                    element={<ModernUniversityProfile />}
-                  />
-                  <Route
-                    path="/university/:id"
-                    element={<UniversityProfile />}
-                  />
+                  <Route path="/university-profile" element={<ModernUniversityProfile />} />
+                  <Route path="/university/:id" element={<UniversityProfile />} />
                   <Route path="/study-resources" element={<StudyResources />} />
 
                   {/* Shopping and Cart Routes */}
