@@ -71,15 +71,39 @@ function App() {
                   <Route path="/" element={<Index />} />
                   <Route path="/books" element={<BookListing />} />
                   <Route path="/books/:id" element={<BookDetails />} />
+                  <Route path="/book/:id" element={<BookDetails />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route path="/verify" element={<Verify />} />
+                  <Route path="/confirm" element={<Confirm />} />
+                  <Route
+                    path="/confirm-email-change"
+                    element={<ConfirmEmailChange />}
+                  />
+
+                  {/* University and Campus Routes */}
                   <Route path="/university-info" element={<UniversityInfo />} />
                   <Route
                     path="/university-profile"
                     element={<ModernUniversityProfile />}
                   />
+                  <Route
+                    path="/university/:id"
+                    element={<UniversityProfile />}
+                  />
+                  <Route path="/study-resources" element={<StudyResources />} />
 
-                  {/* Policy Pages */}
+                  {/* Shopping and Cart Routes */}
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/checkout/:id" element={<Checkout />} />
+                  <Route path="/checkout/cart" element={<Checkout />} />
+                  <Route path="/shipping" element={<Shipping />} />
+
+                  {/* Support and Info Pages */}
+                  <Route path="/contact" element={<ContactUs />} />
+                  <Route path="/faq" element={<FAQ />} />
                   <Route path="/policies" element={<Policies />} />
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/terms" element={<Terms />} />
@@ -94,10 +118,50 @@ function App() {
                     }
                   />
                   <Route
+                    path="/user-profile"
+                    element={
+                      <ProtectedRoute>
+                        <UserProfile />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
                     path="/create-listing"
                     element={
                       <ProtectedRoute>
                         <CreateListing />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/edit-book/:id"
+                    element={
+                      <ProtectedRoute>
+                        <EditBook />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/notifications"
+                    element={
+                      <ProtectedRoute>
+                        <Notifications />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/activity"
+                    element={
+                      <ProtectedRoute>
+                        <ActivityLog />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/report"
+                    element={
+                      <ProtectedRoute>
+                        <Report />
                       </ProtectedRoute>
                     }
                   />
