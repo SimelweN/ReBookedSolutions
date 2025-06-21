@@ -652,6 +652,18 @@ const EnhancedAPSCalculator: React.FC = () => {
           </CardContent>
         </Card>
 
+        {/* University-Specific APS Scoring Display */}
+        {apsCalculation.isCalculationValid &&
+          apsCalculation.fullCalculation?.universitySpecificScores && (
+            <UniversitySpecificAPSDisplay
+              universityScores={
+                apsCalculation.fullCalculation.universitySpecificScores
+              }
+              standardAPS={apsCalculation.totalAPS}
+              className="lg:col-span-3"
+            />
+          )}
+
         {/* Enhanced Results Card */}
         <Card className="lg:col-span-2 bg-white border-0 shadow-lg">
           <CardHeader className="pb-3">
