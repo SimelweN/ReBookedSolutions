@@ -260,6 +260,21 @@ const EnhancedAPSCalculator: React.FC = () => {
     toast.success("All data cleared");
   }, [clearError]);
 
+  // Clear APS profile from all universities
+  const handleClearAPSProfile = useCallback(() => {
+    clearAPSProfile();
+    setSubjects([]);
+    setSelectedSubject("");
+    setSelectedMarks("");
+    setSearchResults([]);
+    setSelectedProgram(null);
+    setIsDetailsModalOpen(false);
+    setShowProgramsSection(false);
+    setUniversitySpecificScores(null);
+    clearError();
+    toast.success("APS profile cleared from all universities");
+  }, [clearAPSProfile, clearError]);
+
   // Search programs function
   const searchPrograms = useCallback(async () => {
     if (!apsCalculation.isCalculationValid) {
