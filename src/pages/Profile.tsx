@@ -386,15 +386,6 @@ const Profile = () => {
                     <Plus className="h-5 w-5 mr-2" />
                     List a Book
                   </Button>
-
-                  <Button
-                    onClick={() => setIsDeleteProfileDialogOpen(true)}
-                    variant="destructive"
-                    className="w-full"
-                  >
-                    <AlertTriangle className="h-4 w-4 mr-2" />
-                    Delete Profile
-                  </Button>
                 </CardContent>
               </Card>
 
