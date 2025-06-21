@@ -233,24 +233,36 @@ const DeleteProfileDialog = ({ isOpen, onClose }: DeleteProfileDialogProps) => {
           <Button variant="outline" onClick={handleClose} disabled={isDeleting}>
             Cancel
           </Button>
-          <Button
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={confirmText !== "DELETE" || isDeleting}
-            className="bg-red-600 hover:bg-red-700"
-          >
-            {isDeleting ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Deleting...
-              </>
-            ) : (
-              <>
-                <AlertTriangle className="h-4 w-4 mr-2" />
-                Delete Profile
-              </>
-            )}
-          </Button>
+          {step === "confirm" ? (
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              disabled={confirmText !== "DELETE" || isDeleting}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              <AlertTriangle className="h-4 w-4 mr-2" />
+              Continue
+            </Button>
+          ) : (
+            <Button
+              variant="destructive"
+              onClick={handleFinalDelete}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <AlertTriangle className="h-4 w-4 mr-2" />
+                  Delete Profile
+                </>
+              )}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
