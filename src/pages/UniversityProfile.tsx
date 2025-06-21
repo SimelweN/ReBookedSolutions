@@ -200,7 +200,7 @@ const UniversityProfile: React.FC = () => {
             <div className="absolute bottom-10 right-20 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
           </div>
 
-          <div className="relative z-10 container mx-auto px-4 py-8 lg:py-16">
+          <div className="relative z-10 container mx-auto px-4 py-6 pb-8 lg:py-16">
             {/* Back Button */}
             <div className="mb-6 lg:mb-8">
               <Button
