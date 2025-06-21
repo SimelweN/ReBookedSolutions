@@ -658,7 +658,15 @@ const EnhancedUniversityProfile: React.FC = () => {
                     {/* Clear APS Profile Button */}
                     <div className="mt-4 pt-3 border-t border-white/20">
                       <Button
-                        onClick={clearAPSProfile}
+                        onClick={() => {
+                          clearAPSProfile();
+                          // If viewing from APS context, navigate back to clean university view
+                          if (fromAPS) {
+                            navigate(`/university/${universityId}`, {
+                              replace: true,
+                            });
+                          }
+                        }}
                         variant="outline"
                         size="sm"
                         className="w-full bg-white/10 border-white/30 text-white hover:bg-white/20 text-xs"
