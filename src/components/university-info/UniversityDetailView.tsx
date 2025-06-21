@@ -901,9 +901,44 @@ const UniversityDetailView: React.FC<UniversityDetailViewProps> = ({
                             Get exclusive early access when we launch
                             accommodation services for {university.name}
                           </p>
-                          <Button className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-10 py-4 rounded-2xl font-bold text-lg shadow-xl transform hover:scale-105 transition-all duration-300">
-                            🔔 Notify Me When Available
-                          </Button>
+                          {isAuthenticated ? (
+                            <Button
+                              onClick={handleNotifyRequest}
+                              disabled={notifyLoading}
+                              className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-10 py-4 rounded-2xl font-bold text-lg shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                            >
+                              {notifyLoading ? (
+                                <>
+                                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                                  Submitting...
+                                </>
+                              ) : (
+                                <>
+                                  <Bell className="w-5 h-5 mr-2" />
+                                  Notify Me When Available
+                                </>
+                              )}
+                            </Button>
+                          ) : (
+                            <div className="space-y-3">
+                              <Button
+                                disabled
+                                className="bg-gray-400 text-white px-10 py-4 rounded-2xl font-bold text-lg cursor-not-allowed"
+                              >
+                                <Lock className="w-5 h-5 mr-2" />
+                                Login Required to Get Notified
+                              </Button>
+                              <p className="text-sm text-gray-500 text-center">
+                                <button
+                                  onClick={() => navigate("/login")}
+                                  className="text-green-600 hover:underline font-medium"
+                                >
+                                  Log in
+                                </button>{" "}
+                                to receive notifications about {university.name}
+                              </p>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
