@@ -1,31 +1,35 @@
-# Courier Guy API Implementation Summary
+# Courier Services API Implementation Summary
 
 ## ✅ Successfully Implemented
 
-The Courier Guy API key `42555ddcb06244d7b81b615ef437dea1` has been successfully integrated into your application.
+Both courier service API keys have been successfully integrated into your application:
+
+- **Courier Guy API**: `42555ddcb06244d7b81b615ef437dea1`
+- **Fastway API**: `438e66af0238937544ae94ad86de26c1`
 
 ## Changes Made
 
 ### 1. Environment Configuration Updates
 
 - **File**: `src/config/environment.ts`
-  - Added `VITE_COURIER_GUY_API_KEY` to environment configuration
+  - Added `VITE_COURIER_GUY_API_KEY` and `VITE_FASTWAY_API_KEY` to environment configuration
   - Updated validation logic to include optional API key warnings
   - Enhanced production warnings for missing optional keys
 
 ### 2. Environment Variable Configuration
 
-- **File**: `.env` (created)
+- **File**: `.env` (created/updated)
 
-  - Added the Courier Guy API key for local development
-  - Configured with the provided key: `42555ddcb06244d7b81b615ef437dea1`
+  - Added both Courier Guy and Fastway API keys for local development
+  - Courier Guy: `42555ddcb06244d7b81b615ef437dea1`
+  - Fastway: `438e66af0238937544ae94ad86de26c1`
 
 - **File**: `.env.example` (updated)
 
-  - Added Courier Guy API key placeholder for team reference
+  - Added both API key placeholders for team reference
 
 - **File**: `fly.env.example` (updated)
-  - Added deployment command for Fly.io with the API key
+  - Added deployment commands for both APIs on Fly.io
 
 ### 3. Documentation
 
@@ -37,24 +41,36 @@ The Courier Guy API key `42555ddcb06244d7b81b615ef437dea1` has been successfully
 
 ## Existing Integration Points
 
-The following components were already implemented and will now work with the API key:
+The following components were already implemented and will now work with the API keys:
 
 ### Supabase Edge Functions
 
+**Courier Guy:**
+
 - ✅ `supabase/functions/courier-guy-shipment/index.ts` - Creates shipments
 - ✅ `supabase/functions/courier-guy-track/index.ts` - Tracks packages
-- ✅ `supabase/functions/get-delivery-quotes/index.ts` - Gets delivery quotes
+
+**Fastway:**
+
+- ✅ `supabase/functions/fastway-quote/index.ts` - Gets delivery quotes
+- ✅ `supabase/functions/fastway-shipment/index.ts` - Creates shipments
+- ✅ `supabase/functions/fastway-track/index.ts` - Tracks packages
+
+**Unified Services:**
+
+- ✅ `supabase/functions/get-delivery-quotes/index.ts` - Aggregates quotes from both services
 
 ### Frontend Components
 
 - ✅ `src/components/courier-guy/CourierGuyTracker.tsx` - Package tracking UI
 - ✅ `src/components/courier-guy/CourierGuyTrackingOnly.tsx` - Simplified tracking
+- ✅ Fastway components integrated into unified delivery system
 
 ### Services
 
-- ✅ `src/services/courierGuyService.ts` - Service layer with TypeScript types
-- ✅ Integration with unified delivery service
-- ✅ Address validation for South African addresses
+- ✅ `src/services/courierGuyService.ts` - Courier Guy service layer
+- ✅ Integration with unified delivery service for both providers
+- ✅ Address validation for South African and Australian addresses
 
 ## Features Now Available
 
@@ -90,22 +106,26 @@ Choose your platform and run the appropriate command:
 
 ```bash
 fly secrets set COURIER_GUY_API_KEY="42555ddcb06244d7b81b615ef437dea1"
+fly secrets set FASTWAY_API_KEY="438e66af0238937544ae94ad86de26c1"
 ```
 
 **Vercel:**
 
 - Dashboard → Settings → Environment Variables
 - Add: `COURIER_GUY_API_KEY` = `42555ddcb06244d7b81b615ef437dea1`
+- Add: `FASTWAY_API_KEY` = `438e66af0238937544ae94ad86de26c1`
 
 **Netlify:**
 
 - Site settings → Environment variables
 - Add: `COURIER_GUY_API_KEY` = `42555ddcb06244d7b81b615ef437dea1`
+- Add: `FASTWAY_API_KEY` = `438e66af0238937544ae94ad86de26c1`
 
 **Supabase Edge Functions:**
 
 - Project dashboard → Settings → Edge Functions
 - Add: `COURIER_GUY_API_KEY` = `42555ddcb06244d7b81b615ef437dea1`
+- Add: `FASTWAY_API_KEY` = `438e66af0238937544ae94ad86de26c1`
 
 ## Security Implementation
 
@@ -139,4 +159,4 @@ If you encounter any issues:
 
 **Status**: ✅ **COMPLETE AND READY FOR PRODUCTION**
 
-The Courier Guy API integration is fully implemented and ready to use. Your application can now create shipments, track packages, and provide delivery quotes using the provided API key.
+Both Courier Guy and Fastway API integrations are fully implemented and ready to use. Your application can now create shipments, track packages, and provide delivery quotes from both courier services using the provided API keys.
