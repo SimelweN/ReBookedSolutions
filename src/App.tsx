@@ -105,6 +105,7 @@ function App() {
                       path="/study-resources"
                       element={<StudyResources />}
                     />
+                    <Route path="/study-tips" element={<StudyResources />} />
 
                     {/* Shopping and Cart Routes */}
                     <Route path="/cart" element={<Cart />} />
