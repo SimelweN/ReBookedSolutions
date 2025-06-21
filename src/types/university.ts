@@ -57,6 +57,13 @@ export interface University {
   studentPopulation?: number;
   campuses?: string[];
   type?: string;
+  scoringSystem?:
+    | "standard"
+    | "uct-fps"
+    | "wits-composite"
+    | "stellenbosch-tpt"
+    | "rhodes-average"
+    | "unisa-custom";
 }
 
 // APS Calculator Types
@@ -78,6 +85,18 @@ export interface APSCalculation {
   subjects: APSSubject[];
   totalScore: number;
   eligibleDegrees: EligibleDegree[];
+  universitySpecificScores?: UniversityAPSResult[];
+}
+
+export interface UniversityAPSResult {
+  universityId: string;
+  universityName: string;
+  score: number;
+  maxScore: number;
+  explanation: string;
+  methodology: string;
+  isEligible?: boolean;
+  programSpecificScore?: number;
 }
 
 // Bursary Types
