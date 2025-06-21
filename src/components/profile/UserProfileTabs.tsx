@@ -5,6 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Edit,
   Trash2,
@@ -18,6 +21,9 @@ import {
   BookOpen,
   MessageSquare,
   Calendar,
+  Shield,
+  UserX,
+  Pause,
 } from "lucide-react";
 import { Book } from "@/types/book";
 import ProfileEditDialog from "@/components/ProfileEditDialog";
