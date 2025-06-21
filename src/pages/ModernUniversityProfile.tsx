@@ -38,9 +38,8 @@ import CampusNavbar from "@/components/CampusNavbar";
 import SEO from "@/components/SEO";
 
 const ModernUniversityProfile: React.FC = () => {
-  const [searchParams] = useSearchParams();
+  const { id: universityId } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const universityId = searchParams.get("id");
   const [selectedFaculty, setSelectedFaculty] = useState<string | null>(null);
 
   // Find the university
