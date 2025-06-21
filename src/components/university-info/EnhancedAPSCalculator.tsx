@@ -384,7 +384,11 @@ const EnhancedAPSCalculator: React.FC = () => {
               <div className="font-medium mb-2">Please fix these issues:</div>
               <ul className="list-disc list-inside space-y-1 text-sm">
                 {validationErrors.map((error, i) => (
-                  <li key={i}>{error}</li>
+                  <li key={i}>
+                    {typeof error === "string"
+                      ? error
+                      : error.message || "Validation error"}
+                  </li>
                 ))}
               </ul>
             </AlertDescription>
@@ -398,7 +402,11 @@ const EnhancedAPSCalculator: React.FC = () => {
               <div className="font-medium mb-2">Recommendations:</div>
               <ul className="list-disc list-inside space-y-1 text-sm">
                 {validationWarnings.map((warning, i) => (
-                  <li key={i}>{warning}</li>
+                  <li key={i}>
+                    {typeof warning === "string"
+                      ? warning
+                      : warning.message || "Validation warning"}
+                  </li>
                 ))}
               </ul>
             </AlertDescription>
