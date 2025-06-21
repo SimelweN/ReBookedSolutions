@@ -435,7 +435,7 @@ export function calculateUniversitySpecificAPS(
     { id: "unisa", calculator: () => calculateUNISAScore(subjects) },
   ];
 
-  // Other universities using standard APS
+  // Other universities using standard APS (All 21 remaining universities)
   const standardAPSUniversities = [
     { id: "up", name: "University of Pretoria" },
     { id: "uj", name: "University of Johannesburg" },
@@ -446,6 +446,18 @@ export function calculateUniversitySpecificAPS(
     { id: "ukzn", name: "University of KwaZulu-Natal" },
     { id: "ufs", name: "University of the Free State" },
     { id: "uwc", name: "University of the Western Cape" },
+    { id: "ufh", name: "University of Fort Hare" },
+    { id: "cput", name: "Cape Peninsula University of Technology" },
+    { id: "vut", name: "Vaal University of Technology" },
+    { id: "cut", name: "Central University of Technology" },
+    { id: "ul", name: "University of Limpopo" },
+    { id: "univen", name: "University of Venda" },
+    { id: "wsu", name: "Walter Sisulu University" },
+    { id: "smu", name: "Sefako Makgatho Health Sciences University" },
+    { id: "ump", name: "University of Mpumalanga" },
+    { id: "unizulu", name: "University of Zululand" },
+    { id: "nmu", name: "Nelson Mandela University" },
+    { id: "spu", name: "Sol Plaatje University" },
   ];
 
   // Calculate custom scores
