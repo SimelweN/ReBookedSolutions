@@ -659,23 +659,24 @@ const AdminResourcesTab = ({ className }: AdminResourcesTabProps) => {
           <div className="flex justify-end space-x-2 pt-4">
             {isEditing ? (
               <>
-                <Button
-                  variant="ghost"
-                  onClick={handleCancelEdit}
-                  disabled={isCreating}
-                >
-                  <X className="mr-2 h-4 w-4" />
-                  Cancel
-                </Button>
-                <Button onClick={handleUpdateItem} disabled={isCreating}>
-                  <Save className="mr-2 h-4 w-4" />
-                  {isCreating ? "Updating..." : "Update Item"}
-                </Button>
-              </>
-            ) : (
-              <Button onClick={handleCreateItem} disabled={isCreating}>
-                <Plus className="mr-2 h-4 w-4" />
-                {isCreating ? "Creating..." : "Create Item"}
+                    <Button
+                      type="button"
+                      onClick={handleCreateItem}
+                      disabled={isCreating || !formData.title?.trim() || !formData.description?.trim()}
+                      className="w-full"
+                    >
+                      {isCreating ? (
+                        <>
+                          <Save className="h-4 w-4 mr-2 animate-spin" />
+                          Creating...
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="h-4 w-4 mr-2" />
+                          Create {activeTab === "resources" ? "Resource" : "Tip"}
+                        </>
+                      )}
+                    </Button>
               </Button>
             )}
           </div>
