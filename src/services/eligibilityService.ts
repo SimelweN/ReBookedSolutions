@@ -38,13 +38,13 @@ export interface EligibilityOptions {
 /**
  * Single source of truth for eligibility assessment
  */
-export function assessEligibility(
+export async function assessEligibility(
   course: ComprehensiveCourse,
   universityId: string,
   userAPS: number,
   userSubjects: APSSubject[],
   options: EligibilityOptions = {},
-): EligibilityResult {
+): Promise<EligibilityResult> {
   const {
     maxAPSGap = 5,
     allowAlmostEligible = true,

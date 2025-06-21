@@ -715,7 +715,7 @@ function getExpectedLevel(marks: number): number {
 /**
  * System-wide validation report
  */
-export function generateSystemValidationReport(): {
+export async function generateSystemValidationReport(): Promise<{
   summary: {
     totalCourses: number;
     validCourses: number;
@@ -729,7 +729,7 @@ export function generateSystemValidationReport(): {
     facultyCollisions: ValidationError[];
   };
   recommendations: string[];
-} {
+}> {
   const { COMPREHENSIVE_COURSES } = await import(
     "@/constants/universities/comprehensive-course-database"
   );
