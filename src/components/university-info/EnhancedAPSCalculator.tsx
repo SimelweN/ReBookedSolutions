@@ -72,8 +72,7 @@ import { validateAPSSubjectsEnhanced } from "@/utils/enhancedValidation";
 import UniversitySpecificAPSDisplay from "./UniversitySpecificAPSDisplay";
 
 /**
- * Enhanced APS Calculator addressing critical filtering and validation issues
- * Fixes problems: No APS filtering, silent failures, poor validation, UI issues
+ * Enhanced APS Calculator with university-specific scoring and clean layout
  */
 
 interface APSSubjectInput {
@@ -82,18 +81,6 @@ interface APSSubjectInput {
   level: number;
   points: number;
   isRequired: boolean;
-}
-
-interface ProgramEligibilityDisplay {
-  program: any;
-  isEligible: boolean;
-  apsGap: number;
-  subjectMatch: {
-    hasRequiredSubjects: boolean;
-    missingSubjects: string[];
-    score: number;
-  };
-  competitiveness: "Low" | "Moderate" | "High";
 }
 
 const EnhancedAPSCalculator: React.FC = () => {
@@ -205,11 +192,13 @@ const EnhancedAPSCalculator: React.FC = () => {
     const errors = apsCalculation.validationResult?.errors || [];
     const warnings = apsCalculation.validationResult?.warnings || [];
 
-    const errorMessages = errors.map(error =>
-      typeof error === 'string' ? error : (error?.message || 'Unknown error')
+    const errorMessages = errors.map((error) =>
+      typeof error === "string" ? error : error?.message || "Unknown error",
     );
-    const warningMessages = warnings.map(warning =>
-      typeof warning === 'string' ? warning : (warning?.message || 'Unknown warning')
+    const warningMessages = warnings.map((warning) =>
+      typeof warning === "string"
+        ? warning
+        : warning?.message || "Unknown warning",
     );
 
     setValidationErrors(errorMessages);
@@ -254,7 +243,7 @@ const EnhancedAPSCalculator: React.FC = () => {
 
       // Calculate level and points
       const points = convertPercentageToPoints(marks);
-      const level = points; // In South African system, level often equals points
+      const level = points;
 
       // Determine if subject is typically required
       const isRequired = [
@@ -425,7 +414,8 @@ const EnhancedAPSCalculator: React.FC = () => {
           Calculate Your APS Score
         </h1>
         <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-          Enter your matric results to calculate your Admission Point Score and discover which university programs you qualify for
+          Enter your matric results to calculate your Admission Point Score and
+          discover which university programs you qualify for
         </p>
       </div>
 
@@ -535,8 +525,15 @@ const EnhancedAPSCalculator: React.FC = () => {
                   />
                   {selectedMarks && (
                     <div className="text-sm text-book-600 font-medium">
-                      Level {convertPercentageToPoints(parseFloat(selectedMarks) || 0)}
-                      ({convertPercentageToPoints(parseFloat(selectedMarks) || 0)} points)
+                      Level{" "}
+                      {convertPercentageToPoints(
+                        parseFloat(selectedMarks) || 0,
+                      )}
+                      (
+                      {convertPercentageToPoints(
+                        parseFloat(selectedMarks) || 0,
+                      )}{" "}
+                      points)
                     </div>
                   )}
                 </div>
@@ -581,7 +578,10 @@ const EnhancedAPSCalculator: React.FC = () => {
                             {subject.name}
                           </span>
                           {subject.isRequired && (
-                            <Badge variant="secondary" className="text-xs bg-book-100 text-book-800">
+                            <Badge
+                              variant="secondary"
+                              className="text-xs bg-book-100 text-book-800"
+                            >
                               Core Subject
                             </Badge>
                           )}
@@ -589,9 +589,13 @@ const EnhancedAPSCalculator: React.FC = () => {
                         <div className="flex items-center gap-4 text-sm text-gray-600">
                           <span>{subject.marks}%</span>
                           <span>Level {subject.level}</span>
-                          <span className="font-medium text-book-600">{subject.points} points</span>
+                          <span className="font-medium text-book-600">
+                            {subject.points} points
+                          </span>
                         </div>
-                        {subject.name.toLowerCase().includes("life orientation") && (
+                        {subject.name
+                          .toLowerCase()
+                          .includes("life orientation") && (
                           <span className="text-xs text-gray-500 italic">
                             Required but doesn't count towards APS
                           </span>
@@ -667,141 +671,123 @@ const EnhancedAPSCalculator: React.FC = () => {
 
         {/* University Scores Section */}
         <div className="xl:col-span-3 space-y-6">
-          {apsCalculation.isCalculationValid && apsCalculation.fullCalculation?.universitySpecificScores && (
-            <UniversitySpecificAPSDisplay
-              universityScores={apsCalculation.fullCalculation.universitySpecificScores}
-              standardAPS={apsCalculation.totalAPS}
-            />
-          )}
+          {apsCalculation.isCalculationValid &&
+            apsCalculation.fullCalculation?.universitySpecificScores && (
+              <UniversitySpecificAPSDisplay
+                universityScores={
+                  apsCalculation.fullCalculation.universitySpecificScores
+                }
+                standardAPS={apsCalculation.totalAPS}
+              />
+            )}
 
           {/* Program Search Results */}
-          <Card className="bg-white shadow-sm border border-gray-200">
-            <CardHeader className="pb-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <CardTitle className="flex items-center gap-2 text-xl text-gray-900">
-                    <Target className="h-5 w-5 text-book-600" />
-                    Program Search Results
-                  </CardTitle>
-                  <CardDescription>
-                    {apsCalculation.isCalculationValid
-                      ? `Programs you may qualify for with APS ${apsCalculation.totalAPS}`
-                      : "Complete your subjects above to discover available programs"}
-                  </CardDescription>
-                </div>
+          {searchResults.length > 0 && (
+            <Card className="bg-white shadow-sm border border-gray-200">
+              <CardHeader className="pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <CardTitle className="flex items-center gap-2 text-xl text-gray-900">
+                      <Target className="h-5 w-5 text-book-600" />
+                      Program Search Results
+                    </CardTitle>
+                    <CardDescription>
+                      Programs you may qualify for with APS{" "}
+                      {apsCalculation.totalAPS}
+                    </CardDescription>
+                  </div>
 
-              {/* Enhanced Filters */}
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                >
-                  <Filter className="w-4 h-4 mr-1" />
-                  Filters
-                </Button>
-                {searchResults.length > 0 && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={searchPrograms}
-                    disabled={isLoading}
-                  >
-                    <RefreshCw className="w-4 h-4 mr-1" />
-                    Refresh
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            {/* Advanced Filters */}
-            {showAdvancedFilters && (
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-lg">
-                <div>
-                  <Label className="text-sm font-medium text-slate-700 mb-2 block">
-                    Faculty
-                  </Label>
-                  <Select
-                    value={facultyFilter}
-                    onValueChange={setFacultyFilter}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="All Faculties" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Faculties</SelectItem>
-                      {availableFaculties.map((faculty) => (
-                        <SelectItem key={faculty} value={faculty}>
-                          {faculty}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="text-sm font-medium text-slate-700 mb-2 block">
-                    Sort By
-                  </Label>
-                  <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="eligibility">Eligibility</SelectItem>
-                      <SelectItem value="aps">APS Requirement</SelectItem>
-                      <SelectItem value="name">Name</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex flex-col justify-end">
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      checked={includeAlmostQualified}
-                      onCheckedChange={setIncludeAlmostQualified}
-                    />
-                    <Label className="text-sm">Show almost eligible</Label>
+                  {/* Enhanced Filters */}
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        setShowAdvancedFilters(!showAdvancedFilters)
+                      }
+                    >
+                      <Filter className="w-4 h-4 mr-1" />
+                      Filters
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={searchPrograms}
+                      disabled={isLoading}
+                    >
+                      <RefreshCw className="w-4 h-4 mr-1" />
+                      Refresh
+                    </Button>
                   </div>
                 </div>
-              </div>
-            )}
-          </CardHeader>
 
-          <CardContent>
-            {!apsCalculation.isCalculationValid ? (
-              <div className="text-center py-12">
-                <GraduationCap className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-slate-600 mb-2">
-                  Add your subjects to get started
-                </h3>
-                <p className="text-slate-500">
-                  Enter at least 4 matric subjects to see which programs you
-                  qualify for
-                </p>
-              </div>
-            ) : searchResults.length === 0 ? (
-              <div className="text-center py-12">
-                <Target className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-slate-600 mb-2">
-                  Click "Find Eligible Programs" to search
-                </h3>
-                <p className="text-slate-500">
-                  We'll search across major universities to find programs you
-                  qualify for
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-6">
+                {/* Advanced Filters */}
+                {showAdvancedFilters && (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                        Faculty Filter
+                      </Label>
+                      <Select
+                        value={facultyFilter}
+                        onValueChange={setFacultyFilter}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="All Faculties" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Faculties</SelectItem>
+                          {availableFaculties.map((faculty) => (
+                            <SelectItem key={faculty} value={faculty}>
+                              {faculty}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                        Sort By
+                      </Label>
+                      <Select value={sortBy} onValueChange={setSortBy}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="eligibility">
+                            Eligibility
+                          </SelectItem>
+                          <SelectItem value="aps">APS Requirement</SelectItem>
+                          <SelectItem value="name">Name</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="almost-qualified"
+                        checked={includeAlmostQualified}
+                        onCheckedChange={setIncludeAlmostQualified}
+                      />
+                      <Label htmlFor="almost-qualified" className="text-sm">
+                        Include Almost Qualified
+                      </Label>
+                    </div>
+                  </div>
+                )}
+              </CardHeader>
+
+              <CardContent>
                 {/* Statistics */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="text-center p-3 bg-green-50 rounded-lg">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  <div className="text-center p-3 bg-green-50 rounded-lg border border-green-200">
                     <div className="text-2xl font-bold text-green-800">
                       {statistics.eligible}
                     </div>
                     <div className="text-sm text-green-600">Eligible</div>
                   </div>
-                  <div className="text-center p-3 bg-yellow-50 rounded-lg">
+                  <div className="text-center p-3 bg-yellow-50 rounded-lg border border-yellow-200">
                     <div className="text-2xl font-bold text-yellow-800">
                       {statistics.almostEligible}
                     </div>
@@ -809,13 +795,13 @@ const EnhancedAPSCalculator: React.FC = () => {
                       Almost Eligible
                     </div>
                   </div>
-                  <div className="text-center p-3 bg-blue-50 rounded-lg">
+                  <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-200">
                     <div className="text-2xl font-bold text-blue-800">
                       {statistics.total}
                     </div>
                     <div className="text-sm text-blue-600">Total Found</div>
                   </div>
-                  <div className="text-center p-3 bg-purple-50 rounded-lg">
+                  <div className="text-center p-3 bg-purple-50 rounded-lg border border-purple-200">
                     <div className="text-2xl font-bold text-purple-800">
                       {statistics.eligibilityRate}%
                     </div>
@@ -831,13 +817,13 @@ const EnhancedAPSCalculator: React.FC = () => {
                       className={`p-4 rounded-lg border-2 transition-all ${
                         program.eligible
                           ? "bg-green-50 border-green-200 hover:bg-green-100"
-                          : "bg-slate-50 border-slate-200 hover:bg-slate-100"
+                          : "bg-gray-50 border-gray-200 hover:bg-gray-100"
                       }`}
                     >
                       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-semibold text-slate-900">
+                            <h4 className="font-semibold text-gray-900">
                               {program.name}
                             </h4>
                             {program.eligible && (
@@ -847,12 +833,12 @@ const EnhancedAPSCalculator: React.FC = () => {
                               </Badge>
                             )}
                           </div>
-                          <p className="text-sm text-slate-600 mb-2">
+                          <p className="text-sm text-gray-600 mb-2">
                             {program.universityInfo?.name ||
                               "Unknown University"}{" "}
                             • {program.faculty}
                           </p>
-                          <p className="text-sm text-slate-700 line-clamp-2">
+                          <p className="text-sm text-gray-700 line-clamp-2">
                             {program.description}
                           </p>
                           {!program.eligible && program.apsGap > 0 && (
@@ -883,19 +869,19 @@ const EnhancedAPSCalculator: React.FC = () => {
                   ))}
                 </div>
 
-                {filteredResults.length === 0 && searchResults.length > 0 && (
+                {filteredResults.length === 0 && (
                   <div className="text-center py-8">
-                    <Filter className="h-8 w-8 text-slate-400 mx-auto mb-2" />
-                    <p className="text-slate-600">
+                    <Filter className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-gray-600">
                       No programs match your current filters. Try adjusting your
                       criteria.
                     </p>
                   </div>
                 )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
 
       {/* Program Details Modal */}
@@ -919,17 +905,17 @@ const EnhancedAPSCalculator: React.FC = () => {
                 <h3 className="font-semibold text-green-800">
                   Program Overview
                 </h3>
-                <p className="text-slate-600">{selectedProgram.description}</p>
+                <p className="text-gray-600">{selectedProgram.description}</p>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-slate-500" />
+                    <Clock className="h-4 w-4 text-gray-500" />
                     <span className="text-sm">
                       Duration: {selectedProgram.duration}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Star className="h-4 w-4 text-slate-500" />
+                    <Star className="h-4 w-4 text-gray-500" />
                     <span className="text-sm">
                       APS Required: {selectedProgram.defaultAps}
                     </span>
@@ -976,7 +962,7 @@ const EnhancedAPSCalculator: React.FC = () => {
                         (subject: any, index: number) => (
                           <div
                             key={index}
-                            className="flex justify-between items-center p-2 bg-slate-50 rounded"
+                            className="flex justify-between items-center p-2 bg-gray-50 rounded"
                           >
                             <span className="font-medium">{subject.name}</span>
                             <div className="flex items-center gap-2">
@@ -1049,8 +1035,6 @@ const EnhancedAPSCalculator: React.FC = () => {
           </DialogContent>
         </Dialog>
       )}
-        </div>
-      </div>
     </div>
   );
 };
