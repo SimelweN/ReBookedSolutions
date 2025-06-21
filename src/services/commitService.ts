@@ -36,10 +36,19 @@ export const commitBookSale = async (bookId: string): Promise<void> => {
 
     if (bookError) {
       console.error("[CommitService] Error fetching book:", bookError);
-      throw new Error("Failed to fetch book details");
+      console.error("[CommitService] Book ID:", bookId, "User ID:", user.id);
+      throw new Error(
+        `Failed to fetch book details: ${bookError.message || bookError.toString()}`,
+      );
     }
 
     if (!book) {
+      console.warn(
+        "[CommitService] Book not found - ID:",
+        bookId,
+        "User:",
+        user.id,
+      );
       throw new Error(
         "Book not found or you don't have permission to commit this sale",
       );
