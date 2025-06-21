@@ -32,6 +32,33 @@ const AdminListingsTab = ({
   onListingAction,
 }: AdminListingsTabProps) => {
   const isMobile = useIsMobile();
+  const [isClearing, setIsClearing] = useState(false);
+
+  const handleClearAllBooks = async () => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ALL ${listings.length} books? This action cannot be undone.`,
+    );
+
+    if (!confirmed) return;
+
+    setIsClearing(true);
+    try {
+      const result = await clearAllBooks();
+
+      if (result.success) {
+        toast.success(result.message);
+        // Reload the page to refresh listings
+        window.location.reload();
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error("Error clearing books:", error);
+      toast.error("Failed to clear books");
+    } finally {
+      setIsClearing(false);
+    }
+  };
 
   if (!listings || listings.length === 0) {
     return (
