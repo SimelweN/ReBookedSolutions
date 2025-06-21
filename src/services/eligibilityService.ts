@@ -1,5 +1,8 @@
 import { APSSubject } from "@/types/university";
-import { ComprehensiveCourse } from "@/constants/universities/comprehensive-course-database";
+import {
+  ComprehensiveCourse,
+  getAPSRequirement,
+} from "@/constants/universities/comprehensive-course-database";
 import { checkSubjectRequirements } from "./subjectMatchingService";
 import { logError } from "./systemMonitoringService";
 
@@ -38,13 +41,13 @@ export interface EligibilityOptions {
 /**
  * Single source of truth for eligibility assessment
  */
-export async function assessEligibility(
+export function assessEligibility(
   course: ComprehensiveCourse,
   universityId: string,
   userAPS: number,
   userSubjects: APSSubject[],
   options: EligibilityOptions = {},
-): Promise<EligibilityResult> {
+): EligibilityResult {
   const {
     maxAPSGap = 5,
     allowAlmostEligible = true,
@@ -62,9 +65,6 @@ export async function assessEligibility(
     }
 
     // Get APS requirement for this university
-    const { getAPSRequirement } = await import(
-      "@/constants/universities/comprehensive-course-database"
-    );
     const requiredAPS = getAPSRequirement(course, universityId);
 
     // APS Assessment
