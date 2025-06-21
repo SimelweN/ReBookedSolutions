@@ -19,8 +19,9 @@ export interface UserAPSProfile {
   subjects: APSSubject[];
   totalAPS: number;
   lastUpdated: string;
-  isValid: boolean;
-  validationErrors: string[];
+  isValid?: boolean;
+  validationErrors?: string[];
+  universitySpecificScores?: import("@/types/university").UniversityAPSResult[];
 }
 
 export interface APSAwareState {
@@ -65,6 +66,7 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
           lastUpdated: new Date().toISOString(),
           isValid: validation.isValid,
           validationErrors: validation.errors,
+          universitySpecificScores: apsCalculation.universitySpecificScores,
         };
 
         setUserProfile(newProfile);
