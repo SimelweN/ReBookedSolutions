@@ -189,8 +189,14 @@ export class ActivityService {
 
         if (notifError) {
           // Check if it's a table not found error
-          if (notifError.code === "42P01" || notifError.message?.includes("relation") || notifError.message?.includes("does not exist")) {
-            console.log("Notifications table does not exist, using sample activities");
+          if (
+            notifError.code === "42P01" ||
+            notifError.message?.includes("relation") ||
+            notifError.message?.includes("does not exist")
+          ) {
+            console.log(
+              "Notifications table does not exist, using sample activities",
+            );
             return this.createSampleActivities(userId);
           }
 
@@ -234,27 +240,6 @@ export class ActivityService {
         );
         return this.createSampleActivities(userId);
       }
-        ) {
-          activityType = "sale";
-        } else if (cleanTitle.toLowerCase().includes("listing")) {
-          activityType = "listing_created";
-        } else if (cleanTitle.toLowerCase().includes("profile")) {
-          activityType = "profile_updated";
-        } else if (cleanTitle.toLowerCase().includes("login")) {
-          activityType = "login";
-        }
-
-        return {
-          id: notif.id,
-          user_id: notif.user_id,
-          type: activityType,
-          title: cleanTitle,
-          description: cleanDescription,
-          metadata:
-            Object.keys(parsedMetadata).length > 0 ? parsedMetadata : undefined,
-          created_at: notif.created_at,
-        };
-      });
     } catch (error) {
       this.logDetailedError("Error fetching user activities", error);
       return [];
@@ -337,7 +322,11 @@ export class ActivityService {
     } else if (typeof error === "object" && error !== null) {
       // Handle Supabase errors and other objects
       const errorObj = error as any;
-      errorMessage = errorObj.message || errorObj.error_description || errorObj.msg || JSON.stringify(error);
+      errorMessage =
+        errorObj.message ||
+        errorObj.error_description ||
+        errorObj.msg ||
+        JSON.stringify(error);
       errorDetails = errorObj.details || errorObj.hint || errorObj.code;
       errorStack = errorObj.stack;
     } else if (typeof error === "string") {
