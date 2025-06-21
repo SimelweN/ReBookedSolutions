@@ -4,7 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { MapPin, CheckCircle, XCircle, RefreshCw } from "lucide-react";
+import {
+  MapPin,
+  CheckCircle,
+  XCircle,
+  RefreshCw,
+  AlertTriangle,
+} from "lucide-react";
 
 const MapsTest = () => {
   const [apiKey, setApiKey] = useState<string | null>(null);
