@@ -138,7 +138,7 @@ const extractUniversityPrograms = () => {
 
     if (import.meta.env.DEV && programs.length > 0) {
       console.log(
-        `✅ Extracted ${programs.length} programs from massive course database`,
+        `✅ Extracted ${programs.length} programs from comprehensive course database`,
       );
     }
   } catch (error) {
