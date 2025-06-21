@@ -275,6 +275,133 @@ function useSessionStorage<T>(key: string, initialValue: T) {
   return [storedValue, setValue] as const;
 }
 
+export function useAPSAwareCourseAssignment(universityId?: string) {
+  // Temporary user APS profile (session only)
+  const [userProfile, setUserProfile] =
+    useSessionStorage<UserAPSProfile | null>("userAPSProfile", null);
+
+  // Component state
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [lastSearchResults, setLastSearchResults] =
+    useState<CoursesForUniversityResult | null>(null);
+
+  /**
+   * Update user's APS subjects and recalculate profile
+   */
+  const updateUserSubjects = useCallback(
+    async (subjects: APSSubject[]) => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        // Validate subjects
+        const validation = validateAPSSubjects(subjects);
+        if (!validation.isValid) {
+          setError(validation.errors.join("; "));
+          return false;
+        }
+
+        // Calculate total APS
+        const totalAPS = calculateAPS(subjects);
+
+        // Create profile
+        const profile: UserAPSProfile = {
+          subjects,
+          totalAPS,
+          lastUpdated: new Date().toISOString(),
+          isValid: true,
+        };
+
+        // Save to session storage
+        setUserProfile(profile);
+        return true;
+      } catch (error) {
+        console.error("Error updating user subjects:", error);
+        setError("Failed to update subjects. Please try again.");
+        return false;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [setUserProfile]
+  );
+
+  /**
+   * Search courses for a specific university using user's APS
+   */
+  const searchCoursesForUniversity = useCallback(
+    async (targetUniversityId: string) => {
+      if (!userProfile) {
+        console.warn("No user profile available for course search");
+        return [];
+      }
+
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const results = await getUniversityFacultiesWithAPS(
+          targetUniversityId,
+          userProfile.subjects
+        );
+
+        // Cache results for current university
+        if (targetUniversityId === universityId) {
+          setLastSearchResults(results);
+        }
+
+        return results.programs || [];
+      } catch (error) {
+        console.error("Error searching courses:", error);
+        setError("Failed to search courses. Please try again.");
+        return [];
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [userProfile, universityId]
+  );
+
+  /**
+   * Check if user qualifies for a specific program
+   */
+  const checkProgramEligibility = useCallback(
+    (program: any) => {
+      if (!userProfile) return { eligible: false, reason: "No APS profile" };
+
+      try {
+        return assessEligibility(userProfile.subjects, program);
+      } catch (error) {
+        console.error("Error checking eligibility:", error);
+        return { eligible: false, reason: "Error checking eligibility" };
+      }
+    },
+    [userProfile]
+  );
+
+  /**
+   * Clear user's APS profile
+   */
+  const clearAPSProfile = useCallback(() => {
+    try {
+      sessionStorage.removeItem("userAPSProfile");
+      sessionStorage.removeItem("apsSearchResults");
+      setUserProfile(null);
+      setLastSearchResults(null);
+      setError(null);
+    } catch (error) {
+      console.error("Error clearing APS profile:", error);
+    }
+  }, [setUserProfile]);
+
+  /**
+   * Clear any errors
+   */
+  const clearError = useCallback(() => {
+    setError(null);
+  }, []);
+
   return {
     userProfile,
     isLoading,
