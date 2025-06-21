@@ -189,14 +189,8 @@ export class ActivityService {
 
         if (notifError) {
           // Check if it's a table not found error
-          if (
-            notifError.code === "42P01" ||
-            notifError.message?.includes("relation") ||
-            notifError.message?.includes("does not exist")
-          ) {
-            console.log(
-              "Notifications table does not exist, using sample activities",
-            );
+          if (notifError.code === "42P01" || notifError.message?.includes("relation") || notifError.message?.includes("does not exist")) {
+            console.log("Notifications table does not exist, using sample activities");
             return this.createSampleActivities(userId);
           }
 
@@ -240,49 +234,6 @@ export class ActivityService {
         );
         return this.createSampleActivities(userId);
       }
-
-      console.log(
-        `✅ Found ${notifications?.length || 0} activities in notifications table`,
-      );
-
-      // If no notifications found, create sample activities
-      if (!notifications || notifications.length === 0) {
-        console.log("No activities found, creating sample activities");
-        return this.createSampleActivities(userId);
-      }
-
-      // Convert notifications to activities
-      return (notifications || []).map((notif) => {
-        const message = notif.message || "";
-        let activityType: ActivityType = "profile_updated";
-        let cleanDescription = message;
-        let parsedMetadata = {};
-
-        // Try to extract metadata if encoded in message
-        const metaMatch = message.match(/\[META:(.+?)\]$/);
-        if (metaMatch) {
-          try {
-            parsedMetadata = JSON.parse(metaMatch[1]);
-            cleanDescription = cleanDescription.replace(/\s*\[META:.+?\]$/, "");
-          } catch (e) {
-            // Ignore parsing errors
-          }
-        }
-
-        // Extract activity type from title
-        const title = notif.title || "";
-        const titleMatch = title.match(/^Activity:\s*(.+)$/);
-        const cleanTitle = titleMatch ? titleMatch[1] : title;
-
-        // Determine activity type based on title/message content
-        if (
-          cleanTitle.toLowerCase().includes("purchase") ||
-          cleanDescription.toLowerCase().includes("bought")
-        ) {
-          activityType = "purchase";
-        } else if (
-          cleanTitle.toLowerCase().includes("sale") ||
-          cleanDescription.toLowerCase().includes("sold")
         ) {
           activityType = "sale";
         } else if (cleanTitle.toLowerCase().includes("listing")) {
@@ -386,11 +337,7 @@ export class ActivityService {
     } else if (typeof error === "object" && error !== null) {
       // Handle Supabase errors and other objects
       const errorObj = error as any;
-      errorMessage =
-        errorObj.message ||
-        errorObj.error_description ||
-        errorObj.msg ||
-        JSON.stringify(error);
+      errorMessage = errorObj.message || errorObj.error_description || errorObj.msg || JSON.stringify(error);
       errorDetails = errorObj.details || errorObj.hint || errorObj.code;
       errorStack = errorObj.stack;
     } else if (typeof error === "string") {
