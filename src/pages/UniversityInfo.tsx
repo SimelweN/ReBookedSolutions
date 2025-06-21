@@ -38,6 +38,8 @@ import {
   Star,
   CheckCircle,
   Home,
+  Lock,
+  Bell,
 } from "lucide-react";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES as SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/index";
 import {
