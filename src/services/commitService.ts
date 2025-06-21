@@ -10,6 +10,29 @@ export interface CommitData {
 }
 
 /**
+ * Helper function to properly log errors with meaningful information
+ */
+const logCommitError = (
+  message: string,
+  error: unknown,
+  context?: Record<string, any>,
+) => {
+  const errorInfo = {
+    message: error instanceof Error ? error.message : "Unknown error",
+    code: (error as any)?.code || "unknown",
+    details:
+      (error as any)?.details ||
+      (error as any)?.hint ||
+      "No additional details",
+    stack: error instanceof Error ? error.stack : undefined,
+    context: context || {},
+    timestamp: new Date().toISOString(),
+  };
+
+  console.error(`[CommitService] ${message}:`, errorInfo);
+};
+
+/**
  * Commits a book sale within the 48-hour window
  * Updates the book status and triggers delivery process
  */
