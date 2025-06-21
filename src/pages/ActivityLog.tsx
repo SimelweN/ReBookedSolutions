@@ -329,7 +329,84 @@ const ActivityLog = () => {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value={activeTab}>
+            {/* Commits Tab */}
+            <TabsContent value="commits">
+              {pendingCommits.length > 0 ? (
+                <div className="space-y-4">
+                  <Alert className="border-orange-200 bg-orange-50">
+                    <Clock className="h-4 w-4 text-orange-600" />
+                    <AlertDescription className="text-orange-800">
+                      <strong>Pending Commits:</strong> You have{" "}
+                      {pendingCommits.length} sale(s) that require your
+                      commitment within 48 hours.
+                    </AlertDescription>
+                  </Alert>
+
+                  {pendingCommits.map((commit) => (
+                    <div
+                      key={commit.id}
+                      className="bg-white rounded-lg p-4 border border-orange-200 shadow-sm"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-grow">
+                          <h3 className="font-medium text-gray-800 mb-2">
+                            {commit.bookTitle}
+                          </h3>
+                          <p className="text-sm text-gray-600 mb-2">
+                            Buyer: {commit.buyerName} • Price: R{commit.price}
+                          </p>
+                          <div className="flex items-center gap-2 text-sm">
+                            <Clock className="h-4 w-4 text-orange-500" />
+                            <span className="text-orange-600 font-medium">
+                              {Math.max(
+                                0,
+                                Math.floor(
+                                  (new Date(commit.expiresAt).getTime() -
+                                    new Date().getTime()) /
+                                    (1000 * 60 * 60),
+                                ),
+                              )}{" "}
+                              hours remaining
+                            </span>
+                          </div>
+                        </div>
+
+                        <Button
+                          onClick={() => commitBook(commit.bookId)}
+                          disabled={isCommitting}
+                          className="bg-book-600 hover:bg-book-700"
+                        >
+                          {isCommitting ? (
+                            <>
+                              <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                              Committing...
+                            </>
+                          ) : (
+                            <>
+                              <Check className="h-4 w-4 mr-2" />
+                              Commit Sale
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-20">
+                  <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-600 mb-2">
+                    No Pending Commits
+                  </h3>
+                  <p className="text-gray-500">
+                    You don't have any sales waiting for commitment.
+                  </p>
+                </div>
+              )}
+            </TabsContent>
+
+            {/* Other Tabs */}
+            <TabsContent value={activeTab === "commits" ? "all" : activeTab}>
               {isLoading ? (
                 <div className="flex justify-center items-center py-20">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-book-600"></div>
