@@ -2149,7 +2149,7 @@ const SimpleAPSCalculator: React.FC = () => {
               </div>
             </div>
             <div className="bg-slate-800 rounded-xl p-6 text-center border border-slate-700">
-              <Target className="h-8 w-8 text-blue-400 mx-auto mb-3" />
+              <Target className="h-8 w-8 text-book-400 mx-auto mb-3" />
               <div className="text-3xl font-bold text-white mb-1">
                 {stats.eligibilityRate}%
               </div>
