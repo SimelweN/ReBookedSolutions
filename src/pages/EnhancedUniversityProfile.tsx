@@ -61,6 +61,10 @@ import {
   useAPSFilterOptions,
 } from "@/hooks/useAPSAwareCourseAssignment";
 import { assessEligibility } from "@/services/eligibilityService";
+import {
+  getUniversityLogoPath,
+  createLogoFallbackHandler,
+} from "@/utils/universityLogoUtils";
 import "@/styles/university-profile-mobile.css";
 
 /**
@@ -402,35 +406,17 @@ const EnhancedUniversityProfile: React.FC = () => {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
                   <div className="university-logo-container w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-2xl p-3 shadow-lg flex-shrink-0 flex items-center justify-center">
                     <img
-                      src={university.logo || "/university-logos/default.svg"}
+                      src={
+                        getUniversityLogoPath(university.id) ||
+                        university.logo ||
+                        "/university-logos/default.svg"
+                      }
                       alt={`${university.name} logo`}
                       className="w-full h-full object-contain"
-                      onError={(e) => {
-                        const target = e.currentTarget;
-                        if (target.src !== "/university-logos/default.svg") {
-                          target.src = "/university-logos/default.svg";
-                        } else {
-                          // If even default fails, show university initials
-                          target.style.display = "none";
-                          const fallback = target.parentElement;
-                          if (
-                            fallback &&
-                            !fallback.querySelector(".fallback-text")
-                          ) {
-                            const textElement = document.createElement("div");
-                            textElement.className =
-                              "fallback-text text-book-600 font-bold text-base sm:text-lg flex items-center justify-center w-full h-full text-center";
-                            // Create initials from university name
-                            const initials = university.name
-                              .split(" ")
-                              .map((word) => word.charAt(0).toUpperCase())
-                              .join("")
-                              .slice(0, 3);
-                            textElement.textContent = initials;
-                            fallback.appendChild(textElement);
-                          }
-                        }
-                      }}
+                      onError={createLogoFallbackHandler(
+                        university.id,
+                        university.name,
+                      )}
                     />
                   </div>
                   <div className="flex-1 min-w-0">
