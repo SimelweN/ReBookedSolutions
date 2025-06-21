@@ -54,11 +54,11 @@ import { cn } from "@/lib/utils";
 import { SOUTH_AFRICAN_SUBJECTS } from "@/constants/subjects";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/complete-26-universities";
 import {
-  MASSIVE_COURSE_DATABASE,
-  getUniversitiesForProgram,
+  COMPREHENSIVE_COURSES,
+  getUniversitiesForCourse,
   getAPSRequirement,
-  programToDegree,
-} from "@/constants/universities/massive-course-database";
+  courseToDegree,
+} from "@/constants/universities/comprehensive-course-database";
 import { toast } from "sonner";
 
 // Extract all programs from the massive course database
