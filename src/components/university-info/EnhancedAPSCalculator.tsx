@@ -101,6 +101,7 @@ const EnhancedAPSCalculator: React.FC = () => {
     updateUserSubjects,
     searchCoursesForUniversity,
     checkProgramEligibility,
+    clearAPSProfile,
     clearError,
   } = useAPSAwareCourseAssignment();
 
