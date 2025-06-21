@@ -37,4 +37,14 @@ validateSupabaseConfig();
 export const supabase = createClient<Database>(
   ENV.VITE_SUPABASE_URL,
   ENV.VITE_SUPABASE_ANON_KEY,
+  {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true,
+      flowType: "pkce",
+      // Better error handling for failed auth attempts
+      debug: import.meta.env.DEV,
+    },
+  },
 );

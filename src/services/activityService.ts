@@ -35,7 +35,7 @@ export class ActivityService {
       // Log to console
       console.log(`📝 Profile updated for user: ${userId}`);
 
-      // Create notification for profile update
+      // Create notification for profile update (if table exists)
       const { error } = await supabase.from("notifications").insert({
         user_id: userId,
         title: "Profile Updated",
@@ -45,7 +45,22 @@ export class ActivityService {
       });
 
       if (error) {
-        console.warn("Failed to create profile update notification:", error);
+        // Check if it's a table not found error
+        if (
+          error.code === "42P01" ||
+          error.message?.includes("relation") ||
+          error.message?.includes("does not exist") ||
+          error.message?.includes("schema cache")
+        ) {
+          console.log(
+            "📝 Notifications table not available, skipping notification",
+          );
+        } else {
+          console.warn(
+            "⚠️ Failed to create profile update notification:",
+            error.message || error,
+          );
+        }
       } else {
         console.log("✅ Profile update notification created");
       }
@@ -83,7 +98,7 @@ export class ActivityService {
         return { success: true };
       }
 
-      // For important activities, create a notification
+      // For important activities, create a notification (if table exists)
       try {
         const { error: notificationError } = await supabase
           .from("notifications")
@@ -96,20 +111,31 @@ export class ActivityService {
           });
 
         if (notificationError) {
+          // Check if it's a table not found error
+          if (
+            notificationError.code === "42P01" ||
+            notificationError.message?.includes("relation") ||
+            notificationError.message?.includes("does not exist") ||
+            notificationError.message?.includes("schema cache")
+          ) {
+            console.log(
+              "📝 Notifications table not available, activity logged to console only",
+            );
+            return { success: true };
+          }
           throw notificationError;
         }
 
         console.log(`✅ Activity notification created: ${type} - ${title}`);
         return { success: true };
       } catch (notificationError) {
-        this.logDetailedError(
-          "Failed to create activity notification",
-          notificationError,
+        console.warn(
+          "⚠️ Failed to create activity notification:",
+          notificationError.message || notificationError,
         );
         return {
-          success: false,
-          error: "Failed to create activity notification",
-          details: notificationError,
+          success: true, // Don't fail the whole operation for notification issues
+          warning: "Notification not created",
         };
       }
     } catch (error) {
@@ -192,17 +218,19 @@ export class ActivityService {
           if (
             notifError.code === "42P01" ||
             notifError.message?.includes("relation") ||
-            notifError.message?.includes("does not exist")
+            notifError.message?.includes("does not exist") ||
+            notifError.message?.includes("schema cache")
           ) {
             console.log(
-              "Notifications table does not exist, using sample activities",
+              "📝 Notifications table not available, using sample activities",
             );
             return this.createSampleActivities(userId);
           }
 
-          this.logDetailedError(
-            "Error fetching activity notifications",
-            notifError,
+          // Only log errors that aren't table-not-found issues
+          console.warn(
+            "⚠️ Non-critical error fetching notifications, falling back to sample data:",
+            notifError.message || notifError,
           );
           // Return sample activities as fallback
           return this.createSampleActivities(userId);
@@ -353,9 +381,19 @@ export class ActivityService {
         errorObj.message ||
         errorObj.error_description ||
         errorObj.msg ||
-        JSON.stringify(error);
+        "Database operation failed";
       errorDetails = errorObj.details || errorObj.hint || errorObj.code;
       errorStack = errorObj.stack;
+
+      // Better logging for debugging
+      try {
+        console.error(
+          `❌ ${message} - Full error object:`,
+          JSON.stringify(error, null, 2),
+        );
+      } catch (stringifyError) {
+        console.error(`❌ ${message} - Error object (unstringifiable):`, error);
+      }
     } else if (typeof error === "string") {
       errorMessage = error;
     } else {

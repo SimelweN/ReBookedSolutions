@@ -7,6 +7,8 @@ import { ThemeProvider } from "next-themes";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
+import AuthErrorHandler from "./components/AuthErrorHandler";
+import GoogleMapsProvider from "./contexts/GoogleMapsContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
@@ -17,6 +19,10 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import CreateListing from "./pages/CreateListing";
+import GoogleMapsDemo from "./pages/GoogleMapsDemo";
+import MapsTest from "./pages/MapsTest";
+import BasicMapsExample from "./pages/BasicMapsExample";
+import WorkingMapsDemo from "./pages/WorkingMapsDemo";
 import Admin from "./pages/Admin";
 import UniversityInfo from "./pages/UniversityInfo";
 import ModernUniversityProfile from "./pages/ModernUniversityProfile";
@@ -64,12 +70,13 @@ function App() {
   return (
     <ErrorBoundary level="app">
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <AuthProvider>
-            <CartProvider>
-              <Router>
-                <ScrollToTop />
-                <div className="min-h-screen bg-gray-50">
+        <ThemeProvider attribute="class" defaultTheme="light">
+          <GoogleMapsProvider>
+            <AuthProvider>
+              <CartProvider>
+                <Router>
+                  <AuthErrorHandler />
+                  <ScrollToTop />
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/books" element={<BookListing />} />
@@ -121,6 +128,13 @@ function App() {
                     <Route path="/policies" element={<Policies />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
+                    <Route
+                      path="/google-maps-demo"
+                      element={<GoogleMapsDemo />}
+                    />
+                    <Route path="/maps-test" element={<MapsTest />} />
+                    <Route path="/basic-maps" element={<BasicMapsExample />} />
+                    <Route path="/working-maps" element={<WorkingMapsDemo />} />
 
                     {/* Protected Routes */}
                     <Route
@@ -192,10 +206,10 @@ function App() {
 
                     <Route path="*" element={<NotFound />} />
                   </Routes>
-                </div>
-              </Router>
-            </CartProvider>
-          </AuthProvider>
+                </Router>
+              </CartProvider>
+            </AuthProvider>
+          </GoogleMapsProvider>
           {/* Vercel Analytics and Speed Insights */}
           <Analytics />
           <SpeedInsights />

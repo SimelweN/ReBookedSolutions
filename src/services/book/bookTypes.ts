@@ -32,6 +32,7 @@ export interface BookQueryResult {
   grade?: string;
   university_year?: string;
   university?: string;
+  province?: string;
   seller_id: string;
   profiles?: ProfileData | null;
 }
