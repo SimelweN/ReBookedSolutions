@@ -15,7 +15,7 @@ const GoogleMapsContext = createContext<GoogleMapsContextType>({
 
 export const useGoogleMaps = () => {
   const context = useContext(GoogleMapsContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useGoogleMaps must be used within a GoogleMapsProvider");
   }
   return context;
@@ -39,4 +39,4 @@ export const GoogleMapsProvider = ({ children }: GoogleMapsProviderProps) => {
   );
 };
 
-export default GoogleMapsProvider;
+export { GoogleMapsProvider as default };
