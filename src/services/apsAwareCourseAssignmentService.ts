@@ -171,7 +171,9 @@ export function getCoursesForUniversityWithAPS(
         }
 
         // Validate assignment rule structure
-        const ruleValidation = validateCourseAssignmentRule(course);
+        const ruleValidation = validateCourseAssignmentRule(
+          course.assignmentRule,
+        );
         if (!ruleValidation.isValid) {
           logError(
             "assignment",
@@ -561,80 +563,6 @@ export function getUniversityFacultiesWithAPS(
       `Critical error in getUniversityFacultiesWithAPS: ${error}`,
     );
     return result;
-  }
-}
-
-/**
- * Validate assignment rules for a course
- */
-export function validateCourseAssignmentRule(
-  course: ComprehensiveCourse,
-): ProgramAssignmentValidation {
-  const validation: ProgramAssignmentValidation = {
-    isValid: true,
-    errors: [],
-    warnings: [],
-    universityId: "",
-    courseId: course.name || "unknown",
-  };
-
-  try {
-    if (!course.assignmentRule) {
-      validation.isValid = false;
-      validation.errors.push("Assignment rule is missing");
-      return validation;
-    }
-
-    const rule = course.assignmentRule;
-
-    // Validate rule structure
-    if (!rule.type || !["all", "exclude", "include_only"].includes(rule.type)) {
-      validation.isValid = false;
-      validation.errors.push(`Invalid rule type: ${rule.type}`);
-    }
-
-    // Validate university IDs in rule
-    if (rule.type !== "all" && rule.universities) {
-      const validUniversityIds = ALL_SOUTH_AFRICAN_UNIVERSITIES.map(
-        (u) => u.id,
-      );
-      const invalidIds = rule.universities.filter(
-        (id) => !validUniversityIds.includes(id),
-      );
-
-      if (invalidIds.length > 0) {
-        validation.warnings.push(
-          `Invalid university IDs in rule: ${invalidIds.join(", ")}`,
-        );
-      }
-
-      if (rule.universities.length === 0) {
-        validation.warnings.push("Empty university list in assignment rule");
-      }
-    }
-
-    // Validate conflict scenarios
-    if (rule.type === "exclude" && rule.universities) {
-      const excludedCount = rule.universities.length;
-      const totalUniversities = ALL_SOUTH_AFRICAN_UNIVERSITIES.length;
-
-      if (excludedCount >= totalUniversities) {
-        validation.isValid = false;
-        validation.errors.push("Cannot exclude all universities");
-      }
-
-      if (excludedCount > totalUniversities * 0.8) {
-        validation.warnings.push(
-          "Excluding most universities - consider using include_only rule",
-        );
-      }
-    }
-
-    return validation;
-  } catch (error) {
-    validation.isValid = false;
-    validation.errors.push(`Error validating assignment rule: ${error}`);
-    return validation;
   }
 }
 
