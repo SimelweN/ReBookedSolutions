@@ -674,7 +674,7 @@ const ComprehensiveAPSCalculator: React.FC = () => {
                 ) : (
                   <div className="space-y-6">
                     {/* Quick Stats */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
                       <div className="text-center p-3 bg-green-50 rounded-lg">
                         <div className="text-2xl font-bold text-green-800">
                           {stats.eligibleCount}
@@ -689,14 +689,6 @@ const ComprehensiveAPSCalculator: React.FC = () => {
                         </div>
                         <div className="text-sm text-blue-600">
                           Total Programs
-                        </div>
-                      </div>
-                      <div className="text-center p-3 bg-amber-50 rounded-lg">
-                        <div className="text-2xl font-bold text-amber-800">
-                          {Math.round(stats.eligibilityRate)}%
-                        </div>
-                        <div className="text-sm text-amber-600">
-                          Eligibility Rate
                         </div>
                       </div>
                       <div className="text-center p-3 bg-purple-50 rounded-lg">
