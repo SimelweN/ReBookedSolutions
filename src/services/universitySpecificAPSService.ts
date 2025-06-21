@@ -76,7 +76,7 @@ export function calculateUCTScore(subjects: APSSubject[]): UniversityAPSResult {
       universityName: "University of Cape Town",
       score: totalScore,
       maxScore: 54,
-      explanation: `UCT Score: ${totalScore}/54 — calculated using your top 6 subjects with UCT's custom 9-point scale.`,
+      explanation: `UCT Score: ${totalScore} out of 54, calculated using UCT's FPS system based on your top 6 subjects.`,
       methodology: "UCT uses this instead of the normal APS.",
     };
   } catch (error) {
@@ -471,9 +471,10 @@ export function calculateUniversitySpecificAPS(
         explanation: `${name
           .split(" ")
           .map((word) => word.charAt(0).toUpperCase())
-          .join(
-            "",
-          )} APS: ${standardAPS} — calculated using standard 42-point system.`,
+          .join("")} APS: ${standardAPS} out of 42, calculated using ${name
+          .split(" ")
+          .map((word) => word.charAt(0).toUpperCase())
+          .join("")}'s standard APS method.`,
         methodology: `${name
           .split(" ")
           .map((word) => word.charAt(0).toUpperCase())
