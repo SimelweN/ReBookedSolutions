@@ -108,8 +108,8 @@ const extractUniversityPrograms = () => {
       );
     };
 
-    MASSIVE_COURSE_DATABASE.forEach((courseTemplate) => {
-      const applicableUniversities = getUniversitiesForProgram(
+    COMPREHENSIVE_COURSES.forEach((courseTemplate) => {
+      const applicableUniversities = getUniversitiesForCourse(
         courseTemplate.assignmentRule,
       );
 
