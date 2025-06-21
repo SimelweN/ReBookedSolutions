@@ -599,6 +599,9 @@ const ComprehensiveAPSCalculator: React.FC = () => {
                     <div className="text-sm text-green-600">
                       Total APS Score
                     </div>
+                    <div className="text-xs text-slate-500 mt-1">
+                      (Life Orientation not included)
+                    </div>
                   </div>
                 </div>
               </CardContent>
