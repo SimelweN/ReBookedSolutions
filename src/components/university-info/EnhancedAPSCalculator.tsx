@@ -201,15 +201,17 @@ const EnhancedAPSCalculator: React.FC = () => {
 
   // Update validation errors when calculation changes
   useEffect(() => {
-    // Extract message strings from validation error objects
-    const errorMessages = apsCalculation.validationResult.errors.map((error) =>
-      typeof error === "string" ? error : error.message || "Unknown error",
+    // Extract message strings from validation error objects with safety checks
+    const errors = apsCalculation.validationResult?.errors || [];
+    const warnings = apsCalculation.validationResult?.warnings || [];
+
+    const errorMessages = errors.map((error) =>
+      typeof error === "string" ? error : error?.message || "Unknown error",
     );
-    const warningMessages = apsCalculation.validationResult.warnings.map(
-      (warning) =>
-        typeof warning === "string"
-          ? warning
-          : warning.message || "Unknown warning",
+    const warningMessages = warnings.map((warning) =>
+      typeof warning === "string"
+        ? warning
+        : warning?.message || "Unknown warning",
     );
 
     setValidationErrors(errorMessages);
