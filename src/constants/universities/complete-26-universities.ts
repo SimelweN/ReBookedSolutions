@@ -110,6 +110,7 @@ const BASE_UNIVERSITIES: University[] = [
     establishedYear: 1908,
     studentPopulation: 56000,
     type: "Traditional University",
+    scoringSystem: "standard",
     applicationInfo: {
       isOpen: true,
       openingDate: "1 April 2025",
@@ -188,6 +189,7 @@ const BASE_UNIVERSITIES: University[] = [
     establishedYear: 1904,
     studentPopulation: 8500,
     type: "Traditional University",
+    scoringSystem: "rhodes-average",
     applicationInfo: {
       isOpen: true,
       openingDate: "1 April 2025",
