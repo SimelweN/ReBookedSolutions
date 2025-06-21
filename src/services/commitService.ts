@@ -179,6 +179,11 @@ export const getCommitPendingBooks = async (): Promise<any[]> => {
       return [];
     }
 
+    console.log(
+      "[CommitService] Query successful, found books:",
+      books?.length || 0,
+    );
+
     // Filter for books that might need commits (this is simplified logic)
     // In a real system, you'd have proper order status tracking
     const pendingCommits = (books || [])
