@@ -2,6 +2,7 @@ import { Degree } from "@/types/university";
 
 // University-specific program mappings based on actual offerings
 // This ensures only programs that actually exist at each university are included
+// CLEANED: Removed faculty names, marketing phrases, and invalid program IDs
 
 export interface UniversityProgramMapping {
   universityId: string;
@@ -21,25 +22,20 @@ export const FACULTY_STRUCTURES = {
       id: "engineering",
       name: "Faculty of Engineering and the Built Environment",
       commonPrograms: [
-        "bsc-eng-civil",
-        "bsc-eng-mechanical",
-        "bsc-eng-electrical",
-        "bsc-eng-chemical",
-        "bsc-eng-industrial",
-        "bsc-construction-management",
-        "bsc-quantity-surveying",
-        "barch-architecture",
+        "beng-civil",
+        "beng-mechanical",
+        "beng-electrical",
+        "beng-chemical",
+        "beng-industrial",
       ],
     },
     health: {
       id: "health-sciences",
       name: "Faculty of Health Sciences",
       commonPrograms: [
-        "mbchb-medicine-surgery",
-        "bds-dental-surgery",
-        "bpharm-pharmacy",
+        "mbchb-medicine",
         "bsc-physiotherapy",
-        "bns-nursing-science",
+        "bnurs-nursing",
         "bsc-occupational-therapy",
       ],
     },
@@ -52,7 +48,7 @@ export const FACULTY_STRUCTURES = {
         "bcom-economics",
         "bcom-marketing",
         "bcom-business-management",
-        "bsc-actuarial-science",
+        "bcom-human-resources",
       ],
     },
     humanities: {
@@ -72,11 +68,10 @@ export const FACULTY_STRUCTURES = {
       name: "Faculty of Science",
       commonPrograms: [
         "bsc-computer-science",
-        "bsc-mathematics",
+        "bsc-mathematical-sciences",
         "bsc-physics",
         "bsc-chemistry",
         "bsc-biological-sciences",
-        "bsc-statistics",
       ],
     },
     law: {
@@ -90,8 +85,7 @@ export const FACULTY_STRUCTURES = {
       commonPrograms: [
         "bed-foundation-phase",
         "bed-intermediate-phase",
-        "bed-senior-phase",
-        "bed-fet-phase",
+        "bed-senior-fet-phase",
       ],
     },
   },
@@ -102,24 +96,16 @@ export const FACULTY_STRUCTURES = {
       id: "engineering",
       name: "Faculty of Engineering and the Built Environment",
       commonPrograms: [
-        "bsc-eng-civil",
-        "bsc-eng-mechanical",
-        "bsc-eng-electrical",
-        "bsc-eng-industrial",
-        "bsc-construction-management",
-        "bsc-quantity-surveying",
+        "beng-civil",
+        "beng-mechanical",
+        "beng-electrical",
+        "beng-industrial",
       ],
     },
     informationTechnology: {
       id: "information-technology",
       name: "Faculty of Informatics and Design",
-      commonPrograms: [
-        "bit-information-technology",
-        "bsc-computer-science",
-        "bsc-software-engineering",
-        "bis-information-systems",
-        "bdes-graphic-design",
-      ],
+      commonPrograms: ["bsc-computer-science"],
     },
     business: {
       id: "business",
@@ -128,28 +114,18 @@ export const FACULTY_STRUCTURES = {
         "bcom-accounting",
         "bcom-business-management",
         "bcom-marketing",
-        "bcom-human-resource-management",
-        "bcom-logistics",
+        "bcom-human-resources",
       ],
     },
     health: {
       id: "health",
       name: "Faculty of Health and Wellness Sciences",
-      commonPrograms: [
-        "bns-nursing-science",
-        "bsc-environmental-health",
-        "bsc-clinical-technology",
-        "bemc-emergency-medical-care",
-      ],
+      commonPrograms: ["bnurs-nursing", "bsc-medical-laboratory-sciences"],
     },
     appliedSciences: {
       id: "applied-sciences",
       name: "Faculty of Applied Sciences",
-      commonPrograms: [
-        "bsc-biotechnology",
-        "bsc-food-science-technology",
-        "bsc-environmental-science",
-      ],
+      commonPrograms: ["bsc-environmental-science"],
     },
   },
 
@@ -158,22 +134,14 @@ export const FACULTY_STRUCTURES = {
     engineering: {
       id: "engineering",
       name: "Faculty of Engineering and the Built Environment",
-      commonPrograms: [
-        "bsc-eng-civil",
-        "bsc-eng-mechanical",
-        "bsc-eng-electrical",
-        "bsc-eng-mining",
-        "bsc-construction-management",
-        "barch-architecture",
-      ],
+      commonPrograms: ["beng-civil", "beng-mechanical", "beng-electrical"],
     },
     health: {
       id: "health-sciences",
       name: "Faculty of Health Sciences",
       commonPrograms: [
-        "mbchb-medicine-surgery",
-        "bpharm-pharmacy",
-        "bns-nursing-science",
+        "mbchb-medicine",
+        "bnurs-nursing",
         "bsc-physiotherapy",
         "bsc-occupational-therapy",
         "bsc-dietetics",
@@ -187,7 +155,6 @@ export const FACULTY_STRUCTURES = {
         "bcom-finance",
         "bcom-business-management",
         "bcom-marketing",
-        "bpa-public-administration",
       ],
     },
     humanities: {
@@ -197,8 +164,7 @@ export const FACULTY_STRUCTURES = {
         "ba-english",
         "ba-psychology",
         "ba-sociology",
-        "ba-communication-science",
-        "ba-development-studies",
+        "ba-media-communication",
       ],
     },
     science: {
@@ -206,9 +172,8 @@ export const FACULTY_STRUCTURES = {
       name: "Faculty of Science",
       commonPrograms: [
         "bsc-computer-science",
-        "bsc-mathematics",
+        "bsc-mathematical-sciences",
         "bsc-environmental-science",
-        "bsc-geography",
       ],
     },
     education: {
@@ -217,13 +182,14 @@ export const FACULTY_STRUCTURES = {
       commonPrograms: [
         "bed-foundation-phase",
         "bed-intermediate-phase",
-        "bed-senior-phase",
+        "bed-senior-fet-phase",
       ],
     },
   },
 };
 
 // University-specific program mappings
+// CLEANED: Only valid program IDs from comprehensive-programs.ts
 export const UNIVERSITY_PROGRAM_MAPPINGS: UniversityProgramMapping[] = [
   // Traditional Universities
   {
@@ -239,8 +205,6 @@ export const UNIVERSITY_PROGRAM_MAPPINGS: UniversityProgramMapping[] = [
           "bcom-economics",
           "bcom-marketing",
           "bcom-business-management",
-          "bsc-actuarial-science",
-          "bcom-investment-management",
         ],
       },
       {
@@ -248,12 +212,10 @@ export const UNIVERSITY_PROGRAM_MAPPINGS: UniversityProgramMapping[] = [
         name: "Faculty of Engineering and the Built Environment",
         description: "Premier engineering education",
         programIds: [
-          "bsc-eng-civil",
-          "bsc-eng-mechanical",
-          "bsc-eng-electrical",
-          "bsc-eng-chemical",
-          "bsc-construction-management",
-          "barch-architecture",
+          "beng-civil",
+          "beng-mechanical",
+          "beng-electrical",
+          "beng-chemical",
         ],
       },
       {
@@ -261,12 +223,9 @@ export const UNIVERSITY_PROGRAM_MAPPINGS: UniversityProgramMapping[] = [
         name: "Faculty of Health Sciences",
         description: "Leading medical school in Africa",
         programIds: [
-          "mbchb-medicine-surgery",
-          "bpharm-pharmacy",
+          "mbchb-medicine",
           "bsc-physiotherapy",
           "bsc-occupational-therapy",
-          "bsc-speech-language-pathology",
-          "bsc-audiology",
         ],
       },
       {
@@ -280,7 +239,6 @@ export const UNIVERSITY_PROGRAM_MAPPINGS: UniversityProgramMapping[] = [
           "ba-sociology",
           "ba-political-science",
           "ba-philosophy",
-          "ba-archaeology",
         ],
       },
       {
@@ -289,7 +247,7 @@ export const UNIVERSITY_PROGRAM_MAPPINGS: UniversityProgramMapping[] = [
         description: "Natural sciences and mathematics",
         programIds: [
           "bsc-computer-science",
-          "bsc-mathematics",
+          "bsc-mathematical-sciences",
           "bsc-physics",
           "bsc-chemistry",
           "bsc-biological-sciences",
@@ -316,7 +274,6 @@ export const UNIVERSITY_PROGRAM_MAPPINGS: UniversityProgramMapping[] = [
           "bcom-finance",
           "bcom-economics",
           "bcom-business-management",
-          "bsc-actuarial-science",
         ],
       },
       {
@@ -324,12 +281,11 @@ export const UNIVERSITY_PROGRAM_MAPPINGS: UniversityProgramMapping[] = [
         name: "Faculty of Engineering and the Built Environment",
         description: "Leading engineering school",
         programIds: [
-          "bsc-eng-civil",
-          "bsc-eng-mechanical",
-          "bsc-eng-electrical",
-          "bsc-eng-chemical",
-          "bsc-eng-mining",
-          "bsc-eng-industrial",
+          "beng-civil",
+          "beng-mechanical",
+          "beng-electrical",
+          "beng-chemical",
+          "beng-industrial",
         ],
       },
       {
@@ -337,9 +293,7 @@ export const UNIVERSITY_PROGRAM_MAPPINGS: UniversityProgramMapping[] = [
         name: "Faculty of Health Sciences",
         description: "Medical excellence",
         programIds: [
-          "mbchb-medicine-surgery",
-          "bds-dental-surgery",
-          "bpharm-pharmacy",
+          "mbchb-medicine",
           "bsc-physiotherapy",
           "bsc-occupational-therapy",
         ],
@@ -353,8 +307,7 @@ export const UNIVERSITY_PROGRAM_MAPPINGS: UniversityProgramMapping[] = [
           "ba-history",
           "ba-psychology",
           "ba-sociology",
-          "ba-international-relations",
-          "ba-fine-arts",
+          "bfa-fine-art",
         ],
       },
       {
@@ -363,11 +316,10 @@ export const UNIVERSITY_PROGRAM_MAPPINGS: UniversityProgramMapping[] = [
         description: "Research-intensive science education",
         programIds: [
           "bsc-computer-science",
-          "bsc-mathematics",
+          "bsc-mathematical-sciences",
           "bsc-physics",
           "bsc-chemistry",
           "bsc-biological-sciences",
-          "bsc-geology",
         ],
       },
     ],
@@ -380,13 +332,7 @@ export const UNIVERSITY_PROGRAM_MAPPINGS: UniversityProgramMapping[] = [
         id: "humanities",
         name: "Faculty of Humanities",
         description: "African-centered humanities education",
-        programIds: [
-          "ba-english",
-          "bachelor-heritage-studies",
-          "ba-psychology",
-          "ba-sociology",
-          "ba-development-studies",
-        ],
+        programIds: ["ba-english", "ba-psychology", "ba-sociology"],
       },
       {
         id: "natural-agricultural-sciences",
@@ -394,154 +340,72 @@ export const UNIVERSITY_PROGRAM_MAPPINGS: UniversityProgramMapping[] = [
         description: "Science with focus on sustainable development",
         programIds: [
           "bsc-computer-science",
-          "bachelor-data-science",
           "bsc-environmental-science",
-          "bsc-mathematics",
-          "bsc-agriculture-plant-production",
+          "bsc-mathematical-sciences",
         ],
       },
       {
         id: "education",
         name: "Faculty of Education",
-        description: "Teacher training for Northern Cape",
+        description: "Teacher education and development",
         programIds: [
           "bed-foundation-phase",
           "bed-intermediate-phase",
-          "bed-senior-phase",
+          "bed-senior-fet-phase",
+        ],
+      },
+      {
+        id: "management",
+        name: "Faculty of Management and Economic Sciences",
+        description: "Business and economic education",
+        programIds: [
+          "bcom-accounting",
+          "bcom-business-management",
+          "bcom-economics",
         ],
       },
     ],
   },
-  // Universities of Technology
   {
-    universityId: "cput",
+    universityId: "ump",
     availableFaculties: [
       {
-        id: "business-management",
-        name: "Faculty of Business and Management Sciences",
-        description: "Applied business education",
+        id: "agriculture",
+        name: "Faculty of Agriculture and Natural Sciences",
+        description: "Agricultural and environmental sciences",
+        programIds: ["bsc-environmental-science"],
+      },
+      {
+        id: "education",
+        name: "Faculty of Education",
+        description: "Teacher training and development",
+        programIds: [
+          "bed-foundation-phase",
+          "bed-intermediate-phase",
+          "bed-senior-fet-phase",
+        ],
+      },
+      {
+        id: "management",
+        name: "Faculty of Economic and Management Sciences",
+        description: "Business and management education",
         programIds: [
           "bcom-accounting",
           "bcom-business-management",
-          "bcom-marketing",
-          "bcom-human-resource-management",
-          "bcom-tourism-management",
+          "bcom-economics",
         ],
       },
       {
-        id: "engineering",
-        name: "Faculty of Engineering and the Built Environment",
-        description: "Applied engineering solutions",
+        id: "humanities",
+        name: "Faculty of Humanities and Social Sciences",
+        description: "Social sciences and humanities",
         programIds: [
-          "bsc-eng-civil",
-          "bsc-eng-mechanical",
-          "bsc-eng-electrical",
-          "bsc-construction-management",
-          "bsc-quantity-surveying",
-        ],
-      },
-      {
-        id: "informatics-design",
-        name: "Faculty of Informatics and Design",
-        description: "Technology and creative design",
-        programIds: [
-          "bit-information-technology",
-          "bsc-software-engineering",
-          "bdes-graphic-design",
-          "bdes-fashion-design",
-        ],
-      },
-      {
-        id: "health-wellness",
-        name: "Faculty of Health and Wellness Sciences",
-        description: "Applied health sciences",
-        programIds: [
-          "bns-nursing-science",
-          "bsc-environmental-health",
-          "bsc-clinical-technology",
-          "bsc-sports-science",
+          "ba-english",
+          "ba-psychology",
+          "ba-sociology",
+          "bsw-social-work",
         ],
       },
     ],
   },
 ];
-
-// Function to get programs available at a specific university
-export const getUniversityPrograms = (universityId: string): string[] => {
-  const mapping = UNIVERSITY_PROGRAM_MAPPINGS.find(
-    (m) => m.universityId === universityId,
-  );
-  if (!mapping) return [];
-
-  return mapping.availableFaculties.flatMap((faculty) => faculty.programIds);
-};
-
-// Function to get faculty structure for a university type
-export const getFacultyStructure = (
-  universityType: "traditional" | "technology" | "comprehensive",
-) => {
-  return FACULTY_STRUCTURES[universityType];
-};
-
-// Function to validate if a program exists at a university
-export const isProgramAvailable = (
-  universityId: string,
-  programId: string,
-): boolean => {
-  const availablePrograms = getUniversityPrograms(universityId);
-  return availablePrograms.includes(programId);
-};
-
-// Function to get university type based on ID
-export const getUniversityType = (
-  universityId: string,
-): "traditional" | "technology" | "comprehensive" => {
-  const traditionalUniversities = [
-    "uct",
-    "wits",
-    "up",
-    "ukzn",
-    "sun",
-    "ru",
-    "ufh",
-  ];
-  const technologyUniversities = ["cput", "dut", "tut", "vut", "cut", "mut"];
-
-  if (traditionalUniversities.includes(universityId)) return "traditional";
-  if (technologyUniversities.includes(universityId)) return "technology";
-  return "comprehensive";
-};
-
-// Enhanced faculty mapping with correct names for different university types
-export const getCorrectFacultyName = (
-  universityId: string,
-  baseFacultyId: string,
-): string => {
-  const universityType = getUniversityType(universityId);
-  const structure = FACULTY_STRUCTURES[universityType];
-
-  // Find matching faculty structure
-  const facultyKey = Object.keys(structure).find((key) => {
-    const faculty = structure[key as keyof typeof structure];
-    return faculty.id === baseFacultyId || baseFacultyId.includes(key);
-  });
-
-  if (facultyKey) {
-    const faculty = structure[facultyKey as keyof typeof structure];
-    return faculty.name;
-  }
-
-  // Default fallback names
-  const fallbackNames: { [key: string]: string } = {
-    engineering: "Faculty of Engineering",
-    "health-sciences": "Faculty of Health Sciences",
-    commerce: "Faculty of Commerce",
-    humanities: "Faculty of Humanities",
-    science: "Faculty of Science",
-    law: "Faculty of Law",
-    education: "Faculty of Education",
-    "information-technology": "Faculty of Information Technology",
-  };
-
-  return fallbackNames[baseFacultyId] || "Faculty";
-};
