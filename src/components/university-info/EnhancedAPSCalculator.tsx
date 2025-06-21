@@ -155,8 +155,16 @@ const EnhancedAPSCalculator: React.FC = () => {
 
   // Calculate APS with all validations
   const apsCalculation = useMemo(() => {
-    const apsResult = calculateAPS(subjects);
-    const validationResult = validateAPSSubjectsEnhanced(subjects);
+    // Convert APSSubjectInput to APSSubject for calculations
+    const apsSubjects: APSSubject[] = subjects.map((subject) => ({
+      name: subject.name,
+      marks: subject.marks,
+      level: subject.level,
+      points: subject.points,
+    }));
+
+    const apsResult = calculateAPS(apsSubjects);
+    const validationResult = validateAPSSubjectsEnhanced(apsSubjects);
 
     // Calculate university-specific scores for all 26 universities
     const universitySpecificCalculation =
