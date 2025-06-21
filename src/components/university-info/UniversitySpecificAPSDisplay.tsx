@@ -160,6 +160,19 @@ const APSScoreCard: React.FC<APSScoreCardProps> = ({
             </AlertDescription>
           </Alert>
 
+          {/* View Programs Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              navigate(`/university-profile/${score.universityId}`)
+            }
+            className="w-full border-book-600 text-book-600 hover:bg-book-50"
+          >
+            <GraduationCap className="h-4 w-4 mr-2" />
+            View Programs
+          </Button>
+
           {showDetails && (
             <div className="pt-2 border-t">
               <Dialog open={showMethodology} onOpenChange={setShowMethodology}>
