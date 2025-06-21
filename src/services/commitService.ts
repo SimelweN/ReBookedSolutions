@@ -274,7 +274,7 @@ export const handleOverdueCommits = async (): Promise<void> => {
       }
     }
   } catch (error) {
-    console.error("[CommitService] Error handling overdue commits:", error);
+    logCommitError("Error handling overdue commits", error);
     // Don't throw error for background process
   }
 };
