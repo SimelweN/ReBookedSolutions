@@ -81,13 +81,29 @@ const AdminListingsTab = ({
   return (
     <Card>
       <CardHeader className="pb-4">
-        <CardTitle className="text-lg md:text-xl">
-          Book Listings Management
-        </CardTitle>
-        <CardDescription className="text-sm">
-          All listings are auto-approved and go live immediately (
-          {listings.length} total)
-        </CardDescription>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <CardTitle className="text-lg md:text-xl">
+              Book Listings Management
+            </CardTitle>
+            <CardDescription className="text-sm">
+              All listings are auto-approved and go live immediately (
+              {listings.length} total)
+            </CardDescription>
+          </div>
+          <Button
+            onClick={handleClearAllBooks}
+            disabled={isClearing || listings.length === 0}
+            variant="destructive"
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <AlertTriangle className="h-4 w-4" />
+            {isClearing
+              ? "Clearing..."
+              : `Clear All Books (${listings.length})`}
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="p-0 md:p-6">
         <div className="overflow-x-auto">
