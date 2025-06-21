@@ -21,6 +21,11 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { University } from "@/types/university";
 import { useAPSAwareCourseAssignment } from "@/hooks/useAPSAwareCourseAssignment";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { NotificationRequestService } from "@/services/notificationRequestService";
+import { toast } from "sonner";
+import { useState } from "react";
 
 interface UniversityDetailViewProps {
   university: University;
