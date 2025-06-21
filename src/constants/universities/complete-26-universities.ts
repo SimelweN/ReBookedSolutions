@@ -19,7 +19,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Cape Town",
     location: "Cape Town",
     province: "Western Cape",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/uct-fff84c?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/aa876bee812e456d8594f765f547fed4/uct-f42185?format=webp&width=800",
     overview:
       "Africa's leading university, globally ranked for academic excellence and research innovation.",
     website: "https://www.uct.ac.za",
@@ -46,7 +46,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of the Witwatersrand",
     location: "Johannesburg",
     province: "Gauteng",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/wits-e516dc?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/aa876bee812e456d8594f765f547fed4/wits-b10802?format=webp&width=800",
     overview:
       "Leading African research university with a global reputation for academic excellence and innovation.",
     website: "https://www.wits.ac.za",
@@ -73,7 +73,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Stellenbosch University",
     location: "Stellenbosch",
     province: "Western Cape",
-    logo: "https://cdn.builder.io/api/v1/assets/0f22b19c46fe46488c6c8c5a3c15b7b9/stellenbosh-c8c737?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/aa876bee812e456d8594f765f547fed4/stellenbosh-51a11b?format=webp&width=800",
     overview:
       "Research-intensive university with a tradition of academic excellence and innovation in South Africa.",
     website: "https://www.sun.ac.za",
@@ -100,7 +100,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Pretoria",
     location: "Pretoria",
     province: "Gauteng",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/up-d5c0a5?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/aa876bee812e456d8594f765f547fed4/up-dd56d2?format=webp&width=800",
     overview:
       "Top research university in South Africa with comprehensive academic programs and research excellence.",
     website: "https://www.up.ac.za",
@@ -127,7 +127,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of KwaZulu-Natal",
     location: "Durban",
     province: "KwaZulu-Natal",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/ukzn-6666c2?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/aa876bee812e456d8594f765f547fed4/ukzn-bb1a92?format=webp&width=800",
     overview:
       "Leading research university with strong community engagement and academic excellence.",
     website: "https://www.ukzn.ac.za",
@@ -153,7 +153,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of the Free State",
     location: "Bloemfontein",
     province: "Free State",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/ufs-ace12a?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/aa876bee812e456d8594f765f547fed4/ufs-2f8e7a?format=webp&width=800",
     overview:
       "Multi-campus university with strong research focus and comprehensive academic programs.",
     website: "https://www.ufs.ac.za",
@@ -179,7 +179,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Rhodes University",
     location: "Makhanda",
     province: "Eastern Cape",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/rhodes-59a57e?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/aa876bee812e456d8594f765f547fed4/rhodes-9ec680?format=webp&width=800",
     overview:
       "Prestigious small university known for academic excellence and high-quality research output.",
     website: "https://www.ru.ac.za",
@@ -206,7 +206,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "North-West University",
     location: "Potchefstroom",
     province: "North West",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/nwu-1835f1?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/aa876bee812e456d8594f765f547fed4/nwu-dd57fc?format=webp&width=800",
     overview:
       "Multi-campus university providing quality education across diverse academic disciplines.",
     website: "https://www.nwu.ac.za",
@@ -232,7 +232,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of the Western Cape",
     location: "Cape Town",
     province: "Western Cape",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/uwc-08e16e?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/aa876bee812e456d8594f765f547fed4/cape-peninusla-f20516?format=webp&width=800",
     overview:
       "University committed to excellence, equality, and innovation in higher education.",
     website: "https://www.uwc.ac.za",
@@ -258,7 +258,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Fort Hare",
     location: "Alice",
     province: "Eastern Cape",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/ufh-d03b0b?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/aa876bee812e456d8594f765f547fed4/fort-hare-348944?format=webp&width=800",
     overview:
       "Historic university known for producing African leaders and academic excellence.",
     website: "https://www.ufh.ac.za",
@@ -284,7 +284,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Limpopo",
     location: "Polokwane",
     province: "Limpopo",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/limpopo-8a5b3a?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/aa876bee812e456d8594f765f547fed4/limpopo-67f4c6?format=webp&width=800",
     overview:
       "University serving the Limpopo province with focus on African Renaissance and development.",
     website: "https://www.ul.ac.za",
