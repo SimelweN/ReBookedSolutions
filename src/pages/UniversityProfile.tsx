@@ -607,7 +607,7 @@ const UniversityProfile: React.FC = () => {
 
             {/* Student Life Tab */}
             <TabsContent value="student-life">
-              <Card className="bg-white shadow-xl border-0 rounded-2xl">
+              <Card className="bg-white shadow-xl border-0 rounded-2xl relative z-30">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-xl">
                     <Heart className="w-5 h-5 text-book-600" />
