@@ -165,14 +165,6 @@ const BookGrid = ({
                       </span>
                     </div>
 
-                    {/* Province display */}
-                    {book.province && (
-                      <div className="mt-2 flex items-center text-xs text-gray-500">
-                        <MapPin className="h-3 w-3 mr-1" />
-                        {book.province}
-                      </div>
-                    )}
-
                     {/* Commit Button for Seller - even for unavailable books */}
                     {isPendingCommit && isOwner && onCommitBook && (
                       <div className="mt-3 pt-3 border-t border-gray-200">
