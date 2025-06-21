@@ -73,6 +73,12 @@ const ActivityLog = () => {
     loadActivities();
   }, [user, loadActivities]);
 
+  useEffect(() => {
+    if (user) {
+      refreshPendingCommits();
+    }
+  }, [user, refreshPendingCommits]);
+
   const getActivityIcon = (type: string) => {
     switch (type) {
       case "purchase":
