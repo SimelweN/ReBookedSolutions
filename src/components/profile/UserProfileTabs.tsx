@@ -22,7 +22,7 @@ import {
 import { Book } from "@/types/book";
 import ProfileEditDialog from "@/components/ProfileEditDialog";
 import AddressEditDialog from "@/components/AddressEditDialog";
-import SimpleAddressEditDialog from "@/components/SimpleAddressEditDialog";
+import GoogleMapsAddressDialog from "@/components/GoogleMapsAddressDialog";
 import UnavailableBookCard from "@/components/UnavailableBookCard";
 import { UserProfile, AddressData, Address } from "@/types/address";
 
@@ -419,11 +419,13 @@ const UserProfileTabs = ({
 
                   <Button
                     onClick={() => setIsAddressEditDialogOpen(true)}
-                    className="w-full md:w-auto"
+                    className="w-full md:w-auto bg-book-600 hover:bg-book-700"
                     disabled={isLoadingAddress}
                   >
                     <MapPin className="h-4 w-4 mr-2" />
-                    {isLoadingAddress ? "Loading..." : "Edit Addresses"}
+                    {isLoadingAddress
+                      ? "Loading..."
+                      : "🗺️ Set Addresses with Maps"}
                   </Button>
                 </CardContent>
               </Card>
@@ -442,7 +444,7 @@ const UserProfileTabs = ({
       )}
 
       {addressData && onSaveAddresses && (
-        <SimpleAddressEditDialog
+        <GoogleMapsAddressDialog
           isOpen={isAddressEditDialogOpen}
           onClose={() => setIsAddressEditDialogOpen(false)}
           addressData={addressData}
