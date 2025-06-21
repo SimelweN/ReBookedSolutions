@@ -245,6 +245,30 @@ const EnhancedUniversityProfile: React.FC = () => {
     checkProgramEligibility,
   ]);
 
+  // Listen for global APS profile clearing event
+  useEffect(() => {
+    const handleAPSProfileCleared = () => {
+      // Reset faculties data to clean state
+      setFacultiesData((prev) => ({
+        ...prev,
+        statistics: {
+          totalFaculties: prev.faculties.length,
+          totalDegrees: prev.faculties.reduce(
+            (total, faculty) => total + (faculty.degrees?.length || 0),
+            0,
+          ),
+          eligibleDegrees: 0,
+          averageAPS: 0,
+        },
+      }));
+    };
+
+    window.addEventListener("apsProfileCleared", handleAPSProfileCleared);
+    return () => {
+      window.removeEventListener("apsProfileCleared", handleAPSProfileCleared);
+    };
+  }, []);
+
   // Enhanced statistics calculation
   const enhancedStats = useMemo(() => {
     const baseStats = {
