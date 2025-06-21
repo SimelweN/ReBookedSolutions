@@ -872,9 +872,44 @@ const UniversityInfo = () => {
                           Be the first to know when we launch! Get notified
                           about exclusive early access.
                         </p>
-                        <Button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-200">
-                          Notify Me When Available
-                        </Button>
+                        {isAuthenticated ? (
+                          <Button
+                            onClick={handleNotifyRequest}
+                            disabled={notifyLoading}
+                            className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {notifyLoading ? (
+                              <>
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                                Submitting...
+                              </>
+                            ) : (
+                              <>
+                                <Bell className="w-4 h-4 mr-2" />
+                                Notify Me When Available
+                              </>
+                            )}
+                          </Button>
+                        ) : (
+                          <div className="space-y-2">
+                            <Button
+                              disabled
+                              className="bg-gray-400 text-white px-8 py-3 rounded-xl font-semibold cursor-not-allowed"
+                            >
+                              <Lock className="w-4 h-4 mr-2" />
+                              Login Required to Get Notified
+                            </Button>
+                            <p className="text-sm text-gray-500 text-center">
+                              <button
+                                onClick={() => navigate("/login")}
+                                className="text-green-600 hover:underline"
+                              >
+                                Log in
+                              </button>{" "}
+                              to receive notifications
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
