@@ -17,12 +17,18 @@ export const commitBookSale = async (bookId: string): Promise<void> => {
   try {
     console.log("[CommitService] Starting commit process for book:", bookId);
 
+    // Validate input
+    if (!bookId || typeof bookId !== "string") {
+      throw new Error("Invalid book ID provided");
+    }
+
     // Get current user
     const {
       data: { user },
       error: userError,
     } = await supabase.auth.getUser();
     if (userError || !user) {
+      console.error("[CommitService] Authentication error:", userError);
       throw new Error("User not authenticated");
     }
 
