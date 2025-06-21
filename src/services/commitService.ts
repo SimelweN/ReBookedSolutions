@@ -104,15 +104,12 @@ export const commitBookSale = async (bookId: string): Promise<void> => {
       .eq("seller_id", user.id);
 
     if (updateError) {
-      console.error("[CommitService] Error updating book status:", updateError);
-      console.error(
-        "[CommitService] Update details - Book ID:",
+      logCommitError("Error updating book status", updateError, {
         bookId,
-        "User ID:",
-        user.id,
-      );
+        userId: user.id,
+      });
       throw new Error(
-        `Failed to commit sale: ${updateError.message || updateError.toString()}`,
+        `Failed to commit sale: ${updateError.message || "Database update failed"}`,
       );
     }
 
