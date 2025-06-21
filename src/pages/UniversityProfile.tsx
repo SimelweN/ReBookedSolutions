@@ -414,36 +414,37 @@ const UniversityProfile: React.FC = () => {
                           </CardHeader>
 
                           {expandedFaculties.has(faculty.id) && (
-                            <CardContent>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <CardContent className="pt-4">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
                                 {faculty.degrees?.map((degree) => (
                                   <div
                                     key={degree.id}
-                                    className="p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200"
+                                    className="p-3 lg:p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200"
                                   >
-                                    <div className="flex items-start justify-between mb-3">
-                                      <h4 className="font-semibold text-slate-900 leading-tight">
+                                    <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-3 gap-2">
+                                      <h4 className="font-semibold text-slate-900 leading-tight text-sm lg:text-base flex-1">
                                         {degree.name}
                                       </h4>
-                                      <Badge className="bg-book-100 text-book-700 hover:bg-book-200">
+                                      <Badge className="bg-book-100 text-book-700 hover:bg-book-200 text-xs whitespace-nowrap self-start">
                                         APS {degree.apsRequirement}
                                       </Badge>
                                     </div>
 
-                                    <p className="text-sm text-slate-600 mb-3 line-clamp-2">
+                                    <p className="text-xs lg:text-sm text-slate-600 mb-3 line-clamp-2">
                                       {degree.description}
                                     </p>
 
-                                    <div className="flex items-center justify-between text-xs text-slate-500">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 text-xs text-slate-500">
                                       <div className="flex items-center gap-1">
-                                        <Clock className="w-3 h-3" />
-                                        {degree.duration}
+                                        <Clock className="w-3 h-3 flex-shrink-0" />
+                                        <span>{degree.duration}</span>
                                       </div>
                                       <div className="flex items-center gap-1">
-                                        <Briefcase className="w-3 h-3" />
-                                        {degree.careerProspects?.length ||
-                                          0}{" "}
-                                        careers
+                                        <Briefcase className="w-3 h-3 flex-shrink-0" />
+                                        <span>
+                                          {degree.careerProspects?.length || 0}{" "}
+                                          careers
+                                        </span>
                                       </div>
                                     </div>
                                   </div>
