@@ -193,13 +193,10 @@ const AdminStudyResourcesTab = () => {
       };
 
       if (editingResource) {
-        await studyResourcesService.updateStudyResource(
-          editingResource.id,
-          resourcePayload,
-        );
+        await updateStudyResource(editingResource.id, resourcePayload);
         toast.success("Resource updated successfully");
       } else {
-        await studyResourcesService.createStudyResource(resourcePayload);
+        await createStudyResource(resourcePayload);
         toast.success("Resource created successfully");
       }
 
