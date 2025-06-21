@@ -75,7 +75,11 @@ const ActivityLog = () => {
 
   useEffect(() => {
     if (user) {
-      refreshPendingCommits();
+      // Safely attempt to refresh pending commits
+      refreshPendingCommits().catch((error) => {
+        console.warn("Could not load pending commits:", error);
+        // Silently fail to prevent UI crashes
+      });
     }
   }, [user, refreshPendingCommits]);
 
