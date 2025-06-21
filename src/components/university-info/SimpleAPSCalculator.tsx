@@ -1865,7 +1865,7 @@ const getPerformanceLevel = (
   if (aps >= 24)
     return {
       level: "Good",
-      color: "text-blue-600 bg-blue-100",
+      color: "text-book-600 bg-book-100",
       description: "Solid performance - many options available",
     };
   if (aps >= 18)
