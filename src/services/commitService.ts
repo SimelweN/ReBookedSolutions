@@ -218,6 +218,13 @@ export const getCommitPendingBooks = async (): Promise<any[]> => {
       .eq("sold", true)
       .order("created_at", { ascending: true });
 
+    console.log(
+      "[CommitService] Query executed, error:",
+      !!error,
+      "data:",
+      !!books,
+    );
+
     if (error) {
       logCommitError("Error fetching pending books", error, {
         userId: user.id,
