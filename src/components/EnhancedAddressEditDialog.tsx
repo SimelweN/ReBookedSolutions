@@ -15,14 +15,14 @@ import { MapPin, Loader2, Navigation } from "lucide-react";
 import { toast } from "sonner";
 import { Address, AddressData } from "@/types/address";
 import {
-  LoadScript,
   Autocomplete,
   GoogleMap,
   Marker,
-} from "@react-google-maps/api";
+} from '@react-google-maps/api';
+import { useGoogleMaps } from '@/contexts/GoogleMapsContext';
 
-const libraries = ["places"];
-const mapContainerStyle = { width: "100%", height: "300px" };
+const libraries = ['places'];
+const mapContainerStyle = { width: '100%', height: '300px' };
 const defaultCenter = { lat: -26.2041, lng: 28.0473 }; // Johannesburg
 
 interface EnhancedAddressEditDialogProps {
@@ -57,6 +57,9 @@ const EnhancedAddressEditDialog = ({
   const [sameAsPickup, setSameAsPickup] = useState(false);
   const [useGoogleMaps, setUseGoogleMaps] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Google Maps context
+  const googleMapsContext = useGoogleMaps();
 
   // Google Maps refs and state
   const pickupAutocompleteRef = useRef(null);
@@ -123,31 +126,25 @@ const EnhancedAddressEditDialog = ({
     const lng = place.geometry.location.lng();
 
     // Extract address components
-    let street = "",
-      city = "",
-      province = "",
-      postalCode = "";
+    let street = '', city = '', province = '', postalCode = '';
 
     if (place.address_components) {
       for (const component of place.address_components) {
         const types = component.types;
-        if (types.includes("street_number") || types.includes("route")) {
-          street = (street + " " + component.long_name).trim();
-        } else if (
-          types.includes("locality") ||
-          types.includes("administrative_area_level_2")
-        ) {
+        if (types.includes('street_number') || types.includes('route')) {
+          street = (street + ' ' + component.long_name).trim();
+        } else if (types.includes('locality') || types.includes('administrative_area_level_2')) {
           city = component.long_name;
-        } else if (types.includes("administrative_area_level_1")) {
+        } else if (types.includes('administrative_area_level_1')) {
           province = component.long_name;
-        } else if (types.includes("postal_code")) {
+        } else if (types.includes('postal_code')) {
           postalCode = component.long_name;
         }
       }
     }
 
     const newAddress = {
-      street: street || place.formatted_address?.split(",")[0] || "",
+      street: street || place.formatted_address?.split(',')[0] || '',
       city,
       province,
       postalCode,
@@ -161,7 +158,7 @@ const EnhancedAddressEditDialog = ({
       setShippingCoords({ lat, lng });
     }
 
-    console.log("Pickup address selected:", newAddress);
+    console.log('Pickup address selected:', newAddress);
   };
 
   const handleShippingPlaceChanged = () => {
@@ -177,31 +174,25 @@ const EnhancedAddressEditDialog = ({
     const lng = place.geometry.location.lng();
 
     // Extract address components
-    let street = "",
-      city = "",
-      province = "",
-      postalCode = "";
+    let street = '', city = '', province = '', postalCode = '';
 
     if (place.address_components) {
       for (const component of place.address_components) {
         const types = component.types;
-        if (types.includes("street_number") || types.includes("route")) {
-          street = (street + " " + component.long_name).trim();
-        } else if (
-          types.includes("locality") ||
-          types.includes("administrative_area_level_2")
-        ) {
+        if (types.includes('street_number') || types.includes('route')) {
+          street = (street + ' ' + component.long_name).trim();
+        } else if (types.includes('locality') || types.includes('administrative_area_level_2')) {
           city = component.long_name;
-        } else if (types.includes("administrative_area_level_1")) {
+        } else if (types.includes('administrative_area_level_1')) {
           province = component.long_name;
-        } else if (types.includes("postal_code")) {
+        } else if (types.includes('postal_code')) {
           postalCode = component.long_name;
         }
       }
     }
 
     const newAddress = {
-      street: street || place.formatted_address?.split(",")[0] || "",
+      street: street || place.formatted_address?.split(',')[0] || '',
       city,
       province,
       postalCode,
@@ -210,40 +201,27 @@ const EnhancedAddressEditDialog = ({
     setShippingAddress(newAddress);
     setShippingCoords({ lat, lng });
 
-    console.log("Shipping address selected:", newAddress);
+    console.log('Shipping address selected:', newAddress);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validate pickup address
-    if (
-      !pickupAddress.street ||
-      !pickupAddress.city ||
-      !pickupAddress.province ||
-      !pickupAddress.postalCode
-    ) {
+    if (!pickupAddress.street || !pickupAddress.city || !pickupAddress.province || !pickupAddress.postalCode) {
       toast.error("Please fill in all pickup address fields");
       return;
     }
 
     // Validate shipping address if not using same address
-    if (
-      !sameAsPickup &&
-      (!shippingAddress.street ||
-        !shippingAddress.city ||
-        !shippingAddress.province ||
-        !shippingAddress.postalCode)
-    ) {
+    if (!sameAsPickup && (!shippingAddress.street || !shippingAddress.city || !shippingAddress.province || !shippingAddress.postalCode)) {
       toast.error("Please fill in all shipping address fields");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const finalShippingAddress = sameAsPickup
-        ? pickupAddress
-        : shippingAddress;
+      const finalShippingAddress = sameAsPickup ? pickupAddress : shippingAddress;
       await onSave(pickupAddress, finalShippingAddress, sameAsPickup);
       toast.success("Addresses updated successfully!");
       onClose();
@@ -277,11 +255,22 @@ const EnhancedAddressEditDialog = ({
               id="use-google-maps"
               checked={useGoogleMaps}
               onCheckedChange={(checked) => setUseGoogleMaps(checked === true)}
+              disabled={!googleMapsContext.isLoaded}
             />
             <Label htmlFor="use-google-maps" className="text-sm font-medium">
-              🗺️ Use Google Maps for precise address selection (recommended)
+              🗺️ Use Google Maps for precise address selection
+              {googleMapsContext.isLoaded ? " (recommended)" : " (loading...)"}
             </Label>
           </div>
+
+          {/* Google Maps Error */}
+          {googleMapsContext.loadError && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-800">
+                <strong>Maps Error:</strong> Could not load Google Maps. You can still use manual address entry.
+              </p>
+            </div>
+          )}
 
           {/* Pickup Address */}
           <div className="space-y-4">
@@ -290,23 +279,14 @@ const EnhancedAddressEditDialog = ({
               Pickup Address *
             </h3>
 
-            {useGoogleMaps ? (
-              <LoadScript
-                googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
-                libraries={libraries}
-              >
+            {useGoogleMaps && googleMapsContext.isLoaded ? (
                 <div className="space-y-4">
                   <div>
-                    <Label
-                      htmlFor="pickup-google-input"
-                      className="text-sm font-medium"
-                    >
+                    <Label htmlFor="pickup-google-input" className="text-sm font-medium">
                       Search for your pickup address
                     </Label>
                     <Autocomplete
-                      onLoad={(autocomplete) =>
-                        (pickupAutocompleteRef.current = autocomplete)
-                      }
+                      onLoad={(autocomplete) => (pickupAutocompleteRef.current = autocomplete)}
                       onPlaceChanged={handlePickupPlaceChanged}
                     >
                       <Input
@@ -317,8 +297,7 @@ const EnhancedAddressEditDialog = ({
                       />
                     </Autocomplete>
                     <p className="text-xs text-gray-600 mt-1">
-                      Try: "1 Sandton Drive, Sandton" or "V&A Waterfront, Cape
-                      Town"
+                      Try: "1 Sandton Drive, Sandton" or "V&A Waterfront, Cape Town"
                     </p>
                   </div>
 
@@ -326,8 +305,7 @@ const EnhancedAddressEditDialog = ({
                     <div className="space-y-3">
                       <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
                         <p className="text-sm text-green-800">
-                          <strong>✅ Pickup Address Selected:</strong>
-                          <br />
+                          <strong>✅ Pickup Address Selected:</strong><br />
                           {formatAddressForDisplay(pickupAddress)}
                         </p>
                       </div>
@@ -335,16 +313,9 @@ const EnhancedAddressEditDialog = ({
                         mapContainerStyle={mapContainerStyle}
                         center={pickupCoords}
                         zoom={15}
-                      >
-                        <Marker
-                          position={pickupCoords}
-                          title="Pickup Location"
-                        />
-                      </GoogleMap>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </LoadScript>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -352,12 +323,7 @@ const EnhancedAddressEditDialog = ({
                   <Input
                     id="pickup-street"
                     value={pickupAddress.street}
-                    onChange={(e) =>
-                      setPickupAddress({
-                        ...pickupAddress,
-                        street: e.target.value,
-                      })
-                    }
+                    onChange={(e) => setPickupAddress({ ...pickupAddress, street: e.target.value })}
                     placeholder="123 Main Street"
                     required
                   />
@@ -367,12 +333,7 @@ const EnhancedAddressEditDialog = ({
                   <Input
                     id="pickup-city"
                     value={pickupAddress.city}
-                    onChange={(e) =>
-                      setPickupAddress({
-                        ...pickupAddress,
-                        city: e.target.value,
-                      })
-                    }
+                    onChange={(e) => setPickupAddress({ ...pickupAddress, city: e.target.value })}
                     placeholder="Johannesburg"
                     required
                   />
@@ -381,9 +342,7 @@ const EnhancedAddressEditDialog = ({
                   <ProvinceSelector
                     label="Province"
                     value={pickupAddress.province || ""}
-                    onValueChange={(value) =>
-                      setPickupAddress((prev) => ({ ...prev, province: value }))
-                    }
+                    onValueChange={(value) => setPickupAddress((prev) => ({ ...prev, province: value }))}
                     placeholder="Select province"
                     required
                   />
@@ -393,12 +352,7 @@ const EnhancedAddressEditDialog = ({
                   <Input
                     id="pickup-postal"
                     value={pickupAddress.postalCode}
-                    onChange={(e) =>
-                      setPickupAddress({
-                        ...pickupAddress,
-                        postalCode: e.target.value,
-                      })
-                    }
+                    onChange={(e) => setPickupAddress({ ...pickupAddress, postalCode: e.target.value })}
                     placeholder="2000"
                     required
                   />
@@ -427,32 +381,21 @@ const EnhancedAddressEditDialog = ({
                 Shipping Address *
               </h3>
 
-              {useGoogleMaps ? (
-                <LoadScript
-                  googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
-                  libraries={libraries}
-                >
+              {useGoogleMaps && googleMapsContext.isLoaded ? (
                   <div className="space-y-4">
                     <div>
-                      <Label
-                        htmlFor="shipping-google-input"
-                        className="text-sm font-medium"
-                      >
+                      <Label htmlFor="shipping-google-input" className="text-sm font-medium">
                         Search for your shipping address
                       </Label>
                       <Autocomplete
-                        onLoad={(autocomplete) =>
-                          (shippingAutocompleteRef.current = autocomplete)
-                        }
+                        onLoad={(autocomplete) => (shippingAutocompleteRef.current = autocomplete)}
                         onPlaceChanged={handleShippingPlaceChanged}
                       >
                         <Input
                           id="shipping-google-input"
                           placeholder="Start typing your shipping address..."
                           className="w-full"
-                          defaultValue={formatAddressForDisplay(
-                            shippingAddress,
-                          )}
+                          defaultValue={formatAddressForDisplay(shippingAddress)}
                         />
                       </Autocomplete>
                     </div>
@@ -461,25 +404,14 @@ const EnhancedAddressEditDialog = ({
                       <div className="space-y-3">
                         <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
                           <p className="text-sm text-green-800">
-                            <strong>✅ Shipping Address Selected:</strong>
-                            <br />
+                            <strong>✅ Shipping Address Selected:</strong><br />
                             {formatAddressForDisplay(shippingAddress)}
                           </p>
                         </div>
                         <GoogleMap
-                          mapContainerStyle={mapContainerStyle}
-                          center={shippingCoords}
-                          zoom={15}
-                        >
-                          <Marker
-                            position={shippingCoords}
-                            title="Shipping Location"
-                          />
-                        </GoogleMap>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </LoadScript>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -487,12 +419,7 @@ const EnhancedAddressEditDialog = ({
                     <Input
                       id="shipping-street"
                       value={shippingAddress.street}
-                      onChange={(e) =>
-                        setShippingAddress({
-                          ...shippingAddress,
-                          street: e.target.value,
-                        })
-                      }
+                      onChange={(e) => setShippingAddress({ ...shippingAddress, street: e.target.value })}
                       placeholder="123 Main Street"
                       required
                     />
@@ -502,12 +429,7 @@ const EnhancedAddressEditDialog = ({
                     <Input
                       id="shipping-city"
                       value={shippingAddress.city}
-                      onChange={(e) =>
-                        setShippingAddress({
-                          ...shippingAddress,
-                          city: e.target.value,
-                        })
-                      }
+                      onChange={(e) => setShippingAddress({ ...shippingAddress, city: e.target.value })}
                       placeholder="Johannesburg"
                       required
                     />
@@ -516,12 +438,7 @@ const EnhancedAddressEditDialog = ({
                     <ProvinceSelector
                       label="Province"
                       value={shippingAddress.province || ""}
-                      onValueChange={(value) =>
-                        setShippingAddress((prev) => ({
-                          ...prev,
-                          province: value,
-                        }))
-                      }
+                      onValueChange={(value) => setShippingAddress((prev) => ({ ...prev, province: value }))}
                       placeholder="Select province"
                       required
                     />
@@ -531,12 +448,7 @@ const EnhancedAddressEditDialog = ({
                     <Input
                       id="shipping-postal"
                       value={shippingAddress.postalCode}
-                      onChange={(e) =>
-                        setShippingAddress({
-                          ...shippingAddress,
-                          postalCode: e.target.value,
-                        })
-                      }
+                      onChange={(e) => setShippingAddress({ ...shippingAddress, postalCode: e.target.value })}
                       placeholder="2000"
                       required
                     />
