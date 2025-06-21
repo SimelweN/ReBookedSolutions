@@ -16,7 +16,16 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Edit, Trash2, FileText, BookOpen, User } from "lucide-react";
 import { toast } from "sonner";
-import { studyResourcesService } from "@/services/admin/studyResourcesService"; // Corrected import
+import {
+  createStudyResource,
+  updateStudyResource,
+  deleteStudyResource,
+  createStudyTip,
+  updateStudyTip,
+  deleteStudyTip,
+  getStudyResources,
+  getStudyTips,
+} from "@/services/admin/studyResourcesService";
 
 interface StudyResource {
   id: string;
