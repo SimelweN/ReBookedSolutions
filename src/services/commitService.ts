@@ -190,7 +190,11 @@ export const getCommitPendingBooks = async (): Promise<any[]> => {
     );
     return pendingCommits;
   } catch (error) {
-    console.error("[CommitService] Error getting commit pending books:", error);
+    console.error("[CommitService] Exception in getCommitPendingBooks:", {
+      message: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
+      error: typeof error === "object" ? JSON.stringify(error) : String(error),
+    });
     // Return empty array instead of throwing to prevent UI crashes
     return [];
   }
