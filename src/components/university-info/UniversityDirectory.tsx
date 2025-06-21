@@ -23,6 +23,7 @@ import {
 import { SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities";
 
 const UniversityDirectory = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProvince, setSelectedProvince] = useState<string>("all");
 
