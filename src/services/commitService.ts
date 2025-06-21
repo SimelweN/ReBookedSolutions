@@ -129,12 +129,24 @@ export const checkCommitDeadline = (orderCreatedAt: string): boolean => {
  */
 export const getCommitPendingBooks = async (): Promise<any[]> => {
   try {
+    console.log("[CommitService] Starting getCommitPendingBooks...");
+
     const {
       data: { user },
       error: userError,
     } = await supabase.auth.getUser();
-    if (userError || !user) {
-      throw new Error("User not authenticated");
+
+    if (userError) {
+      console.error(
+        "[CommitService] Authentication error:",
+        userError.message || userError,
+      );
+      return [];
+    }
+
+    if (!user) {
+      console.log("[CommitService] No authenticated user found");
+      return [];
     }
 
     // For now, return empty array since the commit system would need
