@@ -663,7 +663,7 @@ const EnhancedUniversityProfile: React.FC = () => {
             {/* Enhanced Programs Tab */}
             <TabsContent value="programs">
               <div className="space-y-6">
-                <div className="bg-white rounded-2xl shadow-xl p-8 relative z-30">
+                <div className="tab-content-mobile bg-white rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8 relative z-30">
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
                     <div>
                       <h2 className="text-2xl font-bold text-slate-900">
