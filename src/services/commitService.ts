@@ -202,6 +202,7 @@ export const getCommitPendingBooks = async (): Promise<any[]> => {
       "[CommitService] Found pending commits:",
       pendingCommits.length,
     );
+    console.log("[CommitService] Returning commits data:", pendingCommits);
     return pendingCommits;
   } catch (error) {
     console.error("[CommitService] Exception in getCommitPendingBooks:", {
