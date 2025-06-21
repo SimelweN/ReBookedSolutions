@@ -413,6 +413,14 @@ const Profile = () => {
                         <Heart className="h-4 w-4 mr-2" />
                         Activity Log
                       </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => setIsTemporarilyAway(!isTemporarilyAway)}
+                      >
+                        <Clock className="h-4 w-4 mr-2" />
+                        {isTemporarilyAway
+                          ? "End Temporary Away"
+                          : "Mark as Temporarily Away"}
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </CardContent>
