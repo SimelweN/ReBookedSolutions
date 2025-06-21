@@ -200,9 +200,9 @@ const UniversityProfile: React.FC = () => {
             <div className="absolute bottom-10 right-20 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
           </div>
 
-          <div className="relative z-10 container mx-auto px-4 py-16">
+          <div className="relative z-10 container mx-auto px-4 py-8 lg:py-16">
             {/* Back Button */}
-            <div className="mb-8">
+            <div className="mb-6 lg:mb-8">
               <Button
                 onClick={handleBack}
                 variant="ghost"
@@ -213,11 +213,11 @@ const UniversityProfile: React.FC = () => {
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-center">
               {/* University Info */}
-              <div className="lg:col-span-2 space-y-6">
-                <div className="flex items-center gap-6">
-                  <div className="w-20 h-20 bg-white rounded-2xl p-3 shadow-lg">
+              <div className="lg:col-span-2 space-y-4 lg:space-y-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-2xl p-3 shadow-lg flex-shrink-0">
                     <img
                       src={university.logo}
                       alt={`${university.name} logo`}
@@ -227,24 +227,24 @@ const UniversityProfile: React.FC = () => {
                       }}
                     />
                   </div>
-                  <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <h1 className="text-4xl lg:text-5xl font-bold text-white">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                      <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white leading-tight">
                         {university.name}
                       </h1>
                       <Badge
                         variant="secondary"
-                        className="bg-white/20 text-white border-white/30 backdrop-blur-sm"
+                        className="bg-white/20 text-white border-white/30 backdrop-blur-sm text-xs sm:text-sm self-start"
                       >
                         {university.type}
                       </Badge>
                     </div>
-                    <p className="text-xl text-white/90 font-medium">
+                    <p className="text-lg sm:text-xl text-white/90 font-medium mb-2">
                       {university.fullName}
                     </p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <MapPin className="w-4 h-4 text-white/80" />
-                      <span className="text-white/80">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-white/80 flex-shrink-0" />
+                      <span className="text-white/80 text-sm sm:text-base">
                         {university.location}, {university.province}
                       </span>
                     </div>
