@@ -462,16 +462,14 @@ const EnhancedUniversityProfile: React.FC = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Button
                       onClick={handleViewBooks}
-                      variant="outline"
-                      className="border-2 border-white text-white hover:bg-white hover:text-slate-800 backdrop-blur-sm w-full text-sm font-medium py-3"
+                      className="bg-white/20 text-white border border-white/40 hover:bg-white/30 w-full text-sm font-semibold py-3 backdrop-blur"
                     >
                       <BookOpen className="w-4 h-4 mr-2" />
                       Books
                     </Button>
                     <Button
                       onClick={handleAPSCalculator}
-                      variant="outline"
-                      className="border-2 border-white text-white hover:bg-white hover:text-slate-800 backdrop-blur-sm w-full text-sm font-medium py-3"
+                      className="bg-white/20 text-white border border-white/40 hover:bg-white/30 w-full text-sm font-semibold py-3 backdrop-blur"
                     >
                       <Calculator className="w-4 h-4 mr-2" />
                       Calculator
