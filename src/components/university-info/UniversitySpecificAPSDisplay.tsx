@@ -96,7 +96,13 @@ const APSScoreCard: React.FC<APSScoreCardProps> = ({
           <div className="flex-1">
             <CardTitle className="text-lg flex items-center gap-2">
               <Building className="h-4 w-4" />
-              {score.universityName}
+              <button
+                onClick={handleUniversityNameClick}
+                className="text-left hover:text-blue-600 hover:underline transition-colors duration-200 font-semibold"
+                title={`View ${score.universityName} profile`}
+              >
+                {score.universityName}
+              </button>
               {isCustomScoring && (
                 <Badge variant="secondary" className="text-xs">
                   Custom Scoring
