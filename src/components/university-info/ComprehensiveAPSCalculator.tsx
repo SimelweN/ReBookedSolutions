@@ -382,10 +382,6 @@ const ComprehensiveAPSCalculator: React.FC = () => {
     const calculatedStats = {
       totalDegrees: processedPrograms.length,
       eligibleCount: eligible.length,
-      eligibilityRate:
-        processedPrograms.length > 0
-          ? (eligible.length / processedPrograms.length) * 100
-          : 0,
       topUniversities: [...new Set(eligible.map((p) => p.abbreviation))].slice(
         0,
         5,
