@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { University } from "@/types/university";
+import { useAPSAwareCourseAssignment } from "@/hooks/useAPSAwareCourseAssignment";
 
 interface UniversityDetailViewProps {
   university: University;
