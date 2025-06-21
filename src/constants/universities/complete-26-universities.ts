@@ -5,13 +5,11 @@ import { getUniversityFaculties } from "./massive-course-database";
  * COMPLETE 26 SOUTH AFRICAN PUBLIC UNIVERSITIES
  *
  * This is the definitive list of all 26 public universities in South Africa
- * with comprehensive program allocation based on the complete course list.
- * Programs are assigned using the comprehensive course allocation system.
- *
- * Note: All faculties are populated via comprehensive assignment - no manual faculty generation.
+ * with comprehensive program allocation based on the massive course database.
+ * Faculties are populated dynamically using the assignment rules.
  */
 
-// Base universities without programs (will be populated by comprehensive assignment)
+// Base universities without programs (will be populated dynamically)
 const BASE_UNIVERSITIES: University[] = [
   // TRADITIONAL UNIVERSITIES (11)
   {
@@ -27,7 +25,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.uct.ac.za",
     studentPortal: "https://www.uct.ac.za/students",
     admissionsContact: "admissions@uct.ac.za",
-    faculties: [], // Will be populated dynamically
+    faculties: [],
     establishedYear: 1829,
     studentPopulation: 29000,
     type: "Traditional University",
@@ -53,7 +51,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.wits.ac.za",
     studentPortal: "https://www.wits.ac.za/students",
     admissionsContact: "admissions@wits.ac.za",
-    faculties: [], // Will be populated dynamically
+    faculties: [],
     establishedYear: 1922,
     studentPopulation: 40000,
     type: "Traditional University",
@@ -79,7 +77,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.sun.ac.za",
     studentPortal: "https://www.sun.ac.za/students",
     admissionsContact: "admissions@sun.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 1918,
     studentPopulation: 32000,
     type: "Traditional University",
@@ -105,7 +103,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.up.ac.za",
     studentPortal: "https://www.up.ac.za/students",
     admissionsContact: "admissions@up.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 1908,
     studentPopulation: 56000,
     type: "Traditional University",
@@ -131,7 +129,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.ukzn.ac.za",
     studentPortal: "https://www.ukzn.ac.za/students",
     admissionsContact: "admissions@ukzn.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 2004,
     studentPopulation: 47000,
     type: "Traditional University",
@@ -157,7 +155,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.ufs.ac.za",
     studentPortal: "https://www.ufs.ac.za/students",
     admissionsContact: "admissions@ufs.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 1904,
     studentPopulation: 38000,
     type: "Traditional University",
@@ -183,7 +181,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.ru.ac.za",
     studentPortal: "https://www.ru.ac.za/students",
     admissionsContact: "admissions@ru.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 1904,
     studentPopulation: 8500,
     type: "Traditional University",
@@ -203,15 +201,15 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "North-West University",
     location: "Potchefstroom",
     province: "North West",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/nwu-071a25?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/nwu-1835f1?format=webp&width=800",
     overview:
-      "Multi-campus university offering diverse academic programs with strong research focus.",
+      "Multi-campus university providing quality education across diverse academic disciplines.",
     website: "https://www.nwu.ac.za",
     studentPortal: "https://www.nwu.ac.za/students",
     admissionsContact: "admissions@nwu.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 2004,
-    studentPopulation: 65000,
+    studentPopulation: 68000,
     type: "Traditional University",
     applicationInfo: {
       isOpen: true,
@@ -224,18 +222,18 @@ const BASE_UNIVERSITIES: University[] = [
   },
   {
     id: "uwc",
-    name: "University of the Western Cape",
+    name: "UWC",
     abbreviation: "UWC",
     fullName: "University of the Western Cape",
     location: "Cape Town",
     province: "Western Cape",
-    logo: "https://cdn.builder.io/api/v1/assets/0f22b19c46fe46488c6c8c5a3c15b7b9/uwc-3ee0b9?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/uwc-08e16e?format=webp&width=800",
     overview:
-      "University with strong community focus and commitment to social justice and transformation.",
+      "University committed to excellence, equality, and innovation in higher education.",
     website: "https://www.uwc.ac.za",
     studentPortal: "https://www.uwc.ac.za/students",
     admissionsContact: "admissions@uwc.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 1960,
     studentPopulation: 24000,
     type: "Traditional University",
@@ -255,13 +253,13 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Fort Hare",
     location: "Alice",
     province: "Eastern Cape",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/fort-hare-cc3cf9?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/ufh-d03b0b?format=webp&width=800",
     overview:
-      "Historic university with proud legacy of African leadership development and academic excellence.",
+      "Historic university known for producing African leaders and academic excellence.",
     website: "https://www.ufh.ac.za",
     studentPortal: "https://www.ufh.ac.za/students",
     admissionsContact: "admissions@ufh.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 1916,
     studentPopulation: 12000,
     type: "Traditional University",
@@ -281,15 +279,15 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Limpopo",
     location: "Polokwane",
     province: "Limpopo",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/limpopo-d4c90b?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/limpopo-8a5b3a?format=webp&width=800",
     overview:
-      "University serving the Limpopo province with focus on rural development and community engagement.",
+      "University serving the Limpopo province with focus on African Renaissance and development.",
     website: "https://www.ul.ac.za",
     studentPortal: "https://www.ul.ac.za/students",
     admissionsContact: "admissions@ul.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 2005,
-    studentPopulation: 25000,
+    studentPopulation: 20000,
     type: "Traditional University",
     applicationInfo: {
       isOpen: true,
@@ -303,19 +301,71 @@ const BASE_UNIVERSITIES: University[] = [
 
   // UNIVERSITIES OF TECHNOLOGY (6)
   {
+    id: "cput",
+    name: "CPUT",
+    abbreviation: "CPUT",
+    fullName: "Cape Peninsula University of Technology",
+    location: "Cape Town",
+    province: "Western Cape",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/cput-ae1c61?format=webp&width=800",
+    overview:
+      "Technology university providing practical education and skills development in the Western Cape.",
+    website: "https://www.cput.ac.za",
+    studentPortal: "https://www.cput.ac.za/students",
+    admissionsContact: "admissions@cput.ac.za",
+    faculties: [],
+    establishedYear: 2005,
+    studentPopulation: 33000,
+    type: "University of Technology",
+    applicationInfo: {
+      isOpen: true,
+      openingDate: "1 May 2025",
+      closingDate: "30 September 2025",
+      academicYear: "2026",
+      applicationFee: "R100",
+      applicationMethod: "Online via CPUT Student Portal",
+    },
+  },
+  {
+    id: "dut",
+    name: "DUT",
+    abbreviation: "DUT",
+    fullName: "Durban University of Technology",
+    location: "Durban",
+    province: "KwaZulu-Natal",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/dut-bac0b6?format=webp&width=800",
+    overview:
+      "Technology university providing career-focused education and innovation in KwaZulu-Natal.",
+    website: "https://www.dut.ac.za",
+    studentPortal: "https://www.dut.ac.za/students",
+    admissionsContact: "admissions@dut.ac.za",
+    faculties: [],
+    establishedYear: 2002,
+    studentPopulation: 32000,
+    type: "University of Technology",
+    applicationInfo: {
+      isOpen: true,
+      openingDate: "1 April 2025",
+      closingDate: "30 September 2025",
+      academicYear: "2026",
+      applicationFee: "R100",
+      applicationMethod: "Online via DUT Student Portal",
+    },
+  },
+  {
     id: "tut",
     name: "TUT",
     abbreviation: "TUT",
     fullName: "Tshwane University of Technology",
     location: "Pretoria",
     province: "Gauteng",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/tut-502ab8?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/tut-bc8adf?format=webp&width=800",
     overview:
-      "Leading university of technology providing career-focused education and practical skills development.",
+      "Large technology university providing practical skills and professional development.",
     website: "https://www.tut.ac.za",
     studentPortal: "https://www.tut.ac.za/students",
     admissionsContact: "admissions@tut.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 2004,
     studentPopulation: 60000,
     type: "University of Technology",
@@ -329,73 +379,21 @@ const BASE_UNIVERSITIES: University[] = [
     },
   },
   {
-    id: "dut",
-    name: "DUT",
-    abbreviation: "DUT",
-    fullName: "Durban University of Technology",
-    location: "Durban",
-    province: "KwaZulu-Natal",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/dut-30eb73?format=webp&width=800",
-    overview:
-      "Technology-focused university with strong industry partnerships and practical learning approach.",
-    website: "https://www.dut.ac.za",
-    studentPortal: "https://www.dut.ac.za/students",
-    admissionsContact: "admissions@dut.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
-    establishedYear: 2002,
-    studentPopulation: 33000,
-    type: "University of Technology",
-    applicationInfo: {
-      isOpen: true,
-      openingDate: "1 April 2025",
-      closingDate: "30 September 2025",
-      academicYear: "2026",
-      applicationFee: "R100",
-      applicationMethod: "Online via DUT Application Portal",
-    },
-  },
-  {
-    id: "cput",
-    name: "CPUT",
-    abbreviation: "CPUT",
-    fullName: "Cape Peninsula University of Technology",
-    location: "Cape Town",
-    province: "Western Cape",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/cape-peninusla-499c5e?format=webp&width=800",
-    overview:
-      "Technology university known for practical, career-oriented programs and industry engagement.",
-    website: "https://www.cput.ac.za",
-    studentPortal: "https://www.cput.ac.za/students",
-    admissionsContact: "admissions@cput.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
-    establishedYear: 2005,
-    studentPopulation: 32000,
-    type: "University of Technology",
-    applicationInfo: {
-      isOpen: true,
-      openingDate: "1 April 2025",
-      closingDate: "30 September 2025",
-      academicYear: "2026",
-      applicationFee: "R100",
-      applicationMethod: "Online via CPUT Student Portal",
-    },
-  },
-  {
     id: "cut",
     name: "CUT",
     abbreviation: "CUT",
     fullName: "Central University of Technology",
     location: "Bloemfontein",
     province: "Free State",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/cut-16c93d?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/cut-73a52d?format=webp&width=800",
     overview:
-      "Technology university focusing on applied research and career-oriented education.",
+      "Technology university focusing on career-oriented education and innovation in the Free State.",
     website: "https://www.cut.ac.za",
     studentPortal: "https://www.cut.ac.za/students",
     admissionsContact: "admissions@cut.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 1981,
-    studentPopulation: 15000,
+    studentPopulation: 13000,
     type: "University of Technology",
     applicationInfo: {
       isOpen: true,
@@ -419,7 +417,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.vut.ac.za",
     studentPortal: "https://www.vut.ac.za/students",
     admissionsContact: "admissions@vut.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 1966,
     studentPopulation: 20000,
     type: "University of Technology",
@@ -445,7 +443,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.mut.ac.za",
     studentPortal: "https://www.mut.ac.za/students",
     admissionsContact: "admissions@mut.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 1979,
     studentPopulation: 13000,
     type: "University of Technology",
@@ -473,7 +471,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.uj.ac.za",
     studentPortal: "https://www.uj.ac.za/students",
     admissionsContact: "admissions@uj.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 2005,
     studentPopulation: 50000,
     type: "Comprehensive University",
@@ -499,7 +497,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.unisa.ac.za",
     studentPortal: "https://www.unisa.ac.za/students",
     admissionsContact: "admissions@unisa.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 1873,
     studentPopulation: 300000,
     type: "Comprehensive University",
@@ -525,7 +523,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.unizulu.ac.za",
     studentPortal: "https://www.unizulu.ac.za/students",
     admissionsContact: "admissions@unizulu.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 1960,
     studentPopulation: 16000,
     type: "Comprehensive University",
@@ -551,7 +549,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.univen.ac.za",
     studentPortal: "https://www.univen.ac.za/students",
     admissionsContact: "admissions@univen.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 1982,
     studentPopulation: 15000,
     type: "Comprehensive University",
@@ -577,7 +575,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.mandela.ac.za",
     studentPortal: "https://www.mandela.ac.za/students",
     admissionsContact: "admissions@mandela.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 2005,
     studentPopulation: 27000,
     type: "Comprehensive University",
@@ -597,15 +595,15 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Walter Sisulu University",
     location: "Mthatha",
     province: "Eastern Cape",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/wsu-a30990?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/walter-sisulu-7f97dc?format=webp&width=800",
     overview:
-      "Comprehensive university serving the Eastern Cape with multiple campuses and diverse programs.",
+      "Multi-campus comprehensive university serving the Eastern Cape with focus on social justice.",
     website: "https://www.wsu.ac.za",
     studentPortal: "https://www.wsu.ac.za/students",
     admissionsContact: "admissions@wsu.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 2005,
-    studentPopulation: 28000,
+    studentPopulation: 27000,
     type: "Comprehensive University",
     applicationInfo: {
       isOpen: true,
@@ -617,7 +615,7 @@ const BASE_UNIVERSITIES: University[] = [
     },
   },
 
-  // SPECIALIZED UNIVERSITIES (3)
+  // NEW GENERATION UNIVERSITIES (3)
   {
     id: "smu",
     name: "SMU",
@@ -625,27 +623,27 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Sefako Makgatho Health Sciences University",
     location: "Pretoria",
     province: "Gauteng",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/sefako-7760a4?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/smu-0d1508?format=webp&width=800",
     overview:
-      "Specialized health sciences university focusing on medical and health-related programs.",
+      "Health sciences university dedicated to training healthcare professionals and medical research.",
     website: "https://www.smu.ac.za",
     studentPortal: "https://www.smu.ac.za/students",
     admissionsContact: "admissions@smu.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 2014,
-    studentPopulation: 6000,
+    studentPopulation: 4000,
     type: "Traditional University",
     applicationInfo: {
       isOpen: true,
       openingDate: "1 April 2025",
-      closingDate: "30 September 2025",
+      closingDate: "31 July 2025",
       academicYear: "2026",
       applicationFee: "R100",
       applicationMethod: "Online via SMU Student Portal",
     },
   },
   {
-    id: "spu",
+    id: "sol",
     name: "SPU",
     abbreviation: "SPU",
     fullName: "Sol Plaatje University",
@@ -657,7 +655,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.spu.ac.za",
     studentPortal: "https://www.spu.ac.za/students",
     admissionsContact: "admissions@spu.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 2013,
     studentPopulation: 3000,
     type: "Traditional University",
@@ -683,7 +681,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.ump.ac.za",
     studentPortal: "https://www.ump.ac.za/students",
     admissionsContact: "admissions@ump.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [],
     establishedYear: 2013,
     studentPopulation: 4000,
     type: "Traditional University",
@@ -698,35 +696,40 @@ const BASE_UNIVERSITIES: University[] = [
   },
 ];
 
-// Apply comprehensive program assignment to all universities
-export const ALL_26_SA_UNIVERSITIES = applyAssignmentRules(
-  BASE_UNIVERSITIES,
-  ALL_COMPREHENSIVE_PROGRAMS,
-);
+/**
+ * Populate university faculties using the massive course database
+ */
+function populateUniversityFaculties(): University[] {
+  return BASE_UNIVERSITIES.map((university) => ({
+    ...university,
+    faculties: getUniversityFaculties(university.id),
+  }));
+}
 
-// Log assignment results in development
-logAssignmentResults(ALL_26_SA_UNIVERSITIES);
-
-// Export for compatibility
-export const ALL_SOUTH_AFRICAN_UNIVERSITIES = ALL_26_SA_UNIVERSITIES;
+/**
+ * FINAL EXPORT: All 26 universities with comprehensive program assignment
+ */
+export const ALL_SOUTH_AFRICAN_UNIVERSITIES = populateUniversityFaculties();
 
 // University counts by type
 export const UNIVERSITY_STATISTICS = {
-  traditional: ALL_26_SA_UNIVERSITIES.filter(
+  traditional: ALL_SOUTH_AFRICAN_UNIVERSITIES.filter(
     (u) => u.type === "Traditional University",
   ).length,
-  technology: ALL_26_SA_UNIVERSITIES.filter(
+  technology: ALL_SOUTH_AFRICAN_UNIVERSITIES.filter(
     (u) => u.type === "University of Technology",
   ).length,
-  comprehensive: ALL_26_SA_UNIVERSITIES.filter(
+  comprehensive: ALL_SOUTH_AFRICAN_UNIVERSITIES.filter(
     (u) => u.type === "Comprehensive University",
   ).length,
-  total: ALL_26_SA_UNIVERSITIES.length,
+  total: ALL_SOUTH_AFRICAN_UNIVERSITIES.length,
 };
 
-console.log(
-  `✅ Complete database loaded: ${ALL_26_SA_UNIVERSITIES.length} South African universities`,
-);
-console.log(
-  `📊 Statistics: ${UNIVERSITY_STATISTICS.traditional} Traditional, ${UNIVERSITY_STATISTICS.technology} Technology, ${UNIVERSITY_STATISTICS.comprehensive} Comprehensive`,
-);
+if (import.meta.env.DEV) {
+  console.log(
+    `✅ Complete database loaded: ${ALL_SOUTH_AFRICAN_UNIVERSITIES.length} South African universities`,
+  );
+  console.log(
+    `📊 Statistics: ${UNIVERSITY_STATISTICS.traditional} Traditional, ${UNIVERSITY_STATISTICS.technology} Technology, ${UNIVERSITY_STATISTICS.comprehensive} Comprehensive`,
+  );
+}
