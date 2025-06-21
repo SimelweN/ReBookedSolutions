@@ -107,8 +107,7 @@ const EnhancedUniversityProfile: React.FC = () => {
         const profileData = state.apsProfile;
         if (profileData?.subjects && profileData.subjects.length >= 4) {
           sessionStorage.setItem("userAPSProfile", JSON.stringify(profileData));
-          // Force a re-render to pick up the new profile
-          window.location.reload();
+          console.log("APS profile restored from navigation state");
         }
       } catch (error) {
         console.error("Failed to restore APS profile:", error);
