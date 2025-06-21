@@ -325,37 +325,41 @@ const UniversityProfile: React.FC = () => {
         </div>
 
         {/* Main Content */}
-        <div className="relative z-20 container mx-auto px-4 -mt-8 pb-16">
-          <Tabs defaultValue="programs" className="space-y-8">
+        <div className="relative z-20 container mx-auto px-4 -mt-4 lg:-mt-8 pb-16">
+          <Tabs defaultValue="programs" className="space-y-6 lg:space-y-8">
             <div className="bg-white rounded-2xl shadow-xl p-2 relative z-30">
-              <TabsList className="grid w-full grid-cols-4 bg-slate-100 rounded-xl">
+              <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 bg-slate-100 rounded-xl gap-1 lg:gap-0">
                 <TabsTrigger
                   value="programs"
-                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg"
+                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 lg:px-4"
                 >
-                  <GraduationCap className="w-4 h-4 mr-2" />
-                  Programs
+                  <GraduationCap className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Programs</span>
+                  <span className="sm:hidden">Degrees</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="admissions"
-                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg"
+                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 lg:px-4"
                 >
-                  <Award className="w-4 h-4 mr-2" />
-                  Admissions
+                  <Award className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Admissions</span>
+                  <span className="sm:hidden">Apply</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="student-life"
-                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg"
+                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 lg:px-4"
                 >
-                  <Heart className="w-4 h-4 mr-2" />
-                  Student Life
+                  <Heart className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Student Life</span>
+                  <span className="sm:hidden">Life</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="resources"
-                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg"
+                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 lg:px-4"
                 >
-                  <Lightbulb className="w-4 h-4 mr-2" />
-                  Resources
+                  <Lightbulb className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Resources</span>
+                  <span className="sm:hidden">Tools</span>
                 </TabsTrigger>
               </TabsList>
             </div>
