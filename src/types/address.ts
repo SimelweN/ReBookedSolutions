@@ -1,10 +1,10 @@
-
 export interface Address {
   street: string;
   city: string;
   province: string;
   postalCode: string;
   streetAddress?: string; // For backend compatibility
+  instructions?: string; // For additional details like unit numbers, gate codes, etc.
 }
 
 export interface AddressData {
