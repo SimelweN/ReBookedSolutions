@@ -117,6 +117,15 @@ export interface BursaryFilters {
   financialNeed?: boolean;
   maxAmount?: number;
   deadline?: string;
+  // Enhanced filtering options
+  minMarks?: number; // Minimum academic marks/percentage
+  maxHouseholdIncome?: number; // Maximum household income
+  genderSpecific?: string; // "male" | "female" | "any"
+  raceSpecific?: string; // "african" | "coloured" | "indian" | "white" | "any"
+  studyLevel?: string; // "undergraduate" | "postgraduate" | "any"
+  disabilitySupport?: boolean; // For students with disabilities
+  ruralBackground?: boolean; // For students from rural areas
+  firstGeneration?: boolean; // First-generation university students
 }
 
 // User-submitted Program Types
