@@ -31,7 +31,7 @@ export const commitBookSale = async (bookId: string): Promise<void> => {
       .from("books")
       .select("*")
       .eq("id", bookId)
-      .eq("user_id", user.id)
+      .eq("seller_id", user.id)
       .single();
 
     if (bookError) {
