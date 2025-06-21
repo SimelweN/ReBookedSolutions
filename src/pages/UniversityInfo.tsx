@@ -73,10 +73,12 @@ const preloadBooksSection = () =>
 const UniversityInfo = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
   const currentTool = searchParams.get("tool") || "overview";
   const selectedUniversityId = searchParams.get("university");
   const [showAllUniversities, setShowAllUniversities] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notifyLoading, setNotifyLoading] = useState(false);
 
   // Early return for testing
   if (import.meta.env.DEV) {
