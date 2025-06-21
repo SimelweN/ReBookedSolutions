@@ -98,6 +98,24 @@ const EnhancedUniversityProfile: React.FC = () => {
     clearError,
   } = useAPSAwareCourseAssignment(universityId);
 
+  // Handle navigation from APS results
+  useEffect(() => {
+    const state = location.state as any;
+    if (state?.fromAPS && state?.apsProfile && !hasValidProfile) {
+      // If coming from APS results but no profile is loaded, restore it
+      try {
+        const profileData = state.apsProfile;
+        if (profileData?.subjects && profileData.subjects.length >= 4) {
+          sessionStorage.setItem("userAPSProfile", JSON.stringify(profileData));
+          // Force a re-render to pick up the new profile
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error("Failed to restore APS profile:", error);
+      }
+    }
+  }, [location.state, hasValidProfile]);
+
   const {
     filterOptions,
     includeAlmostQualified,
