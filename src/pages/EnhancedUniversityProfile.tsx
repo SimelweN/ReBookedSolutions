@@ -181,24 +181,16 @@ const EnhancedUniversityProfile: React.FC = () => {
         const faculties = getUniversityFaculties(universityId);
 
         // Calculate statistics
-        const totalDegrees = faculties.reduce(
-          (total, faculty) => total + (faculty.degrees?.length || 0),
-          0,
-        );
-        const eligibleDegrees = userProfile
-          ? faculties.reduce((total, faculty) => {
-              return (
-                total +
-                (faculty.degrees?.filter((degree) => {
-                  const eligibility = checkProgramEligibility(
-                    degree.apsRequirement,
-                    degree.subjects || [],
-                  );
-                  return eligibility.eligible;
-                }).length || 0)
-              );
-            }, 0)
-          : 0;
+        const totalDegrees = faculties.reduce((total, faculty) => total + (faculty.degrees?.length || 0), 0);
+        const eligibleDegrees = userProfile ? faculties.reduce((total, faculty) => {
+          return total + (faculty.degrees?.filter(degree => {
+            const eligibility = checkProgramEligibility(
+              degree.apsRequirement,
+              degree.subjects || []
+            );
+            return eligibility.eligible;
+          }).length || 0);
+        }, 0) : 0;
 
         // Debug logging
         if (import.meta.env.DEV) {
@@ -774,19 +766,19 @@ const EnhancedUniversityProfile: React.FC = () => {
                   </div>
 
                   {/* Loading State */}
-                  {(isLoading || facultiesData.isLoading) && (
+                  {(apsLoading || facultiesData.isLoading) && (
                     <div className="flex items-center justify-center py-12">
-                      <Loader2 className="w-8 h-8 animate-spin text-book-600" />
-                      <span className="ml-2 text-slate-600">
-                        Loading programs...
-                      </span>
+                      <div className="flex items-center gap-3">
+                        <Loader2 className="h-6 w-6 animate-spin text-green-600" />
+                        <span className="text-gray-600">
+                          Loading university programs...
+                        </span>
+                      </div>
                     </div>
                   )}
 
                   {/* Programs Display */}
-                  {!isLoading && !facultiesData.isLoading && (
-                    <>
-                      {filteredFaculties.length > 0 ? (
+                  {!apsLoading && !facultiesData.isLoading && (
                         <div className="space-y-4">
                           {/* Enhanced Statistics */}
                           {hasValidProfile && qualificationSummary && (
