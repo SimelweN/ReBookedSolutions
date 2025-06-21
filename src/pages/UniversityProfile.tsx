@@ -439,9 +439,7 @@ const UniversityProfile: React.FC = () => {
                             key={uni.id}
                             variant="outline"
                             className="w-full justify-between border border-gray-200 h-11 text-left"
-                            onClick={() =>
-                              navigate(`/university-profile?id=${uni.id}`)
-                            }
+                            onClick={() => navigate(`/university/${uni.id}`)}
                           >
                             <div className="text-gray-900 text-sm font-medium">
                               {uni.abbreviation}
