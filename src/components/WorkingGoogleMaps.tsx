@@ -1,15 +1,15 @@
-import { useRef, useState } from "react";
+import { useRef, useState } from 'react';
 import {
-  LoadScript,
   Autocomplete,
   GoogleMap,
   Marker,
-} from "@react-google-maps/api";
+} from '@react-google-maps/api';
+import { useGoogleMaps } from '@/contexts/GoogleMapsContext';
 
-const libraries = ["places"];
+const libraries = ['places'];
 const containerStyle = {
-  width: "100%",
-  height: "300px",
+  width: '100%',
+  height: '300px',
 };
 
 const defaultCenter = {
@@ -32,11 +32,12 @@ interface WorkingGoogleMapsProps {
 export default function WorkingGoogleMaps({
   onAddressSelect,
   title = "Pickup Address",
-  placeholder = "Start typing an address...",
-}: WorkingGoogleMapsProps) {
+  placeholder = "Start typing an address..."
+}: WorkingGoogleMapsProps) => {
+  const googleMaps = useGoogleMaps();
   const autocompleteRef = useRef(null);
   const [coords, setCoords] = useState(null);
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState('');
 
   const onPlaceChanged = () => {
     const place = autocompleteRef.current.getPlace();
@@ -53,8 +54,8 @@ export default function WorkingGoogleMaps({
     setCoords({ lat, lng });
     setAddress(formattedAddress);
 
-    console.log("Address:", formattedAddress);
-    console.log("Lat:", lat, "Lng:", lng);
+    console.log('Address:', formattedAddress);
+    console.log('Lat:', lat, 'Lng:', lng);
 
     // Call parent callback if provided
     if (onAddressSelect) {
@@ -66,12 +67,28 @@ export default function WorkingGoogleMaps({
     }
   };
 
-  return (
-    <LoadScript
-      googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
-      libraries={libraries}
-    >
+  if (!googleMaps.isLoaded) {
+    return (
       <div className="p-6 max-w-xl mx-auto space-y-4">
+        <div className="text-center">
+          <p>Loading Google Maps...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (googleMaps.loadError) {
+    return (
+      <div className="p-6 max-w-xl mx-auto space-y-4">
+        <div className="text-center text-red-600">
+          <p>Error loading Google Maps</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6 max-w-xl mx-auto space-y-4">
         <h1 className="text-2xl font-bold">{title}</h1>
 
         <Autocomplete
@@ -88,15 +105,9 @@ export default function WorkingGoogleMaps({
         {coords && (
           <>
             <div className="bg-gray-100 p-2 rounded shadow">
-              <p>
-                <strong>Selected Address:</strong> {address}
-              </p>
-              <p>
-                <strong>Latitude:</strong> {coords.lat}
-              </p>
-              <p>
-                <strong>Longitude:</strong> {coords.lng}
-              </p>
+              <p><strong>Selected Address:</strong> {address}</p>
+              <p><strong>Latitude:</strong> {coords.lat}</p>
+              <p><strong>Longitude:</strong> {coords.lng}</p>
             </div>
 
             <GoogleMap
@@ -108,7 +119,6 @@ export default function WorkingGoogleMaps({
             </GoogleMap>
           </>
         )}
-      </div>
-    </LoadScript>
+    </div>
   );
 }
