@@ -8,6 +8,8 @@ import {
 } from "@/constants/universities/comprehensive-course-database";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/complete-26-universities";
 import { calculateAPS, validateAPSSubjects } from "@/utils/apsCalculation";
+import { validateCourseAssignmentRule } from "@/utils/enhancedValidation";
+import { logError } from "./systemMonitoringService";
 
 /**
  * Enhanced APS-aware course assignment service
@@ -118,24 +120,154 @@ export function getCoursesForUniversityWithAPS(
       );
     }
 
-    // Filter courses by assignment rules
-    const applicableCourses = COMPREHENSIVE_COURSES.filter((course) => {
+    // Filter courses by assignment rules with comprehensive error tracking
+    const applicableCourses = COMPREHENSIVE_COURSES.filter((course, index) => {
       try {
-        // Validate course data
-        if (!course || !course.assignmentRule || !course.name) {
-          result.warnings.push(
-            `Invalid course data found, skipping: ${course?.name || "unknown"}`,
+        // Comprehensive course validation
+        if (!course) {
+          logError(
+            "assignment",
+            "high",
+            `Null course found at index ${index}`,
+            { universityId: sanitizedUniversityId },
+          );
+          result.errors.push(`Course ${index} is null or undefined`);
+          return false;
+        }
+
+        if (
+          !course.name ||
+          typeof course.name !== "string" ||
+          course.name.trim().length === 0
+        ) {
+          logError(
+            "assignment",
+            "high",
+            `Course missing name at index ${index}`,
+            {
+              course: course,
+              universityId: sanitizedUniversityId,
+            },
+          );
+          result.errors.push(
+            `Course ${index} has invalid name: "${course.name}"`,
           );
           return false;
+        }
+
+        if (!course.assignmentRule) {
+          logError(
+            "assignment",
+            "critical",
+            `Course "${course.name}" missing assignment rule`,
+            {
+              courseIndex: index,
+              courseName: course.name,
+              universityId: sanitizedUniversityId,
+            },
+          );
+          result.errors.push(`Course "${course.name}" has no assignment rule`);
+          return false;
+        }
+
+        // Validate assignment rule structure
+        const ruleValidation = validateCourseAssignmentRule(course);
+        if (!ruleValidation.isValid) {
+          logError(
+            "assignment",
+            "critical",
+            `Course "${course.name}" has invalid assignment rule`,
+            {
+              courseIndex: index,
+              courseName: course.name,
+              ruleErrors: ruleValidation.errors,
+              universityId: sanitizedUniversityId,
+            },
+          );
+          result.errors.push(
+            `Course "${course.name}" has invalid assignment rule: ${ruleValidation.errors.join(", ")}`,
+          );
+          return false;
+        }
+
+        // Log warnings for rule issues
+        if (ruleValidation.warnings.length > 0) {
+          logError(
+            "assignment",
+            "medium",
+            `Course "${course.name}" has assignment rule warnings`,
+            {
+              courseIndex: index,
+              courseName: course.name,
+              ruleWarnings: ruleValidation.warnings,
+              universityId: sanitizedUniversityId,
+            },
+          );
+          result.warnings.push(
+            ...ruleValidation.warnings.map(
+              (w) => `Course "${course.name}": ${w}`,
+            ),
+          );
+        }
+
+        // Validate other required fields
+        if (!course.faculty || typeof course.faculty !== "string") {
+          result.warnings.push(
+            `Course "${course.name}" missing or invalid faculty`,
+          );
+        }
+
+        if (
+          typeof course.defaultAps !== "number" ||
+          course.defaultAps < 0 ||
+          course.defaultAps > 56
+        ) {
+          logError(
+            "assignment",
+            "medium",
+            `Course "${course.name}" has invalid APS: ${course.defaultAps}`,
+            {
+              courseIndex: index,
+              courseName: course.name,
+              aps: course.defaultAps,
+              universityId: sanitizedUniversityId,
+            },
+          );
+          result.warnings.push(
+            `Course "${course.name}" has invalid APS: ${course.defaultAps}`,
+          );
         }
 
         const applicableUniversities = getUniversitiesForCourse(
           course.assignmentRule,
         );
-        return applicableUniversities.includes(sanitizedUniversityId);
+        const isApplicable = applicableUniversities.includes(
+          sanitizedUniversityId,
+        );
+
+        // Log successful processing in dev mode
+        if (import.meta.env.DEV && isApplicable) {
+          console.log(
+            `✓ Course "${course.name}" applicable to ${sanitizedUniversityId}`,
+          );
+        }
+
+        return isApplicable;
       } catch (error) {
-        result.warnings.push(
-          `Error processing course assignment rule for: ${course?.name || "unknown"}`,
+        logError(
+          "assignment",
+          "critical",
+          `Error processing course "${course?.name || "unknown"}"`,
+          {
+            error: error.toString(),
+            courseIndex: index,
+            courseName: course?.name,
+            universityId: sanitizedUniversityId,
+            stack: error.stack,
+          },
+        );
+        result.errors.push(
+          `Failed to process course "${course?.name || `index ${index}`}": ${error}`,
         );
         return false;
       }
@@ -230,6 +362,7 @@ export function getCoursesForUniversityWithAPS(
 
 /**
  * Calculate how well user's subjects match course requirements
+ * FIXED: Uses precise subject matching to prevent false positives
  */
 function calculateSubjectMatch(
   course: ComprehensiveCourse,
@@ -238,43 +371,69 @@ function calculateSubjectMatch(
   hasRequiredSubjects: boolean;
   missingSubjects: string[];
   subjectScore: number;
+  detailedMatches: Array<{
+    required: string;
+    matched?: string;
+    confidence?: number;
+    levelValid?: boolean;
+    reason: string;
+  }>;
 } {
+  // Import precise matching service
+  const { checkSubjectRequirements } = require("./subjectMatchingService");
+
   if (!course.subjects || course.subjects.length === 0) {
     return {
       hasRequiredSubjects: true,
       missingSubjects: [],
       subjectScore: 100,
+      detailedMatches: [],
     };
   }
 
-  const requiredSubjects = course.subjects.filter((s) => s.isRequired);
-  const missingSubjects: string[] = [];
-  let matchedRequired = 0;
+  // Use precise subject matching
+  const result = checkSubjectRequirements(
+    userSubjects.map((s) => ({
+      name: s.name,
+      level: s.level,
+      points: s.points,
+    })),
+    course.subjects,
+  );
 
-  requiredSubjects.forEach((reqSubject) => {
-    const userSubject = userSubjects.find(
-      (us) =>
-        us.name.toLowerCase().includes(reqSubject.name.toLowerCase()) ||
-        reqSubject.name.toLowerCase().includes(us.name.toLowerCase()),
-    );
+  // Build detailed match information
+  const detailedMatches = result.matchedSubjects.map((match) => ({
+    required: match.required,
+    matched: match.matched,
+    confidence: match.confidence,
+    levelValid: match.levelValid,
+    reason: match.levelValid ? match.matchReason : match.levelReason,
+  }));
 
-    if (!userSubject || userSubject.level < reqSubject.level) {
-      missingSubjects.push(`${reqSubject.name} (Level ${reqSubject.level})`);
-    } else {
-      matchedRequired++;
-    }
+  // Add missing subjects
+  result.missingSubjects.forEach((missing) => {
+    detailedMatches.push({
+      required: missing.name,
+      reason: `Missing ${missing.name} (Level ${missing.level}). Alternatives: ${missing.alternatives.join(", ") || "None"}`,
+    });
   });
 
-  const hasRequiredSubjects = missingSubjects.length === 0;
   const subjectScore =
-    requiredSubjects.length > 0
-      ? Math.round((matchedRequired / requiredSubjects.length) * 100)
+    course.subjects.filter((s) => s.isRequired).length > 0
+      ? Math.round(
+          (result.matchedSubjects.filter((m) => m.levelValid).length /
+            course.subjects.filter((s) => s.isRequired).length) *
+            100,
+        )
       : 100;
 
   return {
-    hasRequiredSubjects,
-    missingSubjects,
+    hasRequiredSubjects: result.isEligible,
+    missingSubjects: result.missingSubjects.map(
+      (s) => `${s.name} (Level ${s.level})`,
+    ),
     subjectScore,
+    detailedMatches,
   };
 }
 
