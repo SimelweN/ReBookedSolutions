@@ -27,7 +27,7 @@ const BASE_UNIVERSITIES: University[] = [
     website: "https://www.uct.ac.za",
     studentPortal: "https://www.uct.ac.za/students",
     admissionsContact: "admissions@uct.ac.za",
-    faculties: [], // Will be populated by comprehensive assignment
+    faculties: [], // Will be populated dynamically
     establishedYear: 1829,
     studentPopulation: 29000,
     type: "Traditional University",
