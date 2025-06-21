@@ -66,8 +66,10 @@ const UserProfileTabs = ({
   deletingBooks = new Set(),
 }: UserProfileTabsProps) => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddressEditDialogOpen, setIsAddressEditDialogOpen] = useState(false);
+  const [isTemporarilyAway, setIsTemporarilyAway] = useState(false);
 
   const formatAddress = (address: Address | null | undefined) => {
     if (!address) return "Not provided";
