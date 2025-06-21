@@ -506,6 +506,7 @@ const BASE_UNIVERSITIES: University[] = [
     establishedYear: 1873,
     studentPopulation: 300000,
     type: "Comprehensive University",
+    scoringSystem: "unisa-custom",
     applicationInfo: {
       isOpen: true,
       openingDate: "1 August 2025",
