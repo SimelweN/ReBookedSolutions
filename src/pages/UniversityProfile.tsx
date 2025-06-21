@@ -178,7 +178,7 @@ const UniversityProfile: React.FC = () => {
 
       <CampusNavbar />
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 relative">
         {/* Hero Section */}
         <div className="relative overflow-hidden bg-gradient-to-r from-book-600 via-book-700 to-emerald-600">
           <div className="absolute inset-0 bg-black/20 pointer-events-none"></div>
