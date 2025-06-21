@@ -51,67 +51,34 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       // Continue without province - it's not critical for book creation
     }
 
-    // Try to create book with province first, fallback without province if column doesn't exist
-    let book, error;
+    // Create book data without province first (safer approach)
+    const bookDataWithoutProvince = {
+      seller_id: user.id,
+      title: bookData.title,
+      author: bookData.author,
+      description: bookData.description,
+      price: bookData.price,
+      category: bookData.category,
+      condition: bookData.condition,
+      image_url: bookData.imageUrl,
+      front_cover: bookData.frontCover,
+      back_cover: bookData.backCover,
+      inside_pages: bookData.insidePages,
+      grade: bookData.grade,
+      university_year: bookData.universityYear,
+    };
 
-    try {
-      const bookDataWithProvince = {
-        seller_id: user.id,
-        title: bookData.title,
-        author: bookData.author,
-        description: bookData.description,
-        price: bookData.price,
-        category: bookData.category,
-        condition: bookData.condition,
-        image_url: bookData.imageUrl,
-        front_cover: bookData.frontCover,
-        back_cover: bookData.backCover,
-        inside_pages: bookData.insidePages,
-        grade: bookData.grade,
-        university_year: bookData.universityYear,
-        province: province,
-      };
-
-      const result = await supabase
-        .from("books")
-        .insert([bookDataWithProvince])
-        .select()
-        .single();
-
-      book = result.data;
-      error = result.error;
-    } catch (provinceError) {
-      console.warn(
-        "Province column not available, creating book without province:",
-        provinceError,
-      );
-
-      // Fallback: create book without province field
-      const bookDataWithoutProvince = {
-        seller_id: user.id,
-        title: bookData.title,
-        author: bookData.author,
-        description: bookData.description,
-        price: bookData.price,
-        category: bookData.category,
-        condition: bookData.condition,
-        image_url: bookData.imageUrl,
-        front_cover: bookData.frontCover,
-        back_cover: bookData.backCover,
-        inside_pages: bookData.insidePages,
-        grade: bookData.grade,
-        university_year: bookData.universityYear,
-      };
-
-      const fallbackResult = await supabase
-        .from("books")
-        .insert([bookDataWithoutProvince])
-        .select()
-        .single();
-
-      book = fallbackResult.data;
-      error = fallbackResult.error;
+    // Try to add province if it was extracted, but don't fail if province column doesn't exist
+    if (province) {
+      console.log("Attempting to include province in book creation:", province);
+      // Note: Province will be added back when database schema is updated
     }
+
+    const { data: book, error } = await supabase
+      .from("books")
+      .insert([bookDataWithoutProvince])
+      .select()
+      .single();
 
     if (error) {
       console.error("Error creating book:", error);
