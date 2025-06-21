@@ -4035,6 +4035,1239 @@ export const COMPREHENSIVE_COURSES: ComprehensiveCourse[] = [
       "Quantity Surveyor Assistant",
     ],
   },
+
+  // ==============================================
+  // MISSING ENGINEERING PROGRAMS
+  // ==============================================
+  {
+    name: "Metallurgical Engineering",
+    faculty: "Engineering",
+    description:
+      "Materials processing, metal extraction, and material properties.",
+    duration: "4 years",
+    defaultAps: 36,
+    assignmentRule: parseMostExceptRule("Wits, UP, NWU"),
+    subjects: [
+      { name: "Mathematics", level: 6, isRequired: true },
+      { name: "Physical Sciences", level: 6, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Metallurgical Engineer",
+      "Materials Engineer",
+      "Mining Engineer",
+      "Quality Control Engineer",
+    ],
+  },
+  {
+    name: "Petroleum Engineering",
+    faculty: "Engineering",
+    description: "Oil and gas exploration, extraction, and processing.",
+    duration: "4 years",
+    defaultAps: 38,
+    assignmentRule: parseMostExceptRule("Wits, UP"),
+    subjects: [
+      { name: "Mathematics", level: 6, isRequired: true },
+      { name: "Physical Sciences", level: 6, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Petroleum Engineer",
+      "Reservoir Engineer",
+      "Drilling Engineer",
+      "Production Engineer",
+    ],
+  },
+  {
+    name: "Materials Engineering",
+    faculty: "Engineering",
+    description: "Development and characterization of engineering materials.",
+    duration: "4 years",
+    defaultAps: 36,
+    assignmentRule: parseMostExceptRule("Wits"),
+    subjects: [
+      { name: "Mathematics", level: 6, isRequired: true },
+      { name: "Physical Sciences", level: 6, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Materials Engineer",
+      "Research Scientist",
+      "Quality Engineer",
+      "Product Development Engineer",
+    ],
+  },
+  {
+    name: "Engineering Management",
+    faculty: "Engineering",
+    description:
+      "Management principles applied to engineering projects and organizations.",
+    duration: "4 years",
+    defaultAps: 34,
+    assignmentRule: parseMostExceptRule("UP"),
+    subjects: [
+      { name: "Mathematics", level: 6, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Engineering Manager",
+      "Project Manager",
+      "Operations Manager",
+      "Technical Director",
+    ],
+  },
+  {
+    name: "Energy Engineering",
+    faculty: "Engineering",
+    description:
+      "Renewable energy systems, power generation, and energy efficiency.",
+    duration: "4 years",
+    defaultAps: 35,
+    assignmentRule: parseMostExceptRule("NWU, UJ"),
+    subjects: [
+      { name: "Mathematics", level: 6, isRequired: true },
+      { name: "Physical Sciences", level: 6, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Energy Engineer",
+      "Renewable Energy Specialist",
+      "Power Systems Engineer",
+      "Sustainability Consultant",
+    ],
+  },
+  {
+    name: "Marine Engineering",
+    faculty: "Engineering",
+    description: "Ship propulsion, marine systems, and naval architecture.",
+    duration: "4 years",
+    defaultAps: 34,
+    assignmentRule: parseMostExceptRule("CPUT"),
+    subjects: [
+      { name: "Mathematics", level: 6, isRequired: true },
+      { name: "Physical Sciences", level: 6, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Marine Engineer",
+      "Naval Architect",
+      "Ship Designer",
+      "Port Engineer",
+    ],
+  },
+  {
+    name: "Systems Engineering",
+    faculty: "Engineering",
+    description: "Complex systems design, integration, and management.",
+    duration: "4 years",
+    defaultAps: 36,
+    assignmentRule: parseMostExceptRule("UP"),
+    subjects: [
+      { name: "Mathematics", level: 6, isRequired: true },
+      { name: "Physical Sciences", level: 5, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Systems Engineer",
+      "Systems Analyst",
+      "Integration Engineer",
+      "Technical Lead",
+    ],
+  },
+
+  // ==============================================
+  // MISSING HEALTH SCIENCES PROGRAMS
+  // ==============================================
+  {
+    name: "Bachelor of Homoeopathy",
+    faculty: "Health Sciences",
+    description: "Alternative medicine and homeopathic treatment principles.",
+    duration: "5 years",
+    defaultAps: 30,
+    assignmentRule: parseMostExceptRule("DUT"),
+    subjects: [
+      { name: "Life Sciences", level: 5, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "Homeopath",
+      "Alternative Medicine Practitioner",
+      "Natural Health Consultant",
+      "Wellness Practitioner",
+    ],
+  },
+  {
+    name: "Bachelor of Complementary Medicine",
+    faculty: "Health Sciences",
+    description: "Integrative and complementary healthcare approaches.",
+    duration: "4 years",
+    defaultAps: 30,
+    assignmentRule: parseMostExceptRule("UJ"),
+    subjects: [
+      { name: "Life Sciences", level: 5, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "Complementary Medicine Practitioner",
+      "Integrative Health Specialist",
+      "Wellness Consultant",
+      "Natural Therapist",
+    ],
+  },
+  {
+    name: "Bachelor of Chiropractic",
+    faculty: "Health Sciences",
+    description: "Spinal manipulation and musculoskeletal treatment.",
+    duration: "6 years",
+    defaultAps: 34,
+    assignmentRule: parseMostExceptRule("DUT"),
+    subjects: [
+      { name: "Life Sciences", level: 6, isRequired: true },
+      { name: "Physical Sciences", level: 5, isRequired: true },
+      { name: "Mathematics", level: 5, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Chiropractor",
+      "Spinal Specialist",
+      "Sports Chiropractor",
+      "Rehabilitation Specialist",
+    ],
+  },
+  {
+    name: "Medical Orthotics & Prosthetics",
+    faculty: "Health Sciences",
+    description: "Design and fitting of orthotic devices and prosthetic limbs.",
+    duration: "4 years",
+    defaultAps: 32,
+    assignmentRule: parseMostExceptRule("UP, DUT"),
+    subjects: [
+      { name: "Life Sciences", level: 5, isRequired: true },
+      { name: "Physical Sciences", level: 5, isRequired: true },
+      { name: "Mathematics", level: 5, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Orthotist",
+      "Prosthetist",
+      "Rehabilitation Technologist",
+      "Medical Device Specialist",
+    ],
+  },
+  {
+    name: "Bachelor of Social Work",
+    faculty: "Health Sciences",
+    description: "Social welfare, community development, and human services.",
+    duration: "4 years",
+    defaultAps: 26,
+    assignmentRule: { type: "all" },
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "Social Worker",
+      "Community Development Officer",
+      "Family Counselor",
+      "Child Protection Officer",
+    ],
+  },
+  {
+    name: "Hearing Acoustics",
+    faculty: "Health Sciences",
+    description: "Hearing aid technology and audiological equipment.",
+    duration: "3 years",
+    defaultAps: 30,
+    assignmentRule: parseMostExceptRule("SMU, UP"),
+    subjects: [
+      { name: "Physical Sciences", level: 5, isRequired: true },
+      { name: "Mathematics", level: 5, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Hearing Aid Acoustician",
+      "Audiological Technician",
+      "Hearing Device Specialist",
+      "Acoustic Engineer",
+    ],
+  },
+  {
+    name: "Medical Rescue",
+    faculty: "Health Sciences",
+    description: "Emergency rescue operations and pre-hospital care.",
+    duration: "3 years",
+    defaultAps: 28,
+    assignmentRule: parseMostExceptRule("TUT"),
+    subjects: [
+      { name: "Life Sciences", level: 5, isRequired: true },
+      { name: "Physical Sciences", level: 4, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Medical Rescue Practitioner",
+      "Emergency Medical Technician",
+      "Rescue Operator",
+      "Disaster Response Specialist",
+    ],
+  },
+
+  // ==============================================
+  // MISSING EDUCATION PROGRAMS
+  // ==============================================
+  {
+    name: "Bachelor of Education in Early Childhood Development (ECD)",
+    faculty: "Education",
+    description: "Early childhood education and development for ages 0-6.",
+    duration: "4 years",
+    defaultAps: 22,
+    assignmentRule: parseMostExceptRule("UNISA, NWU"),
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 3, isRequired: true },
+    ],
+    careerProspects: [
+      "ECD Teacher",
+      "Preschool Principal",
+      "Child Development Specialist",
+      "Early Learning Coordinator",
+    ],
+  },
+  {
+    name: "Inclusive Education",
+    faculty: "Education",
+    description: "Education for learners with diverse needs and abilities.",
+    duration: "4 years",
+    defaultAps: 24,
+    assignmentRule: parseMostExceptRule("UNISA, NWU"),
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "Inclusive Education Specialist",
+      "Learning Support Teacher",
+      "Special Needs Coordinator",
+      "Educational Therapist",
+    ],
+  },
+  {
+    name: "ICT in Education",
+    faculty: "Education",
+    description: "Technology integration in teaching and learning.",
+    duration: "4 years",
+    defaultAps: 26,
+    assignmentRule: { type: "all" },
+    subjects: [
+      { name: "Mathematics", level: 5, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Educational Technology Specialist",
+      "E-Learning Developer",
+      "Digital Learning Coordinator",
+      "STEM Education Specialist",
+    ],
+  },
+
+  // ==============================================
+  // MISSING HUMANITIES/SOCIAL SCIENCES PROGRAMS
+  // ==============================================
+  {
+    name: "Social Work",
+    faculty: "Humanities",
+    description: "Social services, community development, and human welfare.",
+    duration: "4 years",
+    defaultAps: 26,
+    assignmentRule: parseMostExceptRule("UJ, UNISA, NWU, UKZN"),
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "Social Worker",
+      "Community Development Officer",
+      "Family Counselor",
+      "NGO Program Manager",
+    ],
+  },
+  {
+    name: "Criminology",
+    faculty: "Humanities",
+    description: "Crime patterns, criminal behavior, and justice systems.",
+    duration: "3 years",
+    defaultAps: 26,
+    assignmentRule: parseMostExceptRule("UCT, UP, UJ"),
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "Criminologist",
+      "Crime Analyst",
+      "Police Officer",
+      "Correctional Officer",
+    ],
+  },
+  {
+    name: "Media Studies",
+    faculty: "Humanities",
+    description: "Media theory, digital communication, and media production.",
+    duration: "3 years",
+    defaultAps: 26,
+    assignmentRule: { type: "all" },
+    subjects: [{ name: "English", level: 5, isRequired: true }],
+    careerProspects: [
+      "Media Analyst",
+      "Content Producer",
+      "Digital Media Specialist",
+      "Media Researcher",
+    ],
+  },
+  {
+    name: "Library & Information Science",
+    faculty: "Humanities",
+    description:
+      "Information management, library systems, and knowledge organization.",
+    duration: "3 years",
+    defaultAps: 24,
+    assignmentRule: parseMostExceptRule("UNISA, UWC"),
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "Librarian",
+      "Information Manager",
+      "Knowledge Manager",
+      "Digital Archivist",
+    ],
+  },
+  {
+    name: "Cultural & Heritage Studies",
+    faculty: "Humanities",
+    description:
+      "Cultural preservation, heritage management, and cultural analysis.",
+    duration: "3 years",
+    defaultAps: 24,
+    assignmentRule: parseMostExceptRule("UKZN, UFS"),
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "History", level: 4, isRequired: false },
+    ],
+    careerProspects: [
+      "Heritage Officer",
+      "Museum Curator",
+      "Cultural Coordinator",
+      "Tourism Heritage Specialist",
+    ],
+  },
+  {
+    name: "Peace & Conflict Studies",
+    faculty: "Humanities",
+    description:
+      "Conflict resolution, peace building, and international relations.",
+    duration: "3 years",
+    defaultAps: 28,
+    assignmentRule: parseMostExceptRule("UKZN, UCT"),
+    subjects: [
+      { name: "English", level: 6, isRequired: true },
+      { name: "History", level: 4, isRequired: false },
+    ],
+    careerProspects: [
+      "Peace Mediator",
+      "Conflict Resolution Specialist",
+      "International Relations Officer",
+      "NGO Peace Worker",
+    ],
+  },
+  {
+    name: "Youth Development",
+    faculty: "Humanities",
+    description: "Youth programs, community engagement, and youth empowerment.",
+    duration: "3 years",
+    defaultAps: 22,
+    assignmentRule: parseMostExceptRule("UNISA, DUT"),
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Life Orientation", level: 4, isRequired: false },
+    ],
+    careerProspects: [
+      "Youth Development Officer",
+      "Community Worker",
+      "Youth Program Coordinator",
+      "Skills Development Facilitator",
+    ],
+  },
+  {
+    name: "Ethics",
+    faculty: "Humanities",
+    description:
+      "Moral philosophy, applied ethics, and ethical decision-making.",
+    duration: "3 years",
+    defaultAps: 28,
+    assignmentRule: parseMostExceptRule("UCT, SU"),
+    subjects: [
+      { name: "English", level: 6, isRequired: true },
+      { name: "Philosophy", level: 4, isRequired: false },
+    ],
+    careerProspects: [
+      "Ethics Consultant",
+      "Corporate Ethics Officer",
+      "Policy Analyst",
+      "Bioethics Specialist",
+    ],
+  },
+
+  // ==============================================
+  // MISSING COMMERCE/BUSINESS PROGRAMS
+  // ==============================================
+  {
+    name: "Retail Business Management",
+    faculty: "Commerce",
+    description:
+      "Retail operations, merchandising, and customer experience management.",
+    duration: "3 years",
+    defaultAps: 24,
+    assignmentRule: parseMostExceptRule("CPUT, DUT"),
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "Retail Manager",
+      "Store Manager",
+      "Merchandising Manager",
+      "Customer Experience Manager",
+    ],
+  },
+  {
+    name: "Financial Planning",
+    faculty: "Commerce",
+    description:
+      "Personal financial planning, investment advice, and wealth management.",
+    duration: "3 years",
+    defaultAps: 28,
+    assignmentRule: parseMostExceptRule("UJ, UNISA"),
+    subjects: [
+      { name: "Mathematics", level: 5, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Financial Planner",
+      "Investment Adviser",
+      "Wealth Manager",
+      "Financial Consultant",
+    ],
+  },
+  {
+    name: "Office Management & Technology",
+    faculty: "Commerce",
+    description:
+      "Administrative systems, office technology, and business communication.",
+    duration: "3 years",
+    defaultAps: 22,
+    assignmentRule: parseMostExceptRule("TUT, DUT"),
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 3, isRequired: true },
+    ],
+    careerProspects: [
+      "Office Manager",
+      "Administrative Manager",
+      "Executive Assistant",
+      "Business Administrator",
+    ],
+  },
+  {
+    name: "Business Intelligence",
+    faculty: "Commerce",
+    description:
+      "Data analytics, business reporting, and decision support systems.",
+    duration: "3 years",
+    defaultAps: 30,
+    assignmentRule: parseMostExceptRule("NWU"),
+    subjects: [
+      { name: "Mathematics", level: 6, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Business Intelligence Analyst",
+      "Data Analyst",
+      "Business Analyst",
+      "Reporting Specialist",
+    ],
+  },
+  {
+    name: "E-Commerce",
+    faculty: "Commerce",
+    description:
+      "Digital business, online marketing, and e-commerce platforms.",
+    duration: "3 years",
+    defaultAps: 26,
+    assignmentRule: parseMostExceptRule("UJ"),
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "E-Commerce Manager",
+      "Digital Marketing Manager",
+      "Online Business Developer",
+      "Digital Strategy Consultant",
+    ],
+  },
+
+  // ==============================================
+  // MISSING LAW PROGRAMS
+  // ==============================================
+  {
+    name: "Bachelor of Paralegal Studies",
+    faculty: "Law",
+    description:
+      "Legal assistance, document preparation, and legal support services.",
+    duration: "3 years",
+    defaultAps: 26,
+    assignmentRule: parseMostExceptRule("UNISA, NWU"),
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "Paralegal",
+      "Legal Assistant",
+      "Court Clerk",
+      "Legal Support Officer",
+    ],
+  },
+  {
+    name: "Legal Support",
+    faculty: "Law",
+    description:
+      "Legal administration, case management, and legal office operations.",
+    duration: "3 years",
+    defaultAps: 24,
+    assignmentRule: parseMostExceptRule("CPUT, UNISA"),
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 3, isRequired: true },
+    ],
+    careerProspects: [
+      "Legal Support Officer",
+      "Legal Administrator",
+      "Court Administrator",
+      "Legal Secretary",
+    ],
+  },
+
+  // ==============================================
+  // MISSING SCIENCE PROGRAMS
+  // ==============================================
+  {
+    name: "Marine Science",
+    faculty: "Science",
+    description: "Ocean sciences, marine ecosystems, and coastal management.",
+    duration: "3 years",
+    defaultAps: 30,
+    assignmentRule: parseMostExceptRule("UCT, UWC"),
+    subjects: [
+      { name: "Life Sciences", level: 6, isRequired: true },
+      { name: "Physical Sciences", level: 5, isRequired: true },
+      { name: "Mathematics", level: 5, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Marine Scientist",
+      "Oceanographer",
+      "Marine Conservationist",
+      "Fisheries Scientist",
+    ],
+  },
+  {
+    name: "Space Science",
+    faculty: "Science",
+    description: "Astrophysics, space technology, and astronomical research.",
+    duration: "3 years",
+    defaultAps: 36,
+    assignmentRule: parseMostExceptRule("Wits, UCT"),
+    subjects: [
+      { name: "Physical Sciences", level: 7, isRequired: true },
+      { name: "Mathematics", level: 7, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Space Scientist",
+      "Astrophysicist",
+      "Space Systems Engineer",
+      "Observatory Researcher",
+    ],
+  },
+  {
+    name: "Climate & Atmospheric Science",
+    faculty: "Science",
+    description: "Climate modeling, atmospheric physics, and weather systems.",
+    duration: "3 years",
+    defaultAps: 32,
+    assignmentRule: parseMostExceptRule("UKZN, NWU"),
+    subjects: [
+      { name: "Physical Sciences", level: 6, isRequired: true },
+      { name: "Mathematics", level: 6, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Climatologist",
+      "Atmospheric Scientist",
+      "Weather Forecaster",
+      "Climate Researcher",
+    ],
+  },
+  {
+    name: "Applied Physics",
+    faculty: "Science",
+    description: "Physics applications in technology and engineering.",
+    duration: "3 years",
+    defaultAps: 34,
+    assignmentRule: parseMostExceptRule("SU, UP"),
+    subjects: [
+      { name: "Physical Sciences", level: 7, isRequired: true },
+      { name: "Mathematics", level: 7, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Applied Physicist",
+      "Research Scientist",
+      "Technology Developer",
+      "Medical Physicist",
+    ],
+  },
+  {
+    name: "Actuarial Mathematics",
+    faculty: "Science",
+    description: "Mathematical modeling for risk assessment and insurance.",
+    duration: "3 years",
+    defaultAps: 38,
+    assignmentRule: parseMostExceptRule("UCT, SU, UP"),
+    subjects: [
+      { name: "Mathematics", level: 7, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Actuary",
+      "Risk Analyst",
+      "Insurance Mathematician",
+      "Financial Modeler",
+    ],
+  },
+  {
+    name: "Mathematical Statistics",
+    faculty: "Science",
+    description: "Advanced statistical theory and applications.",
+    duration: "3 years",
+    defaultAps: 34,
+    assignmentRule: parseMostExceptRule("NWU, UP"),
+    subjects: [
+      { name: "Mathematics", level: 7, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Statistician",
+      "Data Scientist",
+      "Research Analyst",
+      "Statistical Consultant",
+    ],
+  },
+  {
+    name: "Physics with Electronics",
+    faculty: "Science",
+    description: "Physics principles applied to electronic systems.",
+    duration: "3 years",
+    defaultAps: 34,
+    assignmentRule: parseMostExceptRule("Wits, UJ"),
+    subjects: [
+      { name: "Physical Sciences", level: 7, isRequired: true },
+      { name: "Mathematics", level: 6, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Electronics Engineer",
+      "Systems Developer",
+      "Research Physicist",
+      "Technology Specialist",
+    ],
+  },
+
+  // ==============================================
+  // MISSING IT/COMPUTER SCIENCE PROGRAMS
+  // ==============================================
+  {
+    name: "UX/UI Design",
+    faculty: "Information Technology",
+    description: "User experience design and interface development.",
+    duration: "3 years",
+    defaultAps: 26,
+    assignmentRule: parseMostExceptRule("UNISA, UJ"),
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Visual Arts", level: 4, isRequired: false },
+      { name: "Mathematics", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "UX Designer",
+      "UI Designer",
+      "Product Designer",
+      "Interaction Designer",
+    ],
+  },
+  {
+    name: "Digital Transformation",
+    faculty: "Information Technology",
+    description:
+      "Digital innovation, technology strategy, and organizational change.",
+    duration: "3 years",
+    defaultAps: 28,
+    assignmentRule: parseMostExceptRule("NWU"),
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Digital Transformation Manager",
+      "Innovation Consultant",
+      "Technology Strategist",
+      "Change Management Specialist",
+    ],
+  },
+  {
+    name: "IT Management",
+    faculty: "Information Technology",
+    description:
+      "Technology management, IT strategy, and systems administration.",
+    duration: "3 years",
+    defaultAps: 28,
+    assignmentRule: parseMostExceptRule("UJ"),
+    subjects: [
+      { name: "Mathematics", level: 5, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "IT Manager",
+      "Technology Director",
+      "Systems Manager",
+      "IT Consultant",
+    ],
+  },
+  {
+    name: "Tech Entrepreneurship",
+    faculty: "Information Technology",
+    description:
+      "Technology startups, innovation management, and digital business.",
+    duration: "3 years",
+    defaultAps: 26,
+    assignmentRule: parseMostExceptRule("NWU, UJ"),
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "Tech Entrepreneur",
+      "Startup Founder",
+      "Innovation Manager",
+      "Technology Consultant",
+    ],
+  },
+  {
+    name: "Robotics",
+    faculty: "Information Technology",
+    description: "Robotics systems, automation, and artificial intelligence.",
+    duration: "4 years",
+    defaultAps: 32,
+    assignmentRule: parseMostExceptRule("TUT, UP"),
+    subjects: [
+      { name: "Mathematics", level: 6, isRequired: true },
+      { name: "Physical Sciences", level: 6, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Robotics Engineer",
+      "Automation Specialist",
+      "AI Engineer",
+      "Systems Integration Engineer",
+    ],
+  },
+  {
+    name: "Embedded Systems",
+    faculty: "Information Technology",
+    description:
+      "Microcontrollers, embedded programming, and hardware integration.",
+    duration: "3 years",
+    defaultAps: 30,
+    assignmentRule: parseMostExceptRule("UP, UNISA"),
+    subjects: [
+      { name: "Mathematics", level: 6, isRequired: true },
+      { name: "Physical Sciences", level: 5, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Embedded Systems Engineer",
+      "Firmware Developer",
+      "Hardware Engineer",
+      "IoT Developer",
+    ],
+  },
+
+  // ==============================================
+  // MISSING AGRICULTURE PROGRAMS
+  // ==============================================
+  {
+    name: "Poultry Science",
+    faculty: "Agriculture",
+    description: "Poultry production, breeding, and management systems.",
+    duration: "4 years",
+    defaultAps: 24,
+    assignmentRule: parseMostExceptRule("UFS"),
+    subjects: [
+      { name: "Life Sciences", level: 5, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Poultry Specialist",
+      "Farm Manager",
+      "Livestock Consultant",
+      "Animal Nutritionist",
+    ],
+  },
+  {
+    name: "Agribusiness",
+    faculty: "Agriculture",
+    description: "Agricultural business management and market systems.",
+    duration: "4 years",
+    defaultAps: 26,
+    assignmentRule: parseMostExceptRule("UFS, UP"),
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Agribusiness Manager",
+      "Agricultural Consultant",
+      "Farm Business Advisor",
+      "Agricultural Economist",
+    ],
+  },
+  {
+    name: "Post-Harvest Technology",
+    faculty: "Agriculture",
+    description: "Food preservation, storage, and processing technologies.",
+    duration: "4 years",
+    defaultAps: 26,
+    assignmentRule: parseMostExceptRule("UFS"),
+    subjects: [
+      { name: "Life Sciences", level: 5, isRequired: true },
+      { name: "Physical Sciences", level: 4, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Post-Harvest Specialist",
+      "Food Technologist",
+      "Storage Manager",
+      "Quality Control Specialist",
+    ],
+  },
+  {
+    name: "Agroecology",
+    faculty: "Agriculture",
+    description: "Sustainable farming systems and ecological agriculture.",
+    duration: "4 years",
+    defaultAps: 24,
+    assignmentRule: parseMostExceptRule("UFH, UNISA"),
+    subjects: [
+      { name: "Life Sciences", level: 5, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Agroecologist",
+      "Sustainable Agriculture Specialist",
+      "Environmental Farmer",
+      "Ecological Consultant",
+    ],
+  },
+  {
+    name: "Climate-Smart Agriculture",
+    faculty: "Agriculture",
+    description: "Climate-resilient farming and adaptation strategies.",
+    duration: "4 years",
+    defaultAps: 26,
+    assignmentRule: parseMostExceptRule("UNISA"),
+    subjects: [
+      { name: "Life Sciences", level: 5, isRequired: true },
+      { name: "Geography", level: 4, isRequired: false },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Climate-Smart Agriculture Specialist",
+      "Agricultural Adaptation Consultant",
+      "Sustainable Farming Advisor",
+      "Climate Researcher",
+    ],
+  },
+  {
+    name: "Agricultural Extension & Rural Resource Management",
+    faculty: "Agriculture",
+    description:
+      "Rural development, extension services, and resource management.",
+    duration: "4 years",
+    defaultAps: 22,
+    assignmentRule: parseMostExceptRule("UKZN, UNISA"),
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Life Sciences", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "Agricultural Extension Officer",
+      "Rural Development Specialist",
+      "Resource Manager",
+      "Community Development Officer",
+    ],
+  },
+
+  // ==============================================
+  // MISSING BUILT ENVIRONMENT PROGRAMS
+  // ==============================================
+  {
+    name: "Urban Studies",
+    faculty: "Built Environment",
+    description: "Urban development, housing policy, and city planning.",
+    duration: "3 years",
+    defaultAps: 28,
+    assignmentRule: parseMostExceptRule("Wits, UJ"),
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 4, isRequired: true },
+      { name: "Geography", level: 4, isRequired: false },
+    ],
+    careerProspects: [
+      "Urban Planner",
+      "Housing Specialist",
+      "Community Development Officer",
+      "Policy Analyst",
+    ],
+  },
+  {
+    name: "Heritage & Conservation Studies",
+    faculty: "Built Environment",
+    description: "Cultural heritage preservation and conservation management.",
+    duration: "3 years",
+    defaultAps: 26,
+    assignmentRule: parseMostExceptRule("SU, UP"),
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "History", level: 4, isRequired: false },
+      { name: "Visual Arts", level: 4, isRequired: false },
+    ],
+    careerProspects: [
+      "Heritage Officer",
+      "Conservation Specialist",
+      "Museum Curator",
+      "Cultural Tourism Manager",
+    ],
+  },
+  {
+    name: "Property Development",
+    faculty: "Built Environment",
+    description:
+      "Real estate development, project management, and investment analysis.",
+    duration: "3 years",
+    defaultAps: 28,
+    assignmentRule: parseMostExceptRule("UCT, UJ"),
+    subjects: [
+      { name: "Mathematics", level: 5, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Property Developer",
+      "Real Estate Investment Manager",
+      "Development Project Manager",
+      "Property Consultant",
+    ],
+  },
+  {
+    name: "Urban Infrastructure",
+    faculty: "Built Environment",
+    description:
+      "Infrastructure planning, utilities management, and city systems.",
+    duration: "4 years",
+    defaultAps: 30,
+    assignmentRule: parseMostExceptRule("NWU, UP"),
+    subjects: [
+      { name: "Mathematics", level: 6, isRequired: true },
+      { name: "Physical Sciences", level: 5, isRequired: true },
+      { name: "English", level: 5, isRequired: true },
+    ],
+    careerProspects: [
+      "Infrastructure Planner",
+      "Utilities Engineer",
+      "Municipal Engineer",
+      "Transport Planner",
+    ],
+  },
+
+  // ==============================================
+  // MISSING TVET PROGRAMS
+  // ==============================================
+  {
+    name: "Diploma in Mechanical Engineering (Heavy Current)",
+    faculty: "Engineering",
+    description:
+      "Heavy machinery, industrial equipment, and mechanical systems.",
+    duration: "3 years",
+    defaultAps: 24,
+    assignmentRule: {
+      type: "include_only",
+      universities: ["tut", "dut", "mut", "vut"],
+    },
+    subjects: [
+      { name: "Mathematics", level: 4, isRequired: true },
+      { name: "Physical Sciences", level: 4, isRequired: true },
+      { name: "English", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "Mechanical Technician",
+      "Heavy Equipment Operator",
+      "Industrial Mechanic",
+      "Maintenance Supervisor",
+    ],
+  },
+  {
+    name: "Diploma in Electrical Engineering (Process Instrumentation)",
+    faculty: "Engineering",
+    description: "Industrial automation, control systems, and instrumentation.",
+    duration: "3 years",
+    defaultAps: 26,
+    assignmentRule: {
+      type: "include_only",
+      universities: ["tut", "dut", "mut", "vut"],
+    },
+    subjects: [
+      { name: "Mathematics", level: 5, isRequired: true },
+      { name: "Physical Sciences", level: 5, isRequired: true },
+      { name: "English", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "Instrumentation Technician",
+      "Process Control Specialist",
+      "Automation Engineer",
+      "Control Systems Technician",
+    ],
+  },
+  {
+    name: "Diploma in Cosmetology",
+    faculty: "Humanities",
+    description: "Beauty therapy, cosmetic science, and aesthetic treatments.",
+    duration: "2 years",
+    defaultAps: 18,
+    assignmentRule: {
+      type: "include_only",
+      universities: ["tut", "dut", "mut", "vut"],
+    },
+    subjects: [
+      { name: "English", level: 4, isRequired: true },
+      { name: "Life Sciences", level: 3, isRequired: false },
+    ],
+    careerProspects: [
+      "Cosmetologist",
+      "Beauty Therapist",
+      "Spa Manager",
+      "Aesthetic Practitioner",
+    ],
+  },
+  {
+    name: "Diploma in Public Relations Practice",
+    faculty: "Humanities",
+    description:
+      "Strategic communication, media relations, and public engagement.",
+    duration: "3 years",
+    defaultAps: 22,
+    assignmentRule: {
+      type: "include_only",
+      universities: ["tut", "dut", "mut", "vut"],
+    },
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 3, isRequired: true },
+    ],
+    careerProspects: [
+      "Public Relations Officer",
+      "Communications Coordinator",
+      "Media Relations Specialist",
+      "Corporate Communications Manager",
+    ],
+  },
+  {
+    name: "Diploma in Journalism",
+    faculty: "Humanities",
+    description: "News reporting, media production, and digital journalism.",
+    duration: "3 years",
+    defaultAps: 24,
+    assignmentRule: {
+      type: "include_only",
+      universities: ["tut", "dut", "mut", "vut"],
+    },
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 3, isRequired: true },
+    ],
+    careerProspects: [
+      "Journalist",
+      "News Reporter",
+      "Media Producer",
+      "Digital Content Creator",
+    ],
+  },
+  {
+    name: "Diploma in Events Management",
+    faculty: "Commerce",
+    description:
+      "Event planning, project coordination, and hospitality management.",
+    duration: "3 years",
+    defaultAps: 20,
+    assignmentRule: {
+      type: "include_only",
+      universities: ["tut", "dut", "mut", "vut"],
+    },
+    subjects: [
+      { name: "English", level: 4, isRequired: true },
+      { name: "Mathematics", level: 3, isRequired: true },
+    ],
+    careerProspects: [
+      "Events Manager",
+      "Event Coordinator",
+      "Wedding Planner",
+      "Conference Organizer",
+    ],
+  },
+  {
+    name: "Diploma in Library and Information Services",
+    faculty: "Humanities",
+    description:
+      "Library management, information systems, and digital archives.",
+    duration: "3 years",
+    defaultAps: 22,
+    assignmentRule: {
+      type: "include_only",
+      universities: ["tut", "dut", "mut", "vut"],
+    },
+    subjects: [
+      { name: "English", level: 5, isRequired: true },
+      { name: "Mathematics", level: 3, isRequired: true },
+    ],
+    careerProspects: [
+      "Library Assistant",
+      "Information Officer",
+      "Records Manager",
+      "Digital Archivist",
+    ],
+  },
 ];
 
 // Debug logging for course assignment
