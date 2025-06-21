@@ -27,6 +27,7 @@ import {
   HelpCircle,
   MoreHorizontal,
   Heart,
+  Clock,
 } from "lucide-react";
 import UserProfileTabs from "@/components/profile/UserProfileTabs";
 import { saveUserAddresses, getUserAddresses } from "@/services/addressService";
@@ -65,6 +66,7 @@ const Profile = () => {
   const [isLoadingAddress, setIsLoadingAddress] = useState(false);
   const [isLoadingListings, setIsLoadingListings] = useState(true);
   const [deletingBooks, setDeletingBooks] = useState<Set<string>>(new Set());
+  const [isTemporarilyAway, setIsTemporarilyAway] = useState(false);
 
   const loadUserAddresses = useCallback(async () => {
     if (!user?.id) return;
@@ -331,6 +333,25 @@ const Profile = () => {
                 </CardContent>
               </Card>
 
+              {/* Temporarily Away Status */}
+              {isTemporarilyAway && (
+                <Alert className="border-orange-200 bg-orange-50">
+                  <Clock className="h-4 w-4 text-orange-600" />
+                  <AlertDescription className="text-orange-800">
+                    <div className="space-y-2">
+                      <div className="font-medium">
+                        You are temporarily away
+                      </div>
+                      <div className="text-sm">
+                        Your listings are hidden from buyers and you won't
+                        receive new orders. You can change this in your Account
+                        Settings.
+                      </div>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
+
               {/* Pickup Address Warning - Only show if user has active listings but no pickup address */}
               {activeListings &&
                 activeListings.some(
@@ -386,15 +407,6 @@ const Profile = () => {
                     <Plus className="h-5 w-5 mr-2" />
                     List a Book
                   </Button>
-
-                  <Button
-                    onClick={() => setIsDeleteProfileDialogOpen(true)}
-                    variant="destructive"
-                    className="w-full"
-                  >
-                    <AlertTriangle className="h-4 w-4 mr-2" />
-                    Delete Profile
-                  </Button>
                 </CardContent>
               </Card>
 
@@ -421,6 +433,14 @@ const Profile = () => {
                       <DropdownMenuItem onClick={() => navigate("/activity")}>
                         <Heart className="h-4 w-4 mr-2" />
                         Activity Log
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => setIsTemporarilyAway(!isTemporarilyAway)}
+                      >
+                        <Clock className="h-4 w-4 mr-2" />
+                        {isTemporarilyAway
+                          ? "End Temporary Away"
+                          : "Mark as Temporarily Away"}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -466,6 +486,33 @@ const Profile = () => {
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
+                </CardContent>
+              </Card>
+
+              {/* Danger Zone */}
+              <Card className="border-red-200 bg-red-50">
+                <CardHeader>
+                  <CardTitle className="text-lg text-red-700 flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5" />
+                    Danger Zone
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="bg-white p-3 rounded-lg border border-red-200">
+                    <p className="text-sm text-red-600 mb-3">
+                      <strong>Warning:</strong> This action cannot be undone.
+                      Deleting your account will permanently remove your
+                      profile, listings, and all associated data.
+                    </p>
+                    <Button
+                      onClick={() => setIsDeleteProfileDialogOpen(true)}
+                      variant="destructive"
+                      className="w-full"
+                    >
+                      <AlertTriangle className="h-4 w-4 mr-2" />
+                      Delete Profile
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             </div>

@@ -177,87 +177,71 @@ export class ActivityService {
       // Fallback: Get activities from notifications table AND create sample activities
       console.log("🔄 Fetching activities from notifications table...");
 
-      const notifQuery = supabase
-        .from("notifications")
-        .select("*")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(limit);
+      try {
+        const notifQuery = supabase
+          .from("notifications")
+          .select("*")
+          .eq("user_id", userId)
+          .order("created_at", { ascending: false })
+          .limit(limit);
 
-      const { data: notifications, error: notifError } = await notifQuery;
+        const { data: notifications, error: notifError } = await notifQuery;
 
-      if (notifError) {
-        this.logDetailedError(
-          "Error fetching activity notifications",
-          notifError,
-        );
-        // Return sample activities as fallback
-        return this.createSampleActivities(userId);
-      }
-
-      console.log(
-        `✅ Found ${notifications?.length || 0} activities in notifications table`,
-      );
-
-      // If no notifications found, create sample activities
-      if (!notifications || notifications.length === 0) {
-        console.log("No activities found, creating sample activities");
-        return this.createSampleActivities(userId);
-      }
-
-      // Convert notifications to activities
-      return (notifications || []).map((notif) => {
-        const message = notif.message || "";
-        let activityType: ActivityType = "profile_updated";
-        let cleanDescription = message;
-        let parsedMetadata = {};
-
-        // Try to extract metadata if encoded in message
-        const metaMatch = message.match(/\[META:(.+?)\]$/);
-        if (metaMatch) {
-          try {
-            parsedMetadata = JSON.parse(metaMatch[1]);
-            cleanDescription = cleanDescription.replace(/\s*\[META:.+?\]$/, "");
-          } catch (e) {
-            // Ignore parsing errors
+        if (notifError) {
+          // Check if it's a table not found error
+          if (
+            notifError.code === "42P01" ||
+            notifError.message?.includes("relation") ||
+            notifError.message?.includes("does not exist")
+          ) {
+            console.log(
+              "Notifications table does not exist, using sample activities",
+            );
+            return this.createSampleActivities(userId);
           }
+
+          this.logDetailedError(
+            "Error fetching activity notifications",
+            notifError,
+          );
+          // Return sample activities as fallback
+          return this.createSampleActivities(userId);
         }
 
-        // Extract activity type from title
-        const title = notif.title || "";
-        const titleMatch = title.match(/^Activity:\s*(.+)$/);
-        const cleanTitle = titleMatch ? titleMatch[1] : title;
+        console.log(
+          `✅ Found ${notifications?.length || 0} activities in notifications table`,
+        );
 
-        // Determine activity type based on title/message content
-        if (
-          cleanTitle.toLowerCase().includes("purchase") ||
-          cleanDescription.toLowerCase().includes("bought")
-        ) {
-          activityType = "purchase";
-        } else if (
-          cleanTitle.toLowerCase().includes("sale") ||
-          cleanDescription.toLowerCase().includes("sold")
-        ) {
-          activityType = "sale";
-        } else if (cleanTitle.toLowerCase().includes("listing")) {
-          activityType = "listing_created";
-        } else if (cleanTitle.toLowerCase().includes("profile")) {
-          activityType = "profile_updated";
-        } else if (cleanTitle.toLowerCase().includes("login")) {
-          activityType = "login";
+        // If no notifications found, create sample activities
+        if (!notifications || notifications.length === 0) {
+          console.log("No activities found, creating sample activities");
+          return this.createSampleActivities(userId);
         }
 
-        return {
-          id: notif.id,
-          user_id: notif.user_id,
-          type: activityType,
-          title: cleanTitle,
-          description: cleanDescription,
-          metadata:
-            Object.keys(parsedMetadata).length > 0 ? parsedMetadata : undefined,
-          created_at: notif.created_at,
-        };
-      });
+        // Convert notifications to activities with safety checks
+        return (notifications || []).map((notif) => {
+          return {
+            id: notif.id || `notif-${Date.now()}-${Math.random()}`,
+            user_id: notif.user_id || userId,
+            type: this.mapNotificationToActivityType(notif.type || "info"),
+            title: notif.title || "Activity",
+            description:
+              notif.message || notif.description || "Activity recorded",
+            metadata: {
+              notificationId: notif.id,
+              read: notif.read || false,
+              originalType: notif.type,
+            },
+            created_at: notif.created_at || new Date().toISOString(),
+          };
+        });
+      } catch (fallbackError) {
+        this.logDetailedError(
+          "Exception during notifications fallback",
+          fallbackError,
+        );
+        return this.createSampleActivities(userId);
+      }
     } catch (error) {
       this.logDetailedError("Error fetching user activities", error);
       return [];
@@ -327,14 +311,63 @@ export class ActivityService {
   }
 
   /**
+   * Maps notification types to activity types
+   */
+  private static mapNotificationToActivityType(
+    notificationType: string,
+  ): ActivityType {
+    switch (notificationType?.toLowerCase()) {
+      case "purchase":
+      case "bought":
+        return "purchase";
+      case "sale":
+      case "sold":
+        return "sale";
+      case "listing":
+      case "listing_created":
+        return "listing_created";
+      case "login":
+        return "login";
+      case "profile":
+      case "profile_updated":
+      default:
+        return "profile_updated";
+    }
+  }
+
+  /**
    * Helper method for detailed error logging
    */
   private static logDetailedError(message: string, error: unknown): void {
+    let errorMessage = "Unknown error";
+    let errorDetails = null;
+    let errorStack = null;
+
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      errorStack = error.stack;
+    } else if (typeof error === "object" && error !== null) {
+      // Handle Supabase errors and other objects
+      const errorObj = error as any;
+      errorMessage =
+        errorObj.message ||
+        errorObj.error_description ||
+        errorObj.msg ||
+        JSON.stringify(error);
+      errorDetails = errorObj.details || errorObj.hint || errorObj.code;
+      errorStack = errorObj.stack;
+    } else if (typeof error === "string") {
+      errorMessage = error;
+    } else {
+      errorMessage = String(error);
+    }
+
     console.error(`❌ ${message}:`, {
-      error: error?.message || error,
-      stack: error?.stack,
-      details: error?.details || error?.hint,
+      message: errorMessage,
+      details: errorDetails,
+      stack: errorStack,
       timestamp: new Date().toISOString(),
+      originalError: import.meta.env.DEV ? error : undefined, // Only log full error in development
     });
   }
 }

@@ -67,8 +67,75 @@ const BursaryListing = () => {
         filters.financialNeed === undefined ||
         bursary.requirements.financialNeed === filters.financialNeed;
 
+      // Study level filter
+      const matchesStudyLevel =
+        !filters.studyLevel ||
+        filters.studyLevel === "any" ||
+        (filters.studyLevel === "undergraduate" &&
+          (bursary.fieldsOfStudy.some((field) =>
+            field.toLowerCase().includes("undergraduate"),
+          ) ||
+            !bursary.fieldsOfStudy.some((field) =>
+              field.toLowerCase().includes("postgraduate"),
+            ))) ||
+        (filters.studyLevel === "postgraduate" &&
+          bursary.fieldsOfStudy.some((field) =>
+            field.toLowerCase().includes("postgraduate"),
+          ));
+
+      // Minimum marks filter
+      const matchesMinMarks =
+        !filters.minMarks ||
+        (bursary.requirements.minimumMarks !== undefined &&
+          bursary.requirements.minimumMarks <= filters.minMarks);
+
+      // Maximum household income filter
+      const matchesHouseholdIncome =
+        !filters.maxHouseholdIncome ||
+        (bursary.requirements.maxHouseholdIncome !== undefined &&
+          bursary.requirements.maxHouseholdIncome >=
+            filters.maxHouseholdIncome);
+
+      // Gender filter
+      const matchesGender =
+        !filters.genderSpecific ||
+        filters.genderSpecific === "any" ||
+        !bursary.requirements.genderSpecific ||
+        bursary.requirements.genderSpecific === filters.genderSpecific;
+
+      // Race filter
+      const matchesRace =
+        !filters.raceSpecific ||
+        filters.raceSpecific === "any" ||
+        !bursary.requirements.raceSpecific ||
+        bursary.requirements.raceSpecific === filters.raceSpecific;
+
+      // Special criteria filters
+      const matchesDisabilitySupport =
+        !filters.disabilitySupport ||
+        bursary.requirements.disabilitySupport === true;
+
+      const matchesRuralBackground =
+        !filters.ruralBackground ||
+        bursary.requirements.ruralBackground === true;
+
+      const matchesFirstGeneration =
+        !filters.firstGeneration ||
+        bursary.requirements.firstGeneration === true;
+
       return (
-        matchesSearch && matchesField && matchesProvince && matchesFinancialNeed
+        matchesSearch &&
+        matchesField &&
+        matchesProvince &&
+        matchesFinancialNeed &&
+        matchesStudyLevel &&
+        matchesMinMarks &&
+        matchesHouseholdIncome &&
+        matchesGender &&
+        matchesRace &&
+        matchesDisabilitySupport &&
+        matchesRuralBackground &&
+        matchesFirstGeneration
       );
     });
   }, [searchTerm, filters]);
@@ -181,27 +248,190 @@ const BursaryListing = () => {
               </SelectContent>
             </Select>
 
+            {/* Study Level Filter */}
+            <Select
+              value={filters.studyLevel || "any"}
+              onValueChange={(value) =>
+                updateFilter("studyLevel", value === "any" ? undefined : value)
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Study Level" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="any">Any Level</SelectItem>
+                <SelectItem value="undergraduate">Undergraduate</SelectItem>
+                <SelectItem value="postgraduate">Postgraduate</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Advanced Filters Row */}
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {/* Minimum Marks */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Min. Academic Marks (%)
+              </label>
+              <Input
+                type="number"
+                placeholder="e.g. 65"
+                min="0"
+                max="100"
+                value={filters.minMarks || ""}
+                onChange={(e) =>
+                  updateFilter(
+                    "minMarks",
+                    e.target.value ? parseInt(e.target.value) : undefined,
+                  )
+                }
+              />
+            </div>
+
+            {/* Max Household Income */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Max. Household Income (R)
+              </label>
+              <Input
+                type="number"
+                placeholder="e.g. 350000"
+                min="0"
+                value={filters.maxHouseholdIncome || ""}
+                onChange={(e) =>
+                  updateFilter(
+                    "maxHouseholdIncome",
+                    e.target.value ? parseInt(e.target.value) : undefined,
+                  )
+                }
+              />
+            </div>
+
+            {/* Gender Specific */}
+            <Select
+              value={filters.genderSpecific || "any"}
+              onValueChange={(value) =>
+                updateFilter(
+                  "genderSpecific",
+                  value === "any" ? undefined : value,
+                )
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Gender" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="any">Any Gender</SelectItem>
+                <SelectItem value="female">Female Only</SelectItem>
+                <SelectItem value="male">Male Only</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Race Specific */}
+            <Select
+              value={filters.raceSpecific || "any"}
+              onValueChange={(value) =>
+                updateFilter(
+                  "raceSpecific",
+                  value === "any" ? undefined : value,
+                )
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Race" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="any">Any Race</SelectItem>
+                <SelectItem value="african">African</SelectItem>
+                <SelectItem value="coloured">Coloured</SelectItem>
+                <SelectItem value="indian">Indian</SelectItem>
+                <SelectItem value="white">White</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Clear Filters */}
+            <Button variant="outline" onClick={clearFilters} className="w-full">
+              Clear All Filters
+            </Button>
+          </div>
+
+          {/* Special Criteria Checkboxes */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="financial-need"
-                checked={filters.financialNeed === true}
+                checked={filters.financialNeed || false}
                 onCheckedChange={(checked) =>
-                  updateFilter("financialNeed", checked ? true : undefined)
+                  updateFilter(
+                    "financialNeed",
+                    checked === true ? true : undefined,
+                  )
                 }
               />
-              <label htmlFor="financial-need" className="text-sm font-medium">
+              <label
+                htmlFor="financial-need"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
                 Financial need based
               </label>
             </div>
 
-            <Button variant="outline" onClick={clearFilters} className="w-full">
-              Clear Filters
-            </Button>
-          </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="disability-support"
+                checked={filters.disabilitySupport || false}
+                onCheckedChange={(checked) =>
+                  updateFilter(
+                    "disabilitySupport",
+                    checked === true ? true : undefined,
+                  )
+                }
+              />
+              <label
+                htmlFor="disability-support"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Disability support
+              </label>
+            </div>
 
-          {/* Results Count */}
-          <div className="text-sm text-gray-600">
-            Showing {filteredBursaries.length} of {BURSARIES.length} bursaries
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="rural-background"
+                checked={filters.ruralBackground || false}
+                onCheckedChange={(checked) =>
+                  updateFilter(
+                    "ruralBackground",
+                    checked === true ? true : undefined,
+                  )
+                }
+              />
+              <label
+                htmlFor="rural-background"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Rural background
+              </label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="first-generation"
+                checked={filters.firstGeneration || false}
+                onCheckedChange={(checked) =>
+                  updateFilter(
+                    "firstGeneration",
+                    checked === true ? true : undefined,
+                  )
+                }
+              />
+              <label
+                htmlFor="first-generation"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                First-generation student
+              </label>
+            </div>
           </div>
         </CardContent>
       </Card>

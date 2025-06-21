@@ -3,7 +3,6 @@ import {
   ALL_SOUTH_AFRICAN_UNIVERSITIES as COMPLETE_26_UNIVERSITIES,
   UNIVERSITY_STATISTICS,
 } from "./complete-26-universities";
-import { PROGRAM_STATISTICS } from "./comprehensive-program-allocation";
 
 // Use the complete 26 university database with comprehensive program allocation
 export const ALL_SOUTH_AFRICAN_UNIVERSITIES: University[] =
@@ -124,7 +123,7 @@ export const UNIVERSITY_METADATA = {
   lastUpdated: new Date().toISOString(),
   version: "6.0.0-complete-26-universities",
   source: "complete-26-universities",
-  programStatistics: PROGRAM_STATISTICS,
+  programStatistics: { totalPrograms: 0, programsByFaculty: {} },
   features: [
     "All 26 South African public universities",
     "University-specific APS scores",

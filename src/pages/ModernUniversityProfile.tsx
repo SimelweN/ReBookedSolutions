@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   ExternalLink,
@@ -38,9 +38,8 @@ import CampusNavbar from "@/components/CampusNavbar";
 import SEO from "@/components/SEO";
 
 const ModernUniversityProfile: React.FC = () => {
-  const [searchParams] = useSearchParams();
+  const { id: universityId } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const universityId = searchParams.get("id");
   const [selectedFaculty, setSelectedFaculty] = useState<string | null>(null);
 
   // Find the university
@@ -142,7 +141,7 @@ const ModernUniversityProfile: React.FC = () => {
         title={`${university.name} - University Profile | ReBooked Campus`}
         description={`Comprehensive profile of ${university.fullName || university.name}. Programs, statistics, and everything you need to know.`}
         keywords={`${university.name}, university profile, programs, faculties, admissions`}
-        url={`https://www.rebookedsolutions.co.za/university-profile?id=${university.id}`}
+        url={`https://www.rebookedsolutions.co.za/university/${university.id}`}
       />
 
       <CampusNavbar />

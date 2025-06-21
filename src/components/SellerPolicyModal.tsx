@@ -25,7 +25,7 @@ interface SellerPolicyModalProps {
 const SellerPolicyModal = ({ isOpen, onClose }: SellerPolicyModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh]">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] w-[95vw] max-w-[95vw] sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-book-600">
             <Shield className="h-5 w-5" />

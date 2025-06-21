@@ -121,7 +121,7 @@ const UniversityInfo = () => {
   // Redirect to new university profile route if university parameter is present
   useEffect(() => {
     if (selectedUniversityId) {
-      navigate(`/university-profile?id=${selectedUniversityId}`, {
+      navigate(`/university/${selectedUniversityId}`, {
         replace: true,
       });
     }
@@ -441,7 +441,7 @@ const UniversityInfo = () => {
               className="flex-1 hover:bg-book-50 hover:border-book-300 text-book-600 border-book-200 text-xs sm:text-sm min-h-[36px]"
               onClick={(e) => {
                 e.stopPropagation();
-                navigate(`/university-profile?id=${applicationInfo.id}`);
+                navigate(`/university/${applicationInfo.id}`);
               }}
             >
               <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
@@ -555,34 +555,7 @@ const UniversityInfo = () => {
 
       <CampusNavbar />
 
-      {/* Test div to check if component renders */}
-      <div
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          background: "red",
-          color: "white",
-          padding: "4px",
-          zIndex: 9999,
-          fontSize: "12px",
-        }}
-      >
-        UniversityInfo Loading - {SOUTH_AFRICAN_UNIVERSITIES?.length || 0} unis
-      </div>
-
       <div className="min-h-screen bg-gray-50">
-        {/* Debug information */}
-        {import.meta.env.DEV && (
-          <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 m-4">
-            <div className="text-sm">
-              <strong>Debug Info:</strong> Universities loaded:{" "}
-              {SOUTH_AFRICAN_UNIVERSITIES?.length || 0}, Current tool:{" "}
-              {currentTool}, University ID: {selectedUniversityId || "none"}
-            </div>
-          </div>
-        )}
-
         {/* Main Content with Tabs */}
         <div className="container mx-auto px-4 py-6">
           <Tabs
@@ -757,10 +730,10 @@ const UniversityInfo = () => {
                 </p>
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-8 max-w-2xl mx-auto">
                   <Building className="h-12 w-12 mx-auto text-yellow-600 mb-4" />
-                  <h3 className="text-xl font-semibold text-yellow-800 mb-2">
+                  <h3 className="text-xl font-semibold text-book-800 mb-2">
                     Coming Soon
                   </h3>
-                  <p className="text-yellow-700">
+                  <p className="text-book-700">
                     We're working on bringing you comprehensive accommodation
                     listings and booking services.
                   </p>

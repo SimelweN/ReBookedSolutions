@@ -1865,7 +1865,7 @@ const getPerformanceLevel = (
   if (aps >= 24)
     return {
       level: "Good",
-      color: "text-blue-600 bg-blue-100",
+      color: "text-book-600 bg-book-100",
       description: "Solid performance - many options available",
     };
   if (aps >= 18)
@@ -2048,27 +2048,30 @@ const SimpleAPSCalculator: React.FC = () => {
   const filteredDegrees = useMemo(() => {
     let filtered = degreeAnalysis;
 
-    if (totalAPS === 0) {
-      // Show a sample of programs when no APS is entered
-      filtered = degreeAnalysis.slice(0, 50);
-    } else {
-      switch (selectedFilter) {
-        case "eligible":
-          filtered = filtered.filter((d) => d.eligible);
-          break;
-        case "competitive":
-          filtered = filtered.filter((d) => d.competitiveness === "High");
-          break;
-        case "all":
-        default:
+    // Apply filtering based on selected filter, regardless of APS score
+    switch (selectedFilter) {
+      case "eligible":
+        filtered = filtered.filter((d) => d.eligible);
+        break;
+      case "competitive":
+        filtered = filtered.filter((d) => d.competitiveness === "High");
+        break;
+      case "all":
+      default:
+        if (totalAPS === 0) {
+          // When no APS is entered, show all programs sorted by APS requirement
+          filtered = filtered.sort(
+            (a, b) => a.apsRequirement - b.apsRequirement,
+          );
+        } else {
           // Show all programs, but prioritize eligible ones
           filtered = filtered.sort((a, b) => {
             if (a.eligible && !b.eligible) return -1;
             if (!a.eligible && b.eligible) return 1;
-            return b.apsRequirement - a.apsRequirement;
+            return a.apsRequirement - b.apsRequirement;
           });
-          break;
-      }
+        }
+        break;
     }
 
     return filtered;
@@ -2149,7 +2152,7 @@ const SimpleAPSCalculator: React.FC = () => {
               </div>
             </div>
             <div className="bg-slate-800 rounded-xl p-6 text-center border border-slate-700">
-              <Target className="h-8 w-8 text-blue-400 mx-auto mb-3" />
+              <Target className="h-8 w-8 text-book-400 mx-auto mb-3" />
               <div className="text-3xl font-bold text-white mb-1">
                 {stats.eligibilityRate}%
               </div>
@@ -2466,7 +2469,7 @@ const SimpleAPSCalculator: React.FC = () => {
                                 {/* Faculty Header */}
                                 <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
                                   <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
-                                    <Building className="h-5 w-5 text-blue-500" />
+                                    <Building className="h-5 w-5 text-book-500" />
                                     {faculty}
                                   </h3>
                                   <div className="flex items-center gap-2">
@@ -2664,7 +2667,7 @@ const SimpleAPSCalculator: React.FC = () => {
                   <Card className="bg-white border-0 shadow-lg">
                     <CardHeader className="pb-3">
                       <CardTitle className="flex items-center gap-2 text-lg text-slate-900">
-                        <TrendingUp className="h-5 w-5 text-blue-500" />
+                        <TrendingUp className="h-5 w-5 text-book-500" />
                         Performance Metrics
                       </CardTitle>
                     </CardHeader>
@@ -2733,7 +2736,7 @@ const SimpleAPSCalculator: React.FC = () => {
             onClick={() => navigate("/books")}
           >
             <CardContent className="p-6 text-center">
-              <BookOpen className="h-8 w-8 text-blue-500 mx-auto mb-3" />
+              <BookOpen className="h-8 w-8 text-book-500 mx-auto mb-3" />
               <h3 className="font-semibold text-slate-900 mb-2">
                 Browse Textbooks
               </h3>

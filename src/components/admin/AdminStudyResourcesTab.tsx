@@ -16,7 +16,16 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Edit, Trash2, FileText, BookOpen, User } from "lucide-react";
 import { toast } from "sonner";
-import { studyResourcesService } from "@/services/admin/studyResourcesService"; // Corrected import
+import {
+  createStudyResource,
+  updateStudyResource,
+  deleteStudyResource,
+  createStudyTip,
+  updateStudyTip,
+  deleteStudyTip,
+  getStudyResources,
+  getStudyTips,
+} from "@/services/admin/studyResourcesService";
 
 interface StudyResource {
   id: string;
@@ -125,10 +134,17 @@ const AdminStudyResourcesTab = () => {
     setIsLoading(true);
     setError(null);
     try {
+      console.log("Loading study resources and tips...");
       const [resourcesData, tipsData] = await Promise.all([
-        studyResourcesService.getStudyResources(),
-        studyResourcesService.getStudyTips(),
+        getStudyResources(),
+        getStudyTips(),
       ]);
+      console.log(
+        "Loaded resources:",
+        resourcesData.length,
+        "tips:",
+        tipsData.length,
+      );
       setResources(resourcesData);
       setTips(tipsData);
     } catch (error) {
@@ -177,13 +193,10 @@ const AdminStudyResourcesTab = () => {
       };
 
       if (editingResource) {
-        await studyResourcesService.updateStudyResource(
-          editingResource.id,
-          resourcePayload,
-        );
+        await updateStudyResource(editingResource.id, resourcePayload);
         toast.success("Resource updated successfully");
       } else {
-        await studyResourcesService.createStudyResource(resourcePayload);
+        await createStudyResource(resourcePayload);
         toast.success("Resource created successfully");
       }
 
@@ -233,10 +246,10 @@ const AdminStudyResourcesTab = () => {
       };
 
       if (editingTip) {
-        await studyResourcesService.updateStudyTip(editingTip.id, tipPayload);
+        await updateStudyTip(editingTip.id, tipPayload);
         toast.success("Tip updated successfully");
       } else {
-        await studyResourcesService.createStudyTip(tipPayload);
+        await createStudyTip(tipPayload);
         toast.success("Tip created successfully");
       }
 
@@ -296,20 +309,20 @@ const AdminStudyResourcesTab = () => {
     if (!confirm("Are you sure you want to delete this resource?")) return;
 
     try {
-      await studyResourcesService.deleteStudyResource(id);
+      await deleteStudyResource(id);
       toast.success("Resource deleted successfully");
-      loadData();
+      await loadData();
     } catch (error) {
       console.error("Error deleting resource:", error);
       toast.error("Failed to delete resource");
     }
   };
 
-  const deleteTip = async (id: string) => {
+  const handleDeleteTip = async (id: string) => {
     if (!confirm("Are you sure you want to delete this tip?")) return;
 
     try {
-      await studyResourcesService.deleteStudyTip(id);
+      await deleteStudyTip(id);
       toast.success("Tip deleted successfully");
       loadData();
     } catch (error) {
