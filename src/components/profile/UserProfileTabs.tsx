@@ -55,17 +55,20 @@ const UserProfileTabs = ({
   return (
     <div className="w-full">
       <Tabs defaultValue="listings" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="listings">Listings</TabsTrigger>
-          {isOwnProfile && <TabsTrigger value="account">Account</TabsTrigger>}
+        <TabsList className="w-full">
+          <TabsTrigger value="listings" className="flex-1">
+            Active Listings ({activeListings.length})
+          </TabsTrigger>
+          <TabsTrigger value="activity" className="flex-1">
+            Activity
+          </TabsTrigger>
+          <TabsTrigger value="account" className="flex-1">
+            Account Information
+          </TabsTrigger>
+          <TabsTrigger value="addresses" className="flex-1">
+            Addresses
+          </TabsTrigger>
         </TabsList>
-
-        <TabsContent value="listings" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-xl md:text-2xl">
-                Active Listings ({activeListings.length})
-              </CardTitle>
             </CardHeader>
             <CardContent>
               {isLoading ? (
