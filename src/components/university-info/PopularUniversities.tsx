@@ -387,9 +387,7 @@ const PopularUniversities = () => {
             <div className="flex flex-col sm:flex-row gap-2">
               <Button
                 size="sm"
-                onClick={() =>
-                  navigate(`/university-profile?id=${university.id}`)
-                }
+                onClick={() => navigate(`/university/${university.id}`)}
                 className="flex-1 text-white text-xs sm:text-sm transition-all duration-200"
                 className="bg-book-600 border-book-600 text-white hover:bg-book-700"
               >
