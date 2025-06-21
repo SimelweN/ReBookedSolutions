@@ -299,8 +299,14 @@ const EnhancedAPSCalculator: React.FC = () => {
     }
 
     try {
-      // Update user profile with current subjects
-      await updateUserSubjects(subjects as APSSubject[]);
+      // Update user profile with current subjects - properly convert APSSubjectInput to APSSubject
+      const apsSubjects: APSSubject[] = subjects.map((subject) => ({
+        name: subject.name,
+        marks: subject.marks,
+        level: subject.level,
+        points: subject.points,
+      }));
+      await updateUserSubjects(apsSubjects);
 
       // Search across all universities
       const results = [];
