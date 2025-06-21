@@ -318,8 +318,35 @@ const EnhancedAPSCalculator: React.FC = () => {
     try {
       setSearchResults([]);
 
-      // Search across major universities
-      const universityIds = ["uct", "wits", "stellenbosch", "up", "ukzn"];
+      // Search across ALL major South African universities to show complete program listings
+      const universityIds = [
+        "uct",
+        "wits",
+        "stellenbosch",
+        "up",
+        "ukzn",
+        "ufs",
+        "rhodes",
+        "uwc",
+        "unisa",
+        "uj",
+        "nwu",
+        "tut",
+        "dut",
+        "mut",
+        "vut",
+        "wsu",
+        "smu",
+        "uven",
+        "ul",
+        "unizulu",
+        "ufh",
+        "cut",
+        "cput",
+        "nmmu",
+        "univen",
+        "sol",
+      ];
       const allResults: any[] = [];
 
       for (const universityId of universityIds) {
