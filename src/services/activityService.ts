@@ -353,9 +353,19 @@ export class ActivityService {
         errorObj.message ||
         errorObj.error_description ||
         errorObj.msg ||
-        JSON.stringify(error);
+        "Database operation failed";
       errorDetails = errorObj.details || errorObj.hint || errorObj.code;
       errorStack = errorObj.stack;
+
+      // Better logging for debugging
+      try {
+        console.error(
+          `❌ ${message} - Full error object:`,
+          JSON.stringify(error, null, 2),
+        );
+      } catch (stringifyError) {
+        console.error(`❌ ${message} - Error object (unstringifiable):`, error);
+      }
     } else if (typeof error === "string") {
       errorMessage = error;
     } else {
