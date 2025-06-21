@@ -1,9 +1,5 @@
 import { University } from "@/types/university";
-import {
-  applyAssignmentRules,
-  ALL_COMPREHENSIVE_PROGRAMS,
-  logAssignmentResults,
-} from "./comprehensive-program-assignment";
+import { getUniversityFaculties } from "./massive-course-database";
 
 /**
  * COMPLETE 26 SOUTH AFRICAN PUBLIC UNIVERSITIES
