@@ -225,29 +225,25 @@ const UniversityGrid = ({
                           } else {
                             // Show fallback text if even default fails
                             target.style.display = "none";
-                            const fallback = target.parentElement?.querySelector(".logo-fallback");
+                            const fallback =
+                              target.parentElement?.querySelector(
+                                ".logo-fallback",
+                              );
                             if (fallback) {
                               (fallback as HTMLElement).style.display = "flex";
                             }
                           }
                         }}
                       />
-                        <div
-                          className="logo-fallback w-full h-full bg-book-100 rounded flex items-center justify-center"
-                          style={{ display: "none" }}
-                        >
-                          <span className="text-book-600 font-bold text-sm">
-                            {university.abbreviation}
-                          </span>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="w-12 h-12 bg-book-100 rounded-lg flex items-center justify-center">
+                      <div
+                        className="logo-fallback w-full h-full bg-book-100 rounded flex items-center justify-center"
+                        style={{ display: "none" }}
+                      >
                         <span className="text-book-600 font-bold text-sm">
                           {university.abbreviation}
                         </span>
                       </div>
-                    )}
+                    </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-bold text-lg text-gray-900 group-hover:text-book-600 transition-colors leading-tight">
                         {university.name}
