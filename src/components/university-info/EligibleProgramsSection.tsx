@@ -340,6 +340,13 @@ const EligibleProgramsSection: React.FC<EligibleProgramsSectionProps> = ({
           </div>
         </div>
 
+        {/* Faculty Overview */}
+        <div className="mb-6 p-4 bg-gradient-to-r from-book-50 to-blue-50 rounded-lg border">
+          <p className="text-sm text-gray-700 text-center">
+            {generateFacultyOverview(programsByFaculty, facultyCounts)}
+          </p>
+        </div>
+
         {/* Faculty Tabs */}
         <div className="mb-6">
           <div className="flex flex-wrap gap-2 border-b">
@@ -349,27 +356,40 @@ const EligibleProgramsSection: React.FC<EligibleProgramsSectionProps> = ({
               onClick={() => setSelectedFacultyTab("all")}
               className="rounded-b-none"
             >
+              <Target className="w-3 h-3 mr-1" />
               All Programs ({statistics.total})
             </Button>
-            {Object.keys(programsByFaculty).map((faculty) => (
-              <Button
-                key={faculty}
-                variant={selectedFacultyTab === faculty ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setSelectedFacultyTab(faculty)}
-                className="rounded-b-none"
-              >
-                {faculty} ({facultyCounts[faculty]?.total || 0})
-                {facultyCounts[faculty]?.eligible > 0 && (
-                  <Badge
-                    variant="secondary"
-                    className="ml-1 bg-green-100 text-green-800 text-xs"
-                  >
-                    {facultyCounts[faculty].eligible}
-                  </Badge>
-                )}
-              </Button>
-            ))}
+            {sortedFaculties.map(({ name: faculty, stats }) => {
+              const colors = getFacultyColor(faculty);
+              return (
+                <Button
+                  key={faculty}
+                  variant={selectedFacultyTab === faculty ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setSelectedFacultyTab(faculty)}
+                  className={cn(
+                    "rounded-b-none",
+                    selectedFacultyTab === faculty &&
+                      `${colors.bg} ${colors.text} border-t-2 ${colors.border}`,
+                  )}
+                >
+                  {faculty} ({stats.total})
+                  {stats.eligible > 0 && (
+                    <Badge
+                      variant="secondary"
+                      className="ml-1 bg-green-100 text-green-800 text-xs"
+                    >
+                      {stats.eligible}
+                    </Badge>
+                  )}
+                  {stats.eligibilityRate > 0 && (
+                    <span className="ml-1 text-xs opacity-75">
+                      {stats.eligibilityRate}%
+                    </span>
+                  )}
+                </Button>
+              );
+            })}
           </div>
         </div>
 
