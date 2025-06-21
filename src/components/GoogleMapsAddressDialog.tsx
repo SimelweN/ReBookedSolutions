@@ -173,41 +173,34 @@ const GoogleMapsAddressDialog = ({
     const lat = place.geometry.location.lat();
     const lng = place.geometry.location.lng();
 
-    // Extract address components
-    let street = "",
-      city = "",
-      province = "",
-      postalCode = "";
+    // Extract address components using utility functions
+    const province = extractProvince(place);
+    const city = extractCity(place);
+    const postalCode = extractPostalCode(place);
 
+    // Extract street address from formatted address or components
+    let street = "";
     if (place.address_components) {
       for (const component of place.address_components) {
         const types = component.types;
         if (types.includes("street_number") || types.includes("route")) {
           street = (street + " " + component.long_name).trim();
-        } else if (
-          types.includes("locality") ||
-          types.includes("administrative_area_level_2")
-        ) {
-          city = component.long_name;
-        } else if (types.includes("administrative_area_level_1")) {
-          province = component.long_name;
-        } else if (types.includes("postal_code")) {
-          postalCode = component.long_name;
         }
       }
     }
 
     const newAddress = {
       street: street || place.formatted_address?.split(",")[0] || "",
-      city,
-      province,
-      postalCode,
+      city: city || "",
+      province: province || "",
+      postalCode: postalCode || "",
     };
 
     setShippingAddress(newAddress);
     setShippingCoords({ lat, lng });
 
     console.log("Shipping address selected:", newAddress);
+    console.log("Province extracted:", province);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
