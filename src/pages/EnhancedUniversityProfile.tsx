@@ -458,22 +458,22 @@ const EnhancedUniversityProfile: React.FC = () => {
                     Visit Website
                   </Button>
 
-                  {/* Secondary actions - 2 column grid on mobile */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <Button
+                  {/* Secondary actions - Stack on mobile for better visibility */}
+                  <div className="space-y-2 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-3">
+                    <button
                       onClick={handleViewBooks}
-                      className="bg-white/20 text-white border border-white/40 hover:bg-white/30 w-full text-sm font-semibold py-3 backdrop-blur"
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center"
                     >
                       <BookOpen className="w-4 h-4 mr-2" />
-                      Books
-                    </Button>
-                    <Button
+                      Find Textbooks
+                    </button>
+                    <button
                       onClick={handleAPSCalculator}
-                      className="bg-white/20 text-white border border-white/40 hover:bg-white/30 w-full text-sm font-semibold py-3 backdrop-blur"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center"
                     >
                       <Calculator className="w-4 h-4 mr-2" />
-                      Calculator
-                    </Button>
+                      APS Calculator
+                    </button>
                   </div>
                 </div>
               </div>
