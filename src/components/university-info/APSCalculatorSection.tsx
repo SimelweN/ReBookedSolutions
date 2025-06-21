@@ -4,9 +4,11 @@ import APSErrorBoundary from "./APSErrorBoundary";
 
 const APSCalculatorSection = () => {
   return (
-    <APSErrorBoundary>
-      <ModernAPSCalculator />
-    </APSErrorBoundary>
+    <div className="container mx-auto px-4 py-6">
+      <APSErrorBoundary>
+        <ModernAPSCalculator />
+      </APSErrorBoundary>
+    </div>
   );
 };
 

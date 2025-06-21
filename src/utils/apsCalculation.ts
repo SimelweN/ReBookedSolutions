@@ -2,8 +2,15 @@ import { APSSubject, APSCalculation, EligibleDegree } from "@/types/university";
 import { calculateAPSPoints } from "@/constants/degrees";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities";
 import { isNonContributing } from "@/constants/subjects";
+import {
+  calculateUniversitySpecificAPS,
+  UniversityAPSCalculation,
+} from "@/services/universitySpecificAPSService";
 
-export const calculateAPS = (subjects: APSSubject[]): APSCalculation => {
+export const calculateAPS = (
+  subjects: APSSubject[],
+  targetUniversities?: string[],
+): APSCalculation => {
   try {
     // Validate input
     if (!subjects || !Array.isArray(subjects)) {
@@ -35,6 +42,12 @@ export const calculateAPS = (subjects: APSSubject[]): APSCalculation => {
         return total;
       }
     }, 0);
+
+    // Calculate university-specific scores
+    const universityAPSCalculation = calculateUniversitySpecificAPS(
+      subjects,
+      targetUniversities,
+    );
 
     // Find eligible degrees from all universities
     const eligibleDegrees: EligibleDegree[] = [];
@@ -144,6 +157,8 @@ export const calculateAPS = (subjects: APSSubject[]): APSCalculation => {
       subjects: contributingSubjects,
       totalScore,
       eligibleDegrees,
+      universitySpecificScores:
+        universityAPSCalculation.universitySpecificScores,
     };
   } catch (error) {
     console.error("Error in calculateAPS:", error);
@@ -153,6 +168,7 @@ export const calculateAPS = (subjects: APSSubject[]): APSCalculation => {
       subjects: [],
       totalScore: 0,
       eligibleDegrees: [],
+      universitySpecificScores: [],
     };
   }
 };

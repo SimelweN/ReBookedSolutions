@@ -65,6 +65,7 @@ import {
   getUniversityLogoPath,
   createLogoFallbackHandler,
 } from "@/utils/universityLogoUtils";
+import { getUniversityFaculties } from "@/constants/universities/comprehensive-course-database";
 import "@/styles/university-profile-mobile.css";
 
 /**
@@ -86,13 +87,13 @@ const EnhancedUniversityProfile: React.FC = () => {
   // APS-aware filtering
   const {
     userProfile,
-    isLoading,
+    isLoading: apsLoading,
     error,
     hasValidProfile,
     qualificationSummary,
     searchCoursesForUniversity,
-    getFacultiesForUniversity,
     checkProgramEligibility,
+    clearAPSProfile,
     clearError,
   } = useAPSAwareCourseAssignment(universityId);
 
@@ -176,49 +177,97 @@ const EnhancedUniversityProfile: React.FC = () => {
         console.log(`Loading faculties for university: ${universityId}`);
       }
 
-      getFacultiesForUniversity(universityId, filterOptions)
-        .then((result) => {
-          // Debug logging
-          if (import.meta.env.DEV) {
-            console.log(`Faculty results for ${universityId}:`, {
-              facultiesCount: result.faculties.length,
-              totalDegrees: result.statistics.totalDegrees,
-              errors: result.errors,
-              warnings: result.warnings,
-            });
-          }
+      try {
+        // Get faculties directly from the university data
+        const faculties = getUniversityFaculties(universityId);
 
-          setFacultiesData({
-            faculties: result.faculties,
-            statistics: result.statistics,
-            errors: result.errors,
-            warnings: result.warnings,
-            isLoading: false,
+        // Calculate statistics
+        const totalDegrees = faculties.reduce(
+          (total, faculty) => total + (faculty.degrees?.length || 0),
+          0,
+        );
+        const eligibleDegrees = userProfile
+          ? faculties.reduce((total, faculty) => {
+              return (
+                total +
+                (faculty.degrees?.filter((degree) => {
+                  const eligibility = checkProgramEligibility(
+                    degree.apsRequirement,
+                    degree.subjects || [],
+                  );
+                  return eligibility.eligible;
+                }).length || 0)
+              );
+            }, 0)
+          : 0;
+
+        // Debug logging
+        if (import.meta.env.DEV) {
+          console.log(`Faculty results for ${universityId}:`, {
+            facultiesCount: faculties.length,
+            totalDegrees,
+            eligibleDegrees,
           });
-        })
-        .catch((err) => {
-          console.error(`Error loading faculties for ${universityId}:`, err);
-          setFacultiesData({
-            faculties: [],
-            statistics: {
-              totalFaculties: 0,
-              totalDegrees: 0,
-              eligibleDegrees: 0,
-              averageAPS: 0,
-            },
-            errors: [`Error loading faculties: ${err}`],
-            warnings: [],
-            isLoading: false,
-          });
+        }
+
+        setFacultiesData({
+          faculties,
+          statistics: {
+            totalFaculties: faculties.length,
+            totalDegrees,
+            eligibleDegrees,
+            averageAPS: 0, // Can be calculated if needed
+          },
+          errors: [],
+          warnings: [],
+          isLoading: false,
         });
+      } catch (err) {
+        console.error(`Error loading faculties for ${universityId}:`, err);
+        setFacultiesData({
+          faculties: [],
+          statistics: {
+            totalFaculties: 0,
+            totalDegrees: 0,
+            eligibleDegrees: 0,
+            averageAPS: 0,
+          },
+          errors: [`Error loading faculties: ${err}`],
+          warnings: [],
+          isLoading: false,
+        });
+      }
     }
   }, [
     universityId,
     universityData.university,
     userProfile,
-    filterOptions,
-    getFacultiesForUniversity,
+    checkProgramEligibility,
   ]);
+
+  // Listen for global APS profile clearing event
+  useEffect(() => {
+    const handleAPSProfileCleared = () => {
+      // Reset faculties data to clean state
+      setFacultiesData((prev) => ({
+        ...prev,
+        statistics: {
+          totalFaculties: prev.faculties.length,
+          totalDegrees: prev.faculties.reduce(
+            (total, faculty) => total + (faculty.degrees?.length || 0),
+            0,
+          ),
+          eligibleDegrees: 0,
+          averageAPS: 0,
+        },
+      }));
+    };
+
+    window.addEventListener("apsProfileCleared", handleAPSProfileCleared);
+    return () => {
+      window.removeEventListener("apsProfileCleared", handleAPSProfileCleared);
+    };
+  }, []);
 
   // Enhanced statistics calculation
   const enhancedStats = useMemo(() => {
@@ -576,6 +625,18 @@ const EnhancedUniversityProfile: React.FC = () => {
                         </span>
                       </div>
                     </div>
+                    {/* Clear APS Profile Button */}
+                    <div className="mt-4 pt-3 border-t border-white/20">
+                      <Button
+                        onClick={clearAPSProfile}
+                        variant="outline"
+                        size="sm"
+                        className="w-full bg-white/10 border-white/30 text-white hover:bg-white/20 text-xs"
+                      >
+                        <X className="w-3 h-3 mr-1" />
+                        Clear APS Profile
+                      </Button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -750,17 +811,19 @@ const EnhancedUniversityProfile: React.FC = () => {
                   </div>
 
                   {/* Loading State */}
-                  {(isLoading || facultiesData.isLoading) && (
+                  {(apsLoading || facultiesData.isLoading) && (
                     <div className="flex items-center justify-center py-12">
-                      <Loader2 className="w-8 h-8 animate-spin text-book-600" />
-                      <span className="ml-2 text-slate-600">
-                        Loading programs...
-                      </span>
+                      <div className="flex items-center gap-3">
+                        <Loader2 className="h-6 w-6 animate-spin text-green-600" />
+                        <span className="text-gray-600">
+                          Loading university programs...
+                        </span>
+                      </div>
                     </div>
                   )}
 
                   {/* Programs Display */}
-                  {!isLoading && !facultiesData.isLoading && (
+                  {!apsLoading && !facultiesData.isLoading && (
                     <>
                       {filteredFaculties.length > 0 ? (
                         <div className="space-y-4">

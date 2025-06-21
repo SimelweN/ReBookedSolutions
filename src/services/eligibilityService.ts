@@ -1,5 +1,8 @@
 import { APSSubject } from "@/types/university";
-import { ComprehensiveCourse } from "@/constants/universities/comprehensive-course-database";
+import {
+  ComprehensiveCourse,
+  getAPSRequirement,
+} from "@/constants/universities/comprehensive-course-database";
 import { checkSubjectRequirements } from "./subjectMatchingService";
 import { logError } from "./systemMonitoringService";
 
@@ -62,8 +65,6 @@ export function assessEligibility(
     }
 
     // Get APS requirement for this university
-    const getAPSRequirement =
-      require("@/constants/universities/comprehensive-course-database").getAPSRequirement;
     const requiredAPS = getAPSRequirement(course, universityId);
 
     // APS Assessment

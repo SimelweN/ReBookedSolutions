@@ -29,6 +29,7 @@ const BASE_UNIVERSITIES: University[] = [
     establishedYear: 1829,
     studentPopulation: 29000,
     type: "Traditional University",
+    scoringSystem: "uct-fps",
     applicationInfo: {
       isOpen: true,
       openingDate: "1 April 2025",
@@ -55,6 +56,7 @@ const BASE_UNIVERSITIES: University[] = [
     establishedYear: 1922,
     studentPopulation: 40000,
     type: "Traditional University",
+    scoringSystem: "wits-composite",
     applicationInfo: {
       isOpen: true,
       openingDate: "1 April 2025",
@@ -81,6 +83,7 @@ const BASE_UNIVERSITIES: University[] = [
     establishedYear: 1918,
     studentPopulation: 32000,
     type: "Traditional University",
+    scoringSystem: "stellenbosch-tpt",
     applicationInfo: {
       isOpen: true,
       openingDate: "1 March 2025",
@@ -107,6 +110,7 @@ const BASE_UNIVERSITIES: University[] = [
     establishedYear: 1908,
     studentPopulation: 56000,
     type: "Traditional University",
+    scoringSystem: "standard",
     applicationInfo: {
       isOpen: true,
       openingDate: "1 April 2025",
@@ -185,6 +189,7 @@ const BASE_UNIVERSITIES: University[] = [
     establishedYear: 1904,
     studentPopulation: 8500,
     type: "Traditional University",
+    scoringSystem: "rhodes-average",
     applicationInfo: {
       isOpen: true,
       openingDate: "1 April 2025",
@@ -501,6 +506,7 @@ const BASE_UNIVERSITIES: University[] = [
     establishedYear: 1873,
     studentPopulation: 300000,
     type: "Comprehensive University",
+    scoringSystem: "unisa-custom",
     applicationInfo: {
       isOpen: true,
       openingDate: "1 August 2025",

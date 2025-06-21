@@ -41,6 +41,7 @@ import ConfirmEmailChange from "./pages/ConfirmEmailChange";
 import Report from "./pages/Report";
 import UserProfile from "./pages/UserProfile";
 import FAQ from "./pages/FAQ";
+import APSDemo from "./pages/APSDemo";
 import "./App.css";
 
 // Create query client
@@ -106,6 +107,7 @@ function App() {
                       element={<StudyResources />}
                     />
                     <Route path="/study-tips" element={<StudyResources />} />
+                    <Route path="/aps-demo" element={<APSDemo />} />
 
                     {/* Shopping and Cart Routes */}
                     <Route path="/cart" element={<Cart />} />

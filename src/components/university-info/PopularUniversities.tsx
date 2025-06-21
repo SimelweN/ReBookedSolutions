@@ -388,11 +388,20 @@ const PopularUniversities = () => {
               <Button
                 size="sm"
                 onClick={() => navigate(`/university/${university.id}`)}
-                className="flex-1 text-white text-xs sm:text-sm transition-all duration-200"
-                className="bg-book-600 border-book-600 text-white hover:bg-book-700"
+                className="flex-1 text-white text-xs sm:text-sm transition-all duration-200 bg-book-600 border-book-600 hover:bg-book-700"
               >
                 <UniversityIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Explore University
+              </Button>
+
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => navigate(`/university-profile/${university.id}`)}
+                className="flex-1 text-xs sm:text-sm transition-all duration-200 border-book-600 text-book-600 hover:bg-book-50"
+              >
+                <GraduationCap className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                View Programs
               </Button>
 
               <div className="flex gap-2 justify-end">
