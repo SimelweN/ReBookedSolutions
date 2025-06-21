@@ -36,6 +36,11 @@ const UniversityDetailView: React.FC<UniversityDetailViewProps> = ({
   university,
   onBack,
 }) => {
+  // Auth and navigation
+  const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const [notifyLoading, setNotifyLoading] = useState(false);
+
   // APS profile management
   const { hasValidProfile, clearAPSProfile } = useAPSAwareCourseAssignment();
 
