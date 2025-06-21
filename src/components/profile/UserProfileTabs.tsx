@@ -225,7 +225,8 @@ const UserProfileTabs = ({
                     Commit System Coming Soon
                   </h3>
                   <p className="text-gray-500 text-sm">
-                    The commit system will track your transaction history once it's fully implemented.
+                    The commit system will track your transaction history once
+                    it's fully implemented.
                   </p>
                 </div>
               </CardContent>
@@ -407,7 +408,9 @@ const UserProfileTabs = ({
                       </p>
                     </div>
                     <div className="space-y-2">
-                      <h3 className="font-semibold text-lg">Shipping Address</h3>
+                      <h3 className="font-semibold text-lg">
+                        Shipping Address
+                      </h3>
                       <p className="text-sm text-gray-600">
                         {formatAddress(addressData?.shipping_address)}
                       </p>
@@ -420,7 +423,9 @@ const UserProfileTabs = ({
                     disabled={isLoadingAddress}
                   >
                     <MapPin className="h-4 w-4 mr-2" />
-                    {isLoadingAddress ? "Loading..." : "🗺️ Edit with Google Maps"}
+                    {isLoadingAddress
+                      ? "Loading..."
+                      : "🗺️ Edit with Google Maps"}
                   </Button>
                 </CardContent>
               </Card>
@@ -447,6 +452,7 @@ const UserProfileTabs = ({
           isLoading={isLoadingAddress}
         />
       )}
+    </div>
   );
 };
 
