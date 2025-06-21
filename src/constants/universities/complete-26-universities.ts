@@ -29,6 +29,7 @@ const BASE_UNIVERSITIES: University[] = [
     establishedYear: 1829,
     studentPopulation: 29000,
     type: "Traditional University",
+    scoringSystem: "uct-fps",
     applicationInfo: {
       isOpen: true,
       openingDate: "1 April 2025",
