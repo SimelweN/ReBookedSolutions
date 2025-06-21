@@ -17,19 +17,43 @@ const logCommitError = (
   error: unknown,
   context?: Record<string, any>,
 ) => {
-  const errorInfo = {
-    message: error instanceof Error ? error.message : "Unknown error",
-    code: (error as any)?.code || "unknown",
-    details:
-      (error as any)?.details ||
-      (error as any)?.hint ||
-      "No additional details",
-    stack: error instanceof Error ? error.stack : undefined,
-    context: context || {},
-    timestamp: new Date().toISOString(),
-  };
+  try {
+    let errorInfo: any = {
+      timestamp: new Date().toISOString(),
+      context: context || {},
+    };
 
-  console.error(`[CommitService] ${message}:`, errorInfo);
+    if (error instanceof Error) {
+      errorInfo.type = "Error";
+      errorInfo.message = error.message;
+      errorInfo.stack = error.stack;
+    } else if (error && typeof error === "object") {
+      errorInfo.type = "Object";
+      errorInfo.message = (error as any).message || "No message";
+      errorInfo.code = (error as any).code || "unknown";
+      errorInfo.details =
+        (error as any).details || (error as any).hint || "No details";
+
+      // Try to stringify the whole error object for debugging
+      try {
+        errorInfo.fullError = JSON.stringify(error, null, 2);
+      } catch (stringifyError) {
+        errorInfo.fullError = "Could not stringify error object";
+        errorInfo.errorKeys = Object.keys(error);
+      }
+    } else {
+      errorInfo.type = typeof error;
+      errorInfo.message = String(error);
+    }
+
+    console.error(`[CommitService] ${message}:`, errorInfo);
+  } catch (loggingError) {
+    // Fallback if our error logging itself fails
+    console.error(`[CommitService] ${message}: Error logging failed`, {
+      originalError: error,
+      loggingError: loggingError,
+    });
+  }
 };
 
 /**
