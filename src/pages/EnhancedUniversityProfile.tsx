@@ -463,19 +463,20 @@ const EnhancedUniversityProfile: React.FC = () => {
                     <Button
                       onClick={handleViewBooks}
                       variant="outline"
-                      className="hero-button-mobile border-white/30 text-white hover:bg-white/20 backdrop-blur-sm w-full text-sm"
+                      className="border-white/30 text-white hover:bg-white/20 backdrop-blur-sm w-full text-sm font-medium"
                     >
-                      <BookOpen className="w-4 h-4 mr-2" />
-                      <span className="hidden xs:inline">Find Textbooks</span>
-                      <span className="xs:hidden">Books</span>
+                      <BookOpen className="w-4 h-4 mr-2 flex-shrink-0" />
+                      <span className="hidden sm:inline">Find Textbooks</span>
+                      <span className="sm:hidden">Books</span>
                     </Button>
                     <Button
                       onClick={handleAPSCalculator}
                       variant="outline"
-                      className="hero-button-mobile border-white/30 text-white hover:bg-white/20 backdrop-blur-sm w-full text-sm"
+                      className="border-white/30 text-white hover:bg-white/20 backdrop-blur-sm w-full text-sm font-medium"
                     >
-                      <Calculator className="w-4 h-4 mr-2" />
-                      APS Calculator
+                      <Calculator className="w-4 h-4 mr-2 flex-shrink-0" />
+                      <span className="hidden sm:inline">APS Calculator</span>
+                      <span className="sm:hidden">Calculator</span>
                     </Button>
                   </div>
                 </div>
