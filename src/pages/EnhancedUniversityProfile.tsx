@@ -600,6 +600,18 @@ const EnhancedUniversityProfile: React.FC = () => {
                         </span>
                       </div>
                     </div>
+                    {/* Clear APS Profile Button */}
+                    <div className="mt-4 pt-3 border-t border-white/20">
+                      <Button
+                        onClick={clearAPSProfile}
+                        variant="outline"
+                        size="sm"
+                        className="w-full bg-white/10 border-white/30 text-white hover:bg-white/20 text-xs"
+                      >
+                        <X className="w-3 h-3 mr-1" />
+                        Clear APS Profile
+                      </Button>
+                    </div>
                   </div>
                 )}
               </div>
