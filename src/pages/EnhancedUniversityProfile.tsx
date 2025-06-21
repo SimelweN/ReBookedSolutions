@@ -60,6 +60,7 @@ import {
   useAPSAwareCourseAssignment,
   useAPSFilterOptions,
 } from "@/hooks/useAPSAwareCourseAssignment";
+import { assessEligibility } from "@/services/eligibilityService";
 
 /**
  * Enhanced University Profile with APS-aware filtering
@@ -816,10 +817,6 @@ const EnhancedUniversityProfile: React.FC = () => {
                                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
                                     {faculty.degrees?.map((degree) => {
                                       // Use centralized eligibility service
-                                      const {
-                                        assessEligibility,
-                                      } = require("@/services/eligibilityService");
-
                                       const eligibilityResult =
                                         hasValidProfile && userProfile
                                           ? assessEligibility(
