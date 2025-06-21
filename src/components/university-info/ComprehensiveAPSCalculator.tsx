@@ -294,13 +294,8 @@ const ProgramDetailsModal: React.FC<ProgramDetailsModalProps> = ({
 };
 
 const ComprehensiveAPSCalculator: React.FC = () => {
-  // Initialize with default subjects
-  const [subjects, setSubjects] = useState<APSSubject[]>([
-    { name: "English", level: 0, countsForAPS: true },
-    { name: "Afrikaans", level: 0, countsForAPS: true },
-    { name: "Mathematics", level: 0, countsForAPS: true },
-    { name: "Life Orientation", level: 0, countsForAPS: false },
-  ]);
+  // Start with empty subjects array - users add their own subjects and scores
+  const [subjects, setSubjects] = useState<APSSubject[]>([]);
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
   const [showAllPrograms, setShowAllPrograms] = useState(false);
