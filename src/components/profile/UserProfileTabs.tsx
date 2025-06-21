@@ -67,39 +67,14 @@ const UserProfileTabs = ({
     return `${address.street}, ${address.city}, ${address.province} ${address.postalCode}`;
   };
 
-  // Mock commit data - in real app this would come from props or API
+  // Real commit data - will be passed as props or fetched from API
   const commitData = {
-    totalCommits: 12,
-    activeCommits: 3,
-    completedCommits: 9,
-    averageResponseTime: "2.3 hours",
-    reliabilityScore: 92,
-    recentCommits: [
-      {
-        id: "1",
-        bookTitle: "Calculus: Early Transcendentals",
-        buyerName: "Sarah M.",
-        commitDate: "2024-01-15",
-        status: "completed",
-        responseTime: "1.5 hours",
-      },
-      {
-        id: "2",
-        bookTitle: "Linear Algebra and Its Applications",
-        buyerName: "Mike T.",
-        commitDate: "2024-01-14",
-        status: "active",
-        responseTime: "pending",
-      },
-      {
-        id: "3",
-        bookTitle: "Organic Chemistry",
-        buyerName: "Lisa K.",
-        commitDate: "2024-01-13",
-        status: "completed",
-        responseTime: "3.2 hours",
-      },
-    ],
+    totalCommits: 0,
+    activeCommits: 0,
+    completedCommits: 0,
+    averageResponseTime: "N/A",
+    reliabilityScore: 0,
+    recentCommits: [],
   };
 
   return (
@@ -305,53 +280,66 @@ const UserProfileTabs = ({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {commitData.recentCommits.map((commit) => (
-                    <div
-                      key={commit.id}
-                      className={`p-3 rounded-lg border ${
-                        commit.status === "completed"
-                          ? "bg-green-50 border-green-200"
-                          : "bg-yellow-50 border-yellow-200"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h4 className="font-medium text-sm truncate">
-                            {commit.bookTitle}
-                          </h4>
-                          <p className="text-xs text-gray-600">
-                            Buyer: {commit.buyerName}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {new Date(commit.commitDate).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <div className="flex flex-col items-end">
-                          <Badge
-                            variant={
-                              commit.status === "completed"
-                                ? "default"
-                                : "secondary"
-                            }
-                            className={
-                              commit.status === "completed"
-                                ? "bg-green-600"
-                                : "bg-yellow-600"
-                            }
-                          >
-                            {commit.status}
-                          </Badge>
-                          {commit.responseTime !== "pending" && (
-                            <span className="text-xs text-gray-500 mt-1">
-                              {commit.responseTime}
-                            </span>
-                          )}
+                {commitData.recentCommits.length === 0 ? (
+                  <div className="text-center py-8">
+                    <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-600 mb-2">
+                      No Commits Yet
+                    </h3>
+                    <p className="text-gray-500 text-sm">
+                      Commits will appear here when buyers express interest in
+                      your books.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {commitData.recentCommits.map((commit) => (
+                      <div
+                        key={commit.id}
+                        className={`p-3 rounded-lg border ${
+                          commit.status === "completed"
+                            ? "bg-green-50 border-green-200"
+                            : "bg-yellow-50 border-yellow-200"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-sm truncate">
+                              {commit.bookTitle}
+                            </h4>
+                            <p className="text-xs text-gray-600">
+                              Buyer: {commit.buyerName}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {new Date(commit.commitDate).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <div className="flex flex-col items-end">
+                            <Badge
+                              variant={
+                                commit.status === "completed"
+                                  ? "default"
+                                  : "secondary"
+                              }
+                              className={
+                                commit.status === "completed"
+                                  ? "bg-green-600"
+                                  : "bg-yellow-600"
+                              }
+                            >
+                              {commit.status}
+                            </Badge>
+                            {commit.responseTime !== "pending" && (
+                              <span className="text-xs text-gray-500 mt-1">
+                                {commit.responseTime}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
