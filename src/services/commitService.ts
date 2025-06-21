@@ -185,25 +185,23 @@ export const handleOverdueCommits = async (): Promise<void> => {
     const pendingBooks = await getCommitPendingBooks();
 
     for (const book of pendingBooks) {
-      if (book.order_created_at && checkCommitDeadline(book.order_created_at)) {
+      if (book.createdAt && checkCommitDeadline(book.createdAt)) {
         // Cancel the order and refund buyer
         const { error: cancelError } = await supabase
           .from("books")
           .update({
-            status: "available",
-            order_id: null,
-            order_created_at: null,
+            sold: false,
             updated_at: new Date().toISOString(),
           })
-          .eq("id", book.id);
+          .eq("id", book.bookId);
 
         if (cancelError) {
           console.error(
-            `Failed to cancel overdue commit for book ${book.id}:`,
+            `Failed to cancel overdue commit for book ${book.bookId}:`,
             cancelError,
           );
         } else {
-          console.log(`Cancelled overdue commit for book ${book.id}`);
+          console.log(`Cancelled overdue commit for book ${book.bookId}`);
 
           // TODO: Trigger refund process
           // TODO: Notify both buyer and seller
