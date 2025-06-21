@@ -259,6 +259,8 @@ const EnhancedUniversityProfile: React.FC = () => {
     universityData.university,
     userProfile,
     checkProgramEligibility,
+    fromAPS,
+    apsScore,
   ]);
 
   // Listen for global APS profile clearing event
