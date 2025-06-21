@@ -171,8 +171,23 @@ const EnhancedUniversityProfile: React.FC = () => {
     if (universityId && universityData.university) {
       setFacultiesData((prev) => ({ ...prev, isLoading: true }));
 
+      // Debug logging
+      if (import.meta.env.DEV) {
+        console.log(`Loading faculties for university: ${universityId}`);
+      }
+
       getFacultiesForUniversity(universityId, filterOptions)
         .then((result) => {
+          // Debug logging
+          if (import.meta.env.DEV) {
+            console.log(`Faculty results for ${universityId}:`, {
+              facultiesCount: result.faculties.length,
+              totalDegrees: result.statistics.totalDegrees,
+              errors: result.errors,
+              warnings: result.warnings,
+            });
+          }
+
           setFacultiesData({
             faculties: result.faculties,
             statistics: result.statistics,
@@ -182,6 +197,7 @@ const EnhancedUniversityProfile: React.FC = () => {
           });
         })
         .catch((err) => {
+          console.error(`Error loading faculties for ${universityId}:`, err);
           setFacultiesData({
             faculties: [],
             statistics: {
