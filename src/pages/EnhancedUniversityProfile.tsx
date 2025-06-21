@@ -616,11 +616,13 @@ const EnhancedUniversityProfile: React.FC = () => {
                 </div>
 
                 {/* APS Profile Card */}
-                {hasValidProfile && (
+                {(hasValidProfile || fromAPS) && (
                   <div className="bg-green-500/20 backdrop-blur-md rounded-2xl p-4 sm:p-6 border border-green-300/30">
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="text-white font-semibold text-sm sm:text-base">
-                        Your APS Profile
+                        {fromAPS
+                          ? "APS-Based Recommendations"
+                          : "Your APS Profile"}
                       </h3>
                       <Star className="w-5 h-5 text-yellow-300" />
                     </div>
