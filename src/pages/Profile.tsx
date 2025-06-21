@@ -66,6 +66,7 @@ const Profile = () => {
   const [isLoadingAddress, setIsLoadingAddress] = useState(false);
   const [isLoadingListings, setIsLoadingListings] = useState(true);
   const [deletingBooks, setDeletingBooks] = useState<Set<string>>(new Set());
+  const [isTemporarilyAway, setIsTemporarilyAway] = useState(false);
 
   const loadUserAddresses = useCallback(async () => {
     if (!user?.id) return;
