@@ -47,6 +47,7 @@ export type Database = {
           image_url: string;
           inside_pages: string | null;
           price: number;
+          province: string | null;
           seller_id: string;
           sold: boolean;
           title: string;
@@ -65,6 +66,7 @@ export type Database = {
           image_url: string;
           inside_pages?: string | null;
           price: number;
+          province?: string | null;
           seller_id: string;
           sold?: boolean;
           title: string;
@@ -83,6 +85,7 @@ export type Database = {
           image_url?: string;
           inside_pages?: string | null;
           price?: number;
+          province?: string | null;
           seller_id?: string;
           sold?: boolean;
           title?: string;
