@@ -218,56 +218,16 @@ const UserProfileTabs = ({
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 bg-blue-50 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">
-                      {commitData.totalCommits}
-                    </div>
-                    <div className="text-sm text-blue-700">Total Commits</div>
-                  </div>
-                  <div className="text-center p-3 bg-green-50 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">
-                      {commitData.completedCommits}
-                    </div>
-                    <div className="text-sm text-green-700">Completed</div>
-                  </div>
+                <div className="text-center py-8">
+                  <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-600 mb-2">
+                    Commit System Coming Soon
+                  </h3>
+                  <p className="text-gray-500 text-sm">
+                    The commit system will track your transaction history once
+                    it's fully implemented.
+                  </p>
                 </div>
-
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">
-                      Active Commits:
-                    </span>
-                    <span className="font-medium">
-                      {commitData.activeCommits}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">
-                      Avg Response Time:
-                    </span>
-                    <span className="font-medium">
-                      {commitData.averageResponseTime}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">
-                      Reliability Score:
-                    </span>
-                    <span className="font-medium text-green-600">
-                      {commitData.reliabilityScore}%
-                    </span>
-                  </div>
-                </div>
-
-                <Alert className="border-blue-200 bg-blue-50">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription>
-                    The 48-hour commit system ensures reliable transactions.
-                    Maintain a high reliability score to build trust with
-                    buyers!
-                  </AlertDescription>
-                </Alert>
               </CardContent>
             </Card>
 
@@ -439,7 +399,29 @@ const UserProfileTabs = ({
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  {/* Commit stats will be displayed when the feature is implemented */}
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <h3 className="font-semibold text-lg">Pickup Address</h3>
+                      <p className="text-sm text-gray-600">
+                        {formatAddress(addressData?.pickup_address)}
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="font-semibold text-lg">
+                        Shipping Address
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {formatAddress(addressData?.shipping_address)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={() => setIsAddressEditDialogOpen(true)}
+                    className="w-full md:w-auto"
+                    disabled={isLoadingAddress}
+                  >
+                    <MapPin className="h-4 w-4 mr-2" />
                     {isLoadingAddress ? "Loading..." : "Edit Addresses"}
                   </Button>
                 </CardContent>
