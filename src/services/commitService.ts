@@ -190,12 +190,11 @@ export const handleOverdueCommits = async (): Promise<void> => {
 
     for (const book of pendingBooks) {
       if (book.createdAt && checkCommitDeadline(book.createdAt)) {
-        // Cancel the order and refund buyer
+        // Cancel the order and make book available again
         const { error: cancelError } = await supabase
           .from("books")
           .update({
             sold: false,
-            updated_at: new Date().toISOString(),
           })
           .eq("id", book.bookId);
 
