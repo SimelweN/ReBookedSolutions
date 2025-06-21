@@ -56,6 +56,7 @@ const BASE_UNIVERSITIES: University[] = [
     establishedYear: 1922,
     studentPopulation: 40000,
     type: "Traditional University",
+    scoringSystem: "wits-composite",
     applicationInfo: {
       isOpen: true,
       openingDate: "1 April 2025",
@@ -82,6 +83,7 @@ const BASE_UNIVERSITIES: University[] = [
     establishedYear: 1918,
     studentPopulation: 32000,
     type: "Traditional University",
+    scoringSystem: "stellenbosch-tpt",
     applicationInfo: {
       isOpen: true,
       openingDate: "1 March 2025",
