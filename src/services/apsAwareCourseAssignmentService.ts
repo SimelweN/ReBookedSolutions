@@ -390,10 +390,11 @@ function calculateSubjectMatch(
   }
 
   // Use precise subject matching
+  // FIX: Properly map APSSubject to the expected format for checkSubjectRequirements
   const result = checkSubjectRequirements(
     userSubjects.map((s) => ({
       name: s.name,
-      level: s.level,
+      level: s.level || s.points || 0, // APSSubject has level property, fallback to points if needed
       points: s.points,
     })),
     course.subjects,

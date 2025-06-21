@@ -155,21 +155,32 @@ const EnhancedAPSCalculator: React.FC = () => {
 
   // Calculate APS with all validations
   const apsCalculation = useMemo(() => {
-    const apsResult = calculateAPS(subjects);
-    const validationResult = validateAPSSubjectsEnhanced(subjects);
+    // Convert APSSubjectInput to APSSubject for calculations
+    const apsSubjects: APSSubject[] = subjects.map((subject) => ({
+      name: subject.name,
+      marks: subject.marks,
+      level: subject.level,
+      points: subject.points,
+    }));
+
+    const apsResult = calculateAPS(apsSubjects);
+    const validationResult = validateAPSSubjectsEnhanced(apsSubjects);
 
     // Calculate university-specific scores for all 26 universities
     const universitySpecificCalculation =
-      subjects.length > 0
+      apsSubjects.length > 0
         ? import("@/services/universitySpecificAPSService").then((module) =>
-            module.calculateUniversitySpecificAPS(subjects, ALL_UNIVERSITY_IDS),
+            module.calculateUniversitySpecificAPS(
+              apsSubjects,
+              ALL_UNIVERSITY_IDS,
+            ),
           )
         : null;
 
     return {
       totalAPS: apsResult.totalScore, // Extract the totalScore property
       validationResult,
-      isCalculationValid: validationResult.isValid && subjects.length >= 6,
+      isCalculationValid: validationResult.isValid && apsSubjects.length >= 6,
       fullCalculation: universitySpecificCalculation,
       eligibleDegrees: apsResult.eligibleDegrees, // Also store eligible degrees
     };
@@ -299,8 +310,14 @@ const EnhancedAPSCalculator: React.FC = () => {
     }
 
     try {
-      // Update user profile with current subjects
-      await updateUserSubjects(subjects as APSSubject[]);
+      // Update user profile with current subjects - properly convert APSSubjectInput to APSSubject
+      const apsSubjects: APSSubject[] = subjects.map((subject) => ({
+        name: subject.name,
+        marks: subject.marks,
+        level: subject.level,
+        points: subject.points,
+      }));
+      await updateUserSubjects(apsSubjects);
 
       // Search across all universities
       const results = [];

@@ -127,9 +127,9 @@ const CampusNavbar = () => {
 
             <Button
               variant="ghost"
-              onClick={() => handleNavigation("/study-resources")}
+              onClick={() => handleNavigation("/study-tips")}
               className={`px-3 py-2 rounded-lg font-medium transition-colors text-sm ${
-                isActive("/study-resources")
+                isActive("/study-tips") || isActive("/study-resources")
                   ? "bg-book-50 text-book-600"
                   : "text-gray-600 hover:text-book-600 hover:bg-book-50"
               }`}
@@ -184,13 +184,11 @@ const CampusNavbar = () => {
 
             <Button
               variant="ghost"
-              onClick={() =>
-                handleNavigation("/university-info?tool=bursaries")
-              }
+              onClick={() => handleNavigation("/study-tips")}
               className={`px-2 py-2 rounded-lg transition-colors ${
-                isActive("bursaries")
-                  ? "bg-book-50 text-book-600"
-                  : "text-gray-600 hover:text-book-600 hover:bg-book-50"
+                isActive("/study-tips") || isActive("/study-resources")
+                  ? "bg-book-600 text-white"
+                  : "text-gray-600 hover:text-book-600"
               }`}
               size="sm"
             >
@@ -271,17 +269,11 @@ const CampusNavbar = () => {
 
               <Button
                 variant="ghost"
-                onClick={() =>
-                  handleNavigation("/university-info?tool=aps-calculator")
-                }
-                className={`w-full justify-start px-4 py-3 rounded-lg font-medium transition-colors text-sm ${
-                  isActive("aps-calculator")
-                    ? "bg-book-50 text-book-600"
-                    : "text-gray-600"
-                }`}
+                onClick={() => handleNavigation("/study-tips")}
+                className="flex items-center justify-start px-4 py-3 w-full text-left rounded-lg font-medium transition-colors hover:bg-book-50 hover:text-book-600"
               >
-                <Calculator className="w-4 h-4 mr-3" />
-                APS Calculator
+                <Lightbulb className="w-4 h-4 mr-3" />
+                Study Tips
               </Button>
 
               <Button
@@ -314,9 +306,9 @@ const CampusNavbar = () => {
 
               <Button
                 variant="ghost"
-                onClick={() => handleNavigation("/study-resources")}
+                onClick={() => handleNavigation("/study-tips")}
                 className={`w-full justify-start px-4 py-3 rounded-lg font-medium transition-colors text-sm ${
-                  isActive("/study-resources")
+                  isActive("/study-tips") || isActive("/study-resources")
                     ? "bg-book-50 text-book-600"
                     : "text-gray-600"
                 }`}
