@@ -230,11 +230,7 @@ export const getCommitPendingBooks = async (): Promise<any[]> => {
     console.log("[CommitService] Returning commits data:", pendingCommits);
     return pendingCommits;
   } catch (error) {
-    console.error("[CommitService] Exception in getCommitPendingBooks:", {
-      message: error instanceof Error ? error.message : "Unknown error",
-      stack: error instanceof Error ? error.stack : undefined,
-      error: typeof error === "object" ? JSON.stringify(error) : String(error),
-    });
+    logCommitError("Exception in getCommitPendingBooks", error);
     // Return empty array instead of throwing to prevent UI crashes
     return [];
   }
