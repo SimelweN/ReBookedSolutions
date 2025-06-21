@@ -68,19 +68,14 @@ export const commitBookSale = async (bookId: string): Promise<void> => {
       throw new Error("Failed to commit sale");
     }
 
-    // Log the commit action
-    const { error: logError } = await supabase.from("activity_logs").insert({
-      user_id: user.id,
+    // Log the commit action (console logging for now)
+    console.log("[CommitService] Commit action completed:", {
+      userId: user.id,
       action: "commit_sale",
-      details: `Committed sale for book ${book.title}`,
-      book_id: bookId,
-      created_at: new Date().toISOString(),
+      bookId: bookId,
+      bookTitle: book.title,
+      timestamp: new Date().toISOString(),
     });
-
-    if (logError) {
-      console.warn("[CommitService] Failed to log commit action:", logError);
-      // Don't throw error for logging failure
-    }
 
     // TODO: Trigger delivery process initiation
     // This would typically involve:
