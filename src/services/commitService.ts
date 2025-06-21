@@ -51,7 +51,11 @@ export const commitBookSale = async (bookId: string): Promise<void> => {
       error: userError,
     } = await supabase.auth.getUser();
     if (userError || !user) {
-      console.error("[CommitService] Authentication error:", userError);
+      if (userError) {
+        logCommitError("Authentication error", userError);
+      } else {
+        console.log("[CommitService] No authenticated user found");
+      }
       throw new Error("User not authenticated");
     }
 
