@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ActivityService, Activity } from "@/services/activityService";
+import { useCommit } from "@/hooks/useCommit";
 import {
   ArrowLeft,
   Check,
@@ -23,6 +24,7 @@ import {
   LogIn,
   AlertCircle,
   RefreshCw,
+  Package,
 } from "lucide-react";
 
 const ActivityLog = () => {
