@@ -29,21 +29,19 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
         const pickupAddress = profileData.pickup_address as any;
         if (pickupAddress?.province) {
           province = pickupAddress.province;
-        } else if (typeof pickupAddress === "string") {
+        } else if (typeof pickupAddress === 'string') {
           // If pickup_address is a string, try to extract province from it
           // This is a fallback for older address formats
           const addressStr = pickupAddress.toLowerCase();
-          if (addressStr.includes("western cape")) province = "Western Cape";
-          else if (addressStr.includes("gauteng")) province = "Gauteng";
-          else if (addressStr.includes("kwazulu")) province = "KwaZulu-Natal";
-          else if (addressStr.includes("eastern cape"))
-            province = "Eastern Cape";
-          else if (addressStr.includes("free state")) province = "Free State";
-          else if (addressStr.includes("limpopo")) province = "Limpopo";
-          else if (addressStr.includes("mpumalanga")) province = "Mpumalanga";
-          else if (addressStr.includes("northern cape"))
-            province = "Northern Cape";
-          else if (addressStr.includes("north west")) province = "North West";
+          if (addressStr.includes('western cape')) province = 'Western Cape';
+          else if (addressStr.includes('gauteng')) province = 'Gauteng';
+          else if (addressStr.includes('kwazulu')) province = 'KwaZulu-Natal';
+          else if (addressStr.includes('eastern cape')) province = 'Eastern Cape';
+          else if (addressStr.includes('free state')) province = 'Free State';
+          else if (addressStr.includes('limpopo')) province = 'Limpopo';
+          else if (addressStr.includes('mpumalanga')) province = 'Mpumalanga';
+          else if (addressStr.includes('northern cape')) province = 'Northern Cape';
+          else if (addressStr.includes('north west')) province = 'North West';
         }
       }
     } catch (addressError) {
@@ -51,26 +49,64 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       // Continue without province - it's not critical for book creation
     }
 
-    const { data: book, error } = await supabase
-      .from("books")
-      .insert([
-        {
-          seller_id: user.id,
-          title: bookData.title,
-          author: bookData.author,
-          description: bookData.description,
-          price: bookData.price,
-          category: bookData.category,
-          condition: bookData.condition,
-          image_url: bookData.imageUrl,
-          front_cover: bookData.frontCover,
-          back_cover: bookData.backCover,
-          inside_pages: bookData.insidePages,
-          grade: bookData.grade,
-          university_year: bookData.universityYear,
-          province: province,
-        },
-      ])
+    // Try to create book with province first, fallback without province if column doesn't exist
+    let book, error;
+
+    try {
+      const bookDataWithProvince = {
+        seller_id: user.id,
+        title: bookData.title,
+        author: bookData.author,
+        description: bookData.description,
+        price: bookData.price,
+        category: bookData.category,
+        condition: bookData.condition,
+        image_url: bookData.imageUrl,
+        front_cover: bookData.frontCover,
+        back_cover: bookData.backCover,
+        inside_pages: bookData.insidePages,
+        grade: bookData.grade,
+        university_year: bookData.universityYear,
+        province: province,
+      };
+
+      const result = await supabase
+        .from("books")
+        .insert([bookDataWithProvince])
+        .select()
+        .single();
+
+      book = result.data;
+      error = result.error;
+    } catch (provinceError) {
+      console.warn("Province column not available, creating book without province:", provinceError);
+
+      // Fallback: create book without province field
+      const bookDataWithoutProvince = {
+        seller_id: user.id,
+        title: bookData.title,
+        author: bookData.author,
+        description: bookData.description,
+        price: bookData.price,
+        category: bookData.category,
+        condition: bookData.condition,
+        image_url: bookData.imageUrl,
+        front_cover: bookData.frontCover,
+        back_cover: bookData.backCover,
+        inside_pages: bookData.insidePages,
+        grade: bookData.grade,
+        university_year: bookData.universityYear,
+      };
+
+      const fallbackResult = await supabase
+        .from("books")
+        .insert([bookDataWithoutProvince])
+        .select()
+        .single();
+
+      book = fallbackResult.data;
+      error = fallbackResult.error;
+    }
       .select()
       .single();
 
