@@ -325,7 +325,7 @@ const UniversityProfile: React.FC = () => {
         </div>
 
         {/* Main Content */}
-        <div className="relative z-20 container mx-auto px-4 -mt-4 lg:-mt-8 pb-16">
+        <div className="relative z-20 container mx-auto px-4 mt-4 lg:-mt-8 pb-16 lg:pb-24">
           <Tabs defaultValue="programs" className="space-y-6 lg:space-y-8">
             <div className="bg-white rounded-2xl shadow-xl p-2 relative z-30">
               <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 bg-slate-100 rounded-xl gap-1 lg:gap-0">
