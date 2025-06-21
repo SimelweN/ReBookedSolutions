@@ -89,19 +89,35 @@ const UserProfileTabs = ({
   return (
     <div className="w-full">
       <Tabs defaultValue="listings" className="w-full">
-        <TabsList className="w-full">
-          <TabsTrigger value="listings" className="flex-1">
-            Active Listings ({activeListings.length})
+        <TabsList
+          className={`w-full ${isMobile ? "grid grid-cols-2 gap-1 h-auto p-1" : "flex"}`}
+        >
+          <TabsTrigger
+            value="listings"
+            className={`${isMobile ? "h-10 text-xs px-2 col-span-2" : "flex-1"}`}
+          >
+            {isMobile
+              ? `Listings (${activeListings.length})`
+              : `Active Listings (${activeListings.length})`}
           </TabsTrigger>
-          <TabsTrigger value="activity" className="flex-1">
+          <TabsTrigger
+            value="activity"
+            className={`${isMobile ? "h-10 text-xs px-2 col-span-2" : "flex-1"}`}
+          >
             Activity
           </TabsTrigger>
           {isOwnProfile && (
             <>
-              <TabsTrigger value="account" className="flex-1">
+              <TabsTrigger
+                value="account"
+                className={`${isMobile ? "h-10 text-xs px-2" : "flex-1"}`}
+              >
                 Account
               </TabsTrigger>
-              <TabsTrigger value="addresses" className="flex-1">
+              <TabsTrigger
+                value="addresses"
+                className={`${isMobile ? "h-10 text-xs px-2" : "flex-1"}`}
+              >
                 Addresses
               </TabsTrigger>
             </>
