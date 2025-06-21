@@ -503,7 +503,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     name: "Mangosuthu University of Technology",
     abbreviation: "MUT",
     fullName: "Mangosuthu University of Technology",
-    logo: "/university-logos/mut.png",
+    logo: "/university-logos/default.svg",
     code: "mut",
   },
   {
@@ -511,7 +511,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     name: "Cape Peninsula University of Technology",
     abbreviation: "CPUT",
     fullName: "Cape Peninsula University of Technology",
-    logo: "/university-logos/cput.png",
+    logo: "/university-logos/default.svg",
     code: "cput",
   },
 ];
