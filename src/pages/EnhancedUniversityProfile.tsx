@@ -956,7 +956,8 @@ const EnhancedUniversityProfile: React.FC = () => {
                                     {faculty.degrees?.map((degree) => {
                                       // Use centralized eligibility service
                                       const eligibilityResult =
-                                        hasValidProfile && userProfile
+                                        (hasValidProfile && userProfile) ||
+                                        (fromAPS && apsScore)
                                           ? assessEligibility(
                                               {
                                                 name: degree.name,
@@ -971,8 +972,12 @@ const EnhancedUniversityProfile: React.FC = () => {
                                                 assignmentRule: { type: "all" },
                                               },
                                               universityId!,
-                                              userProfile.totalAPS,
-                                              userProfile.subjects,
+                                              fromAPS && apsScore
+                                                ? parseInt(apsScore)
+                                                : userProfile?.totalAPS || 0,
+                                              fromAPS && apsScore
+                                                ? []
+                                                : userProfile?.subjects || [], // For URL params, we only check APS, not subjects
                                             )
                                           : null;
 
