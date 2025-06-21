@@ -423,7 +423,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     name: "Stellenbosch University",
     abbreviation: "SU",
     fullName: "Stellenbosch University",
-    logo: "/university-logos/stellenbosch.png",
+    logo: "/university-logos/default.svg",
     code: "su",
   },
   {
@@ -431,7 +431,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     name: "University of KwaZulu-Natal",
     abbreviation: "UKZN",
     fullName: "University of KwaZulu-Natal",
-    logo: "/university-logos/ukzn.png",
+    logo: "/university-logos/default.svg",
     code: "ukzn",
   },
   {
@@ -439,7 +439,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     name: "University of Johannesburg",
     abbreviation: "UJ",
     fullName: "University of Johannesburg",
-    logo: "/university-logos/uj.png",
+    logo: "/university-logos/default.svg",
     code: "uj",
   },
   {
@@ -447,7 +447,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     name: "Rhodes University",
     abbreviation: "RU",
     fullName: "Rhodes University",
-    logo: "/university-logos/rhodes.png",
+    logo: "/university-logos/default.svg",
     code: "ru",
   },
   {
@@ -455,7 +455,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     name: "North-West University",
     abbreviation: "NWU",
     fullName: "North-West University",
-    logo: "/university-logos/nwu.png",
+    logo: "/university-logos/default.svg",
     code: "nwu",
   },
   {
