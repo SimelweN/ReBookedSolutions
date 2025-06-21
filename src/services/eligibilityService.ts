@@ -62,8 +62,9 @@ export function assessEligibility(
     }
 
     // Get APS requirement for this university
-    const getAPSRequirement =
-      require("@/constants/universities/comprehensive-course-database").getAPSRequirement;
+    const { getAPSRequirement } = await import(
+      "@/constants/universities/comprehensive-course-database"
+    );
     const requiredAPS = getAPSRequirement(course, universityId);
 
     // APS Assessment
