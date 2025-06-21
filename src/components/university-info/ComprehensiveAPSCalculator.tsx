@@ -294,7 +294,13 @@ const ProgramDetailsModal: React.FC<ProgramDetailsModalProps> = ({
 };
 
 const ComprehensiveAPSCalculator: React.FC = () => {
-  const [subjects, setSubjects] = useState<APSSubject[]>([]);
+  // Initialize with default subjects
+  const [subjects, setSubjects] = useState<APSSubject[]>([
+    { name: "English", level: 0, countsForAPS: true },
+    { name: "Afrikaans", level: 0, countsForAPS: true },
+    { name: "Mathematics", level: 0, countsForAPS: true },
+    { name: "Life Orientation", level: 0, countsForAPS: false },
+  ]);
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
   const [showAllPrograms, setShowAllPrograms] = useState(false);
@@ -303,9 +309,11 @@ const ComprehensiveAPSCalculator: React.FC = () => {
   const [selectedProgram, setSelectedProgram] = useState<any>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
-  // Calculate total APS
+  // Calculate total APS (excluding Life Orientation)
   const totalAPS = useMemo(() => {
-    return subjects.reduce((total, subject) => total + subject.level, 0);
+    return subjects
+      .filter((subject) => subject.countsForAPS !== false)
+      .reduce((total, subject) => total + subject.level, 0);
   }, [subjects]);
 
   // Filter and analyze programs
