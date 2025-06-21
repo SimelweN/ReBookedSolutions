@@ -136,21 +136,21 @@ const UniversityDetailView: React.FC<UniversityDetailViewProps> = ({
               {/* Logo Section */}
               <div className="relative">
                 <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl shadow-lg flex items-center justify-center border-4 border-white">
-                  {university.logo ? (
-                    <img
-                      src={university.logo}
-                      alt={`${university.name} logo`}
-                      className="w-20 h-20 object-contain"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
+                  <img
+                    src={university.logo || "/university-logos/default.svg"}
+                    alt={`${university.name} logo`}
+                    className="w-20 h-20 object-contain"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      if (!target.src.includes("default.svg")) {
+                        target.src = "/university-logos/default.svg";
+                      } else {
                         target.style.display = "none";
                         target.nextElementSibling?.classList.remove("hidden");
-                      }}
-                    />
-                  ) : null}
-                  <GraduationCap
-                    className={`h-16 w-16 text-gray-400 ${university.logo ? "hidden" : ""}`}
+                      }
+                    }}
                   />
+                  <GraduationCap className="h-16 w-16 text-gray-400 hidden" />
                 </div>
                 <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-r from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-lg">
                   <Award className="h-4 w-4 text-white" />
