@@ -2466,7 +2466,7 @@ const SimpleAPSCalculator: React.FC = () => {
                                 {/* Faculty Header */}
                                 <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
                                   <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
-                                    <Building className="h-5 w-5 text-blue-500" />
+                                    <Building className="h-5 w-5 text-book-500" />
                                     {faculty}
                                   </h3>
                                   <div className="flex items-center gap-2">
