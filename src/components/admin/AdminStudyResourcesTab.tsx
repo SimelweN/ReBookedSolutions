@@ -309,20 +309,20 @@ const AdminStudyResourcesTab = () => {
     if (!confirm("Are you sure you want to delete this resource?")) return;
 
     try {
-      await studyResourcesService.deleteStudyResource(id);
+      await deleteStudyResource(id);
       toast.success("Resource deleted successfully");
-      loadData();
+      await loadData();
     } catch (error) {
       console.error("Error deleting resource:", error);
       toast.error("Failed to delete resource");
     }
   };
 
-  const deleteTip = async (id: string) => {
+  const handleDeleteTip = async (id: string) => {
     if (!confirm("Are you sure you want to delete this tip?")) return;
 
     try {
-      await studyResourcesService.deleteStudyTip(id);
+      await deleteStudyTip(id);
       toast.success("Tip deleted successfully");
       loadData();
     } catch (error) {
