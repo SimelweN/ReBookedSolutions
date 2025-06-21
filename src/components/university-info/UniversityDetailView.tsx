@@ -31,6 +31,9 @@ const UniversityDetailView: React.FC<UniversityDetailViewProps> = ({
   university,
   onBack,
 }) => {
+  // APS profile management
+  const { hasValidProfile, clearAPSProfile } = useAPSAwareCourseAssignment();
+
   // Calculate program count
   const totalPrograms =
     university.faculties?.reduce((total, faculty) => {
