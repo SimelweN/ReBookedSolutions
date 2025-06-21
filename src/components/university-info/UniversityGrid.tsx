@@ -213,25 +213,25 @@ const UniversityGrid = ({
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
-                    {university.logo ? (
-                      <div className="w-12 h-12 rounded-lg bg-white border border-gray-200 p-2 flex items-center justify-center">
-                        <img
-                          src={university.logo}
-                          alt={`${university.name} logo`}
-                          className="w-full h-full object-contain"
-                          onError={(e) => {
-                            // Fallback to abbreviation if logo fails to load
-                            const target = e.target as HTMLImageElement;
+                    <div className="w-12 h-12 rounded-lg bg-white border border-gray-200 p-2 flex items-center justify-center">
+                      <img
+                        src={university.logo || "/university-logos/default.svg"}
+                        alt={`${university.name} logo`}
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          if (!target.src.includes("default.svg")) {
+                            target.src = "/university-logos/default.svg";
+                          } else {
+                            // Show fallback text if even default fails
                             target.style.display = "none";
-                            const fallback =
-                              target.parentElement?.querySelector(
-                                ".logo-fallback",
-                              );
+                            const fallback = target.parentElement?.querySelector(".logo-fallback");
                             if (fallback) {
                               (fallback as HTMLElement).style.display = "flex";
                             }
-                          }}
-                        />
+                          }
+                        }}
+                      />
                         <div
                           className="logo-fallback w-full h-full bg-book-100 rounded flex items-center justify-center"
                           style={{ display: "none" }}
