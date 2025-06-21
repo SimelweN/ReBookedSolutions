@@ -284,24 +284,146 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       console.log("🔄 [AuthContext] Initializing auth...");
 
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
+      // Check if there are auth code parameters in the URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const hasAuthCode = urlParams.has("code");
+      const hasError = urlParams.has("error");
 
-      if (error) {
-        throw new Error(`Auth initialization failed: ${error.message}`);
-      }
+      if (hasAuthCode) {
+        console.log(
+          "🔗 [AuthContext] Auth code detected in URL, attempting code exchange...",
+        );
 
-      if (session) {
-        await handleAuthStateChange(session, "SESSION_RESTORED");
+        try {
+          // Try to exchange the code for a session
+          const { data, error: exchangeError } =
+            await supabase.auth.exchangeCodeForSession(window.location.href);
+
+          if (exchangeError) {
+            console.warn(
+              "⚠️ [AuthContext] Code exchange failed:",
+              exchangeError.message,
+            );
+
+            // If code exchange fails due to PKCE issues, clear URL and get regular session
+            if (
+              exchangeError.message.includes("code verifier") ||
+              exchangeError.message.includes("invalid request")
+            ) {
+              console.log(
+                "🧹 [AuthContext] Clearing auth parameters from URL due to PKCE error",
+              );
+              // Clear the URL parameters to prevent repeated failed attempts
+              window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname,
+              );
+
+              // Fall back to getting existing session
+              const { data: sessionData, error: sessionError } =
+                await supabase.auth.getSession();
+              if (sessionError) {
+                throw sessionError;
+              }
+
+              if (sessionData.session) {
+                await handleAuthStateChange(
+                  sessionData.session,
+                  "SESSION_RESTORED",
+                );
+              } else {
+                setUser(null);
+                setProfile(null);
+                setSession(null);
+                setIsLoading(false);
+              }
+            } else {
+              throw exchangeError;
+            }
+          } else if (data.session) {
+            console.log("✅ [AuthContext] Code exchange successful");
+            await handleAuthStateChange(data.session, "SIGNED_IN");
+          }
+        } catch (codeExchangeError) {
+          console.warn(
+            "⚠️ [AuthContext] Code exchange attempt failed, falling back to session check:",
+            codeExchangeError,
+          );
+
+          // Clear problematic URL parameters
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname,
+          );
+
+          // Fall back to regular session check
+          const { data: sessionData, error: sessionError } =
+            await supabase.auth.getSession();
+          if (sessionError && !sessionError.message.includes("code verifier")) {
+            throw sessionError;
+          }
+
+          if (sessionData?.session) {
+            await handleAuthStateChange(
+              sessionData.session,
+              "SESSION_RESTORED",
+            );
+          } else {
+            setUser(null);
+            setProfile(null);
+            setSession(null);
+            setIsLoading(false);
+          }
+        }
+      } else if (hasError) {
+        // Handle auth errors in URL
+        const error = urlParams.get("error");
+        const errorDescription = urlParams.get("error_description");
+        console.warn(
+          "🚨 [AuthContext] Auth error in URL:",
+          error,
+          errorDescription,
+        );
+
+        // Clear error from URL
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.pathname,
+        );
+
+        // Still try to get existing session
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (sessionData?.session) {
+          await handleAuthStateChange(sessionData.session, "SESSION_RESTORED");
+        } else {
+          setUser(null);
+          setProfile(null);
+          setSession(null);
+          setIsLoading(false);
+        }
       } else {
-        // No session found - user is not authenticated
-        // Batch state updates to prevent glitching
-        setUser(null);
-        setProfile(null);
-        setSession(null);
-        setIsLoading(false);
+        // Normal session check
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
+        if (error && !error.message.includes("code verifier")) {
+          throw new Error(`Auth initialization failed: ${error.message}`);
+        }
+
+        if (session) {
+          await handleAuthStateChange(session, "SESSION_RESTORED");
+        } else {
+          // No session found - user is not authenticated
+          setUser(null);
+          setProfile(null);
+          setSession(null);
+          setIsLoading(false);
+        }
       }
 
       setAuthInitialized(true);
@@ -311,8 +433,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         error,
         "Failed to initialize authentication",
       );
-      setInitError(errorMessage);
-      logError("Auth initialization failed", error);
+
+      // Don't show PKCE errors to users as they're not actionable
+      if (error instanceof Error && error.message.includes("code verifier")) {
+        console.warn(
+          "⚠️ [AuthContext] PKCE error handled silently:",
+          error.message,
+        );
+        setInitError(null);
+
+        // Clear URL and set to unauthenticated state
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.pathname,
+        );
+        setUser(null);
+        setProfile(null);
+        setSession(null);
+      } else {
+        setInitError(errorMessage);
+        logError("Auth initialization failed", error);
+      }
 
       // Ensure loading is turned off on error to prevent infinite loading
       setIsLoading(false);
