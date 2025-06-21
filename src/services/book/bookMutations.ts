@@ -68,10 +68,11 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       university_year: bookData.universityYear,
     };
 
-    // Try to add province if it was extracted, but don't fail if province column doesn't exist
+    // Store province for future use when database schema is updated
     if (province) {
-      console.log("Attempting to include province in book creation:", province);
-      // Note: Province will be added back when database schema is updated
+      console.log("📍 Province extracted from user address:", province);
+      console.log("💡 Province will be stored once database schema is updated");
+      // TODO: Add province to book data when 'province' column is available in production
     }
 
     const { data: book, error } = await supabase
