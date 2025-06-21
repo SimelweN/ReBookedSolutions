@@ -87,12 +87,11 @@ const EnhancedUniversityProfile: React.FC = () => {
   // APS-aware filtering
   const {
     userProfile,
-    isLoading,
+    isLoading: apsLoading,
     error,
     hasValidProfile,
     qualificationSummary,
     searchCoursesForUniversity,
-    getFacultiesForUniversity,
     checkProgramEligibility,
     clearError,
   } = useAPSAwareCourseAssignment(universityId);
