@@ -222,10 +222,10 @@ const UniversitySpecificAPSDisplay: React.FC<
 
   if (!universityScores || universityScores.length === 0) {
     return (
-      <Card className={className}>
+      <Card className={cn("shadow-sm border border-gray-200", className)}>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calculator className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-xl text-gray-900">
+            <Calculator className="h-5 w-5 text-book-600" />
             University-Specific Scores
           </CardTitle>
           <CardDescription>
@@ -233,9 +233,9 @@ const UniversitySpecificAPSDisplay: React.FC<
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Alert>
-            <Info className="h-4 w-4" />
-            <AlertDescription>
+          <Alert className="border-book-200 bg-book-50">
+            <Info className="h-4 w-4 text-book-600" />
+            <AlertDescription className="text-book-800">
               Add your subject marks above to see how different South African
               universities calculate your admission scores.
             </AlertDescription>
@@ -259,45 +259,53 @@ const UniversitySpecificAPSDisplay: React.FC<
     : universityScores.slice(0, 6);
 
   return (
-    <div className={cn("space-y-6", className)}>
+    <div className={cn("space-y-8", className)}>
       {/* Header with summary */}
-      <Card>
+      <Card className="shadow-sm border border-gray-200 bg-gradient-to-r from-book-50 to-blue-50">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <GraduationCap className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-xl text-gray-900">
+            <GraduationCap className="h-5 w-5 text-book-600" />
             University-Specific APS Scores
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-gray-700">
             Different universities use different scoring systems. Here's how you
             qualify for each:
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">
+            <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-blue-200">
+              <div className="text-3xl font-bold text-book-600">
                 {standardAPS}
               </div>
-              <div className="text-sm text-gray-600">Standard APS</div>
-              <div className="text-xs text-gray-500">
+              <div className="text-sm font-medium text-gray-700 mt-1">
+                Standard APS
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
                 Used by most universities
               </div>
             </div>
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">
+            <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-green-200">
+              <div className="text-3xl font-bold text-green-600">
                 {customScoringUniversities.length}
               </div>
-              <div className="text-sm text-gray-600">Custom Systems</div>
-              <div className="text-xs text-gray-500">
+              <div className="text-sm font-medium text-gray-700 mt-1">
+                Custom Systems
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
                 Universities with unique scoring
               </div>
             </div>
-            <div className="text-center p-4 bg-purple-50 rounded-lg">
-              <div className="text-2xl font-bold text-purple-600">
+            <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-purple-200">
+              <div className="text-3xl font-bold text-purple-600">
                 {universityScores.length}
               </div>
-              <div className="text-sm text-gray-600">Total Universities</div>
-              <div className="text-xs text-gray-500">Scored for comparison</div>
+              <div className="text-sm font-medium text-gray-700 mt-1">
+                Total Universities
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
+                Scored for comparison
+              </div>
             </div>
           </div>
         </CardContent>
@@ -305,12 +313,18 @@ const UniversitySpecificAPSDisplay: React.FC<
 
       {/* Custom Scoring Universities */}
       {customScoringUniversities.length > 0 && (
-        <div>
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <TrendingUp className="h-5 w-5" />
-            Universities with Custom Scoring Systems
-          </h3>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="space-y-6">
+          <div className="text-center space-y-2">
+            <h3 className="text-xl font-bold text-gray-900 flex items-center justify-center gap-2">
+              <TrendingUp className="h-6 w-6 text-book-600" />
+              Universities with Custom Scoring Systems
+            </h3>
+            <p className="text-gray-600">
+              These universities use unique scoring methods that may work in
+              your favor
+            </p>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {customScoringUniversities.map((score) => (
               <APSScoreCard
                 key={score.universityId}
@@ -326,11 +340,16 @@ const UniversitySpecificAPSDisplay: React.FC<
 
       {/* Standard APS Universities */}
       {standardAPSUniversities.length > 0 && (
-        <div>
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <CheckCircle className="h-5 w-5" />
-            Universities Using Standard APS System
-          </h3>
+        <div className="space-y-6">
+          <div className="text-center space-y-2">
+            <h3 className="text-xl font-bold text-gray-900 flex items-center justify-center gap-2">
+              <CheckCircle className="h-6 w-6 text-book-600" />
+              Universities Using Standard APS System
+            </h3>
+            <p className="text-gray-600">
+              These universities use the traditional 42-point APS calculation
+            </p>
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
             {(showAllScores
               ? standardAPSUniversities
@@ -347,10 +366,11 @@ const UniversitySpecificAPSDisplay: React.FC<
           </div>
 
           {standardAPSUniversities.length > 6 && (
-            <div className="text-center mt-4">
+            <div className="text-center mt-6">
               <Button
                 variant="outline"
                 onClick={() => setShowAllScores(!showAllScores)}
+                className="bg-white hover:bg-gray-50 border-gray-300"
               >
                 <Eye className="h-4 w-4 mr-2" />
                 {showAllScores
@@ -363,9 +383,9 @@ const UniversitySpecificAPSDisplay: React.FC<
       )}
 
       {/* Important Notice */}
-      <Alert>
-        <AlertTriangle className="h-4 w-4" />
-        <AlertDescription>
+      <Alert className="border-amber-200 bg-amber-50">
+        <AlertTriangle className="h-4 w-4 text-amber-600" />
+        <AlertDescription className="text-amber-800">
           <strong>Important:</strong> Universities with custom scoring systems
           cannot be directly compared with those using standard APS. Each
           university's score is calculated according to their specific
