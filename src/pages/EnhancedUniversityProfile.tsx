@@ -176,48 +176,72 @@ const EnhancedUniversityProfile: React.FC = () => {
         console.log(`Loading faculties for university: ${universityId}`);
       }
 
-      getFacultiesForUniversity(universityId, filterOptions)
-        .then((result) => {
-          // Debug logging
-          if (import.meta.env.DEV) {
-            console.log(`Faculty results for ${universityId}:`, {
-              facultiesCount: result.faculties.length,
-              totalDegrees: result.statistics.totalDegrees,
-              errors: result.errors,
-              warnings: result.warnings,
-            });
-          }
+      try {
+        // Get faculties directly from the university data
+        const faculties = getUniversityFaculties(universityId);
 
-          setFacultiesData({
-            faculties: result.faculties,
-            statistics: result.statistics,
-            errors: result.errors,
-            warnings: result.warnings,
-            isLoading: false,
+        // Calculate statistics
+        const totalDegrees = faculties.reduce(
+          (total, faculty) => total + (faculty.degrees?.length || 0),
+          0,
+        );
+        const eligibleDegrees = userProfile
+          ? faculties.reduce((total, faculty) => {
+              return (
+                total +
+                (faculty.degrees?.filter((degree) => {
+                  const eligibility = checkProgramEligibility(
+                    degree.apsRequirement,
+                    degree.subjects || [],
+                  );
+                  return eligibility.eligible;
+                }).length || 0)
+              );
+            }, 0)
+          : 0;
+
+        // Debug logging
+        if (import.meta.env.DEV) {
+          console.log(`Faculty results for ${universityId}:`, {
+            facultiesCount: faculties.length,
+            totalDegrees,
+            eligibleDegrees,
           });
-        })
-        .catch((err) => {
-          console.error(`Error loading faculties for ${universityId}:`, err);
-          setFacultiesData({
-            faculties: [],
-            statistics: {
-              totalFaculties: 0,
-              totalDegrees: 0,
-              eligibleDegrees: 0,
-              averageAPS: 0,
-            },
-            errors: [`Error loading faculties: ${err}`],
-            warnings: [],
-            isLoading: false,
-          });
+        }
+
+        setFacultiesData({
+          faculties,
+          statistics: {
+            totalFaculties: faculties.length,
+            totalDegrees,
+            eligibleDegrees,
+            averageAPS: 0, // Can be calculated if needed
+          },
+          errors: [],
+          warnings: [],
+          isLoading: false,
         });
+      } catch (err) {
+        console.error(`Error loading faculties for ${universityId}:`, err);
+        setFacultiesData({
+          faculties: [],
+          statistics: {
+            totalFaculties: 0,
+            totalDegrees: 0,
+            eligibleDegrees: 0,
+            averageAPS: 0,
+          },
+          errors: [`Error loading faculties: ${err}`],
+          warnings: [],
+          isLoading: false,
+        });
+      }
     }
   }, [
     universityId,
     universityData.university,
     userProfile,
-    filterOptions,
-    getFacultiesForUniversity,
+    checkProgramEligibility,
   ]);
 
   // Enhanced statistics calculation
