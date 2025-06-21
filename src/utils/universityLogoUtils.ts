@@ -4,39 +4,20 @@
  */
 
 export const UNIVERSITY_LOGO_MAPPING: Record<string, string> = {
-  // Map university IDs to logo files
-  uct: "/university-logos/uct.svg",
-  wits: "/university-logos/wits.svg",
-  stellenbosch: "/university-logos/stellenbosch.svg",
-  up: "/university-logos/up.svg",
-  ukzn: "/university-logos/ukzn.svg",
-  ufs: "/university-logos/ufs.svg",
-  ru: "/university-logos/ru.svg",
-  nwu: "/university-logos/nwu.svg",
+  // Map university IDs to logo files - only include files that actually exist
   uwc: "/university-logos/uwc.svg",
-  uj: "/university-logos/uj.svg",
-  unisa: "/university-logos/unisa.svg",
-  ufh: "/university-logos/ufh.svg",
-  tut: "/university-logos/tut.svg",
-  dut: "/university-logos/dut.svg",
-  vut: "/university-logos/vut.svg",
-  mut: "/university-logos/mut.svg",
-  cput: "/university-logos/cput.svg",
-  ul: "/university-logos/ul.svg",
-  univen: "/university-logos/univen.svg",
-  wsu: "/university-logos/wsu.svg",
-  smu: "/university-logos/smu.svg",
-  ump: "/university-logos/ump.svg",
-  unizulu: "/university-logos/unizulu.svg",
-  cut: "/university-logos/cut.svg",
-  nmu: "/university-logos/nmu.svg",
-  spu: "/university-logos/spu.svg",
+  // All other universities will fall back to default.svg
 };
 
 /**
  * Get the logo path for a university
+ * Always returns a valid path, defaults to default.svg for missing logos
  */
 export function getUniversityLogoPath(universityId: string): string {
+  if (!universityId || typeof universityId !== "string") {
+    return "/university-logos/default.svg";
+  }
+
   const id = universityId.toLowerCase().trim();
   return UNIVERSITY_LOGO_MAPPING[id] || "/university-logos/default.svg";
 }

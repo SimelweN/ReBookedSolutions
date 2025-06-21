@@ -65,7 +65,10 @@ const APSScoreCard: React.FC<APSScoreCardProps> = ({
 
   const handleUniversityNameClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent card onClick
-    navigate(`/university-profile/${score.universityId}`);
+    // Pass APS context through URL parameter to ensure it's preserved
+    navigate(
+      `/university/${score.universityId}?fromAPS=true&aps=${score.score}`,
+    );
   };
 
   const getScoreColor = (percentage: number) => {
@@ -164,9 +167,12 @@ const APSScoreCard: React.FC<APSScoreCardProps> = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() =>
-              navigate(`/university-profile/${score.universityId}`)
-            }
+            onClick={() => {
+              // Pass APS context to ensure personalized experience
+              navigate(
+                `/university/${score.universityId}?fromAPS=true&aps=${score.score}`,
+              );
+            }}
             className="w-full border-book-600 text-book-600 hover:bg-book-50"
           >
             <GraduationCap className="h-4 w-4 mr-2" />

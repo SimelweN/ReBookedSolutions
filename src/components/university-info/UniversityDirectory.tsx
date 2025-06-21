@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ import {
 import { SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities";
 
 const UniversityDirectory = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProvince, setSelectedProvince] = useState<string>("all");
 
@@ -212,6 +214,9 @@ const UniversityDirectory = () => {
                             <Button
                               variant="outline"
                               className="border-book-200 text-book-600 hover:bg-book-50"
+                              onClick={() =>
+                                navigate(`/university/${university.id}`)
+                              }
                             >
                               <BookOpen className="h-4 w-4 mr-2" />
                               View Programs

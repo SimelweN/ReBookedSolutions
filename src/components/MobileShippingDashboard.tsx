@@ -17,11 +17,12 @@ import {
 
 // Import tracking-only components
 import CourierGuyTrackingOnly from "@/components/courier-guy/CourierGuyTrackingOnly";
+import FastwayTrackingOnly from "@/components/fastway/FastwayTrackingOnly";
 import ShipLogicTrackingOnly from "@/components/shiplogic/ShipLogicTrackingOnly";
 import ShipLogicRateQuote from "@/components/shiplogic/ShipLogicRateQuote";
 
 interface MobileShippingDashboardProps {
-  defaultProvider?: "courierGuy" | "shipLogic";
+  defaultProvider?: "courierGuy" | "shipLogic" | "fastway";
 }
 
 const MobileShippingDashboard = ({
@@ -29,7 +30,7 @@ const MobileShippingDashboard = ({
 }: MobileShippingDashboardProps) => {
   const navigate = useNavigate();
   const [selectedProvider, setSelectedProvider] = useState<
-    "courierGuy" | "shipLogic"
+    "courierGuy" | "shipLogic" | "fastway"
   >(defaultProvider);
 
   const providers = [
@@ -40,6 +41,14 @@ const MobileShippingDashboard = ({
       description: "Local courier service",
       features: ["Local SA courier", "Reliable tracking", "2-3 business days"],
       color: "blue",
+    },
+    {
+      id: "fastway",
+      name: "Fastway",
+      logo: "🏃‍♂️",
+      description: "Express courier service",
+      features: ["Express delivery", "Wide coverage", "Competitive rates"],
+      color: "orange",
     },
     {
       id: "shipLogic",
@@ -76,11 +85,15 @@ const MobileShippingDashboard = ({
                   selectedProvider === provider.id
                     ? provider.color === "blue"
                       ? "border-blue-500 bg-blue-50"
-                      : "border-green-500 bg-green-50"
+                      : provider.color === "orange"
+                        ? "border-orange-500 bg-orange-50"
+                        : "border-green-500 bg-green-50"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
                 onClick={() =>
-                  setSelectedProvider(provider.id as "courierGuy" | "shipLogic")
+                  setSelectedProvider(
+                    provider.id as "courierGuy" | "shipLogic" | "fastway",
+                  )
                 }
               >
                 <div className="flex items-start space-x-3">
@@ -93,7 +106,13 @@ const MobileShippingDashboard = ({
                       {selectedProvider === provider.id && (
                         <Badge
                           variant="default"
-                          className={`text-xs ${provider.color === "blue" ? "bg-blue-600" : "bg-green-600"}`}
+                          className={`text-xs ${
+                            provider.color === "blue"
+                              ? "bg-blue-600"
+                              : provider.color === "orange"
+                                ? "bg-orange-600"
+                                : "bg-green-600"
+                          }`}
                         >
                           Selected
                         </Badge>
@@ -171,6 +190,11 @@ const MobileShippingDashboard = ({
 
                 {selectedProvider === "courierGuy" ? (
                   <CourierGuyTrackingOnly />
+                ) : selectedProvider === "fastway" ? (
+                  <FastwayTrackingOnly
+                    placeholder="Enter Fastway tracking number"
+                    showBranding={false}
+                  />
                 ) : (
                   <ShipLogicTrackingOnly
                     placeholder="Enter tracking number"
@@ -182,7 +206,34 @@ const MobileShippingDashboard = ({
 
             {/* Quote Tab */}
             <TabsContent value="quote" className="mt-0">
-              {selectedProvider === "shipLogic" ? (
+              {selectedProvider === "fastway" ? (
+                <Card>
+                  <CardContent className="text-center py-8">
+                    <div className="space-y-4">
+                      <Package className="h-12 w-12 mx-auto text-orange-500" />
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">
+                          Fastway Express Rates
+                        </h3>
+                        <p className="text-gray-600 text-sm mb-4">
+                          Fast and reliable courier delivery
+                        </p>
+                      </div>
+                      <div className="bg-orange-50 p-4 rounded-lg max-w-sm mx-auto">
+                        <div className="text-2xl font-bold text-orange-600">
+                          R65 - R120
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Express delivery rates
+                        </div>
+                        <div className="text-xs text-gray-500 mt-2">
+                          Final rates calculated at checkout
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : selectedProvider === "shipLogic" ? (
                 <div className="space-y-4">
                   <div className="bg-green-50 p-3 rounded-lg border-l-4 border-green-500">
                     <div className="flex items-start space-x-2">

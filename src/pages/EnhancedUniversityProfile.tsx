@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
   ExternalLink,
@@ -76,6 +76,7 @@ import "@/styles/university-profile-mobile.css";
 const EnhancedUniversityProfile: React.FC = () => {
   const { id: universityId } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Enhanced state management
   const [expandedFaculties, setExpandedFaculties] = useState<Set<string>>(
@@ -96,6 +97,20 @@ const EnhancedUniversityProfile: React.FC = () => {
     clearAPSProfile,
     clearError,
   } = useAPSAwareCourseAssignment(universityId);
+
+  // Detect if coming from APS calculator
+  const searchParams = new URLSearchParams(location.search);
+  const fromAPS = searchParams.get("fromAPS") === "true";
+  const apsScore = searchParams.get("aps");
+
+  // Show APS context message when coming from APS results
+  useEffect(() => {
+    if (fromAPS && apsScore) {
+      console.log(`Navigated from APS calculator with score: ${apsScore}`);
+      // Set active tab to programs to show APS-filtered content
+      setActiveTab("programs");
+    }
+  }, [fromAPS, apsScore]);
 
   const {
     filterOptions,
@@ -601,19 +616,31 @@ const EnhancedUniversityProfile: React.FC = () => {
                 </div>
 
                 {/* APS Profile Card */}
-                {hasValidProfile && (
+                {(hasValidProfile || fromAPS) && (
                   <div className="bg-green-500/20 backdrop-blur-md rounded-2xl p-4 sm:p-6 border border-green-300/30">
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="text-white font-semibold text-sm sm:text-base">
-                        Your APS Profile
+                        {fromAPS
+                          ? "APS-Based Recommendations"
+                          : "Your APS Profile"}
                       </h3>
                       <Star className="w-5 h-5 text-yellow-300" />
                     </div>
                     <div className="space-y-2">
+                      {fromAPS && apsScore && (
+                        <div className="bg-blue-500/20 p-3 rounded-lg mb-3">
+                          <p className="text-white text-xs">
+                            Viewing programs based on your APS score of{" "}
+                            <strong>{apsScore}</strong>
+                          </p>
+                        </div>
+                      )}
                       <div className="flex justify-between items-center">
-                        <span className="text-white/80 text-sm">Your APS</span>
+                        <span className="text-white/80 text-sm">
+                          {fromAPS ? "Your APS Score" : "Your APS"}
+                        </span>
                         <span className="text-green-300 font-bold text-lg">
-                          {userProfile?.totalAPS}
+                          {fromAPS ? apsScore : userProfile?.totalAPS}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -725,6 +752,20 @@ const EnhancedUniversityProfile: React.FC = () => {
             {/* Enhanced Programs Tab */}
             <TabsContent value="programs">
               <div className="space-y-6">
+                {/* APS Context Banner */}
+                {fromAPS && apsScore && (
+                  <Alert className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+                    <Calculator className="h-4 w-4" />
+                    <AlertDescription>
+                      <strong>APS-Based View:</strong> You're viewing programs
+                      at {university.name} based on your APS score of{" "}
+                      <strong>{apsScore}</strong>.
+                      {hasValidProfile
+                        ? " Programs are filtered to show what you qualify for."
+                        : " Complete your full APS profile for personalized filtering."}
+                    </AlertDescription>
+                  </Alert>
+                )}
                 <div className="tab-content-mobile bg-white rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8 relative z-30">
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
                     <div>

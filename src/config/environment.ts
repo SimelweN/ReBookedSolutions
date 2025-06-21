@@ -12,6 +12,8 @@ export const ENV = {
   VITE_PAYSTACK_PUBLIC_KEY: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || "",
   VITE_APP_URL:
     import.meta.env.VITE_APP_URL || "https://rebookedsolutions.co.za",
+  VITE_COURIER_GUY_API_KEY: import.meta.env.VITE_COURIER_GUY_API_KEY || "",
+  VITE_FASTWAY_API_KEY: import.meta.env.VITE_FASTWAY_API_KEY || "",
 } as const;
 
 export const IS_PRODUCTION = ENV.NODE_ENV === "production";
@@ -20,7 +22,15 @@ export const IS_DEVELOPMENT = ENV.NODE_ENV === "development";
 // Validate required environment variables
 export const validateEnvironment = () => {
   const required = ["VITE_SUPABASE_URL", "VITE_SUPABASE_ANON_KEY"];
+  // Add optional API keys for production warnings
+  const optional = ["VITE_COURIER_GUY_API_KEY", "VITE_FASTWAY_API_KEY"];
+
   const missing = required.filter((key) => {
+    const value = ENV[key as keyof typeof ENV];
+    return !value || value.trim() === "";
+  });
+
+  const missingOptional = optional.filter((key) => {
     const value = ENV[key as keyof typeof ENV];
     return !value || value.trim() === "";
   });
@@ -83,6 +93,13 @@ Current environment: ${ENV.NODE_ENV}
 
   if (missing.length === 0) {
     console.log("✅ Environment variables validated successfully");
+
+    // Warn about missing optional API keys in production
+    if (import.meta.env.PROD && missingOptional.length > 0) {
+      console.warn(
+        `⚠️ Optional API keys not set (some features may be limited): ${missingOptional.join(", ")}`,
+      );
+    }
   }
 
   return missing.length === 0;

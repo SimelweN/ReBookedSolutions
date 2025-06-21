@@ -132,13 +132,17 @@ const FacultyDetail = () => {
             <div className="space-y-4">
               {/* Logo and University Name Row */}
               <div className="flex items-center justify-center sm:justify-start space-x-3 sm:space-x-4">
-                {university.logo && (
-                  <img
-                    src={university.logo}
-                    alt={`${university.name} logo`}
-                    className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg object-contain bg-white border border-gray-200 p-1 sm:p-2 flex-shrink-0"
-                  />
-                )}
+                <img
+                  src={university.logo || "/university-logos/default.svg"}
+                  alt={`${university.name} logo`}
+                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg object-contain bg-white border border-gray-200 p-1 sm:p-2 flex-shrink-0"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    if (!target.src.includes("default.svg")) {
+                      target.src = "/university-logos/default.svg";
+                    }
+                  }}
+                />
                 <div className="text-center sm:text-left">
                   <div className="text-sm sm:text-base opacity-90 mb-1">
                     {university.abbreviation}

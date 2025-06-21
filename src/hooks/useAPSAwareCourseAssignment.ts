@@ -8,6 +8,7 @@ import {
   APSAwareCourseSearchService,
 } from "@/services/apsAwareCourseAssignmentService";
 import { calculateAPS, validateAPSSubjects } from "@/utils/apsCalculation";
+
 /**
  * Enhanced hook for APS-aware course assignment with user state management
  * Uses sessionStorage for temporary storage - data clears on browser refresh
@@ -87,23 +88,27 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
         const validation = validateAPSSubjects(subjects);
         if (!validation.isValid) {
           setError(validation.errors.join("; "));
-          return;
+          return false;
         }
 
-        // Calculate APS
-        const apsResult = calculateAPS(subjects);
+        // Calculate total APS
+        const totalAPS = calculateAPS(subjects);
 
+        // Create profile
         const profile: UserAPSProfile = {
           subjects,
-          totalAPS: apsResult.totalScore,
+          totalAPS,
           lastUpdated: new Date().toISOString(),
-          isValid: validation.isValid,
-          validationErrors: validation.errors,
+          isValid: true,
         };
 
+        // Save to session storage
         setUserProfile(profile);
-      } catch (err) {
-        setError(`Error updating APS profile: ${err}`);
+        return true;
+      } catch (error) {
+        console.error("Error updating user subjects:", error);
+        setError("Failed to update subjects. Please try again.");
+        return false;
       } finally {
         setIsLoading(false);
       }
@@ -112,140 +117,81 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
   );
 
   /**
-   * Search for courses with current user's APS profile
+   * Search courses for a specific university using user's APS
    */
   const searchCoursesForUniversity = useCallback(
-    async (
-      targetUniversityId: string,
-      options: Partial<APSFilterOptions> = {},
-    ): Promise<CoursesForUniversityResult> => {
+    async (targetUniversityId: string) => {
+      if (!userProfile) {
+        console.warn("No user profile available for course search");
+        return [];
+      }
+
       try {
         setIsLoading(true);
         setError(null);
 
-        const apsOptions: APSFilterOptions = {
-          userAPS: userProfile?.totalAPS,
-          userSubjects: userProfile?.subjects,
-          includeAlmostQualified: true,
-          maxAPSGap: 5,
-          ...options,
-        };
-
-        const result = await Promise.resolve(
-          getCoursesForUniversityWithAPS(targetUniversityId, apsOptions),
+        const results = await getUniversityFacultiesWithAPS(
+          targetUniversityId,
+          userProfile.subjects,
         );
 
-        if (result.errors.length > 0) {
-          setError(result.errors.join("; "));
+        // Cache results for current university
+        if (targetUniversityId === universityId) {
+          setLastSearchResults(results);
         }
 
-        setLastSearchResults(result);
-        return result;
-      } catch (err) {
-        const errorMsg = `Error searching courses: ${err}`;
-        setError(errorMsg);
-
-        // Return empty result on error
-        return {
-          universityId: targetUniversityId,
-          courses: [],
-          totalCourses: 0,
-          eligibleCourses: 0,
-          almostEligibleCourses: 0,
-          errors: [errorMsg],
-          warnings: [],
-        };
+        return results.programs || [];
+      } catch (error) {
+        console.error("Error searching courses:", error);
+        setError("Failed to search courses. Please try again.");
+        return [];
       } finally {
         setIsLoading(false);
       }
     },
-    [userProfile],
+    [userProfile, universityId],
   );
 
   /**
-   * Check if user is eligible for a specific program
+   * Check if user qualifies for a specific program
    */
   const checkProgramEligibility = useCallback(
-    (
-      programAPS: number,
-      requiredSubjects: Array<{
-        name: string;
-        level: number;
-        isRequired: boolean;
-      }> = [],
-    ) => {
-      if (!userProfile) {
+    (program: any) => {
+      if (!userProfile) return { eligible: false, reason: "No APS profile" };
+
+      try {
+        // Basic eligibility check - can be enhanced
+        const userAPS = userProfile.totalAPS;
+        const requiredAPS = program.apsRequirement || program.defaultAps || 20;
+
         return {
-          eligible: false,
-          reason: "No APS profile found",
-          apsGap: programAPS,
-          missingSubjects: requiredSubjects
-            .filter((s) => s.isRequired)
-            .map((s) => s.name),
+          eligible: userAPS >= requiredAPS,
+          reason:
+            userAPS >= requiredAPS
+              ? "Meets APS requirement"
+              : `APS too low (need ${requiredAPS}, have ${userAPS})`,
         };
+      } catch (error) {
+        console.error("Error checking eligibility:", error);
+        return { eligible: false, reason: "Error checking eligibility" };
       }
-
-      const apsGap = Math.max(0, programAPS - userProfile.totalAPS);
-      const apsEligible = userProfile.totalAPS >= programAPS;
-
-      // Check subject requirements
-      const missingSubjects: string[] = [];
-      requiredSubjects
-        .filter((s) => s.isRequired)
-        .forEach((reqSubject) => {
-          const userSubject = userProfile.subjects.find(
-            (us) =>
-              us.name.toLowerCase().includes(reqSubject.name.toLowerCase()) ||
-              reqSubject.name.toLowerCase().includes(us.name.toLowerCase()),
-          );
-
-          if (!userSubject || userSubject.level < reqSubject.level) {
-            missingSubjects.push(
-              `${reqSubject.name} (Level ${reqSubject.level})`,
-            );
-          }
-        });
-
-      const subjectsEligible = missingSubjects.length === 0;
-      const overallEligible = apsEligible && subjectsEligible;
-
-      return {
-        eligible: overallEligible,
-        reason: !apsEligible
-          ? `Need ${apsGap} more APS points`
-          : !subjectsEligible
-            ? `Missing required subjects: ${missingSubjects.join(", ")}`
-            : "Eligible",
-        apsGap,
-        missingSubjects,
-      };
     },
     [userProfile],
   );
 
   /**
-   * Clear APS profile completely - removes all APS-based logic across the site
-   * Returns everything to clean state as if no APS was ever entered
+   * Clear user's APS profile
    */
   const clearAPSProfile = useCallback(() => {
-    setUserProfile(null);
-    setLastSearchResults(null);
-    setError(null);
-
-    // Clear all APS-related data from sessionStorage (temporary storage)
     try {
       sessionStorage.removeItem("userAPSProfile");
       sessionStorage.removeItem("apsSearchResults");
-      sessionStorage.removeItem("universityAPSScores");
-      sessionStorage.removeItem("facultyData");
-      sessionStorage.removeItem("programEligibility");
-      sessionStorage.removeItem("apsCalculationCache");
+      setUserProfile(null);
+      setLastSearchResults(null);
+      setError(null);
     } catch (error) {
-      console.warn("Failed to clear sessionStorage:", error);
+      console.error("Error clearing APS profile:", error);
     }
-
-    // Trigger a global state reset for APS-related components
-    window.dispatchEvent(new CustomEvent("apsProfileCleared"));
   }, [setUserProfile]);
 
   /**
@@ -292,8 +238,10 @@ export function useAPSFilterOptions() {
     () => ({
       includeAlmostQualified,
       maxAPSGap,
+      facultyFilter,
+      sortBy,
     }),
-    [includeAlmostQualified, maxAPSGap],
+    [includeAlmostQualified, maxAPSGap, facultyFilter, sortBy],
   );
 
   return {
@@ -310,15 +258,14 @@ export function useAPSFilterOptions() {
 }
 
 /**
- * Hook for cached search results across components
+ * Enhanced search hook with caching
  */
-export function useCachedAPSSearch() {
+export function useAPSSearch() {
   const searchWithCache = useCallback(
-    (query: {
+    async (query: {
       universityId?: string;
-      apsOptions?: APSFilterOptions;
-      facultyFilter?: string;
-      searchTerm?: string;
+      faculty?: string;
+      apsRange?: { min: number; max: number };
     }) => {
       return APSAwareCourseSearchService.searchPrograms(query);
     },

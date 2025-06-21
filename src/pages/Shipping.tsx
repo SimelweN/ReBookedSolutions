@@ -8,8 +8,8 @@ const Shipping = () => {
     <Layout>
       <SEO
         title="Shipping & Delivery - ReBooked Solutions"
-        description="Track your textbook deliveries with Courier Guy and ShipLogic. Real-time tracking for all your orders."
-        keywords="shipping, delivery, courier guy, shiplogic, tracking, textbook delivery"
+        description="Track your textbook deliveries with Courier Guy, Fastway, and ShipLogic. Real-time tracking for all your orders."
+        keywords="shipping, delivery, courier guy, fastway, shiplogic, tracking, textbook delivery"
         url="https://www.rebookedsolutions.co.za/shipping"
       />
 
@@ -21,8 +21,8 @@ const Shipping = () => {
             </h1>
             <p className="text-gray-600 text-sm sm:text-base max-w-3xl mx-auto px-4">
               Track your textbook deliveries with our integrated shipping
-              providers. Shipments are automatically created when you purchase
-              books.
+              providers including Courier Guy, Fastway, and ShipLogic. Shipments
+              are automatically created when you purchase books.
             </p>
           </div>
 
