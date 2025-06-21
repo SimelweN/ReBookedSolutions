@@ -3,7 +3,22 @@ import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2, Eye, MapPin, User } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Edit,
+  Trash2,
+  Eye,
+  MapPin,
+  User,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
+  Star,
+  BookOpen,
+  MessageSquare,
+  Calendar,
+} from "lucide-react";
 import { Book } from "@/types/book";
 import ProfileEditDialog from "@/components/ProfileEditDialog";
 import AddressEditDialog from "@/components/AddressEditDialog";
@@ -52,6 +67,41 @@ const UserProfileTabs = ({
     return `${address.street}, ${address.city}, ${address.province} ${address.postalCode}`;
   };
 
+  // Mock commit data - in real app this would come from props or API
+  const commitData = {
+    totalCommits: 12,
+    activeCommits: 3,
+    completedCommits: 9,
+    averageResponseTime: "2.3 hours",
+    reliabilityScore: 92,
+    recentCommits: [
+      {
+        id: "1",
+        bookTitle: "Calculus: Early Transcendentals",
+        buyerName: "Sarah M.",
+        commitDate: "2024-01-15",
+        status: "completed",
+        responseTime: "1.5 hours",
+      },
+      {
+        id: "2",
+        bookTitle: "Linear Algebra and Its Applications",
+        buyerName: "Mike T.",
+        commitDate: "2024-01-14",
+        status: "active",
+        responseTime: "pending",
+      },
+      {
+        id: "3",
+        bookTitle: "Organic Chemistry",
+        buyerName: "Lisa K.",
+        commitDate: "2024-01-13",
+        status: "completed",
+        responseTime: "3.2 hours",
+      },
+    ],
+  };
+
   return (
     <div className="w-full">
       <Tabs defaultValue="listings" className="w-full">
@@ -62,12 +112,16 @@ const UserProfileTabs = ({
           <TabsTrigger value="activity" className="flex-1">
             Activity
           </TabsTrigger>
-          <TabsTrigger value="account" className="flex-1">
-            Account Information
-          </TabsTrigger>
-          <TabsTrigger value="addresses" className="flex-1">
-            Addresses
-          </TabsTrigger>
+          {isOwnProfile && (
+            <>
+              <TabsTrigger value="account" className="flex-1">
+                Account
+              </TabsTrigger>
+              <TabsTrigger value="addresses" className="flex-1">
+                Addresses
+              </TabsTrigger>
+            </>
+          )}
         </TabsList>
 
         <TabsContent value="listings" className="space-y-4">
@@ -76,6 +130,7 @@ const UserProfileTabs = ({
               <CardTitle className="text-xl md:text-2xl">
                 Active Listings ({activeListings.length})
               </CardTitle>
+            </CardHeader>
             <CardContent>
               {isLoading ? (
                 <div className="text-center py-8">
@@ -160,17 +215,10 @@ const UserProfileTabs = ({
                                 className="text-xs"
                                 disabled={deletingBooks.has(book.id)}
                               >
-                                {deletingBooks.has(book.id) ? (
-                                  <>
-                                    <div className="h-3 w-3 mr-1 animate-spin rounded-full border border-white border-t-transparent" />
-                                    Deleting...
-                                  </>
-                                ) : (
-                                  <>
-                                    <Trash2 className="h-3 w-3 mr-1" />
-                                    Delete
-                                  </>
-                                )}
+                                <Trash2 className="h-3 w-3 mr-1" />
+                                {deletingBooks.has(book.id)
+                                  ? "Deleting..."
+                                  : "Delete"}
                               </Button>
                             </div>
                           )}
@@ -184,93 +232,284 @@ const UserProfileTabs = ({
           </Card>
         </TabsContent>
 
-        {isOwnProfile && (
-          <TabsContent value="account" className="space-y-4">
+        <TabsContent value="activity" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Commit System Overview */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <User className="h-5 w-5 mr-2" />
-                  Account Information
+                  <CheckCircle className="h-5 w-5 mr-2 text-green-600" />
+                  Commit System Stats
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">
-                      Name
-                    </label>
-                    <p className="mt-1">{profile?.name || "Not provided"}</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 bg-blue-50 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">
+                      {commitData.totalCommits}
+                    </div>
+                    <div className="text-sm text-blue-700">Total Commits</div>
                   </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">
-                      Email
-                    </label>
-                    <p className="mt-1">{profile?.email || "Not provided"}</p>
+                  <div className="text-center p-3 bg-green-50 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600">
+                      {commitData.completedCommits}
+                    </div>
+                    <div className="text-sm text-green-700">Completed</div>
                   </div>
                 </div>
-                <Button
-                  onClick={() => setIsEditDialogOpen(true)}
-                  variant="outline"
-                  className="w-full md:w-auto"
-                >
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Profile
-                </Button>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">
+                      Active Commits:
+                    </span>
+                    <span className="font-medium">
+                      {commitData.activeCommits}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">
+                      Avg Response Time:
+                    </span>
+                    <span className="font-medium">
+                      {commitData.averageResponseTime}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">
+                      Reliability Score:
+                    </span>
+                    <span className="font-medium text-green-600">
+                      {commitData.reliabilityScore}%
+                    </span>
+                  </div>
+                </div>
+
+                <Alert className="border-blue-200 bg-blue-50">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription>
+                    The 48-hour commit system ensures reliable transactions.
+                    Maintain a high reliability score to build trust with
+                    buyers!
+                  </AlertDescription>
+                </Alert>
               </CardContent>
             </Card>
 
+            {/* Recent Activity */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <MapPin className="h-5 w-5 mr-2" />
-                  Addresses
+                  <Clock className="h-5 w-5 mr-2 text-orange-600" />
+                  Recent Commits
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-600">
-                    Pickup Address
-                  </label>
-                  <p className="mt-1 text-sm">
-                    {formatAddress(addressData?.pickup_address)}
-                  </p>
+              <CardContent>
+                <div className="space-y-3">
+                  {commitData.recentCommits.map((commit) => (
+                    <div
+                      key={commit.id}
+                      className={`p-3 rounded-lg border ${
+                        commit.status === "completed"
+                          ? "bg-green-50 border-green-200"
+                          : "bg-yellow-50 border-yellow-200"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-medium text-sm truncate">
+                            {commit.bookTitle}
+                          </h4>
+                          <p className="text-xs text-gray-600">
+                            Buyer: {commit.buyerName}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {new Date(commit.commitDate).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="flex flex-col items-end">
+                          <Badge
+                            variant={
+                              commit.status === "completed"
+                                ? "default"
+                                : "secondary"
+                            }
+                            className={
+                              commit.status === "completed"
+                                ? "bg-green-600"
+                                : "bg-yellow-600"
+                            }
+                          >
+                            {commit.status}
+                          </Badge>
+                          {commit.responseTime !== "pending" && (
+                            <span className="text-xs text-gray-500 mt-1">
+                              {commit.responseTime}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-600">
-                    Shipping Address
-                  </label>
-                  <p className="mt-1 text-sm">
-                    {addressData?.addresses_same
-                      ? "Same as pickup address"
-                      : formatAddress(addressData?.shipping_address)}
-                  </p>
-                </div>
-                <Button
-                  onClick={() => setIsAddressEditDialogOpen(true)}
-                  variant="outline"
-                  className="w-full md:w-auto"
-                >
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Addresses
-                </Button>
               </CardContent>
             </Card>
-          </TabsContent>
+          </div>
+
+          {/* Commit System Explanation */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <MessageSquare className="h-5 w-5 mr-2 text-indigo-600" />
+                How the 48-Hour Commit System Works
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="prose prose-sm max-w-none">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-blue-50 rounded-lg">
+                    <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-2">
+                      1
+                    </div>
+                    <h4 className="font-medium mb-1">Buyer Commits</h4>
+                    <p className="text-sm text-gray-600">
+                      Buyer expresses serious interest in your book
+                    </p>
+                  </div>
+                  <div className="text-center p-4 bg-yellow-50 rounded-lg">
+                    <div className="w-8 h-8 bg-yellow-600 text-white rounded-full flex items-center justify-center mx-auto mb-2">
+                      2
+                    </div>
+                    <h4 className="font-medium mb-1">48-Hour Window</h4>
+                    <p className="text-sm text-gray-600">
+                      You have 48 hours to respond and arrange pickup
+                    </p>
+                  </div>
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-2">
+                      3
+                    </div>
+                    <h4 className="font-medium mb-1">Transaction</h4>
+                    <p className="text-sm text-gray-600">
+                      Meet buyer and complete the sale successfully
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {isOwnProfile && (
+          <>
+            <TabsContent value="account" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl md:text-2xl flex items-center">
+                    <User className="h-6 w-6 mr-2" />
+                    Account Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <p>
+                      <strong>Name:</strong> {profile?.name || "Not provided"}
+                    </p>
+                    <p>
+                      <strong>Email:</strong> {profile?.email || "Not provided"}
+                    </p>
+                    <p>
+                      <strong>Student Number:</strong>{" "}
+                      {profile?.student_number || "Not provided"}
+                    </p>
+                    <p>
+                      <strong>University:</strong>{" "}
+                      {profile?.university || "Not provided"}
+                    </p>
+                    <p>
+                      <strong>Study Year:</strong>{" "}
+                      {profile?.study_year || "Not provided"}
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => setIsEditDialogOpen(true)}
+                    className="w-full md:w-auto"
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Profile
+                  </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="addresses" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl md:text-2xl flex items-center">
+                    <MapPin className="h-6 w-6 mr-2" />
+                    Addresses
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <h3 className="font-semibold text-lg">Pickup Address</h3>
+                      <p className="text-sm text-gray-600">
+                        Where buyers can collect books from you
+                      </p>
+                      <div className="p-3 bg-gray-50 rounded border min-h-[60px] flex items-center">
+                        <p className="text-sm">
+                          {formatAddress(addressData?.pickup)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <h3 className="font-semibold text-lg">
+                        Shipping Address
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Where you want orders shipped to you
+                      </p>
+                      <div className="p-3 bg-gray-50 rounded border min-h-[60px] flex items-center">
+                        <p className="text-sm">
+                          {formatAddress(addressData?.shipping)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={() => setIsAddressEditDialogOpen(true)}
+                    disabled={isLoadingAddress}
+                    className="w-full md:w-auto"
+                  >
+                    <MapPin className="h-4 w-4 mr-2" />
+                    {isLoadingAddress ? "Loading..." : "Edit Addresses"}
+                  </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </>
         )}
       </Tabs>
 
-      <ProfileEditDialog
-        isOpen={isEditDialogOpen}
-        onClose={() => setIsEditDialogOpen(false)}
-      />
+      {/* Dialogs */}
+      {profile && (
+        <ProfileEditDialog
+          isOpen={isEditDialogOpen}
+          onClose={() => setIsEditDialogOpen(false)}
+          currentProfile={profile}
+        />
+      )}
 
-      {isOwnProfile && onSaveAddresses && (
+      {addressData && onSaveAddresses && (
         <AddressEditDialog
           isOpen={isAddressEditDialogOpen}
           onClose={() => setIsAddressEditDialogOpen(false)}
-          addressData={addressData}
+          currentPickupAddress={addressData.pickup}
+          currentShippingAddress={addressData.shipping}
           onSave={onSaveAddresses}
-          isLoading={isLoadingAddress}
         />
       )}
     </div>
