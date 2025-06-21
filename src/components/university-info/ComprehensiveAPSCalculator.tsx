@@ -463,14 +463,10 @@ const ComprehensiveAPSCalculator: React.FC = () => {
       </div>
 
       <Tabs defaultValue="calculator" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 lg:w-[400px] mx-auto">
+        <TabsList className="grid w-full grid-cols-1 lg:w-[300px] mx-auto">
           <TabsTrigger value="calculator" className="flex items-center gap-2">
             <Calculator className="h-4 w-4" />
-            APS Calculator
-          </TabsTrigger>
-          <TabsTrigger value="overview" className="flex items-center gap-2">
-            <BarChart3 className="h-4 w-4" />
-            Overview
+            APS Calculator & Results
           </TabsTrigger>
         </TabsList>
 
