@@ -98,22 +98,19 @@ const EnhancedUniversityProfile: React.FC = () => {
     clearError,
   } = useAPSAwareCourseAssignment(universityId);
 
-  // Handle navigation from APS results
+  // Detect if coming from APS calculator
+  const searchParams = new URLSearchParams(location.search);
+  const fromAPS = searchParams.get("fromAPS") === "true";
+  const apsScore = searchParams.get("aps");
+
+  // Show APS context message when coming from APS results
   useEffect(() => {
-    const state = location.state as any;
-    if (state?.fromAPS && state?.apsProfile && !hasValidProfile) {
-      // If coming from APS results but no profile is loaded, restore it
-      try {
-        const profileData = state.apsProfile;
-        if (profileData?.subjects && profileData.subjects.length >= 4) {
-          sessionStorage.setItem("userAPSProfile", JSON.stringify(profileData));
-          console.log("APS profile restored from navigation state");
-        }
-      } catch (error) {
-        console.error("Failed to restore APS profile:", error);
-      }
+    if (fromAPS && apsScore) {
+      console.log(`Navigated from APS calculator with score: ${apsScore}`);
+      // Set active tab to programs to show APS-filtered content
+      setActiveTab("programs");
     }
-  }, [location.state, hasValidProfile]);
+  }, [fromAPS, apsScore]);
 
   const {
     filterOptions,
