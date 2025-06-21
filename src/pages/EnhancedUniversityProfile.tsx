@@ -752,6 +752,20 @@ const EnhancedUniversityProfile: React.FC = () => {
             {/* Enhanced Programs Tab */}
             <TabsContent value="programs">
               <div className="space-y-6">
+                {/* APS Context Banner */}
+                {fromAPS && apsScore && (
+                  <Alert className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+                    <Calculator className="h-4 w-4" />
+                    <AlertDescription>
+                      <strong>APS-Based View:</strong> You're viewing programs
+                      at {university.name} based on your APS score of{" "}
+                      <strong>{apsScore}</strong>.
+                      {hasValidProfile
+                        ? " Programs are filtered to show what you qualify for."
+                        : " Complete your full APS profile for personalized filtering."}
+                    </AlertDescription>
+                  </Alert>
+                )}
                 <div className="tab-content-mobile bg-white rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8 relative z-30">
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
                     <div>
