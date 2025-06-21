@@ -78,6 +78,7 @@ const DeleteProfileDialog = ({ isOpen, onClose }: DeleteProfileDialogProps) => {
   };
 
   const handleClose = () => {
+    if (isDeleting) return;
     onClose();
     setStep("confirm");
     setConfirmText("");
@@ -86,57 +87,147 @@ const DeleteProfileDialog = ({ isOpen, onClose }: DeleteProfileDialogProps) => {
     setFeedback("");
   };
 
-  const handleClose = () => {
-    if (isDeleting) return;
-    setConfirmText("");
-    onClose();
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md w-[95vw] max-w-[95vw] sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-red-600">
             <AlertTriangle className="h-5 w-5" />
-            Delete Profile
+            {step === "confirm" ? "Delete Profile" : "Feedback (Optional)"}
           </DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove all your data from our servers.
+            {step === "confirm"
+              ? "This action cannot be undone. This will permanently delete your account and remove all your data from our servers."
+              : "Help us improve by sharing your feedback (optional)."}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
-          <div className="bg-red-50 p-3 rounded-lg border border-red-200">
-            <p className="text-sm text-red-800 font-semibold mb-2">
-              What will be deleted:
+        {step === "confirm" ? (
+          <div className="space-y-4">
+            <div className="bg-red-50 p-3 rounded-lg border border-red-200">
+              <p className="text-sm text-red-800 font-semibold mb-2">
+                What will be deleted:
+              </p>
+              <ul className="text-sm text-red-700 space-y-1">
+                <li>• Your profile and account information</li>
+                <li>• All your book listings</li>
+                <li>• Your transaction history</li>
+                <li>• Your saved addresses</li>
+                <li>• All notifications and messages</li>
+              </ul>
+            </div>
+
+            <p className="text-sm text-gray-600">
+              Please type <strong>DELETE</strong> to confirm you want to
+              permanently delete your account.
             </p>
-            <ul className="text-sm text-red-700 space-y-1">
-              <li>• Your profile and account information</li>
-              <li>• All your book listings</li>
-              <li>• Your transaction history</li>
-              <li>• Your saved addresses</li>
-              <li>• All notifications and messages</li>
-            </ul>
-          </div>
 
-          <p className="text-sm text-gray-600">
-            Please type <strong>DELETE</strong> to confirm you want to
-            permanently delete your account.
-          </p>
-
-          <div className="space-y-2">
-            <Label htmlFor="confirm-delete">Type 'DELETE' to confirm</Label>
-            <Input
-              id="confirm-delete"
-              value={confirmText}
-              onChange={(e) => setConfirmText(e.target.value)}
-              placeholder="DELETE"
-              className="font-mono"
-              disabled={isDeleting}
-            />
+            <div className="space-y-2">
+              <Label htmlFor="confirm-delete">Type 'DELETE' to confirm</Label>
+              <Input
+                id="confirm-delete"
+                value={confirmText}
+                onChange={(e) => setConfirmText(e.target.value)}
+                placeholder="DELETE"
+                className="font-mono"
+                disabled={isDeleting}
+              />
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="space-y-4">
+            <div>
+              <Label className="text-sm font-medium mb-2 block">
+                Rate your experience with ReBooked (1-5 stars)
+              </Label>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRating(star)}
+                    className="p-1"
+                  >
+                    <Star
+                      className={`h-6 w-6 ${
+                        star <= rating
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-gray-300"
+                      }`}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-sm font-medium mb-2 block">
+                Why are you leaving?
+              </Label>
+              <RadioGroup value={reason} onValueChange={setReason}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="not-useful" id="not-useful" />
+                  <Label htmlFor="not-useful" className="text-sm">
+                    Not useful for my needs
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="too-complex" id="too-complex" />
+                  <Label htmlFor="too-complex" className="text-sm">
+                    Too complex to use
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="poor-service" id="poor-service" />
+                  <Label htmlFor="poor-service" className="text-sm">
+                    Poor customer service
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="found-alternative"
+                    id="found-alternative"
+                  />
+                  <Label htmlFor="found-alternative" className="text-sm">
+                    Found a better alternative
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="privacy-concerns"
+                    id="privacy-concerns"
+                  />
+                  <Label htmlFor="privacy-concerns" className="text-sm">
+                    Privacy concerns
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="other" id="other" />
+                  <Label htmlFor="other" className="text-sm">
+                    Other
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div>
+              <Label
+                htmlFor="feedback"
+                className="text-sm font-medium mb-2 block"
+              >
+                Additional feedback (optional)
+              </Label>
+              <Textarea
+                id="feedback"
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                placeholder="Tell us how we could improve..."
+                className="min-h-[80px]"
+                maxLength={500}
+              />
+            </div>
+          </div>
+        )}
 
         <DialogFooter className="gap-2">
           <Button variant="outline" onClick={handleClose} disabled={isDeleting}>
