@@ -8,6 +8,7 @@ import {
   APSAwareCourseSearchService,
 } from "@/services/apsAwareCourseAssignmentService";
 import { calculateAPS, validateAPSSubjects } from "@/utils/apsCalculation";
+
 /**
  * Enhanced hook for APS-aware course assignment with user state management
  * Uses sessionStorage for temporary storage - data clears on browser refresh
@@ -87,218 +88,6 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
         const validation = validateAPSSubjects(subjects);
         if (!validation.isValid) {
           setError(validation.errors.join("; "));
-          return;
-        }
-
-        // Calculate APS
-        const apsResult = calculateAPS(subjects);
-
-        const profile: UserAPSProfile = {
-          subjects,
-          totalAPS: apsResult.totalScore,
-          lastUpdated: new Date().toISOString(),
-          isValid: validation.isValid,
-          validationErrors: validation.errors,
-        };
-
-        setUserProfile(profile);
-      } catch (err) {
-        setError(`Error updating APS profile: ${err}`);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [setUserProfile],
-  );
-
-  /**
-   * Search for courses with current user's APS profile
-   */
-  const searchCoursesForUniversity = useCallback(
-    async (
-      targetUniversityId: string,
-      options: Partial<APSFilterOptions> = {},
-    ): Promise<CoursesForUniversityResult> => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const apsOptions: APSFilterOptions = {
-          userAPS: userProfile?.totalAPS,
-          userSubjects: userProfile?.subjects,
-          includeAlmostQualified: true,
-          maxAPSGap: 5,
-          ...options,
-        };
-
-        const result = await Promise.resolve(
-          getCoursesForUniversityWithAPS(targetUniversityId, apsOptions),
-        );
-
-        if (result.errors.length > 0) {
-          setError(result.errors.join("; "));
-        }
-
-        setLastSearchResults(result);
-        return result;
-      } catch (err) {
-        const errorMsg = `Error searching courses: ${err}`;
-        setError(errorMsg);
-
-        // Return empty result on error
-        return {
-          universityId: targetUniversityId,
-          courses: [],
-          totalCourses: 0,
-          eligibleCourses: 0,
-          almostEligibleCourses: 0,
-          errors: [errorMsg],
-          warnings: [],
-        };
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [userProfile],
-  );
-
-  /**
-   * Check if user is eligible for a specific program
-   */
-  const checkProgramEligibility = useCallback(
-    (
-      programAPS: number,
-      requiredSubjects: Array<{
-        name: string;
-        level: number;
-        isRequired: boolean;
-      }> = [],
-    ) => {
-      if (!userProfile) {
-        return {
-          eligible: false,
-          reason: "No APS profile found",
-          apsGap: programAPS,
-          missingSubjects: requiredSubjects
-            .filter((s) => s.isRequired)
-            .map((s) => s.name),
-        };
-      }
-
-      const apsGap = Math.max(0, programAPS - userProfile.totalAPS);
-      const apsEligible = userProfile.totalAPS >= programAPS;
-
-      // Check subject requirements
-      const missingSubjects: string[] = [];
-      requiredSubjects
-        .filter((s) => s.isRequired)
-        .forEach((reqSubject) => {
-          const userSubject = userProfile.subjects.find(
-            (us) =>
-              us.name.toLowerCase().includes(reqSubject.name.toLowerCase()) ||
-              reqSubject.name.toLowerCase().includes(us.name.toLowerCase()),
-          );
-
-          if (!userSubject || userSubject.level < reqSubject.level) {
-            missingSubjects.push(
-              `${reqSubject.name} (Level ${reqSubject.level})`,
-            );
-          }
-        });
-
-      const subjectsEligible = missingSubjects.length === 0;
-      const overallEligible = apsEligible && subjectsEligible;
-
-      return {
-        eligible: overallEligible,
-        reason: !apsEligible
-          ? `Need ${apsGap} more APS points`
-          : !subjectsEligible
-            ? `Missing required subjects: ${missingSubjects.join(", ")}`
-            : "Eligible",
-        apsGap,
-        missingSubjects,
-      };
-    },
-    [userProfile],
-  );
-
-  /**
-   * Clear APS profile completely - removes all APS-based logic across the site
-   * Returns everything to clean state as if no APS was ever entered
-   */
-  const clearAPSProfile = useCallback(() => {
-    setUserProfile(null);
-    setLastSearchResults(null);
-    setError(null);
-
-// Custom hook for sessionStorage (temporary storage)
-function useSessionStorage<T>(key: string, initialValue: T) {
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    try {
-      const item = sessionStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
-    } catch {
-      return initialValue;
-    }
-  });
-
-  const setValue = (value: T) => {
-    try {
-      setStoredValue(value);
-      sessionStorage.setItem(key, JSON.stringify(value));
-    } catch (error) {
-      console.error("Error saving to sessionStorage:", error);
-    }
-  };
-
-  // Add an effect to listen for external sessionStorage changes
-  useEffect(() => {
-    const handleStorageChange = () => {
-      try {
-        const item = sessionStorage.getItem(key);
-        const newValue = item ? JSON.parse(item) : initialValue;
-        if (JSON.stringify(newValue) !== JSON.stringify(storedValue)) {
-          setStoredValue(newValue);
-        }
-      } catch (error) {
-        console.error("Error reading from sessionStorage:", error);
-      }
-    };
-
-    // Check for changes periodically (since sessionStorage doesn't emit events)
-    const interval = setInterval(handleStorageChange, 100);
-
-    return () => clearInterval(interval);
-  }, [key, initialValue, storedValue]);
-
-  return [storedValue, setValue] as const;
-}
-
-export function useAPSAwareCourseAssignment(universityId?: string) {
-  // Temporary user APS profile (session only)
-  const [userProfile, setUserProfile] =
-    useSessionStorage<UserAPSProfile | null>("userAPSProfile", null);
-
-  // Component state
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [lastSearchResults, setLastSearchResults] =
-    useState<CoursesForUniversityResult | null>(null);
-
-  /**
-   * Update user's APS subjects and recalculate profile
-   */
-  const updateUserSubjects = useCallback(
-    async (subjects: APSSubject[]) => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        // Validate subjects
-        const validation = validateAPSSubjects(subjects);
-        if (!validation.isValid) {
-          setError(validation.errors.join("; "));
           return false;
         }
 
@@ -324,7 +113,7 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
         setIsLoading(false);
       }
     },
-    [setUserProfile]
+    [setUserProfile],
   );
 
   /**
@@ -343,7 +132,7 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
 
         const results = await getUniversityFacultiesWithAPS(
           targetUniversityId,
-          userProfile.subjects
+          userProfile.subjects,
         );
 
         // Cache results for current university
@@ -360,7 +149,7 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
         setIsLoading(false);
       }
     },
-    [userProfile, universityId]
+    [userProfile, universityId],
   );
 
   /**
@@ -371,13 +160,23 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
       if (!userProfile) return { eligible: false, reason: "No APS profile" };
 
       try {
-        return assessEligibility(userProfile.subjects, program);
+        // Basic eligibility check - can be enhanced
+        const userAPS = userProfile.totalAPS;
+        const requiredAPS = program.apsRequirement || program.defaultAps || 20;
+
+        return {
+          eligible: userAPS >= requiredAPS,
+          reason:
+            userAPS >= requiredAPS
+              ? "Meets APS requirement"
+              : `APS too low (need ${requiredAPS}, have ${userAPS})`,
+        };
       } catch (error) {
         console.error("Error checking eligibility:", error);
         return { eligible: false, reason: "Error checking eligibility" };
       }
     },
-    [userProfile]
+    [userProfile],
   );
 
   /**
@@ -439,8 +238,10 @@ export function useAPSFilterOptions() {
     () => ({
       includeAlmostQualified,
       maxAPSGap,
+      facultyFilter,
+      sortBy,
     }),
-    [includeAlmostQualified, maxAPSGap],
+    [includeAlmostQualified, maxAPSGap, facultyFilter, sortBy],
   );
 
   return {
@@ -457,15 +258,14 @@ export function useAPSFilterOptions() {
 }
 
 /**
- * Hook for cached search results across components
+ * Enhanced search hook with caching
  */
-export function useCachedAPSSearch() {
+export function useAPSSearch() {
   const searchWithCache = useCallback(
-    (query: {
+    async (query: {
       universityId?: string;
-      apsOptions?: APSFilterOptions;
-      facultyFilter?: string;
-      searchTerm?: string;
+      faculty?: string;
+      apsRange?: { min: number; max: number };
     }) => {
       return APSAwareCourseSearchService.searchPrograms(query);
     },
