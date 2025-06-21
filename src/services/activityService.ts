@@ -35,7 +35,7 @@ export class ActivityService {
       // Log to console
       console.log(`📝 Profile updated for user: ${userId}`);
 
-      // Create notification for profile update
+      // Create notification for profile update (if table exists)
       const { error } = await supabase.from("notifications").insert({
         user_id: userId,
         title: "Profile Updated",
@@ -45,7 +45,22 @@ export class ActivityService {
       });
 
       if (error) {
-        console.warn("Failed to create profile update notification:", error);
+        // Check if it's a table not found error
+        if (
+          error.code === "42P01" ||
+          error.message?.includes("relation") ||
+          error.message?.includes("does not exist") ||
+          error.message?.includes("schema cache")
+        ) {
+          console.log(
+            "📝 Notifications table not available, skipping notification",
+          );
+        } else {
+          console.warn(
+            "⚠️ Failed to create profile update notification:",
+            error.message || error,
+          );
+        }
       } else {
         console.log("✅ Profile update notification created");
       }
@@ -79,7 +94,7 @@ export class ActivityService {
 
       // For silent activities, we can create a simple log without notification
       if (SILENT_ACTIVITY_TYPES.has(type)) {
-        console.log(`���� Silent activity logged: ${type} - ${title}`);
+        console.log(`📝 Silent activity logged: ${type} - ${title}`);
         return { success: true };
       }
 
