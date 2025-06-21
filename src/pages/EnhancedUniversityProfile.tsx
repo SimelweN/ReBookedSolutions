@@ -66,6 +66,7 @@ import {
   createLogoFallbackHandler,
 } from "@/utils/universityLogoUtils";
 import { getUniversityFaculties } from "@/constants/universities/comprehensive-course-database";
+import { toast } from "sonner";
 import "@/styles/university-profile-mobile.css";
 
 /**
