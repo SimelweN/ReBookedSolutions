@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
+import AuthErrorHandler from "./components/AuthErrorHandler";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
@@ -66,13 +67,14 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <ErrorBoundary level="app">
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <AuthProvider>
-            <CartProvider>
-              <Router>
-                <ScrollToTop />
-                <div className="min-h-screen bg-gray-50">
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider attribute="class" defaultTheme="light">
+            <AuthProvider>
+              <CartProvider>
+                <Router>
+                  <AuthErrorHandler />
+                  <ScrollToTop />
+                  <Routes>
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/books" element={<BookListing />} />
@@ -124,10 +126,7 @@ function App() {
                     <Route path="/policies" element={<Policies />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
-                    <Route
-                      path="/google-maps-demo"
-                      element={<GoogleMapsDemo />}
-                    />
+                    <Route path="/google-maps-demo" element={<GoogleMapsDemo />} />
                     <Route path="/maps-test" element={<MapsTest />} />
                     <Route path="/basic-maps" element={<BasicMapsExample />} />
 
