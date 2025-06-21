@@ -146,17 +146,19 @@ export const getCommitPendingBooks = async (): Promise<any[]> => {
     // In a real system, you'd have proper order status tracking
     const pendingCommits = (books || [])
       .filter((book) => {
-        // Simplified logic - in reality this would check order status
-        return book.sold && !book.committed_at;
+        // For now, since we don't have a proper commit tracking system,
+        // we'll just return books that are marked as sold
+        return book.sold;
       })
       .map((book) => ({
         id: book.id,
         bookId: book.id,
         bookTitle: book.title,
-        buyerName: "Buyer", // Would come from orders table
+        buyerName: "Interested Buyer", // Would come from orders table in real system
         price: book.price,
         expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(), // 48 hours from now
         createdAt: book.created_at,
+        status: book.sold ? "completed" : "pending",
       }));
 
     console.log(
