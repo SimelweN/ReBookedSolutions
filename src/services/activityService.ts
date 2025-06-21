@@ -309,6 +309,31 @@ export class ActivityService {
   }
 
   /**
+   * Maps notification types to activity types
+   */
+  private static mapNotificationToActivityType(
+    notificationType: string,
+  ): ActivityType {
+    switch (notificationType?.toLowerCase()) {
+      case "purchase":
+      case "bought":
+        return "purchase";
+      case "sale":
+      case "sold":
+        return "sale";
+      case "listing":
+      case "listing_created":
+        return "listing_created";
+      case "login":
+        return "login";
+      case "profile":
+      case "profile_updated":
+      default:
+        return "profile_updated";
+    }
+  }
+
+  /**
    * Helper method for detailed error logging
    */
   private static logDetailedError(message: string, error: unknown): void {
