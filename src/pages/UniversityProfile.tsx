@@ -27,9 +27,8 @@ import CampusNavbar from "@/components/CampusNavbar";
 import SEO from "@/components/SEO";
 
 const UniversityProfile: React.FC = () => {
-  const [searchParams] = useSearchParams();
+  const { id: universityId } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const universityId = searchParams.get("id");
   const [expandedFaculties, setExpandedFaculties] = useState<Set<string>>(
     new Set(),
   );
