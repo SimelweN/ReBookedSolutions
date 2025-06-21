@@ -8,11 +8,9 @@ import {
   APSAwareCourseSearchService,
 } from "@/services/apsAwareCourseAssignmentService";
 import { calculateAPS, validateAPSSubjects } from "@/utils/apsCalculation";
-import { useLocalStorage } from "./useLocalStorage";
-
 /**
  * Enhanced hook for APS-aware course assignment with user state management
- * Addresses the critical issue of no APS filtering in program assignment
+ * Uses sessionStorage for temporary storage - data clears on browser refresh
  */
 
 export interface UserAPSProfile {
@@ -31,12 +29,44 @@ export interface APSAwareState {
   lastSearchResults: CoursesForUniversityResult | null;
 }
 
-export function useAPSAwareCourseAssignment(universityId?: string) {
-  // Persistent user APS profile
-  const [userProfile, setUserProfile] = useLocalStorage<UserAPSProfile | null>(
-    "userAPSProfile",
-    null,
+// Custom hook for sessionStorage (temporary storage)
+function useSessionStorage<T>(key: string, initialValue: T) {
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    try {
+      const item = sessionStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.warn(`Error reading sessionStorage key "${key}":`, error);
+      return initialValue;
+    }
+  });
+
+  const setValue = useCallback(
+    (value: T | ((val: T) => T)) => {
+      try {
+        const valueToStore =
+          value instanceof Function ? value(storedValue) : value;
+        setStoredValue(valueToStore);
+
+        if (valueToStore === null || valueToStore === undefined) {
+          sessionStorage.removeItem(key);
+        } else {
+          sessionStorage.setItem(key, JSON.stringify(valueToStore));
+        }
+      } catch (error) {
+        console.warn(`Error setting sessionStorage key "${key}":`, error);
+      }
+    },
+    [key, storedValue],
   );
+
+  return [storedValue, setValue] as const;
+}
+
+export function useAPSAwareCourseAssignment(universityId?: string) {
+  // Temporary user APS profile (session only)
+  const [userProfile, setUserProfile] =
+    useSessionStorage<UserAPSProfile | null>("userAPSProfile", null);
 
   // Component state
   const [isLoading, setIsLoading] = useState(false);
