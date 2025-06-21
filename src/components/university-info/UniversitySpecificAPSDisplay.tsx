@@ -65,7 +65,7 @@ const APSScoreCard: React.FC<APSScoreCardProps> = ({
 
   const handleUniversityNameClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent card onClick
-    navigate(`/university-profile/${score.universityId}`);
+    navigate(`/university/${score.universityId}`);
   };
 
   const getScoreColor = (percentage: number) => {
