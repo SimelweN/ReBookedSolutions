@@ -1,9 +1,9 @@
 import React from "react";
-import SimpleAPSCalculator from "./SimpleAPSCalculator";
+import ComprehensiveAPSCalculator from "./ComprehensiveAPSCalculator";
 
-// Use the simple, reliable version that definitely works
+// Use the comprehensive version with massive course database
 const ModernAPSCalculator: React.FC = () => {
-  return <SimpleAPSCalculator />;
+  return <ComprehensiveAPSCalculator />;
 };
 
 export default ModernAPSCalculator;
