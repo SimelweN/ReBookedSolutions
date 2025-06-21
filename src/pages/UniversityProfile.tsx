@@ -181,17 +181,17 @@ const UniversityProfile: React.FC = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         {/* Hero Section */}
         <div className="relative overflow-hidden bg-gradient-to-r from-book-600 via-book-700 to-emerald-600">
-          <div className="absolute inset-0 bg-black/20"></div>
-          <div className="absolute inset-0 bg-gradient-to-br from-transparent to-black/30"></div>
+          <div className="absolute inset-0 bg-black/20 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent to-black/30 pointer-events-none"></div>
 
           {/* Decorative elements */}
-          <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
             <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-xl"></div>
             <div className="absolute top-20 -left-10 w-32 h-32 bg-white/5 rounded-full blur-xl"></div>
             <div className="absolute bottom-10 right-20 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
           </div>
 
-          <div className="relative container mx-auto px-4 py-16">
+          <div className="relative z-10 container mx-auto px-4 py-16">
             {/* Back Button */}
             <div className="mb-8">
               <Button
