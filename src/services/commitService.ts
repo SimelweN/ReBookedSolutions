@@ -45,21 +45,20 @@ export const commitBookSale = async (bookId: string): Promise<void> => {
       );
     }
 
-    // Check if book is sold but not yet committed
-    if (!book.sold) {
-      throw new Error("Book is not sold yet");
+    // For now, just log the commit action since the commit system is in development
+    console.log("[CommitService] Processing commit for book:", book.title);
+
+    // Check if book is already sold
+    if (book.sold) {
+      console.log("[CommitService] Book is already marked as sold");
+      // In a real system, we'd check if commit is already processed
     }
 
-    if (book.committed_at) {
-      throw new Error("Sale has already been committed");
-    }
-
-    // Update book to mark as committed
+    // Update book to mark as sold (simplified for current schema)
     const { error: updateError } = await supabase
       .from("books")
       .update({
-        committed_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        sold: true,
       })
       .eq("id", bookId)
       .eq("seller_id", user.id);
