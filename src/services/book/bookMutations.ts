@@ -15,6 +15,42 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       throw new Error("User not authenticated");
     }
 
+    // Fetch province from user's pickup address
+    let province = null;
+    try {
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("pickup_address")
+        .eq("id", user.id)
+        .single();
+
+      if (profileData?.pickup_address) {
+        // Check if pickup_address has province property
+        const pickupAddress = profileData.pickup_address as any;
+        if (pickupAddress?.province) {
+          province = pickupAddress.province;
+        } else if (typeof pickupAddress === "string") {
+          // If pickup_address is a string, try to extract province from it
+          // This is a fallback for older address formats
+          const addressStr = pickupAddress.toLowerCase();
+          if (addressStr.includes("western cape")) province = "Western Cape";
+          else if (addressStr.includes("gauteng")) province = "Gauteng";
+          else if (addressStr.includes("kwazulu")) province = "KwaZulu-Natal";
+          else if (addressStr.includes("eastern cape"))
+            province = "Eastern Cape";
+          else if (addressStr.includes("free state")) province = "Free State";
+          else if (addressStr.includes("limpopo")) province = "Limpopo";
+          else if (addressStr.includes("mpumalanga")) province = "Mpumalanga";
+          else if (addressStr.includes("northern cape"))
+            province = "Northern Cape";
+          else if (addressStr.includes("north west")) province = "North West";
+        }
+      }
+    } catch (addressError) {
+      console.warn("Could not fetch user address for province:", addressError);
+      // Continue without province - it's not critical for book creation
+    }
+
     const { data: book, error } = await supabase
       .from("books")
       .insert([
@@ -32,6 +68,7 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
           inside_pages: bookData.insidePages,
           grade: bookData.grade,
           university_year: bookData.universityYear,
+          province: province,
         },
       ])
       .select()
