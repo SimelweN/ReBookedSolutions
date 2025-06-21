@@ -1052,7 +1052,8 @@ const EnhancedUniversityProfile: React.FC = () => {
                                           </p>
 
                                           {/* Detailed eligibility information */}
-                                          {hasValidProfile &&
+                                          {(hasValidProfile ||
+                                            (fromAPS && apsScore)) &&
                                             eligibilityResult && (
                                               <div
                                                 className={`mb-3 p-3 rounded border ${
