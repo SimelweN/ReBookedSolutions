@@ -677,7 +677,10 @@ const AdminResourcesTab = ({ className }: AdminResourcesTabProps) => {
                         </>
                       )}
                     </Button>
-            )}
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
