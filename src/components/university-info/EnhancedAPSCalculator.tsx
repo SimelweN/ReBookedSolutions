@@ -154,7 +154,7 @@ const EnhancedAPSCalculator: React.FC = () => {
 
   // Calculate APS with all validations
   const apsCalculation = useMemo(() => {
-    const totalAPS = calculateAPS(subjects);
+    const apsResult = calculateAPS(subjects);
     const validationResult = validateAPSSubjectsEnhanced(subjects);
 
     // Calculate university-specific scores for all 26 universities
@@ -166,10 +166,11 @@ const EnhancedAPSCalculator: React.FC = () => {
         : null;
 
     return {
-      totalAPS,
+      totalAPS: apsResult.totalScore, // Extract the totalScore property
       validationResult,
       isCalculationValid: validationResult.isValid && subjects.length >= 6,
       fullCalculation: universitySpecificCalculation,
+      eligibleDegrees: apsResult.eligibleDegrees, // Also store eligible degrees
     };
   }, [subjects]);
 
