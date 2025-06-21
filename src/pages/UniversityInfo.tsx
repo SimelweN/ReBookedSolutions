@@ -35,6 +35,9 @@ import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
+  Star,
+  CheckCircle,
+  Home,
 } from "lucide-react";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES as SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/index";
 import {
