@@ -376,6 +376,7 @@ const UserProfileTabs = ({
         {isOwnProfile && (
           <>
             <TabsContent value="account" className="space-y-4">
+              {/* Account Information */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-xl md:text-2xl flex items-center">
@@ -391,18 +392,6 @@ const UserProfileTabs = ({
                     <p>
                       <strong>Email:</strong> {profile?.email || "Not provided"}
                     </p>
-                    <p>
-                      <strong>Student Number:</strong>{" "}
-                      {profile?.student_number || "Not provided"}
-                    </p>
-                    <p>
-                      <strong>University:</strong>{" "}
-                      {profile?.university || "Not provided"}
-                    </p>
-                    <p>
-                      <strong>Study Year:</strong>{" "}
-                      {profile?.study_year || "Not provided"}
-                    </p>
                   </div>
                   <Button
                     onClick={() => setIsEditDialogOpen(true)}
@@ -411,6 +400,80 @@ const UserProfileTabs = ({
                     <Edit className="h-4 w-4 mr-2" />
                     Edit Profile
                   </Button>
+                </CardContent>
+              </Card>
+
+              {/* Listing Management */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl md:text-2xl flex items-center">
+                    <Pause className="h-6 w-6 mr-2" />
+                    Listing Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Label htmlFor="temporarily-away">Temporarily Away</Label>
+                      <p className="text-sm text-gray-600">
+                        Pause your listings when you're unavailable. Your books
+                        will be hidden from search results.
+                      </p>
+                    </div>
+                    <Switch
+                      id="temporarily-away"
+                      checked={isTemporarilyAway}
+                      onCheckedChange={setIsTemporarilyAway}
+                    />
+                  </div>
+                  {isTemporarilyAway && (
+                    <Alert className="bg-yellow-50 border-yellow-200">
+                      <Pause className="h-4 w-4 text-yellow-600" />
+                      <AlertDescription className="text-yellow-800">
+                        Your listings are currently paused and hidden from other
+                        users.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Danger Zone */}
+              <Card className="border-red-200">
+                <CardHeader>
+                  <CardTitle className="text-xl md:text-2xl flex items-center text-red-700">
+                    <Shield className="h-6 w-6 mr-2" />
+                    Danger Zone
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div className="flex items-start space-x-3">
+                      <UserX className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <h3 className="font-medium text-red-800">
+                          Delete Account
+                        </h3>
+                        <p className="text-sm text-red-600 mt-1">
+                          Permanently delete your account and all associated
+                          data. This action cannot be undone.
+                        </p>
+                        <Button
+                          variant="destructive"
+                          className="mt-3 bg-red-600 hover:bg-red-700"
+                          onClick={() => {
+                            // TODO: Implement account deletion
+                            alert(
+                              "Account deletion feature will be implemented soon.",
+                            );
+                          }}
+                        >
+                          <UserX className="h-4 w-4 mr-2" />
+                          Delete My Account
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
