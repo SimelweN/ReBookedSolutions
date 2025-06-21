@@ -156,6 +156,7 @@ const UNIVERSITY_PROGRAMS = extractUniversityPrograms();
 interface APSSubject {
   name: string;
   level: number;
+  countsForAPS?: boolean; // Life Orientation doesn't count for APS
 }
 
 interface ProgramDetailsModalProps {
