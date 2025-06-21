@@ -459,6 +459,33 @@ const Profile = () => {
                   </DropdownMenu>
                 </CardContent>
               </Card>
+
+              {/* Danger Zone */}
+              <Card className="border-red-200 bg-red-50">
+                <CardHeader>
+                  <CardTitle className="text-lg text-red-700 flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5" />
+                    Danger Zone
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="bg-white p-3 rounded-lg border border-red-200">
+                    <p className="text-sm text-red-600 mb-3">
+                      <strong>Warning:</strong> This action cannot be undone.
+                      Deleting your account will permanently remove your
+                      profile, listings, and all associated data.
+                    </p>
+                    <Button
+                      onClick={() => setIsDeleteProfileDialogOpen(true)}
+                      variant="destructive"
+                      className="w-full"
+                    >
+                      <AlertTriangle className="h-4 w-4 mr-2" />
+                      Delete Profile
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Right Content - Tabs (Keep as-is) */}
