@@ -419,11 +419,22 @@ const ComprehensiveAPSCalculator: React.FC = () => {
       if (existingIndex >= 0) {
         // Update existing subject
         const newSubjects = [...subjects];
-        newSubjects[existingIndex] = { name: selectedSubject, level };
+        newSubjects[existingIndex] = {
+          name: selectedSubject,
+          level,
+          countsForAPS: selectedSubject !== "Life Orientation",
+        };
         setSubjects(newSubjects);
       } else {
         // Add new subject
-        setSubjects((prev) => [...prev, { name: selectedSubject, level }]);
+        setSubjects((prev) => [
+          ...prev,
+          {
+            name: selectedSubject,
+            level,
+            countsForAPS: selectedSubject !== "Life Orientation",
+          },
+        ]);
       }
 
       setSelectedSubject("");
