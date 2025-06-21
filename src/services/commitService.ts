@@ -64,10 +64,12 @@ export const commitBookSale = async (bookId: string): Promise<void> => {
       .single();
 
     if (bookError) {
-      console.error("[CommitService] Error fetching book:", bookError);
-      console.error("[CommitService] Book ID:", bookId, "User ID:", user.id);
+      logCommitError("Error fetching book", bookError, {
+        bookId,
+        userId: user.id,
+      });
       throw new Error(
-        `Failed to fetch book details: ${bookError.message || bookError.toString()}`,
+        `Failed to fetch book details: ${bookError.message || "Database error"}`,
       );
     }
 
