@@ -352,7 +352,7 @@ const UniversityProfile: React.FC = () => {
             {/* Programs Tab */}
             <TabsContent value="programs">
               <div className="space-y-6">
-                <div className="bg-white rounded-2xl shadow-xl p-8">
+                <div className="bg-white rounded-2xl shadow-xl p-8 relative z-30">
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-2xl font-bold text-slate-900">
                       Academic Programs
