@@ -463,7 +463,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     name: "University of the Free State",
     abbreviation: "UFS",
     fullName: "University of the Free State",
-    logo: "/university-logos/ufs.png",
+    logo: "/university-logos/default.svg",
     code: "ufs",
   },
   {
@@ -471,7 +471,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     name: "University of South Africa",
     abbreviation: "UNISA",
     fullName: "University of South Africa",
-    logo: "/university-logos/unisa.png",
+    logo: "/university-logos/default.svg",
     code: "unisa",
   },
   {
@@ -479,7 +479,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     name: "University of the Western Cape",
     abbreviation: "UWC",
     fullName: "University of the Western Cape",
-    logo: "/university-logos/uwc.png",
+    logo: "/university-logos/uwc.svg",
     code: "uwc",
   },
   {
@@ -487,7 +487,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     name: "University of Venda",
     abbreviation: "UNIVEN",
     fullName: "University of Venda",
-    logo: "/university-logos/univen.png",
+    logo: "/university-logos/default.svg",
     code: "univen",
   },
   {
@@ -495,7 +495,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     name: "University of Limpopo",
     abbreviation: "UL",
     fullName: "University of Limpopo",
-    logo: "/university-logos/ul.png",
+    logo: "/university-logos/default.svg",
     code: "ul",
   },
   {
