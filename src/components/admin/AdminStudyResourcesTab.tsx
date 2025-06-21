@@ -134,10 +134,17 @@ const AdminStudyResourcesTab = () => {
     setIsLoading(true);
     setError(null);
     try {
+      console.log("Loading study resources and tips...");
       const [resourcesData, tipsData] = await Promise.all([
-        studyResourcesService.getStudyResources(),
-        studyResourcesService.getStudyTips(),
+        getStudyResources(),
+        getStudyTips(),
       ]);
+      console.log(
+        "Loaded resources:",
+        resourcesData.length,
+        "tips:",
+        tipsData.length,
+      );
       setResources(resourcesData);
       setTips(tipsData);
     } catch (error) {
