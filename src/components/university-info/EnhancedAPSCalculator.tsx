@@ -201,8 +201,19 @@ const EnhancedAPSCalculator: React.FC = () => {
 
   // Update validation errors when calculation changes
   useEffect(() => {
-    setValidationErrors(apsCalculation.validationResult.errors);
-    setValidationWarnings(apsCalculation.validationResult.warnings);
+    // Extract message strings from validation error objects
+    const errorMessages = apsCalculation.validationResult.errors.map((error) =>
+      typeof error === "string" ? error : error.message || "Unknown error",
+    );
+    const warningMessages = apsCalculation.validationResult.warnings.map(
+      (warning) =>
+        typeof warning === "string"
+          ? warning
+          : warning.message || "Unknown warning",
+    );
+
+    setValidationErrors(errorMessages);
+    setValidationWarnings(warningMessages);
   }, [apsCalculation.validationResult]);
 
   // Sync with global APS profile when calculation is valid
