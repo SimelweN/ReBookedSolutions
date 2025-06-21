@@ -397,11 +397,7 @@ const EnhancedAPSCalculator: React.FC = () => {
               <div className="font-medium mb-2">Please fix these issues:</div>
               <ul className="list-disc list-inside space-y-1 text-sm">
                 {validationErrors.map((error, i) => (
-                  <li key={i}>
-                    {typeof error === "string"
-                      ? error
-                      : error.message || "Validation error"}
-                  </li>
+                  <li key={i}>{error}</li>
                 ))}
               </ul>
             </AlertDescription>
