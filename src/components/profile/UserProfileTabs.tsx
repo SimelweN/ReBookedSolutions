@@ -233,62 +233,89 @@ const UserProfileTabs = ({
         </TabsContent>
 
         <TabsContent value="activity" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Commit System Overview */}
+          {/* Commit System Overview */}
+          <div
+            className={`grid grid-cols-1 ${isMobile ? "gap-4" : "md:grid-cols-2 gap-6"}`}
+          >
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <CheckCircle className="h-5 w-5 mr-2 text-green-600" />
-                  Commit System Stats
+                  Commit Stats
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="text-center py-8">
-                  <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-600 mb-2">
-                    Commit System Coming Soon
-                  </h3>
-                  <p className="text-gray-500 text-sm">
-                    The commit system will track your transaction history once
-                    it's fully implemented.
-                  </p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 bg-gray-50 rounded-lg">
+                    <div className="text-2xl font-bold text-gray-600">
+                      {commitData.totalCommits ?? "-"}
+                    </div>
+                    <div className="text-xs text-gray-500">Total Commits</div>
+                  </div>
+                  <div className="text-center p-3 bg-green-50 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600">
+                      {commitData.completedCommits ?? "-"}
+                    </div>
+                    <div className="text-xs text-gray-500">Completed</div>
+                  </div>
+                  <div className="text-center p-3 bg-yellow-50 rounded-lg">
+                    <div className="text-2xl font-bold text-yellow-600">
+                      {commitData.activeCommits ?? "-"}
+                    </div>
+                    <div className="text-xs text-gray-500">Active</div>
+                  </div>
+                  <div className="text-center p-3 bg-blue-50 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">
+                      {commitData.reliabilityScore ?? "-"}%
+                    </div>
+                    <div className="text-xs text-gray-500">Reliability</div>
+                  </div>
                 </div>
+                {commitData.averageResponseTime && (
+                  <div className="mt-4 text-center">
+                    <Badge variant="secondary" className="text-xs">
+                      Avg Response: {commitData.averageResponseTime}
+                    </Badge>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
-            {/* Recent Activity */}
+            {/* Recent Commits */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Clock className="h-5 w-5 mr-2 text-orange-600" />
-                  Recent Commits
+                  Recent Activity
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {commitData.recentCommits.length === 0 ? (
                   <div className="text-center py-8">
-                    <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-600 mb-2">
-                      No Commits Yet
+                    <MessageSquare className="h-8 w-8 text-gray-400 mx-auto mb-3" />
+                    <h3 className="font-medium text-gray-600 mb-1">
+                      No Activity Yet
                     </h3>
                     <p className="text-gray-500 text-sm">
-                      Commits will appear here when buyers express interest in
-                      your books.
+                      Commit activity will appear here when buyers express
+                      interest in your books.
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-3 max-h-64 overflow-y-auto">
                     {commitData.recentCommits.map((commit) => (
                       <div
                         key={commit.id}
                         className={`p-3 rounded-lg border ${
                           commit.status === "completed"
                             ? "bg-green-50 border-green-200"
-                            : "bg-yellow-50 border-yellow-200"
+                            : commit.status === "active"
+                              ? "bg-yellow-50 border-yellow-200"
+                              : "bg-gray-50 border-gray-200"
                         }`}
                       >
                         <div className="flex items-start justify-between">
-                          <div className="flex-1">
+                          <div className="flex-1 min-w-0">
                             <h4 className="font-medium text-sm truncate">
                               {commit.bookTitle}
                             </h4>
@@ -306,19 +333,22 @@ const UserProfileTabs = ({
                                   ? "default"
                                   : "secondary"
                               }
-                              className={
+                              className={`text-xs ${
                                 commit.status === "completed"
                                   ? "bg-green-600"
-                                  : "bg-yellow-600"
-                              }
+                                  : commit.status === "active"
+                                    ? "bg-yellow-600"
+                                    : "bg-gray-600"
+                              }`}
                             >
                               {commit.status}
                             </Badge>
-                            {commit.responseTime !== "pending" && (
-                              <span className="text-xs text-gray-500 mt-1">
-                                {commit.responseTime}
-                              </span>
-                            )}
+                            {commit.responseTime &&
+                              commit.responseTime !== "pending" && (
+                                <span className="text-xs text-gray-500 mt-1">
+                                  {commit.responseTime}
+                                </span>
+                              )}
                           </div>
                         </div>
                       </div>
@@ -338,33 +368,50 @@ const UserProfileTabs = ({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="prose prose-sm max-w-none">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-blue-50 rounded-lg">
-                    <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-2">
-                      1
-                    </div>
-                    <h4 className="font-medium mb-1">Buyer Commits</h4>
-                    <p className="text-sm text-gray-600">
-                      Buyer expresses serious interest in your book
-                    </p>
+              <div
+                className={`grid grid-cols-1 ${isMobile ? "gap-3" : "md:grid-cols-3 gap-4"}`}
+              >
+                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                  <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-2">
+                    1
                   </div>
-                  <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                    <div className="w-8 h-8 bg-yellow-600 text-white rounded-full flex items-center justify-center mx-auto mb-2">
-                      2
-                    </div>
-                    <h4 className="font-medium mb-1">48-Hour Window</h4>
-                    <p className="text-sm text-gray-600">
-                      You have 48 hours to respond and arrange pickup
-                    </p>
+                  <h4 className="font-medium mb-1">Buyer Commits</h4>
+                  <p className="text-sm text-gray-600">
+                    Buyer expresses serious interest in your book
+                  </p>
+                </div>
+                <div className="text-center p-4 bg-yellow-50 rounded-lg">
+                  <div className="w-8 h-8 bg-yellow-600 text-white rounded-full flex items-center justify-center mx-auto mb-2">
+                    2
                   </div>
-                  <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-2">
-                      3
-                    </div>
-                    <h4 className="font-medium mb-1">Transaction</h4>
-                    <p className="text-sm text-gray-600">
-                      Meet buyer and complete the sale successfully
+                  <h4 className="font-medium mb-1">48-Hour Window</h4>
+                  <p className="text-sm text-gray-600">
+                    You have 48 hours to respond and arrange pickup
+                  </p>
+                </div>
+                <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-2">
+                    3
+                  </div>
+                  <h4 className="font-medium mb-1">Complete Sale</h4>
+                  <p className="text-sm text-gray-600">
+                    Meet buyer and complete the transaction successfully
+                  </p>
+                </div>
+              </div>
+
+              {/* Commit System Status */}
+              <div className="mt-6 bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                <div className="flex items-center">
+                  <MessageSquare className="h-5 w-5 text-indigo-600 mr-3" />
+                  <div>
+                    <h4 className="font-medium text-indigo-800">
+                      Commit System Status
+                    </h4>
+                    <p className="text-sm text-indigo-600 mt-1">
+                      The commit system is in development. This interface shows
+                      the structure that will be populated with real data once
+                      the feature is complete.
                     </p>
                   </div>
                 </div>
