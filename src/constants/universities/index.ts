@@ -123,7 +123,7 @@ export const UNIVERSITY_METADATA = {
   lastUpdated: new Date().toISOString(),
   version: "6.0.0-complete-26-universities",
   source: "complete-26-universities",
-  programStatistics: PROGRAM_STATISTICS,
+  programStatistics: { totalPrograms: 0, programsByFaculty: {} },
   features: [
     "All 26 South African public universities",
     "University-specific APS scores",
