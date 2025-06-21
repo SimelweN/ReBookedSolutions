@@ -31,7 +31,7 @@ export const commitBookSale = async (bookId: string): Promise<void> => {
       .from("books")
       .select("*")
       .eq("id", bookId)
-      .eq("seller_id", user.id)
+      .eq("user_id", user.id)
       .single();
 
     if (bookError) {
@@ -45,21 +45,24 @@ export const commitBookSale = async (bookId: string): Promise<void> => {
       );
     }
 
-    // Check if book is in pending commit state
-    if (book.status !== "pending_commit") {
-      throw new Error("Book is not in a state that requires commit");
+    // Check if book is sold but not yet committed
+    if (!book.sold) {
+      throw new Error("Book is not sold yet");
     }
 
-    // Update book status to committed
+    if (book.committed_at) {
+      throw new Error("Sale has already been committed");
+    }
+
+    // Update book to mark as committed
     const { error: updateError } = await supabase
       .from("books")
       .update({
-        status: "committed",
         committed_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
       .eq("id", bookId)
-      .eq("seller_id", user.id);
+      .eq("user_id", user.id);
 
     if (updateError) {
       console.error("[CommitService] Error updating book status:", updateError);
