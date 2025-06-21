@@ -1498,28 +1498,39 @@ const EnhancedUniversityProfile: React.FC = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {hasValidProfile ? (
+                    {hasValidProfile || (fromAPS && apsScore) ? (
                       <div className="p-4 bg-green-50 rounded-lg border border-green-200">
                         <h4 className="font-medium text-green-800 mb-3">
-                          Your APS Profile Active
+                          {fromAPS
+                            ? "APS-Based View"
+                            : "Your APS Profile Active"}
                         </h4>
                         <div className="space-y-2 text-sm text-green-700">
-                          <p>Current APS: {userProfile?.totalAPS}</p>
                           <p>
-                            Last Updated:{" "}
-                            {userProfile &&
-                              new Date(
-                                userProfile.lastUpdated,
-                              ).toLocaleDateString()}
+                            Current APS:{" "}
+                            {fromAPS ? apsScore : userProfile?.totalAPS}
                           </p>
-                          <p>Subjects: {userProfile?.subjects.length}</p>
+                          {fromAPS ? (
+                            <p>Source: View Programs navigation</p>
+                          ) : (
+                            <>
+                              <p>
+                                Last Updated:{" "}
+                                {userProfile &&
+                                  new Date(
+                                    userProfile.lastUpdated,
+                                  ).toLocaleDateString()}
+                              </p>
+                              <p>Subjects: {userProfile?.subjects.length}</p>
+                            </>
+                          )}
                         </div>
                         <Button
                           onClick={handleAPSCalculator}
                           size="sm"
                           className="mt-3 bg-green-600 hover:bg-green-700 text-white"
                         >
-                          Update APS Profile
+                          {fromAPS ? "Recalculate APS" : "Update APS Profile"}
                         </Button>
                       </div>
                     ) : (
@@ -1558,20 +1569,28 @@ const EnhancedUniversityProfile: React.FC = () => {
                             {(enhancedStats as any).averageAPS || "N/A"}
                           </span>
                         </div>
-                        {hasValidProfile && (
+                        {(hasValidProfile || (fromAPS && apsScore)) && (
                           <>
                             <div className="flex justify-between">
                               <span>Eligible:</span>
                               <span className="font-medium text-green-600">
-                                {(enhancedStats as any).eligiblePrograms}
+                                {(enhancedStats as any).eligiblePrograms || 0}
                               </span>
                             </div>
                             <div className="flex justify-between">
                               <span>Success Rate:</span>
                               <span className="font-medium text-green-600">
-                                {(enhancedStats as any).eligibilityRate}%
+                                {(enhancedStats as any).eligibilityRate || 0}%
                               </span>
                             </div>
+                            {fromAPS && apsScore && (
+                              <div className="flex justify-between">
+                                <span>Your APS:</span>
+                                <span className="font-medium text-blue-600">
+                                  {apsScore}
+                                </span>
+                              </div>
+                            )}
                           </>
                         )}
                       </div>
