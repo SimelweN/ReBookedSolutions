@@ -61,6 +61,7 @@ import {
   useAPSFilterOptions,
 } from "@/hooks/useAPSAwareCourseAssignment";
 import { assessEligibility } from "@/services/eligibilityService";
+import "@/styles/university-profile-mobile.css";
 
 /**
  * Enhanced University Profile with APS-aware filtering
@@ -399,7 +400,7 @@ const EnhancedUniversityProfile: React.FC = () => {
               {/* University Info */}
               <div className="lg:col-span-2 space-y-4 lg:space-y-6">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-2xl p-3 shadow-lg flex-shrink-0 flex items-center justify-center">
+                  <div className="university-logo-container w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-2xl p-3 shadow-lg flex-shrink-0 flex items-center justify-center">
                     <img
                       src={university.logo || "/university-logos/default.svg"}
                       alt={`${university.name} logo`}
@@ -459,11 +460,11 @@ const EnhancedUniversityProfile: React.FC = () => {
                 </p>
 
                 {/* Enhanced Quick Actions - Mobile Responsive */}
-                <div className="space-y-3">
+                <div className="university-actions space-y-3">
                   {/* Primary action - full width on mobile */}
                   <Button
                     onClick={handleVisitWebsite}
-                    className="bg-white text-book-700 hover:bg-white/90 shadow-lg w-full"
+                    className="hero-button-mobile bg-white text-book-700 hover:bg-white/90 shadow-lg w-full"
                   >
                     <Globe className="w-4 h-4 mr-2" />
                     Visit Website
@@ -474,15 +475,16 @@ const EnhancedUniversityProfile: React.FC = () => {
                     <Button
                       onClick={handleViewBooks}
                       variant="outline"
-                      className="border-white/30 text-white hover:bg-white/20 backdrop-blur-sm w-full text-sm"
+                      className="hero-button-mobile border-white/30 text-white hover:bg-white/20 backdrop-blur-sm w-full text-sm"
                     >
                       <BookOpen className="w-4 h-4 mr-2" />
-                      Find Textbooks
+                      <span className="hidden xs:inline">Find Textbooks</span>
+                      <span className="xs:hidden">Books</span>
                     </Button>
                     <Button
                       onClick={handleAPSCalculator}
                       variant="outline"
-                      className="border-white/30 text-white hover:bg-white/20 backdrop-blur-sm w-full text-sm"
+                      className="hero-button-mobile border-white/30 text-white hover:bg-white/20 backdrop-blur-sm w-full text-sm"
                     >
                       <Calculator className="w-4 h-4 mr-2" />
                       APS Calculator
@@ -617,7 +619,7 @@ const EnhancedUniversityProfile: React.FC = () => {
           <Tabs
             value={activeTab}
             onValueChange={setActiveTab}
-            className="space-y-6 lg:space-y-8"
+            className="university-tabs space-y-6 lg:space-y-8"
           >
             <div className="bg-white rounded-2xl shadow-xl p-3 relative z-30">
               <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 bg-slate-100 rounded-xl gap-1">
