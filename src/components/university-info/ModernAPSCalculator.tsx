@@ -1,9 +1,12 @@
 import React from "react";
-import ComprehensiveAPSCalculator from "./ComprehensiveAPSCalculator";
+import EnhancedAPSCalculator from "./EnhancedAPSCalculator";
 
-// Use the comprehensive version with massive course database
+/**
+ * Modern APS Calculator - now uses enhanced version with comprehensive validation
+ * Addresses all critical issues: APS filtering, validation, error handling, UI improvements
+ */
 const ModernAPSCalculator: React.FC = () => {
-  return <ComprehensiveAPSCalculator />;
+  return <EnhancedAPSCalculator />;
 };
 
 export default ModernAPSCalculator;
