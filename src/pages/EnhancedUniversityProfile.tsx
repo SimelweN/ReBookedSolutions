@@ -494,7 +494,7 @@ const EnhancedUniversityProfile: React.FC = () => {
               </div>
 
               {/* Enhanced Stats Cards */}
-              <div className="space-y-4 mt-6 lg:mt-0">
+              <div className="university-stats space-y-4 mt-6 lg:mt-0">
                 <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 sm:p-6 border border-white/20">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-white font-semibold text-sm sm:text-base">
