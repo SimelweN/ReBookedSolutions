@@ -8,10 +8,9 @@ interface GoogleMapsContextType {
   loadError: Error | undefined;
 }
 
-const GoogleMapsContext = createContext<GoogleMapsContextType>({
-  isLoaded: false,
-  loadError: undefined,
-});
+const GoogleMapsContext = createContext<GoogleMapsContextType | undefined>(
+  undefined,
+);
 
 export const useGoogleMaps = () => {
   const context = useContext(GoogleMapsContext);
