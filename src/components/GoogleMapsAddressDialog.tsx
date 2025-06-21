@@ -16,6 +16,11 @@ import { toast } from "sonner";
 import { Address, AddressData } from "@/types/address";
 import { Autocomplete, GoogleMap, Marker } from "@react-google-maps/api";
 import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
+import {
+  extractProvince,
+  extractCity,
+  extractPostalCode,
+} from "@/utils/googleMapsUtils";
 
 const mapContainerStyle = { width: "100%", height: "300px" };
 
