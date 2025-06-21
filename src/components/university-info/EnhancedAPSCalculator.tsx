@@ -205,13 +205,11 @@ const EnhancedAPSCalculator: React.FC = () => {
     const errors = apsCalculation.validationResult?.errors || [];
     const warnings = apsCalculation.validationResult?.warnings || [];
 
-    const errorMessages = errors.map((error) =>
-      typeof error === "string" ? error : error?.message || "Unknown error",
+    const errorMessages = errors.map(error =>
+      typeof error === 'string' ? error : (error?.message || 'Unknown error')
     );
-    const warningMessages = warnings.map((warning) =>
-      typeof warning === "string"
-        ? warning
-        : warning?.message || "Unknown warning",
+    const warningMessages = warnings.map(warning =>
+      typeof warning === 'string' ? warning : (warning?.message || 'Unknown warning')
     );
 
     setValidationErrors(errorMessages);
@@ -416,181 +414,186 @@ const EnhancedAPSCalculator: React.FC = () => {
   }, [searchResults, maxAPSGap]);
 
   return (
-    <div className="max-w-7xl mx-auto p-4 lg:p-6 space-y-6">
-      {/* Enhanced Header */}
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl lg:text-4xl font-bold text-slate-900">
-          Enhanced APS Calculator & Program Explorer
+    <div className="w-full space-y-8">
+      {/* Clean Header Section */}
+      <div className="text-center space-y-4 bg-gradient-to-r from-book-50 to-blue-50 py-8 px-6 rounded-2xl">
+        <div className="inline-flex items-center gap-2 bg-book-100 text-book-800 px-4 py-2 rounded-full text-sm font-medium">
+          <Calculator className="w-4 h-4" />
+          APS Calculator
+        </div>
+        <h1 className="text-3xl lg:text-4xl font-bold text-gray-900">
+          Calculate Your APS Score
         </h1>
-        <p className="text-lg text-slate-600 max-w-4xl mx-auto">
-          Calculate your Admission Point Score with comprehensive validation and
-          discover programs you qualify for across South African universities.
-          Now with enhanced filtering and error handling.
+        <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          Enter your matric results to calculate your Admission Point Score and discover which university programs you qualify for
         </p>
       </div>
 
-      {/* Error Alerts */}
-      {error && (
-        <Alert className="border-red-200 bg-red-50">
-          <AlertTriangle className="h-4 w-4 text-red-600" />
-          <AlertDescription className="text-red-800">
-            {error}
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={clearError}
-              className="ml-2 h-auto p-1 text-red-600 hover:text-red-800"
-            >
-              <X className="w-3 h-3" />
-            </Button>
-          </AlertDescription>
-        </Alert>
-      )}
+      {/* Alerts Section - Compact and Clean */}
+      <div className="space-y-3">
+        {error && (
+          <Alert className="border-red-200 bg-red-50">
+            <AlertTriangle className="h-4 w-4 text-red-600" />
+            <AlertDescription className="text-red-800 flex items-center justify-between">
+              <span>{error}</span>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={clearError}
+                className="h-6 w-6 p-0 text-red-600 hover:text-red-800"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
 
-      {/* Validation Errors */}
-      {validationErrors.length > 0 && (
-        <Alert className="border-red-200 bg-red-50">
-          <AlertTriangle className="h-4 w-4 text-red-600" />
-          <AlertDescription className="text-red-800">
-            <div className="font-medium mb-1">Validation Errors:</div>
-            <ul className="list-disc list-inside space-y-1">
-              {validationErrors.map((error, i) => (
-                <li key={i} className="text-sm">
-                  {error}
-                </li>
-              ))}
-            </ul>
-          </AlertDescription>
-        </Alert>
-      )}
+        {validationErrors.length > 0 && (
+          <Alert className="border-red-200 bg-red-50">
+            <AlertTriangle className="h-4 w-4 text-red-600" />
+            <AlertDescription className="text-red-800">
+              <div className="font-medium mb-2">Please fix these issues:</div>
+              <ul className="list-disc list-inside space-y-1 text-sm">
+                {validationErrors.map((error, i) => (
+                  <li key={i}>{error}</li>
+                ))}
+              </ul>
+            </AlertDescription>
+          </Alert>
+        )}
 
-      {/* Validation Warnings */}
-      {validationWarnings.length > 0 && (
-        <Alert className="border-yellow-200 bg-yellow-50">
-          <AlertTriangle className="h-4 w-4 text-yellow-600" />
-          <AlertDescription className="text-yellow-800">
-            <div className="font-medium mb-1">Validation Warnings:</div>
-            <ul className="list-disc list-inside space-y-1">
-              {validationWarnings.map((warning, i) => (
-                <li key={i} className="text-sm">
-                  {warning}
-                </li>
-              ))}
-            </ul>
-          </AlertDescription>
-        </Alert>
-      )}
+        {validationWarnings.length > 0 && (
+          <Alert className="border-yellow-200 bg-yellow-50">
+            <Info className="h-4 w-4 text-yellow-600" />
+            <AlertDescription className="text-yellow-800">
+              <div className="font-medium mb-2">Recommendations:</div>
+              <ul className="list-disc list-inside space-y-1 text-sm">
+                {validationWarnings.map((warning, i) => (
+                  <li key={i}>{warning}</li>
+                ))}
+              </ul>
+            </AlertDescription>
+          </Alert>
+        )}
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Enhanced APS Calculator Card */}
-        <Card className="lg:col-span-1 bg-white border-0 shadow-lg">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-xl text-slate-900">
-              <Calculator className="h-5 w-5 text-green-600" />
-              Calculate Your APS
+      {/* Main Content - Better Grid Layout */}
+      <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
+        {/* Calculator Input Section */}
+        <Card className="xl:col-span-2 bg-white shadow-sm border border-gray-200">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2 text-xl text-gray-900">
+              <BookOpen className="h-5 w-5 text-book-600" />
+              Subject Results
             </CardTitle>
             <CardDescription>
-              Enter your matric subject results to calculate your Admission
-              Point Score
+              Add your matric subjects and marks to calculate your APS
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Subject Selection */}
-            <div className="space-y-3">
-              <Label className="text-sm font-medium text-slate-700">
-                Select Subject
-              </Label>
-              <Select
-                value={selectedSubject}
-                onValueChange={setSelectedSubject}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Choose a subject" />
-                </SelectTrigger>
-                <SelectContent>
-                  {SOUTH_AFRICAN_SUBJECTS.map((subject) => (
-                    <SelectItem key={subject} value={subject}>
-                      {subject}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <CardContent className="space-y-6">
+            {/* Add Subject Form */}
+            <div className="bg-gray-50 p-6 rounded-xl space-y-4">
+              <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                <Plus className="w-4 h-4" />
+                Add Subject
+              </h3>
 
-            {/* Marks Input */}
-            <div className="space-y-3">
-              <Label className="text-sm font-medium text-slate-700">
-                Final Mark (%)
-              </Label>
-              <Input
-                type="number"
-                min="0"
-                max="100"
-                value={selectedMarks}
-                onChange={(e) => setSelectedMarks(e.target.value)}
-                placeholder="Enter your final mark"
-              />
-              {selectedMarks && (
-                <div className="text-sm text-slate-600">
-                  Level{" "}
-                  {convertPercentageToPoints(parseFloat(selectedMarks) || 0)}(
-                  {convertPercentageToPoints(parseFloat(selectedMarks) || 0)}{" "}
-                  points)
-                </div>
-              )}
-            </div>
-
-            <Button
-              onClick={addSubject}
-              disabled={!selectedSubject || !selectedMarks}
-              className="w-full bg-green-600 hover:bg-green-700"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Subject
-            </Button>
-
-            {/* Added Subjects */}
-            {subjects.length > 0 && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm font-medium text-slate-700">
-                    Your Subjects ({subjects.length})
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">
+                    Subject
                   </Label>
+                  <Select
+                    value={selectedSubject}
+                    onValueChange={setSelectedSubject}
+                  >
+                    <SelectTrigger className="bg-white">
+                      <SelectValue placeholder="Choose a subject" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SOUTH_AFRICAN_SUBJECTS.map((subject) => (
+                        <SelectItem key={subject} value={subject}>
+                          {subject}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">
+                    Final Mark (%)
+                  </Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={selectedMarks}
+                    onChange={(e) => setSelectedMarks(e.target.value)}
+                    placeholder="Enter your final mark"
+                    className="bg-white"
+                  />
+                  {selectedMarks && (
+                    <div className="text-sm text-book-600 font-medium">
+                      Level {convertPercentageToPoints(parseFloat(selectedMarks) || 0)}
+                      ({convertPercentageToPoints(parseFloat(selectedMarks) || 0)} points)
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <Button
+                onClick={addSubject}
+                disabled={!selectedSubject || !selectedMarks}
+                className="w-full bg-book-600 hover:bg-book-700"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Subject
+              </Button>
+            </div>
+
+            {/* Added Subjects List */}
+            {subjects.length > 0 && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                    <GraduationCap className="w-4 h-4" />
+                    Your Subjects ({subjects.length})
+                  </h3>
                   <Button
                     size="sm"
-                    variant="ghost"
+                    variant="outline"
                     onClick={clearAllSubjects}
-                    className="text-red-500 hover:text-red-700 h-auto p-1"
+                    className="text-red-600 border-red-200 hover:bg-red-50"
                   >
                     Clear All
                   </Button>
                 </div>
-                <div className="space-y-2 max-h-40 overflow-y-auto">
+                <div className="space-y-3 max-h-64 overflow-y-auto">
                   {subjects.map((subject, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between p-2 bg-slate-50 rounded"
+                      className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:shadow-sm transition-shadow"
                     >
-                      <div className="flex flex-col flex-1">
+                      <div className="flex-1 space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium">
+                          <span className="font-medium text-gray-900">
                             {subject.name}
                           </span>
                           {subject.isRequired && (
-                            <Badge variant="secondary" className="text-xs">
-                              Required
+                            <Badge variant="secondary" className="text-xs bg-book-100 text-book-800">
+                              Core Subject
                             </Badge>
                           )}
                         </div>
-                        <span className="text-xs text-slate-500">
-                          {subject.marks}% = Level {subject.level} (
-                          {subject.points} points)
-                        </span>
-                        {subject.name
-                          .toLowerCase()
-                          .includes("life orientation") && (
-                          <span className="text-xs text-slate-500">
-                            (Required but doesn't count for APS)
+                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                          <span>{subject.marks}%</span>
+                          <span>Level {subject.level}</span>
+                          <span className="font-medium text-book-600">{subject.points} points</span>
+                        </div>
+                        {subject.name.toLowerCase().includes("life orientation") && (
+                          <span className="text-xs text-gray-500 italic">
+                            Required but doesn't count towards APS
                           </span>
                         )}
                       </div>
@@ -598,9 +601,9 @@ const EnhancedAPSCalculator: React.FC = () => {
                         size="sm"
                         variant="ghost"
                         onClick={() => removeSubject(index)}
-                        className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                        className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
                       >
-                        <X className="w-3 h-3" />
+                        <X className="w-4 h-4" />
                       </Button>
                     </div>
                   ))}
@@ -608,90 +611,84 @@ const EnhancedAPSCalculator: React.FC = () => {
               </div>
             )}
 
-            {/* Enhanced APS Display */}
-            <div
-              className={`p-4 rounded-lg border-2 ${
-                apsCalculation.isCalculationValid
-                  ? "bg-green-50 border-green-200"
-                  : "bg-slate-50 border-slate-200"
-              }`}
-            >
-              <div className="text-center">
-                <div
-                  className={`text-3xl font-bold ${
-                    apsCalculation.isCalculationValid
-                      ? "text-green-800"
-                      : "text-slate-600"
-                  }`}
-                >
-                  {apsCalculation.totalAPS}
-                </div>
-                <div
-                  className={`text-sm ${
-                    apsCalculation.isCalculationValid
-                      ? "text-green-600"
-                      : "text-slate-500"
-                  }`}
-                >
-                  Total APS Score
-                </div>
-                {apsCalculation.totalAPS > 0 && (
-                  <div className="text-xs text-slate-500 mt-1">
-                    {getAPSScoreDescription(apsCalculation.totalAPS)}
+            {/* APS Score Display */}
+            {subjects.length > 0 && (
+              <div className="bg-gradient-to-br from-book-50 to-blue-50 p-6 rounded-xl border border-book-200">
+                <div className="text-center space-y-4">
+                  <div className="space-y-2">
+                    <div
+                      className={`text-4xl font-bold ${
+                        apsCalculation.isCalculationValid
+                          ? "text-book-700"
+                          : "text-gray-600"
+                      }`}
+                    >
+                      {apsCalculation.totalAPS}
+                    </div>
+                    <div className="text-sm font-medium text-gray-700">
+                      Your APS Score
+                    </div>
+                    {apsCalculation.totalAPS > 0 && (
+                      <Badge
+                        variant="secondary"
+                        className="bg-book-100 text-book-800 border-book-200"
+                      >
+                        {getAPSScoreDescription(apsCalculation.totalAPS)}
+                      </Badge>
+                    )}
                   </div>
-                )}
-                <div className="text-xs text-slate-400 mt-1">
-                  Quality Score: {apsCalculation.validationResult.score}%
+
+                  {apsCalculation.isCalculationValid && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        Quality Score: {apsCalculation.validationResult.score}%
+                      </div>
+                      <Button
+                        onClick={searchPrograms}
+                        className="w-full bg-book-600 hover:bg-book-700"
+                        disabled={isLoading}
+                        size="lg"
+                      >
+                        {isLoading ? (
+                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        ) : (
+                          <Target className="w-5 h-5 mr-2" />
+                        )}
+                        Find Your Programs
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
-
-              {apsCalculation.isCalculationValid && (
-                <div className="mt-3 pt-3 border-t border-green-200">
-                  <Button
-                    onClick={searchPrograms}
-                    className="w-full bg-green-600 hover:bg-green-700"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    ) : (
-                      <Target className="w-4 h-4 mr-2" />
-                    )}
-                    Find Eligible Programs
-                  </Button>
-                </div>
-              )}
-            </div>
+            )}
           </CardContent>
         </Card>
 
-        {/* University-Specific APS Scoring Display */}
-        {apsCalculation.isCalculationValid &&
-          apsCalculation.fullCalculation?.universitySpecificScores && (
+        {/* University Scores Section */}
+        <div className="xl:col-span-3 space-y-6">
+          {apsCalculation.isCalculationValid && apsCalculation.fullCalculation?.universitySpecificScores && (
             <UniversitySpecificAPSDisplay
-              universityScores={
-                apsCalculation.fullCalculation.universitySpecificScores
-              }
+              universityScores={apsCalculation.fullCalculation.universitySpecificScores}
               standardAPS={apsCalculation.totalAPS}
-              className="lg:col-span-3"
             />
           )}
 
-        {/* Enhanced Results Card */}
-        <Card className="lg:col-span-2 bg-white border-0 shadow-lg">
-          <CardHeader className="pb-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <CardTitle className="flex items-center gap-2 text-xl text-slate-900">
-                  <Target className="h-5 w-5 text-green-600" />
-                  Your Program Results
-                </CardTitle>
-                <CardDescription>
-                  {apsCalculation.isCalculationValid
-                    ? `Programs across universities for APS ${apsCalculation.totalAPS}`
-                    : "Add your subjects to see program recommendations"}
-                </CardDescription>
-              </div>
+          {/* Program Search Results */}
+          <Card className="bg-white shadow-sm border border-gray-200">
+            <CardHeader className="pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <CardTitle className="flex items-center gap-2 text-xl text-gray-900">
+                    <Target className="h-5 w-5 text-book-600" />
+                    Program Search Results
+                  </CardTitle>
+                  <CardDescription>
+                    {apsCalculation.isCalculationValid
+                      ? `Programs you may qualify for with APS ${apsCalculation.totalAPS}`
+                      : "Complete your subjects above to discover available programs"}
+                  </CardDescription>
+                </div>
 
               {/* Enhanced Filters */}
               <div className="flex flex-col sm:flex-row gap-2">
@@ -1052,6 +1049,9 @@ const EnhancedAPSCalculator: React.FC = () => {
           </DialogContent>
         </Dialog>
       )}
+          </Card>
+        </div>
+      </div>
     </div>
   );
 };
