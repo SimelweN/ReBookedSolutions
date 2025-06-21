@@ -180,7 +180,7 @@ const EnhancedAPSCalculator: React.FC = () => {
     return {
       totalAPS: apsResult.totalScore, // Extract the totalScore property
       validationResult,
-      isCalculationValid: validationResult.isValid && subjects.length >= 6,
+      isCalculationValid: validationResult.isValid && apsSubjects.length >= 6,
       fullCalculation: universitySpecificCalculation,
       eligibleDegrees: apsResult.eligibleDegrees, // Also store eligible degrees
     };
