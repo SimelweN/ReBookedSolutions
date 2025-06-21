@@ -201,20 +201,21 @@ const EnhancedUniversityProfile: React.FC = () => {
           (total, faculty) => total + (faculty.degrees?.length || 0),
           0,
         );
-        const eligibleDegrees = userProfile
-          ? faculties.reduce((total, faculty) => {
-              return (
-                total +
-                (faculty.degrees?.filter((degree) => {
-                  const eligibility = checkProgramEligibility(
-                    degree.apsRequirement,
-                    degree.subjects || [],
-                  );
-                  return eligibility.eligible;
-                }).length || 0)
-              );
-            }, 0)
-          : 0;
+        const eligibleDegrees =
+          userProfile || (fromAPS && apsScore)
+            ? faculties.reduce((total, faculty) => {
+                return (
+                  total +
+                  (faculty.degrees?.filter((degree) => {
+                    const eligibility = checkProgramEligibility(
+                      degree,
+                      fromAPS && apsScore ? parseInt(apsScore) : undefined,
+                    );
+                    return eligibility.eligible;
+                  }).length || 0)
+                );
+              }, 0)
+            : 0;
 
         // Debug logging
         if (import.meta.env.DEV) {
