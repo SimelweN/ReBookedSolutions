@@ -536,14 +536,26 @@ const EnhancedAPSCalculator: React.FC = () => {
                       <GraduationCap className="w-4 h-4" />
                       Your Subjects ({subjects.length})
                     </h3>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={clearAllSubjects}
-                      className="text-red-600 border-red-200 hover:bg-red-50"
-                    >
-                      Clear All
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={clearAllSubjects}
+                        className="text-red-600 border-red-200 hover:bg-red-50"
+                      >
+                        Clear All
+                      </Button>
+                      {hasValidProfile && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleClearAPSProfile}
+                          className="text-red-600 border-red-200 hover:bg-red-50"
+                        >
+                          Clear Profile
+                        </Button>
+                      )}
+                    </div>
                   </div>
                   <div className="space-y-3 max-h-64 overflow-y-auto">
                     {subjects.map((subject, index) => (
