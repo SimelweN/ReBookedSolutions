@@ -191,6 +191,9 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
       setUserProfile(null);
       setLastSearchResults(null);
       setError(null);
+
+      // Trigger global state reset event
+      window.dispatchEvent(new CustomEvent("apsProfileCleared"));
     } catch (error) {
       console.error("Error clearing APS profile:", error);
     }
