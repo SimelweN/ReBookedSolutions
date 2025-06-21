@@ -184,12 +184,12 @@ const CampusNavbar = () => {
 
             <Button
               variant="ghost"
-              onClick={() =>
-                handleNavigation("/university-info?tool=bursaries")
-              }
+              onClick={() => handleNavigation("/study-tips")}
               className={`px-2 py-2 rounded-lg transition-colors ${
-                isActive("bursaries")
-                  ? "bg-book-50 text-book-600"
+                isActive("/study-tips") || isActive("/study-resources")
+                  ? "bg-book-600 text-white"
+                  : "text-gray-600 hover:text-book-600"
+              }`}
                   : "text-gray-600 hover:text-book-600 hover:bg-book-50"
               }`}
               size="sm"
@@ -308,7 +308,7 @@ const CampusNavbar = () => {
 
               <Button
                 variant="ghost"
-                onClick={() => handleNavigation("/study-resources")}
+                onClick={() => handleNavigation("/study-tips")}
                 className={`w-full justify-start px-4 py-3 rounded-lg font-medium transition-colors text-sm ${
                   isActive("/study-tips") || isActive("/study-resources")
                     ? "bg-book-50 text-book-600"
