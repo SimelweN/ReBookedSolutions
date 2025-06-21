@@ -214,9 +214,22 @@ const UniversityDirectory = () => {
                             <Button
                               variant="outline"
                               className="border-book-200 text-book-600 hover:bg-book-50"
-                              onClick={() =>
-                                navigate(`/university/${university.id}`)
-                              }
+                              onClick={() => {
+                                // Check if there's an active APS profile to pass context
+                                const userProfile =
+                                  sessionStorage.getItem("userAPSProfile");
+                                const aps = userProfile
+                                  ? JSON.parse(userProfile).totalAPS
+                                  : null;
+
+                                if (aps) {
+                                  navigate(
+                                    `/university/${university.id}?fromAPS=true&aps=${aps}`,
+                                  );
+                                } else {
+                                  navigate(`/university/${university.id}`);
+                                }
+                              }}
                             >
                               <BookOpen className="h-4 w-4 mr-2" />
                               View Programs
