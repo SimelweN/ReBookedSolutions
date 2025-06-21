@@ -461,7 +461,7 @@ const UniversityProfile: React.FC = () => {
             <TabsContent value="admissions">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Application Info */}
-                <Card className="bg-white shadow-xl border-0 rounded-2xl">
+                <Card className="bg-white shadow-xl border-0 rounded-2xl relative z-30">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-xl">
                       <CreditCard className="w-5 h-5 text-book-600" />
