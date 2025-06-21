@@ -187,6 +187,22 @@ const EnhancedAPSCalculator: React.FC = () => {
     }
   }, [apsCalculation.fullCalculation]);
 
+  // Listen for global APS profile clearing event
+  useEffect(() => {
+    const handleAPSProfileCleared = () => {
+      setUniversitySpecificScores(null);
+      setSearchResults([]);
+      setSelectedProgram(null);
+      setIsDetailsModalOpen(false);
+      setShowProgramsSection(false);
+    };
+
+    window.addEventListener("apsProfileCleared", handleAPSProfileCleared);
+    return () => {
+      window.removeEventListener("apsProfileCleared", handleAPSProfileCleared);
+    };
+  }, []);
+
   // Update validation messages
   useEffect(() => {
     // Extract just the message strings from validation error objects
