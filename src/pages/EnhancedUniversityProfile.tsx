@@ -419,12 +419,14 @@ const EnhancedUniversityProfile: React.FC = () => {
                           ) {
                             const textElement = document.createElement("div");
                             textElement.className =
-                              "fallback-text text-book-600 font-bold text-lg flex items-center justify-center w-full h-full";
-                            textElement.textContent = university.name
+                              "fallback-text text-book-600 font-bold text-base sm:text-lg flex items-center justify-center w-full h-full text-center";
+                            // Create initials from university name
+                            const initials = university.name
                               .split(" ")
-                              .map((word) => word[0])
+                              .map((word) => word.charAt(0).toUpperCase())
                               .join("")
                               .slice(0, 3);
+                            textElement.textContent = initials;
                             fallback.appendChild(textElement);
                           }
                         }
