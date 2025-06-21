@@ -330,11 +330,35 @@ export class ActivityService {
    * Helper method for detailed error logging
    */
   private static logDetailedError(message: string, error: unknown): void {
+    let errorMessage = "Unknown error";
+    let errorDetails = null;
+    let errorStack = null;
+
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      errorStack = error.stack;
+    } else if (typeof error === "object" && error !== null) {
+      // Handle Supabase errors and other objects
+      const errorObj = error as any;
+      errorMessage =
+        errorObj.message ||
+        errorObj.error_description ||
+        errorObj.msg ||
+        JSON.stringify(error);
+      errorDetails = errorObj.details || errorObj.hint || errorObj.code;
+      errorStack = errorObj.stack;
+    } else if (typeof error === "string") {
+      errorMessage = error;
+    } else {
+      errorMessage = String(error);
+    }
+
     console.error(`❌ ${message}:`, {
-      error: error?.message || error,
-      stack: error?.stack,
-      details: error?.details || error?.hint,
+      message: errorMessage,
+      details: errorDetails,
+      stack: errorStack,
       timestamp: new Date().toISOString(),
+      originalError: import.meta.env.DEV ? error : undefined, // Only log full error in development
     });
   }
 }
