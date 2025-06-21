@@ -121,7 +121,7 @@ const UniversityInfo = () => {
   // Redirect to new university profile route if university parameter is present
   useEffect(() => {
     if (selectedUniversityId) {
-      navigate(`/university-profile?id=${selectedUniversityId}`, {
+      navigate(`/university/${selectedUniversityId}`, {
         replace: true,
       });
     }
