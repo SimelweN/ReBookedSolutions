@@ -22,7 +22,7 @@ import {
 import { Book } from "@/types/book";
 import ProfileEditDialog from "@/components/ProfileEditDialog";
 import AddressEditDialog from "@/components/AddressEditDialog";
-import EnhancedAddressEditDialog from "@/components/EnhancedAddressEditDialog";
+import SimpleAddressEditDialog from "@/components/SimpleAddressEditDialog";
 import UnavailableBookCard from "@/components/UnavailableBookCard";
 import { UserProfile, AddressData, Address } from "@/types/address";
 
@@ -423,9 +423,7 @@ const UserProfileTabs = ({
                     disabled={isLoadingAddress}
                   >
                     <MapPin className="h-4 w-4 mr-2" />
-                    {isLoadingAddress
-                      ? "Loading..."
-                      : "🗺️ Edit with Google Maps"}
+                    {isLoadingAddress ? "Loading..." : "Edit Addresses"}
                   </Button>
                 </CardContent>
               </Card>
@@ -444,7 +442,7 @@ const UserProfileTabs = ({
       )}
 
       {addressData && onSaveAddresses && (
-        <EnhancedAddressEditDialog
+        <SimpleAddressEditDialog
           isOpen={isAddressEditDialogOpen}
           onClose={() => setIsAddressEditDialogOpen(false)}
           addressData={addressData}
