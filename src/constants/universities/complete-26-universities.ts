@@ -1,5 +1,5 @@
 import { University } from "@/types/university";
-import { getUniversityFaculties } from "./massive-course-database";
+import { getUniversityFaculties } from "./comprehensive-course-database";
 
 /**
  * COMPLETE 26 SOUTH AFRICAN PUBLIC UNIVERSITIES
