@@ -575,7 +575,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Nelson Mandela University",
     location: "Port Elizabeth",
     province: "Eastern Cape",
-    logo: "https://cdn.builder.io/api/v1/assets/0f22b19c46fe46488c6c8c5a3c15b7b9/nelson-2adb35?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/aa876bee812e456d8594f765f547fed4/nelson-4ddaa3?format=webp&width=800",
     overview:
       "Comprehensive university known for academic excellence and community engagement in the Eastern Cape.",
     website: "https://www.mandela.ac.za",
@@ -601,7 +601,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Walter Sisulu University",
     location: "Mthatha",
     province: "Eastern Cape",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/walter-sisulu-7f97dc?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/aa876bee812e456d8594f765f547fed4/wsu-147edd?format=webp&width=800",
     overview:
       "Multi-campus comprehensive university serving the Eastern Cape with focus on social justice.",
     website: "https://www.wsu.ac.za",
@@ -629,7 +629,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Sefako Makgatho Health Sciences University",
     location: "Pretoria",
     province: "Gauteng",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/smu-0d1508?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/aa876bee812e456d8594f765f547fed4/sefako-3351db?format=webp&width=800",
     overview:
       "Health sciences university dedicated to training healthcare professionals and medical research.",
     website: "https://www.smu.ac.za",
@@ -655,7 +655,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "Sol Plaatje University",
     location: "Kimberley",
     province: "Northern Cape",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/sol-plaatje-28cea9?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/aa876bee812e456d8594f765f547fed4/sol-plaatje-f6051b?format=webp&width=800",
     overview:
       "New university established to serve the Northern Cape region with innovative programs.",
     website: "https://www.spu.ac.za",
@@ -681,7 +681,7 @@ const BASE_UNIVERSITIES: University[] = [
     fullName: "University of Mpumalanga",
     location: "Nelspruit",
     province: "Mpumalanga",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/mpumalanga-b87746?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/aa876bee812e456d8594f765f547fed4/mpumalanga-bfd8c3?format=webp&width=800",
     overview:
       "New university serving Mpumalanga province with focus on regional development needs.",
     website: "https://www.ump.ac.za",
