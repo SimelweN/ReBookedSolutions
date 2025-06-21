@@ -15,6 +15,7 @@ export interface Book {
   grade?: string;
   universityYear?: string;
   university?: string;
+  province?: string;
   seller: {
     id: string;
     name: string;
@@ -36,4 +37,5 @@ export interface BookFormData {
   grade?: string;
   universityYear?: string;
   university?: string;
+  province?: string;
 }
