@@ -187,8 +187,21 @@ const EnhancedAPSCalculator: React.FC = () => {
 
   // Update validation messages
   useEffect(() => {
-    setValidationErrors(apsCalculation.validationResult.errors || []);
-    setValidationWarnings(apsCalculation.validationResult.warnings || []);
+    // Extract just the message strings from validation error objects
+    const errorMessages = (apsCalculation.validationResult.errors || []).map(
+      (error) =>
+        typeof error === "string" ? error : error.message || "Validation error",
+    );
+    const warningMessages = (
+      apsCalculation.validationResult.warnings || []
+    ).map((warning) =>
+      typeof warning === "string"
+        ? warning
+        : warning.message || "Validation warning",
+    );
+
+    setValidationErrors(errorMessages);
+    setValidationWarnings(warningMessages);
   }, [apsCalculation.validationResult]);
 
   // Add subject function
