@@ -399,7 +399,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     name: "University of Cape Town",
     abbreviation: "UCT",
     fullName: "University of Cape Town",
-    logo: "/university-logos/uct.png",
+    logo: "/university-logos/default.svg",
     code: "uct",
   },
   {
@@ -407,7 +407,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     name: "University of the Witwatersrand",
     abbreviation: "Wits",
     fullName: "University of the Witwatersrand",
-    logo: "/university-logos/wits.png",
+    logo: "/university-logos/default.svg",
     code: "wits",
   },
   {
@@ -415,7 +415,7 @@ export const SOUTH_AFRICAN_UNIVERSITIES_SIMPLE: SimpleUniversity[] = [
     name: "University of Pretoria",
     abbreviation: "UP",
     fullName: "University of Pretoria",
-    logo: "/university-logos/up.png",
+    logo: "/university-logos/default.svg",
     code: "up",
   },
   {
