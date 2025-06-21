@@ -75,7 +75,6 @@ function App() {
                   <AuthErrorHandler />
                   <ScrollToTop />
                   <Routes>
-                  <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/books" element={<BookListing />} />
                     <Route path="/books/:id" element={<BookDetails />} />
