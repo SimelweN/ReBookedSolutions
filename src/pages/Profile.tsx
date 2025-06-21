@@ -333,6 +333,25 @@ const Profile = () => {
                 </CardContent>
               </Card>
 
+              {/* Temporarily Away Status */}
+              {isTemporarilyAway && (
+                <Alert className="border-orange-200 bg-orange-50">
+                  <Clock className="h-4 w-4 text-orange-600" />
+                  <AlertDescription className="text-orange-800">
+                    <div className="space-y-2">
+                      <div className="font-medium">
+                        You are temporarily away
+                      </div>
+                      <div className="text-sm">
+                        Your listings are hidden from buyers and you won't
+                        receive new orders. You can change this in your Account
+                        Settings.
+                      </div>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
+
               {/* Pickup Address Warning - Only show if user has active listings but no pickup address */}
               {activeListings &&
                 activeListings.some(
