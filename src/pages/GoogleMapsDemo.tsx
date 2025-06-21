@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import GoogleMapsAddressInput from "@/components/GoogleMapsAddressInput";
+import SimpleGoogleMapsInput from "@/components/SimpleGoogleMapsInput";
 import GoogleMapsAddressDialog from "@/components/GoogleMapsAddressDialog";
 import PickupAddressInput from "@/components/PickupAddressInput";
 import { MapPin, Navigation, Users, Clock } from "lucide-react";
@@ -104,8 +105,69 @@ const GoogleMapsDemo = () => {
           </Card>
         </div>
 
+        {/* Debug Information */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-orange-600">
+              <AlertTriangle className="h-5 w-5" />
+              Debug Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <strong>API Key Status:</strong>{" "}
+                {import.meta.env.VITE_GOOGLE_MAPS_API_KEY ? (
+                  <Badge className="bg-green-600">✓ Found</Badge>
+                ) : (
+                  <Badge variant="destructive">✗ Missing</Badge>
+                )}
+              </div>
+              <div>
+                <strong>API Key Preview:</strong>{" "}
+                {import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+                  ? `${import.meta.env.VITE_GOOGLE_MAPS_API_KEY.substring(0, 10)}...`
+                  : "Not found"}
+              </div>
+              <div>
+                <strong>Environment Mode:</strong>{" "}
+                <Badge variant="outline">{import.meta.env.MODE}</Badge>
+              </div>
+              <div>
+                <strong>Google Maps Script:</strong>{" "}
+                {typeof window !== "undefined" && window.google ? (
+                  <Badge className="bg-green-600">✓ Loaded</Badge>
+                ) : (
+                  <Badge variant="secondary">⧗ Loading</Badge>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Demo Sections */}
         <div className="space-y-8">
+          {/* Simple Google Maps Component (for debugging) */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="h-5 w-5" />
+                Simple Google Maps Component (Debugging)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 mb-4">
+                This simplified version loads Google Maps directly without
+                external libraries.
+              </p>
+              <SimpleGoogleMapsInput
+                onAddressSelect={handleAddressSelect}
+                label="Test Google Maps Loading"
+                placeholder="Try typing: 1 Sandton Drive, Sandton..."
+              />
+            </CardContent>
+          </Card>
+
           {/* Basic Address Input Demo */}
           <Card>
             <CardHeader>
