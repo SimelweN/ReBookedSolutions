@@ -24,7 +24,7 @@ export const UNIVERSITY_APPLICATIONS_2025: UniversityApplicationInfo[] = [
     feeNotes: "SADC applicants pay R100, non-SADC applicants pay R300",
     isFree: false,
     type: "Traditional University",
-    logo: "https://cdn.builder.io/api/v1/assets/23257b8f40f04bad93cf61926ea750ad/uct-fff84c?format=webp&width=800",
+    logo: "https://cdn.builder.io/api/v1/assets/aa876bee812e456d8594f765f547fed4/uct-f42185?format=webp&width=800",
   },
   {
     id: "uwc",

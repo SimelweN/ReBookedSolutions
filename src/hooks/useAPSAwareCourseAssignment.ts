@@ -154,22 +154,24 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
 
   /**
    * Check if user qualifies for a specific program
+   * Supports both userProfile and direct APS value from URL params
    */
   const checkProgramEligibility = useCallback(
-    (program: any) => {
-      if (!userProfile) return { eligible: false, reason: "No APS profile" };
+    (program: any, directAPS?: number) => {
+      const apsToUse = directAPS || userProfile?.totalAPS;
+
+      if (!apsToUse) return { eligible: false, reason: "No APS profile" };
 
       try {
         // Basic eligibility check - can be enhanced
-        const userAPS = userProfile.totalAPS;
         const requiredAPS = program.apsRequirement || program.defaultAps || 20;
 
         return {
-          eligible: userAPS >= requiredAPS,
+          eligible: apsToUse >= requiredAPS,
           reason:
-            userAPS >= requiredAPS
+            apsToUse >= requiredAPS
               ? "Meets APS requirement"
-              : `APS too low (need ${requiredAPS}, have ${userAPS})`,
+              : `APS too low (need ${requiredAPS}, have ${apsToUse})`,
         };
       } catch (error) {
         console.error("Error checking eligibility:", error);
@@ -189,6 +191,9 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
       setUserProfile(null);
       setLastSearchResults(null);
       setError(null);
+
+      // Trigger global state reset event
+      window.dispatchEvent(new CustomEvent("apsProfileCleared"));
     } catch (error) {
       console.error("Error clearing APS profile:", error);
     }

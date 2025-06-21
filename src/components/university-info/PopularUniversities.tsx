@@ -397,7 +397,21 @@ const PopularUniversities = () => {
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => navigate(`/university/${university.id}`)}
+                onClick={() => {
+                  // Check if there's an active APS profile to pass context
+                  const userProfile = sessionStorage.getItem("userAPSProfile");
+                  const aps = userProfile
+                    ? JSON.parse(userProfile).totalAPS
+                    : null;
+
+                  if (aps) {
+                    navigate(
+                      `/university/${university.id}?fromAPS=true&aps=${aps}`,
+                    );
+                  } else {
+                    navigate(`/university/${university.id}`);
+                  }
+                }}
                 className="flex-1 text-xs sm:text-sm transition-all duration-200 border-book-600 text-book-600 hover:bg-book-50"
               >
                 <GraduationCap className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />

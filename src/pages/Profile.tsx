@@ -28,6 +28,10 @@ import {
   MoreHorizontal,
   Heart,
   Clock,
+  Shield,
+  UserX,
+  EyeOff,
+  Eye,
 } from "lucide-react";
 import UserProfileTabs from "@/components/profile/UserProfileTabs";
 import { saveUserAddresses, getUserAddresses } from "@/services/addressService";
@@ -67,6 +71,7 @@ const Profile = () => {
   const [isLoadingListings, setIsLoadingListings] = useState(true);
   const [deletingBooks, setDeletingBooks] = useState<Set<string>>(new Set());
   const [isTemporarilyAway, setIsTemporarilyAway] = useState(false);
+  const [showDangerZone, setShowDangerZone] = useState(false);
 
   const loadUserAddresses = useCallback(async () => {
     if (!user?.id) return;
@@ -244,10 +249,29 @@ const Profile = () => {
       );
       setIsDeleteProfileDialogOpen(false);
 
-      // Optionally navigate to a goodbye page or logout
-      // navigate("/");
+      // Optional: Sign out user or redirect
+      navigate("/");
     } catch (error) {
       toast.error("Failed to delete profile. Please try again.");
+    }
+  };
+
+  const handleTempAwayToggle = async () => {
+    try {
+      const newStatus = !isTemporarilyAway;
+      setIsTemporarilyAway(newStatus);
+
+      // Here you would implement the actual API call to update user status
+      // await updateUserAwayStatus(user.id, newStatus);
+
+      toast.success(
+        newStatus
+          ? "🏖️ Temporarily away - Your listings are now hidden"
+          : "🔄 Welcome back - Your listings are now visible again",
+      );
+    } catch (error) {
+      toast.error("Failed to update status. Please try again.");
+      setIsTemporarilyAway(!isTemporarilyAway); // Revert on error
     }
   };
 
@@ -489,31 +513,104 @@ const Profile = () => {
                 </CardContent>
               </Card>
 
-              {/* Danger Zone */}
-              <Card className="border-red-200 bg-red-50">
+              {/* Account Settings */}
+              <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg text-red-700 flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5" />
-                    Danger Zone
+                  <CardTitle className="text-lg flex items-center">
+                    <Settings className="h-5 w-5 mr-2" />
+                    Account Settings
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="bg-white p-3 rounded-lg border border-red-200">
-                    <p className="text-sm text-red-600 mb-3">
-                      <strong>Warning:</strong> This action cannot be undone.
-                      Deleting your account will permanently remove your
-                      profile, listings, and all associated data.
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-gray-600">
+                    Manage your account preferences and settings.
+                  </p>
+
+                  {/* Temp Away Feature */}
+                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center">
+                        {isTemporarilyAway ? (
+                          <EyeOff className="h-5 w-5 text-blue-600 mr-2" />
+                        ) : (
+                          <Eye className="h-5 w-5 text-blue-600 mr-2" />
+                        )}
+                        <span className="font-medium text-blue-900">
+                          Temporarily Away
+                        </span>
+                      </div>
+                      <Button
+                        onClick={handleTempAwayToggle}
+                        variant={isTemporarilyAway ? "destructive" : "default"}
+                        size="sm"
+                      >
+                        {isTemporarilyAway ? "Return" : "Go Away"}
+                      </Button>
+                    </div>
+                    <p className="text-sm text-blue-700">
+                      {isTemporarilyAway
+                        ? "Your listings are currently hidden from other users. Click 'Return' to make them visible again."
+                        : "Hide all your listings temporarily. Perfect for vacations or when you can't respond to messages."}
                     </p>
-                    <Button
-                      onClick={() => setIsDeleteProfileDialogOpen(true)}
-                      variant="destructive"
-                      className="w-full"
-                    >
-                      <AlertTriangle className="h-4 w-4 mr-2" />
-                      Delete Profile
-                    </Button>
+                    {isTemporarilyAway && (
+                      <div className="mt-2 p-2 bg-yellow-100 rounded border border-yellow-300">
+                        <p className="text-xs text-yellow-800 flex items-center">
+                          <Clock className="h-3 w-3 mr-1" />
+                          Your listings are hidden and won't appear in search
+                          results
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
+              </Card>
+
+              {/* Danger Zone */}
+              <Card className="border-red-200 bg-red-50/50">
+                <CardHeader
+                  className="cursor-pointer"
+                  onClick={() => setShowDangerZone(!showDangerZone)}
+                >
+                  <CardTitle className="text-lg flex items-center text-red-800">
+                    <Shield className="h-5 w-5 mr-2" />
+                    Danger Zone
+                    <AlertTriangle className="h-4 w-4 ml-auto" />
+                  </CardTitle>
+                </CardHeader>
+                {showDangerZone && (
+                  <CardContent className="border-t border-red-200">
+                    <Alert className="border-red-300 bg-red-50 mb-4">
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertDescription className="text-red-800">
+                        <strong>Warning:</strong> This action cannot be undone.
+                        Deleting your account will permanently remove:
+                        <ul className="list-disc ml-6 mt-2">
+                          <li>Your profile and personal information</li>
+                          <li>All your book listings (active and sold)</li>
+                          <li>Your transaction history</li>
+                          <li>Any saved addresses</li>
+                          <li>All associated data</li>
+                        </ul>
+                      </AlertDescription>
+                    </Alert>
+
+                    <div className="space-y-3">
+                      <p className="text-sm text-red-700">
+                        Before deleting your account, consider using
+                        "Temporarily Away" instead if you just need a break.
+                      </p>
+
+                      <Button
+                        onClick={() => setIsDeleteProfileDialogOpen(true)}
+                        variant="destructive"
+                        className="w-full"
+                      >
+                        <UserX className="h-4 w-4 mr-2" />
+                        Permanently Delete My Account
+                      </Button>
+                    </div>
+                  </CardContent>
+                )}
               </Card>
             </div>
 

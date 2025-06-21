@@ -66,6 +66,7 @@ import {
   createLogoFallbackHandler,
 } from "@/utils/universityLogoUtils";
 import { getUniversityFaculties } from "@/constants/universities/comprehensive-course-database";
+import { toast } from "sonner";
 import "@/styles/university-profile-mobile.css";
 
 /**
@@ -201,20 +202,21 @@ const EnhancedUniversityProfile: React.FC = () => {
           (total, faculty) => total + (faculty.degrees?.length || 0),
           0,
         );
-        const eligibleDegrees = userProfile
-          ? faculties.reduce((total, faculty) => {
-              return (
-                total +
-                (faculty.degrees?.filter((degree) => {
-                  const eligibility = checkProgramEligibility(
-                    degree.apsRequirement,
-                    degree.subjects || [],
-                  );
-                  return eligibility.eligible;
-                }).length || 0)
-              );
-            }, 0)
-          : 0;
+        const eligibleDegrees =
+          userProfile || (fromAPS && apsScore)
+            ? faculties.reduce((total, faculty) => {
+                return (
+                  total +
+                  (faculty.degrees?.filter((degree) => {
+                    const eligibility = checkProgramEligibility(
+                      degree,
+                      fromAPS && apsScore ? parseInt(apsScore) : undefined,
+                    );
+                    return eligibility.eligible;
+                  }).length || 0)
+                );
+              }, 0)
+            : 0;
 
         // Debug logging
         if (import.meta.env.DEV) {
@@ -258,6 +260,8 @@ const EnhancedUniversityProfile: React.FC = () => {
     universityData.university,
     userProfile,
     checkProgramEligibility,
+    fromAPS,
+    apsScore,
   ]);
 
   // Listen for global APS profile clearing event
@@ -655,7 +659,16 @@ const EnhancedUniversityProfile: React.FC = () => {
                     {/* Clear APS Profile Button */}
                     <div className="mt-4 pt-3 border-t border-white/20">
                       <Button
-                        onClick={clearAPSProfile}
+                        onClick={() => {
+                          clearAPSProfile();
+                          toast.success("APS profile cleared successfully");
+                          // If viewing from APS context, navigate back to clean university view
+                          if (fromAPS) {
+                            navigate(`/university/${universityId}`, {
+                              replace: true,
+                            });
+                          }
+                        }}
                         variant="outline"
                         size="sm"
                         className="w-full bg-white/10 border-white/30 text-white hover:bg-white/20 text-xs"
@@ -754,7 +767,7 @@ const EnhancedUniversityProfile: React.FC = () => {
               <div className="space-y-6">
                 {/* APS Context Banner */}
                 {fromAPS && apsScore && (
-                  <Alert className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+                  <Alert className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200 mb-6">
                     <Calculator className="h-4 w-4" />
                     <AlertDescription>
                       <strong>APS-Based View:</strong> You're viewing programs
@@ -953,7 +966,8 @@ const EnhancedUniversityProfile: React.FC = () => {
                                     {faculty.degrees?.map((degree) => {
                                       // Use centralized eligibility service
                                       const eligibilityResult =
-                                        hasValidProfile && userProfile
+                                        (hasValidProfile && userProfile) ||
+                                        (fromAPS && apsScore)
                                           ? assessEligibility(
                                               {
                                                 name: degree.name,
@@ -968,8 +982,12 @@ const EnhancedUniversityProfile: React.FC = () => {
                                                 assignmentRule: { type: "all" },
                                               },
                                               universityId!,
-                                              userProfile.totalAPS,
-                                              userProfile.subjects,
+                                              fromAPS && apsScore
+                                                ? parseInt(apsScore)
+                                                : userProfile?.totalAPS || 0,
+                                              fromAPS && apsScore
+                                                ? []
+                                                : userProfile?.subjects || [], // For URL params, we only check APS, not subjects
                                             )
                                           : null;
 
@@ -1044,7 +1062,8 @@ const EnhancedUniversityProfile: React.FC = () => {
                                           </p>
 
                                           {/* Detailed eligibility information */}
-                                          {hasValidProfile &&
+                                          {(hasValidProfile ||
+                                            (fromAPS && apsScore)) &&
                                             eligibilityResult && (
                                               <div
                                                 className={`mb-3 p-3 rounded border ${
@@ -1498,28 +1517,39 @@ const EnhancedUniversityProfile: React.FC = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {hasValidProfile ? (
+                    {hasValidProfile || (fromAPS && apsScore) ? (
                       <div className="p-4 bg-green-50 rounded-lg border border-green-200">
                         <h4 className="font-medium text-green-800 mb-3">
-                          Your APS Profile Active
+                          {fromAPS
+                            ? "APS-Based View"
+                            : "Your APS Profile Active"}
                         </h4>
                         <div className="space-y-2 text-sm text-green-700">
-                          <p>Current APS: {userProfile?.totalAPS}</p>
                           <p>
-                            Last Updated:{" "}
-                            {userProfile &&
-                              new Date(
-                                userProfile.lastUpdated,
-                              ).toLocaleDateString()}
+                            Current APS:{" "}
+                            {fromAPS ? apsScore : userProfile?.totalAPS}
                           </p>
-                          <p>Subjects: {userProfile?.subjects.length}</p>
+                          {fromAPS ? (
+                            <p>Source: View Programs navigation</p>
+                          ) : (
+                            <>
+                              <p>
+                                Last Updated:{" "}
+                                {userProfile &&
+                                  new Date(
+                                    userProfile.lastUpdated,
+                                  ).toLocaleDateString()}
+                              </p>
+                              <p>Subjects: {userProfile?.subjects.length}</p>
+                            </>
+                          )}
                         </div>
                         <Button
                           onClick={handleAPSCalculator}
                           size="sm"
                           className="mt-3 bg-green-600 hover:bg-green-700 text-white"
                         >
-                          Update APS Profile
+                          {fromAPS ? "Recalculate APS" : "Update APS Profile"}
                         </Button>
                       </div>
                     ) : (
@@ -1558,20 +1588,28 @@ const EnhancedUniversityProfile: React.FC = () => {
                             {(enhancedStats as any).averageAPS || "N/A"}
                           </span>
                         </div>
-                        {hasValidProfile && (
+                        {(hasValidProfile || (fromAPS && apsScore)) && (
                           <>
                             <div className="flex justify-between">
                               <span>Eligible:</span>
                               <span className="font-medium text-green-600">
-                                {(enhancedStats as any).eligiblePrograms}
+                                {(enhancedStats as any).eligiblePrograms || 0}
                               </span>
                             </div>
                             <div className="flex justify-between">
                               <span>Success Rate:</span>
                               <span className="font-medium text-green-600">
-                                {(enhancedStats as any).eligibilityRate}%
+                                {(enhancedStats as any).eligibilityRate || 0}%
                               </span>
                             </div>
+                            {fromAPS && apsScore && (
+                              <div className="flex justify-between">
+                                <span>Your APS:</span>
+                                <span className="font-medium text-blue-600">
+                                  {apsScore}
+                                </span>
+                              </div>
+                            )}
                           </>
                         )}
                       </div>
