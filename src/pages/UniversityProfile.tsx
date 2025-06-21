@@ -251,15 +251,15 @@ const UniversityProfile: React.FC = () => {
                   </div>
                 </div>
 
-                <p className="text-lg text-white/90 leading-relaxed max-w-3xl">
+                <p className="text-base sm:text-lg text-white/90 leading-relaxed">
                   {university.overview}
                 </p>
 
                 {/* Quick Actions */}
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <Button
                     onClick={handleVisitWebsite}
-                    className="bg-white text-book-700 hover:bg-white/90 shadow-lg"
+                    className="bg-white text-book-700 hover:bg-white/90 shadow-lg w-full sm:w-auto"
                   >
                     <Globe className="w-4 h-4 mr-2" />
                     Visit Website
@@ -267,7 +267,7 @@ const UniversityProfile: React.FC = () => {
                   <Button
                     onClick={handleViewBooks}
                     variant="outline"
-                    className="border-white/30 text-white hover:bg-white/20 backdrop-blur-sm"
+                    className="border-white/30 text-white hover:bg-white/20 backdrop-blur-sm w-full sm:w-auto"
                   >
                     <BookOpen className="w-4 h-4 mr-2" />
                     Find Textbooks
@@ -275,7 +275,7 @@ const UniversityProfile: React.FC = () => {
                   <Button
                     onClick={handleAPSRequirements}
                     variant="outline"
-                    className="border-white/30 text-white hover:bg-white/20 backdrop-blur-sm"
+                    className="border-white/30 text-white hover:bg-white/20 backdrop-blur-sm w-full sm:w-auto"
                   >
                     <Calculator className="w-4 h-4 mr-2" />
                     APS Calculator
