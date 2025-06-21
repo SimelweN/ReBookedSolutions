@@ -25,6 +25,12 @@ const DeleteProfileDialog = ({ isOpen, onClose }: DeleteProfileDialogProps) => {
   const { user, profile } = useAuth();
   const [confirmText, setConfirmText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [step, setStep] = useState<"confirm" | "feedback">("confirm");
+
+  // Feedback form state
+  const [rating, setRating] = useState<number>(0);
+  const [reason, setReason] = useState("");
+  const [feedback, setFeedback] = useState("");
 
   const handleDelete = async () => {
     if (!user || confirmText !== "DELETE") {
