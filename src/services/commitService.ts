@@ -130,7 +130,7 @@ export const commitBookSale = async (bookId: string): Promise<void> => {
 
     console.log("[CommitService] Book sale committed successfully:", bookId);
   } catch (error) {
-    console.error("[CommitService] Error committing book sale:", error);
+    logCommitError("Error committing book sale", error);
     throw error;
   }
 };
