@@ -2733,7 +2733,7 @@ const SimpleAPSCalculator: React.FC = () => {
             onClick={() => navigate("/books")}
           >
             <CardContent className="p-6 text-center">
-              <BookOpen className="h-8 w-8 text-blue-500 mx-auto mb-3" />
+              <BookOpen className="h-8 w-8 text-book-500 mx-auto mb-3" />
               <h3 className="font-semibold text-slate-900 mb-2">
                 Browse Textbooks
               </h3>
