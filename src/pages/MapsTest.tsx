@@ -72,67 +72,136 @@ const MapsTest = () => {
     }
 
     setError(null);
+    setScriptLoaded(false);
+    setGoogleMapsReady(false);
+
+    console.log("🚀 Starting manual Google Maps load...");
+    console.log("📍 API Key:", apiKey.substring(0, 10) + "...");
 
     // Remove existing script if any
     const existingScript = document.querySelector(
       'script[src*="maps.googleapis.com"]',
     );
     if (existingScript) {
+      console.log("🗑️ Removing existing script");
       existingScript.remove();
     }
 
+    // Clean up existing Google objects
+    if ((window as any).google) {
+      console.log("🧹 Cleaning up existing Google object");
+      delete (window as any).google;
+    }
+
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initGoogleMaps`;
+    const scriptUrl = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initGoogleMaps`;
+    script.src = scriptUrl;
     script.async = true;
     script.defer = true;
 
+    console.log("📡 Loading script from:", scriptUrl);
+
     // Set up callback
     (window as any).initGoogleMaps = () => {
+      console.log("✅ Google Maps callback fired!");
       setScriptLoaded(true);
       setGoogleMapsReady(true);
-      console.log("Google Maps loaded successfully!");
+
+      // Test if Places API is available
+      if (window.google && window.google.maps && window.google.maps.places) {
+        console.log("🎯 Places API confirmed available!");
+      } else {
+        console.warn("⚠️ Places API not available");
+        setError(
+          "Places API not available - check Google Cloud Console settings",
+        );
+      }
     };
 
     script.onload = () => {
-      console.log("Google Maps script loaded");
+      console.log("📜 Script element loaded successfully");
       setScriptLoaded(true);
     };
 
     script.onerror = (e) => {
-      console.error("Failed to load Google Maps script:", e);
-      setError(
-        "Failed to load Google Maps script. Check API key and network connection.",
-      );
+      console.error("❌ Script loading failed:", e);
+      setError(`Script loading failed. This could be due to:
+      1. Invalid API key
+      2. Network/firewall blocking maps.googleapis.com
+      3. API not enabled in Google Cloud Console
+      4. Billing not set up in Google Cloud`);
     };
 
     document.head.appendChild(script);
+
+    // Timeout check
+    setTimeout(() => {
+      if (!window.google) {
+        console.warn(
+          "⏰ Timeout: Google Maps still not loaded after 10 seconds",
+        );
+        setError(
+          "Timeout: Google Maps took too long to load. Check network connection.",
+        );
+      }
+    }, 10000);
   };
 
   const testAutocomplete = () => {
+    console.log("🧪 Testing autocomplete...");
+
     if (!window.google || !window.google.maps || !window.google.maps.places) {
-      setError("Google Maps Places API not available");
+      const msg = "Google Maps Places API not available";
+      console.error("❌", msg);
+      setError(msg);
       return;
     }
 
     try {
       // Create a temporary input element
       const input = document.createElement("input");
+      input.placeholder = "Test input for autocomplete";
+      input.style.position = "fixed";
+      input.style.top = "-1000px";
       document.body.appendChild(input);
 
       const autocomplete = new window.google.maps.places.Autocomplete(input, {
         types: ["address"],
         componentRestrictions: { country: "za" },
+        fields: ["formatted_address", "geometry"],
       });
 
-      console.log("Autocomplete created successfully!", autocomplete);
+      console.log("✅ Autocomplete created successfully!", autocomplete);
       setError(null);
+
+      // Test autocomplete methods
+      console.log("🔧 Testing autocomplete methods...");
+      console.log("- setBounds method:", typeof autocomplete.setBounds);
+      console.log("- setFields method:", typeof autocomplete.setFields);
+      console.log("- getPlace method:", typeof autocomplete.getPlace);
 
       // Clean up
       document.body.removeChild(input);
+
+      console.log("🎉 All tests passed!");
     } catch (err) {
-      console.error("Autocomplete test failed:", err);
+      console.error("❌ Autocomplete test failed:", err);
       setError(`Autocomplete test failed: ${err}`);
     }
+  };
+
+  const testDirectURL = () => {
+    if (!apiKey) {
+      setError("No API key to test");
+      return;
+    }
+
+    const testUrl = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
+    console.log("🌐 Testing direct URL access...");
+    console.log("URL:", testUrl);
+
+    // Open in new tab to test manually
+    window.open(testUrl, "_blank");
   };
 
   return (
@@ -245,14 +314,14 @@ const MapsTest = () => {
             <CardTitle>Manual Tests</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Button
                 onClick={loadGoogleMapsManually}
                 disabled={!apiKey}
                 className="flex items-center gap-2"
               >
                 <RefreshCw className="h-4 w-4" />
-                Load Google Maps Script
+                Load Maps Script
               </Button>
 
               <Button
@@ -264,18 +333,44 @@ const MapsTest = () => {
                 <MapPin className="h-4 w-4" />
                 Test Autocomplete
               </Button>
+
+              <Button
+                onClick={testDirectURL}
+                disabled={!apiKey}
+                variant="secondary"
+                className="flex items-center gap-2"
+              >
+                🌐 Test API Key
+              </Button>
             </div>
 
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-gray-600 space-y-2">
               <p>
-                <strong>Step 1:</strong> Click "Load Google Maps Script" to
-                manually load the API
+                <strong>Step 1:</strong> Open browser console (F12) to see
+                detailed logs
               </p>
               <p>
-                <strong>Step 2:</strong> Once loaded, click "Test Autocomplete"
-                to verify Places API
+                <strong>Step 2:</strong> Click "Load Maps Script" - watch
+                console for errors
+              </p>
+              <p>
+                <strong>Step 3:</strong> Click "Test API Key" to verify key
+                works in browser
+              </p>
+              <p>
+                <strong>Step 4:</strong> Once loaded, test autocomplete
+                functionality
               </p>
             </div>
+
+            <Alert className="mt-4">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Console Output:</strong> Detailed debug information is
+                logged to the browser console. Press F12 and look at the Console
+                tab for step-by-step loading details.
+              </AlertDescription>
+            </Alert>
           </CardContent>
         </Card>
 
