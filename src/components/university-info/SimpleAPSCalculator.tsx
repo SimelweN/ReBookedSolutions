@@ -2664,7 +2664,7 @@ const SimpleAPSCalculator: React.FC = () => {
                   <Card className="bg-white border-0 shadow-lg">
                     <CardHeader className="pb-3">
                       <CardTitle className="flex items-center gap-2 text-lg text-slate-900">
-                        <TrendingUp className="h-5 w-5 text-blue-500" />
+                        <TrendingUp className="h-5 w-5 text-book-500" />
                         Performance Metrics
                       </CardTitle>
                     </CardHeader>
