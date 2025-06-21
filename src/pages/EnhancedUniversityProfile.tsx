@@ -757,7 +757,7 @@ const EnhancedUniversityProfile: React.FC = () => {
               <div className="space-y-6">
                 {/* APS Context Banner */}
                 {fromAPS && apsScore && (
-                  <Alert className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+                  <Alert className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200 mb-6">
                     <Calculator className="h-4 w-4" />
                     <AlertDescription>
                       <strong>APS-Based View:</strong> You're viewing programs
