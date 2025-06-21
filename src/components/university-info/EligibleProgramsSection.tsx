@@ -106,42 +106,20 @@ const EligibleProgramsSection: React.FC<EligibleProgramsSectionProps> = ({
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [selectedFacultyTab, setSelectedFacultyTab] = useState<string>("all");
 
-  // Group programs by faculty
+  // Group programs by faculty using utility functions
   const programsByFaculty = useMemo(() => {
-    const grouped: Record<string, Program[]> = {};
-
-    programs.forEach((program) => {
-      const faculty = program.faculty || "Other";
-      if (!grouped[faculty]) {
-        grouped[faculty] = [];
-      }
-      grouped[faculty].push(program);
-    });
-
-    // Sort faculties alphabetically
-    const sortedFaculties = Object.keys(grouped).sort();
-    const sortedGrouped: Record<string, Program[]> = {};
-
-    sortedFaculties.forEach((faculty) => {
-      sortedGrouped[faculty] = grouped[faculty];
-    });
-
-    return sortedGrouped;
+    return groupProgramsByFaculty(programs);
   }, [programs]);
 
-  // Get faculty counts
+  // Get faculty counts and statistics
   const facultyCounts = useMemo(() => {
-    const counts: Record<string, { total: number; eligible: number }> = {};
-
-    Object.entries(programsByFaculty).forEach(([faculty, facultyPrograms]) => {
-      counts[faculty] = {
-        total: facultyPrograms.length,
-        eligible: facultyPrograms.filter((p) => p.eligible).length,
-      };
-    });
-
-    return counts;
+    return calculateFacultyStats(programsByFaculty);
   }, [programsByFaculty]);
+
+  // Get sorted faculties for better organization
+  const sortedFaculties = useMemo(() => {
+    return getSortedFacultiesWithCounts(facultyCounts, "total");
+  }, [facultyCounts]);
 
   // Get filtered programs based on selected faculty tab
   const displayedPrograms = useMemo(() => {
