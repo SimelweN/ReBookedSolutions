@@ -549,7 +549,7 @@ const UniversityProfile: React.FC = () => {
                 </Card>
 
                 {/* Quick Actions */}
-                <Card className="bg-gradient-to-br from-book-50 to-emerald-50 shadow-xl border-0 rounded-2xl">
+                <Card className="bg-gradient-to-br from-book-50 to-emerald-50 shadow-xl border-0 rounded-2xl relative z-30">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-xl">
                       <Zap className="w-5 h-5 text-book-600" />
