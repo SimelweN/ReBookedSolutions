@@ -74,7 +74,15 @@ export const commitBookSale = async (bookId: string): Promise<void> => {
 
     if (updateError) {
       console.error("[CommitService] Error updating book status:", updateError);
-      throw new Error("Failed to commit sale");
+      console.error(
+        "[CommitService] Update details - Book ID:",
+        bookId,
+        "User ID:",
+        user.id,
+      );
+      throw new Error(
+        `Failed to commit sale: ${updateError.message || updateError.toString()}`,
+      );
     }
 
     // Log the commit action (console logging for now)
