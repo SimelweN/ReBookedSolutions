@@ -8,8 +8,9 @@ import {
 } from "@/constants/universities/comprehensive-course-database";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/complete-26-universities";
 import { calculateAPS, validateAPSSubjects } from "@/utils/apsCalculation";
-import { validateCourseAssignmentRule } from "@/utils/enhancedValidation";
+import { validateAssignmentRule } from "@/utils/enhancedValidation";
 import { logError } from "./systemMonitoringService";
+import { checkSubjectRequirements } from "./subjectMatchingService";
 
 /**
  * Enhanced APS-aware course assignment service
@@ -171,9 +172,7 @@ export function getCoursesForUniversityWithAPS(
         }
 
         // Validate assignment rule structure
-        const ruleValidation = validateCourseAssignmentRule(
-          course.assignmentRule,
-        );
+        const ruleValidation = validateAssignmentRule(course.assignmentRule);
         if (!ruleValidation.isValid) {
           logError(
             "assignment",
@@ -381,9 +380,6 @@ function calculateSubjectMatch(
     reason: string;
   }>;
 } {
-  // Import precise matching service
-  const { checkSubjectRequirements } = require("./subjectMatchingService");
-
   if (!course.subjects || course.subjects.length === 0) {
     return {
       hasRequiredSubjects: true,
