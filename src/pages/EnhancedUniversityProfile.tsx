@@ -626,7 +626,7 @@ const EnhancedUniversityProfile: React.FC = () => {
               <TabsList className="grid w-full grid-cols-2 grid-rows-2 sm:grid-cols-4 sm:grid-rows-1 bg-slate-100 rounded-xl gap-2">
                 <TabsTrigger
                   value="programs"
-                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 py-3 sm:px-4 flex flex-col sm:flex-row items-center justify-center min-h-[50px] sm:min-h-[40px]"
+                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 py-3 sm:px-4 flex flex-col sm:flex-row items-center justify-center min-h-[70px] sm:min-h-[40px]"
                 >
                   <GraduationCap className="w-4 h-4 mb-1 sm:mb-0 sm:mr-2 flex-shrink-0" />
                   <span className="hidden sm:inline">Programs</span>
@@ -636,7 +636,7 @@ const EnhancedUniversityProfile: React.FC = () => {
                 </TabsTrigger>
                 <TabsTrigger
                   value="admissions"
-                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 py-3 sm:px-4 flex flex-col sm:flex-row items-center justify-center min-h-[50px] sm:min-h-[40px]"
+                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 py-3 sm:px-4 flex flex-col sm:flex-row items-center justify-center min-h-[70px] sm:min-h-[40px]"
                 >
                   <Award className="w-4 h-4 mb-1 sm:mb-0 sm:mr-2 flex-shrink-0" />
                   <span className="hidden sm:inline">Admissions</span>
@@ -644,7 +644,7 @@ const EnhancedUniversityProfile: React.FC = () => {
                 </TabsTrigger>
                 <TabsTrigger
                   value="student-life"
-                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 py-3 sm:px-4 flex flex-col sm:flex-row items-center justify-center min-h-[50px] sm:min-h-[40px]"
+                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 py-3 sm:px-4 flex flex-col sm:flex-row items-center justify-center min-h-[70px] sm:min-h-[40px]"
                 >
                   <Heart className="w-4 h-4 mb-1 sm:mb-0 sm:mr-2 flex-shrink-0" />
                   <span className="hidden sm:inline">Student Life</span>
@@ -652,7 +652,7 @@ const EnhancedUniversityProfile: React.FC = () => {
                 </TabsTrigger>
                 <TabsTrigger
                   value="resources"
-                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 py-3 sm:px-4 flex flex-col sm:flex-row items-center justify-center min-h-[50px] sm:min-h-[40px]"
+                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 py-3 sm:px-4 flex flex-col sm:flex-row items-center justify-center min-h-[70px] sm:min-h-[40px]"
                 >
                   <Lightbulb className="w-4 h-4 mb-1 sm:mb-0 sm:mr-2 flex-shrink-0" />
                   <span className="hidden sm:inline">Resources</span>
