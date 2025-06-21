@@ -537,24 +537,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("🔄 [AuthContext] Auth state changed:", {
         event,
         hasSession: !!session,
       });
 
-      if (session) {
-        handleAuthStateChange(session, event);
-      } else {
-        // Clear user tracking ref
-        currentUserIdRef.current = null;
+      try {
+        if (session) {
+          await handleAuthStateChange(session, event);
+        } else {
+          // Clear user tracking ref
+          currentUserIdRef.current = null;
 
-        // Batch clear all auth state to prevent UI flickering
-        setUser(null);
-        setProfile(null);
-        setSession(null);
+          // Batch clear all auth state to prevent UI flickering
+          setUser(null);
+          setProfile(null);
+          setSession(null);
+          setIsLoading(false);
+          console.log("✅ [AuthContext] Auth state cleared");
+        }
+      } catch (error) {
+        console.warn("⚠️ [AuthContext] Auth state change error:", error);
+
+        // Handle PKCE errors silently
+        if (error instanceof Error && error.message.includes("code verifier")) {
+          console.log(
+            "🧹 [AuthContext] Handling PKCE error in auth state change",
+          );
+
+          // Clear URL parameters if they exist
+          const url = new URL(window.location.href);
+          if (url.searchParams.has("code") || url.searchParams.has("error")) {
+            window.history.replaceState(
+              {},
+              document.title,
+              window.location.pathname,
+            );
+          }
+
+          // Set to unauthenticated state
+          setUser(null);
+          setProfile(null);
+          setSession(null);
+        }
+
         setIsLoading(false);
-        console.log("✅ [AuthContext] Auth state cleared");
       }
     });
 
