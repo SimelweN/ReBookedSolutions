@@ -54,13 +54,21 @@ const UniversityProfile: React.FC = () => {
     new Set(),
   );
 
-  // Find the university
+  // Find the university and populate with comprehensive faculties
   const university = useMemo(() => {
     if (!universityId) return null;
-    return (
-      ALL_SOUTH_AFRICAN_UNIVERSITIES.find((uni) => uni.id === universityId) ||
-      null
+    const baseUniversity = ALL_SOUTH_AFRICAN_UNIVERSITIES.find(
+      (uni) => uni.id === universityId,
     );
+    if (!baseUniversity) return null;
+
+    // Get comprehensive faculties from course database
+    const comprehensiveFaculties = getUniversityFaculties(universityId);
+
+    return {
+      ...baseUniversity,
+      faculties: comprehensiveFaculties,
+    };
   }, [universityId]);
 
   // Calculate statistics
