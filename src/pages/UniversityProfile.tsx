@@ -40,6 +40,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { University, Faculty, Degree } from "@/types/university";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/index";
+import { getUniversityFaculties } from "@/constants/universities/comprehensive-course-database";
 import CampusNavbar from "@/components/CampusNavbar";
 import SEO from "@/components/SEO";
 
