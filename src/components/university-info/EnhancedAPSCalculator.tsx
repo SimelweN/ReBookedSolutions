@@ -1049,8 +1049,6 @@ const EnhancedAPSCalculator: React.FC = () => {
           </DialogContent>
         </Dialog>
       )}
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>
