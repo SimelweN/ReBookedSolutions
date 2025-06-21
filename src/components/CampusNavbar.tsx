@@ -190,8 +190,6 @@ const CampusNavbar = () => {
                   ? "bg-book-600 text-white"
                   : "text-gray-600 hover:text-book-600"
               }`}
-                  : "text-gray-600 hover:text-book-600 hover:bg-book-50"
-              }`}
               size="sm"
             >
               <GraduationCap className="w-4 h-4" />
