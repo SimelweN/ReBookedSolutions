@@ -65,6 +65,7 @@ import {
   getUniversityLogoPath,
   createLogoFallbackHandler,
 } from "@/utils/universityLogoUtils";
+import { getUniversityFaculties } from "@/constants/universities/comprehensive-course-database";
 import "@/styles/university-profile-mobile.css";
 
 /**
