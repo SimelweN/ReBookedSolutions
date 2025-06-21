@@ -94,31 +94,33 @@ const UserProfileTabs = ({
         >
           <TabsTrigger
             value="listings"
-            className={`${isMobile ? "h-10 text-xs px-2 col-span-2" : "flex-1"}`}
+            className={`${isMobile ? "h-12 text-xs px-1 col-span-2 flex-col" : "flex-1"} flex items-center justify-center`}
           >
-            {isMobile
-              ? `Listings (${activeListings.length})`
-              : `Active Listings (${activeListings.length})`}
+            <span className={isMobile ? "text-center" : ""}>
+              {isMobile
+                ? `Listings (${activeListings.length})`
+                : `Active Listings (${activeListings.length})`}
+            </span>
           </TabsTrigger>
           <TabsTrigger
             value="activity"
-            className={`${isMobile ? "h-10 text-xs px-2 col-span-2" : "flex-1"}`}
+            className={`${isMobile ? "h-12 text-xs px-1 col-span-2 flex-col" : "flex-1"} flex items-center justify-center`}
           >
-            Activity
+            <span className={isMobile ? "text-center" : ""}>Activity</span>
           </TabsTrigger>
           {isOwnProfile && (
             <>
               <TabsTrigger
                 value="account"
-                className={`${isMobile ? "h-10 text-xs px-2" : "flex-1"}`}
+                className={`${isMobile ? "h-12 text-xs px-1 flex-col" : "flex-1"} flex items-center justify-center`}
               >
-                Account
+                <span className={isMobile ? "text-center" : ""}>Account</span>
               </TabsTrigger>
               <TabsTrigger
                 value="addresses"
-                className={`${isMobile ? "h-10 text-xs px-2" : "flex-1"}`}
+                className={`${isMobile ? "h-12 text-xs px-1 flex-col" : "flex-1"} flex items-center justify-center`}
               >
-                Addresses
+                <span className={isMobile ? "text-center" : ""}>Addresses</span>
               </TabsTrigger>
             </>
           )}
