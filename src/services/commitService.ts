@@ -62,7 +62,7 @@ export const commitBookSale = async (bookId: string): Promise<void> => {
         updated_at: new Date().toISOString(),
       })
       .eq("id", bookId)
-      .eq("user_id", user.id);
+      .eq("seller_id", user.id);
 
     if (updateError) {
       console.error("[CommitService] Error updating book status:", updateError);
