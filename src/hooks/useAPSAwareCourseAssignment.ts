@@ -232,28 +232,48 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
     setLastSearchResults(null);
     setError(null);
 
-    // Clear all APS-related data from sessionStorage (temporary storage)
+// Custom hook for sessionStorage (temporary storage)
+function useSessionStorage<T>(key: string, initialValue: T) {
+  const [storedValue, setStoredValue] = useState<T>(() => {
     try {
-      sessionStorage.removeItem("userAPSProfile");
-      sessionStorage.removeItem("apsSearchResults");
-      sessionStorage.removeItem("universityAPSScores");
-      sessionStorage.removeItem("facultyData");
-      sessionStorage.removeItem("programEligibility");
-      sessionStorage.removeItem("apsCalculationCache");
-    } catch (error) {
-      console.warn("Failed to clear sessionStorage:", error);
+      const item = sessionStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch {
+      return initialValue;
     }
+  });
 
-    // Trigger a global state reset for APS-related components
-    window.dispatchEvent(new CustomEvent("apsProfileCleared"));
-  }, [setUserProfile]);
+  const setValue = (value: T) => {
+    try {
+      setStoredValue(value);
+      sessionStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      console.error("Error saving to sessionStorage:", error);
+    }
+  };
 
-  /**
-   * Clear any errors
-   */
-  const clearError = useCallback(() => {
-    setError(null);
-  }, []);
+  // Add an effect to listen for external sessionStorage changes
+  useEffect(() => {
+    const handleStorageChange = () => {
+      try {
+        const item = sessionStorage.getItem(key);
+        const newValue = item ? JSON.parse(item) : initialValue;
+        if (JSON.stringify(newValue) !== JSON.stringify(storedValue)) {
+          setStoredValue(newValue);
+        }
+      } catch (error) {
+        console.error("Error reading from sessionStorage:", error);
+      }
+    };
+
+    // Check for changes periodically (since sessionStorage doesn't emit events)
+    const interval = setInterval(handleStorageChange, 100);
+
+    return () => clearInterval(interval);
+  }, [key, initialValue, storedValue]);
+
+  return [storedValue, setValue] as const;
+}
 
   return {
     userProfile,
