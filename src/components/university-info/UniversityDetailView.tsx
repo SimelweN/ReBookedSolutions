@@ -182,6 +182,17 @@ const UniversityDetailView: React.FC<UniversityDetailViewProps> = ({
                       Student Portal
                     </Button>
                   )}
+                  {hasValidProfile && (
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      onClick={clearAPSProfile}
+                      className="border-2 border-red-200 hover:border-red-300 text-red-600 hover:text-red-700 shadow-sm hover:shadow-md transition-all duration-300"
+                    >
+                      <Star className="h-5 w-5 mr-2" />
+                      Clear APS Profile
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
