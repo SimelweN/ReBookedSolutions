@@ -65,7 +65,18 @@ const APSScoreCard: React.FC<APSScoreCardProps> = ({
 
   const handleUniversityNameClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent card onClick
-    navigate(`/university/${score.universityId}`);
+    // Ensure APS data is preserved when navigating
+    const currentAPSProfile = sessionStorage.getItem("userAPSProfile");
+    if (currentAPSProfile) {
+      navigate(`/university/${score.universityId}`, {
+        state: {
+          fromAPS: true,
+          apsProfile: JSON.parse(currentAPSProfile),
+        },
+      });
+    } else {
+      navigate(`/university/${score.universityId}`);
+    }
   };
 
   const getScoreColor = (percentage: number) => {
@@ -164,7 +175,21 @@ const APSScoreCard: React.FC<APSScoreCardProps> = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate(`/university/${score.universityId}`)}
+            onClick={() => {
+              // Ensure APS data is preserved when navigating
+              const currentAPSProfile =
+                sessionStorage.getItem("userAPSProfile");
+              if (currentAPSProfile) {
+                navigate(`/university/${score.universityId}`, {
+                  state: {
+                    fromAPS: true,
+                    apsProfile: JSON.parse(currentAPSProfile),
+                  },
+                });
+              } else {
+                navigate(`/university/${score.universityId}`);
+              }
+            }}
             className="w-full border-book-600 text-book-600 hover:bg-book-50"
           >
             <GraduationCap className="h-4 w-4 mr-2" />
