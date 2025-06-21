@@ -58,9 +58,15 @@ const APSScoreCard: React.FC<APSScoreCardProps> = ({
   showDetails = false,
 }) => {
   const [showMethodology, setShowMethodology] = useState(false);
+  const navigate = useNavigate();
 
   const percentage = Math.round((score.score / score.maxScore) * 100);
   const isCustomScoring = usesCustomScoring(score.universityId);
+
+  const handleUniversityNameClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card onClick
+    navigate(`/university-profile/${score.universityId}`);
+  };
 
   const getScoreColor = (percentage: number) => {
     if (percentage >= 80) return "text-green-600";
