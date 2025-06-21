@@ -32,30 +32,58 @@ const DeleteProfileDialog = ({ isOpen, onClose }: DeleteProfileDialogProps) => {
   const [reason, setReason] = useState("");
   const [feedback, setFeedback] = useState("");
 
-  const handleDelete = async () => {
+  const handleConfirmDelete = () => {
     if (!user || confirmText !== "DELETE") {
       toast.error("Please type 'DELETE' to confirm");
       return;
     }
+    setStep("feedback");
+  };
 
+  const handleFinalDelete = async () => {
     setIsDeleting(true);
     try {
+      // Submit feedback to admin (would be stored in database)
+      const feedbackData = {
+        userId: user?.id,
+        userName: profile?.name || "Anonymous",
+        rating,
+        reason,
+        feedback,
+        deletedAt: new Date().toISOString(),
+      };
+
+      // Store feedback for admin dashboard (placeholder - would be actual API call)
+      console.log("Feedback data for admin:", feedbackData);
+
       // Here you would implement the actual profile deletion logic
-      // For now, we'll simulate the process
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       toast.success(
-        "Profile deletion request submitted. You will receive an email confirmation.",
+        "Profile deletion request submitted. Thank you for your feedback. You will receive an email confirmation.",
       );
       onClose();
 
       // Reset form
       setConfirmText("");
+      setStep("confirm");
+      setRating(0);
+      setReason("");
+      setFeedback("");
     } catch (error) {
       toast.error("Failed to delete profile. Please try again.");
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  const handleClose = () => {
+    onClose();
+    setStep("confirm");
+    setConfirmText("");
+    setRating(0);
+    setReason("");
+    setFeedback("");
   };
 
   const handleClose = () => {
