@@ -93,6 +93,7 @@ const EnhancedUniversityProfile: React.FC = () => {
     qualificationSummary,
     searchCoursesForUniversity,
     checkProgramEligibility,
+    clearAPSProfile,
     clearError,
   } = useAPSAwareCourseAssignment(universityId);
 
