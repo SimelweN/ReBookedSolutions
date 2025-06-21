@@ -284,34 +284,36 @@ const UniversityProfile: React.FC = () => {
               </div>
 
               {/* Stats Cards */}
-              <div className="space-y-4">
-                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+              <div className="space-y-4 mt-6 lg:mt-0">
+                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 sm:p-6 border border-white/20">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-white font-semibold">Quick Stats</h3>
+                    <h3 className="text-white font-semibold text-sm sm:text-base">
+                      Quick Stats
+                    </h3>
                     <Trophy className="w-5 h-5 text-yellow-300" />
                   </div>
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-2 lg:grid-cols-1 gap-3 lg:gap-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-white/80">Students</span>
-                      <span className="text-white font-bold text-lg">
+                      <span className="text-white/80 text-sm">Students</span>
+                      <span className="text-white font-bold text-base sm:text-lg">
                         {stats.students}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-white/80">Established</span>
-                      <span className="text-white font-bold text-lg">
+                      <span className="text-white/80 text-sm">Established</span>
+                      <span className="text-white font-bold text-base sm:text-lg">
                         {stats.established}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-white/80">Faculties</span>
-                      <span className="text-white font-bold text-lg">
+                      <span className="text-white/80 text-sm">Faculties</span>
+                      <span className="text-white font-bold text-base sm:text-lg">
                         {stats.faculties}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-white/80">Programs</span>
-                      <span className="text-white font-bold text-lg">
+                      <span className="text-white/80 text-sm">Programs</span>
+                      <span className="text-white font-bold text-base sm:text-lg">
                         {stats.programs}
                       </span>
                     </div>
