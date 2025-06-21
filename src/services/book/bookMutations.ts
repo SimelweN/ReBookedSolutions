@@ -15,23 +15,6 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       throw new Error("User not authenticated");
     }
 
-    // Fetch user's pickup address to get province
-    let province = null;
-    try {
-      const { data: addressData } = await supabase
-        .from("user_addresses")
-        .select("pickup_address")
-        .eq("user_id", user.id)
-        .single();
-
-      if (addressData?.pickup_address) {
-        province = addressData.pickup_address.province;
-      }
-    } catch (addressError) {
-      console.warn("Could not fetch user address for province:", addressError);
-      // Continue without province - it's not critical for book creation
-    }
-
     const { data: book, error } = await supabase
       .from("books")
       .insert([
@@ -49,7 +32,6 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
           inside_pages: bookData.insidePages,
           grade: bookData.grade,
           university_year: bookData.universityYear,
-          province: province,
         },
       ])
       .select()
