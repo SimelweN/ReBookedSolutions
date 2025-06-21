@@ -67,13 +67,13 @@ const UserProfileTabs = ({
     return `${address.street}, ${address.city}, ${address.province} ${address.postalCode}`;
   };
 
-  // Real commit data - will be passed as props or fetched from API
+  // Commit data will be fetched from API when the feature is ready
   const commitData = {
-    totalCommits: 0,
-    activeCommits: 0,
-    completedCommits: 0,
-    averageResponseTime: "N/A",
-    reliabilityScore: 0,
+    totalCommits: null,
+    activeCommits: null,
+    completedCommits: null,
+    averageResponseTime: null,
+    reliabilityScore: null,
     recentCommits: [],
   };
 
@@ -439,40 +439,7 @@ const UserProfileTabs = ({
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <h3 className="font-semibold text-lg">Pickup Address</h3>
-                      <p className="text-sm text-gray-600">
-                        Where buyers can collect books from you
-                      </p>
-                      <div className="p-3 bg-gray-50 rounded border min-h-[60px] flex items-center">
-                        <p className="text-sm">
-                          {formatAddress(addressData?.pickup)}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <h3 className="font-semibold text-lg">
-                        Shipping Address
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        Where you want orders shipped to you
-                      </p>
-                      <div className="p-3 bg-gray-50 rounded border min-h-[60px] flex items-center">
-                        <p className="text-sm">
-                          {formatAddress(addressData?.shipping)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Button
-                    onClick={() => setIsAddressEditDialogOpen(true)}
-                    disabled={isLoadingAddress}
-                    className="w-full md:w-auto"
-                  >
-                    <MapPin className="h-4 w-4 mr-2" />
+                  {/* Commit stats will be displayed when the feature is implemented */}
                     {isLoadingAddress ? "Loading..." : "Edit Addresses"}
                   </Button>
                 </CardContent>
