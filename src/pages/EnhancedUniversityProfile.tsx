@@ -661,6 +661,7 @@ const EnhancedUniversityProfile: React.FC = () => {
                       <Button
                         onClick={() => {
                           clearAPSProfile();
+                          toast.success("APS profile cleared successfully");
                           // If viewing from APS context, navigate back to clean university view
                           if (fromAPS) {
                             navigate(`/university/${universityId}`, {
