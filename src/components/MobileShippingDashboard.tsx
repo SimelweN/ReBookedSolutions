@@ -21,7 +21,7 @@ import ShipLogicTrackingOnly from "@/components/shiplogic/ShipLogicTrackingOnly"
 import ShipLogicRateQuote from "@/components/shiplogic/ShipLogicRateQuote";
 
 interface MobileShippingDashboardProps {
-  defaultProvider?: "courierGuy" | "shipLogic";
+  defaultProvider?: "courierGuy" | "shipLogic" | "fastway";
 }
 
 const MobileShippingDashboard = ({
@@ -29,7 +29,7 @@ const MobileShippingDashboard = ({
 }: MobileShippingDashboardProps) => {
   const navigate = useNavigate();
   const [selectedProvider, setSelectedProvider] = useState<
-    "courierGuy" | "shipLogic"
+    "courierGuy" | "shipLogic" | "fastway"
   >(defaultProvider);
 
   const providers = [
@@ -40,6 +40,14 @@ const MobileShippingDashboard = ({
       description: "Local courier service",
       features: ["Local SA courier", "Reliable tracking", "2-3 business days"],
       color: "blue",
+    },
+    {
+      id: "fastway",
+      name: "Fastway",
+      logo: "🏃‍♂️",
+      description: "Express courier service",
+      features: ["Express delivery", "Wide coverage", "Competitive rates"],
+      color: "orange",
     },
     {
       id: "shipLogic",
@@ -76,11 +84,15 @@ const MobileShippingDashboard = ({
                   selectedProvider === provider.id
                     ? provider.color === "blue"
                       ? "border-blue-500 bg-blue-50"
-                      : "border-green-500 bg-green-50"
+                      : provider.color === "orange"
+                        ? "border-orange-500 bg-orange-50"
+                        : "border-green-500 bg-green-50"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
                 onClick={() =>
-                  setSelectedProvider(provider.id as "courierGuy" | "shipLogic")
+                  setSelectedProvider(
+                    provider.id as "courierGuy" | "shipLogic" | "fastway",
+                  )
                 }
               >
                 <div className="flex items-start space-x-3">
@@ -93,7 +105,13 @@ const MobileShippingDashboard = ({
                       {selectedProvider === provider.id && (
                         <Badge
                           variant="default"
-                          className={`text-xs ${provider.color === "blue" ? "bg-blue-600" : "bg-green-600"}`}
+                          className={`text-xs ${
+                            provider.color === "blue"
+                              ? "bg-blue-600"
+                              : provider.color === "orange"
+                                ? "bg-orange-600"
+                                : "bg-green-600"
+                          }`}
                         >
                           Selected
                         </Badge>
