@@ -19,6 +19,7 @@ import Profile from "./pages/Profile";
 import CreateListing from "./pages/CreateListing";
 import GoogleMapsDemo from "./pages/GoogleMapsDemo";
 import MapsTest from "./pages/MapsTest";
+import BasicMapsExample from "./pages/BasicMapsExample";
 import Admin from "./pages/Admin";
 import UniversityInfo from "./pages/UniversityInfo";
 import ModernUniversityProfile from "./pages/ModernUniversityProfile";
@@ -128,6 +129,7 @@ function App() {
                       element={<GoogleMapsDemo />}
                     />
                     <Route path="/maps-test" element={<MapsTest />} />
+                    <Route path="/basic-maps" element={<BasicMapsExample />} />
 
                     {/* Protected Routes */}
                     <Route
