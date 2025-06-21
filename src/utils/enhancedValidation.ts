@@ -730,9 +730,9 @@ export function generateSystemValidationReport(): {
   };
   recommendations: string[];
 } {
-  const {
-    COMPREHENSIVE_COURSES,
-  } = require("@/constants/universities/comprehensive-course-database");
+  const { COMPREHENSIVE_COURSES } = await import(
+    "@/constants/universities/comprehensive-course-database"
+  );
 
   let totalScore = 0;
   let validCourses = 0;
