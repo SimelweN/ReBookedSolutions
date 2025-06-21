@@ -2048,27 +2048,30 @@ const SimpleAPSCalculator: React.FC = () => {
   const filteredDegrees = useMemo(() => {
     let filtered = degreeAnalysis;
 
-    if (totalAPS === 0) {
-      // Show a sample of programs when no APS is entered
-      filtered = degreeAnalysis.slice(0, 50);
-    } else {
-      switch (selectedFilter) {
-        case "eligible":
-          filtered = filtered.filter((d) => d.eligible);
-          break;
-        case "competitive":
-          filtered = filtered.filter((d) => d.competitiveness === "High");
-          break;
-        case "all":
-        default:
+    // Apply filtering based on selected filter, regardless of APS score
+    switch (selectedFilter) {
+      case "eligible":
+        filtered = filtered.filter((d) => d.eligible);
+        break;
+      case "competitive":
+        filtered = filtered.filter((d) => d.competitiveness === "High");
+        break;
+      case "all":
+      default:
+        if (totalAPS === 0) {
+          // When no APS is entered, show all programs sorted by APS requirement
+          filtered = filtered.sort(
+            (a, b) => a.apsRequirement - b.apsRequirement,
+          );
+        } else {
           // Show all programs, but prioritize eligible ones
           filtered = filtered.sort((a, b) => {
             if (a.eligible && !b.eligible) return -1;
             if (!a.eligible && b.eligible) return 1;
-            return b.apsRequirement - a.apsRequirement;
+            return a.apsRequirement - b.apsRequirement;
           });
-          break;
-      }
+        }
+        break;
     }
 
     return filtered;
