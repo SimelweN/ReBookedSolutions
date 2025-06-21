@@ -607,38 +607,40 @@ const EnhancedUniversityProfile: React.FC = () => {
             className="university-tabs space-y-6 lg:space-y-8"
           >
             <div className="bg-white rounded-2xl shadow-xl p-3 relative z-30">
-              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 bg-slate-100 rounded-xl gap-1">
+              <TabsList className="grid w-full grid-cols-2 grid-rows-2 sm:grid-cols-4 sm:grid-rows-1 bg-slate-100 rounded-xl gap-2">
                 <TabsTrigger
                   value="programs"
-                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 py-2 sm:px-4 flex items-center justify-center min-h-[40px]"
+                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 py-3 sm:px-4 flex flex-col sm:flex-row items-center justify-center min-h-[50px] sm:min-h-[40px]"
                 >
-                  <GraduationCap className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
+                  <GraduationCap className="w-4 h-4 mb-1 sm:mb-0 sm:mr-2 flex-shrink-0" />
                   <span className="hidden sm:inline">Programs</span>
-                  <span className="sm:hidden text-center">Degrees</span>
+                  <span className="sm:hidden text-center text-xs">
+                    Programs
+                  </span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="admissions"
-                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 py-2 sm:px-4 flex items-center justify-center min-h-[40px]"
+                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 py-3 sm:px-4 flex flex-col sm:flex-row items-center justify-center min-h-[50px] sm:min-h-[40px]"
                 >
-                  <Award className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
+                  <Award className="w-4 h-4 mb-1 sm:mb-0 sm:mr-2 flex-shrink-0" />
                   <span className="hidden sm:inline">Admissions</span>
-                  <span className="sm:hidden text-center">Apply</span>
+                  <span className="sm:hidden text-center text-xs">Apply</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="student-life"
-                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 py-2 sm:px-4 flex items-center justify-center min-h-[40px]"
+                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 py-3 sm:px-4 flex flex-col sm:flex-row items-center justify-center min-h-[50px] sm:min-h-[40px]"
                 >
-                  <Heart className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
+                  <Heart className="w-4 h-4 mb-1 sm:mb-0 sm:mr-2 flex-shrink-0" />
                   <span className="hidden sm:inline">Student Life</span>
-                  <span className="sm:hidden text-center">Life</span>
+                  <span className="sm:hidden text-center text-xs">Life</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="resources"
-                  className="data-[state=active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 py-2 sm:px-4 flex items-center justify-center min-h-[40px]"
+                  className="data-[state-active]:bg-white data-[state=active]:shadow-md rounded-lg text-xs sm:text-sm px-2 py-3 sm:px-4 flex flex-col sm:flex-row items-center justify-center min-h-[50px] sm:min-h-[40px]"
                 >
-                  <Lightbulb className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
+                  <Lightbulb className="w-4 h-4 mb-1 sm:mb-0 sm:mr-2 flex-shrink-0" />
                   <span className="hidden sm:inline">Resources</span>
-                  <span className="sm:hidden text-center">Tools</span>
+                  <span className="sm:hidden text-center text-xs">Tools</span>
                 </TabsTrigger>
               </TabsList>
             </div>
