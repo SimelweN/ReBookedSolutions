@@ -13,6 +13,7 @@ export const ENV = {
   VITE_APP_URL:
     import.meta.env.VITE_APP_URL || "https://rebookedsolutions.co.za",
   VITE_COURIER_GUY_API_KEY: import.meta.env.VITE_COURIER_GUY_API_KEY || "",
+  VITE_FASTWAY_API_KEY: import.meta.env.VITE_FASTWAY_API_KEY || "",
 } as const;
 
 export const IS_PRODUCTION = ENV.NODE_ENV === "production";
@@ -22,7 +23,7 @@ export const IS_DEVELOPMENT = ENV.NODE_ENV === "development";
 export const validateEnvironment = () => {
   const required = ["VITE_SUPABASE_URL", "VITE_SUPABASE_ANON_KEY"];
   // Add optional API keys for production warnings
-  const optional = ["VITE_COURIER_GUY_API_KEY"];
+  const optional = ["VITE_COURIER_GUY_API_KEY", "VITE_FASTWAY_API_KEY"];
 
   const missing = required.filter((key) => {
     const value = ENV[key as keyof typeof ENV];
