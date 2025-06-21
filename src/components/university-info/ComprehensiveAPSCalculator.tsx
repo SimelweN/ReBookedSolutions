@@ -563,10 +563,17 @@ const ComprehensiveAPSCalculator: React.FC = () => {
                           key={index}
                           className="flex items-center justify-between p-2 bg-slate-50 rounded"
                         >
-                          <span className="text-sm">{subject.name}</span>
+                          <div className="flex flex-col">
+                            <span className="text-sm">{subject.name}</span>
+                            {subject.countsForAPS === false && (
+                              <span className="text-xs text-slate-500">
+                                (Required but doesn't count for APS)
+                              </span>
+                            )}
+                          </div>
                           <div className="flex items-center gap-2">
                             <Badge variant="outline">
-                              Level {subject.level}
+                              Level {subject.level || 0}
                             </Badge>
                             <Button
                               size="sm"
