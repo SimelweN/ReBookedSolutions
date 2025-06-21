@@ -2,6 +2,7 @@ import {
   ComprehensiveCourse,
   AssignmentRule,
   ALL_UNIVERSITY_IDS,
+  COMPREHENSIVE_COURSES,
 } from "@/constants/universities/comprehensive-course-database";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/complete-26-universities";
 import { APSSubject, Degree, Faculty, University } from "@/types/university";
@@ -715,7 +716,7 @@ function getExpectedLevel(marks: number): number {
 /**
  * System-wide validation report
  */
-export async function generateSystemValidationReport(): Promise<{
+export function generateSystemValidationReport(): {
   summary: {
     totalCourses: number;
     validCourses: number;
@@ -729,10 +730,8 @@ export async function generateSystemValidationReport(): Promise<{
     facultyCollisions: ValidationError[];
   };
   recommendations: string[];
-}> {
-  const { COMPREHENSIVE_COURSES } = await import(
-    "@/constants/universities/comprehensive-course-database"
-  );
+} {
+  // COMPREHENSIVE_COURSES is now imported at the top of the file
 
   let totalScore = 0;
   let validCourses = 0;
