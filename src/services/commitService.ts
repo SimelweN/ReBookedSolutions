@@ -155,7 +155,12 @@ export const getCommitPendingBooks = async (): Promise<any[]> => {
       .order("created_at", { ascending: true });
 
     if (error) {
-      console.error("[CommitService] Error fetching pending books:", error);
+      console.error("[CommitService] Error fetching pending books:", {
+        message: error.message || "Database query failed",
+        code: error.code || "unknown",
+        details: error.details || error.hint || "No additional details",
+        user: user.id,
+      });
       // Return empty array instead of throwing to prevent UI crashes
       return [];
     }
