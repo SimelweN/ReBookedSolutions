@@ -411,11 +411,7 @@ const EnhancedAPSCalculator: React.FC = () => {
               <div className="font-medium mb-2">Recommendations:</div>
               <ul className="list-disc list-inside space-y-1 text-sm">
                 {validationWarnings.map((warning, i) => (
-                  <li key={i}>
-                    {typeof warning === "string"
-                      ? warning
-                      : warning.message || "Validation warning"}
-                  </li>
+                  <li key={i}>{warning}</li>
                 ))}
               </ul>
             </AlertDescription>
