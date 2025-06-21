@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
   ExternalLink,
@@ -76,6 +76,7 @@ import "@/styles/university-profile-mobile.css";
 const EnhancedUniversityProfile: React.FC = () => {
   const { id: universityId } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Enhanced state management
   const [expandedFaculties, setExpandedFaculties] = useState<Set<string>>(
