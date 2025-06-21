@@ -263,30 +263,49 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
   }, [universityId, userProfile, searchCoursesForUniversity]);
 
   /**
-   * Computed values
+   * Clear APS profile completely from all universities
    */
-  const hasValidProfile = useMemo(() => {
-    return (
-      userProfile && userProfile.isValid && userProfile.subjects.length >= 4
-    );
-  }, [userProfile]);
+  const clearAPSProfile = useCallback(() => {
+    setUserProfile(null);
+    setLastSearchResults(null);
+    setError(null);
 
-  const qualificationSummary = useMemo(() => {
-    if (!lastSearchResults) {
-      return null;
+    // Clear any cached data in localStorage related to APS
+    try {
+      localStorage.removeItem('userAPSProfile');
+      localStorage.removeItem('apsSearchResults');
+      localStorage.removeItem('universityAPSScores');
+    } catch (error) {
+      console.warn('Failed to clear localStorage:', error);
     }
+  }, [setUserProfile]);
 
-    const { courses, eligibleCourses, almostEligibleCourses, totalCourses } =
-      lastSearchResults;
+  /**
+   * Clear any errors
+   */
+  const clearError = useCallback(() => {
+    setError(null);
+  }, []);
 
-    return {
-      totalPrograms: totalCourses,
-      eligible: eligibleCourses,
-      almostEligible: almostEligibleCourses,
-      percentageEligible:
-        totalCourses > 0
-          ? Math.round((eligibleCourses / totalCourses) * 100)
-          : 0,
+  return {
+    userProfile,
+    isLoading,
+    error,
+    hasValidProfile: !!(userProfile?.subjects && userProfile.subjects.length >= 4),
+    qualificationSummary: userProfile
+      ? {
+          totalAPS: userProfile.totalAPS,
+          subjectCount: userProfile.subjects.length,
+          isValid: userProfile.isValid || false,
+        }
+      : null,
+    updateUserSubjects,
+    searchCoursesForUniversity,
+    checkProgramEligibility,
+    clearAPSProfile,
+    clearError,
+  };
+}
       topEligiblePrograms: courses
         .filter((c) => c.isEligible)
         .slice(0, 5)
