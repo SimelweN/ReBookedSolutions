@@ -246,10 +246,10 @@ const AdminStudyResourcesTab = () => {
       };
 
       if (editingTip) {
-        await studyResourcesService.updateStudyTip(editingTip.id, tipPayload);
+        await updateStudyTip(editingTip.id, tipPayload);
         toast.success("Tip updated successfully");
       } else {
-        await studyResourcesService.createStudyTip(tipPayload);
+        await createStudyTip(tipPayload);
         toast.success("Tip created successfully");
       }
 
