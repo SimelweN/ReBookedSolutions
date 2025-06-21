@@ -164,9 +164,7 @@ const APSScoreCard: React.FC<APSScoreCardProps> = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() =>
-              navigate(`/university-profile/${score.universityId}`)
-            }
+            onClick={() => navigate(`/university/${score.universityId}`)}
             className="w-full border-book-600 text-book-600 hover:bg-book-50"
           >
             <GraduationCap className="h-4 w-4 mr-2" />
