@@ -414,12 +414,44 @@ const EligibleProgramsSection: React.FC<EligibleProgramsSectionProps> = ({
           </div>
         )}
 
-        {/* Show More Button for Large Lists */}
-        {displayedPrograms.length > 9 && (
+        {/* Faculty Performance Summary */}
+        {selectedFacultyTab !== "all" && facultyCounts[selectedFacultyTab] && (
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg border">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-book-600" />
+                <span className="font-medium text-gray-900">
+                  {selectedFacultyTab} Faculty
+                </span>
+              </div>
+              <div className="flex items-center gap-4 text-sm text-gray-600">
+                <span>
+                  <strong>{facultyCounts[selectedFacultyTab].eligible}</strong>{" "}
+                  of <strong>{facultyCounts[selectedFacultyTab].total}</strong>{" "}
+                  programs
+                </span>
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    facultyCounts[selectedFacultyTab].eligibilityRate >= 50
+                      ? "text-green-700 border-green-300"
+                      : "text-yellow-700 border-yellow-300",
+                  )}
+                >
+                  {facultyCounts[selectedFacultyTab].eligibilityRate}% Success
+                  Rate
+                </Badge>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Program count info */}
+        {displayedPrograms.length > 12 && (
           <div className="text-center mt-6">
             <p className="text-sm text-gray-600">
-              Showing {Math.min(9, displayedPrograms.length)} of{" "}
-              {displayedPrograms.length} programs
+              Showing all {displayedPrograms.length} programs
+              {selectedFacultyTab !== "all" && ` in ${selectedFacultyTab}`}
             </p>
           </div>
         )}
