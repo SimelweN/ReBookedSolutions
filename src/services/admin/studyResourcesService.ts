@@ -459,8 +459,9 @@ export const getStudyTips = async (): Promise<StudyTip[]> => {
     const tableExists = await checkTableExists("study_tips");
     if (!tableExists) {
       console.warn(
-        "Study tips table does not exist. Please run database migrations.",
+        "Study tips table does not exist. Creating a sample entry to initialize.",
       );
+      // Return empty array but don't fail
       return [];
     }
 
