@@ -36,8 +36,17 @@ import {
   Star,
   BookOpen,
   Target,
+  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  groupProgramsByFaculty,
+  calculateFacultyStats,
+  getSortedFacultiesWithCounts,
+  getFacultyColor,
+  generateFacultyOverview,
+  normalizeFacultyName,
+} from "@/utils/facultyGroupingUtils";
 
 interface Program {
   id: string;
