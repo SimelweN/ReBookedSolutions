@@ -69,7 +69,13 @@ const UserProfileTabs = ({
             Addresses
           </TabsTrigger>
         </TabsList>
-            </CardHeader>
+
+        <TabsContent value="listings" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl md:text-2xl">
+                Active Listings ({activeListings.length})
+              </CardTitle>
             <CardContent>
               {isLoading ? (
                 <div className="text-center py-8">
