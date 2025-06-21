@@ -57,7 +57,7 @@ import {
   MASSIVE_COURSE_DATABASE,
   getUniversitiesForProgram,
   getAPSRequirement,
-  programToDegree
+  programToDegree,
 } from "@/constants/universities/massive-course-database";
 import { toast } from "sonner";
 
@@ -68,23 +68,50 @@ const extractUniversityPrograms = () => {
   try {
     // Get all university IDs from the database
     const allUniversityIds = [
-      "uct", "wits", "stellenbosch", "up", "ukzn", "ufs", "ru", "nwu", "uwc", "ufh", "ul",
-      "cput", "dut", "tut", "cut", "vut", "mut", "uj", "unisa", "unizulu", "univen",
-      "nmu", "wsu", "smu", "sol", "ump"
+      "uct",
+      "wits",
+      "stellenbosch",
+      "up",
+      "ukzn",
+      "ufs",
+      "ru",
+      "nwu",
+      "uwc",
+      "ufh",
+      "ul",
+      "cput",
+      "dut",
+      "tut",
+      "cut",
+      "vut",
+      "mut",
+      "uj",
+      "unisa",
+      "unizulu",
+      "univen",
+      "nmu",
+      "wsu",
+      "smu",
+      "sol",
+      "ump",
     ];
 
     // Find university info by ID
     const getUniversityInfo = (id: string) => {
-      return ALL_SOUTH_AFRICAN_UNIVERSITIES.find(u => u.id === id) || {
-        fullName: id.toUpperCase(),
-        abbreviation: id.toUpperCase(),
-        location: "South Africa",
-        province: "Unknown"
-      };
+      return (
+        ALL_SOUTH_AFRICAN_UNIVERSITIES.find((u) => u.id === id) || {
+          fullName: id.toUpperCase(),
+          abbreviation: id.toUpperCase(),
+          location: "South Africa",
+          province: "Unknown",
+        }
+      );
     };
 
     MASSIVE_COURSE_DATABASE.forEach((courseTemplate) => {
-      const applicableUniversities = getUniversitiesForProgram(courseTemplate.assignmentRule);
+      const applicableUniversities = getUniversitiesForProgram(
+        courseTemplate.assignmentRule,
+      );
 
       applicableUniversities.forEach((universityId) => {
         const universityInfo = getUniversityInfo(universityId);
@@ -101,7 +128,10 @@ const extractUniversityPrograms = () => {
           subjects: courseTemplate.subjects || [],
           careerProspects: courseTemplate.careerProspects || [],
           universityId: universityId,
-          programId: courseTemplate.name.toLowerCase().replace(/\s+/g, "-").replace(/[()]/g, ""),
+          programId: courseTemplate.name
+            .toLowerCase()
+            .replace(/\s+/g, "-")
+            .replace(/[()]/g, ""),
         });
       });
     });
@@ -138,7 +168,7 @@ interface ProgramDetailsModalProps {
 const ProgramDetailsModal: React.FC<ProgramDetailsModalProps> = ({
   program,
   isOpen,
-  onClose
+  onClose,
 }) => {
   const navigate = useNavigate();
 
@@ -190,13 +220,20 @@ const ProgramDetailsModal: React.FC<ProgramDetailsModalProps> = ({
           {/* Subject Requirements */}
           {program.subjects && program.subjects.length > 0 && (
             <div className="space-y-3">
-              <h3 className="font-semibold text-green-800">Subject Requirements</h3>
+              <h3 className="font-semibold text-green-800">
+                Subject Requirements
+              </h3>
               <div className="grid grid-cols-1 gap-2">
                 {program.subjects.map((subject: any, index: number) => (
-                  <div key={index} className="flex justify-between items-center p-2 bg-slate-50 rounded">
+                  <div
+                    key={index}
+                    className="flex justify-between items-center p-2 bg-slate-50 rounded"
+                  >
                     <span className="font-medium">{subject.name}</span>
                     <div className="flex items-center gap-2">
-                      <Badge variant={subject.isRequired ? "default" : "outline"}>
+                      <Badge
+                        variant={subject.isRequired ? "default" : "outline"}
+                      >
                         Level {subject.level}
                       </Badge>
                       {subject.isRequired && (
@@ -214,14 +251,21 @@ const ProgramDetailsModal: React.FC<ProgramDetailsModalProps> = ({
           {/* Career Prospects */}
           {program.careerProspects && program.careerProspects.length > 0 && (
             <div className="space-y-3">
-              <h3 className="font-semibold text-green-800">Career Opportunities</h3>
+              <h3 className="font-semibold text-green-800">
+                Career Opportunities
+              </h3>
               <div className="grid grid-cols-1 gap-2">
-                {program.careerProspects.map((career: string, index: number) => (
-                  <div key={index} className="flex items-center gap-2 p-2 bg-green-50 rounded">
-                    <TrendingUp className="h-4 w-4 text-green-600" />
-                    <span className="text-sm">{career}</span>
-                  </div>
-                ))}
+                {program.careerProspects.map(
+                  (career: string, index: number) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-2 p-2 bg-green-50 rounded"
+                    >
+                      <TrendingUp className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">{career}</span>
+                    </div>
+                  ),
+                )}
               </div>
             </div>
           )}
@@ -263,7 +307,7 @@ const ComprehensiveAPSCalculator: React.FC = () => {
   // Calculate total APS (excluding Life Orientation)
   const totalAPS = useMemo(() => {
     return subjects
-      .filter(subject => subject.countsForAPS !== false)
+      .filter((subject) => subject.countsForAPS !== false)
       .reduce((total, subject) => total + subject.level, 0);
   }, [subjects]);
 
@@ -274,14 +318,14 @@ const ComprehensiveAPSCalculator: React.FC = () => {
     // Apply faculty filter
     if (facultyFilter !== "all") {
       filteredPrograms = filteredPrograms.filter(
-        (program) => program.faculty === facultyFilter
+        (program) => program.faculty === facultyFilter,
       );
     }
 
     // Apply university filter
     if (universityFilter !== "all") {
       filteredPrograms = filteredPrograms.filter(
-        (program) => program.abbreviation === universityFilter
+        (program) => program.abbreviation === universityFilter,
       );
     }
 
@@ -303,23 +347,28 @@ const ComprehensiveAPSCalculator: React.FC = () => {
     });
 
     // Group by faculty
-    const byFaculty = processedPrograms.reduce((acc, program) => {
-      if (!acc[program.faculty]) {
-        acc[program.faculty] = [];
-      }
-      acc[program.faculty].push(program);
-      return acc;
-    }, {} as Record<string, any[]>);
+    const byFaculty = processedPrograms.reduce(
+      (acc, program) => {
+        if (!acc[program.faculty]) {
+          acc[program.faculty] = [];
+        }
+        acc[program.faculty].push(program);
+        return acc;
+      },
+      {} as Record<string, any[]>,
+    );
 
     // Convert to array and sort
     const facultyArray = Object.entries(byFaculty)
       .map(([faculty, programs]) => ({
         faculty,
-        programs: programs.sort((a, b) => b.eligible - a.eligible || a.aps - b.aps),
+        programs: programs.sort(
+          (a, b) => b.eligible - a.eligible || a.aps - b.aps,
+        ),
       }))
       .sort((a, b) => {
-        const aEligible = a.programs.filter(p => p.eligible).length;
-        const bEligible = b.programs.filter(p => p.eligible).length;
+        const aEligible = a.programs.filter((p) => p.eligible).length;
+        const bEligible = b.programs.filter((p) => p.eligible).length;
         return bEligible - aEligible;
       });
 
@@ -328,8 +377,11 @@ const ComprehensiveAPSCalculator: React.FC = () => {
     const calculatedStats = {
       totalDegrees: processedPrograms.length,
       eligibleCount: eligible.length,
-      topUniversities: [...new Set(eligible.map(p => p.abbreviation))].slice(0, 5),
-      topFaculties: [...new Set(eligible.map(p => p.faculty))].slice(0, 5),
+      topUniversities: [...new Set(eligible.map((p) => p.abbreviation))].slice(
+        0,
+        5,
+      ),
+      topFaculties: [...new Set(eligible.map((p) => p.faculty))].slice(0, 5),
     };
 
     return {
@@ -341,17 +393,19 @@ const ComprehensiveAPSCalculator: React.FC = () => {
 
   // Get unique faculties and universities for filters
   const availableFaculties = useMemo(() => {
-    return [...new Set(UNIVERSITY_PROGRAMS.map(p => p.faculty))].sort();
+    return [...new Set(UNIVERSITY_PROGRAMS.map((p) => p.faculty))].sort();
   }, []);
 
   const availableUniversities = useMemo(() => {
-    return [...new Set(UNIVERSITY_PROGRAMS.map(p => p.abbreviation))].sort();
+    return [...new Set(UNIVERSITY_PROGRAMS.map((p) => p.abbreviation))].sort();
   }, []);
 
   const addSubject = useCallback(() => {
     if (selectedSubject && selectedLevel) {
       const level = parseInt(selectedLevel);
-      const existingIndex = subjects.findIndex(s => s.name === selectedSubject);
+      const existingIndex = subjects.findIndex(
+        (s) => s.name === selectedSubject,
+      );
 
       if (existingIndex >= 0) {
         // Update existing subject
@@ -359,16 +413,19 @@ const ComprehensiveAPSCalculator: React.FC = () => {
         newSubjects[existingIndex] = {
           name: selectedSubject,
           level,
-          countsForAPS: selectedSubject !== "Life Orientation"
+          countsForAPS: selectedSubject !== "Life Orientation",
         };
         setSubjects(newSubjects);
       } else {
         // Add new subject
-        setSubjects(prev => [...prev, {
-          name: selectedSubject,
-          level,
-          countsForAPS: selectedSubject !== "Life Orientation"
-        }]);
+        setSubjects((prev) => [
+          ...prev,
+          {
+            name: selectedSubject,
+            level,
+            countsForAPS: selectedSubject !== "Life Orientation",
+          },
+        ]);
       }
 
       setSelectedSubject("");
@@ -378,7 +435,7 @@ const ComprehensiveAPSCalculator: React.FC = () => {
   }, [selectedSubject, selectedLevel, subjects]);
 
   const removeSubject = useCallback((index: number) => {
-    setSubjects(prev => prev.filter((_, i) => i !== index));
+    setSubjects((prev) => prev.filter((_, i) => i !== index));
     toast.success("Subject removed");
   }, []);
 
@@ -394,345 +451,384 @@ const ComprehensiveAPSCalculator: React.FC = () => {
           APS Calculator & Program Explorer
         </h1>
         <p className="text-lg text-slate-600 max-w-3xl mx-auto">
-          Calculate your Admission Point Score and discover all programs you qualify for
-          across South African universities with our comprehensive database.
+          Calculate your Admission Point Score and discover all programs you
+          qualify for across South African universities with our comprehensive
+          database.
         </p>
       </div>
 
       <div className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* APS Calculator Card */}
-            <Card className="lg:col-span-1 bg-white border-0 shadow-lg">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-xl text-slate-900">
-                  <Calculator className="h-5 w-5 text-green-600" />
-                  Calculate Your APS
-                </CardTitle>
-                <CardDescription>
-                  Enter your subject results to calculate your Admission Point Score
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Subject Selection */}
-                <div className="space-y-3">
-                  <Label className="text-sm font-medium text-slate-700">
-                    Select Subject
-                  </Label>
-                  <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choose a subject" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {SOUTH_AFRICAN_SUBJECTS.map((subject) => (
-                        <SelectItem key={subject} value={subject}>
-                          {subject}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Level Selection */}
-                <div className="space-y-3">
-                  <Label className="text-sm font-medium text-slate-700">
-                    Achievement Level
-                  </Label>
-                  <Select value={selectedLevel} onValueChange={setSelectedLevel}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select level" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {[7, 6, 5, 4, 3, 2, 1].map((level) => (
-                        <SelectItem key={level} value={level.toString()}>
-                          Level {level} ({level === 7 ? "80-100%" : level === 6 ? "70-79%" : level === 5 ? "60-69%" : level === 4 ? "50-59%" : level === 3 ? "40-49%" : level === 2 ? "30-39%" : "0-29%"})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Button
-                  onClick={addSubject}
-                  disabled={!selectedSubject || !selectedLevel}
-                  className="w-full bg-green-600 hover:bg-green-700"
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* APS Calculator Card */}
+          <Card className="lg:col-span-1 bg-white border-0 shadow-lg">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-xl text-slate-900">
+                <Calculator className="h-5 w-5 text-green-600" />
+                Calculate Your APS
+              </CardTitle>
+              <CardDescription>
+                Enter your subject results to calculate your Admission Point
+                Score
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Subject Selection */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium text-slate-700">
+                  Select Subject
+                </Label>
+                <Select
+                  value={selectedSubject}
+                  onValueChange={setSelectedSubject}
                 >
-                  Add Subject
-                </Button>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose a subject" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SOUTH_AFRICAN_SUBJECTS.map((subject) => (
+                      <SelectItem key={subject} value={subject}>
+                        {subject}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-                {/* Added Subjects */}
-                {subjects.length > 0 && (
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium text-slate-700">
-                      Your Subjects ({subjects.length})
-                    </Label>
-                    <div className="space-y-2 max-h-40 overflow-y-auto">
-                      {subjects.map((subject, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between p-2 bg-slate-50 rounded"
-                        >
-                          <div className="flex flex-col">
-                            <span className="text-sm">{subject.name}</span>
-                            {subject.countsForAPS === false && (
-                              <span className="text-xs text-slate-500">
-                                (Required but doesn't count for APS)
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline">Level {subject.level || 0}</Badge>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => removeSubject(index)}
-                              className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                            >
-                              ×
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+              {/* Level Selection */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium text-slate-700">
+                  Achievement Level
+                </Label>
+                <Select value={selectedLevel} onValueChange={setSelectedLevel}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[7, 6, 5, 4, 3, 2, 1].map((level) => (
+                      <SelectItem key={level} value={level.toString()}>
+                        Level {level} (
+                        {level === 7
+                          ? "80-100%"
+                          : level === 6
+                            ? "70-79%"
+                            : level === 5
+                              ? "60-69%"
+                              : level === 4
+                                ? "50-59%"
+                                : level === 3
+                                  ? "40-49%"
+                                  : level === 2
+                                    ? "30-39%"
+                                    : "0-29%"}
+                        )
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-                {/* Total APS Display */}
-                <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-800">
-                      {totalAPS}
-                    </div>
-                    <div className="text-sm text-green-600">Total APS Score</div>
-                    <div className="text-xs text-slate-500 mt-1">
-                      (Life Orientation not included)
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+              <Button
+                onClick={addSubject}
+                disabled={!selectedSubject || !selectedLevel}
+                className="w-full bg-green-600 hover:bg-green-700"
+              >
+                Add Subject
+              </Button>
 
-            {/* Results Card */}
-            <Card className="lg:col-span-2 bg-white border-0 shadow-lg">
-              <CardHeader className="pb-3">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div>
-                    <CardTitle className="flex items-center gap-2 text-xl text-slate-900">
-                      <Target className="h-5 w-5 text-green-600" />
-                      Your Eligible Programs
-                    </CardTitle>
-                    <CardDescription>
-                      Programs you qualify for with APS {totalAPS}
-                    </CardDescription>
-                  </div>
-
-                  {/* Filters */}
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <Select value={facultyFilter} onValueChange={setFacultyFilter}>
-                      <SelectTrigger className="w-full sm:w-[150px]">
-                        <SelectValue placeholder="Filter by faculty" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Faculties</SelectItem>
-                        {availableFaculties.map((faculty) => (
-                          <SelectItem key={faculty} value={faculty}>
-                            {faculty}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-
-                    <Select value={universityFilter} onValueChange={setUniversityFilter}>
-                      <SelectTrigger className="w-full sm:w-[120px]">
-                        <SelectValue placeholder="Filter by university" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Universities</SelectItem>
-                        {availableUniversities.map((university) => (
-                          <SelectItem key={university} value={university}>
-                            {university}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {totalAPS === 0 ? (
-                  <div className="text-center py-12">
-                    <GraduationCap className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-600 mb-2">
-                      Add your subjects to get started
-                    </h3>
-                    <p className="text-slate-500">
-                      Enter your matric results to see which programs you qualify for
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    {/* Quick Stats */}
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="text-center p-3 bg-green-50 rounded-lg">
-                        <div className="text-2xl font-bold text-green-800">
-                          {stats.eligibleCount}
-                        </div>
-                        <div className="text-sm text-green-600">Eligible Programs</div>
-                      </div>
-                      <div className="text-center p-3 bg-blue-50 rounded-lg">
-                        <div className="text-2xl font-bold text-blue-800">
-                          {stats.totalDegrees}
-                        </div>
-                        <div className="text-sm text-blue-600">Total Programs</div>
-                      </div>
-                      <div className="text-center p-3 bg-purple-50 rounded-lg">
-                        <div className="text-2xl font-bold text-purple-800">
-                          {stats.topUniversities.length}
-                        </div>
-                        <div className="text-sm text-purple-600">Universities</div>
-                      </div>
-                    </div>
-
-                    {/* Programs by Faculty */}
-                    <div className="space-y-4">
-                      {(showAllPrograms ? programsByFaculty : programsByFaculty.slice(0, 3)).map(
-                        ({ faculty, programs }) => (
-                          <div key={faculty} className="border border-slate-200 rounded-lg p-4">
-                            <div className="flex items-center justify-between mb-3">
-                              <h3 className="font-semibold text-slate-900">
-                                Faculty of {faculty}
-                              </h3>
-                              <Badge variant="outline" className="text-xs">
-                                {programs.length} programs
-                              </Badge>
-                            </div>
-
-                            <div className="space-y-3">
-                              {(showAllPrograms ? programs : programs.slice(0, 3)).map(
-                                (program, index) => (
-                                  <div
-                                    key={index}
-                                    className="p-3 bg-slate-50 rounded border border-slate-100"
-                                  >
-                                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                                      <div className="flex-1">
-                                        <h4 className="font-semibold text-slate-900 mb-1">
-                                          {program.program}
-                                        </h4>
-                                        <p className="text-sm text-slate-600 mb-2">
-                                          {program.university}
-                                        </p>
-                                        <p className="text-sm text-slate-700">
-                                          {program.description}
-                                        </p>
-                                      </div>
-                                      <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2">
-                                        <Badge
-                                          variant={
-                                            program.eligible
-                                              ? "default"
-                                              : "destructive"
-                                          }
-                                          className={`${program.eligible ? "bg-emerald-600 hover:bg-emerald-700" : ""} whitespace-nowrap`}
-                                        >
-                                          APS {program.aps}
-                                        </Badge>
-                                        <Badge
-                                          variant="outline"
-                                          className={cn(
-                                            "whitespace-nowrap",
-                                            program.competitiveness === "High"
-                                              ? "border-red-200 text-red-700 bg-red-50"
-                                              : program.competitiveness === "Moderate"
-                                                ? "border-orange-200 text-orange-700 bg-orange-50"
-                                                : "border-green-200 text-green-700 bg-green-50",
-                                          )}
-                                        >
-                                          {program.competitiveness}
-                                        </Badge>
-                                      </div>
-                                    </div>
-
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm mt-3">
-                                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                                        <span className="flex items-center gap-1 text-slate-600">
-                                          <Calendar className="h-3 w-3" />
-                                          {program.duration}
-                                        </span>
-                                        {program.eligible ? (
-                                          <span className="flex items-center gap-1 text-emerald-600">
-                                            <CheckCircle className="h-3 w-3" />
-                                            Eligible
-                                          </span>
-                                        ) : (
-                                          <span className="flex items-center gap-1 text-red-600">
-                                            <AlertTriangle className="h-3 w-3" />
-                                            Need {program.apsGap} more points
-                                          </span>
-                                        )}
-                                      </div>
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() => handleViewDetails(program)}
-                                        className="border-green-500 text-green-600 hover:bg-green-50 w-full sm:w-auto justify-center sm:justify-start"
-                                      >
-                                        <Eye className="h-3 w-3 mr-1" />
-                                        View Details
-                                        <ChevronRight className="h-3 w-3 ml-1" />
-                                      </Button>
-                                    </div>
-                                  </div>
-                                ))}
-
-                              {/* Show more programs in this faculty */}
-                              {!showAllPrograms && programs.length > 3 && (
-                                <div className="text-center pt-2">
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => setShowAllPrograms(true)}
-                                    className="text-slate-600 hover:text-slate-900"
-                                  >
-                                    +{programs.length - 3} more in {faculty}
-                                  </Button>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ),
-                      )}
-
-                      {/* View More Faculties Button */}
-                      {programsByFaculty.length > 3 && (
-                        <div className="text-center mt-6 pt-4 border-t border-slate-100">
-                          {!showAllPrograms ? (
-                            <Button
-                              onClick={() => setShowAllPrograms(true)}
-                              variant="outline"
-                              className="border-emerald-200 text-emerald-600 hover:bg-emerald-50"
-                            >
-                              View All Faculties (
-                              {programsByFaculty.length - 3} more)
-                            </Button>
-                          ) : (
-                            <Button
-                              onClick={() => setShowAllPrograms(false)}
-                              variant="outline"
-                              className="border-slate-200 text-slate-600 hover:bg-slate-50"
-                            >
-                              Show Less
-                            </Button>
+              {/* Added Subjects */}
+              {subjects.length > 0 && (
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-slate-700">
+                    Your Subjects ({subjects.length})
+                  </Label>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {subjects.map((subject, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-2 bg-slate-50 rounded"
+                      >
+                        <div className="flex flex-col">
+                          <span className="text-sm">{subject.name}</span>
+                          {subject.countsForAPS === false && (
+                            <span className="text-xs text-slate-500">
+                              (Required but doesn't count for APS)
+                            </span>
                           )}
                         </div>
-                      )}
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">
+                            Level {subject.level || 0}
+                          </Badge>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => removeSubject(index)}
+                            className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                          >
+                            ×
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Total APS Display */}
+              <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-800">
+                    {totalAPS}
+                  </div>
+                  <div className="text-sm text-green-600">Total APS Score</div>
+                  <div className="text-xs text-slate-500 mt-1">
+                    (Life Orientation not included)
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Results Card */}
+          <Card className="lg:col-span-2 bg-white border-0 shadow-lg">
+            <CardHeader className="pb-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <CardTitle className="flex items-center gap-2 text-xl text-slate-900">
+                    <Target className="h-5 w-5 text-green-600" />
+                    Your Eligible Programs
+                  </CardTitle>
+                  <CardDescription>
+                    Programs you qualify for with APS {totalAPS}
+                  </CardDescription>
+                </div>
+
+                {/* Filters */}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Select
+                    value={facultyFilter}
+                    onValueChange={setFacultyFilter}
+                  >
+                    <SelectTrigger className="w-full sm:w-[150px]">
+                      <SelectValue placeholder="Filter by faculty" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Faculties</SelectItem>
+                      {availableFaculties.map((faculty) => (
+                        <SelectItem key={faculty} value={faculty}>
+                          {faculty}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select
+                    value={universityFilter}
+                    onValueChange={setUniversityFilter}
+                  >
+                    <SelectTrigger className="w-full sm:w-[120px]">
+                      <SelectValue placeholder="Filter by university" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Universities</SelectItem>
+                      {availableUniversities.map((university) => (
+                        <SelectItem key={university} value={university}>
+                          {university}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {totalAPS === 0 ? (
+                <div className="text-center py-12">
+                  <GraduationCap className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-slate-600 mb-2">
+                    Add your subjects to get started
+                  </h3>
+                  <p className="text-slate-500">
+                    Enter your matric results to see which programs you qualify
+                    for
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* Quick Stats */}
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="text-center p-3 bg-green-50 rounded-lg">
+                      <div className="text-2xl font-bold text-green-800">
+                        {stats.eligibleCount}
+                      </div>
+                      <div className="text-sm text-green-600">
+                        Eligible Programs
+                      </div>
+                    </div>
+                    <div className="text-center p-3 bg-blue-50 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-800">
+                        {stats.totalDegrees}
+                      </div>
+                      <div className="text-sm text-blue-600">
+                        Total Programs
+                      </div>
+                    </div>
+                    <div className="text-center p-3 bg-purple-50 rounded-lg">
+                      <div className="text-2xl font-bold text-purple-800">
+                        {stats.topUniversities.length}
+                      </div>
+                      <div className="text-sm text-purple-600">
+                        Universities
+                      </div>
                     </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
+
+                  {/* Programs by Faculty */}
+                  <div className="space-y-4">
+                    {(showAllPrograms
+                      ? programsByFaculty
+                      : programsByFaculty.slice(0, 3)
+                    ).map(({ faculty, programs }) => (
+                      <div
+                        key={faculty}
+                        className="border border-slate-200 rounded-lg p-4"
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="font-semibold text-slate-900">
+                            Faculty of {faculty}
+                          </h3>
+                          <Badge variant="outline" className="text-xs">
+                            {programs.length} programs
+                          </Badge>
+                        </div>
+
+                        <div className="space-y-3">
+                          {(showAllPrograms
+                            ? programs
+                            : programs.slice(0, 3)
+                          ).map((program, index) => (
+                            <div
+                              key={index}
+                              className="p-3 bg-slate-50 rounded border border-slate-100"
+                            >
+                              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                                <div className="flex-1">
+                                  <h4 className="font-semibold text-slate-900 mb-1">
+                                    {program.program}
+                                  </h4>
+                                  <p className="text-sm text-slate-600 mb-2">
+                                    {program.university}
+                                  </p>
+                                  <p className="text-sm text-slate-700">
+                                    {program.description}
+                                  </p>
+                                </div>
+                                <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2">
+                                  <Badge
+                                    variant={
+                                      program.eligible
+                                        ? "default"
+                                        : "destructive"
+                                    }
+                                    className={`${program.eligible ? "bg-emerald-600 hover:bg-emerald-700" : ""} whitespace-nowrap`}
+                                  >
+                                    APS {program.aps}
+                                  </Badge>
+                                  <Badge
+                                    variant="outline"
+                                    className={cn(
+                                      "whitespace-nowrap",
+                                      program.competitiveness === "High"
+                                        ? "border-red-200 text-red-700 bg-red-50"
+                                        : program.competitiveness === "Moderate"
+                                          ? "border-orange-200 text-orange-700 bg-orange-50"
+                                          : "border-green-200 text-green-700 bg-green-50",
+                                    )}
+                                  >
+                                    {program.competitiveness}
+                                  </Badge>
+                                </div>
+                              </div>
+
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm mt-3">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                                  <span className="flex items-center gap-1 text-slate-600">
+                                    <Calendar className="h-3 w-3" />
+                                    {program.duration}
+                                  </span>
+                                  {program.eligible ? (
+                                    <span className="flex items-center gap-1 text-emerald-600">
+                                      <CheckCircle className="h-3 w-3" />
+                                      Eligible
+                                    </span>
+                                  ) : (
+                                    <span className="flex items-center gap-1 text-red-600">
+                                      <AlertTriangle className="h-3 w-3" />
+                                      Need {program.apsGap} more points
+                                    </span>
+                                  )}
+                                </div>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleViewDetails(program)}
+                                  className="border-green-500 text-green-600 hover:bg-green-50 w-full sm:w-auto justify-center sm:justify-start"
+                                >
+                                  <Eye className="h-3 w-3 mr-1" />
+                                  View Details
+                                  <ChevronRight className="h-3 w-3 ml-1" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+
+                          {/* Show more programs in this faculty */}
+                          {!showAllPrograms && programs.length > 3 && (
+                            <div className="text-center pt-2">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => setShowAllPrograms(true)}
+                                className="text-slate-600 hover:text-slate-900"
+                              >
+                                +{programs.length - 3} more in {faculty}
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* View More Faculties Button */}
+                    {programsByFaculty.length > 3 && (
+                      <div className="text-center mt-6 pt-4 border-t border-slate-100">
+                        {!showAllPrograms ? (
+                          <Button
+                            onClick={() => setShowAllPrograms(true)}
+                            variant="outline"
+                            className="border-emerald-200 text-emerald-600 hover:bg-emerald-50"
+                          >
+                            View All Faculties ({programsByFaculty.length - 3}{" "}
+                            more)
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={() => setShowAllPrograms(false)}
+                            variant="outline"
+                            className="border-slate-200 text-slate-600 hover:bg-slate-50"
+                          >
+                            Show Less
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
 
       {/* Program Details Modal */}
       {selectedProgram && (
