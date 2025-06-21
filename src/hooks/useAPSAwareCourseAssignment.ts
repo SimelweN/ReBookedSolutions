@@ -224,21 +224,28 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
   );
 
   /**
-   * Clear APS profile completely from all universities
+   * Clear APS profile completely - removes all APS-based logic across the site
+   * Returns everything to clean state as if no APS was ever entered
    */
   const clearAPSProfile = useCallback(() => {
     setUserProfile(null);
     setLastSearchResults(null);
     setError(null);
 
-    // Clear any cached data in localStorage related to APS
+    // Clear all APS-related data from sessionStorage (temporary storage)
     try {
-      localStorage.removeItem("userAPSProfile");
-      localStorage.removeItem("apsSearchResults");
-      localStorage.removeItem("universityAPSScores");
+      sessionStorage.removeItem("userAPSProfile");
+      sessionStorage.removeItem("apsSearchResults");
+      sessionStorage.removeItem("universityAPSScores");
+      sessionStorage.removeItem("facultyData");
+      sessionStorage.removeItem("programEligibility");
+      sessionStorage.removeItem("apsCalculationCache");
     } catch (error) {
-      console.warn("Failed to clear localStorage:", error);
+      console.warn("Failed to clear sessionStorage:", error);
     }
+
+    // Trigger a global state reset for APS-related components
+    window.dispatchEvent(new CustomEvent("apsProfileCleared"));
   }, [setUserProfile]);
 
   /**
