@@ -39,7 +39,7 @@ export const UNIVERSITY_ABBREVIATIONS = {
   UNIZULU: "unizulu",
   CUT: "cut",
   NMU: "nmu",
-  SOL: "sol",
+  SPU: "spu",
 };
 
 // Get all university IDs
