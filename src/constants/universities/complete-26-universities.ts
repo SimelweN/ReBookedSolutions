@@ -643,7 +643,7 @@ const BASE_UNIVERSITIES: University[] = [
     },
   },
   {
-    id: "sol",
+    id: "spu",
     name: "SPU",
     abbreviation: "SPU",
     fullName: "Sol Plaatje University",
