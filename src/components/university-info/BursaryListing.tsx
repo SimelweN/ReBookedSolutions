@@ -67,8 +67,75 @@ const BursaryListing = () => {
         filters.financialNeed === undefined ||
         bursary.requirements.financialNeed === filters.financialNeed;
 
+      // Study level filter
+      const matchesStudyLevel =
+        !filters.studyLevel ||
+        filters.studyLevel === "any" ||
+        (filters.studyLevel === "undergraduate" &&
+          (bursary.fieldsOfStudy.some((field) =>
+            field.toLowerCase().includes("undergraduate"),
+          ) ||
+            !bursary.fieldsOfStudy.some((field) =>
+              field.toLowerCase().includes("postgraduate"),
+            ))) ||
+        (filters.studyLevel === "postgraduate" &&
+          bursary.fieldsOfStudy.some((field) =>
+            field.toLowerCase().includes("postgraduate"),
+          ));
+
+      // Minimum marks filter
+      const matchesMinMarks =
+        !filters.minMarks ||
+        (bursary.requirements.minimumMarks !== undefined &&
+          bursary.requirements.minimumMarks <= filters.minMarks);
+
+      // Maximum household income filter
+      const matchesHouseholdIncome =
+        !filters.maxHouseholdIncome ||
+        (bursary.requirements.maxHouseholdIncome !== undefined &&
+          bursary.requirements.maxHouseholdIncome >=
+            filters.maxHouseholdIncome);
+
+      // Gender filter
+      const matchesGender =
+        !filters.genderSpecific ||
+        filters.genderSpecific === "any" ||
+        !bursary.requirements.genderSpecific ||
+        bursary.requirements.genderSpecific === filters.genderSpecific;
+
+      // Race filter
+      const matchesRace =
+        !filters.raceSpecific ||
+        filters.raceSpecific === "any" ||
+        !bursary.requirements.raceSpecific ||
+        bursary.requirements.raceSpecific === filters.raceSpecific;
+
+      // Special criteria filters
+      const matchesDisabilitySupport =
+        !filters.disabilitySupport ||
+        bursary.requirements.disabilitySupport === true;
+
+      const matchesRuralBackground =
+        !filters.ruralBackground ||
+        bursary.requirements.ruralBackground === true;
+
+      const matchesFirstGeneration =
+        !filters.firstGeneration ||
+        bursary.requirements.firstGeneration === true;
+
       return (
-        matchesSearch && matchesField && matchesProvince && matchesFinancialNeed
+        matchesSearch &&
+        matchesField &&
+        matchesProvince &&
+        matchesFinancialNeed &&
+        matchesStudyLevel &&
+        matchesMinMarks &&
+        matchesHouseholdIncome &&
+        matchesGender &&
+        matchesRace &&
+        matchesDisabilitySupport &&
+        matchesRuralBackground &&
+        matchesFirstGeneration
       );
     });
   }, [searchTerm, filters]);
