@@ -218,19 +218,21 @@ export class ActivityService {
           return this.createSampleActivities(userId);
         }
 
-        // Convert notifications to activities
+        // Convert notifications to activities with safety checks
         return (notifications || []).map((notif) => {
           return {
-            id: notif.id,
-            user_id: notif.user_id,
-            type: this.mapNotificationToActivityType(notif.type),
-            title: notif.title,
-            description: notif.message,
+            id: notif.id || `notif-${Date.now()}-${Math.random()}`,
+            user_id: notif.user_id || userId,
+            type: this.mapNotificationToActivityType(notif.type || "info"),
+            title: notif.title || "Activity",
+            description:
+              notif.message || notif.description || "Activity recorded",
             metadata: {
               notificationId: notif.id,
-              read: notif.read,
+              read: notif.read || false,
+              originalType: notif.type,
             },
-            created_at: notif.created_at,
+            created_at: notif.created_at || new Date().toISOString(),
           };
         });
       } catch (fallbackError) {
