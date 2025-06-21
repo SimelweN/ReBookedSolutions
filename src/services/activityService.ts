@@ -98,7 +98,7 @@ export class ActivityService {
         return { success: true };
       }
 
-      // For important activities, create a notification
+      // For important activities, create a notification (if table exists)
       try {
         const { error: notificationError } = await supabase
           .from("notifications")
@@ -111,20 +111,31 @@ export class ActivityService {
           });
 
         if (notificationError) {
+          // Check if it's a table not found error
+          if (
+            notificationError.code === "42P01" ||
+            notificationError.message?.includes("relation") ||
+            notificationError.message?.includes("does not exist") ||
+            notificationError.message?.includes("schema cache")
+          ) {
+            console.log(
+              "📝 Notifications table not available, activity logged to console only",
+            );
+            return { success: true };
+          }
           throw notificationError;
         }
 
         console.log(`✅ Activity notification created: ${type} - ${title}`);
         return { success: true };
       } catch (notificationError) {
-        this.logDetailedError(
-          "Failed to create activity notification",
-          notificationError,
+        console.warn(
+          "⚠️ Failed to create activity notification:",
+          notificationError.message || notificationError,
         );
         return {
-          success: false,
-          error: "Failed to create activity notification",
-          details: notificationError,
+          success: true, // Don't fail the whole operation for notification issues
+          warning: "Notification not created",
         };
       }
     } catch (error) {
