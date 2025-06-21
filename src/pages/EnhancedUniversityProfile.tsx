@@ -627,10 +627,20 @@ const EnhancedUniversityProfile: React.FC = () => {
                       <Star className="w-5 h-5 text-yellow-300" />
                     </div>
                     <div className="space-y-2">
+                      {fromAPS && apsScore && (
+                        <div className="bg-blue-500/20 p-3 rounded-lg mb-3">
+                          <p className="text-white text-xs">
+                            Viewing programs based on your APS score of{" "}
+                            <strong>{apsScore}</strong>
+                          </p>
+                        </div>
+                      )}
                       <div className="flex justify-between items-center">
-                        <span className="text-white/80 text-sm">Your APS</span>
+                        <span className="text-white/80 text-sm">
+                          {fromAPS ? "Your APS Score" : "Your APS"}
+                        </span>
                         <span className="text-green-300 font-bold text-lg">
-                          {userProfile?.totalAPS}
+                          {fromAPS ? apsScore : userProfile?.totalAPS}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
