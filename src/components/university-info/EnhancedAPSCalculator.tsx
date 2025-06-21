@@ -168,9 +168,12 @@ const EnhancedAPSCalculator: React.FC = () => {
 
     // Calculate university-specific scores for all 26 universities
     const universitySpecificCalculation =
-      subjects.length > 0
+      apsSubjects.length > 0
         ? import("@/services/universitySpecificAPSService").then((module) =>
-            module.calculateUniversitySpecificAPS(subjects, ALL_UNIVERSITY_IDS),
+            module.calculateUniversitySpecificAPS(
+              apsSubjects,
+              ALL_UNIVERSITY_IDS,
+            ),
           )
         : null;
 
