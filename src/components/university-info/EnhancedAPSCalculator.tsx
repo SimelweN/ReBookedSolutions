@@ -286,13 +286,27 @@ const EnhancedAPSCalculator: React.FC = () => {
     [subjects],
   );
 
-  // Clear all subjects
+  // Clear all subjects and completely reset APS data
   const clearAllSubjects = useCallback(() => {
+    // Clear all input fields
     setSubjects([]);
+    setSelectedSubject("");
+    setSelectedMarks("");
+
+    // Clear all validation messages
     setValidationErrors([]);
     setValidationWarnings([]);
-    toast.success("All subjects cleared");
-  }, []);
+
+    // Clear all program search results
+    setSearchResults([]);
+    setSelectedProgram(null);
+    setIsDetailsModalOpen(false);
+
+    // Clear any error states
+    clearError();
+
+    toast.success("Calculator completely reset - all data cleared");
+  }, [clearError]);
 
   // Enhanced program search across universities
   const searchPrograms = useCallback(async () => {
