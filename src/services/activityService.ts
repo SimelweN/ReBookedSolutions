@@ -79,7 +79,7 @@ export class ActivityService {
 
       // For silent activities, we can create a simple log without notification
       if (SILENT_ACTIVITY_TYPES.has(type)) {
-        console.log(`📝 Silent activity logged: ${type} - ${title}`);
+        console.log(`���� Silent activity logged: ${type} - ${title}`);
         return { success: true };
       }
 
@@ -192,17 +192,19 @@ export class ActivityService {
           if (
             notifError.code === "42P01" ||
             notifError.message?.includes("relation") ||
-            notifError.message?.includes("does not exist")
+            notifError.message?.includes("does not exist") ||
+            notifError.message?.includes("schema cache")
           ) {
             console.log(
-              "Notifications table does not exist, using sample activities",
+              "📝 Notifications table not available, using sample activities",
             );
             return this.createSampleActivities(userId);
           }
 
-          this.logDetailedError(
-            "Error fetching activity notifications",
-            notifError,
+          // Only log errors that aren't table-not-found issues
+          console.warn(
+            "⚠️ Non-critical error fetching notifications, falling back to sample data:",
+            notifError.message || notifError,
           );
           // Return sample activities as fallback
           return this.createSampleActivities(userId);
