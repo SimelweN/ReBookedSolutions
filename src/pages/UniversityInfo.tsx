@@ -555,34 +555,7 @@ const UniversityInfo = () => {
 
       <CampusNavbar />
 
-      {/* Test div to check if component renders */}
-      <div
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          background: "red",
-          color: "white",
-          padding: "4px",
-          zIndex: 9999,
-          fontSize: "12px",
-        }}
-      >
-        UniversityInfo Loading - {SOUTH_AFRICAN_UNIVERSITIES?.length || 0} unis
-      </div>
-
       <div className="min-h-screen bg-gray-50">
-        {/* Debug information */}
-        {import.meta.env.DEV && (
-          <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 m-4">
-            <div className="text-sm">
-              <strong>Debug Info:</strong> Universities loaded:{" "}
-              {SOUTH_AFRICAN_UNIVERSITIES?.length || 0}, Current tool:{" "}
-              {currentTool}, University ID: {selectedUniversityId || "none"}
-            </div>
-          </div>
-        )}
-
         {/* Main Content with Tabs */}
         <div className="container mx-auto px-4 py-6">
           <Tabs
