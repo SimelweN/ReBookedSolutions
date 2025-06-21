@@ -159,9 +159,11 @@ export const getCommitPendingBooks = async (): Promise<any[]> => {
     // Query books that might be sold but not yet committed
     // This is a simplified version - a real implementation would need
     // a proper orders/transactions table
+    console.log("[CommitService] Querying books for user:", user.id);
+
     const { data: books, error } = await supabase
       .from("books")
-      .select("*")
+      .select("id, title, price, sold, created_at, seller_id")
       .eq("seller_id", user.id)
       .eq("sold", true)
       .order("created_at", { ascending: true });
