@@ -823,8 +823,8 @@ const EnhancedAPSCalculator: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Results List */}
-                <div className="space-y-3 max-h-96 overflow-y-auto">
+                {/* Results List - Show ALL Programs */}
+                <div className="space-y-3 overflow-y-auto">
                   {filteredResults.map((program, index) => (
                     <div
                       key={index}
