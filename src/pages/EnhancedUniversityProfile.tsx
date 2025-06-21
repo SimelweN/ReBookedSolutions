@@ -399,13 +399,34 @@ const EnhancedUniversityProfile: React.FC = () => {
               {/* University Info */}
               <div className="lg:col-span-2 space-y-4 lg:space-y-6">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-2xl p-3 shadow-lg flex-shrink-0">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-2xl p-3 shadow-lg flex-shrink-0 flex items-center justify-center">
                     <img
-                      src={university.logo}
+                      src={university.logo || "/university-logos/default.svg"}
                       alt={`${university.name} logo`}
                       className="w-full h-full object-contain"
                       onError={(e) => {
-                        e.currentTarget.src = "/university-logos/default.svg";
+                        const target = e.currentTarget;
+                        if (target.src !== "/university-logos/default.svg") {
+                          target.src = "/university-logos/default.svg";
+                        } else {
+                          // If even default fails, show university initials
+                          target.style.display = "none";
+                          const fallback = target.parentElement;
+                          if (
+                            fallback &&
+                            !fallback.querySelector(".fallback-text")
+                          ) {
+                            const textElement = document.createElement("div");
+                            textElement.className =
+                              "fallback-text text-book-600 font-bold text-lg flex items-center justify-center w-full h-full";
+                            textElement.textContent = university.name
+                              .split(" ")
+                              .map((word) => word[0])
+                              .join("")
+                              .slice(0, 3);
+                            fallback.appendChild(textElement);
+                          }
+                        }
                       }}
                     />
                   </div>
@@ -437,31 +458,36 @@ const EnhancedUniversityProfile: React.FC = () => {
                   {university.overview}
                 </p>
 
-                {/* Enhanced Quick Actions */}
-                <div className="flex flex-col sm:flex-row gap-3">
+                {/* Enhanced Quick Actions - Mobile Responsive */}
+                <div className="space-y-3">
+                  {/* Primary action - full width on mobile */}
                   <Button
                     onClick={handleVisitWebsite}
-                    className="bg-white text-book-700 hover:bg-white/90 shadow-lg w-full sm:w-auto"
+                    className="bg-white text-book-700 hover:bg-white/90 shadow-lg w-full"
                   >
                     <Globe className="w-4 h-4 mr-2" />
                     Visit Website
                   </Button>
-                  <Button
-                    onClick={handleViewBooks}
-                    variant="outline"
-                    className="border-white/30 text-white hover:bg-white/20 backdrop-blur-sm w-full sm:w-auto"
-                  >
-                    <BookOpen className="w-4 h-4 mr-2" />
-                    Find Textbooks
-                  </Button>
-                  <Button
-                    onClick={handleAPSCalculator}
-                    variant="outline"
-                    className="border-white/30 text-white hover:bg-white/20 backdrop-blur-sm w-full sm:w-auto"
-                  >
-                    <Calculator className="w-4 h-4 mr-2" />
-                    APS Calculator
-                  </Button>
+
+                  {/* Secondary actions - 2 column grid on mobile */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <Button
+                      onClick={handleViewBooks}
+                      variant="outline"
+                      className="border-white/30 text-white hover:bg-white/20 backdrop-blur-sm w-full text-sm"
+                    >
+                      <BookOpen className="w-4 h-4 mr-2" />
+                      Find Textbooks
+                    </Button>
+                    <Button
+                      onClick={handleAPSCalculator}
+                      variant="outline"
+                      className="border-white/30 text-white hover:bg-white/20 backdrop-blur-sm w-full text-sm"
+                    >
+                      <Calculator className="w-4 h-4 mr-2" />
+                      APS Calculator
+                    </Button>
+                  </div>
                 </div>
               </div>
 
