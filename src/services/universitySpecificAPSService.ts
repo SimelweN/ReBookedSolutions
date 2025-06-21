@@ -480,17 +480,8 @@ export function calculateUniversitySpecificAPS(
         universityName: name,
         score: standardAPS,
         maxScore: 42,
-        explanation: `${name
-          .split(" ")
-          .map((word) => word.charAt(0).toUpperCase())
-          .join("")} APS: ${standardAPS} out of 42, calculated using ${name
-          .split(" ")
-          .map((word) => word.charAt(0).toUpperCase())
-          .join("")}'s standard APS method.`,
-        methodology: `${name
-          .split(" ")
-          .map((word) => word.charAt(0).toUpperCase())
-          .join("")} uses the normal APS system.`,
+        explanation: `${name} APS: ${standardAPS} out of 42, calculated using ${name}'s standard APS method.`,
+        methodology: `${name} uses the standard South African APS system.`,
       });
     }
   });
