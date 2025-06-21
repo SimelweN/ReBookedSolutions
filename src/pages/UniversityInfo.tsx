@@ -211,6 +211,57 @@ const UniversityInfo = () => {
     }
   }, []);
 
+  // Handle notification request for accommodation
+  const handleNotifyRequest = async () => {
+    if (!isAuthenticated || !user) {
+      toast.error("Please log in to get notified");
+      navigate("/login");
+      return;
+    }
+
+    setNotifyLoading(true);
+    try {
+      // Check if user already has a pending request
+      const { exists, error: checkError } =
+        await NotificationRequestService.hasExistingRequest(
+          user.id,
+          "accommodation",
+          "general", // General accommodation notification
+        );
+
+      if (checkError) {
+        throw new Error(checkError);
+      }
+
+      if (exists) {
+        toast.info("You're already on the notification list!");
+        return;
+      }
+
+      // Submit notification request
+      const { success, error } =
+        await NotificationRequestService.requestAccommodationNotification(
+          user.id,
+          user.email || "",
+          "general",
+          "General Accommodation Services",
+        );
+
+      if (!success) {
+        throw new Error(error || "Failed to submit request");
+      }
+
+      toast.success(
+        "You'll be notified when accommodation services are available!",
+      );
+    } catch (error) {
+      console.error("Error submitting notification request:", error);
+      toast.error("Failed to submit notification request. Please try again.");
+    } finally {
+      setNotifyLoading(false);
+    }
+  };
+
   // Loading component for lazy-loaded sections
   const LoadingSection = () => (
     <div className="flex flex-col justify-center items-center py-12 space-y-4">
