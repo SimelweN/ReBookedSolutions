@@ -433,7 +433,7 @@ const EnhancedUniversityProfile: React.FC = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
-                      <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white leading-tight">
+                      <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-5xl font-bold text-white leading-tight break-words">
                         {university.name}
                       </h1>
                       <Badge
