@@ -636,7 +636,218 @@ export const COMPREHENSIVE_COURSES: ComprehensiveCourse[] = [
       "Network Administrator",
     ],
   },
+
+  // Technical and Vocational Programmes (for TUT, DUT, MUT, VUT, CPUT)
+  {
+    name: "National Diploma in Engineering (Mechanical)",
+    faculty: "Engineering",
+    description: "Practical engineering training with hands-on experience.",
+    duration: "3 years",
+    defaultAps: 26,
+    assignmentRule: {
+      type: "include_only",
+      universities: ["tut", "dut", "mut", "vut", "cput"],
+    },
+    subjects: [
+      { name: "Mathematics", level: 5, isRequired: true },
+      { name: "Physical Sciences", level: 5, isRequired: true },
+      { name: "English", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "Engineering Technician",
+      "Maintenance Engineer",
+      "Production Supervisor",
+      "Quality Controller",
+    ],
+  },
+  {
+    name: "National Diploma in Engineering (Electrical)",
+    faculty: "Engineering",
+    description: "Electrical systems and power engineering technology.",
+    duration: "3 years",
+    defaultAps: 26,
+    assignmentRule: {
+      type: "include_only",
+      universities: ["tut", "dut", "mut", "vut", "cput"],
+    },
+    subjects: [
+      { name: "Mathematics", level: 5, isRequired: true },
+      { name: "Physical Sciences", level: 5, isRequired: true },
+      { name: "English", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "Electrical Technician",
+      "Control Systems Technician",
+      "Maintenance Engineer",
+      "Power Systems Operator",
+    ],
+  },
+  {
+    name: "National Diploma in Information Technology",
+    faculty: "Information Technology",
+    description: "Practical IT skills and systems administration.",
+    duration: "3 years",
+    defaultAps: 24,
+    assignmentRule: {
+      type: "include_only",
+      universities: ["tut", "dut", "mut", "vut", "cput"],
+    },
+    subjects: [
+      { name: "Mathematics", level: 4, isRequired: true },
+      { name: "English", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "IT Support Technician",
+      "Network Administrator",
+      "Web Developer",
+      "Database Operator",
+    ],
+  },
+  {
+    name: "National Diploma in Business Studies",
+    faculty: "Commerce",
+    description: "Business management and administration skills.",
+    duration: "3 years",
+    defaultAps: 22,
+    assignmentRule: {
+      type: "include_only",
+      universities: ["tut", "dut", "mut", "vut", "cput"],
+    },
+    subjects: [
+      { name: "Mathematics", level: 4, isRequired: true },
+      { name: "English", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "Business Administrator",
+      "Office Manager",
+      "Customer Service Manager",
+      "Sales Representative",
+    ],
+  },
+  {
+    name: "National Diploma in Hospitality Management",
+    faculty: "Commerce",
+    description: "Hotel and hospitality industry management.",
+    duration: "3 years",
+    defaultAps: 20,
+    assignmentRule: {
+      type: "include_only",
+      universities: ["tut", "dut", "mut", "vut", "cput"],
+    },
+    subjects: [
+      { name: "English", level: 4, isRequired: true },
+      { name: "Mathematics", level: 3, isRequired: true },
+    ],
+    careerProspects: [
+      "Hotel Manager",
+      "Restaurant Manager",
+      "Event Coordinator",
+      "Tourism Officer",
+    ],
+  },
+  {
+    name: "National Diploma in Public Management",
+    faculty: "Commerce",
+    description: "Public sector administration and governance.",
+    duration: "3 years",
+    defaultAps: 22,
+    assignmentRule: {
+      type: "include_only",
+      universities: ["tut", "dut", "mut", "vut", "cput"],
+    },
+    subjects: [
+      { name: "English", level: 4, isRequired: true },
+      { name: "Mathematics", level: 3, isRequired: true },
+    ],
+    careerProspects: [
+      "Public Administrator",
+      "Government Officer",
+      "Municipal Manager",
+      "Policy Analyst",
+    ],
+  },
+  {
+    name: "National Diploma in Environmental Health",
+    faculty: "Health Sciences",
+    description: "Environmental health monitoring and safety.",
+    duration: "3 years",
+    defaultAps: 24,
+    assignmentRule: {
+      type: "include_only",
+      universities: ["tut", "dut", "mut", "vut", "cput"],
+    },
+    subjects: [
+      { name: "Life Sciences", level: 4, isRequired: true },
+      { name: "English", level: 4, isRequired: true },
+      { name: "Mathematics", level: 3, isRequired: true },
+    ],
+    careerProspects: [
+      "Environmental Health Officer",
+      "Health Inspector",
+      "Safety Officer",
+      "Water Quality Analyst",
+    ],
+  },
+  {
+    name: "National Diploma in Food Technology",
+    faculty: "Agriculture",
+    description: "Food processing and quality control.",
+    duration: "3 years",
+    defaultAps: 24,
+    assignmentRule: {
+      type: "include_only",
+      universities: ["tut", "dut", "mut", "vut", "cput"],
+    },
+    subjects: [
+      { name: "Life Sciences", level: 4, isRequired: true },
+      { name: "Physical Sciences", level: 4, isRequired: true },
+      { name: "English", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "Food Technologist",
+      "Quality Controller",
+      "Production Manager",
+      "Food Safety Inspector",
+    ],
+  },
+  {
+    name: "National Diploma in Building Construction",
+    faculty: "Engineering",
+    description: "Construction management and building technology.",
+    duration: "3 years",
+    defaultAps: 24,
+    assignmentRule: {
+      type: "include_only",
+      universities: ["tut", "dut", "mut", "vut", "cput"],
+    },
+    subjects: [
+      { name: "Mathematics", level: 4, isRequired: true },
+      { name: "Physical Sciences", level: 4, isRequired: true },
+      { name: "English", level: 4, isRequired: true },
+    ],
+    careerProspects: [
+      "Construction Supervisor",
+      "Building Inspector",
+      "Site Manager",
+      "Quantity Surveyor Assistant",
+    ],
+  },
 ];
+
+// Debug logging for course assignment
+if (typeof window !== "undefined" && import.meta.env.DEV) {
+  console.log(`Total courses in database: ${COMPREHENSIVE_COURSES.length}`);
+  const coursesForMUT = COMPREHENSIVE_COURSES.filter((course) => {
+    const applicableUniversities = getUniversitiesForCourse(
+      course.assignmentRule,
+    );
+    return applicableUniversities.includes("mut");
+  });
+  console.log(
+    `Courses available for MUT: ${coursesForMUT.length}`,
+    coursesForMUT.map((c) => c.name),
+  );
+}
 
 // Apply assignment rules and get universities for a course
 export function getUniversitiesForCourse(rule: AssignmentRule): string[] {
