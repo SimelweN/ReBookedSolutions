@@ -28,6 +28,10 @@ import {
   MoreHorizontal,
   Heart,
   Clock,
+  Shield,
+  UserX,
+  EyeOff,
+  Eye,
 } from "lucide-react";
 import UserProfileTabs from "@/components/profile/UserProfileTabs";
 import { saveUserAddresses, getUserAddresses } from "@/services/addressService";
@@ -67,6 +71,7 @@ const Profile = () => {
   const [isLoadingListings, setIsLoadingListings] = useState(true);
   const [deletingBooks, setDeletingBooks] = useState<Set<string>>(new Set());
   const [isTemporarilyAway, setIsTemporarilyAway] = useState(false);
+  const [showDangerZone, setShowDangerZone] = useState(false);
 
   const loadUserAddresses = useCallback(async () => {
     if (!user?.id) return;
@@ -244,10 +249,29 @@ const Profile = () => {
       );
       setIsDeleteProfileDialogOpen(false);
 
-      // Optionally navigate to a goodbye page or logout
-      // navigate("/");
+      // Optional: Sign out user or redirect
+      navigate("/");
     } catch (error) {
       toast.error("Failed to delete profile. Please try again.");
+    }
+  };
+
+  const handleTempAwayToggle = async () => {
+    try {
+      const newStatus = !isTemporarilyAway;
+      setIsTemporarilyAway(newStatus);
+
+      // Here you would implement the actual API call to update user status
+      // await updateUserAwayStatus(user.id, newStatus);
+
+      toast.success(
+        newStatus
+          ? "🏖️ Temporarily away - Your listings are now hidden"
+          : "🔄 Welcome back - Your listings are now visible again",
+      );
+    } catch (error) {
+      toast.error("Failed to update status. Please try again.");
+      setIsTemporarilyAway(!isTemporarilyAway); // Revert on error
     }
   };
 
