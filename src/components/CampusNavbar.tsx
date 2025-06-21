@@ -310,7 +310,7 @@ const CampusNavbar = () => {
                 variant="ghost"
                 onClick={() => handleNavigation("/study-resources")}
                 className={`w-full justify-start px-4 py-3 rounded-lg font-medium transition-colors text-sm ${
-                  isActive("/study-resources")
+                  isActive("/study-tips") || isActive("/study-resources")
                     ? "bg-book-50 text-book-600"
                     : "text-gray-600"
                 }`}
