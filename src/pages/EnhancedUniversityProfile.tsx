@@ -181,16 +181,24 @@ const EnhancedUniversityProfile: React.FC = () => {
         const faculties = getUniversityFaculties(universityId);
 
         // Calculate statistics
-        const totalDegrees = faculties.reduce((total, faculty) => total + (faculty.degrees?.length || 0), 0);
-        const eligibleDegrees = userProfile ? faculties.reduce((total, faculty) => {
-          return total + (faculty.degrees?.filter(degree => {
-            const eligibility = checkProgramEligibility(
-              degree.apsRequirement,
-              degree.subjects || []
-            );
-            return eligibility.eligible;
-          }).length || 0);
-        }, 0) : 0;
+        const totalDegrees = faculties.reduce(
+          (total, faculty) => total + (faculty.degrees?.length || 0),
+          0,
+        );
+        const eligibleDegrees = userProfile
+          ? faculties.reduce((total, faculty) => {
+              return (
+                total +
+                (faculty.degrees?.filter((degree) => {
+                  const eligibility = checkProgramEligibility(
+                    degree.apsRequirement,
+                    degree.subjects || [],
+                  );
+                  return eligibility.eligible;
+                }).length || 0)
+              );
+            }, 0)
+          : 0;
 
         // Debug logging
         if (import.meta.env.DEV) {
@@ -779,6 +787,8 @@ const EnhancedUniversityProfile: React.FC = () => {
 
                   {/* Programs Display */}
                   {!apsLoading && !facultiesData.isLoading && (
+                    <>
+                      {filteredFaculties.length > 0 ? (
                         <div className="space-y-4">
                           {/* Enhanced Statistics */}
                           {hasValidProfile && qualificationSummary && (
