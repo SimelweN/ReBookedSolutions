@@ -1,18 +1,22 @@
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, ReactNode } from "react";
 import { useJsApiLoader } from "@react-google-maps/api";
 
-const libraries = ["places"];
+// Define the libraries array with proper typing
+const libraries: "places"[] = ["places"];
 
+// Define the context type
 interface GoogleMapsContextType {
   isLoaded: boolean;
   loadError: Error | undefined;
 }
 
+// Create the context with undefined as default
 const GoogleMapsContext = createContext<GoogleMapsContextType | undefined>(
   undefined,
 );
 
-export const useGoogleMaps = () => {
+// Custom hook to use the Google Maps context
+export const useGoogleMaps = (): GoogleMapsContextType => {
   const context = useContext(GoogleMapsContext);
   if (context === undefined) {
     throw new Error("useGoogleMaps must be used within a GoogleMapsProvider");
@@ -20,22 +24,32 @@ export const useGoogleMaps = () => {
   return context;
 };
 
+// Provider props interface
 interface GoogleMapsProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-export const GoogleMapsProvider = ({ children }: GoogleMapsProviderProps) => {
+// Google Maps Provider component
+export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
+  children,
+}) => {
   const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
-    libraries: libraries as any,
+    libraries,
+    preventGoogleFontsLoading: true,
   });
 
+  const value: GoogleMapsContextType = {
+    isLoaded,
+    loadError,
+  };
+
   return (
-    <GoogleMapsContext.Provider value={{ isLoaded, loadError }}>
+    <GoogleMapsContext.Provider value={value}>
       {children}
     </GoogleMapsContext.Provider>
   );
 };
 
-export { GoogleMapsProvider as default };
+export default GoogleMapsProvider;
