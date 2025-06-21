@@ -168,7 +168,7 @@ const UniversityProfile: React.FC = () => {
         title={`${university.name} - University Profile | ReBooked Campus`}
         description={`Explore ${university.fullName || university.name} programs, faculties, and information. Complete guide to ${university.name}.`}
         keywords={`${university.name}, ${university.abbreviation}, university programs, faculties, South African universities`}
-        url={`https://www.rebookedsolutions.co.za/university-profile?id=${university.id}`}
+        url={`https://www.rebookedsolutions.co.za/university/${university.id}`}
       />
 
       <CampusNavbar />
