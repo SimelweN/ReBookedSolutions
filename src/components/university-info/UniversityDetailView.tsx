@@ -675,28 +675,155 @@ const UniversityDetailView: React.FC<UniversityDetailViewProps> = ({
               </TabsContent>
 
               <TabsContent value="accommodation" className="mt-0">
-                <div className="text-center py-20">
-                  <div className="max-w-lg mx-auto">
-                    <div className="w-24 h-24 bg-gradient-to-r from-green-400 to-green-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg">
-                      <Home className="h-12 w-12 text-white" />
-                    </div>
-                    <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                      Student Accommodation
-                    </h2>
-                    <p className="text-lg text-gray-600 mb-8">
-                      We're working on bringing you comprehensive accommodation
-                      information for {university.name}.
-                    </p>
-                    <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8 border border-green-100">
-                      <h3 className="text-2xl font-semibold text-gray-900 mb-3">
-                        Coming Soon
-                      </h3>
-                      <p className="text-gray-700 leading-relaxed">
-                        Our accommodation section will include dormitory
-                        information, off-campus housing options, pricing
-                        details, and application processes. Stay tuned for
-                        updates!
-                      </p>
+                <div className="relative overflow-hidden min-h-screen">
+                  {/* Dynamic background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50"></div>
+                  <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-l from-green-300/30 to-transparent rounded-full blur-3xl animate-pulse"></div>
+                  <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-r from-emerald-300/30 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-teal-200/20 to-green-200/20 rounded-full blur-2xl animate-ping"></div>
+
+                  <div className="relative z-10 py-20 px-6">
+                    <div className="max-w-6xl mx-auto">
+                      {/* Header section */}
+                      <div className="text-center mb-16">
+                        <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 px-6 py-3 rounded-full text-sm font-medium mb-6 animate-bounce">
+                          <Home className="w-5 h-5" />
+                          Housing at {university.name}
+                        </div>
+                        <h2 className="text-5xl font-bold text-gray-900 mb-6 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                          Student Accommodation
+                        </h2>
+                        <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                          We're building something incredible to help you find
+                          the perfect home during your studies at{" "}
+                          {university.name}
+                        </p>
+                      </div>
+
+                      {/* Main content */}
+                      <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+                        {/* Left side - Features */}
+                        <div className="space-y-8">
+                          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-green-100 shadow-xl">
+                            <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                              <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                                <Star className="w-5 h-5 text-white" />
+                              </div>
+                              What's Coming
+                            </h3>
+                            <div className="space-y-4">
+                              <div className="flex items-start gap-3">
+                                <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-1">
+                                  <CheckCircle className="w-4 h-4 text-green-600" />
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-gray-900">
+                                    Campus Residences
+                                  </h4>
+                                  <p className="text-gray-600 text-sm">
+                                    Official university accommodation with meal
+                                    plans
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-start gap-3">
+                                <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center mt-1">
+                                  <CheckCircle className="w-4 h-4 text-emerald-600" />
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-gray-900">
+                                    Off-Campus Housing
+                                  </h4>
+                                  <p className="text-gray-600 text-sm">
+                                    Apartments and shared housing near campus
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-start gap-3">
+                                <div className="w-6 h-6 bg-teal-100 rounded-full flex items-center justify-center mt-1">
+                                  <CheckCircle className="w-4 h-4 text-teal-600" />
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-gray-900">
+                                    Virtual Tours
+                                  </h4>
+                                  <p className="text-gray-600 text-sm">
+                                    360° tours and detailed photo galleries
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-start gap-3">
+                                <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-1">
+                                  <CheckCircle className="w-4 h-4 text-green-600" />
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-gray-900">
+                                    Application System
+                                  </h4>
+                                  <p className="text-gray-600 text-sm">
+                                    Simple online applications and instant
+                                    approvals
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Right side - Coming Soon Hero */}
+                        <div className="text-center">
+                          <div className="relative">
+                            <div className="w-32 h-32 mx-auto bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 rounded-3xl flex items-center justify-center shadow-2xl transform hover:scale-110 transition-all duration-500 mb-8">
+                              <Home className="h-16 w-16 text-white" />
+                              <div className="absolute -top-3 -right-3 w-8 h-8 bg-yellow-400 rounded-full animate-bounce flex items-center justify-center">
+                                <span className="text-xs font-bold text-yellow-900">
+                                  !
+                                </span>
+                              </div>
+                              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-blue-400 rounded-full animate-pulse"></div>
+                            </div>
+
+                            <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-3xl p-8 text-white shadow-2xl transform hover:scale-105 transition-transform duration-300">
+                              <h3 className="text-4xl font-bold mb-4 flex items-center justify-center gap-3">
+                                <Star className="w-10 h-10 text-yellow-300 animate-spin" />
+                                Coming Soon!
+                                <Star className="w-10 h-10 text-yellow-300 animate-spin" />
+                              </h3>
+                              <p className="text-xl text-green-50 leading-relaxed mb-6">
+                                Revolutionary accommodation platform launching
+                                soon
+                              </p>
+                              <div className="bg-white/20 rounded-2xl p-4 backdrop-blur-sm">
+                                <p className="text-green-100 text-sm">
+                                  🏠 Smart matching system
+                                  <br />
+                                  📱 Mobile-first experience
+                                  <br />
+                                  💳 Secure payment processing
+                                  <br />
+                                  🤝 Student community features
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Bottom CTA */}
+                      <div className="text-center">
+                        <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 border border-green-100 shadow-xl max-w-2xl mx-auto">
+                          <h4 className="text-2xl font-bold text-gray-900 mb-4">
+                            Be the First to Know!
+                          </h4>
+                          <p className="text-gray-600 mb-6">
+                            Get exclusive early access when we launch
+                            accommodation services for {university.name}
+                          </p>
+                          <Button className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-10 py-4 rounded-2xl font-bold text-lg shadow-xl transform hover:scale-105 transition-all duration-300">
+                            🔔 Notify Me When Available
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
