@@ -64,7 +64,6 @@ export const createStudyResource = async (
       category: data.category,
       tags: data.tags,
       url: data.url,
-      provider: data.provider,
       duration: data.duration,
       rating: data.rating || 0,
       download_url: data.downloadUrl,
