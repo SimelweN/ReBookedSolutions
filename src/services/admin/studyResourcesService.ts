@@ -403,14 +403,44 @@ export const getStudyResources = async (): Promise<StudyResource[]> => {
       return [];
     }
 
+    // Use specific column selection to avoid issues with missing columns
     const { data, error } = await supabase
       .from("study_resources")
-      .select("*")
+      .select(
+        `
+        id,
+        title,
+        description,
+        type,
+        category,
+        difficulty,
+        url,
+        rating,
+        provider,
+        duration,
+        tags,
+        download_url,
+        is_active,
+        is_featured,
+        is_sponsored,
+        sponsor_name,
+        sponsor_logo,
+        sponsor_url,
+        sponsor_cta,
+        created_at,
+        updated_at
+      `,
+      )
       .eq("is_active", true)
       .order("created_at", { ascending: false });
 
     if (error) {
-      logError("studyResourcesService.getStudyResources", error);
+      console.error("studyResourcesService.getStudyResources error:", {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+      });
 
       // Handle specific database errors
       if (error.code === "42P01") {
@@ -420,7 +450,15 @@ export const getStudyResources = async (): Promise<StudyResource[]> => {
         return [];
       }
 
-      throw new Error("Failed to fetch study resources");
+      if (error.code === "42703") {
+        console.error(
+          "Column not found in study_resources table. Check table schema:",
+          error.message,
+        );
+        return [];
+      }
+
+      throw new Error(`Failed to fetch study resources: ${error.message}`);
     }
 
     return (data || []).map((item) => ({
