@@ -217,7 +217,10 @@ export const updateBook = async (
 
     return mapBookFromDatabase(bookWithProfile);
   } catch (error) {
-    console.error("Error in updateBook:", error);
+    console.error(
+      "Error in updateBook:",
+      error instanceof Error ? error.message : String(error),
+    );
     handleBookServiceError(error, "update book");
     return null; // This line will never be reached due to handleBookServiceError throwing, but TypeScript needs it
   }
