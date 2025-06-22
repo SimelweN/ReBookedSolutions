@@ -183,6 +183,33 @@ const AdminResourcesTab = ({ className }: AdminResourcesTabProps) => {
 
   return (
     <div className={`space-y-6 ${className}`}>
+      {/* Database Status Warning */}
+      {existingResources.length === 0 && existingTips.length === 0 && (
+        <Card className="border-yellow-200 bg-yellow-50">
+          <CardHeader>
+            <CardTitle className="text-yellow-800 flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5" />
+              Database Setup Required
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-yellow-700 text-sm mb-3">
+              The study resources and tips feature requires database tables that
+              may not be available yet. If you're experiencing errors, please
+              check the Database Status in the Utilities tab and run the
+              database initialization if needed.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => (window.location.hash = "#utilities")}
+              className="text-yellow-700 border-yellow-300 hover:bg-yellow-100"
+            >
+              Go to Database Utilities
+            </Button>
+          </CardContent>
+        </Card>
+      )}
       {/* Tab Selector */}
       <div className="flex space-x-2 bg-gray-100 p-1 rounded-lg">
         <Button
