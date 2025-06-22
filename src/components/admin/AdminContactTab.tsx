@@ -94,9 +94,21 @@ const AdminContactTab = () => {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center gap-2">
-          <Mail className="h-5 w-5 text-blue-600" />
-          <CardTitle>Contact Messages</CardTitle>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Mail className="h-5 w-5 text-blue-600" />
+            <CardTitle>Contact Messages</CardTitle>
+          </div>
+          {messages.length > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleClearAllMessages}
+              disabled={isLoading}
+            >
+              Clear All Messages
+            </Button>
+          )}
         </div>
         <CardDescription>Manage and respond to user inquiries</CardDescription>
       </CardHeader>
