@@ -27,7 +27,10 @@ export const cleanupDuplicateBooks = async (): Promise<void> => {
       .in("title", duplicatesTitles);
 
     if (error) {
-      console.error("❌ Error finding duplicate books:", error);
+      console.error(
+        "❌ Error finding duplicate books:",
+        error.message || String(error),
+      );
       return;
     }
 
