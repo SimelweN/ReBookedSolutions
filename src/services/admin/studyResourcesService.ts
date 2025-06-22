@@ -510,6 +510,7 @@ export const getStudyTips = async (): Promise<StudyTip[]> => {
         `
         id,
         title,
+        content,
         category,
         difficulty,
         tags,
