@@ -53,7 +53,10 @@ const AdminListingsTab = ({
         toast.error(result.message);
       }
     } catch (error) {
-      console.error("Error clearing books:", error);
+      console.error(
+        "Error clearing books:",
+        error instanceof Error ? error.message : String(error),
+      );
       toast.error("Failed to clear books");
     } finally {
       setIsClearing(false);
