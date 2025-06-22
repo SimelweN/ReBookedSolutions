@@ -437,6 +437,8 @@ const BursaryExplorer = () => {
             {(filters.fieldOfStudy ||
               filters.province ||
               filters.financialNeed ||
+              filters.maxHouseholdIncome ||
+              filters.minMarks ||
               searchTerm) && (
               <div className="flex flex-wrap gap-2">
                 <span className="text-sm text-gray-600">Active filters:</span>
