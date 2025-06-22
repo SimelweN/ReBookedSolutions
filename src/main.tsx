@@ -277,7 +277,7 @@ try {
             color: #9ca3af;
           ">
             ReBooked Solutions<br>
-            If this problem persists, contact: support@rebookedsolutions.co.za
+            If this problem persists, contact: info@rebookedsolutions.co.za
           </div>
         </div>
       </div>

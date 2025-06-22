@@ -114,7 +114,7 @@ export default function EnvironmentError({
             <p className="text-xs text-gray-500">
               ReBooked Solutions
               <br />
-              Need help? Contact: support@rebookedsolutions.co.za
+              Need help? Contact: info@rebookedsolutions.co.za
             </p>
           </div>
         </CardContent>
