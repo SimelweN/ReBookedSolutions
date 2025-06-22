@@ -416,7 +416,6 @@ export const getStudyResources = async (): Promise<StudyResource[]> => {
         difficulty,
         url,
         rating,
-        provider,
         duration,
         tags,
         download_url,
