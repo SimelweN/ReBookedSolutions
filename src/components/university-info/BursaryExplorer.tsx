@@ -368,6 +368,45 @@ const BursaryExplorer = () => {
                 </label>
               </div>
 
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-600">
+                  Max. Household Income (R)
+                </label>
+                <Input
+                  type="number"
+                  placeholder="e.g. 350000"
+                  min="0"
+                  value={filters.maxHouseholdIncome || ""}
+                  onChange={(e) =>
+                    updateFilter(
+                      "maxHouseholdIncome",
+                      e.target.value ? parseInt(e.target.value) : undefined,
+                    )
+                  }
+                  className="border-gray-200 focus:border-yellow-400"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-600">
+                  Your Average Marks (%)
+                </label>
+                <Input
+                  type="number"
+                  placeholder="e.g. 75"
+                  min="0"
+                  max="100"
+                  value={filters.minMarks || ""}
+                  onChange={(e) =>
+                    updateFilter(
+                      "minMarks",
+                      e.target.value ? parseInt(e.target.value) : undefined,
+                    )
+                  }
+                  className="border-gray-200 focus:border-yellow-400"
+                />
+              </div>
+
               <Select
                 value={viewMode}
                 onValueChange={(value: "grid" | "list") => setViewMode(value)}
