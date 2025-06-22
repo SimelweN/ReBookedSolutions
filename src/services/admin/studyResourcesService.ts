@@ -403,7 +403,7 @@ export const getStudyResources = async (): Promise<StudyResource[]> => {
       return [];
     }
 
-    // Use specific column selection to avoid issues with missing columns
+    // Query only columns that exist in the actual table
     const { data, error } = await supabase
       .from("study_resources")
       .select(
@@ -416,17 +416,8 @@ export const getStudyResources = async (): Promise<StudyResource[]> => {
         difficulty,
         url,
         rating,
-        provider,
-        duration,
         tags,
-        download_url,
-        is_active,
-        is_featured,
-        is_sponsored,
-        sponsor_name,
-        sponsor_logo,
-        sponsor_url,
-        sponsor_cta,
+        sponsored,
         created_at,
         updated_at
       `,
