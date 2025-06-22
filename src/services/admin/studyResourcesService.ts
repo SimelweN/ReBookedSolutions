@@ -227,19 +227,8 @@ export const createStudyTip = async (
 
     const tipData = {
       title: data.title,
-      content: data.content,
-      category: data.category,
-      difficulty: data.difficulty,
-      tags: data.tags,
+      description: data.content, // Map content to description for database
       is_active: data.isActive,
-      author: data.author,
-      estimated_time: data.estimatedTime,
-      effectiveness: data.effectiveness,
-      is_sponsored: data.isSponsored || false,
-      sponsor_name: data.sponsorName,
-      sponsor_logo: data.sponsorLogo,
-      sponsor_url: data.sponsorUrl,
-      sponsor_cta: data.sponsorCta,
     };
 
     const { data: result, error } = await supabase
