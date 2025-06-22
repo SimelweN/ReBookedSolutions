@@ -249,7 +249,12 @@ export const createStudyTip = async (
       .single();
 
     if (error) {
-      logError("studyResourcesService.createStudyTip", error);
+      console.error("studyResourcesService.createStudyTip error:", {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+      });
 
       if (error.code === "42P01") {
         throw new Error(
@@ -257,7 +262,13 @@ export const createStudyTip = async (
         );
       }
 
-      throw new Error("Failed to create study tip");
+      if (error.code === "42501") {
+        throw new Error(
+          "Permission denied: You don't have permission to create study tips. Please check table permissions or RLS policies.",
+        );
+      }
+
+      throw new Error(`Failed to create study tip: ${error.message}`);
     }
 
     return {
