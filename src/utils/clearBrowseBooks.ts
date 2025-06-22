@@ -14,7 +14,10 @@ export const clearAllBrowseBooks = async (): Promise<{
       .select("*", { count: "exact", head: true });
 
     if (countError) {
-      console.error("Error counting books:", countError);
+      console.error(
+        "Error counting books:",
+        countError.message || String(countError),
+      );
       return {
         success: false,
         message: `Failed to count books: ${countError.message}`,
