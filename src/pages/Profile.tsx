@@ -514,54 +514,6 @@ const Profile = () => {
               </Card>
 
               {/* Account Settings - Moved to UserProfileTabs */}
-
-              {/* Danger Zone */}
-              <Card className="border-red-200 bg-red-50/50">
-                <CardHeader
-                  className="cursor-pointer"
-                  onClick={() => setShowDangerZone(!showDangerZone)}
-                >
-                  <CardTitle className="text-lg flex items-center text-red-800">
-                    <Shield className="h-5 w-5 mr-2" />
-                    Danger Zone
-                    <AlertTriangle className="h-4 w-4 ml-auto" />
-                  </CardTitle>
-                </CardHeader>
-                {showDangerZone && (
-                  <CardContent className="border-t border-red-200">
-                    <Alert className="border-red-300 bg-red-50 mb-4">
-                      <AlertTriangle className="h-4 w-4" />
-                      <AlertDescription className="text-red-800">
-                        <strong>Warning:</strong> This action cannot be undone.
-                        Deleting your account will permanently remove:
-                        <ul className="list-disc ml-6 mt-2">
-                          <li>Your profile and personal information</li>
-                          <li>All your book listings (active and sold)</li>
-                          <li>Your transaction history</li>
-                          <li>Any saved addresses</li>
-                          <li>All associated data</li>
-                        </ul>
-                      </AlertDescription>
-                    </Alert>
-
-                    <div className="space-y-3">
-                      <p className="text-sm text-red-700">
-                        Before deleting your account, consider using
-                        "Temporarily Away" instead if you just need a break.
-                      </p>
-
-                      <Button
-                        onClick={() => setIsDeleteProfileDialogOpen(true)}
-                        variant="destructive"
-                        className="w-full"
-                      >
-                        <UserX className="h-4 w-4 mr-2" />
-                        Permanently Delete My Account
-                      </Button>
-                    </div>
-                  </CardContent>
-                )}
-              </Card>
             </div>
 
             {/* Right Content - Tabs (Keep as-is) */}
