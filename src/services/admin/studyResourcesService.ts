@@ -461,17 +461,17 @@ export const getStudyResources = async (): Promise<StudyResource[]> => {
       difficulty: item.difficulty,
       url: item.url,
       rating: item.rating,
-      provider: "", // Provider column doesn't exist in table
-      duration: item.duration,
+      provider: "", // Not in table
+      duration: "", // Not in table
       tags: item.tags || [],
-      downloadUrl: item.download_url,
-      isActive: item.is_active,
-      isFeatured: item.is_featured,
-      isSponsored: item.is_sponsored,
-      sponsorName: item.sponsor_name,
-      sponsorLogo: item.sponsor_logo,
-      sponsorUrl: item.sponsor_url,
-      sponsorCta: item.sponsor_cta,
+      downloadUrl: "", // Not in table
+      isActive: true, // Default since not in table
+      isFeatured: false, // Not in table
+      isSponsored: item.sponsored || false,
+      sponsorName: "", // Not in table
+      sponsorLogo: "", // Not in table
+      sponsorUrl: "", // Not in table
+      sponsorCta: "", // Not in table
       createdAt: item.created_at,
       updatedAt: item.updated_at,
     }));
