@@ -48,7 +48,10 @@ export const cleanupDuplicateBooks = async (): Promise<void> => {
       );
 
     if (deleteError) {
-      console.error("❌ Error deleting books:", deleteError);
+      console.error(
+        "❌ Error deleting books:",
+        deleteError.message || String(deleteError),
+      );
       return;
     }
 
