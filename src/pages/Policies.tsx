@@ -157,7 +157,7 @@ const Policies = () => {
                       <span>
                         <strong>Contact:</strong>{" "}
                         <span className="break-all">
-                          support@rebookedsolutions.co.za
+                          info@rebookedsolutions.co.za
                         </span>
                       </span>
                     </div>
