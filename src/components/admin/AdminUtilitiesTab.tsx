@@ -184,7 +184,10 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
       // Refresh stats
       await loadDatabaseStats();
     } catch (error) {
-      console.error("Error deleting demo books:", error);
+      console.error(
+        "Error deleting demo books:",
+        error instanceof Error ? error.message : String(error),
+      );
       toast.error("Failed to delete demo books");
     } finally {
       setIsLoading(false);
