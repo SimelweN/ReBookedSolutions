@@ -25,7 +25,14 @@ import {
   getStudyResources,
   getStudyTips,
 } from "@/services/admin/studyResourcesService";
-import { Lightbulb, BookOpen, Plus, Save, CheckCircle } from "lucide-react";
+import {
+  Lightbulb,
+  BookOpen,
+  Plus,
+  Save,
+  CheckCircle,
+  AlertTriangle,
+} from "lucide-react";
 
 interface AdminResourcesTabProps {
   className?: string;
