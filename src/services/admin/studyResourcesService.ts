@@ -50,9 +50,10 @@ export const createStudyResource = async (
     // Check if table exists first
     const tableExists = await checkTableExists("study_resources");
     if (!tableExists) {
-      throw new Error(
-        "Study resources table does not exist. Please run database migrations first.",
-      );
+      const errorMessage =
+        "Study resources database table is not available. Please contact your administrator to run the required database migrations.";
+      console.error("Database migration required:", errorMessage);
+      throw new Error(errorMessage);
     }
 
     const resourceData = {
