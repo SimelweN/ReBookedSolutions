@@ -559,7 +559,7 @@ export const getStudyTips = async (): Promise<StudyTip[]> => {
     return (data || []).map((item) => ({
       id: item.id,
       title: item.title,
-      content: item.content,
+      content: item.content || "", // Handle missing content column
       category: item.category,
       difficulty: item.difficulty,
       tags: item.tags || [],
