@@ -64,17 +64,8 @@ export const createStudyResource = async (
       category: data.category,
       tags: data.tags,
       url: data.url,
-      provider: data.provider,
-      duration: data.duration,
       rating: data.rating || 0,
-      download_url: data.downloadUrl,
-      is_active: data.isActive,
-      is_featured: data.isFeatured || false,
-      is_sponsored: data.isSponsored || false,
-      sponsor_name: data.sponsorName,
-      sponsor_logo: data.sponsorLogo,
-      sponsor_url: data.sponsorUrl,
-      sponsor_cta: data.sponsorCta,
+      sponsored: data.isSponsored || false,
     };
 
     const { data: result, error } = await supabase
