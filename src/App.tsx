@@ -204,6 +204,14 @@ function App() {
                         </AdminProtectedRoute>
                       }
                     />
+                    <Route
+                      path="/admin/reports"
+                      element={
+                        <AdminProtectedRoute>
+                          <AdminReports />
+                        </AdminProtectedRoute>
+                      }
+                    />
 
                     <Route path="*" element={<NotFound />} />
                   </Routes>
