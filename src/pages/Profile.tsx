@@ -513,57 +513,7 @@ const Profile = () => {
                 </CardContent>
               </Card>
 
-              {/* Account Settings */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center">
-                    <Settings className="h-5 w-5 mr-2" />
-                    Account Settings
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-gray-600">
-                    Manage your account preferences and settings.
-                  </p>
-
-                  {/* Temp Away Feature */}
-                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center">
-                        {isTemporarilyAway ? (
-                          <EyeOff className="h-5 w-5 text-blue-600 mr-2" />
-                        ) : (
-                          <Eye className="h-5 w-5 text-blue-600 mr-2" />
-                        )}
-                        <span className="font-medium text-blue-900">
-                          Temporarily Away
-                        </span>
-                      </div>
-                      <Button
-                        onClick={handleTempAwayToggle}
-                        variant={isTemporarilyAway ? "destructive" : "default"}
-                        size="sm"
-                      >
-                        {isTemporarilyAway ? "Return" : "Go Away"}
-                      </Button>
-                    </div>
-                    <p className="text-sm text-blue-700">
-                      {isTemporarilyAway
-                        ? "Your listings are currently hidden from other users. Click 'Return' to make them visible again."
-                        : "Hide all your listings temporarily. Perfect for vacations or when you can't respond to messages."}
-                    </p>
-                    {isTemporarilyAway && (
-                      <div className="mt-2 p-2 bg-yellow-100 rounded border border-yellow-300">
-                        <p className="text-xs text-yellow-800 flex items-center">
-                          <Clock className="h-3 w-3 mr-1" />
-                          Your listings are hidden and won't appear in search
-                          results
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+              {/* Account Settings - Moved to UserProfileTabs */}
 
               {/* Danger Zone */}
               <Card className="border-red-200 bg-red-50/50">
