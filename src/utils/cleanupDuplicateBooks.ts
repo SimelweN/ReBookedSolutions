@@ -59,7 +59,10 @@ export const cleanupDuplicateBooks = async (): Promise<void> => {
       `✅ Successfully deleted ${duplicateBooks.length} duplicate books!`,
     );
   } catch (error) {
-    console.error("💥 Cleanup failed:", error);
+    console.error(
+      "💥 Cleanup failed:",
+      error instanceof Error ? error.message : String(error),
+    );
   }
 };
 
