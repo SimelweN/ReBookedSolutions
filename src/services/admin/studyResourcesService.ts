@@ -103,7 +103,7 @@ export const createStudyResource = async (
       difficulty: result.difficulty,
       url: result.url,
       rating: result.rating,
-      provider: result.provider,
+      provider: "", // Provider column doesn't exist
       duration: result.duration,
       tags: result.tags || [],
       downloadUrl: result.download_url,
