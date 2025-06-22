@@ -572,7 +572,11 @@ export function validateAPSSubjectsEnhanced(
       deductions += 8;
     } else {
       const subjectName = subject.name.toLowerCase();
-      if (subjectName.includes("english")) hasEnglish = true;
+      if (
+        subjectName.includes("english") ||
+        subjectName.includes("home language")
+      )
+        hasEnglish = true;
       if (
         subjectName.includes("mathematics") ||
         subjectName.includes("mathematical literacy")
