@@ -58,7 +58,10 @@ export const clearAllBooks = async (): Promise<{
       deletedCount: booksCount,
     };
   } catch (error) {
-    console.error("Error in clearAllBooks:", error);
+    console.error(
+      "Error in clearAllBooks:",
+      error instanceof Error ? error.message : String(error),
+    );
     return {
       success: false,
       message: `Failed to clear books: ${error instanceof Error ? error.message : "Unknown error"}`,
