@@ -131,7 +131,10 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
       // Refresh stats
       await loadDatabaseStats();
     } catch (error) {
-      console.error("Error deleting all books:", error);
+      console.error(
+        "Error deleting all books:",
+        error instanceof Error ? error.message : String(error),
+      );
       toast.error("Failed to delete books");
     } finally {
       setIsLoading(false);
