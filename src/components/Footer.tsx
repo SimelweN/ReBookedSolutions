@@ -115,38 +115,40 @@ const Footer = () => {
               <li>
                 <Link
                   to="/contact"
-                  className="text-gray-600 hover:text-book-600 text-sm flex items-center"
+                  className="text-gray-600 hover:text-book-600 text-sm flex items-center transition-colors"
                   onClick={handleLinkClick}
                 >
-                  <MessageCircle className="h-4 w-4 mr-2" />
+                  <MessageCircle className="h-4 w-4 mr-2 flex-shrink-0" />
                   Contact Us
                 </Link>
               </li>
               <li>
                 <Link
                   to="/report"
-                  className="text-gray-600 hover:text-book-600 text-sm flex items-center"
+                  className="text-gray-600 hover:text-book-600 text-sm flex items-center transition-colors"
                   onClick={handleLinkClick}
                 >
-                  <AlertTriangle className="h-4 w-4 mr-2" />
+                  <AlertTriangle className="h-4 w-4 mr-2 flex-shrink-0" />
                   Report Issue
                 </Link>
               </li>
               <li>
                 <Link
                   to="/privacy"
-                  className="text-gray-600 hover:text-book-600 text-sm"
+                  className="text-gray-600 hover:text-book-600 text-sm flex items-center transition-colors"
                   onClick={handleLinkClick}
                 >
+                  <span className="w-4 h-4 mr-2 flex-shrink-0"></span>
                   Privacy Policy
                 </Link>
               </li>
               <li>
                 <Link
                   to="/policies"
-                  className="text-gray-600 hover:text-book-600 text-sm font-medium"
+                  className="text-gray-600 hover:text-book-600 text-sm font-medium flex items-center transition-colors"
                   onClick={handleLinkClick}
                 >
+                  <span className="w-4 h-4 mr-2 flex-shrink-0"></span>
                   All Policies & Terms
                 </Link>
               </li>
