@@ -541,19 +541,19 @@ export const getStudyTips = async (): Promise<StudyTip[]> => {
     return (data || []).map((item) => ({
       id: item.id,
       title: item.title,
-      content: "", // Content column doesn't exist in table
-      category: item.category,
-      difficulty: item.difficulty,
-      tags: item.tags || [],
+      content: item.description, // Map description to content for frontend
+      category: "General", // Default since not in table
+      difficulty: "Beginner", // Default since not in table
+      tags: [], // Not in table
       isActive: item.is_active,
-      author: item.author,
-      estimatedTime: item.estimated_time,
-      effectiveness: item.effectiveness,
-      isSponsored: item.is_sponsored,
-      sponsorName: item.sponsor_name,
-      sponsorLogo: item.sponsor_logo,
-      sponsorUrl: item.sponsor_url,
-      sponsorCta: item.sponsor_cta,
+      author: "", // Not in table
+      estimatedTime: "", // Not in table
+      effectiveness: 0, // Not in table
+      isSponsored: false, // Not in table
+      sponsorName: "", // Not in table
+      sponsorLogo: "", // Not in table
+      sponsorUrl: "", // Not in table
+      sponsorCta: "", // Not in table
       createdAt: item.created_at,
       updatedAt: item.updated_at,
     }));
