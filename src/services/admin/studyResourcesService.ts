@@ -270,7 +270,7 @@ export const createStudyTip = async (
     return {
       id: result.id,
       title: result.title,
-      content: result.content,
+      content: "", // Content column doesn't exist
       category: result.category,
       difficulty: result.difficulty,
       tags: result.tags || [],
