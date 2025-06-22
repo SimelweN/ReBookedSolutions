@@ -42,7 +42,10 @@ export const clearAllBrowseBooks = async (): Promise<{
       .neq("id", ""); // This will match all records
 
     if (deleteError) {
-      console.error("Error deleting books:", deleteError);
+      console.error(
+        "Error deleting books:",
+        deleteError.message || String(deleteError),
+      );
       return {
         success: false,
         message: `Failed to delete books: ${deleteError.message}`,
