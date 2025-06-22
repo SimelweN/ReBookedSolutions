@@ -50,7 +50,10 @@ const ConfirmEmailChange = () => {
           toast.error(result.message);
         }
       } catch (error: unknown) {
-        console.error("Email change confirmation failed:", error);
+        console.error(
+          "Email change confirmation failed:",
+          error instanceof Error ? error.message : String(error),
+        );
         setStatus("error");
         setMessage("Failed to process email change confirmation");
         toast.error("Failed to process email change confirmation");
@@ -76,7 +79,10 @@ const ConfirmEmailChange = () => {
         replace: true,
       });
     } catch (error) {
-      console.error("Logout failed:", error);
+      console.error(
+        "Logout failed:",
+        error instanceof Error ? error.message : String(error),
+      );
       // Navigate anyway
       navigate("/login", { replace: true });
     } finally {
