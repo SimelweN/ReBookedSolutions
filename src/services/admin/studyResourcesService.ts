@@ -75,7 +75,12 @@ export const createStudyResource = async (
       .single();
 
     if (error) {
-      logError("studyResourcesService.createStudyResource", error);
+      console.error("studyResourcesService.createStudyResource error:", {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+      });
 
       if (error.code === "42P01") {
         throw new Error(
@@ -83,7 +88,13 @@ export const createStudyResource = async (
         );
       }
 
-      throw new Error("Failed to create study resource");
+      if (error.code === "42501") {
+        throw new Error(
+          "Permission denied: You don't have permission to create study resources. Please check table permissions or RLS policies.",
+        );
+      }
+
+      throw new Error(`Failed to create study resource: ${error.message}`);
     }
 
     return {
