@@ -402,7 +402,6 @@ export const getStudyResources = async (): Promise<StudyResource[]> => {
         updated_at
       `,
       )
-      .eq("is_active", true)
       .order("created_at", { ascending: false });
 
     if (error) {
