@@ -54,6 +54,31 @@ const AdminContactTab = () => {
     }
   };
 
+  const handleClearAllMessages = async () => {
+    if (messages.length === 0) {
+      toast.info("No messages to clear");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Are you sure you want to clear all ${messages.length} contact messages? This action cannot be undone.`,
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setIsLoading(true);
+      await clearAllMessages();
+      setMessages([]);
+      toast.success("All contact messages cleared successfully");
+    } catch (error) {
+      console.error("Error clearing messages:", error);
+      toast.error("Failed to clear messages");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <Card>
