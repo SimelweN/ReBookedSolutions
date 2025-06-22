@@ -75,8 +75,26 @@ const BursaryExplorer = () => {
         filters.financialNeed === undefined ||
         bursary.requirements.financialNeed === filters.financialNeed;
 
+      // Household income filter
+      const matchesHouseholdIncome =
+        !filters.maxHouseholdIncome ||
+        (bursary.requirements.maxHouseholdIncome !== undefined &&
+          bursary.requirements.maxHouseholdIncome >=
+            filters.maxHouseholdIncome);
+
+      // Academic performance filter
+      const matchesAcademicPerformance =
+        !filters.minMarks ||
+        (bursary.requirements.minMarks !== undefined &&
+          bursary.requirements.minMarks <= filters.minMarks);
+
       return (
-        matchesSearch && matchesField && matchesProvince && matchesFinancialNeed
+        matchesSearch &&
+        matchesField &&
+        matchesProvince &&
+        matchesFinancialNeed &&
+        matchesHouseholdIncome &&
+        matchesAcademicPerformance
       );
     });
   }, [searchTerm, filters]);
