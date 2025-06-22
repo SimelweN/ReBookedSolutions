@@ -82,7 +82,7 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       .single();
 
     if (error) {
-      console.error("Error creating book:", error);
+      console.error("Error creating book:", error.message || String(error));
       handleBookServiceError(error, "create book");
     }
 
