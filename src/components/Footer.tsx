@@ -114,6 +114,26 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <Link
+                  to="/contact"
+                  className="text-gray-600 hover:text-book-600 text-sm flex items-center"
+                  onClick={handleLinkClick}
+                >
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  Contact Us
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/report"
+                  className="text-gray-600 hover:text-book-600 text-sm flex items-center"
+                  onClick={handleLinkClick}
+                >
+                  <AlertTriangle className="h-4 w-4 mr-2" />
+                  Report Issue
+                </Link>
+              </li>
+              <li>
+                <Link
                   to="/privacy"
                   className="text-gray-600 hover:text-book-600 text-sm"
                   onClick={handleLinkClick}
