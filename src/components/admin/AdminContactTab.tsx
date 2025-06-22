@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import {
   getAllContactMessages,
   markMessageAsRead,
+  clearAllMessages,
   ContactMessage,
 } from "@/services/contactService";
 import { useIsMobile } from "@/hooks/use-mobile";
