@@ -299,7 +299,10 @@ export const deleteBook = async (bookId: string): Promise<void> => {
       .eq("id", bookId);
 
     if (deleteError) {
-      console.error("Error deleting book:", deleteError);
+      console.error(
+        "Error deleting book:",
+        deleteError.message || String(deleteError),
+      );
       throw new Error(`Failed to delete book: ${deleteError.message}`);
     }
 
