@@ -50,8 +50,7 @@ export const createStudyResource = async (
     // Check if table exists first
     const tableExists = await checkTableExists("study_resources");
     if (!tableExists) {
-      const errorMessage =
-        "Study resources database table is not available. Please contact your administrator to run the required database migrations.";
+      const errorMessage = "Study resources database table is not available. Please contact your administrator to run the required database migrations.";
       console.error("Database migration required:", errorMessage);
       throw new Error(errorMessage);
     }
@@ -228,8 +227,7 @@ export const createStudyTip = async (
     // Check if table exists first
     const tableExists = await checkTableExists("study_tips");
     if (!tableExists) {
-      const errorMessage =
-        "Study tips database table is not available. Please contact your administrator to run the required database migrations.";
+      const errorMessage = "Study tips database table is not available. Please contact your administrator to run the required database migrations.";
       console.error("Database migration required:", errorMessage);
       throw new Error(errorMessage);
     }
@@ -406,8 +404,7 @@ export const getStudyResources = async (): Promise<StudyResource[]> => {
     // Use specific column selection to avoid issues with missing columns
     const { data, error } = await supabase
       .from("study_resources")
-      .select(
-        `
+      .select(`
         id,
         title,
         description,
@@ -429,8 +426,7 @@ export const getStudyResources = async (): Promise<StudyResource[]> => {
         sponsor_cta,
         created_at,
         updated_at
-      `,
-      )
+      `)
       .eq("is_active", true)
       .order("created_at", { ascending: false });
 
@@ -439,7 +435,7 @@ export const getStudyResources = async (): Promise<StudyResource[]> => {
         code: error.code,
         message: error.message,
         details: error.details,
-        hint: error.hint,
+        hint: error.hint
       });
 
       // Handle specific database errors
@@ -453,7 +449,7 @@ export const getStudyResources = async (): Promise<StudyResource[]> => {
       if (error.code === "42703") {
         console.error(
           "Column not found in study_resources table. Check table schema:",
-          error.message,
+          error.message
         );
         return [];
       }
@@ -505,16 +501,39 @@ export const getStudyTips = async (): Promise<StudyTip[]> => {
       return [];
     }
 
+    // Use specific column selection to avoid issues with missing columns
     const { data, error } = await supabase
       .from("study_tips")
-      .select("*")
+      .select(`
+        id,
+        title,
+        content,
+        category,
+        difficulty,
+        tags,
+        is_active,
+        author,
+        estimated_time,
+        effectiveness,
+        is_sponsored,
+        sponsor_name,
+        sponsor_logo,
+        sponsor_url,
+        sponsor_cta,
+        created_at,
+        updated_at
+      `)
       .eq("is_active", true)
       .order("created_at", { ascending: false });
 
     if (error) {
-      logError("studyResourcesService.getStudyTips", error);
+      console.error("studyResourcesService.getStudyTips error:", {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint
+      });
 
-      // Handle specific database errors
       if (error.code === "42P01") {
         console.warn(
           "Study tips table not found. Database migration may be needed.",
@@ -522,7 +541,16 @@ export const getStudyTips = async (): Promise<StudyTip[]> => {
         return [];
       }
 
-      throw new Error("Failed to fetch study tips");
+      if (error.code === "42703") {
+        console.error(
+          "Column not found in study_tips table. Check table schema:",
+          error.message
+        );
+        return [];
+      }
+
+      throw new Error(`Failed to fetch study tips: ${error.message}`);
+    }
     }
 
     return (data || []).map((item) => ({
