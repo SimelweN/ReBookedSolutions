@@ -349,7 +349,7 @@ export const validateAPSSubjects = (
 
     if (!hasEnglish) {
       errors.push(
-        "At least one language subject (English or Afrikaans) is required",
+        "At least one home language subject is required (any official SA language)",
       );
     }
 
