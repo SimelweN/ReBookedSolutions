@@ -24,6 +24,7 @@ import MapsTest from "./pages/MapsTest";
 import BasicMapsExample from "./pages/BasicMapsExample";
 import WorkingMapsDemo from "./pages/WorkingMapsDemo";
 import Admin from "./pages/Admin";
+import AdminReports from "./pages/AdminReports";
 import UniversityInfo from "./pages/UniversityInfo";
 import ModernUniversityProfile from "./pages/ModernUniversityProfile";
 import UniversityProfile from "./pages/UniversityProfile";
