@@ -158,6 +158,28 @@ const Footer = () => {
           <p className="text-sm text-gray-500">
             &copy; {currentYear} ReBooked Solutions. All rights reserved.
           </p>
+
+          {/* Social Media Links */}
+          <div className="flex items-center space-x-4 mt-4 md:mt-0">
+            <a
+              href="https://www.instagram.com/rebooked.solutions?igsh=M2ZsNjd2aTNmZmRh"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-pink-500 transition-colors"
+              aria-label="Follow us on Instagram"
+            >
+              <Instagram className="h-5 w-5" />
+            </a>
+            <a
+              href="https://www.facebook.com/share/16ngKMps6U/?mibextid=wwXIfr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-blue-600 transition-colors"
+              aria-label="Follow us on Facebook"
+            >
+              <Facebook className="h-5 w-5" />
+            </a>
+          </div>
         </div>
       </div>
     </footer>
