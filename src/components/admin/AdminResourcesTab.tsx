@@ -173,14 +173,58 @@ const AdminResourcesTab = ({ className }: AdminResourcesTabProps) => {
 
   const loadExistingItems = async () => {
     try {
+      // Add diagnostic check if needed
+      if (import.meta.env.DEV) {
+        console.log("Loading study resources and tips...");
+      }
+
       const [resources, tips] = await Promise.all([
         getStudyResources(),
         getStudyTips(),
       ]);
       setExistingResources(resources);
       setExistingTips(tips);
+
+      if (import.meta.env.DEV) {
+        console.log(
+          `Loaded ${resources.length} resources and ${tips.length} tips`,
+        );
+      }
     } catch (error) {
-      console.error("Error loading existing items:", error);
+      console.error(
+        "Error loading existing items:",
+        error instanceof Error ? error.message : String(error),
+      );
+
+      // If the error suggests missing columns, provide helpful info
+      if (error instanceof Error && error.message.includes("42703")) {
+        console.error(
+          "Column mismatch detected. Expected columns for study_resources:",
+          [
+            "id",
+            "title",
+            "description",
+            "type",
+            "category",
+            "difficulty",
+            "url",
+            "rating",
+            "provider",
+            "duration",
+            "tags",
+            "download_url",
+            "is_active",
+            "is_featured",
+            "is_sponsored",
+            "sponsor_name",
+            "sponsor_logo",
+            "sponsor_url",
+            "sponsor_cta",
+            "created_at",
+            "updated_at",
+          ],
+        );
+      }
     }
   };
 
