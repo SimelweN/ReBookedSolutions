@@ -469,7 +469,7 @@ export const getStudyResources = async (): Promise<StudyResource[]> => {
       difficulty: item.difficulty,
       url: item.url,
       rating: item.rating,
-      provider: item.provider,
+      provider: item.provider || "", // Handle missing provider column
       duration: item.duration,
       tags: item.tags || [],
       downloadUrl: item.download_url,
