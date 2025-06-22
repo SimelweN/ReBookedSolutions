@@ -40,7 +40,7 @@ export const clearAllBooks = async (): Promise<{
     const { error: deleteError } = await supabase
       .from("books")
       .delete()
-      .neq("id", ""); // This will match all records
+      .gte("created_at", "1900-01-01"); // This will match all records safely
 
     if (deleteError) {
       console.error(
