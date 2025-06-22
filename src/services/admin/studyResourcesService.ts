@@ -228,9 +228,10 @@ export const createStudyTip = async (
     // Check if table exists first
     const tableExists = await checkTableExists("study_tips");
     if (!tableExists) {
-      throw new Error(
-        "Study tips table does not exist. Please run database migrations first.",
-      );
+      const errorMessage =
+        "Study tips database table is not available. Please contact your administrator to run the required database migrations.";
+      console.error("Database migration required:", errorMessage);
+      throw new Error(errorMessage);
     }
 
     const tipData = {
