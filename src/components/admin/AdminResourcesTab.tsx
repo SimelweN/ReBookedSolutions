@@ -139,10 +139,26 @@ const AdminResourcesTab = ({ className }: AdminResourcesTabProps) => {
       resetForm();
       loadExistingItems();
     } catch (error) {
-      console.error(`Error creating ${activeTab}:`, error);
+      console.error(
+        `Error creating ${activeTab}:`,
+        error instanceof Error ? error.message : String(error),
+      );
+
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
-      toast.error(`Failed to create ${activeTab}: ${errorMessage}`);
+
+      // Provide specific guidance for migration issues
+      if (
+        errorMessage.includes("database table is not available") ||
+        errorMessage.includes("migrations")
+      ) {
+        toast.error(
+          "Database setup required. The study resources feature needs to be configured by an administrator.",
+          { duration: 6000 },
+        );
+      } else {
+        toast.error(`Failed to create ${activeTab}: ${errorMessage}`);
+      }
     } finally {
       setIsCreating(false);
     }
