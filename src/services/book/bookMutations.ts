@@ -125,7 +125,10 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
 
     return mappedBook;
   } catch (error) {
-    console.error("Error in createBook:", error);
+    console.error(
+      "Error in createBook:",
+      error instanceof Error ? error.message : String(error),
+    );
     handleBookServiceError(error, "create book");
     throw error; // This line will never be reached due to handleBookServiceError throwing, but TypeScript needs it
   }
