@@ -348,7 +348,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         } catch (codeExchangeError) {
           console.warn(
             "⚠️ [AuthContext] Code exchange attempt failed, falling back to session check:",
-            codeExchangeError,
+            codeExchangeError instanceof Error
+              ? codeExchangeError.message
+              : String(codeExchangeError),
           );
 
           // Clear problematic URL parameters
