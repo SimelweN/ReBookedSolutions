@@ -89,7 +89,10 @@ const Verify = () => {
           }
         }
       } catch (error: unknown) {
-        console.error("❌ Email verification exception:", error);
+        console.error(
+          "❌ Email verification exception:",
+          error instanceof Error ? error.message : String(error),
+        );
         setStatus("error");
 
         const errorMessage =
@@ -167,7 +170,10 @@ const Verify = () => {
         toast.error("Verification did not return a session");
       }
     } catch (error: unknown) {
-      console.error("❌ Exception during manual verification:", error);
+      console.error(
+        "❌ Exception during manual verification:",
+        error instanceof Error ? error.message : String(error),
+      );
       const errorMessage =
         error instanceof Error ? error.message : "Manual verification failed";
       toast.error(`Manual verification failed: ${errorMessage}`);
