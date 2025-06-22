@@ -193,7 +193,7 @@ export const updateBook = async (
       .single();
 
     if (error) {
-      console.error("Error updating book:", error);
+      console.error("Error updating book:", error.message || String(error));
       handleBookServiceError(error, "update book");
     }
 
