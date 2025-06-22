@@ -115,7 +115,10 @@ const Confirm = () => {
         // If we get here, none of the methods worked
         throw new Error("Unable to confirm email with any available method");
       } catch (error: unknown) {
-        console.error("Email confirmation error:", error);
+        console.error(
+          "Email confirmation error:",
+          error instanceof Error ? error.message : String(error),
+        );
         setStatus("error");
 
         let errorMessage = "Email confirmation failed. ";
