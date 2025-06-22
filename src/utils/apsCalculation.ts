@@ -329,13 +329,14 @@ export const validateAPSSubjects = (
       return { isValid: false, errors, warnings };
     }
 
-    // Check for required subjects
+    // Check for required subjects - any official SA home language is valid
     const hasEnglish = subjects.some(
       (s) =>
         s.name &&
         s.marks > 0 &&
         (s.name.toLowerCase().includes("english") ||
-          s.name.toLowerCase().includes("afrikaans")),
+          s.name.toLowerCase().includes("afrikaans") ||
+          s.name.toLowerCase().includes("home language")),
     );
 
     const hasMath = subjects.some(
