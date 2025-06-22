@@ -189,7 +189,10 @@ const BookListing = () => {
         toast.error(result.message);
       }
     } catch (error) {
-      console.error("Failed to clear books:", error);
+      console.error(
+        "Failed to clear books:",
+        error instanceof Error ? error.message : String(error),
+      );
       toast.error("Failed to clear books");
     } finally {
       setIsClearingBooks(false);
