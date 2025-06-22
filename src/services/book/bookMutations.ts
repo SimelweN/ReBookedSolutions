@@ -308,7 +308,10 @@ export const deleteBook = async (bookId: string): Promise<void> => {
 
     console.log("Book deleted successfully:", existingBook.title);
   } catch (error) {
-    console.error("Error in deleteBook:", error);
+    console.error(
+      "Error in deleteBook:",
+      error instanceof Error ? error.message : String(error),
+    );
     handleBookServiceError(error, "delete book");
     throw error; // This line will never be reached due to handleBookServiceError throwing, but TypeScript needs it
   }
