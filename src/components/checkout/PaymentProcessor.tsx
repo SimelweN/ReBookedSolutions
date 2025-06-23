@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   CreditCard,
@@ -11,9 +12,11 @@ import {
   AlertTriangle,
   CheckCircle,
   Info,
+  Lock,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PAYSTACK_CONFIG } from "@/config/paystack";
+import { SecureBankingService } from "@/services/secureBankingService";
 
 interface PaymentProcessorProps {
   amount: number;
