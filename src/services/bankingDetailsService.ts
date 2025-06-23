@@ -107,11 +107,6 @@ export class BankingDetailsService {
     bankingDetails: Omit<BankingDetails, "id" | "created_at" | "updated_at">,
   ): Promise<BankingDetails> {
     try {
-      const user = await supabase.auth.getUser();
-      if (!user.data.user) {
-        throw new Error("User not authenticated");
-      }
-
       // Encrypt sensitive fields
       const encryptedDetails = {
         ...bankingDetails,
@@ -122,11 +117,33 @@ export class BankingDetailsService {
       };
 
       // First, try to update existing record
-      const { data: existingData } = await supabase
+      const { data: existingData, error: selectError } = await supabase
         .from("banking_details")
         .select("id")
-        .eq("user_id", user.data.user.id)
+        .eq("user_id", bankingDetails.user_id)
         .single();
+
+      if (selectError && selectError.code !== "PGRST116") {
+        // Handle table not existing
+        if (
+          selectError.code === "42P01" ||
+          (selectError.message &&
+            selectError.message.includes("relation") &&
+            selectError.message.includes("does not exist"))
+        ) {
+          throw new Error(
+            "Banking details feature is not available yet. Please contact support.",
+          );
+        }
+        console.error("Database error:", {
+          code: selectError.code,
+          message: selectError.message,
+          details: selectError.details,
+        });
+        throw new Error(
+          `Database error: ${selectError.message || "Unknown error"}`,
+        );
+      }
 
       if (existingData) {
         // Update existing record
@@ -136,11 +153,20 @@ export class BankingDetailsService {
             ...encryptedDetails,
             updated_at: new Date().toISOString(),
           })
-          .eq("user_id", user.data.user.id)
+          .eq("user_id", bankingDetails.user_id)
           .select()
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error("Update error:", {
+            code: error.code,
+            message: error.message,
+            details: error.details,
+          });
+          throw new Error(
+            `Failed to update: ${error.message || "Unknown error"}`,
+          );
+        }
         return this.decryptBankingDetails(data);
       } else {
         // Insert new record
@@ -150,15 +176,22 @@ export class BankingDetailsService {
           .select()
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error("Insert error:", {
+            code: error.code,
+            message: error.message,
+            details: error.details,
+          });
+          throw new Error(
+            `Failed to save: ${error.message || "Unknown error"}`,
+          );
+        }
         return this.decryptBankingDetails(data);
       }
     } catch (error) {
-      console.error("Error saving banking details:", error);
       const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to save banking details";
+        error instanceof Error ? error.message : String(error);
+      console.error("Error saving banking details:", errorMessage);
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -182,27 +215,58 @@ export class BankingDetailsService {
         .single();
 
       if (error) {
+        // Handle specific error cases
         if (error.code === "PGRST116") {
-          // No data found
+          // No data found - this is normal for users who haven't added banking details
           return null;
         }
-        throw error;
+
+        if (
+          error.code === "42P01" ||
+          (error.message &&
+            error.message.includes("relation") &&
+            error.message.includes("does not exist"))
+        ) {
+          // Table doesn't exist - migration hasn't been run
+          console.warn(
+            "Banking details table does not exist yet. Migration may need to be run.",
+          );
+          return null;
+        }
+
+        // Log the actual error details
+        console.error("Database error:", {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+        });
+        throw new Error(`Database error: ${error.message || "Unknown error"}`);
       }
 
       return this.decryptBankingDetails(data);
     } catch (error) {
-      console.error("Error fetching banking details:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error("Error fetching banking details:", errorMessage);
+
+      // Handle table not existing gracefully
       if (
-        error instanceof Error &&
-        error.message.includes("relation") &&
-        error.message.includes("does not exist")
+        errorMessage.includes("relation") &&
+        errorMessage.includes("does not exist")
       ) {
         console.warn(
           "Banking details table does not exist yet. This is expected if the migration hasn't been run.",
         );
         return null;
       }
-      throw new Error("Failed to fetch banking details");
+
+      // Don't throw error for missing table, just return null
+      if (errorMessage.includes("Database error: relation")) {
+        return null;
+      }
+
+      throw new Error(`Failed to fetch banking details: ${errorMessage}`);
     }
   }
 

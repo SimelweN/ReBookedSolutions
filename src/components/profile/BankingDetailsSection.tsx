@@ -79,9 +79,16 @@ const BankingDetailsSection: React.FC = () => {
         setFormData(details);
       }
     } catch (error) {
-      console.error("Error loading banking details:", error);
-      // Don't show error toast for missing table
-      if (!(error instanceof Error) || !error.message.includes("relation")) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error("Error loading banking details:", errorMessage);
+
+      // Don't show error toast for missing table or database setup issues
+      if (
+        !errorMessage.includes("relation") &&
+        !errorMessage.includes("not available yet") &&
+        !errorMessage.includes("Migration may need")
+      ) {
         toast.error("Failed to load banking details");
       }
     } finally {
