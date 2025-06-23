@@ -18,6 +18,7 @@ import { debugConnection } from "./utils/debugConnection";
 import { validateApiKey } from "./utils/validateApiKey";
 import { PaymentTester } from "./utils/paymentTester";
 import { testPaymentSetup } from "./utils/testPaymentSetup";
+import { DatabaseSetup } from "./utils/databaseSetup";
 import "./App.css";
 
 // Initialize debug utilities in development
@@ -26,12 +27,16 @@ if (import.meta.env.DEV) {
   (window as any).validateApiKey = validateApiKey;
   (window as any).PaymentTester = PaymentTester;
   (window as any).testPaymentSetup = testPaymentSetup;
+  (window as any).DatabaseSetup = DatabaseSetup;
   console.log("🛠️ Debug utilities available:");
   console.log("  - debugConnection() - Full connection test");
   console.log("  - validateApiKey() - Check API key validity");
   console.log("  - PaymentTester.testPaymentSystem() - Test payment setup");
   console.log(
     "  - testPaymentSetup() - Test user requirements for listing books",
+  );
+  console.log(
+    "  - DatabaseSetup.showSetupInstructions() - Check database setup",
   );
 }
 
