@@ -110,24 +110,23 @@ export const safeLogError = (
   error: unknown,
   additionalData?: any,
 ) => {
-  const formattedError = formatErrorForLogging(error);
   const errorMessage = getReadableErrorMessage(error);
   const errorCode =
     (error as any)?.code || (error as any)?.error_code || "NO_CODE";
 
-  // Log a simple, readable message first
+  // Log a simple, readable message only
   const simpleMessage = `${context}: ${errorMessage}${errorCode !== "NO_CODE" ? ` (${errorCode})` : ""}`;
   console.error(simpleMessage);
 
-  // Then log the detailed error object
-  console.error(`[${context}] Detailed error:`, formattedError);
-
-  // Add additional data if provided
-  if (additionalData) {
-    console.error(`[${context}] Additional data:`, additionalData);
+  // Only log detailed info in development mode and only as strings
+  if (import.meta.env.DEV) {
+    const formattedError = formatErrorForLogging(error);
+    console.error(
+      `[${context}] Error details: ${JSON.stringify(formattedError, null, 2)}`,
+    );
   }
 
-  return formattedError;
+  return errorMessage;
 };
 
 /**

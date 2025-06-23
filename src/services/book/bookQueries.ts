@@ -125,12 +125,12 @@ export const getBooks = async (filters?: BookFilters): Promise<Book[]> => {
         const errorCode = booksError.code || "NO_CODE";
         const errorDetails = booksError.details || "No additional details";
 
-        // Log with proper string messages
+        // Log with proper string messages only
         console.error(`[Books query failed] ${errorMessage}`);
         console.error(`Books query failed: ${errorMessage} (${errorCode})`);
 
-        // Use safeLogError for detailed logging
-        logDetailedError("Books query failed", booksError);
+        // Use safeLogError for detailed logging (no object output)
+        safeLogError("Books query failed", booksError);
 
         throw new Error(
           `Failed to fetch books: ${errorMessage} (Code: ${errorCode})`,
@@ -162,7 +162,7 @@ export const getBooks = async (filters?: BookFilters): Promise<Book[]> => {
             `[Error fetching profiles] ${errorMessage} (${errorCode})`,
           );
 
-          logDetailedError("Error fetching profiles", profilesError);
+          safeLogError("Error fetching profiles", profilesError);
           // Continue without profile data rather than failing completely
         } else if (profilesData) {
           profilesData.forEach((profile) => {
@@ -205,7 +205,7 @@ export const getBooks = async (filters?: BookFilters): Promise<Book[]> => {
     console.error(`[Error in getBooks] ${errorMessage}`);
     console.error(`Error in getBooks: ${errorMessage}`);
 
-    logDetailedError("Error in getBooks", error);
+    safeLogError("Error in getBooks", error);
 
     // Provide user-friendly error message
     const userMessage =
