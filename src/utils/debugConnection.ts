@@ -9,6 +9,18 @@ import { checkConnectionHealth } from "./connectionHealthCheck";
 export const debugConnection = async () => {
   console.log("🔍 Starting connection debug session...");
 
+  // First check environment configuration
+  console.log("🔧 Checking environment configuration...");
+  console.log(
+    "Supabase URL:",
+    import.meta.env.VITE_SUPABASE_URL || "Using fallback",
+  );
+  console.log("API Key present:", !!import.meta.env.VITE_SUPABASE_ANON_KEY);
+  console.log(
+    "API Key starts with:",
+    import.meta.env.VITE_SUPABASE_ANON_KEY?.substring(0, 10) + "...",
+  );
+
   try {
     // Test 1: Basic Supabase connection
     console.log("📡 Testing basic Supabase connection...");
@@ -19,6 +31,22 @@ export const debugConnection = async () => {
 
     if (error) {
       console.error("❌ Basic connection test failed:");
+      console.error("Error message:", error.message);
+      console.error("Error code:", error.code);
+      console.error("Error details:", error.details);
+
+      if (
+        error.message?.includes("Invalid API key") ||
+        error.message?.includes("JWT")
+      ) {
+        console.error("🚨 API KEY ISSUE DETECTED:");
+        console.error(
+          "- The Supabase API key appears to be invalid or expired",
+        );
+        console.error("- Please check your environment variables");
+        console.error("- Make sure VITE_SUPABASE_ANON_KEY is correct");
+      }
+
       safeLogError("Basic Connection Test", error);
     } else {
       console.log("✅ Basic connection test passed");
