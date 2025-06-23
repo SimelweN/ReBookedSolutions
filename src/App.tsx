@@ -50,12 +50,32 @@ const retryImport = (
 ): Promise<any> => {
   return importFn().catch((error) => {
     console.warn(`Dynamic import failed, retries left: ${retries}`, error);
-    if (retries > 0) {
-      // Add delay before retry
-      return new Promise((resolve) => setTimeout(resolve, 1000)).then(() =>
+
+    // Check if it's a network-related error
+    const isNetworkError =
+      error.message?.includes("Failed to fetch") ||
+      error.message?.includes("NetworkError") ||
+      error.message?.includes("dynamically imported module");
+
+    if (retries > 0 && isNetworkError) {
+      // Add exponential backoff for network errors
+      const delay = (4 - retries) * 1500;
+      console.log(`Retrying dynamic import in ${delay}ms...`);
+
+      return new Promise((resolve) => setTimeout(resolve, delay)).then(() =>
         retryImport(importFn, retries - 1),
       );
     }
+
+    // Log detailed error information
+    console.error("Dynamic import failed permanently:", {
+      error: error.message,
+      stack: error.stack,
+      url: window.location.href,
+      userAgent: navigator.userAgent,
+      online: navigator.onLine,
+    });
+
     throw error;
   });
 };
