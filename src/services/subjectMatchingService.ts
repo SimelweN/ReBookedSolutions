@@ -478,3 +478,47 @@ export function getSubjectAlternatives(subjectName: string): string[] {
   const mapping = findSubjectMapping(subjectName);
   return mapping?.synonyms || [];
 }
+
+/**
+ * Test function to verify subject matching works correctly
+ * This helps identify matching issues during development
+ */
+export function testSubjectMatching(): void {
+  console.log("=== Subject Matching Test Results ===");
+
+  // Test cases that should match
+  const testCases = [
+    { user: "English Home Language", required: "English", shouldMatch: true },
+    {
+      user: "English First Additional Language",
+      required: "English",
+      shouldMatch: true,
+    },
+    { user: "Mathematics", required: "Mathematics", shouldMatch: true },
+    { user: "Maths", required: "Mathematics", shouldMatch: true },
+    {
+      user: "Physical Sciences",
+      required: "Physical Sciences",
+      shouldMatch: true,
+    },
+    { user: "Physics", required: "Physical Sciences", shouldMatch: true },
+    { user: "Life Sciences", required: "Life Sciences", shouldMatch: true },
+    { user: "Biology", required: "Life Sciences", shouldMatch: true },
+  ];
+
+  testCases.forEach((testCase) => {
+    const result = matchSubjects(testCase.user, testCase.required);
+    const status =
+      result.isMatch === testCase.shouldMatch ? "✅ PASS" : "❌ FAIL";
+    console.log(
+      `${status}: "${testCase.user}" vs "${testCase.required}" - Match: ${result.isMatch}, Confidence: ${result.confidence}, Reason: ${result.reason}`,
+    );
+  });
+
+  console.log("=== End Test Results ===");
+}
+
+// Uncomment this line to run tests in development
+if (typeof window !== "undefined" && import.meta.env.DEV) {
+  // testSubjectMatching();
+}
