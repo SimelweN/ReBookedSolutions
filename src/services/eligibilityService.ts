@@ -94,6 +94,16 @@ export function assessEligibility(
     const almostMeetsAPS = apsGap > 0 && apsGap <= maxAPSGap;
 
     // Subject Assessment
+    console.log("🎯 Eligibility Assessment Debug:", {
+      courseName: course.name,
+      courseSubjects: course.subjects,
+      userSubjects: userSubjects.map((s) => ({
+        name: s.name,
+        level: s.level,
+        points: s.points,
+      })),
+    });
+
     const subjectResult = checkSubjectRequirements(
       userSubjects.map((s) => ({
         name: s.name,
