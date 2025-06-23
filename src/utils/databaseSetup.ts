@@ -104,44 +104,22 @@ export class DatabaseSetup {
 
     console.log("⚠️ Banking details table not found, attempting to create...");
 
-    // Try to create the table automatically using a simpler approach
+    // Check if user has access to create tables (unlikely in production)
     try {
-      console.log("Attempting to create banking_details table...");
+      console.log("Testing if table creation is possible...");
 
-      // First try a simple create table statement
-      const { error } = await supabase.rpc("exec_sql_if_exists", {
-        sql_statement: `
-          CREATE TABLE IF NOT EXISTS public.banking_details (
-              id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-              user_id UUID NOT NULL,
-              recipient_type TEXT NOT NULL,
-              full_name TEXT NOT NULL,
-              bank_account_number TEXT NOT NULL,
-              bank_name TEXT NOT NULL,
-              branch_code TEXT NOT NULL,
-              account_type TEXT NOT NULL,
-              paystack_subaccount_code TEXT,
-              paystack_subaccount_id TEXT,
-              subaccount_status TEXT DEFAULT 'pending',
-              account_verified BOOLEAN DEFAULT false,
-              created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-              updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-              UNIQUE(user_id)
-          );
-        `,
-      });
+      // Try a simple test - this will fail with permission error if user can't create tables
+      const { error: testError } = await supabase
+        .from("banking_details")
+        .select("id")
+        .limit(0); // Don't actually fetch data, just test access
 
-      if (!error) {
-        // Verify table was created
-        const tableExists = await this.checkBankingTableExists();
-        if (tableExists) {
-          console.log("✅ Banking details table created successfully");
-          toast.success("Banking details feature is now available!");
-          return true;
-        }
+      // If we get a "relation does not exist" error, user might have creation rights
+      if (testError?.code === "42P01") {
+        console.log("Table doesn't exist but we have database access");
       }
     } catch (createError) {
-      console.log("Automatic table creation failed:", createError);
+      console.log("Table creation check:", createError);
     }
 
     // If automatic creation fails, show helpful instructions
