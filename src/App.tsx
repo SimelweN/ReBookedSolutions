@@ -19,6 +19,7 @@ import { validateApiKey } from "./utils/validateApiKey";
 import { PaymentTester } from "./utils/paymentTester";
 import { testPaymentSetup } from "./utils/testPaymentSetup";
 import { DatabaseSetup } from "./utils/databaseSetup";
+import { debugBankingDetails } from "./utils/debugBankingDetails";
 import "./App.css";
 
 // Initialize debug utilities in development
@@ -28,6 +29,7 @@ if (import.meta.env.DEV) {
   (window as any).PaymentTester = PaymentTester;
   (window as any).testPaymentSetup = testPaymentSetup;
   (window as any).DatabaseSetup = DatabaseSetup;
+  (window as any).debugBankingDetails = debugBankingDetails;
   console.log("🛠️ Debug utilities available:");
   console.log("  - debugConnection() - Full connection test");
   console.log("  - validateApiKey() - Check API key validity");
@@ -38,6 +40,7 @@ if (import.meta.env.DEV) {
   console.log(
     "  - DatabaseSetup.showSetupInstructions() - Check database setup",
   );
+  console.log("  - debugBankingDetails() - Debug banking details errors");
 }
 
 // Lazy load components for better performance
