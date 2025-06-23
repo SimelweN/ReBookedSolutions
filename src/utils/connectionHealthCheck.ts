@@ -266,14 +266,7 @@ export const retryWithConnection = async <T>(
         if (!isConnected) {
           const connectionError = new Error("No connection available");
           console.error(
-            `[ConnectionHealthCheck] Connection test failed on attempt ${attempt}:`,
-            {
-              message: "No connection available",
-              attempt,
-              maxRetries,
-              timestamp: new Date().toISOString(),
-              onlineStatus: navigator.onLine,
-            },
+            `[ConnectionHealthCheck] Connection test failed on attempt ${attempt}: No connection available`,
           );
           throw connectionError;
         }
@@ -288,15 +281,7 @@ export const retryWithConnection = async <T>(
       const errorCode = (error as any)?.code || "NO_CODE";
 
       console.error(
-        `[ConnectionHealthCheck] Operation failed on attempt ${attempt}:`,
-        {
-          message: errorMessage,
-          code: errorCode,
-          attempt,
-          maxRetries,
-          willRetry: attempt < maxRetries,
-          timestamp: new Date().toISOString(),
-        },
+        `[ConnectionHealthCheck] Operation failed on attempt ${attempt}: ${errorMessage} (${errorCode})`,
       );
 
       // Don't retry on certain errors
@@ -319,18 +304,11 @@ export const retryWithConnection = async <T>(
     }
   }
 
-  console.error(`[ConnectionHealthCheck] All retry attempts failed:`, {
-    finalError:
-      lastError instanceof Error
-        ? {
-            message: lastError.message,
-            name: lastError.name,
-            code: (lastError as any)?.code,
-          }
-        : String(lastError),
-    attempts: maxRetries,
-    timestamp: new Date().toISOString(),
-  });
+  const finalErrorMessage =
+    lastError instanceof Error ? lastError.message : String(lastError);
+  console.error(
+    `[ConnectionHealthCheck] All retry attempts failed: ${finalErrorMessage}`,
+  );
 
   throw lastError;
 };
