@@ -63,7 +63,21 @@ const BankingDetailsSection: React.FC = () => {
         });
       }
     } catch (error) {
-      console.error("Error loading banking details:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error(`Error loading banking details: ${errorMessage}`);
+
+      // Show user-friendly error message
+      if (
+        errorMessage.includes("relation") &&
+        errorMessage.includes("does not exist")
+      ) {
+        toast.error(
+          "Banking details feature is not available yet. Please contact support.",
+        );
+      } else {
+        toast.error("Failed to load banking details. Please try again later.");
+      }
     } finally {
       setIsLoading(false);
     }
