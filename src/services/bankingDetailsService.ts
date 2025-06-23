@@ -32,17 +32,30 @@ export class BankingDetailsService {
 
   /**
    * Verify user password before accessing banking details
+   * Uses a temporary Supabase client to avoid interfering with the main session
    */
   static async verifyPassword(
     email: string,
     password: string,
   ): Promise<boolean> {
     try {
-      // Store original session
-      const originalSession = await supabase.auth.getSession();
+      // Create a new Supabase client instance for verification only
+      const { createClient } = await import("@supabase/supabase-js");
 
-      // Attempt to sign in with provided credentials
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const tempClient = createClient(
+        import.meta.env.VITE_SUPABASE_URL,
+        import.meta.env.VITE_SUPABASE_ANON_KEY,
+        {
+          auth: {
+            persistSession: false, // Don't persist this verification session
+            autoRefreshToken: false, // Don't auto-refresh
+            detectSessionInUrl: false, // Don't detect session in URL
+          },
+        },
+      );
+
+      // Attempt to sign in with provided credentials using the temp client
+      const { data, error } = await tempClient.auth.signInWithPassword({
         email: email,
         password: password,
       });
@@ -52,13 +65,7 @@ export class BankingDetailsService {
         return false;
       }
 
-      // Password is correct, but we need to restore the original session
-      if (originalSession.data.session) {
-        // Restore the original session
-        await supabase.auth.setSession(originalSession.data.session);
-      }
-
-      // Store verification in session storage with timestamp
+      // Password is correct - store verification in session storage
       const verificationData = {
         isVerified: true,
         timestamp: Date.now(),
@@ -68,6 +75,7 @@ export class BankingDetailsService {
         JSON.stringify(verificationData),
       );
 
+      // The temp client will be garbage collected, no need to explicitly sign out
       return true;
     } catch (error) {
       console.error("Password verification error:", error);
