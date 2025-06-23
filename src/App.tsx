@@ -522,12 +522,24 @@ if (import.meta.env.DEV) {
   (async () => {
     try {
       const { PaymentFlowTester } = await import("@/utils/testPaymentFlow");
+      const { verifyPaymentSetup } = await import("@/utils/verifyPaymentSetup");
+
       (window as any).PaymentFlowTester = PaymentFlowTester;
+      (window as any).verifyPaymentSetup = verifyPaymentSetup;
+
+      console.log("🧪 Payment testing available:");
+      console.log("  - window.verifyPaymentSetup() - Quick setup check");
       console.log(
-        "🧪 Payment testing available: window.PaymentFlowTester.testPaymentSystem()",
+        "  - window.PaymentFlowTester.testPaymentSystem() - Full system test",
       );
+
+      // Auto-run basic verification
+      setTimeout(async () => {
+        console.log("\n🔍 Auto-running payment setup verification...");
+        await verifyPaymentSetup();
+      }, 2000);
     } catch (error) {
-      console.warn("⚠️ Payment flow tester not available:", error);
+      console.warn("⚠️ Payment testing utilities not available:", error);
     }
   })();
 }
