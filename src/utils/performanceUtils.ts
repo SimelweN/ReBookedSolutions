@@ -1,173 +1,125 @@
-import { IS_PRODUCTION } from "@/config/environment";
+// Performance monitoring utilities for optimization
 
-// Performance monitoring utilities
-export class PerformanceMonitor {
-  private static measurements: Map<string, number> = new Map();
-
-  static startMeasure(name: string): void {
-    if (!IS_PRODUCTION && "performance" in window) {
-      performance.mark(`${name}-start`);
-      this.measurements.set(name, performance.now());
-    }
-  }
-
-  static endMeasure(name: string): number | null {
-    if (!IS_PRODUCTION && "performance" in window) {
-      const startTime = this.measurements.get(name);
-      if (startTime) {
-        const endTime = performance.now();
-        const duration = endTime - startTime;
-
-        performance.mark(`${name}-end`);
-        performance.measure(name, `${name}-start`, `${name}-end`);
-
-        console.log(`⏱️ ${name}: ${duration.toFixed(2)}ms`);
-        this.measurements.delete(name);
-
-        return duration;
-      }
-    }
-    return null;
-  }
-
-  static measureAsync<T>(
-    name: string,
-    asyncFunction: () => Promise<T>,
-  ): Promise<T> {
-    this.startMeasure(name);
-    return asyncFunction().finally(() => {
-      this.endMeasure(name);
-    });
-  }
-}
-
-// Core Web Vitals monitoring
-export const initCoreWebVitals = () => {
-  if (!IS_PRODUCTION) return;
-
-  // Largest Contentful Paint (LCP)
-  if ("PerformanceObserver" in window) {
-    const observer = new PerformanceObserver((list) => {
-      const entries = list.getEntries();
-      const lastEntry = entries[entries.length - 1];
-
-      console.log("LCP:", lastEntry.startTime);
-
-      // You can send this to your analytics service
-      // analytics.track('core_web_vital', {
-      //   metric: 'LCP',
-      //   value: lastEntry.startTime
-      // });
-    });
-
-    observer.observe({ entryTypes: ["largest-contentful-paint"] });
-
-    // First Input Delay (FID)
-    const fidObserver = new PerformanceObserver((list) => {
-      for (const entry of list.getEntries()) {
-        console.log("FID:", entry.processingStart - entry.startTime);
-
-        // analytics.track('core_web_vital', {
-        //   metric: 'FID',
-        //   value: entry.processingStart - entry.startTime
-        // });
-      }
-    });
-
-    fidObserver.observe({ entryTypes: ["first-input"] });
-  }
-
-  // Cumulative Layout Shift (CLS)
-  let clsValue = 0;
-  let clsEntries: PerformanceEntry[] = [];
-
-  if ("PerformanceObserver" in window) {
-    const clsObserver = new PerformanceObserver((list) => {
-      for (const entry of list.getEntries()) {
-        if (!(entry as any).hadRecentInput) {
-          clsEntries.push(entry);
-          clsValue += (entry as any).value;
-        }
-      }
-    });
-
-    clsObserver.observe({ entryTypes: ["layout-shift"] });
-
-    // Report CLS when the page visibility changes
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "hidden") {
-        console.log("CLS:", clsValue);
-
-        // analytics.track('core_web_vital', {
-        //   metric: 'CLS',
-        //   value: clsValue
-        // });
-      }
-    });
+export const measurePerformance = (name: string, fn: () => void) => {
+  if (import.meta.env.DEV) {
+    const start = performance.now();
+    fn();
+    const end = performance.now();
+    console.log(`⚡ ${name} took ${(end - start).toFixed(2)}ms`);
+  } else {
+    fn();
   }
 };
 
-// Image optimization utilities
-export const createOptimizedImageUrl = (
-  originalUrl: string,
+export const measureAsyncPerformance = async <T>(
+  name: string,
+  fn: () => Promise<T>,
+): Promise<T> => {
+  if (import.meta.env.DEV) {
+    const start = performance.now();
+    const result = await fn();
+    const end = performance.now();
+    console.log(`⚡ ${name} took ${(end - start).toFixed(2)}ms`);
+    return result;
+  } else {
+    return await fn();
+  }
+};
+
+// Debounce function for performance optimization
+export const debounce = <T extends (...args: any[]) => void>(
+  func: T,
+  delay: number,
+): ((...args: Parameters<T>) => void) => {
+  let timeoutId: NodeJS.Timeout;
+
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+};
+
+// Throttle function for performance optimization
+export const throttle = <T extends (...args: any[]) => void>(
+  func: T,
+  delay: number,
+): ((...args: Parameters<T>) => void) => {
+  let isThrottled = false;
+
+  return (...args: Parameters<T>) => {
+    if (!isThrottled) {
+      func(...args);
+      isThrottled = true;
+      setTimeout(() => {
+        isThrottled = false;
+      }, delay);
+    }
+  };
+};
+
+// Intersection Observer hook for lazy loading
+export const createIntersectionObserver = (
+  callback: (entries: IntersectionObserverEntry[]) => void,
+  options?: IntersectionObserverInit,
+) => {
+  if (typeof window === "undefined") return null;
+
+  return new IntersectionObserver(callback, {
+    rootMargin: "50px",
+    threshold: 0.1,
+    ...options,
+  });
+};
+
+// Check if user prefers reduced motion
+export const prefersReducedMotion = (): boolean => {
+  if (typeof window === "undefined") return false;
+
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+};
+
+// Optimize images for better performance
+export const optimizeImageSrc = (
+  src: string,
   width?: number,
   height?: number,
-  format: "webp" | "jpg" | "png" = "webp",
 ): string => {
-  // If using a service like Cloudinary or ImageKit, construct optimized URL
-  // For now, return original URL
+  // If it's already a CDN URL with optimization, return as-is
+  if (src.includes("cdn.builder.io") || src.includes("format=webp")) {
+    return src;
+  }
 
-  // Example with Cloudinary:
-  // if (originalUrl.includes('cloudinary.com')) {
-  //   const params = [];
-  //   if (width) params.push(`w_${width}`);
-  //   if (height) params.push(`h_${height}`);
-  //   params.push(`f_${format}`, 'q_auto');
-  //
-  //   return originalUrl.replace('/upload/', `/upload/${params.join(',')}/`);
-  // }
+  // For Builder.io images, add optimization parameters
+  if (src.includes("cdn.builder.io")) {
+    const url = new URL(src);
+    url.searchParams.set("format", "webp");
+    if (width) url.searchParams.set("width", width.toString());
+    if (height) url.searchParams.set("height", height.toString());
+    return url.toString();
+  }
 
-  return originalUrl;
+  return src;
 };
 
-// Lazy loading intersection observer
-export const createLazyLoadObserver = (
-  callback: (element: Element) => void,
-): IntersectionObserver => {
-  return new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          callback(entry.target);
-        }
-      });
-    },
-    {
-      rootMargin: "50px 0px",
-      threshold: 0.1,
-    },
-  );
+// Memory usage tracking (development only)
+export const trackMemoryUsage = (label: string) => {
+  if (import.meta.env.DEV && "memory" in performance) {
+    const memory = (performance as any).memory;
+    console.log(`🧠 Memory (${label}):`, {
+      used: `${(memory.usedJSHeapSize / 1048576).toFixed(2)}MB`,
+      total: `${(memory.totalJSHeapSize / 1048576).toFixed(2)}MB`,
+      limit: `${(memory.jsHeapSizeLimit / 1048576).toFixed(2)}MB`,
+    });
+  }
 };
 
-// Bundle size analyzer (development only)
-export const analyzeBundleSize = () => {
-  if (IS_PRODUCTION) return;
-
-  const scripts = document.querySelectorAll("script[src]");
-  const styles = document.querySelectorAll('link[rel="stylesheet"]');
-
-  console.group("📦 Bundle Analysis");
-  console.log(`Scripts: ${scripts.length}`);
-  console.log(`Stylesheets: ${styles.length}`);
-
-  // Estimate bundle sizes (approximate)
-  let totalEstimatedSize = 0;
-  scripts.forEach((script) => {
-    const src = (script as HTMLScriptElement).src;
-    if (src.includes("index-")) {
-      console.log("Main bundle:", src);
-    }
-  });
-
-  console.groupEnd();
+// Bundle size analysis helper
+export const logBundleInfo = () => {
+  if (import.meta.env.DEV) {
+    console.log("📦 Bundle Info:", {
+      mode: import.meta.env.MODE,
+      dev: import.meta.env.DEV,
+      ssr: import.meta.env.SSR,
+    });
+  }
 };

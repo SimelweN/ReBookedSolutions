@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
@@ -12,52 +12,61 @@ import GoogleMapsProvider from "./contexts/GoogleMapsContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
-import Index from "./pages/Index";
-import BookListing from "./pages/BookListing";
-import BookDetails from "./pages/BookDetails";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Profile from "./pages/Profile";
-import CreateListing from "./pages/CreateListing";
-import GoogleMapsDemo from "./pages/GoogleMapsDemo";
-import MapsTest from "./pages/MapsTest";
-import BasicMapsExample from "./pages/BasicMapsExample";
-import WorkingMapsDemo from "./pages/WorkingMapsDemo";
-import Admin from "./pages/Admin";
-import AdminReports from "./pages/AdminReports";
-import UniversityInfo from "./pages/UniversityInfo";
-import ModernUniversityProfile from "./pages/ModernUniversityProfile";
-import UniversityProfile from "./pages/UniversityProfile";
-import Policies from "./pages/Policies";
-import Privacy from "./pages/Privacy";
-import Terms from "./pages/Terms";
-import NotFound from "./pages/NotFound";
-import Cart from "./pages/Cart";
-import Checkout from "./pages/Checkout";
-import Notifications from "./pages/Notifications";
-import Shipping from "./pages/Shipping";
-import ActivityLog from "./pages/ActivityLog";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import Verify from "./pages/Verify";
-import ContactUs from "./pages/ContactUs";
-import EditBook from "./pages/EditBook";
-import StudyResources from "./pages/StudyResources";
-import Confirm from "./pages/Confirm";
-import ConfirmEmailChange from "./pages/ConfirmEmailChange";
-import Report from "./pages/Report";
-import UserProfile from "./pages/UserProfile";
-import FAQ from "./pages/FAQ";
-import APSDemo from "./pages/APSDemo";
+import LoadingSpinner from "./components/LoadingSpinner";
 import "./App.css";
 
-// Create query client
+// Lazy load components for better performance
+const Index = React.lazy(() => import("./pages/Index"));
+const BookListing = React.lazy(() => import("./pages/BookListing"));
+const BookDetails = React.lazy(() => import("./pages/BookDetails"));
+const Login = React.lazy(() => import("./pages/Login"));
+const Register = React.lazy(() => import("./pages/Register"));
+const Profile = React.lazy(() => import("./pages/Profile"));
+const CreateListing = React.lazy(() => import("./pages/CreateListing"));
+const GoogleMapsDemo = React.lazy(() => import("./pages/GoogleMapsDemo"));
+const MapsTest = React.lazy(() => import("./pages/MapsTest"));
+const BasicMapsExample = React.lazy(() => import("./pages/BasicMapsExample"));
+const WorkingMapsDemo = React.lazy(() => import("./pages/WorkingMapsDemo"));
+const Admin = React.lazy(() => import("./pages/Admin"));
+const AdminReports = React.lazy(() => import("./pages/AdminReports"));
+const UniversityInfo = React.lazy(() => import("./pages/UniversityInfo"));
+const ModernUniversityProfile = React.lazy(
+  () => import("./pages/ModernUniversityProfile"),
+);
+const UniversityProfile = React.lazy(() => import("./pages/UniversityProfile"));
+const Policies = React.lazy(() => import("./pages/Policies"));
+const Privacy = React.lazy(() => import("./pages/Privacy"));
+const Terms = React.lazy(() => import("./pages/Terms"));
+const NotFound = React.lazy(() => import("./pages/NotFound"));
+const Cart = React.lazy(() => import("./pages/Cart"));
+const Checkout = React.lazy(() => import("./pages/Checkout"));
+const Notifications = React.lazy(() => import("./pages/Notifications"));
+const Shipping = React.lazy(() => import("./pages/Shipping"));
+const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
+const ForgotPassword = React.lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = React.lazy(() => import("./pages/ResetPassword"));
+const Verify = React.lazy(() => import("./pages/Verify"));
+const ContactUs = React.lazy(() => import("./pages/ContactUs"));
+const EditBook = React.lazy(() => import("./pages/EditBook"));
+const StudyResources = React.lazy(() => import("./pages/StudyResources"));
+const Confirm = React.lazy(() => import("./pages/Confirm"));
+const ConfirmEmailChange = React.lazy(
+  () => import("./pages/ConfirmEmailChange"),
+);
+const Report = React.lazy(() => import("./pages/Report"));
+const UserProfile = React.lazy(() => import("./pages/UserProfile"));
+const FAQ = React.lazy(() => import("./pages/FAQ"));
+const APSDemo = React.lazy(() => import("./pages/APSDemo"));
+
+// Create query client with optimized settings
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
       retry: 1,
       refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
     },
     mutations: {
       retry: false,
@@ -65,7 +74,19 @@ const queryClient = new QueryClient({
   },
 });
 
-// Full app is now restored!
+// Optimized loading component
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <LoadingSpinner size="lg" />
+  </div>
+);
+
+// Lazy route wrapper with error boundary
+const LazyRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <ErrorBoundary level="route">
+    <Suspense fallback={<PageLoader />}>{children}</Suspense>
+  </ErrorBoundary>
+);
 
 function App() {
   return (
@@ -79,70 +100,261 @@ function App() {
                   <AuthErrorHandler />
                   <ScrollToTop />
                   <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/books" element={<BookListing />} />
-                    <Route path="/books/:id" element={<BookDetails />} />
-                    <Route path="/book/:id" element={<BookDetails />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
+                    <Route
+                      path="/"
+                      element={
+                        <LazyRoute>
+                          <Index />
+                        </LazyRoute>
+                      }
+                    />
+                    <Route
+                      path="/books"
+                      element={
+                        <LazyRoute>
+                          <BookListing />
+                        </LazyRoute>
+                      }
+                    />
+                    <Route
+                      path="/books/:id"
+                      element={
+                        <LazyRoute>
+                          <BookDetails />
+                        </LazyRoute>
+                      }
+                    />
+                    <Route
+                      path="/book/:id"
+                      element={
+                        <LazyRoute>
+                          <BookDetails />
+                        </LazyRoute>
+                      }
+                    />
+                    <Route
+                      path="/login"
+                      element={
+                        <LazyRoute>
+                          <Login />
+                        </LazyRoute>
+                      }
+                    />
+                    <Route
+                      path="/register"
+                      element={
+                        <LazyRoute>
+                          <Register />
+                        </LazyRoute>
+                      }
+                    />
                     <Route
                       path="/forgot-password"
-                      element={<ForgotPassword />}
+                      element={
+                        <LazyRoute>
+                          <ForgotPassword />
+                        </LazyRoute>
+                      }
                     />
-                    <Route path="/reset-password" element={<ResetPassword />} />
-                    <Route path="/verify" element={<Verify />} />
-                    <Route path="/confirm" element={<Confirm />} />
+                    <Route
+                      path="/reset-password"
+                      element={
+                        <LazyRoute>
+                          <ResetPassword />
+                        </LazyRoute>
+                      }
+                    />
+                    <Route
+                      path="/verify"
+                      element={
+                        <LazyRoute>
+                          <Verify />
+                        </LazyRoute>
+                      }
+                    />
+                    <Route
+                      path="/confirm"
+                      element={
+                        <LazyRoute>
+                          <Confirm />
+                        </LazyRoute>
+                      }
+                    />
                     <Route
                       path="/confirm-email-change"
-                      element={<ConfirmEmailChange />}
+                      element={
+                        <LazyRoute>
+                          <ConfirmEmailChange />
+                        </LazyRoute>
+                      }
                     />
 
                     {/* University and Campus Routes */}
                     <Route
                       path="/university-info"
-                      element={<UniversityInfo />}
+                      element={
+                        <LazyRoute>
+                          <UniversityInfo />
+                        </LazyRoute>
+                      }
                     />
                     <Route
                       path="/university-profile"
-                      element={<ModernUniversityProfile />}
+                      element={
+                        <LazyRoute>
+                          <ModernUniversityProfile />
+                        </LazyRoute>
+                      }
                     />
                     <Route
                       path="/university/:id"
-                      element={<UniversityProfile />}
+                      element={
+                        <LazyRoute>
+                          <UniversityProfile />
+                        </LazyRoute>
+                      }
                     />
                     <Route
                       path="/study-resources"
-                      element={<StudyResources />}
+                      element={
+                        <LazyRoute>
+                          <StudyResources />
+                        </LazyRoute>
+                      }
                     />
-                    <Route path="/study-tips" element={<StudyResources />} />
-                    <Route path="/aps-demo" element={<APSDemo />} />
+                    <Route
+                      path="/study-tips"
+                      element={
+                        <LazyRoute>
+                          <StudyResources />
+                        </LazyRoute>
+                      }
+                    />
+                    <Route
+                      path="/aps-demo"
+                      element={
+                        <LazyRoute>
+                          <APSDemo />
+                        </LazyRoute>
+                      }
+                    />
 
                     {/* Shopping and Cart Routes */}
-                    <Route path="/cart" element={<Cart />} />
-                    <Route path="/checkout/:id" element={<Checkout />} />
-                    <Route path="/checkout/cart" element={<Checkout />} />
-                    <Route path="/shipping" element={<Shipping />} />
+                    <Route
+                      path="/cart"
+                      element={
+                        <LazyRoute>
+                          <Cart />
+                        </LazyRoute>
+                      }
+                    />
+                    <Route
+                      path="/checkout/:id"
+                      element={
+                        <LazyRoute>
+                          <Checkout />
+                        </LazyRoute>
+                      }
+                    />
+                    <Route
+                      path="/checkout/cart"
+                      element={
+                        <LazyRoute>
+                          <Checkout />
+                        </LazyRoute>
+                      }
+                    />
+                    <Route
+                      path="/shipping"
+                      element={
+                        <LazyRoute>
+                          <Shipping />
+                        </LazyRoute>
+                      }
+                    />
 
                     {/* Support and Info Pages */}
-                    <Route path="/contact" element={<ContactUs />} />
-                    <Route path="/faq" element={<FAQ />} />
-                    <Route path="/policies" element={<Policies />} />
-                    <Route path="/privacy" element={<Privacy />} />
-                    <Route path="/terms" element={<Terms />} />
+                    <Route
+                      path="/contact"
+                      element={
+                        <LazyRoute>
+                          <ContactUs />
+                        </LazyRoute>
+                      }
+                    />
+                    <Route
+                      path="/faq"
+                      element={
+                        <LazyRoute>
+                          <FAQ />
+                        </LazyRoute>
+                      }
+                    />
+                    <Route
+                      path="/policies"
+                      element={
+                        <LazyRoute>
+                          <Policies />
+                        </LazyRoute>
+                      }
+                    />
+                    <Route
+                      path="/privacy"
+                      element={
+                        <LazyRoute>
+                          <Privacy />
+                        </LazyRoute>
+                      }
+                    />
+                    <Route
+                      path="/terms"
+                      element={
+                        <LazyRoute>
+                          <Terms />
+                        </LazyRoute>
+                      }
+                    />
                     <Route
                       path="/google-maps-demo"
-                      element={<GoogleMapsDemo />}
+                      element={
+                        <LazyRoute>
+                          <GoogleMapsDemo />
+                        </LazyRoute>
+                      }
                     />
-                    <Route path="/maps-test" element={<MapsTest />} />
-                    <Route path="/basic-maps" element={<BasicMapsExample />} />
-                    <Route path="/working-maps" element={<WorkingMapsDemo />} />
+                    <Route
+                      path="/maps-test"
+                      element={
+                        <LazyRoute>
+                          <MapsTest />
+                        </LazyRoute>
+                      }
+                    />
+                    <Route
+                      path="/basic-maps"
+                      element={
+                        <LazyRoute>
+                          <BasicMapsExample />
+                        </LazyRoute>
+                      }
+                    />
+                    <Route
+                      path="/working-maps"
+                      element={
+                        <LazyRoute>
+                          <WorkingMapsDemo />
+                        </LazyRoute>
+                      }
+                    />
 
                     {/* Protected Routes */}
                     <Route
                       path="/profile"
                       element={
                         <ProtectedRoute>
-                          <Profile />
+                          <LazyRoute>
+                            <Profile />
+                          </LazyRoute>
                         </ProtectedRoute>
                       }
                     />
@@ -150,7 +362,9 @@ function App() {
                       path="/user-profile"
                       element={
                         <ProtectedRoute>
-                          <UserProfile />
+                          <LazyRoute>
+                            <UserProfile />
+                          </LazyRoute>
                         </ProtectedRoute>
                       }
                     />
@@ -158,7 +372,9 @@ function App() {
                       path="/create-listing"
                       element={
                         <ProtectedRoute>
-                          <CreateListing />
+                          <LazyRoute>
+                            <CreateListing />
+                          </LazyRoute>
                         </ProtectedRoute>
                       }
                     />
@@ -166,7 +382,9 @@ function App() {
                       path="/edit-book/:id"
                       element={
                         <ProtectedRoute>
-                          <EditBook />
+                          <LazyRoute>
+                            <EditBook />
+                          </LazyRoute>
                         </ProtectedRoute>
                       }
                     />
@@ -174,7 +392,9 @@ function App() {
                       path="/notifications"
                       element={
                         <ProtectedRoute>
-                          <Notifications />
+                          <LazyRoute>
+                            <Notifications />
+                          </LazyRoute>
                         </ProtectedRoute>
                       }
                     />
@@ -182,7 +402,9 @@ function App() {
                       path="/activity"
                       element={
                         <ProtectedRoute>
-                          <ActivityLog />
+                          <LazyRoute>
+                            <ActivityLog />
+                          </LazyRoute>
                         </ProtectedRoute>
                       }
                     />
@@ -190,7 +412,9 @@ function App() {
                       path="/report"
                       element={
                         <ProtectedRoute>
-                          <Report />
+                          <LazyRoute>
+                            <Report />
+                          </LazyRoute>
                         </ProtectedRoute>
                       }
                     />
@@ -200,7 +424,9 @@ function App() {
                       path="/admin"
                       element={
                         <AdminProtectedRoute>
-                          <Admin />
+                          <LazyRoute>
+                            <Admin />
+                          </LazyRoute>
                         </AdminProtectedRoute>
                       }
                     />
@@ -208,12 +434,21 @@ function App() {
                       path="/admin/reports"
                       element={
                         <AdminProtectedRoute>
-                          <AdminReports />
+                          <LazyRoute>
+                            <AdminReports />
+                          </LazyRoute>
                         </AdminProtectedRoute>
                       }
                     />
 
-                    <Route path="*" element={<NotFound />} />
+                    <Route
+                      path="*"
+                      element={
+                        <LazyRoute>
+                          <NotFound />
+                        </LazyRoute>
+                      }
+                    />
                   </Routes>
                 </Router>
               </CartProvider>
@@ -227,4 +462,5 @@ function App() {
     </ErrorBoundary>
   );
 }
+
 export default App;
