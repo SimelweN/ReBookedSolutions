@@ -24,19 +24,57 @@ export const validateAddress = (address: Address): boolean => {
 export const canUserListBooks = async (userId: string): Promise<boolean> => {
   try {
     // Check if user has addresses set up (addresses_same indicates address setup completion)
-    const { data, error } = await supabase
+    const { data: profileData, error: profileError } = await supabase
       .from("profiles")
       .select("addresses_same")
       .eq("id", userId)
       .single();
 
-    if (error) {
-      safeLogError("Error checking if user can list books", error, { userId });
+    if (profileError) {
+      safeLogError(
+        "Error checking user profile for book listing",
+        profileError,
+        { userId },
+      );
       return false;
     }
 
-    // User can list books if they have completed address setup
-    return data?.addresses_same !== null;
+    // Check if addresses are set up
+    const hasAddresses = profileData?.addresses_same !== null;
+
+    if (!hasAddresses) {
+      console.log(`User ${userId} cannot list books: addresses not set up`);
+      return false;
+    }
+
+    // Check if user has banking details set up
+    const { data: bankingData, error: bankingError } = await supabase
+      .from("banking_details")
+      .select("id, account_verified, paystack_subaccount_code")
+      .eq("user_id", userId)
+      .single();
+
+    if (bankingError) {
+      // No banking details found or error accessing them
+      console.log(`User ${userId} cannot list books: no banking details found`);
+      return false;
+    }
+
+    // Check if banking details are properly set up and verified
+    const hasBankingSetup =
+      bankingData &&
+      bankingData.account_verified === true &&
+      bankingData.paystack_subaccount_code;
+
+    if (!hasBankingSetup) {
+      console.log(
+        `User ${userId} cannot list books: banking details not verified or incomplete`,
+      );
+      return false;
+    }
+
+    console.log(`User ${userId} can list books: all requirements met`);
+    return true;
   } catch (error) {
     safeLogError("Error in canUserListBooks", error, { userId });
     return false;
