@@ -49,17 +49,29 @@ serve(async (req) => {
       );
     }
 
+    // Ensure amount is in kobo (smallest currency unit)
+    const amountInKobo = Math.round(amount);
+    const bookPriceInKobo = Math.round(bookPrice * 100);
+    const deliveryFeeInKobo = Math.round(deliveryFee * 100);
+
     const reference = `book_${bookId}_${Date.now()}`;
     const sellerShare = 90; // 90% to seller, 10% to platform
 
     const payload = {
       email,
-      amount,
+      amount: amountInKobo, // Already in kobo from frontend
       currency: "ZAR",
       reference,
       callback_url,
-      metadata,
-      // Split payment - 90% of book price to seller, platform keeps 10% + all delivery fees
+      metadata: {
+        ...metadata,
+        book_price_kobo: bookPriceInKobo,
+        delivery_fee_kobo: deliveryFeeInKobo,
+        total_amount_kobo: amountInKobo,
+        seller_id: sellerId,
+        book_id: bookId,
+      },
+      // Split payment configuration - 90% of total to seller, 10% to platform
       split: {
         type: "percentage",
         bearer_type: "subaccount",
@@ -71,7 +83,7 @@ serve(async (req) => {
         ],
       },
       subaccount: sellerSubaccountCode,
-      transaction_charge: 0,
+      transaction_charge: 0, // Platform takes percentage, not fixed charge
     };
 
     console.log("Initializing Paystack payment:", {
