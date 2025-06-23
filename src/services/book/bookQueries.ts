@@ -381,22 +381,14 @@ const getUserBooksWithFallback = async (userId: string): Promise<Book[]> => {
       const errorCode = booksError.code || "NO_CODE";
 
       console.error(
-        `[BookQueries - getUserBooksWithFallback - books query failed]`,
-        {
-          message: errorMessage,
-          code: errorCode,
-          details: booksError.details,
-          hint: booksError.hint,
-          userId,
-        },
+        `[getUserBooksWithFallback - books query failed] ${errorMessage} (${errorCode})`,
       );
 
-      logDetailedError("getUserBooksWithFallback - books query failed", {
-        message: errorMessage,
-        code: errorCode,
-        userId,
-        originalError: booksError,
-      });
+      logDetailedError(
+        "getUserBooksWithFallback - books query failed",
+        booksError,
+      );
+
       throw new Error(
         `Failed to fetch user books: ${errorMessage} (Code: ${errorCode})`,
       );
@@ -424,22 +416,13 @@ const getUserBooksWithFallback = async (userId: string): Promise<Book[]> => {
         const errorCode = profileError.code || "NO_CODE";
 
         console.error(
-          `[BookQueries - getUserBooksWithFallback - profile query failed]`,
-          {
-            message: errorMessage,
-            code: errorCode,
-            details: profileError.details,
-            hint: profileError.hint,
-            userId,
-          },
+          `[getUserBooksWithFallback - profile query failed] ${errorMessage} (${errorCode})`,
         );
 
-        logDetailedError("getUserBooksWithFallback - profile query failed", {
-          message: errorMessage,
-          code: errorCode,
-          userId,
-          originalError: profileError,
-        });
+        logDetailedError(
+          "getUserBooksWithFallback - profile query failed",
+          profileError,
+        );
       } else {
         profileData = profile;
         console.log(
