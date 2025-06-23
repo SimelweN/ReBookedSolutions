@@ -71,6 +71,7 @@ import {
   getAPSScoreDescription,
 } from "@/utils/apsCalculation";
 import { validateAPSSubjectsEnhanced } from "@/utils/enhancedValidation";
+import { normalizeSubjectName } from "@/utils/subjectNormalization";
 import UniversitySpecificAPSDisplay from "./UniversitySpecificAPSDisplay";
 import EligibleProgramsSection from "./EligibleProgramsSection";
 
