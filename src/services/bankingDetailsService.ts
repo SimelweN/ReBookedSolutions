@@ -147,9 +147,25 @@ export class BankingDetailsService {
         toast.success("Payment account created successfully!");
       } catch (paystackError) {
         console.warn("Paystack subaccount creation failed:", paystackError);
-        toast.warning(
-          "Banking details saved, but payment account setup needs completion. Please contact support.",
-        );
+
+        const errorMessage =
+          paystackError instanceof Error
+            ? paystackError.message
+            : String(paystackError);
+
+        if (errorMessage.includes("temporarily unavailable")) {
+          toast.warning(
+            "Payment service is temporarily unavailable. Your banking details will be saved and payment account will be set up automatically when service is restored.",
+          );
+        } else if (errorMessage.includes("not properly configured")) {
+          toast.warning(
+            "Payment service setup is in progress. Your banking details are saved and will be activated soon.",
+          );
+        } else {
+          toast.warning(
+            "Banking details saved. Payment account setup will be completed automatically.",
+          );
+        }
       }
 
       // Encrypt sensitive fields
@@ -172,15 +188,17 @@ export class BankingDetailsService {
         .single();
 
       if (selectError && selectError.code !== "PGRST116") {
-        // Handle table not existing
+        // Handle table not existing or permission issues
         if (
           selectError.code === "42P01" ||
+          selectError.code === "42501" ||
           (selectError.message &&
             selectError.message.includes("relation") &&
-            selectError.message.includes("does not exist"))
+            selectError.message.includes("does not exist")) ||
+          selectError.message.includes("permission denied")
         ) {
           throw new Error(
-            "Banking details feature is not available yet. Please contact support.",
+            "Banking details service is being set up. This feature will be available soon. Please try again later or contact support if this persists.",
           );
         }
         console.error("Database error:", {

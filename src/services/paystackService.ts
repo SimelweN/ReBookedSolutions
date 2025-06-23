@@ -74,7 +74,26 @@ export class PaystackService {
       );
 
       if (error) {
-        throw new Error(error.message || "Failed to create subaccount");
+        console.error("Edge Function error:", error);
+
+        // Check if it's a network/connectivity issue
+        if (error.message?.includes("Failed to send a request")) {
+          throw new Error(
+            "Payment service is temporarily unavailable. Please try again later or contact support.",
+          );
+        }
+
+        // Check if it's a configuration issue
+        if (
+          error.message?.includes("MISSING_SECRET_KEY") ||
+          error.message?.includes("configuration")
+        ) {
+          throw new Error(
+            "Payment service is not properly configured. Please contact support.",
+          );
+        }
+
+        throw new Error(error.message || "Failed to create payment account");
       }
 
       if (!data.success) {
