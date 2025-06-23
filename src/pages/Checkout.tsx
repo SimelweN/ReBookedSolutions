@@ -90,6 +90,8 @@ const Checkout = () => {
   const [loadingQuotes, setLoadingQuotes] = useState(false);
   const [showSalePopup, setShowSalePopup] = useState(false);
   const [showCommitReminderModal, setShowCommitReminderModal] = useState(false);
+  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
+  const [paymentReference, setPaymentReference] = useState<string>("");
   const [saleData, setSaleData] = useState<{
     bookTitle: string;
     bookPrice: number;
