@@ -63,28 +63,66 @@ const CreateListing = () => {
   const [sellerPolicyAccepted, setSellerPolicyAccepted] = useState(false);
   const [canListBooks, setCanListBooks] = useState<boolean | null>(null);
   const [isCheckingAddress, setIsCheckingAddress] = useState(true);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   // Check if user can list books on component mount
   useEffect(() => {
-    const checkAddressStatus = async () => {
+    const checkUserRequirements = async () => {
       if (!user) {
         setCanListBooks(false);
+        setValidationErrors(["Please log in to list books"]);
         setIsCheckingAddress(false);
         return;
       }
 
       try {
-        const canList = await canUserListBooks(user.id);
+        const errors: string[] = [];
+
+        // Check addresses
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("addresses_same")
+          .eq("id", user.id)
+          .single();
+
+        if (!profileData || profileData.addresses_same === null) {
+          errors.push(
+            "Please set up your pickup and shipping addresses in your profile",
+          );
+        }
+
+        // Check banking details
+        const { data: bankingData } = await supabase
+          .from("banking_details")
+          .select("id, account_verified, paystack_subaccount_code")
+          .eq("user_id", user.id)
+          .single();
+
+        if (!bankingData) {
+          errors.push("Please set up your banking details to receive payments");
+        } else if (!bankingData.account_verified) {
+          errors.push("Please verify your banking details");
+        } else if (!bankingData.paystack_subaccount_code) {
+          errors.push("Payment account setup is incomplete");
+        }
+
+        setValidationErrors(errors);
+        const canList = errors.length === 0;
         setCanListBooks(canList);
+
+        if (!canList) {
+          console.log("User cannot list books. Missing requirements:", errors);
+        }
       } catch (error) {
-        console.error("Error checking address status:", error);
+        console.error("Error checking user requirements:", error);
         setCanListBooks(false);
+        setValidationErrors(["Error checking account requirements"]);
       } finally {
         setIsCheckingAddress(false);
       }
     };
 
-    checkAddressStatus();
+    checkUserRequirements();
   }, [user]);
 
   const handleInputChange = (
