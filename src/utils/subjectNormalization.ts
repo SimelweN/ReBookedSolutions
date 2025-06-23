@@ -36,6 +36,15 @@ const SUBJECT_NORMALIZATIONS: SubjectMapping[] = [
     aliases: ["English HL", "English", "English First Language"],
   },
   {
+    standard: "English",
+    aliases: [
+      "English Home Language",
+      "English HL",
+      "English First Additional Language",
+      "English FAL",
+    ],
+  },
+  {
     standard: "English First Additional Language",
     aliases: ["English FAL", "English Additional"],
   },
