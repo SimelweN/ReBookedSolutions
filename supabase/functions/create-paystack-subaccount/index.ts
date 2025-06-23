@@ -36,15 +36,38 @@ serve(async (req) => {
   }
 
   try {
+    console.log("Starting subaccount creation process...");
+
     if (!PAYSTACK_SECRET_KEY) {
       console.error("PAYSTACK_SECRET_KEY environment variable is not set");
       return new Response(
         JSON.stringify({
           success: false,
-          message: "Payment service configuration error",
+          message: "Payment service is not configured. Please contact support.",
+          error_code: "MISSING_SECRET_KEY",
         }),
         {
           status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    console.log("Paystack secret key is present, proceeding with request...");
+
+    let requestBody;
+    try {
+      requestBody = await req.json();
+    } catch (parseError) {
+      console.error("Failed to parse request body:", parseError);
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "Invalid request format",
+          error_code: "INVALID_JSON",
+        }),
+        {
+          status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         },
       );
@@ -57,13 +80,26 @@ serve(async (req) => {
       primary_contact_email,
       primary_contact_name,
       metadata,
-    } = await req.json();
+    } = requestBody;
+
+    console.log("Received request:", {
+      business_name,
+      bank_name,
+      primary_contact_email,
+    });
 
     if (!business_name || !bank_name || !account_number) {
+      const missingFields = [];
+      if (!business_name) missingFields.push("business_name");
+      if (!bank_name) missingFields.push("bank_name");
+      if (!account_number) missingFields.push("account_number");
+
+      console.error("Missing required fields:", missingFields);
       return new Response(
         JSON.stringify({
           success: false,
-          message: "Missing required fields",
+          message: `Missing required fields: ${missingFields.join(", ")}`,
+          error_code: "MISSING_FIELDS",
         }),
         {
           status: 400,
@@ -114,11 +150,28 @@ serve(async (req) => {
     const data = await response.json();
 
     if (!response.ok || !data.status) {
-      console.error("Paystack subaccount creation failed:", data);
+      console.error("Paystack subaccount creation failed:", {
+        status: response.status,
+        statusText: response.statusText,
+        data,
+        payload,
+      });
+
+      let errorMessage = "Failed to create payment account";
+      if (data.message) {
+        errorMessage = data.message;
+      } else if (response.status === 401) {
+        errorMessage = "Payment service authentication failed";
+      } else if (response.status === 400) {
+        errorMessage = "Invalid banking details provided";
+      }
+
       return new Response(
         JSON.stringify({
           success: false,
-          message: data.message || `HTTP error! status: ${response.status}`,
+          message: errorMessage,
+          error_code: `PAYSTACK_${response.status}`,
+          details: data,
         }),
         {
           status: response.status,
