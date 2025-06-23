@@ -37,6 +37,7 @@ import PaymentProcessor from "@/components/checkout/PaymentProcessor";
 import CartPaymentProcessor from "@/components/checkout/CartPaymentProcessor";
 import OrderSummary from "@/components/checkout/OrderSummary";
 import ShippingForm from "@/components/checkout/ShippingForm";
+import PaymentSuccess from "@/components/checkout/PaymentSuccess";
 
 interface AddressData {
   complex?: string;
