@@ -99,7 +99,7 @@ const BankingDetailsSection: React.FC = () => {
     setPasswordError("");
 
     try {
-      const isValid = await BankingDetailsService.verifyCurrentPassword(
+      const isValid = await BankingDetailsService.verifyPassword(
         user.email,
         password,
       );
