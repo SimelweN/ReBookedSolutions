@@ -6,6 +6,7 @@ import {
   calculateUniversitySpecificAPS,
   UniversityAPSCalculation,
 } from "@/services/universitySpecificAPSService";
+import { normalizeSubjectName } from "@/utils/subjectNormalization";
 
 export const calculateAPS = (
   subjects: APSSubject[],
@@ -329,26 +330,29 @@ export const validateAPSSubjects = (
       return { isValid: false, errors, warnings };
     }
 
-    // Check for required subjects
-    const hasEnglish = subjects.some(
-      (s) =>
-        s.name &&
-        s.marks > 0 &&
-        (s.name.toLowerCase().includes("english") ||
-          s.name.toLowerCase().includes("afrikaans")),
-    );
+    // Check for required subjects using normalized names
+    const hasEnglish = subjects.some((s) => {
+      if (!s.name || s.marks <= 0) return false;
+      const normalized = normalizeSubjectName(s.name);
+      return (
+        normalized.includes("English") ||
+        normalized.includes("Afrikaans") ||
+        normalized.includes("Home Language") ||
+        normalized.includes("First Additional Language")
+      );
+    });
 
-    const hasMath = subjects.some(
-      (s) =>
-        s.name &&
-        s.marks > 0 &&
-        (s.name.toLowerCase().includes("mathematics") ||
-          s.name.toLowerCase().includes("mathematical literacy")),
-    );
+    const hasMath = subjects.some((s) => {
+      if (!s.name || s.marks <= 0) return false;
+      const normalized = normalizeSubjectName(s.name);
+      return (
+        normalized === "Mathematics" || normalized === "Mathematical Literacy"
+      );
+    });
 
     if (!hasEnglish) {
       errors.push(
-        "At least one language subject (English or Afrikaans) is required",
+        "At least one home language subject is required (any official SA language)",
       );
     }
 

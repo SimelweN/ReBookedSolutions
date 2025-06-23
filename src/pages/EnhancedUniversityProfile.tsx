@@ -65,6 +65,10 @@ import {
   getUniversityLogoPath,
   createLogoFallbackHandler,
 } from "@/utils/universityLogoUtils";
+import {
+  getUniversitySpecificAPSDisplay,
+  getUniversityAPSMethodology,
+} from "@/utils/universitySpecificAPSDisplay";
 import { getUniversityFaculties } from "@/constants/universities/comprehensive-course-database";
 import { toast } from "sonner";
 import "@/styles/university-profile-mobile.css";
@@ -74,7 +78,7 @@ import "@/styles/university-profile-mobile.css";
  * Addresses critical errors in program assignment and user experience
  */
 
-const EnhancedUniversityProfile: React.FC = () => {
+const EnhancedUniversityProfile: React.FC = React.memo(() => {
   const { id: universityId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -322,6 +326,36 @@ const EnhancedUniversityProfile: React.FC = () => {
 
     return baseStats;
   }, [universityData.university, facultiesData.statistics, hasValidProfile]);
+
+  // Enhanced qualification summary with eligibility statistics
+  const enhancedQualificationSummary = useMemo(() => {
+    if (!hasValidProfile || !userProfile) return null;
+
+    const totalPrograms = facultiesData.statistics.totalDegrees;
+    const eligible = facultiesData.statistics.eligibleDegrees;
+
+    // Calculate almost eligible (programs within APS gap)
+    const almostEligible = facultiesData.faculties.reduce((total, faculty) => {
+      return (
+        total +
+        (faculty.degrees?.filter((degree) => {
+          const eligibility = checkProgramEligibility(degree);
+          return eligibility.category === "almost-eligible";
+        }).length || 0)
+      );
+    }, 0);
+
+    const percentageEligible =
+      totalPrograms > 0 ? Math.round((eligible / totalPrograms) * 100) : 0;
+
+    return {
+      eligible,
+      almostEligible,
+      totalPrograms,
+      percentageEligible,
+      qualificationText: `You qualify for ${eligible} out of ${totalPrograms} programs (${percentageEligible}% eligible)`,
+    };
+  }, [hasValidProfile, userProfile, facultiesData, checkProgramEligibility]);
 
   // Handle back navigation
   const handleBack = () => {
@@ -881,42 +915,65 @@ const EnhancedUniversityProfile: React.FC = () => {
                     <>
                       {filteredFaculties.length > 0 ? (
                         <div className="space-y-4">
-                          {/* Enhanced Statistics */}
-                          {hasValidProfile && qualificationSummary && (
-                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                              <div className="bg-green-50 rounded-lg p-4 text-center">
-                                <div className="text-2xl font-bold text-green-700">
-                                  {qualificationSummary.eligible}
+                          {/* Enhanced Statistics with Qualification Summary */}
+                          {hasValidProfile && enhancedQualificationSummary && (
+                            <>
+                              {/* Qualification Summary Text */}
+                              <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4 mb-4">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <CheckCircle className="h-5 w-5 text-green-600" />
+                                  <h3 className="font-semibold text-green-800">
+                                    Eligibility Summary
+                                  </h3>
                                 </div>
-                                <div className="text-sm text-green-600">
-                                  Eligible
+                                <p className="text-green-700 font-medium">
+                                  {
+                                    enhancedQualificationSummary.qualificationText
+                                  }
+                                </p>
+                              </div>
+
+                              {/* Statistics Grid */}
+                              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                                <div className="bg-green-50 rounded-lg p-4 text-center">
+                                  <div className="text-2xl font-bold text-green-700">
+                                    {enhancedQualificationSummary.eligible}
+                                  </div>
+                                  <div className="text-sm text-green-600">
+                                    Eligible
+                                  </div>
+                                </div>
+                                <div className="bg-yellow-50 rounded-lg p-4 text-center">
+                                  <div className="text-2xl font-bold text-yellow-700">
+                                    {
+                                      enhancedQualificationSummary.almostEligible
+                                    }
+                                  </div>
+                                  <div className="text-sm text-yellow-600">
+                                    Almost Eligible
+                                  </div>
+                                </div>
+                                <div className="bg-blue-50 rounded-lg p-4 text-center">
+                                  <div className="text-2xl font-bold text-blue-700">
+                                    {enhancedQualificationSummary.totalPrograms}
+                                  </div>
+                                  <div className="text-sm text-blue-600">
+                                    Total Programs
+                                  </div>
+                                </div>
+                                <div className="bg-purple-50 rounded-lg p-4 text-center">
+                                  <div className="text-2xl font-bold text-purple-700">
+                                    {
+                                      enhancedQualificationSummary.percentageEligible
+                                    }
+                                    %
+                                  </div>
+                                  <div className="text-sm text-purple-600">
+                                    Eligibility Rate
+                                  </div>
                                 </div>
                               </div>
-                              <div className="bg-yellow-50 rounded-lg p-4 text-center">
-                                <div className="text-2xl font-bold text-yellow-700">
-                                  {qualificationSummary.almostEligible}
-                                </div>
-                                <div className="text-sm text-yellow-600">
-                                  Almost Eligible
-                                </div>
-                              </div>
-                              <div className="bg-blue-50 rounded-lg p-4 text-center">
-                                <div className="text-2xl font-bold text-blue-700">
-                                  {qualificationSummary.totalPrograms}
-                                </div>
-                                <div className="text-sm text-blue-600">
-                                  Total Programs
-                                </div>
-                              </div>
-                              <div className="bg-purple-50 rounded-lg p-4 text-center">
-                                <div className="text-2xl font-bold text-purple-700">
-                                  {qualificationSummary.percentageEligible}%
-                                </div>
-                                <div className="text-sm text-purple-600">
-                                  Eligibility Rate
-                                </div>
-                              </div>
-                            </div>
+                            </>
                           )}
 
                           {filteredFaculties.map((faculty) => (
@@ -938,17 +995,28 @@ const EnhancedUniversityProfile: React.FC = () => {
                                     </p>
                                   </div>
                                   <div className="flex items-center gap-4">
-                                    <Badge variant="outline">
-                                      {faculty.degrees?.length || 0} programs
-                                    </Badge>
-                                    {hasValidProfile && (
-                                      <Badge className="bg-green-100 text-green-700">
-                                        {
-                                          faculty.degrees.filter(
-                                            (d: any) => d.isEligible,
-                                          ).length
-                                        }{" "}
-                                        eligible
+                                    {hasValidProfile ? (
+                                      <Badge
+                                        variant="outline"
+                                        className="text-sm"
+                                      >
+                                        {faculty.degrees?.length || 0} programs
+                                        (
+                                        {faculty.degrees?.filter((degree) => {
+                                          const eligibility =
+                                            checkProgramEligibility(
+                                              degree,
+                                              fromAPS && apsScore
+                                                ? parseInt(apsScore)
+                                                : undefined,
+                                            );
+                                          return eligibility.eligible;
+                                        }).length || 0}{" "}
+                                        matched)
+                                      </Badge>
+                                    ) : (
+                                      <Badge variant="outline">
+                                        {faculty.degrees?.length || 0} programs
                                       </Badge>
                                     )}
                                     {expandedFaculties.has(faculty.id) ? (
@@ -1022,8 +1090,16 @@ const EnhancedUniversityProfile: React.FC = () => {
                                                       ? "bg-yellow-600 hover:bg-yellow-700"
                                                       : "bg-slate-600 hover:bg-slate-700"
                                                 }`}
+                                                title={getUniversityAPSMethodology(
+                                                  universityId!,
+                                                )}
                                               >
-                                                APS {degree.apsRequirement}
+                                                {
+                                                  getUniversitySpecificAPSDisplay(
+                                                    universityId!,
+                                                    degree.apsRequirement,
+                                                  ).displayText
+                                                }
                                               </Badge>
 
                                               {category === "eligible" && (
@@ -1623,6 +1699,8 @@ const EnhancedUniversityProfile: React.FC = () => {
       </div>
     </>
   );
-};
+});
+
+EnhancedUniversityProfile.displayName = "EnhancedUniversityProfile";
 
 export default EnhancedUniversityProfile;

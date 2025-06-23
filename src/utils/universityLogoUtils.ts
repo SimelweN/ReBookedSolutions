@@ -4,9 +4,35 @@
  */
 
 export const UNIVERSITY_LOGO_MAPPING: Record<string, string> = {
-  // Map university IDs to logo files - only include files that actually exist
+  // Universities with specific logo files
   uwc: "/university-logos/uwc.svg",
-  // All other universities will fall back to default.svg
+
+  // All other universities use default.svg as fallback
+  uct: "/university-logos/default.svg",
+  wits: "/university-logos/default.svg",
+  stellenbosch: "/university-logos/default.svg",
+  up: "/university-logos/default.svg",
+  uj: "/university-logos/default.svg",
+  ukzn: "/university-logos/default.svg",
+  rhodes: "/university-logos/default.svg",
+  nwu: "/university-logos/default.svg",
+  ufs: "/university-logos/default.svg",
+  unisa: "/university-logos/default.svg",
+  tut: "/university-logos/default.svg",
+  dut: "/university-logos/default.svg",
+  cput: "/university-logos/default.svg",
+  vut: "/university-logos/default.svg",
+  mut: "/university-logos/default.svg",
+  ufh: "/university-logos/default.svg",
+  univen: "/university-logos/default.svg",
+  ul: "/university-logos/default.svg",
+  unizulu: "/university-logos/default.svg",
+  cut: "/university-logos/default.svg",
+  smu: "/university-logos/default.svg",
+  sol: "/university-logos/default.svg",
+  ust: "/university-logos/default.svg",
+  wsu: "/university-logos/default.svg",
+  univ: "/university-logos/default.svg",
 };
 
 /**

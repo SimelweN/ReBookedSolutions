@@ -15,13 +15,9 @@ import {
 import StudyTipCard from "./StudyTipCard";
 import StudyResourceCard from "./StudyResourceCard";
 import StudyFilters from "./StudyFilters";
-import SponsorshipBanner from "./SponsorshipBanner";
+
 import { useStudyResources } from "@/hooks/useStudyResources";
 import { STUDY_TIPS, STUDY_RESOURCES } from "@/constants/studyResources";
-import {
-  SPONSORED_STUDY_TIPS,
-  SPONSORED_STUDY_RESOURCES,
-} from "@/constants/sponsoredStudyContent";
 import { getAllStudyContent } from "@/services/admin/studyResourcesService";
 import { StudyTip, StudyResource } from "@/types/university";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -49,17 +45,9 @@ const StudyResourcesPage = () => {
           resourcesCount: adminResources.length,
         });
 
-        // Combine static content with admin-added content and sponsored content
-        const combinedTips = [
-          ...STUDY_TIPS,
-          ...SPONSORED_STUDY_TIPS,
-          ...adminTips,
-        ];
-        const combinedResources = [
-          ...STUDY_RESOURCES,
-          ...SPONSORED_STUDY_RESOURCES,
-          ...adminResources,
-        ];
+        // Combine static content with admin-added content (no sponsored content)
+        const combinedTips = [...STUDY_TIPS, ...adminTips];
+        const combinedResources = [...STUDY_RESOURCES, ...adminResources];
 
         setAllTips(combinedTips);
         setAllResources(combinedResources);
@@ -93,9 +81,9 @@ const StudyResourcesPage = () => {
 
         setError(errorMessage);
 
-        // Keep static and sponsored content if database fetch fails
-        setAllTips([...STUDY_TIPS, ...SPONSORED_STUDY_TIPS]);
-        setAllResources([...STUDY_RESOURCES, ...SPONSORED_STUDY_RESOURCES]);
+        // Keep static content only if database fetch fails (no sponsored content)
+        setAllTips(STUDY_TIPS);
+        setAllResources(STUDY_RESOURCES);
       } finally {
         setIsLoading(false);
       }
@@ -165,22 +153,19 @@ const StudyResourcesPage = () => {
           </p>
         </div>
 
-        {/* Sponsorship Banner */}
-        <SponsorshipBanner />
-
         {/* Stats Overview */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mb-8">
           <div className="bg-white p-4 sm:p-6 rounded-lg border shadow-sm text-center">
             <Target className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600 mx-auto mb-2" />
             <div className="text-xl sm:text-2xl font-bold text-gray-900">
-              {STUDY_TIPS.length}
+              {allTips.length}
             </div>
             <div className="text-xs sm:text-sm text-gray-600">Study Tips</div>
           </div>
           <div className="bg-white p-4 sm:p-6 rounded-lg border shadow-sm text-center">
             <BookOpen className="w-6 h-6 sm:w-8 sm:h-8 text-green-600 mx-auto mb-2" />
             <div className="text-xl sm:text-2xl font-bold text-gray-900">
-              {STUDY_RESOURCES.length}
+              {allResources.length}
             </div>
             <div className="text-xs sm:text-sm text-gray-600">Resources</div>
           </div>

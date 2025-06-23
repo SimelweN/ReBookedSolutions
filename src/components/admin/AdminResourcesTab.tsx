@@ -25,7 +25,14 @@ import {
   getStudyResources,
   getStudyTips,
 } from "@/services/admin/studyResourcesService";
-import { Lightbulb, BookOpen, Plus, Save, CheckCircle } from "lucide-react";
+import {
+  Lightbulb,
+  BookOpen,
+  Plus,
+  Save,
+  CheckCircle,
+  AlertTriangle,
+} from "lucide-react";
 
 interface AdminResourcesTabProps {
   className?: string;
@@ -139,10 +146,26 @@ const AdminResourcesTab = ({ className }: AdminResourcesTabProps) => {
       resetForm();
       loadExistingItems();
     } catch (error) {
-      console.error(`Error creating ${activeTab}:`, error);
+      console.error(
+        `Error creating ${activeTab}:`,
+        error instanceof Error ? error.message : String(error),
+      );
+
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
-      toast.error(`Failed to create ${activeTab}: ${errorMessage}`);
+
+      // Provide specific guidance for migration issues
+      if (
+        errorMessage.includes("database table is not available") ||
+        errorMessage.includes("migrations")
+      ) {
+        toast.error(
+          "Database setup required. The study resources feature needs to be configured by an administrator.",
+          { duration: 6000 },
+        );
+      } else {
+        toast.error(`Failed to create ${activeTab}: ${errorMessage}`);
+      }
     } finally {
       setIsCreating(false);
     }
@@ -150,14 +173,58 @@ const AdminResourcesTab = ({ className }: AdminResourcesTabProps) => {
 
   const loadExistingItems = async () => {
     try {
+      // Add diagnostic check if needed
+      if (import.meta.env.DEV) {
+        console.log("Loading study resources and tips...");
+      }
+
       const [resources, tips] = await Promise.all([
         getStudyResources(),
         getStudyTips(),
       ]);
       setExistingResources(resources);
       setExistingTips(tips);
+
+      if (import.meta.env.DEV) {
+        console.log(
+          `Loaded ${resources.length} resources and ${tips.length} tips`,
+        );
+      }
     } catch (error) {
-      console.error("Error loading existing items:", error);
+      console.error(
+        "Error loading existing items:",
+        error instanceof Error ? error.message : String(error),
+      );
+
+      // If the error suggests missing columns, provide helpful info
+      if (error instanceof Error && error.message.includes("42703")) {
+        console.error(
+          "Column mismatch detected. Expected columns for study_resources:",
+          [
+            "id",
+            "title",
+            "description",
+            "type",
+            "category",
+            "difficulty",
+            "url",
+            "rating",
+            "provider",
+            "duration",
+            "tags",
+            "download_url",
+            "is_active",
+            "is_featured",
+            "is_sponsored",
+            "sponsor_name",
+            "sponsor_logo",
+            "sponsor_url",
+            "sponsor_cta",
+            "created_at",
+            "updated_at",
+          ],
+        );
+      }
     }
   };
 
@@ -167,6 +234,33 @@ const AdminResourcesTab = ({ className }: AdminResourcesTabProps) => {
 
   return (
     <div className={`space-y-6 ${className}`}>
+      {/* Database Status Warning */}
+      {existingResources.length === 0 && existingTips.length === 0 && (
+        <Card className="border-yellow-200 bg-yellow-50">
+          <CardHeader>
+            <CardTitle className="text-yellow-800 flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5" />
+              Database Setup Required
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-yellow-700 text-sm mb-3">
+              The study resources and tips feature requires database tables that
+              may not be available yet. If you're experiencing errors, please
+              check the Database Status in the Utilities tab and run the
+              database initialization if needed.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => (window.location.hash = "#utilities")}
+              className="text-yellow-700 border-yellow-300 hover:bg-yellow-100"
+            >
+              Go to Database Utilities
+            </Button>
+          </CardContent>
+        </Card>
+      )}
       {/* Tab Selector */}
       <div className="flex space-x-2 bg-gray-100 p-1 rounded-lg">
         <Button

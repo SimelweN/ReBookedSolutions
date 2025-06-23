@@ -14,7 +14,10 @@ export const clearAllBooks = async (): Promise<{
       .select("*", { count: "exact", head: true });
 
     if (countError) {
-      console.error("Error counting books:", countError);
+      console.error(
+        "Error counting books:",
+        countError.message || String(countError),
+      );
       throw countError;
     }
 
@@ -37,10 +40,13 @@ export const clearAllBooks = async (): Promise<{
     const { error: deleteError } = await supabase
       .from("books")
       .delete()
-      .neq("id", ""); // This will match all records
+      .gte("created_at", "1900-01-01"); // This will match all records safely
 
     if (deleteError) {
-      console.error("Error deleting books:", deleteError);
+      console.error(
+        "Error deleting books:",
+        deleteError.message || String(deleteError),
+      );
       throw deleteError;
     }
 
@@ -52,7 +58,10 @@ export const clearAllBooks = async (): Promise<{
       deletedCount: booksCount,
     };
   } catch (error) {
-    console.error("Error in clearAllBooks:", error);
+    console.error(
+      "Error in clearAllBooks:",
+      error instanceof Error ? error.message : String(error),
+    );
     return {
       success: false,
       message: `Failed to clear books: ${error instanceof Error ? error.message : "Unknown error"}`,

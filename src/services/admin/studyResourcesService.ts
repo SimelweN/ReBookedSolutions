@@ -50,9 +50,10 @@ export const createStudyResource = async (
     // Check if table exists first
     const tableExists = await checkTableExists("study_resources");
     if (!tableExists) {
-      throw new Error(
-        "Study resources table does not exist. Please run database migrations first.",
-      );
+      const errorMessage =
+        "Study resources database table is not available. Please contact your administrator to run the required database migrations.";
+      console.error("Database migration required:", errorMessage);
+      throw new Error(errorMessage);
     }
 
     const resourceData = {
@@ -63,17 +64,8 @@ export const createStudyResource = async (
       category: data.category,
       tags: data.tags,
       url: data.url,
-      provider: data.provider,
-      duration: data.duration,
       rating: data.rating || 0,
-      download_url: data.downloadUrl,
-      is_active: data.isActive,
-      is_featured: data.isFeatured || false,
-      is_sponsored: data.isSponsored || false,
-      sponsor_name: data.sponsorName,
-      sponsor_logo: data.sponsorLogo,
-      sponsor_url: data.sponsorUrl,
-      sponsor_cta: data.sponsorCta,
+      sponsored: data.isSponsored || false,
     };
 
     const { data: result, error } = await supabase
@@ -83,7 +75,12 @@ export const createStudyResource = async (
       .single();
 
     if (error) {
-      logError("studyResourcesService.createStudyResource", error);
+      console.error("studyResourcesService.createStudyResource error:", {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+      });
 
       if (error.code === "42P01") {
         throw new Error(
@@ -91,7 +88,13 @@ export const createStudyResource = async (
         );
       }
 
-      throw new Error("Failed to create study resource");
+      if (error.code === "42501") {
+        throw new Error(
+          "Permission denied: You don't have permission to create study resources. Please check table permissions or RLS policies.",
+        );
+      }
+
+      throw new Error(`Failed to create study resource: ${error.message}`);
     }
 
     return {
@@ -103,17 +106,17 @@ export const createStudyResource = async (
       difficulty: result.difficulty,
       url: result.url,
       rating: result.rating,
-      provider: result.provider,
-      duration: result.duration,
+      provider: "",
+      duration: "",
       tags: result.tags || [],
-      downloadUrl: result.download_url,
-      isActive: result.is_active,
-      isFeatured: result.is_featured,
-      isSponsored: result.is_sponsored,
-      sponsorName: result.sponsor_name,
-      sponsorLogo: result.sponsor_logo,
-      sponsorUrl: result.sponsor_url,
-      sponsorCta: result.sponsor_cta,
+      downloadUrl: "",
+      isActive: true,
+      isFeatured: false,
+      isSponsored: result.sponsored || false,
+      sponsorName: "",
+      sponsorLogo: "",
+      sponsorUrl: "",
+      sponsorCta: "",
       createdAt: result.created_at,
       updatedAt: result.updated_at,
     };
@@ -227,26 +230,16 @@ export const createStudyTip = async (
     // Check if table exists first
     const tableExists = await checkTableExists("study_tips");
     if (!tableExists) {
-      throw new Error(
-        "Study tips table does not exist. Please run database migrations first.",
-      );
+      const errorMessage =
+        "Study tips database table is not available. Please contact your administrator to run the required database migrations.";
+      console.error("Database migration required:", errorMessage);
+      throw new Error(errorMessage);
     }
 
     const tipData = {
       title: data.title,
-      content: data.content,
-      category: data.category,
-      difficulty: data.difficulty,
-      tags: data.tags,
+      description: data.content, // Map content to description for database
       is_active: data.isActive,
-      author: data.author,
-      estimated_time: data.estimatedTime,
-      effectiveness: data.effectiveness,
-      is_sponsored: data.isSponsored || false,
-      sponsor_name: data.sponsorName,
-      sponsor_logo: data.sponsorLogo,
-      sponsor_url: data.sponsorUrl,
-      sponsor_cta: data.sponsorCta,
     };
 
     const { data: result, error } = await supabase
@@ -256,7 +249,12 @@ export const createStudyTip = async (
       .single();
 
     if (error) {
-      logError("studyResourcesService.createStudyTip", error);
+      console.error("studyResourcesService.createStudyTip error:", {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+      });
 
       if (error.code === "42P01") {
         throw new Error(
@@ -264,25 +262,31 @@ export const createStudyTip = async (
         );
       }
 
-      throw new Error("Failed to create study tip");
+      if (error.code === "42501") {
+        throw new Error(
+          "Permission denied: You don't have permission to create study tips. Please check table permissions or RLS policies.",
+        );
+      }
+
+      throw new Error(`Failed to create study tip: ${error.message}`);
     }
 
     return {
       id: result.id,
       title: result.title,
-      content: result.content,
-      category: result.category,
-      difficulty: result.difficulty,
-      tags: result.tags || [],
+      content: result.description,
+      category: "General",
+      difficulty: "Beginner",
+      tags: [],
       isActive: result.is_active,
-      author: result.author,
-      estimatedTime: result.estimated_time,
-      effectiveness: result.effectiveness,
-      isSponsored: result.is_sponsored,
-      sponsorName: result.sponsor_name,
-      sponsorLogo: result.sponsor_logo,
-      sponsorUrl: result.sponsor_url,
-      sponsorCta: result.sponsor_cta,
+      author: "",
+      estimatedTime: "",
+      effectiveness: 0,
+      isSponsored: false,
+      sponsorName: "",
+      sponsorLogo: "",
+      sponsorUrl: "",
+      sponsorCta: "",
       createdAt: result.created_at,
       updatedAt: result.updated_at,
     };
@@ -401,14 +405,34 @@ export const getStudyResources = async (): Promise<StudyResource[]> => {
       return [];
     }
 
+    // Query only columns that exist in the actual table
     const { data, error } = await supabase
       .from("study_resources")
-      .select("*")
-      .eq("is_active", true)
+      .select(
+        `
+        id,
+        title,
+        description,
+        type,
+        category,
+        difficulty,
+        url,
+        rating,
+        tags,
+        sponsored,
+        created_at,
+        updated_at
+      `,
+      )
       .order("created_at", { ascending: false });
 
     if (error) {
-      logError("studyResourcesService.getStudyResources", error);
+      console.error("studyResourcesService.getStudyResources error:", {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+      });
 
       // Handle specific database errors
       if (error.code === "42P01") {
@@ -418,7 +442,15 @@ export const getStudyResources = async (): Promise<StudyResource[]> => {
         return [];
       }
 
-      throw new Error("Failed to fetch study resources");
+      if (error.code === "42703") {
+        console.error(
+          "Column not found in study_resources table. Check table schema:",
+          error.message,
+        );
+        return [];
+      }
+
+      throw new Error(`Failed to fetch study resources: ${error.message}`);
     }
 
     return (data || []).map((item) => ({
@@ -430,17 +462,17 @@ export const getStudyResources = async (): Promise<StudyResource[]> => {
       difficulty: item.difficulty,
       url: item.url,
       rating: item.rating,
-      provider: item.provider,
-      duration: item.duration,
+      provider: "", // Not in table
+      duration: "", // Not in table
       tags: item.tags || [],
-      downloadUrl: item.download_url,
-      isActive: item.is_active,
-      isFeatured: item.is_featured,
-      isSponsored: item.is_sponsored,
-      sponsorName: item.sponsor_name,
-      sponsorLogo: item.sponsor_logo,
-      sponsorUrl: item.sponsor_url,
-      sponsorCta: item.sponsor_cta,
+      downloadUrl: "", // Not in table
+      isActive: true, // Default since not in table
+      isFeatured: false, // Not in table
+      isSponsored: item.sponsored || false,
+      sponsorName: "", // Not in table
+      sponsorLogo: "", // Not in table
+      sponsorUrl: "", // Not in table
+      sponsorCta: "", // Not in table
       createdAt: item.created_at,
       updatedAt: item.updated_at,
     }));
@@ -465,16 +497,30 @@ export const getStudyTips = async (): Promise<StudyTip[]> => {
       return [];
     }
 
+    // Query only columns that exist in the actual table
     const { data, error } = await supabase
       .from("study_tips")
-      .select("*")
+      .select(
+        `
+        id,
+        title,
+        description,
+        is_active,
+        created_at,
+        updated_at
+      `,
+      )
       .eq("is_active", true)
       .order("created_at", { ascending: false });
 
     if (error) {
-      logError("studyResourcesService.getStudyTips", error);
+      console.error("studyResourcesService.getStudyTips error:", {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+      });
 
-      // Handle specific database errors
       if (error.code === "42P01") {
         console.warn(
           "Study tips table not found. Database migration may be needed.",
@@ -482,25 +528,33 @@ export const getStudyTips = async (): Promise<StudyTip[]> => {
         return [];
       }
 
-      throw new Error("Failed to fetch study tips");
+      if (error.code === "42703") {
+        console.error(
+          "Column not found in study_tips table. Check table schema:",
+          error.message,
+        );
+        return [];
+      }
+
+      throw new Error(`Failed to fetch study tips: ${error.message}`);
     }
 
     return (data || []).map((item) => ({
       id: item.id,
       title: item.title,
-      content: item.content,
-      category: item.category,
-      difficulty: item.difficulty,
-      tags: item.tags || [],
+      content: item.description, // Map description to content for frontend
+      category: "General", // Default since not in table
+      difficulty: "Beginner", // Default since not in table
+      tags: [], // Not in table
       isActive: item.is_active,
-      author: item.author,
-      estimatedTime: item.estimated_time,
-      effectiveness: item.effectiveness,
-      isSponsored: item.is_sponsored,
-      sponsorName: item.sponsor_name,
-      sponsorLogo: item.sponsor_logo,
-      sponsorUrl: item.sponsor_url,
-      sponsorCta: item.sponsor_cta,
+      author: "", // Not in table
+      estimatedTime: "", // Not in table
+      effectiveness: 0, // Not in table
+      isSponsored: false, // Not in table
+      sponsorName: "", // Not in table
+      sponsorLogo: "", // Not in table
+      sponsorUrl: "", // Not in table
+      sponsorCta: "", // Not in table
       createdAt: item.created_at,
       updatedAt: item.updated_at,
     }));

@@ -1,7 +1,10 @@
 /**
  * Precise Subject Matching Service
  * Fixes critical issue: Subject matching is too loose causing false positives
+ * Enhanced with subject name normalization for better detection
  */
+
+import { normalizeSubjectName } from "@/utils/subjectNormalization";
 
 export interface SubjectMatchResult {
   isMatch: boolean;
@@ -45,6 +48,18 @@ const SUBJECT_MAPPINGS: SubjectMapping[] = [
       "English First Additional Language",
       "English FAL",
       "English",
+      "English First Language",
+    ],
+    excludes: ["Afrikaans"],
+  },
+  {
+    canonical: "English",
+    synonyms: [
+      "English Home Language",
+      "English HL",
+      "English First Additional Language",
+      "English FAL",
+      "English First Language",
     ],
     excludes: ["Afrikaans"],
   },
@@ -133,21 +148,46 @@ export function matchSubjects(
   userSubject: string,
   requiredSubject: string,
 ): SubjectMatchResult {
-  const userNormalized = userSubject.toLowerCase().trim();
-  const requiredNormalized = requiredSubject.toLowerCase().trim();
+  // First normalize both subject names to standard forms
+  const userStandard = normalizeSubjectName(userSubject);
+  const requiredStandard = normalizeSubjectName(requiredSubject);
 
-  // Exact match - highest confidence
+  const userNormalized = userStandard.toLowerCase().trim();
+  const requiredNormalized = requiredStandard.toLowerCase().trim();
+
+  // Exact match after normalization - highest confidence
   if (userNormalized === requiredNormalized) {
     return {
       isMatch: true,
       confidence: 100,
-      reason: "Exact match",
+      reason:
+        userStandard === userSubject
+          ? "Exact match"
+          : `Normalized match: ${userSubject} → ${userStandard}`,
     };
   }
 
-  // Find mappings for both subjects
-  const userMapping = findSubjectMapping(userSubject);
-  const requiredMapping = findSubjectMapping(requiredSubject);
+  // Special case: Generic "English" requirement should match any English language subject
+  if (requiredStandard === "English" && userStandard.includes("English")) {
+    return {
+      isMatch: true,
+      confidence: 95,
+      reason: `${userSubject} satisfies English language requirement`,
+    };
+  }
+
+  // Special case: User has generic "English" but requirement is specific (rare but possible)
+  if (userStandard === "English" && requiredStandard.includes("English")) {
+    return {
+      isMatch: true,
+      confidence: 90,
+      reason: `English language subject satisfies ${requiredSubject} requirement`,
+    };
+  }
+
+  // Find mappings for both subjects using standardized names
+  const userMapping = findSubjectMapping(userStandard);
+  const requiredMapping = findSubjectMapping(requiredStandard);
 
   // Both subjects have mappings
   if (userMapping && requiredMapping) {
@@ -226,6 +266,70 @@ export function matchSubjects(
     }
   }
 
+  // Enhanced English language subject matching
+  const userLower = userStandard.toLowerCase();
+  const requiredLower = requiredStandard.toLowerCase();
+
+  // Handle English language subjects more comprehensively
+  const englishVariants = [
+    "english",
+    "english home language",
+    "english hl",
+    "english first additional language",
+    "english fal",
+  ];
+  const isUserEnglish = englishVariants.some(
+    (variant) => userLower.includes(variant) || userLower === variant,
+  );
+  const isRequiredEnglish = englishVariants.some(
+    (variant) => requiredLower.includes(variant) || requiredLower === variant,
+  );
+
+  if (isUserEnglish && isRequiredEnglish) {
+    return {
+      isMatch: true,
+      confidence: 92,
+      reason: `English language subject match: "${userSubject}" satisfies "${requiredSubject}" requirement`,
+    };
+  }
+
+  // Handle Mathematics variants
+  const mathVariants = [
+    "mathematics",
+    "maths",
+    "math",
+    "mathematical literacy",
+  ];
+  const isUserMath = mathVariants.some(
+    (variant) => userLower.includes(variant) || userLower === variant,
+  );
+  const isRequiredMath = mathVariants.some(
+    (variant) => requiredLower.includes(variant) || requiredLower === variant,
+  );
+
+  if (isUserMath && isRequiredMath) {
+    // Check for Mathematical Literacy vs Mathematics mismatch
+    const userIsMathLit = userLower.includes("literacy");
+    const requiredIsMathLit = requiredLower.includes("literacy");
+
+    if (userIsMathLit !== requiredIsMathLit) {
+      return {
+        isMatch: false,
+        confidence: 100,
+        reason: `${userSubject} cannot substitute for ${requiredSubject} - different math types`,
+        alternatives: requiredIsMathLit
+          ? ["Mathematical Literacy"]
+          : ["Mathematics"],
+      };
+    }
+
+    return {
+      isMatch: true,
+      confidence: 94,
+      reason: `Mathematics subject match: "${userSubject}" satisfies "${requiredSubject}" requirement`,
+    };
+  }
+
   // Partial match as last resort - very low confidence
   if (
     userNormalized.includes(requiredNormalized) ||
@@ -257,6 +361,7 @@ export function matchSubjects(
 
 /**
  * Validate subject level requirements
+ * Level represents APS points (1-7) where 7=80%+, 6=70%+, 5=60%+, etc.
  */
 export function validateSubjectLevel(
   userLevel: number,
@@ -267,7 +372,26 @@ export function validateSubjectLevel(
   reason: string;
   gap?: number;
 } {
+  console.log(
+    `🔍 Level validation for ${subjectName}: User=${userLevel}, Required=${requiredLevel}`,
+  );
+
+  // Ensure valid level range
+  if (
+    userLevel < 1 ||
+    userLevel > 7 ||
+    requiredLevel < 1 ||
+    requiredLevel > 7
+  ) {
+    console.log(`❌ Invalid level range for ${subjectName}`);
+    return {
+      isValid: false,
+      reason: `Invalid level values for ${subjectName} (levels must be 1-7). User: ${userLevel}, Required: ${requiredLevel}`,
+    };
+  }
+
   if (userLevel >= requiredLevel) {
+    console.log(`✅ Level requirement met for ${subjectName}`);
     return {
       isValid: true,
       reason: `${subjectName} Level ${userLevel} meets requirement (Level ${requiredLevel})`,
@@ -275,9 +399,10 @@ export function validateSubjectLevel(
   }
 
   const gap = requiredLevel - userLevel;
+  console.log(`❌ Level requirement NOT met for ${subjectName}, gap: ${gap}`);
   return {
     isValid: false,
-    reason: `${subjectName} Level ${userLevel} is below requirement (Level ${requiredLevel})`,
+    reason: `${subjectName} Level ${userLevel} is below requirement (Level ${requiredLevel}). Need ${gap} more level${gap > 1 ? "s" : ""}.`,
     gap,
   };
 }
@@ -303,6 +428,13 @@ export function checkSubjectRequirements(
   }>;
   details: string;
 } {
+  console.log("🔍 Subject Requirements Check:", {
+    userSubjects: userSubjects.map((s) => ({ name: s.name, level: s.level })),
+    requiredSubjects: requiredSubjects
+      .filter((s) => s.isRequired)
+      .map((s) => ({ name: s.name, level: s.level })),
+  });
+
   const matchedSubjects: any[] = [];
   const missingSubjects: any[] = [];
 
@@ -311,14 +443,55 @@ export function checkSubjectRequirements(
     let bestMatchConfidence = 0;
 
     // Find best matching user subject
+    console.log(
+      `🔍 Looking for matches for required subject: ${required.name} (Level ${required.level})`,
+    );
+
     for (const userSubject of userSubjects) {
-      const matchResult = matchSubjects(userSubject.name, required.name);
+      let matchResult = matchSubjects(userSubject.name, required.name);
+
+      // Additional direct matching for common cases if primary matching fails
+      if (!matchResult.isMatch || matchResult.confidence < 50) {
+        const userLower = userSubject.name.toLowerCase().trim();
+        const reqLower = required.name.toLowerCase().trim();
+
+        // Direct English language matching
+        if (reqLower === "english" && userLower.includes("english")) {
+          matchResult = {
+            isMatch: true,
+            confidence: 95,
+            reason: `Direct English match: ${userSubject.name} satisfies English requirement`,
+          };
+        }
+        // Direct Mathematics matching
+        else if (
+          reqLower === "mathematics" &&
+          (userLower === "mathematics" || userLower === "maths")
+        ) {
+          matchResult = {
+            isMatch: true,
+            confidence: 98,
+            reason: `Direct Math match: ${userSubject.name} satisfies Mathematics requirement`,
+          };
+        }
+      }
+
+      console.log(
+        `  📝 Checking: "${userSubject.name}" (Level ${userSubject.level}) vs "${required.name}"`,
+      );
+      console.log(
+        `    Match: ${matchResult.isMatch}, Confidence: ${matchResult.confidence}, Reason: ${matchResult.reason}`,
+      );
 
       if (matchResult.isMatch && matchResult.confidence > bestMatchConfidence) {
         const levelCheck = validateSubjectLevel(
           userSubject.level,
           required.level,
           required.name,
+        );
+
+        console.log(
+          `    ✅ Level Check: ${levelCheck.isValid}, Reason: ${levelCheck.reason}`,
         );
 
         bestMatch = {
@@ -335,16 +508,67 @@ export function checkSubjectRequirements(
       }
     }
 
+    // If no match found, check for any possible matches with low confidence for debugging
+    if (!bestMatch) {
+      const debugMatches = userSubjects
+        .map((userSubject) => ({
+          user: userSubject.name,
+          required: required.name,
+          matchResult: matchSubjects(userSubject.name, required.name),
+        }))
+        .filter((debug) => debug.matchResult.confidence > 0);
+
+      if (debugMatches.length > 0) {
+        console.log(
+          `Debug: Potential matches for ${required.name}:`,
+          debugMatches,
+        );
+      }
+    }
+
     if (bestMatch) {
       matchedSubjects.push(bestMatch);
     } else {
-      // Find alternatives from mapping
-      const mapping = findSubjectMapping(required.name);
-      missingSubjects.push({
-        name: required.name,
-        level: required.level,
-        alternatives: mapping?.synonyms || [],
-      });
+      // Before marking as missing, try one more comprehensive check
+      // Check if any user subject could possibly match with lower confidence threshold
+      let fallbackMatch = null;
+
+      for (const userSubject of userSubjects) {
+        const matchResult = matchSubjects(userSubject.name, required.name);
+
+        // Accept matches with confidence >= 40 as fallback
+        if (matchResult.isMatch && matchResult.confidence >= 40) {
+          const levelCheck = validateSubjectLevel(
+            userSubject.level,
+            required.level,
+            required.name,
+          );
+
+          fallbackMatch = {
+            required: required.name,
+            matched: userSubject.name,
+            confidence: matchResult.confidence,
+            levelValid: levelCheck.isValid,
+            userLevel: userSubject.level,
+            requiredLevel: required.level,
+            matchReason: matchResult.reason,
+            levelReason: levelCheck.reason,
+          };
+          break; // Take first acceptable fallback match
+        }
+      }
+
+      if (fallbackMatch) {
+        matchedSubjects.push(fallbackMatch);
+      } else {
+        // Find alternatives from mapping
+        const mapping = findSubjectMapping(required.name);
+        missingSubjects.push({
+          name: required.name,
+          level: required.level,
+          alternatives: mapping?.synonyms || [],
+        });
+      }
     }
   }
 
@@ -377,6 +601,25 @@ export function checkSubjectRequirements(
     details = issues.join("; ");
   }
 
+  console.log("📊 Final Results:", {
+    isEligible,
+    matchedSubjectsCount: matchedSubjects.length,
+    validMatchesCount: validMatches.length,
+    missingSubjectsCount: missingSubjects.length,
+    matchedSubjects: matchedSubjects.map((m) => ({
+      required: m.required,
+      matched: m.matched,
+      levelValid: m.levelValid,
+      userLevel: m.userLevel,
+      requiredLevel: m.requiredLevel,
+    })),
+    missingSubjects: missingSubjects.map((m) => ({
+      name: m.name,
+      level: m.level,
+    })),
+    details,
+  });
+
   return {
     isEligible,
     matchedSubjects,
@@ -391,4 +634,48 @@ export function checkSubjectRequirements(
 export function getSubjectAlternatives(subjectName: string): string[] {
   const mapping = findSubjectMapping(subjectName);
   return mapping?.synonyms || [];
+}
+
+/**
+ * Test function to verify subject matching works correctly
+ * This helps identify matching issues during development
+ */
+export function testSubjectMatching(): void {
+  console.log("=== Subject Matching Test Results ===");
+
+  // Test cases that should match
+  const testCases = [
+    { user: "English Home Language", required: "English", shouldMatch: true },
+    {
+      user: "English First Additional Language",
+      required: "English",
+      shouldMatch: true,
+    },
+    { user: "Mathematics", required: "Mathematics", shouldMatch: true },
+    { user: "Maths", required: "Mathematics", shouldMatch: true },
+    {
+      user: "Physical Sciences",
+      required: "Physical Sciences",
+      shouldMatch: true,
+    },
+    { user: "Physics", required: "Physical Sciences", shouldMatch: true },
+    { user: "Life Sciences", required: "Life Sciences", shouldMatch: true },
+    { user: "Biology", required: "Life Sciences", shouldMatch: true },
+  ];
+
+  testCases.forEach((testCase) => {
+    const result = matchSubjects(testCase.user, testCase.required);
+    const status =
+      result.isMatch === testCase.shouldMatch ? "✅ PASS" : "❌ FAIL";
+    console.log(
+      `${status}: "${testCase.user}" vs "${testCase.required}" - Match: ${result.isMatch}, Confidence: ${result.confidence}, Reason: ${result.reason}`,
+    );
+  });
+
+  console.log("=== End Test Results ===");
+}
+
+// Uncomment this line to run tests in development
+if (typeof window !== "undefined" && import.meta.env.DEV) {
+  // testSubjectMatching();
 }

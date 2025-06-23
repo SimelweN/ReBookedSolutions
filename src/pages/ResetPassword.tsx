@@ -57,7 +57,7 @@ const ResetPassword = () => {
           });
 
           if (error) {
-            console.error("Session error:", error);
+            console.error("Session error:", error.message || String(error));
             toast.error("Invalid or expired reset link");
             setIsValidSession(false);
             setTimeout(() => navigate("/forgot-password"), 3000);
@@ -74,7 +74,10 @@ const ResetPassword = () => {
           } = await supabase.auth.getSession();
 
           if (error) {
-            console.error("Session check error:", error);
+            console.error(
+              "Session check error:",
+              error.message || String(error),
+            );
           }
 
           if (session) {
@@ -88,7 +91,10 @@ const ResetPassword = () => {
           }
         }
       } catch (error) {
-        console.error("Error verifying session:", error);
+        console.error(
+          "Error verifying session:",
+          error instanceof Error ? error.message : String(error),
+        );
         toast.error("Something went wrong. Please try again.");
         setIsValidSession(false);
         setTimeout(() => navigate("/forgot-password"), 3000);
@@ -150,7 +156,10 @@ const ResetPassword = () => {
       await supabase.auth.signOut();
       navigate("/login", { replace: true });
     } catch (error: unknown) {
-      console.error("Password reset error:", error);
+      console.error(
+        "Password reset error:",
+        error instanceof Error ? error.message : String(error),
+      );
       const errorMessage =
         error instanceof Error ? error.message : "Failed to update password";
       toast.error(errorMessage);

@@ -82,7 +82,7 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       .single();
 
     if (error) {
-      console.error("Error creating book:", error);
+      console.error("Error creating book:", error.message || String(error));
       handleBookServiceError(error, "create book");
     }
 
@@ -125,7 +125,10 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
 
     return mappedBook;
   } catch (error) {
-    console.error("Error in createBook:", error);
+    console.error(
+      "Error in createBook:",
+      error instanceof Error ? error.message : String(error),
+    );
     handleBookServiceError(error, "create book");
     throw error; // This line will never be reached due to handleBookServiceError throwing, but TypeScript needs it
   }
@@ -190,7 +193,7 @@ export const updateBook = async (
       .single();
 
     if (error) {
-      console.error("Error updating book:", error);
+      console.error("Error updating book:", error.message || String(error));
       handleBookServiceError(error, "update book");
     }
 
@@ -214,7 +217,10 @@ export const updateBook = async (
 
     return mapBookFromDatabase(bookWithProfile);
   } catch (error) {
-    console.error("Error in updateBook:", error);
+    console.error(
+      "Error in updateBook:",
+      error instanceof Error ? error.message : String(error),
+    );
     handleBookServiceError(error, "update book");
     return null; // This line will never be reached due to handleBookServiceError throwing, but TypeScript needs it
   }
@@ -293,13 +299,19 @@ export const deleteBook = async (bookId: string): Promise<void> => {
       .eq("id", bookId);
 
     if (deleteError) {
-      console.error("Error deleting book:", deleteError);
+      console.error(
+        "Error deleting book:",
+        deleteError.message || String(deleteError),
+      );
       throw new Error(`Failed to delete book: ${deleteError.message}`);
     }
 
     console.log("Book deleted successfully:", existingBook.title);
   } catch (error) {
-    console.error("Error in deleteBook:", error);
+    console.error(
+      "Error in deleteBook:",
+      error instanceof Error ? error.message : String(error),
+    );
     handleBookServiceError(error, "delete book");
     throw error; // This line will never be reached due to handleBookServiceError throwing, but TypeScript needs it
   }

@@ -99,10 +99,10 @@ const Login = () => {
       console.log("Login successful, navigating to home");
       navigate("/", { replace: true });
     } catch (error: unknown) {
-      console.error("Login error in component:", error);
-
       const errorMessage =
         error instanceof Error ? error.message : "Login failed";
+      console.error("Login error in component:", errorMessage);
+
       setLoginError(errorMessage);
 
       // Determine error type for better UX

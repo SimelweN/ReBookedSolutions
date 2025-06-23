@@ -27,7 +27,10 @@ export const cleanupDuplicateBooks = async (): Promise<void> => {
       .in("title", duplicatesTitles);
 
     if (error) {
-      console.error("❌ Error finding duplicate books:", error);
+      console.error(
+        "❌ Error finding duplicate books:",
+        error.message || String(error),
+      );
       return;
     }
 
@@ -48,7 +51,10 @@ export const cleanupDuplicateBooks = async (): Promise<void> => {
       );
 
     if (deleteError) {
-      console.error("❌ Error deleting books:", deleteError);
+      console.error(
+        "❌ Error deleting books:",
+        deleteError.message || String(deleteError),
+      );
       return;
     }
 
@@ -56,7 +62,10 @@ export const cleanupDuplicateBooks = async (): Promise<void> => {
       `✅ Successfully deleted ${duplicateBooks.length} duplicate books!`,
     );
   } catch (error) {
-    console.error("💥 Cleanup failed:", error);
+    console.error(
+      "💥 Cleanup failed:",
+      error instanceof Error ? error.message : String(error),
+    );
   }
 };
 

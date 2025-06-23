@@ -6,11 +6,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
 import { toast } from "sonner";
 import {
   getAllContactMessages,
   markMessageAsRead,
+  clearAllMessages,
   ContactMessage,
 } from "@/services/contactService";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -53,6 +55,31 @@ const AdminContactTab = () => {
     }
   };
 
+  const handleClearAllMessages = async () => {
+    if (messages.length === 0) {
+      toast.info("No messages to clear");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Are you sure you want to clear all ${messages.length} contact messages? This action cannot be undone.`,
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setIsLoading(true);
+      await clearAllMessages();
+      setMessages([]);
+      toast.success("All contact messages cleared successfully");
+    } catch (error) {
+      console.error("Error clearing messages:", error);
+      toast.error("Failed to clear messages");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <Card>
@@ -68,9 +95,21 @@ const AdminContactTab = () => {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center gap-2">
-          <Mail className="h-5 w-5 text-blue-600" />
-          <CardTitle>Contact Messages</CardTitle>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Mail className="h-5 w-5 text-blue-600" />
+            <CardTitle>Contact Messages</CardTitle>
+          </div>
+          {messages.length > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleClearAllMessages}
+              disabled={isLoading}
+            >
+              Clear All Messages
+            </Button>
+          )}
         </div>
         <CardDescription>Manage and respond to user inquiries</CardDescription>
       </CardHeader>

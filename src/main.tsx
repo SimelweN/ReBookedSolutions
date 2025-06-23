@@ -3,7 +3,15 @@ import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App.tsx";
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
+import {
+  measureAsyncPerformance,
+  logBundleInfo,
+} from "./utils/performanceUtils.ts";
 import "./index.css";
+import "./styles/performance-optimizations.css";
+
+// Log bundle info in development
+logBundleInfo();
 
 // Enhanced environment validation with deployment safety
 const validateEnvironment = () => {
@@ -45,6 +53,82 @@ const validateEnvironment = () => {
   }
 };
 
+// Service Worker Registration
+const registerServiceWorker = async () => {
+  if ("serviceWorker" in navigator && import.meta.env.PROD) {
+    try {
+      const registration = await navigator.serviceWorker.register("/sw.js", {
+        scope: "/",
+      });
+
+      console.log("✅ Service Worker registered:", registration.scope);
+
+      // Listen for updates
+      registration.addEventListener("updatefound", () => {
+        const newWorker = registration.installing;
+        if (newWorker) {
+          newWorker.addEventListener("statechange", () => {
+            if (newWorker.state === "installed") {
+              if (navigator.serviceWorker.controller) {
+                console.log("🔄 New content available, reload to update");
+              }
+            }
+          });
+        }
+      });
+
+      return registration;
+    } catch (error) {
+      console.warn("⚠️ Service Worker registration failed:", error);
+    }
+  }
+};
+
+// Performance optimizations
+const optimizePerformance = () => {
+  // Preload critical resources
+  const preloadLink = document.createElement("link");
+  preloadLink.rel = "preload";
+  preloadLink.as = "style";
+  preloadLink.href = "/src/index.css";
+  document.head.appendChild(preloadLink);
+
+  // Add performance observer for Core Web Vitals
+  if ("PerformanceObserver" in window) {
+    try {
+      // Largest Contentful Paint
+      const lcpObserver = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          console.log("📊 LCP:", entry.startTime);
+        }
+      });
+      lcpObserver.observe({ entryTypes: ["largest-contentful-paint"] });
+
+      // First Input Delay
+      const fidObserver = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          console.log("📊 FID:", entry.processingStart - entry.startTime);
+        }
+      });
+      fidObserver.observe({ entryTypes: ["first-input"] });
+
+      // Cumulative Layout Shift
+      const clsObserver = new PerformanceObserver((list) => {
+        let clsValue = 0;
+        for (const entry of list.getEntries()) {
+          if (!entry.hadRecentInput) {
+            clsValue += entry.value;
+          }
+        }
+        console.log("📊 CLS:", clsValue);
+      });
+      clsObserver.observe({ entryTypes: ["layout-shift"] });
+    } catch (error) {
+      console.warn("⚠️ Performance Observer not supported");
+    }
+  }
+};
+
 // Initialize application
 if (import.meta.env.DEV) {
   console.log("🚀 ReBooked Solutions - Starting application...");
@@ -62,13 +146,21 @@ try {
   };
 }
 
-// Create a simple query client with minimal configuration
+// Create optimized query client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes
-      retry: 1,
-      refetchOnWindowFocus: false, // Reduce unnecessary requests
+      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+      retry: (failureCount, error: any) => {
+        // Don't retry on 4xx errors
+        if (error?.status >= 400 && error?.status < 500) {
+          return false;
+        }
+        return failureCount < 2;
+      },
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
     },
     mutations: {
       retry: false,
@@ -77,113 +169,63 @@ const queryClient = new QueryClient({
 });
 
 // Initialize the React app with enhanced error handling
-const initializeApp = () => {
-  const rootElement = document.getElementById("root");
-  if (!rootElement) {
-    throw new Error("Root element #root not found in DOM");
-  }
+const initializeApp = async () => {
+  return measureAsyncPerformance("AppInitialization", async () => {
+    const rootElement = document.getElementById("root");
+    if (!rootElement) {
+      throw new Error("Root element #root not found in DOM");
+    }
 
-  const root = createRoot(rootElement);
+    const root = createRoot(rootElement);
 
-  // Only show environment error in very specific production cases (disabled for now)
-  if (
-    false &&
-    import.meta.env.PROD &&
-    !environmentValidation.isValid &&
-    !environmentValidation.isDev
-  ) {
-    // Dynamically import and render environment error component
-    import("./components/EnvironmentError")
-      .then((module) => {
-        const EnvironmentError = module.default;
-        root.render(
-          <React.StrictMode>
-            <EnvironmentError
-              missingVariables={environmentValidation.missing}
-            />
-          </React.StrictMode>,
-        );
-      })
-      .catch(() => {
-        // Fallback if component import fails
-        root.render(
-          <div
-            style={{
-              minHeight: "100vh",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontFamily: "system-ui",
-              background: "#f9fafb",
-              padding: "1rem",
-            }}
-          >
-            <div
-              style={{
-                textAlign: "center",
-                padding: "2rem",
-                background: "white",
-                borderRadius: "0.5rem",
-                boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-                maxWidth: "500px",
-              }}
-            >
-              <h1 style={{ color: "#dc2626", marginBottom: "1rem" }}>
-                Configuration Error
-              </h1>
-              <p style={{ marginBottom: "1rem" }}>
-                Missing environment variables:{" "}
-                {environmentValidation.missing.join(", ")}
-              </p>
-              <p
-                style={{
-                  marginBottom: "1.5rem",
-                  fontSize: "0.875rem",
-                  color: "#6b7280",
-                }}
-              >
-                Please configure your environment variables in your hosting
-                platform and redeploy.
-              </p>
-              <button
-                onClick={() => window.location.reload()}
-                style={{
-                  background: "#3b82f6",
-                  color: "white",
-                  padding: "0.75rem 1.5rem",
-                  border: "none",
-                  borderRadius: "0.5rem",
-                  cursor: "pointer",
-                }}
-              >
-                Retry
-              </button>
-            </div>
-          </div>,
-        );
-      });
-    return;
-  }
+    // Apply performance optimizations
+    optimizePerformance();
 
-  // Render the app with comprehensive error boundaries
-  root.render(
-    <React.StrictMode>
-      <ErrorBoundary level="app">
-        <QueryClientProvider client={queryClient}>
-          <App />
-        </QueryClientProvider>
-      </ErrorBoundary>
-    </React.StrictMode>,
-  );
+    // Register service worker
+    await registerServiceWorker();
 
-  if (import.meta.env.DEV) {
-    console.log("✅ ReBooked Solutions loaded successfully");
-  }
+    // Only show environment error in very specific production cases (disabled for now)
+    if (
+      false &&
+      import.meta.env.PROD &&
+      !environmentValidation.isValid &&
+      !environmentValidation.isDev
+    ) {
+      // Dynamically import and render environment error component
+      const { default: EnvironmentError } = await import(
+        "./components/EnvironmentError"
+      );
+      root.render(
+        <React.StrictMode>
+          <EnvironmentError missingVariables={environmentValidation.missing} />
+        </React.StrictMode>,
+      );
+      return;
+    }
+
+    // Render the app with comprehensive error boundaries
+    root.render(
+      <React.StrictMode>
+        <ErrorBoundary level="app">
+          <QueryClientProvider client={queryClient}>
+            <App />
+          </QueryClientProvider>
+        </ErrorBoundary>
+      </React.StrictMode>,
+    );
+
+    if (import.meta.env.DEV) {
+      console.log("✅ ReBooked Solutions loaded successfully");
+    }
+  });
 };
 
 // Main execution with comprehensive error handling
 try {
-  initializeApp();
+  initializeApp().catch((error) => {
+    console.error("❌ Critical error during app initialization:", error);
+    throw error;
+  });
 } catch (error) {
   console.error("❌ Critical error during app initialization:", error);
 
@@ -277,7 +319,7 @@ try {
             color: #9ca3af;
           ">
             ReBooked Solutions<br>
-            If this problem persists, contact: support@rebookedsolutions.co.za
+            If this problem persists, contact: info@rebookedsolutions.co.za
           </div>
         </div>
       </div>

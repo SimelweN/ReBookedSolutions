@@ -5,6 +5,10 @@ import {
 } from "@/constants/universities/comprehensive-course-database";
 import { checkSubjectRequirements } from "./subjectMatchingService";
 import { logError } from "./systemMonitoringService";
+import {
+  calculateUniversitySpecificAPS,
+  usesSpecialAPSCalculation,
+} from "./universitySpecificAPSService";
 
 /**
  * Centralized Eligibility Service
@@ -67,12 +71,39 @@ export function assessEligibility(
     // Get APS requirement for this university
     const requiredAPS = getAPSRequirement(course, universityId);
 
-    // APS Assessment
-    const apsGap = Math.max(0, requiredAPS - userAPS);
-    const meetsAPS = userAPS >= requiredAPS;
+    // Calculate the user's APS using university-specific method if applicable
+    let effectiveUserAPS = userAPS;
+    if (usesSpecialAPSCalculation(universityId)) {
+      // For special universities, calculate their specific APS score
+      const universitySpecificResult = calculateUniversitySpecificAPS(
+        userSubjects,
+        [universityId],
+      );
+      const universityScore =
+        universitySpecificResult.universitySpecificScores.find(
+          (score) => score.universityId === universityId,
+        );
+      if (universityScore) {
+        effectiveUserAPS = universityScore.score;
+      }
+    }
+
+    // APS Assessment using effective APS
+    const apsGap = Math.max(0, requiredAPS - effectiveUserAPS);
+    const meetsAPS = effectiveUserAPS >= requiredAPS;
     const almostMeetsAPS = apsGap > 0 && apsGap <= maxAPSGap;
 
     // Subject Assessment
+    console.log("🎯 Eligibility Assessment Debug:", {
+      courseName: course.name,
+      courseSubjects: course.subjects,
+      userSubjects: userSubjects.map((s) => ({
+        name: s.name,
+        level: s.level,
+        points: s.points,
+      })),
+    });
+
     const subjectResult = checkSubjectRequirements(
       userSubjects.map((s) => ({
         name: s.name,
@@ -174,7 +205,7 @@ export function assessEligibility(
       isEligible,
       category,
       apsStatus: {
-        userAPS,
+        userAPS: effectiveUserAPS,
         requiredAPS,
         meetsAPS,
         gap: apsGap,

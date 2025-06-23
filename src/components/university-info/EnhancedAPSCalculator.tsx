@@ -71,6 +71,7 @@ import {
   getAPSScoreDescription,
 } from "@/utils/apsCalculation";
 import { validateAPSSubjectsEnhanced } from "@/utils/enhancedValidation";
+import { normalizeSubjectName } from "@/utils/subjectNormalization";
 import UniversitySpecificAPSDisplay from "./UniversitySpecificAPSDisplay";
 import EligibleProgramsSection from "./EligibleProgramsSection";
 
@@ -159,7 +160,7 @@ const EnhancedAPSCalculator: React.FC = () => {
     const apsSubjects: APSSubject[] = subjects.map((subject) => ({
       name: subject.name,
       marks: subject.marks,
-      level: subject.level,
+      level: subject.points, // Ensure level matches points (APS level 1-7)
       points: subject.points,
     }));
 
@@ -246,19 +247,27 @@ const EnhancedAPSCalculator: React.FC = () => {
       return;
     }
 
-    // Check if subject already exists
-    if (subjects.some((s) => s.name === selectedSubject)) {
+    // Normalize subject name for consistent naming
+    const normalizedSubjectName = normalizeSubjectName(selectedSubject);
+
+    // Check if subject already exists (check both original and normalized names)
+    if (
+      subjects.some(
+        (s) => s.name === selectedSubject || s.name === normalizedSubjectName,
+      )
+    ) {
       toast.error("This subject has already been added");
       return;
     }
 
+    const apsPoints = convertPercentageToPoints(marks);
     const newSubject: APSSubjectInput = {
-      name: selectedSubject,
+      name: normalizedSubjectName, // Use normalized name for consistency
       marks,
-      level: convertPercentageToPoints(marks),
-      points: convertPercentageToPoints(marks),
+      level: apsPoints, // Level should be the APS points (1-7)
+      points: apsPoints, // Points should match level for consistency
       isRequired: ["English", "Mathematics", "Mathematical Literacy"].includes(
-        selectedSubject,
+        normalizedSubjectName,
       ),
     };
 
@@ -314,7 +323,7 @@ const EnhancedAPSCalculator: React.FC = () => {
       const apsSubjects: APSSubject[] = subjects.map((subject) => ({
         name: subject.name,
         marks: subject.marks,
-        level: subject.level,
+        level: subject.points, // Ensure level matches points (APS level 1-7)
         points: subject.points,
       }));
       await updateUserSubjects(apsSubjects);

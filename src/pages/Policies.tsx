@@ -42,7 +42,7 @@ const Policies = () => {
                 <span>
                   <strong>Support:</strong>{" "}
                   <span className="break-all">
-                    support@rebookedsolutions.co.za
+                    info@rebookedsolutions.co.za
                   </span>
                 </span>
               </div>
@@ -157,7 +157,7 @@ const Policies = () => {
                       <span>
                         <strong>Contact:</strong>{" "}
                         <span className="break-all">
-                          support@rebookedsolutions.co.za
+                          info@rebookedsolutions.co.za
                         </span>
                       </span>
                     </div>
@@ -420,7 +420,7 @@ const Policies = () => {
                       </p>
                       <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
                         You may request deletion of your data by contacting
-                        support@rebookedsolutions.co.za. However, we may retain
+                        info@rebookedsolutions.co.za. However, we may retain
                         certain information if required for legal compliance,
                         fraud prevention, dispute resolution, or transaction
                         history.
@@ -459,7 +459,7 @@ const Policies = () => {
                       </ul>
                       <p className="text-gray-700 leading-relaxed text-sm sm:text-base mt-3">
                         To exercise any of these rights, please contact
-                        support@rebookedsolutions.co.za. We may require proof of
+                        info@rebookedsolutions.co.za. We may require proof of
                         identity before processing any request.
                       </p>
                     </section>
@@ -531,7 +531,7 @@ const Policies = () => {
                           <br />
                           Email:{" "}
                           <span className="break-all">
-                            support@rebookedsolutions.co.za
+                            info@rebookedsolutions.co.za
                           </span>
                           <br />
                           Based in the Republic of South Africa
@@ -568,7 +568,7 @@ const Policies = () => {
                       <span>
                         <strong>Email:</strong>{" "}
                         <span className="break-all">
-                          support@rebookedsolutions.co.za
+                          info@rebookedsolutions.co.za
                         </span>
                       </span>
                       <span className="hidden sm:inline">•</span>
@@ -1034,7 +1034,7 @@ const Policies = () => {
                         <p className="text-blue-800 text-sm sm:text-base">
                           Email:{" "}
                           <span className="break-all">
-                            support@rebookedsolutions.co.za
+                            info@rebookedsolutions.co.za
                           </span>
                           <br />
                           ReBooked Solutions (Pty) Ltd – Registered in South
@@ -1123,7 +1123,7 @@ const Policies = () => {
                         evidence and a formal complaint lodged within five (5)
                         calendar days of delivery or the estimated delivery
                         date. Submissions must be made to
-                        support@rebookedsolutions.co.za. The buyer must retain
+                        info@rebookedsolutions.co.za. The buyer must retain
                         proof of delivery, shipping labels, and original
                         packaging where applicable.
                       </p>
@@ -1402,7 +1402,7 @@ const Policies = () => {
                       </h3>
                       <p className="text-gray-700 leading-relaxed text-sm sm:text-base mb-3 sm:mb-4">
                         Buyers or sellers may raise a formal dispute by
-                        submitting an email to support@rebookedsolutions.co.za
+                        submitting an email to info@rebookedsolutions.co.za
                         within seven (7) calendar days of the disputed event.
                       </p>
                       <p className="text-gray-700 leading-relaxed text-sm sm:text-base mb-3 sm:mb-4">
@@ -1517,7 +1517,7 @@ const Policies = () => {
                   <p className="text-blue-700 text-sm sm:text-base">
                     <strong>Email:</strong>{" "}
                     <span className="break-all">
-                      support@rebookedsolutions.co.za
+                      info@rebookedsolutions.co.za
                     </span>
                   </p>
                   <p className="text-blue-700 text-sm sm:text-base">

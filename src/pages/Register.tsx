@@ -64,7 +64,10 @@ const Register = () => {
         });
       }, 2000);
     } catch (error: unknown) {
-      console.error("Registration error in component:", error);
+      console.error(
+        "Registration error in component:",
+        error instanceof Error ? error.message : String(error),
+      );
       // Error is already handled in the register function
     } finally {
       setIsLoading(false);

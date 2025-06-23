@@ -1,5 +1,11 @@
 import { Link } from "react-router-dom";
-import { Book } from "lucide-react";
+import {
+  Book,
+  MessageCircle,
+  AlertTriangle,
+  Instagram,
+  Facebook,
+} from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -105,26 +111,38 @@ const Footer = () => {
             <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
               Support
             </h3>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  to="/privacy"
-                  className="text-gray-600 hover:text-book-600 text-sm"
-                  onClick={handleLinkClick}
-                >
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/policies"
-                  className="text-gray-600 hover:text-book-600 text-sm font-medium"
-                  onClick={handleLinkClick}
-                >
-                  All Policies & Terms
-                </Link>
-              </li>
-            </ul>
+            <div className="flex flex-col space-y-2">
+              <Link
+                to="/contact"
+                className="text-gray-600 hover:text-book-600 text-sm flex items-center transition-colors"
+                onClick={handleLinkClick}
+              >
+                <MessageCircle className="h-4 w-4 mr-2 flex-shrink-0" />
+                Contact Us
+              </Link>
+              <Link
+                to="/report"
+                className="text-gray-600 hover:text-book-600 text-sm flex items-center transition-colors"
+                onClick={handleLinkClick}
+              >
+                <AlertTriangle className="h-4 w-4 mr-2 flex-shrink-0" />
+                Report Issue
+              </Link>
+              <Link
+                to="/privacy"
+                className="text-gray-600 hover:text-book-600 text-sm transition-colors pl-6"
+                onClick={handleLinkClick}
+              >
+                Privacy Policy
+              </Link>
+              <Link
+                to="/policies"
+                className="text-gray-600 hover:text-book-600 text-sm font-medium transition-colors pl-6"
+                onClick={handleLinkClick}
+              >
+                All Policies & Terms
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -132,6 +150,28 @@ const Footer = () => {
           <p className="text-sm text-gray-500">
             &copy; {currentYear} ReBooked Solutions. All rights reserved.
           </p>
+
+          {/* Social Media Links */}
+          <div className="flex items-center space-x-4 mt-4 md:mt-0">
+            <a
+              href="https://www.instagram.com/rebooked.solutions?igsh=M2ZsNjd2aTNmZmRh"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-pink-500 transition-colors"
+              aria-label="Follow us on Instagram"
+            >
+              <Instagram className="h-5 w-5" />
+            </a>
+            <a
+              href="https://www.facebook.com/share/16ngKMps6U/?mibextid=wwXIfr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-blue-600 transition-colors"
+              aria-label="Follow us on Facebook"
+            >
+              <Facebook className="h-5 w-5" />
+            </a>
+          </div>
         </div>
       </div>
     </footer>

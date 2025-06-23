@@ -348,7 +348,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         } catch (codeExchangeError) {
           console.warn(
             "⚠️ [AuthContext] Code exchange attempt failed, falling back to session check:",
-            codeExchangeError,
+            codeExchangeError instanceof Error
+              ? codeExchangeError.message
+              : String(codeExchangeError),
           );
 
           // Clear problematic URL parameters
@@ -558,7 +560,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           console.log("✅ [AuthContext] Auth state cleared");
         }
       } catch (error) {
-        console.warn("⚠️ [AuthContext] Auth state change error:", error);
+        console.warn(
+          "⚠️ [AuthContext] Auth state change error:",
+          error instanceof Error ? error.message : String(error),
+        );
 
         // Handle PKCE errors silently
         if (error instanceof Error && error.message.includes("code verifier")) {

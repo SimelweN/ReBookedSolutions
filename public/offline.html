@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ReBooked Solutions - Offline</title>
+    <title>Offline - ReBooked Solutions</title>
     <style>
       * {
         margin: 0;
@@ -25,59 +25,49 @@
 
       .container {
         background: white;
+        padding: 2rem;
         border-radius: 1rem;
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        padding: 2rem;
         text-align: center;
         max-width: 500px;
         width: 100%;
       }
 
       .icon {
-        width: 80px;
-        height: 80px;
-        background: #6b7280;
+        width: 60px;
+        height: 60px;
+        background: #f59e0b;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 1.5rem;
         color: white;
-        font-size: 2rem;
+        font-size: 24px;
+        font-weight: bold;
       }
 
       h1 {
         color: #1f2937;
-        font-size: 1.75rem;
+        margin: 0 0 1rem;
+        font-size: 1.5rem;
         font-weight: 600;
-        margin-bottom: 0.75rem;
       }
 
       p {
         color: #6b7280;
-        margin-bottom: 1.5rem;
+        margin: 0 0 1.5rem;
         line-height: 1.6;
       }
 
-      .status {
-        background: #f3f4f6;
-        border-radius: 0.5rem;
-        padding: 1rem;
-        margin-bottom: 1.5rem;
-        font-size: 0.875rem;
+      .buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
       }
 
-      .online {
-        background: #dcfce7;
-        color: #166534;
-      }
-
-      .offline {
-        background: #fee2e2;
-        color: #991b1b;
-      }
-
-      .button {
+      button {
         background: #3b82f6;
         color: white;
         border: none;
@@ -86,168 +76,151 @@
         font-size: 0.875rem;
         font-weight: 500;
         cursor: pointer;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
         transition: background 0.2s;
-        margin: 0.25rem;
+        flex: 1;
         min-width: 120px;
       }
 
-      .button:hover {
+      button:hover {
         background: #2563eb;
       }
 
-      .button:disabled {
-        background: #9ca3af;
-        cursor: not-allowed;
+      .secondary {
+        background: #6b7280;
+      }
+
+      .secondary:hover {
+        background: #4b5563;
       }
 
       .footer {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
         border-top: 1px solid #e5e7eb;
-        padding-top: 1rem;
-        margin-top: 1.5rem;
         font-size: 0.75rem;
         color: #9ca3af;
       }
 
-      .pulse {
-        animation: pulse 2s infinite;
+      .status {
+        margin: 1rem 0;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        background: #fef3c7;
+        color: #92400e;
+        font-size: 0.875rem;
       }
 
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 1;
+      @media (max-width: 480px) {
+        .container {
+          padding: 1.5rem;
         }
-        50% {
-          opacity: 0.5;
+
+        .buttons {
+          flex-direction: column;
+        }
+
+        button {
+          width: 100%;
         }
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <div class="icon">📱</div>
+      <div class="icon">📡</div>
+
       <h1>You're Offline</h1>
+
       <p>
-        It looks like you're not connected to the internet. ReBooked Solutions
-        needs an internet connection to work properly.
+        It looks like you've lost your internet connection. Don't worry, we'll
+        get you back online as soon as possible.
       </p>
 
-      <div id="status" class="status offline">
-        <div id="status-text">❌ No internet connection detected</div>
-      </div>
+      <div class="status" id="status">Checking connection status...</div>
 
-      <div>
-        <button id="retry-btn" onclick="tryReconnect()" class="button">
-          🔄 Try Again
-        </button>
-        <button
-          onclick="viewCached()"
-          class="button"
-          style="background: #6b7280"
-        >
-          📋 View Cached Content
-        </button>
+      <div class="buttons">
+        <button onclick="checkConnection()">🔄 Try Again</button>
+        <button onclick="goHome()" class="secondary">🏠 Home</button>
       </div>
 
       <div class="footer">
-        <strong>ReBooked Solutions</strong><br />
-        Your connection will be automatically restored when internet is
-        available.<br />
-        <small>Some features may be limited while offline.</small>
+        ReBooked Solutions<br />
+        Your trusted textbook marketplace
       </div>
     </div>
 
     <script>
-      let retryAttempts = 0;
-      const maxRetries = 5;
+      let isOnline = navigator.onLine;
+      let retryCount = 0;
 
-      function updateStatus(isOnline) {
-        const status = document.getElementById("status");
-        const statusText = document.getElementById("status-text");
-        const retryBtn = document.getElementById("retry-btn");
+      function updateStatus() {
+        const statusEl = document.getElementById("status");
 
-        if (isOnline) {
-          status.className = "status online";
-          statusText.textContent = "✅ Connection restored! Redirecting...";
-          retryBtn.disabled = true;
+        if (navigator.onLine) {
+          statusEl.style.background = "#d1fae5";
+          statusEl.style.color = "#065f46";
+          statusEl.textContent = "✅ Connection restored! Redirecting...";
 
           setTimeout(() => {
             window.location.href = "/";
           }, 2000);
         } else {
-          status.className = "status offline";
-          statusText.textContent = "❌ Still offline. Check your connection.";
-          retryBtn.disabled = false;
+          statusEl.style.background = "#fef3c7";
+          statusEl.style.color = "#92400e";
+          statusEl.textContent = `⚠️ Still offline (Attempt ${retryCount + 1})`;
         }
       }
 
-      function tryReconnect() {
-        retryAttempts++;
-        const retryBtn = document.getElementById("retry-btn");
-        const statusText = document.getElementById("status-text");
+      function checkConnection() {
+        retryCount++;
 
-        retryBtn.textContent = "🔄 Checking...";
-        retryBtn.disabled = true;
-        statusText.textContent = `🔍 Checking connection... (${retryAttempts}/${maxRetries})`;
+        // Update UI immediately
+        const statusEl = document.getElementById("status");
+        statusEl.style.background = "#dbeafe";
+        statusEl.style.color = "#1e40af";
+        statusEl.textContent = "🔄 Checking connection...";
 
-        // Try to fetch a small resource to test connectivity
+        // Try to fetch a small resource
         fetch("/", {
           method: "HEAD",
           cache: "no-cache",
-          mode: "cors",
         })
           .then((response) => {
             if (response.ok) {
-              updateStatus(true);
+              window.location.href = "/";
             } else {
-              throw new Error("Response not ok");
+              updateStatus();
             }
           })
           .catch(() => {
-            setTimeout(() => {
-              updateStatus(false);
-              retryBtn.textContent = "🔄 Try Again";
-
-              if (retryAttempts >= maxRetries) {
-                statusText.textContent =
-                  "❌ Multiple connection attempts failed. Please check your internet.";
-                retryBtn.textContent = "🔄 Keep Trying";
-              }
-            }, 1000);
+            updateStatus();
           });
       }
 
-      function viewCached() {
-        alert(
-          "Cached content feature coming soon! For now, please reconnect to access ReBooked Solutions.",
-        );
+      function goHome() {
+        window.location.href = "/";
       }
 
       // Listen for online/offline events
       window.addEventListener("online", () => {
-        updateStatus(true);
+        isOnline = true;
+        updateStatus();
       });
 
       window.addEventListener("offline", () => {
-        updateStatus(false);
+        isOnline = false;
+        updateStatus();
       });
+
+      // Check connection status on load
+      updateStatus();
 
       // Auto-retry every 30 seconds
       setInterval(() => {
         if (!navigator.onLine) {
-          tryReconnect();
+          checkConnection();
         }
       }, 30000);
-
-      // Initial status check
-      if (navigator.onLine) {
-        // If we're online, try to go to the main app
-        tryReconnect();
-      }
     </script>
   </body>
 </html>

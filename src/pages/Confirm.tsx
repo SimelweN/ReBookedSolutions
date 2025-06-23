@@ -69,7 +69,10 @@ const Confirm = () => {
           });
 
           if (error) {
-            console.error("Token hash verification error:", error);
+            console.error(
+              "Token hash verification error:",
+              error.message || String(error),
+            );
             throw error;
           }
 
@@ -99,7 +102,7 @@ const Confirm = () => {
         );
 
         if (error) {
-          console.error("Code exchange error:", error);
+          console.error("Code exchange error:", error.message || String(error));
           throw error;
         }
 
@@ -115,7 +118,10 @@ const Confirm = () => {
         // If we get here, none of the methods worked
         throw new Error("Unable to confirm email with any available method");
       } catch (error: unknown) {
-        console.error("Email confirmation error:", error);
+        console.error(
+          "Email confirmation error:",
+          error instanceof Error ? error.message : String(error),
+        );
         setStatus("error");
 
         let errorMessage = "Email confirmation failed. ";

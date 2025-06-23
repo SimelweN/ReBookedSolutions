@@ -14,7 +14,10 @@ export const clearAllBrowseBooks = async (): Promise<{
       .select("*", { count: "exact", head: true });
 
     if (countError) {
-      console.error("Error counting books:", countError);
+      console.error(
+        "Error counting books:",
+        countError.message || String(countError),
+      );
       return {
         success: false,
         message: `Failed to count books: ${countError.message}`,
@@ -36,10 +39,13 @@ export const clearAllBrowseBooks = async (): Promise<{
     const { error: deleteError } = await supabase
       .from("books")
       .delete()
-      .neq("id", ""); // This will match all records
+      .gte("created_at", "1900-01-01"); // This will match all records safely
 
     if (deleteError) {
-      console.error("Error deleting books:", deleteError);
+      console.error(
+        "Error deleting books:",
+        deleteError.message || String(deleteError),
+      );
       return {
         success: false,
         message: `Failed to delete books: ${deleteError.message}`,
@@ -55,7 +61,10 @@ export const clearAllBrowseBooks = async (): Promise<{
       deletedCount: totalBooks,
     };
   } catch (error) {
-    console.error("Error in clearAllBrowseBooks:", error);
+    console.error(
+      "Error in clearAllBrowseBooks:",
+      error instanceof Error ? error.message : String(error),
+    );
     return {
       success: false,
       message: `Failed to clear books: ${error instanceof Error ? error.message : "Unknown error"}`,

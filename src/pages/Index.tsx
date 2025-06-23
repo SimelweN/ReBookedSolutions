@@ -1,29 +1,37 @@
-import { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import SEO from "@/components/SEO";
+import OptimizedImage from "@/components/OptimizedImage";
 import { Button } from "@/components/ui/button";
 import { Search, BookOpen } from "lucide-react";
 
-const Index = () => {
+const Index = React.memo(() => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      console.log("Searching for:", searchQuery.trim());
-      navigate(`/books?search=${encodeURIComponent(searchQuery.trim())}`);
-    }
-  };
 
-  const categories = [
-    { name: "Computer Science", icon: "💻" },
-    { name: "Mathematics", icon: "📊" },
-    { name: "Biology", icon: "🧬" },
-    { name: "Chemistry", icon: "⚗️" },
-    { name: "Physics", icon: "🔭" },
-    { name: "Economics", icon: "📈" },
-  ];
+  const handleSearch = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      if (searchQuery.trim()) {
+        console.log("Searching for:", searchQuery.trim());
+        navigate(`/books?search=${encodeURIComponent(searchQuery.trim())}`);
+      }
+    },
+    [searchQuery, navigate],
+  );
+
+  const categories = useMemo(
+    () => [
+      { name: "Computer Science", icon: "💻" },
+      { name: "Mathematics", icon: "📊" },
+      { name: "Biology", icon: "🧬" },
+      { name: "Chemistry", icon: "⚗️" },
+      { name: "Physics", icon: "🔭" },
+      { name: "Economics", icon: "📈" },
+    ],
+    [],
+  );
 
   return (
     <Layout>
@@ -69,14 +77,14 @@ const Index = () => {
             </div>
           </div>
           <div className="md:w-1/2 flex justify-center">
-            <img
-              src="https://cdn.builder.io/api/v1/assets/4b236342bc954bc3a0760c75cd3f3881/pexels-yankrukov-8199706-ad0e6d?format=webp&width=800"
+            <OptimizedImage
+              src="https://cdn.builder.io/api/v1/assets/4b236342bc954bc3a0760c75cd3f3881/pexels-yankrukov-8199706-ad0e6d"
               alt="Three diverse students smiling with stacks of textbooks in library"
-              width="600"
-              height="400"
+              width={600}
+              height={400}
+              priority={true}
               className="rounded-lg shadow-xl max-w-full h-auto w-full max-w-sm md:max-w-full"
-              loading="eager"
-              decoding="sync"
+              containerClassName="w-full"
             />
           </div>
         </div>
@@ -204,6 +212,8 @@ const Index = () => {
       </section>
     </Layout>
   );
-};
+});
+
+Index.displayName = "Index";
 
 export default Index;
