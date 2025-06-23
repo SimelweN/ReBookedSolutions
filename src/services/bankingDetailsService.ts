@@ -21,37 +21,51 @@ export class BankingDetailsService {
   }
 
   /**
-   * Simple decryption for sensitive data
+   * Get banking details for a user with automatic decryption
    */
-  private static decrypt(encryptedData: string): string {
+  static async getBankingDetails(
+    userId: string,
+  ): Promise<BankingDetails | null> {
     try {
-      return decodeURIComponent(escape(atob(encryptedData)));
-    } catch (error) {
-      console.error("Failed to decrypt data:", error);
-      return "";
-    }
-  }
+      const { data, error } = await supabase
+        .from("banking_details")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
 
-  /**
-   * Verify user password before accessing banking details
-   * Uses a simple password confirmation approach
-   */
-  static async verifyPassword(
-    email: string,
-    password: string,
-  ): Promise<boolean> {
-    try {
-      // Simple validation - ensure password is provided and meets basic criteria
-      if (!password || password.length < 6) {
-        console.error(
-          "Password verification failed: Password too short or empty",
-        );
-        return false;
+      if (error) {
+        if (error.code === "PGRST116") {
+          // No banking details found
+          return null;
+        }
+
+        // If table doesn't exist or permission denied, try fallback
+        if (error.code === "42P01" || error.code === "42501") {
+          console.log("Banking details table not accessible, trying fallback");
+          return await FallbackBankingService.getBankingDetailsFallback(userId);
+        }
+
+        throw error;
       }
 
-      // For now, we'll use a simple confirmation approach since Supabase doesn't
-      // have a dedicated password verification endpoint that doesn't interfere with sessions
-      // In a production environment, you might want to implement a custom edge function
+      // Decrypt sensitive fields
+      return {
+        ...data,
+        bank_account_number: this.decrypt(data.bank_account_number),
+        full_name: this.decrypt(data.full_name),
+      } as BankingDetails;
+    } catch (error) {
+      console.error("Error fetching banking details:", error);
+
+      // Try fallback as last resort
+      try {
+        return await FallbackBankingService.getBankingDetailsFallback(userId);
+      } catch (fallbackError) {
+        console.error("Fallback also failed:", fallbackError);
+        return null;
+      }
+    }
+  }
       // that can verify passwords without affecting the current session
 
       // Verify the user is currently authenticated and the email matches
@@ -135,16 +149,11 @@ export class BankingDetailsService {
   ): Promise<BankingDetails> {
     try {
       // First check if the service is available
-      const serviceAvailable =
-        await FallbackBankingService.checkServiceAvailability();
+      const serviceAvailable = await FallbackBankingService.checkServiceAvailability();
 
       if (!serviceAvailable) {
-        console.log(
-          "Banking details table not available, using fallback service",
-        );
-        return await FallbackBankingService.saveBankingDetailsFallback(
-          bankingDetails,
-        );
+        console.log("Banking details table not available, using fallback service");
+        return await FallbackBankingService.saveBankingDetailsFallback(bankingDetails);
       }
       // Create Paystack subaccount first
       let paystackData: {
@@ -161,10 +170,7 @@ export class BankingDetailsService {
       } catch (paystackError) {
         console.warn("Paystack subaccount creation failed:", paystackError);
 
-        const errorMessage =
-          paystackError instanceof Error
-            ? paystackError.message
-            : String(paystackError);
+        const errorMessage = paystackError instanceof Error ? paystackError.message : String(paystackError);
 
         if (errorMessage.includes("temporarily unavailable")) {
           toast.warning(
@@ -206,16 +212,14 @@ export class BankingDetailsService {
           selectError.code === "42P01" ||
           selectError.code === "42501" ||
           (selectError.message &&
-            selectError.message.includes("relation") &&
+            (selectError.message.includes("relation") &&
             selectError.message.includes("does not exist")) ||
-          selectError.message.includes("permission denied")
+            selectError.message.includes("permission denied"))
         ) {
           // Try fallback service instead of failing
           console.log("Database table not accessible, trying fallback service");
           try {
-            return await FallbackBankingService.saveBankingDetailsFallback(
-              bankingDetails,
-            );
+            return await FallbackBankingService.saveBankingDetailsFallback(bankingDetails);
           } catch (fallbackError) {
             throw new Error(
               "Banking details service is being set up. This feature will be available soon. Please try again later or contact support if this persists.",
