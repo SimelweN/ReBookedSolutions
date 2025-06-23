@@ -372,6 +372,10 @@ export function validateSubjectLevel(
   reason: string;
   gap?: number;
 } {
+  console.log(
+    `🔍 Level validation for ${subjectName}: User=${userLevel}, Required=${requiredLevel}`,
+  );
+
   // Ensure valid level range
   if (
     userLevel < 1 ||
@@ -379,13 +383,15 @@ export function validateSubjectLevel(
     requiredLevel < 1 ||
     requiredLevel > 7
   ) {
+    console.log(`❌ Invalid level range for ${subjectName}`);
     return {
       isValid: false,
-      reason: `Invalid level values for ${subjectName} (levels must be 1-7)`,
+      reason: `Invalid level values for ${subjectName} (levels must be 1-7). User: ${userLevel}, Required: ${requiredLevel}`,
     };
   }
 
   if (userLevel >= requiredLevel) {
+    console.log(`✅ Level requirement met for ${subjectName}`);
     return {
       isValid: true,
       reason: `${subjectName} Level ${userLevel} meets requirement (Level ${requiredLevel})`,
@@ -393,6 +399,7 @@ export function validateSubjectLevel(
   }
 
   const gap = requiredLevel - userLevel;
+  console.log(`❌ Level requirement NOT met for ${subjectName}, gap: ${gap}`);
   return {
     isValid: false,
     reason: `${subjectName} Level ${userLevel} is below requirement (Level ${requiredLevel}). Need ${gap} more level${gap > 1 ? "s" : ""}.`,
