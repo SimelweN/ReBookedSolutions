@@ -1,29 +1,30 @@
-import { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Search, BookOpen } from "lucide-react";
 
-const Index = () => {
+const Index = React.memo(() => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-  const handleSearch = (e: React.FormEvent) => {
+
+  const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       console.log("Searching for:", searchQuery.trim());
       navigate(`/books?search=${encodeURIComponent(searchQuery.trim())}`);
     }
-  };
+  }, [searchQuery, navigate]);
 
-  const categories = [
+  const categories = useMemo(() => [
     { name: "Computer Science", icon: "💻" },
     { name: "Mathematics", icon: "📊" },
     { name: "Biology", icon: "🧬" },
     { name: "Chemistry", icon: "⚗️" },
     { name: "Physics", icon: "🔭" },
     { name: "Economics", icon: "📈" },
-  ];
+  ], []);
 
   return (
     <Layout>
