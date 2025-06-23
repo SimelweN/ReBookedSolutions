@@ -16,15 +16,18 @@ import LoadingSpinner from "./components/LoadingSpinner";
 import PerformanceMetrics from "./components/PerformanceMetrics";
 import { debugConnection } from "./utils/debugConnection";
 import { validateApiKey } from "./utils/validateApiKey";
+import { PaymentTester } from "./utils/paymentTester";
 import "./App.css";
 
 // Initialize debug utilities in development
 if (import.meta.env.DEV) {
   (window as any).debugConnection = debugConnection;
   (window as any).validateApiKey = validateApiKey;
+  (window as any).PaymentTester = PaymentTester;
   console.log("🛠️ Debug utilities available:");
   console.log("  - debugConnection() - Full connection test");
   console.log("  - validateApiKey() - Check API key validity");
+  console.log("  - PaymentTester.testPaymentSystem() - Test payment setup");
 }
 
 // Lazy load components for better performance
