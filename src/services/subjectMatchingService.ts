@@ -403,6 +403,24 @@ export function checkSubjectRequirements(
       }
     }
 
+    // If no match found, check for any possible matches with low confidence for debugging
+    if (!bestMatch) {
+      const debugMatches = userSubjects
+        .map((userSubject) => ({
+          user: userSubject.name,
+          required: required.name,
+          matchResult: matchSubjects(userSubject.name, required.name),
+        }))
+        .filter((debug) => debug.matchResult.confidence > 0);
+
+      if (debugMatches.length > 0) {
+        console.log(
+          `Debug: Potential matches for ${required.name}:`,
+          debugMatches,
+        );
+      }
+    }
+
     if (bestMatch) {
       matchedSubjects.push(bestMatch);
     } else {
