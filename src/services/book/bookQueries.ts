@@ -78,7 +78,7 @@ const logDetailedError = (context: string, error: unknown) => {
 
 export const getBooks = async (filters?: BookFilters): Promise<Book[]> => {
   try {
-    console.log("Fetching books with filters:", filters);
+    console.log("🔄 [BookQueries] Starting getBooks with filters:", filters);
 
     const fetchBooksOperation = async () => {
       // First get books
@@ -205,7 +205,10 @@ export const getBooks = async (filters?: BookFilters): Promise<Book[]> => {
         return mapBookFromDatabase(bookData);
       });
 
-      console.log("Processed books:", books.length);
+      console.log(
+        "✅ [BookQueries] Successfully processed books:",
+        books.length,
+      );
       return books;
     };
 
