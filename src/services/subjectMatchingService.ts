@@ -266,6 +266,20 @@ export function matchSubjects(
     }
   }
 
+  // Additional English language checks
+  const isUserEnglishSubject = userStandard.toLowerCase().includes("english");
+  const isRequiredEnglishSubject =
+    requiredStandard.toLowerCase().includes("english") ||
+    requiredStandard.toLowerCase() === "english";
+
+  if (isUserEnglishSubject && isRequiredEnglishSubject) {
+    return {
+      isMatch: true,
+      confidence: 88,
+      reason: `Both are English language subjects: ${userSubject} matches ${requiredSubject}`,
+    };
+  }
+
   // Partial match as last resort - very low confidence
   if (
     userNormalized.includes(requiredNormalized) ||
