@@ -26,6 +26,20 @@ const validateSupabaseConfig = () => {
       `Invalid VITE_SUPABASE_URL: "${ENV.VITE_SUPABASE_URL}". Must be a valid URL.`,
     );
   }
+
+  // Validate API key format (should be a JWT token)
+  if (!ENV.VITE_SUPABASE_ANON_KEY.startsWith("eyJ")) {
+    console.error(
+      "❌ Invalid Supabase API key format. Key should start with 'eyJ'",
+    );
+    console.error(
+      "Current key starts with:",
+      ENV.VITE_SUPABASE_ANON_KEY.substring(0, 10),
+    );
+    throw new Error(
+      "Invalid VITE_SUPABASE_ANON_KEY format. Should be a JWT token starting with 'eyJ'.",
+    );
+  }
 };
 
 // Validate configuration
@@ -34,9 +48,12 @@ validateSupabaseConfig();
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
+// Clean the API key (remove any leading = signs that might have been added by accident)
+const cleanApiKey = ENV.VITE_SUPABASE_ANON_KEY.replace(/^=+/, "");
+
 export const supabase = createClient<Database>(
   ENV.VITE_SUPABASE_URL,
-  ENV.VITE_SUPABASE_ANON_KEY,
+  cleanApiKey,
   {
     auth: {
       autoRefreshToken: true,
