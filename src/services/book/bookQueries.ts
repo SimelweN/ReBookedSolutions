@@ -56,6 +56,20 @@ const logDetailedError = (context: string, error: unknown) => {
   // Use safe error logging to prevent [object Object] issues
   safeLogError(`BookQueries - ${context}`, error);
 
+  // Extract and log key error information
+  const errorInfo = {
+    message: error instanceof Error ? error.message : String(error),
+    name: error instanceof Error ? error.name : typeof error,
+    code: (error as any)?.code || (error as any)?.error_code,
+    details: (error as any)?.details,
+    hint: (error as any)?.hint,
+    status: (error as any)?.status,
+    statusText: (error as any)?.statusText,
+  };
+
+  // Log both the safe error and a readable summary
+  console.error(`[${context}] ${errorInfo.message}`, errorInfo);
+
   // Also log to our error utility (but don't spam it)
   if (logError && bookQueryErrorCount <= 3) {
     logError(context, error);
@@ -107,9 +121,27 @@ export const getBooks = async (filters?: BookFilters): Promise<Book[]> => {
       const { data: booksData, error: booksError } = await query;
 
       if (booksError) {
-        logDetailedError("Books query failed", booksError);
+        const errorMessage = booksError.message || "Unknown database error";
+        const errorCode = booksError.code || "NO_CODE";
+        const errorDetails = booksError.details || "No additional details";
+
+        logDetailedError("Books query failed", {
+          message: errorMessage,
+          code: errorCode,
+          details: errorDetails,
+          hint: booksError.hint,
+          originalError: booksError,
+        });
+
+        console.error(`[BookQueries - Books query failed] Error:`, {
+          message: errorMessage,
+          code: errorCode,
+          details: errorDetails,
+          hint: booksError.hint,
+        });
+
         throw new Error(
-          `Failed to fetch books: ${booksError.message || "Unknown database error"}`,
+          `Failed to fetch books: ${errorMessage} (Code: ${errorCode})`,
         );
       }
 
@@ -130,7 +162,22 @@ export const getBooks = async (filters?: BookFilters): Promise<Book[]> => {
           .in("id", sellerIds);
 
         if (profilesError) {
-          logDetailedError("Error fetching profiles", profilesError);
+          const errorMessage =
+            profilesError.message || "Unknown profiles error";
+          const errorCode = profilesError.code || "NO_CODE";
+
+          console.error(`[BookQueries - Error fetching profiles]`, {
+            message: errorMessage,
+            code: errorCode,
+            details: profilesError.details,
+            hint: profilesError.hint,
+          });
+
+          logDetailedError("Error fetching profiles", {
+            message: errorMessage,
+            code: errorCode,
+            originalError: profilesError,
+          });
           // Continue without profile data rather than failing completely
         } else if (profilesData) {
           profilesData.forEach((profile) => {
@@ -165,15 +212,31 @@ export const getBooks = async (filters?: BookFilters): Promise<Book[]> => {
     // Use retry logic for network resilience
     return await retryWithConnection(fetchBooksOperation, 2, 1000);
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorName = error instanceof Error ? error.name : typeof error;
+
+    console.error(`[BookQueries - Error in getBooks] Error:`, {
+      message: errorMessage,
+      name: errorName,
+      stack: error instanceof Error ? error.stack : undefined,
+      isNetworkError:
+        errorMessage.includes("Failed to fetch") ||
+        errorMessage.includes("NetworkError"),
+      timestamp: new Date().toISOString(),
+    });
+
+    console.error(`[Error in getBooks] ${errorMessage}`);
+    console.error(`Error in getBooks: ${errorMessage}`);
+
     logDetailedError("Error in getBooks", error);
 
     // Provide user-friendly error message
     const userMessage =
       error instanceof Error && error.message.includes("Failed to fetch")
         ? "Unable to connect to the book database. Please check your internet connection and try again."
-        : "Failed to load books. Please try again later.";
+        : `Failed to load books: ${errorMessage}. Please try again later.`;
 
-    console.warn(`[BookQueries] ${userMessage}`, error);
+    console.warn(`[BookQueries] ${userMessage}`);
 
     // Return empty array instead of throwing to prevent app crashes
     return [];
