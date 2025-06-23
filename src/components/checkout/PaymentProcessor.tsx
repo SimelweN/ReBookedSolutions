@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { PAYSTACK_CONFIG } from "@/config/paystack";
-import { SecureBankingService } from "@/services/secureBankingService";
 
 interface PaymentProcessorProps {
   amount: number;
