@@ -76,7 +76,10 @@ const OptimizedImage = React.memo<OptimizedImageProps>(
     return (
       <div
         ref={containerRef}
-        className={cn("relative overflow-hidden", containerClassName)}
+        className={cn(
+          "relative overflow-hidden flex flex-col",
+          containerClassName,
+        )}
         style={{ width, height }}
       >
         {/* Loading placeholder */}
@@ -97,6 +100,7 @@ const OptimizedImage = React.memo<OptimizedImageProps>(
             alt={alt}
             width={width}
             height={height}
+            className="mx-auto"
             loading={priority ? "eager" : "lazy"}
             decoding={priority ? "sync" : "async"}
             onLoad={handleLoad}

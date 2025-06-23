@@ -112,20 +112,20 @@ const Footer = () => {
               Support
             </h3>
             <ul className="space-y-2">
-              <li>
+              <li className="flex flex-col">
                 <Link
                   to="/contact"
-                  className="text-gray-600 hover:text-book-600 text-sm flex items-center transition-colors"
+                  className="text-gray-600 hover:text-book-600 text-sm flex items-center transition-colors mx-auto"
                   onClick={handleLinkClick}
                 >
                   <MessageCircle className="h-4 w-4 mr-2 flex-shrink-0" />
                   Contact Us
                 </Link>
               </li>
-              <li>
+              <li className="flex flex-col">
                 <Link
                   to="/report"
-                  className="text-gray-600 hover:text-book-600 text-sm flex items-center transition-colors"
+                  className="text-gray-600 hover:text-book-600 text-sm flex items-center transition-colors mx-auto"
                   onClick={handleLinkClick}
                 >
                   <AlertTriangle className="h-4 w-4 mr-2 flex-shrink-0" />
