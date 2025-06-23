@@ -3,7 +3,7 @@
  */
 
 import { supabase } from "@/integrations/supabase/client";
-import { BankingDetailsService } from "@/services/bankingDetailsService";
+import { ImprovedBankingService } from "@/services/improvedBankingService";
 import { canUserListBooks } from "@/services/addressValidationService";
 
 export const testPaymentSetup = async () => {
