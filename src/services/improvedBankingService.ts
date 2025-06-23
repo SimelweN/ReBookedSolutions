@@ -70,11 +70,22 @@ export class ImprovedBankingService {
         await this.checkServiceAvailability();
 
       if (!databaseAvailable) {
-        // Show setup instructions to help user understand the issue
-        await DatabaseSetup.showSetupInstructions();
-        throw new Error(
-          "Banking details service is not available. Please contact support.",
+        console.log(
+          "Banking details table not found, attempting automatic setup...",
         );
+
+        // Try to set up the table automatically
+        const setupSuccess = await DatabaseSetup.ensureBankingTableExists();
+
+        if (!setupSuccess) {
+          // Show setup instructions if automatic setup fails
+          await DatabaseSetup.showSetupInstructions();
+          throw new Error(
+            "Banking details table needs to be created. Please run the database setup script or contact support.",
+          );
+        }
+
+        console.log("✅ Banking details table setup completed automatically");
       }
 
       let paystackData: {
@@ -172,10 +183,12 @@ export class ImprovedBankingService {
       console.error(
         `Error in saveBankingDetails: ${errorMessage} (${errorCode})`,
       );
-      console.error("Save banking details error details:", {
-        message: errorMessage,
-        code: errorCode,
-      });
+      console.error(
+        `Save banking details error details: ${JSON.stringify({
+          message: errorMessage,
+          code: errorCode,
+        })}`,
+      );
 
       toast.error(errorMessage);
       throw new Error(errorMessage);
