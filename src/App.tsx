@@ -15,16 +15,14 @@ import ScrollToTop from "./components/ScrollToTop";
 import LoadingSpinner from "./components/LoadingSpinner";
 import PerformanceMetrics from "./components/PerformanceMetrics";
 import { debugConnection } from "./utils/debugConnection";
-import { testErrorHandling } from "./utils/testErrorHandling";
 import "./App.css";
 
-// Initialize debug utilities in development
+// Initialize debug utility in development
 if (import.meta.env.DEV) {
   (window as any).debugConnection = debugConnection;
-  (window as any).testErrorHandling = testErrorHandling;
-  console.log("🛠️ Debug utilities available:");
-  console.log("  - debugConnection() - Test database connection");
-  console.log("  - testErrorHandling() - Test error logging");
+  console.log(
+    "🛠️ Debug utility available: call debugConnection() in console to test connection",
+  );
 }
 
 // Lazy load components for better performance
