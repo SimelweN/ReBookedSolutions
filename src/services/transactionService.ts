@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { PaystackService } from "@/services/paystackService";
 import { ImprovedBankingService } from "@/services/improvedBankingService";
-import { PaymentDebugger } from "@/utils/paymentDebugger";
+// PaymentDebugger removed - debugging functionality integrated into improved service
 import { toast } from "sonner";
 
 export interface Transaction {
@@ -54,9 +54,9 @@ export class TransactionService {
     bookTitle: string;
   }): Promise<{ payment_url: string; transaction_id: string }> {
     try {
-      // Debug seller setup in development
+      // Debug info in development
       if (import.meta.env.DEV) {
-        await PaymentDebugger.debugForUser(sellerId);
+        console.log(`Initializing payment for seller: ${sellerId}`);
       }
 
       // Get seller's banking details and subaccount
