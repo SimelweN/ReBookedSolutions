@@ -1,110 +1,78 @@
--- Manual Database Setup for Study Resources
--- Copy and paste this into your Supabase SQL Editor and run it
+-- Banking Details Table Setup Script
+-- Run this script in your Supabase SQL editor to create the banking_details table
 
--- Create study_resources table
-CREATE TABLE IF NOT EXISTS public.study_resources (
+-- Create banking_details table for secure storage of user banking information
+CREATE TABLE IF NOT EXISTS public.banking_details (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    title TEXT NOT NULL,
-    description TEXT NOT NULL,
-    type TEXT NOT NULL CHECK (type IN ('pdf', 'video', 'website', 'tool', 'course')),
-    category TEXT NOT NULL,
-    difficulty TEXT NOT NULL CHECK (difficulty IN ('Beginner', 'Intermediate', 'Advanced')),
-    url TEXT,
-    rating DECIMAL(3,2) DEFAULT 0 CHECK (rating >= 0 AND rating <= 5),
-    provider TEXT,
-    duration TEXT,
-    tags TEXT[] DEFAULT '{}',
-    download_url TEXT,
-    is_active BOOLEAN DEFAULT true,
-    is_featured BOOLEAN DEFAULT false,
-    is_sponsored BOOLEAN DEFAULT false,
-    sponsor_name TEXT,
-    sponsor_logo TEXT,
-    sponsor_url TEXT,
-    sponsor_cta TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    recipient_type TEXT NOT NULL,
+    full_name TEXT NOT NULL, -- Encrypted
+    bank_account_number TEXT NOT NULL, -- Encrypted
+    bank_name TEXT NOT NULL,
+    branch_code TEXT NOT NULL,
+    account_type TEXT NOT NULL CHECK (account_type IN ('savings', 'current')),
+    paystack_subaccount_code TEXT, -- Paystack subaccount code for split payments
+    paystack_subaccount_id TEXT, -- Paystack subaccount ID
+    subaccount_status TEXT DEFAULT 'pending' CHECK (subaccount_status IN ('pending', 'active', 'inactive')),
+    account_verified BOOLEAN DEFAULT false NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    UNIQUE(user_id)
 );
 
--- Create study_tips table
-CREATE TABLE IF NOT EXISTS public.study_tips (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    title TEXT NOT NULL,
-    content TEXT NOT NULL,
-    category TEXT NOT NULL,
-    difficulty TEXT NOT NULL CHECK (difficulty IN ('Beginner', 'Intermediate', 'Advanced')),
-    tags TEXT[] DEFAULT '{}',
-    is_active BOOLEAN DEFAULT true,
-    author TEXT,
-    estimated_time TEXT,
-    effectiveness INTEGER CHECK (effectiveness >= 0 AND effectiveness <= 100),
-    is_sponsored BOOLEAN DEFAULT false,
-    sponsor_name TEXT,
-    sponsor_logo TEXT,
-    sponsor_url TEXT,
-    sponsor_cta TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+-- Enable Row Level Security (RLS)
+ALTER TABLE public.banking_details ENABLE ROW LEVEL SECURITY;
 
--- Enable Row Level Security
-ALTER TABLE public.study_resources ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.study_tips ENABLE ROW LEVEL SECURITY;
+-- Create RLS policies for banking_details
+-- Users can only see and modify their own banking details
+CREATE POLICY IF NOT EXISTS "Users can view their own banking details" ON public.banking_details
+    FOR SELECT
+    USING (auth.uid() = user_id);
 
--- Create policies for study_resources
-DROP POLICY IF EXISTS "Anyone can view active study resources" ON public.study_resources;
-CREATE POLICY "Anyone can view active study resources" 
-    ON public.study_resources FOR SELECT 
-    USING (is_active = true);
+CREATE POLICY IF NOT EXISTS "Users can insert their own banking details" ON public.banking_details
+    FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
 
-DROP POLICY IF EXISTS "Admins can manage study resources" ON public.study_resources;
-CREATE POLICY "Admins can manage study resources" 
-    ON public.study_resources FOR ALL 
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.profiles 
-            WHERE profiles.id = auth.uid() 
-            AND profiles.role = 'admin'
-        )
-    );
+CREATE POLICY IF NOT EXISTS "Users can update their own banking details" ON public.banking_details
+    FOR UPDATE
+    USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
 
--- Create policies for study_tips
-DROP POLICY IF EXISTS "Anyone can view active study tips" ON public.study_tips;
-CREATE POLICY "Anyone can view active study tips" 
-    ON public.study_tips FOR SELECT 
-    USING (is_active = true);
+CREATE POLICY IF NOT EXISTS "Users can delete their own banking details" ON public.banking_details
+    FOR DELETE
+    USING (auth.uid() = user_id);
 
-DROP POLICY IF EXISTS "Admins can manage study tips" ON public.study_tips;
-CREATE POLICY "Admins can manage study tips" 
-    ON public.study_tips FOR ALL 
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.profiles 
-            WHERE profiles.id = auth.uid() 
-            AND profiles.role = 'admin'
-        )
-    );
+-- Create updated_at trigger function if it doesn't exist
+CREATE OR REPLACE FUNCTION public.handle_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = TIMEZONE('utc'::text, NOW());
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
--- Create indexes for better performance
-CREATE INDEX IF NOT EXISTS study_resources_active_idx ON public.study_resources(is_active);
-CREATE INDEX IF NOT EXISTS study_resources_category_idx ON public.study_resources(category);
-CREATE INDEX IF NOT EXISTS study_resources_difficulty_idx ON public.study_resources(difficulty);
+-- Apply trigger to banking_details table
+DROP TRIGGER IF EXISTS handle_banking_details_updated_at ON public.banking_details;
+CREATE TRIGGER handle_banking_details_updated_at
+    BEFORE UPDATE ON public.banking_details
+    FOR EACH ROW
+    EXECUTE FUNCTION public.handle_updated_at();
 
-CREATE INDEX IF NOT EXISTS study_tips_active_idx ON public.study_tips(is_active);
-CREATE INDEX IF NOT EXISTS study_tips_category_idx ON public.study_tips(category);
-CREATE INDEX IF NOT EXISTS study_tips_difficulty_idx ON public.study_tips(difficulty);
+-- Grant necessary permissions
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.banking_details TO authenticated;
+GRANT USAGE ON SCHEMA public TO authenticated;
 
--- Insert sample data
-INSERT INTO public.study_resources (title, description, type, category, difficulty, url, rating, provider, duration, tags, is_active, is_featured)
-VALUES 
-    ('Sample Mathematics Guide', 'A comprehensive mathematics study guide', 'pdf', 'Mathematics', 'Intermediate', 'https://example.com/math.pdf', 4.5, 'EduResources', '2 hours', ARRAY['mathematics', 'study'], true, true)
-ON CONFLICT (id) DO NOTHING;
+-- Add helpful comments
+COMMENT ON TABLE public.banking_details IS 'Stores encrypted banking details for users with strong security measures';
+COMMENT ON COLUMN public.banking_details.full_name IS 'Encrypted full name of account holder';
+COMMENT ON COLUMN public.banking_details.bank_account_number IS 'Encrypted bank account number';
+COMMENT ON COLUMN public.banking_details.recipient_type IS 'Type of recipient (individual, business, etc.)';
+COMMENT ON COLUMN public.banking_details.account_type IS 'Type of bank account (savings or current)';
+COMMENT ON COLUMN public.banking_details.account_verified IS 'Whether the banking details have been verified and can be used for payments';
+COMMENT ON COLUMN public.banking_details.paystack_subaccount_code IS 'Paystack subaccount code for receiving split payments';
 
-INSERT INTO public.study_tips (title, content, category, difficulty, tags, is_active, author, estimated_time, effectiveness)
-VALUES 
-    ('Active Recall Technique', 'Use active recall by testing yourself frequently rather than just re-reading notes. This method has been proven to significantly improve long-term retention.', 'Study Techniques', 'Beginner', ARRAY['memory', 'study-techniques'], true, 'Study Expert', '5 minutes', 90)
-ON CONFLICT (id) DO NOTHING;
+-- Verify table creation
+SELECT 'Banking details table created successfully!' as status;
 
--- Verify tables were created
-SELECT 'study_resources table created' as status, count(*) as record_count FROM public.study_resources;
-SELECT 'study_tips table created' as status, count(*) as record_count FROM public.study_tips;
+-- Show table structure
+\d+ public.banking_details;
