@@ -938,17 +938,28 @@ const EnhancedUniversityProfile: React.FC = () => {
                                     </p>
                                   </div>
                                   <div className="flex items-center gap-4">
-                                    <Badge variant="outline">
-                                      {faculty.degrees?.length || 0} programs
-                                    </Badge>
-                                    {hasValidProfile && (
-                                      <Badge className="bg-green-100 text-green-700">
-                                        {
-                                          faculty.degrees.filter(
-                                            (d: any) => d.isEligible,
-                                          ).length
-                                        }{" "}
-                                        eligible
+                                    {hasValidProfile ? (
+                                      <Badge
+                                        variant="outline"
+                                        className="text-sm"
+                                      >
+                                        {faculty.degrees?.length || 0} programs
+                                        (
+                                        {faculty.degrees?.filter((degree) => {
+                                          const eligibility =
+                                            checkProgramEligibility(
+                                              degree,
+                                              fromAPS && apsScore
+                                                ? parseInt(apsScore)
+                                                : undefined,
+                                            );
+                                          return eligibility.eligible;
+                                        }).length || 0}{" "}
+                                        matched)
+                                      </Badge>
+                                    ) : (
+                                      <Badge variant="outline">
+                                        {faculty.degrees?.length || 0} programs
                                       </Badge>
                                     )}
                                     {expandedFaculties.has(faculty.id) ? (
