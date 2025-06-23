@@ -118,7 +118,7 @@ export class ImprovedBankingService {
         paystack_subaccount_code: paystackData?.subaccount_code || null,
         paystack_subaccount_id: paystackData?.subaccount_id || null,
         subaccount_status: paystackData ? "active" : "pending_setup",
-        account_verified: !!paystackData,
+        account_verified: !!paystackData, // Will be ignored if column doesn't exist
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
