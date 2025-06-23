@@ -21,7 +21,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
-import { BankingDetailsService } from "@/services/bankingDetailsService";
+import { ImprovedBankingService } from "@/services/improvedBankingService";
 import { BankingDetails, SOUTH_AFRICAN_BANKS, BankInfo } from "@/types/banking";
 import { toast } from "sonner";
 import {
@@ -198,9 +198,9 @@ const BankingDetailsSection: React.FC = () => {
         account_type: formData.account_type! as "savings" | "current",
       };
 
-      const savedDetails = await BankingDetailsService.saveBankingDetails(
+      const savedDetails = await ImprovedBankingService.saveBankingDetails(
         detailsToSave,
-        user.email || "",
+        user.email!,
       );
       setBankingDetails(savedDetails);
       setIsEditing(false);
