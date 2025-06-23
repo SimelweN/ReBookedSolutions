@@ -1037,8 +1037,16 @@ const EnhancedUniversityProfile: React.FC = () => {
                                                       ? "bg-yellow-600 hover:bg-yellow-700"
                                                       : "bg-slate-600 hover:bg-slate-700"
                                                 }`}
+                                                title={getUniversityAPSMethodology(
+                                                  universityId!,
+                                                )}
                                               >
-                                                APS {degree.apsRequirement}
+                                                {
+                                                  getUniversitySpecificAPSDisplay(
+                                                    universityId!,
+                                                    degree.apsRequirement,
+                                                  ).displayText
+                                                }
                                               </Badge>
 
                                               {category === "eligible" && (
