@@ -46,6 +46,26 @@ export class EnhancedPaymentRedirect {
     } catch (error) {
       toast.dismiss();
       console.error("Payment initialization failed:", error);
+
+      // Handle specific seller setup errors
+      if (error instanceof Error) {
+        if (error.message === "SELLER_NO_BANKING_DETAILS") {
+          toast.warning(
+            "Seller hasn't set up banking details yet. Redirecting to alternative payment...",
+          );
+          this.fallbackToExistingPayment(bookId);
+          return;
+        }
+
+        if (error.message === "SELLER_NO_SUBACCOUNT") {
+          toast.warning(
+            "Seller's payment account is being set up. Redirecting to alternative payment...",
+          );
+          this.fallbackToExistingPayment(bookId);
+          return;
+        }
+      }
+
       const errorMessage =
         error instanceof Error ? error.message : "Failed to initialize payment";
       toast.error(errorMessage);
@@ -102,6 +122,21 @@ export class EnhancedPaymentRedirect {
     } catch (error) {
       toast.dismiss();
       console.error("Cart checkout failed:", error);
+
+      // Handle specific seller setup errors
+      if (error instanceof Error) {
+        if (
+          error.message === "SELLER_NO_BANKING_DETAILS" ||
+          error.message === "SELLER_NO_SUBACCOUNT"
+        ) {
+          toast.warning(
+            "Some sellers haven't completed payment setup. Redirecting to alternative checkout...",
+          );
+          this.fallbackToExistingCartCheckout(cartItems);
+          return;
+        }
+      }
+
       const errorMessage =
         error instanceof Error
           ? error.message

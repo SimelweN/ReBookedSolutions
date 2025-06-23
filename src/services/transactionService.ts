@@ -56,10 +56,18 @@ export class TransactionService {
       const sellerBankingDetails =
         await BankingDetailsService.getBankingDetails(sellerId);
 
-      if (!sellerBankingDetails?.paystack_subaccount_code) {
-        throw new Error(
-          "Seller has not set up payment account. Please contact the seller.",
+      if (!sellerBankingDetails) {
+        console.warn(
+          `Seller ${sellerId} has no banking details, falling back to legacy payment`,
         );
+        throw new Error("SELLER_NO_BANKING_DETAILS");
+      }
+
+      if (!sellerBankingDetails.paystack_subaccount_code) {
+        console.warn(
+          `Seller ${sellerId} has banking details but no Paystack subaccount, falling back to legacy payment`,
+        );
+        throw new Error("SELLER_NO_SUBACCOUNT");
       }
 
       // Create transaction record
