@@ -9,6 +9,7 @@ import {
 } from "./utils/performanceUtils.ts";
 import "./index.css";
 import "./styles/performance-optimizations.css";
+import "./utils/resizeObserverFix";
 
 // Log bundle info in development
 logBundleInfo();
