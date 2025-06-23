@@ -30,6 +30,20 @@ export const validateEnvironment = () => {
     return !value || value.trim() === "";
   });
 
+  // Validate Supabase key format (should be a JWT token starting with eyJ)
+  if (
+    ENV.VITE_SUPABASE_ANON_KEY &&
+    !ENV.VITE_SUPABASE_ANON_KEY.startsWith("eyJ")
+  ) {
+    console.error(
+      "❌ VITE_SUPABASE_ANON_KEY appears to be invalid - should start with 'eyJ'",
+    );
+    console.error(
+      "Current key starts with:",
+      ENV.VITE_SUPABASE_ANON_KEY.substring(0, 10) + "...",
+    );
+  }
+
   const missingOptional = optional.filter((key) => {
     const value = ENV[key as keyof typeof ENV];
     return !value || value.trim() === "";
