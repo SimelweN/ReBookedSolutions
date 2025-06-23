@@ -8,6 +8,9 @@ CREATE TABLE IF NOT EXISTS public.banking_details (
     bank_name TEXT NOT NULL,
     branch_code TEXT NOT NULL,
     account_type TEXT NOT NULL CHECK (account_type IN ('savings', 'current')),
+    paystack_subaccount_code TEXT, -- Paystack subaccount code for split payments
+    paystack_subaccount_id TEXT, -- Paystack subaccount ID
+    subaccount_status TEXT DEFAULT 'pending' CHECK (subaccount_status IN ('pending', 'active', 'inactive')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     UNIQUE(user_id)

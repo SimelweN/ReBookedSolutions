@@ -43,6 +43,9 @@ export type Database = {
           bank_name: string;
           branch_code: string;
           account_type: string;
+          paystack_subaccount_code: string | null;
+          paystack_subaccount_id: string | null;
+          subaccount_status: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -55,6 +58,9 @@ export type Database = {
           bank_name: string;
           branch_code: string;
           account_type: string;
+          paystack_subaccount_code?: string | null;
+          paystack_subaccount_id?: string | null;
+          subaccount_status?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -67,6 +73,9 @@ export type Database = {
           bank_name?: string;
           branch_code?: string;
           account_type?: string;
+          paystack_subaccount_code?: string | null;
+          paystack_subaccount_id?: string | null;
+          subaccount_status?: string | null;
           created_at?: string;
           updated_at?: string;
         };
