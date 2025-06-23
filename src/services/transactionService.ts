@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { PaystackService } from "@/services/paystackService";
+import { SecureBankingService } from "@/services/secureBankingService";
 import { ImprovedBankingService } from "@/services/improvedBankingService";
-// PaymentDebugger removed - debugging functionality integrated into improved service
 import { toast } from "sonner";
 
 export interface Transaction {
