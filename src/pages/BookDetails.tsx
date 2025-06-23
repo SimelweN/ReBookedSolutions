@@ -41,9 +41,9 @@ const BookDetails = () => {
 
   const { book, isLoading, error } = useBookDetails(id || "");
 
-  const handleBuyNow = () => {
+  const handleBuyNow = async () => {
     if (!user) {
-      toast.error("Please log in to purchase books");
+      toast.error("Please log in to buy this book");
       navigate("/login");
       return;
     }
@@ -60,7 +60,26 @@ const BookDetails = () => {
       return;
     }
 
-    navigate(`/checkout/${book.id}`);
+    try {
+      // Try new Paystack integration first
+      const { EnhancedPaymentRedirect } = await import(
+        "@/utils/enhancedPaymentRedirect"
+      );
+
+      await EnhancedPaymentRedirect.initiateBuyNow({
+        bookId: book.id,
+        buyerId: user.id,
+        buyerEmail: user.email || "",
+        sellerId: book.seller?.id || "",
+        bookPrice: book.price,
+        bookTitle: book.title,
+        deliveryFee: 0, // Calculate delivery fee as needed
+      });
+    } catch (error) {
+      console.error("Enhanced payment failed, falling back:", error);
+      // Fallback to existing checkout
+      navigate(`/checkout/${book.id}`);
+    }
   };
 
   const handleAddToCart = () => {
