@@ -100,13 +100,13 @@ const OptimizedImage = React.memo<OptimizedImageProps>(
             alt={alt}
             width={width}
             height={height}
-            className="max-sm:mx-auto"
             loading={priority ? "eager" : "lazy"}
             decoding={priority ? "sync" : "async"}
             onLoad={handleLoad}
             onError={handleError}
             className={cn(
               "transition-opacity duration-300",
+              "max-sm:mx-auto",
               isLoaded ? "opacity-100" : "opacity-0",
               className,
             )}
