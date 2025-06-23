@@ -267,6 +267,7 @@ export function matchSubjects(
 
 /**
  * Validate subject level requirements
+ * Level represents APS points (1-7) where 7=80%+, 6=70%+, 5=60%+, etc.
  */
 export function validateSubjectLevel(
   userLevel: number,
@@ -277,6 +278,19 @@ export function validateSubjectLevel(
   reason: string;
   gap?: number;
 } {
+  // Ensure valid level range
+  if (
+    userLevel < 1 ||
+    userLevel > 7 ||
+    requiredLevel < 1 ||
+    requiredLevel > 7
+  ) {
+    return {
+      isValid: false,
+      reason: `Invalid level values for ${subjectName} (levels must be 1-7)`,
+    };
+  }
+
   if (userLevel >= requiredLevel) {
     return {
       isValid: true,
@@ -287,7 +301,7 @@ export function validateSubjectLevel(
   const gap = requiredLevel - userLevel;
   return {
     isValid: false,
-    reason: `${subjectName} Level ${userLevel} is below requirement (Level ${requiredLevel})`,
+    reason: `${subjectName} Level ${userLevel} is below requirement (Level ${requiredLevel}). Need ${gap} more level${gap > 1 ? "s" : ""}.`,
     gap,
   };
 }
