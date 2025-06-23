@@ -325,30 +325,53 @@ const CreateListing = () => {
       <div
         className={`container mx-auto ${isMobile ? "px-2" : "px-4"} py-4 md:py-8 max-w-2xl`}
       >
-        {/* Address Requirement Alert */}
-        {!isCheckingAddress && canListBooks === false && (
-          <Alert className="mb-6 border-orange-200 bg-orange-50">
-            <AlertTriangle className="h-4 w-4 text-orange-600" />
-            <AlertDescription className="text-orange-800">
-              <div className="flex items-center justify-between">
+        {/* Requirements Validation Alert */}
+        {!isCheckingAddress &&
+          canListBooks === false &&
+          validationErrors.length > 0 && (
+            <Alert className="mb-6 border-red-200 bg-red-50">
+              <AlertTriangle className="h-4 w-4 text-red-600" />
+              <AlertDescription className="text-red-800">
                 <div>
-                  <span className="font-medium">Pickup Address Required</span>
-                  <p className="text-sm mt-1">
-                    You need to set a pickup address in your profile before you
-                    can list books for sale.
+                  <span className="font-medium">Account Setup Required</span>
+                  <p className="text-sm mt-1 mb-3">
+                    Please complete the following requirements before listing
+                    books:
                   </p>
+                  <ul className="text-sm space-y-1 mb-4">
+                    {validationErrors.map((error, index) => (
+                      <li key={index} className="flex items-start">
+                        <span className="text-red-600 mr-2">•</span>
+                        {error}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex gap-2 flex-wrap">
+                    <Button
+                      variant="outline"
+                      onClick={() => navigate("/profile")}
+                      className="border-red-300 text-red-700 hover:bg-red-100"
+                      size="sm"
+                    >
+                      Complete Profile
+                    </Button>
+                    {validationErrors.some((error) =>
+                      error.includes("banking"),
+                    ) && (
+                      <Button
+                        variant="outline"
+                        onClick={() => navigate("/profile?tab=banking")}
+                        className="border-red-300 text-red-700 hover:bg-red-100"
+                        size="sm"
+                      >
+                        Setup Banking
+                      </Button>
+                    )}
+                  </div>
                 </div>
-                <Button
-                  variant="outline"
-                  onClick={() => navigate("/profile")}
-                  className="ml-4 border-orange-300 text-orange-700 hover:bg-orange-100"
-                >
-                  Go to Profile
-                </Button>
-              </div>
-            </AlertDescription>
-          </Alert>
-        )}
+              </AlertDescription>
+            </Alert>
+          )}
 
         {/* Loading Address Check */}
         {isCheckingAddress && (
