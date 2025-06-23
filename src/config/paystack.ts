@@ -3,16 +3,14 @@
  */
 export const PAYSTACK_CONFIG = {
   PUBLIC_KEY: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || "",
-  SECRET_KEY: import.meta.env.VITE_PAYSTACK_SECRET_KEY || "",
   BASE_URL: "https://api.paystack.co",
   CALLBACK_URL: `${window.location.origin}/payment-callback`,
 
   // Validation
   isConfigured: () => {
     const hasPublicKey = Boolean(import.meta.env.VITE_PAYSTACK_PUBLIC_KEY);
-    const hasSecretKey = Boolean(import.meta.env.VITE_PAYSTACK_SECRET_KEY);
 
-    if (!hasPublicKey || !hasSecretKey) {
+    if (!hasPublicKey) {
       console.warn(
         "⚠️ Paystack configuration incomplete. Some features may not work.",
       );

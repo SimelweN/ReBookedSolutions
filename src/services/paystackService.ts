@@ -2,14 +2,14 @@ import { BankingDetails, SOUTH_AFRICAN_BANKS } from "@/types/banking";
 import { toast } from "sonner";
 
 /**
- * Paystack service for managing subaccounts and split payments
+ * Paystack service for managing subaccounts and split payments via Edge Functions
  */
 export class PaystackService {
-  private static readonly PAYSTACK_SECRET_KEY = import.meta.env
-    .VITE_PAYSTACK_SECRET_KEY;
   private static readonly PAYSTACK_PUBLIC_KEY = import.meta.env
     .VITE_PAYSTACK_PUBLIC_KEY;
   private static readonly CALLBACK_URL = `${window.location.origin}/payment-callback`;
+  private static readonly SUPABASE_FUNCTION_URL =
+    import.meta.env.VITE_SUPABASE_URL + "/functions/v1";
 
   /**
    * Get bank code for Paystack from bank name
@@ -41,7 +41,7 @@ export class PaystackService {
   }
 
   /**
-   * Create Paystack subaccount for seller
+   * Create Paystack subaccount for seller via Edge Function
    */
   static async createSubaccount(
     bankingDetails: BankingDetails,
@@ -51,19 +51,14 @@ export class PaystackService {
     subaccount_id: string;
   }> {
     try {
-      const bankCode = this.getBankCode(bankingDetails.bank_name);
-      if (!bankCode) {
-        throw new Error(`Unsupported bank: ${bankingDetails.bank_name}`);
-      }
+      const { supabase } = await import("@/integrations/supabase/client");
 
       const payload = {
         business_name: bankingDetails.full_name,
-        settlement_bank: bankCode,
+        bank_name: bankingDetails.bank_name,
         account_number: bankingDetails.bank_account_number,
-        percentage_charge: 0, // Platform takes commission through split
         primary_contact_email: userEmail,
         primary_contact_name: bankingDetails.full_name,
-        primary_contact_phone: "", // Add phone to banking details if needed
         metadata: {
           user_id: bankingDetails.user_id,
           recipient_type: bankingDetails.recipient_type,
@@ -71,21 +66,19 @@ export class PaystackService {
         },
       };
 
-      const response = await fetch("https://api.paystack.co/subaccount", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${this.PAYSTACK_SECRET_KEY}`,
-          "Content-Type": "application/json",
+      const { data, error } = await supabase.functions.invoke(
+        "create-paystack-subaccount",
+        {
+          body: payload,
         },
-        body: JSON.stringify(payload),
-      });
+      );
 
-      const data = await response.json();
+      if (error) {
+        throw new Error(error.message || "Failed to create subaccount");
+      }
 
-      if (!response.ok || !data.status) {
-        throw new Error(
-          data.message || `HTTP error! status: ${response.status}`,
-        );
+      if (!data.success) {
+        throw new Error(data.message || "Subaccount creation failed");
       }
 
       return {
@@ -104,7 +97,7 @@ export class PaystackService {
   }
 
   /**
-   * Initialize payment with subaccount for split payments
+   * Initialize payment with subaccount for split payments via Edge Function
    */
   static async initializePayment({
     buyerEmail,
@@ -128,18 +121,16 @@ export class PaystackService {
     reference: string;
   }> {
     try {
-      const totalAmount = Math.round((bookPrice + deliveryFee) * 100); // Convert to kobo
-      const bookAmountInKobo = Math.round(bookPrice * 100);
-      const deliveryAmountInKobo = Math.round(deliveryFee * 100);
-
-      // Calculate seller's 90% share of book price only
-      const sellerShare = 90; // 90% to seller, 10% to platform
+      const { supabase } = await import("@/integrations/supabase/client");
 
       const payload = {
         email: buyerEmail,
-        amount: totalAmount,
-        currency: "ZAR",
-        reference: `book_${bookId}_${Date.now()}`,
+        amount: Math.round((bookPrice + deliveryFee) * 100), // Convert to kobo
+        bookId,
+        sellerId,
+        sellerSubaccountCode,
+        bookPrice,
+        deliveryFee,
         callback_url: this.CALLBACK_URL,
         metadata: {
           bookId,
@@ -149,41 +140,21 @@ export class PaystackService {
           totalAmount: bookPrice + deliveryFee,
           ...metadata,
         },
-        // Split payment - 90% of book price to seller, platform keeps 10% + all delivery fees
-        split: {
-          type: "percentage",
-          bearer_type: "subaccount",
-          subaccounts: [
-            {
-              subaccount: sellerSubaccountCode,
-              share: sellerShare,
-              split_code: undefined, // Optional: use split_code if you have preset splits
-            },
-          ],
-        },
-        // Alternative: Use direct subaccount field for simpler splits
-        subaccount: sellerSubaccountCode,
-        transaction_charge: 0, // Any additional platform fees
       };
 
-      const response = await fetch(
-        "https://api.paystack.co/transaction/initialize",
+      const { data, error } = await supabase.functions.invoke(
+        "initialize-paystack-payment",
         {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${this.PAYSTACK_SECRET_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
+          body: payload,
         },
       );
 
-      const data = await response.json();
+      if (error) {
+        throw new Error(error.message || "Failed to initialize payment");
+      }
 
-      if (!response.ok || !data.status) {
-        throw new Error(
-          data.message || `HTTP error! status: ${response.status}`,
-        );
+      if (!data.success) {
+        throw new Error(data.message || "Payment initialization failed");
       }
 
       return {
@@ -201,26 +172,25 @@ export class PaystackService {
   }
 
   /**
-   * Verify payment after callback
+   * Verify payment after callback via Edge Function
    */
   static async verifyPayment(reference: string): Promise<any> {
     try {
-      const response = await fetch(
-        `https://api.paystack.co/transaction/verify/${reference}`,
+      const { supabase } = await import("@/integrations/supabase/client");
+
+      const { data, error } = await supabase.functions.invoke(
+        "verify-paystack-payment",
         {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${this.PAYSTACK_SECRET_KEY}`,
-          },
+          body: { reference },
         },
       );
 
-      const data = await response.json();
+      if (error) {
+        throw new Error(error.message || "Failed to verify payment");
+      }
 
-      if (!response.ok || !data.status) {
-        throw new Error(
-          data.message || `HTTP error! status: ${response.status}`,
-        );
+      if (!data.success) {
+        throw new Error(data.message || "Payment verification failed");
       }
 
       return data.data;
