@@ -400,12 +400,28 @@ const getUserBooksWithFallback = async (userId: string): Promise<Book[]> => {
       .order("created_at", { ascending: false });
 
     if (booksError) {
-      logDetailedError(
-        "getUserBooksWithFallback - books query failed",
-        booksError,
+      const errorMessage = booksError.message || "Unknown database error";
+      const errorCode = booksError.code || "NO_CODE";
+
+      console.error(
+        `[BookQueries - getUserBooksWithFallback - books query failed]`,
+        {
+          message: errorMessage,
+          code: errorCode,
+          details: booksError.details,
+          hint: booksError.hint,
+          userId,
+        },
       );
+
+      logDetailedError("getUserBooksWithFallback - books query failed", {
+        message: errorMessage,
+        code: errorCode,
+        userId,
+        originalError: booksError,
+      });
       throw new Error(
-        `Failed to fetch user books: ${booksError.message || "Unknown database error"}`,
+        `Failed to fetch user books: ${errorMessage} (Code: ${errorCode})`,
       );
     }
 
@@ -427,10 +443,26 @@ const getUserBooksWithFallback = async (userId: string): Promise<Book[]> => {
         .maybeSingle();
 
       if (profileError) {
-        logDetailedError(
-          "getUserBooksWithFallback - profile query failed",
-          profileError,
+        const errorMessage = profileError.message || "Unknown profile error";
+        const errorCode = profileError.code || "NO_CODE";
+
+        console.error(
+          `[BookQueries - getUserBooksWithFallback - profile query failed]`,
+          {
+            message: errorMessage,
+            code: errorCode,
+            details: profileError.details,
+            hint: profileError.hint,
+            userId,
+          },
         );
+
+        logDetailedError("getUserBooksWithFallback - profile query failed", {
+          message: errorMessage,
+          code: errorCode,
+          userId,
+          originalError: profileError,
+        });
       } else {
         profileData = profile;
         console.log(
