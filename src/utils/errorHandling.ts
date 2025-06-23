@@ -7,74 +7,99 @@
  */
 export const formatErrorForLogging = (error: unknown): any => {
   if (error === null || error === undefined) {
-    return error;
+    return { value: error, type: typeof error };
   }
 
   if (error instanceof Error) {
     return {
+      type: "Error",
       name: error.name,
       message: error.message,
       stack: error.stack,
     };
   }
 
+  if (
+    typeof error === "string" ||
+    typeof error === "number" ||
+    typeof error === "boolean"
+  ) {
+    return { value: error, type: typeof error };
+  }
+
   if (typeof error === "object") {
     try {
-      // Handle Supabase errors and other objects with specific properties
       const errorObj = error as any;
 
-      if (errorObj.message || errorObj.code || errorObj.details) {
-        return {
-          message: errorObj.message || "Unknown error",
-          code: errorObj.code || "NO_CODE",
-          details: errorObj.details || "No details",
-          hint: errorObj.hint || undefined,
-          name: errorObj.name || "UnknownError",
-        };
+      // Create a safe, flat representation
+      const safeObj: any = {
+        type: "object",
+        constructor: errorObj.constructor?.name || "Unknown",
+      };
+
+      // Extract common error properties safely
+      if (errorObj.message !== undefined) {
+        safeObj.message = String(errorObj.message);
+      }
+      if (errorObj.code !== undefined) {
+        safeObj.code = String(errorObj.code);
+      }
+      if (errorObj.details !== undefined) {
+        safeObj.details = String(errorObj.details);
+      }
+      if (errorObj.hint !== undefined) {
+        safeObj.hint = String(errorObj.hint);
+      }
+      if (errorObj.name !== undefined) {
+        safeObj.name = String(errorObj.name);
+      }
+      if (errorObj.status !== undefined) {
+        safeObj.status = String(errorObj.status);
+      }
+      if (errorObj.statusText !== undefined) {
+        safeObj.statusText = String(errorObj.statusText);
       }
 
-      // Try to stringify the object safely
-      const safeStringify = (obj: any): string => {
-        try {
-          return JSON.stringify(
-            obj,
-            (key, value) => {
-              if (typeof value === "function") return "[Function]";
-              if (typeof value === "undefined") return "[Undefined]";
-              if (value instanceof Error)
-                return {
-                  name: value.name,
-                  message: value.message,
-                  stack: value.stack,
-                };
-              return value;
-            },
-            2,
-          );
-        } catch {
-          return obj.toString();
-        }
-      };
+      // Try to get enumerable properties safely
+      try {
+        const keys = Object.keys(errorObj).slice(0, 10); // Limit to first 10 keys
+        safeObj.availableKeys = keys;
 
+        // Add a few more common properties if they exist
+        keys.forEach((key) => {
+          if (!safeObj[key] && key !== "originalError") {
+            try {
+              const value = errorObj[key];
+              if (
+                typeof value === "string" ||
+                typeof value === "number" ||
+                typeof value === "boolean"
+              ) {
+                safeObj[key] = value;
+              } else if (value !== null && value !== undefined) {
+                safeObj[key] = `[${typeof value}]`;
+              }
+            } catch {
+              // Skip problematic properties
+            }
+          }
+        });
+      } catch {
+        // Skip if can't enumerate properties
+      }
+
+      return safeObj;
+    } catch (e) {
+      // Ultimate fallback
       return {
         type: "object",
-        stringified: safeStringify(errorObj),
-        constructor: errorObj.constructor?.name || "Unknown",
-        keys: Object.keys(errorObj),
-      };
-    } catch (stringifyError) {
-      // If all else fails, return a safe representation
-      return {
-        type: "object",
-        toString: String(error),
-        constructor: error.constructor?.name || "Unknown",
-        error: "Failed to serialize error object",
+        error: "Could not serialize error object",
+        fallback: String(error),
       };
     }
   }
 
-  // For primitives (string, number, boolean)
-  return error;
+  return { value: String(error), type: typeof error };
 };
 
 /**
@@ -86,23 +111,21 @@ export const safeLogError = (
   additionalData?: any,
 ) => {
   const formattedError = formatErrorForLogging(error);
-  const errorMessage = error instanceof Error ? error.message : String(error);
-  const errorName = error instanceof Error ? error.name : typeof error;
-  const errorCode = (error as any)?.code || (error as any)?.error_code;
+  const errorMessage = getReadableErrorMessage(error);
+  const errorCode =
+    (error as any)?.code || (error as any)?.error_code || "NO_CODE";
 
-  // Log a comprehensive error object
-  console.error(`[${context}] Error:`, {
-    message: errorMessage,
-    name: errorName,
-    code: errorCode,
-    error: formattedError,
-    additionalData,
-    timestamp: new Date().toISOString(),
-  });
-
-  // Also log a simple readable message for quick scanning
-  const simpleMessage = `${context}: ${errorMessage}${errorCode ? ` (${errorCode})` : ""}`;
+  // Log a simple, readable message first
+  const simpleMessage = `${context}: ${errorMessage}${errorCode !== "NO_CODE" ? ` (${errorCode})` : ""}`;
   console.error(simpleMessage);
+
+  // Then log the detailed error object
+  console.error(`[${context}] Detailed error:`, formattedError);
+
+  // Add additional data if provided
+  if (additionalData) {
+    console.error(`[${context}] Additional data:`, additionalData);
+  }
 
   return formattedError;
 };
