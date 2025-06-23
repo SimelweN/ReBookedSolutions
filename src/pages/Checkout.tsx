@@ -34,6 +34,8 @@ import { toast } from "sonner";
 import SaleSuccessPopup from "@/components/SaleSuccessPopup";
 import CommitReminderModal from "@/components/CommitReminderModal";
 import PaymentProcessor from "@/components/checkout/PaymentProcessor";
+import OrderSummary from "@/components/checkout/OrderSummary";
+import ShippingForm from "@/components/checkout/ShippingForm";
 
 interface AddressData {
   complex?: string;
