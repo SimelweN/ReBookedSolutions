@@ -111,48 +111,38 @@ const Footer = () => {
             <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
               Support
             </h3>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  to="/contact"
-                  className="text-gray-600 hover:text-book-600 text-sm flex items-center transition-colors"
-                  onClick={handleLinkClick}
-                >
-                  <MessageCircle className="h-4 w-4 mr-2 flex-shrink-0" />
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/report"
-                  className="text-gray-600 hover:text-book-600 text-sm flex items-center transition-colors"
-                  onClick={handleLinkClick}
-                >
-                  <AlertTriangle className="h-4 w-4 mr-2 flex-shrink-0" />
-                  Report Issue
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/privacy"
-                  className="text-gray-600 hover:text-book-600 text-sm flex items-center transition-colors"
-                  onClick={handleLinkClick}
-                >
-                  <span className="w-4 h-4 mr-2 flex-shrink-0"></span>
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/policies"
-                  className="text-gray-600 hover:text-book-600 text-sm font-medium flex items-center transition-colors"
-                  onClick={handleLinkClick}
-                >
-                  <span className="w-4 h-4 mr-2 flex-shrink-0"></span>
-                  All Policies & Terms
-                </Link>
-              </li>
-            </ul>
+            <div className="flex flex-col space-y-2">
+              <Link
+                to="/contact"
+                className="text-gray-600 hover:text-book-600 text-sm flex items-center transition-colors"
+                onClick={handleLinkClick}
+              >
+                <MessageCircle className="h-4 w-4 mr-2 flex-shrink-0" />
+                Contact Us
+              </Link>
+              <Link
+                to="/report"
+                className="text-gray-600 hover:text-book-600 text-sm flex items-center transition-colors"
+                onClick={handleLinkClick}
+              >
+                <AlertTriangle className="h-4 w-4 mr-2 flex-shrink-0" />
+                Report Issue
+              </Link>
+              <Link
+                to="/privacy"
+                className="text-gray-600 hover:text-book-600 text-sm transition-colors pl-6"
+                onClick={handleLinkClick}
+              >
+                Privacy Policy
+              </Link>
+              <Link
+                to="/policies"
+                className="text-gray-600 hover:text-book-600 text-sm font-medium transition-colors pl-6"
+                onClick={handleLinkClick}
+              >
+                All Policies & Terms
+              </Link>
+            </div>
           </div>
         </div>
 
