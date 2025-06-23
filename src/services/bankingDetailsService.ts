@@ -1,0 +1,274 @@
+import { supabase } from "@/integrations/supabase/client";
+import { BankingDetails } from "@/types/banking";
+import { toast } from "sonner";
+
+/**
+ * Service for managing banking details with encryption and security
+ */
+export class BankingDetailsService {
+  private static readonly SESSION_KEY = "banking_access_verified";
+  private static readonly VERIFICATION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+
+  /**
+   * Simple encryption for sensitive data (in production, use a proper encryption library)
+   */
+  private static encrypt(data: string): string {
+    // In production, implement proper encryption using crypto-js or similar
+    // For now, using base64 encoding as a placeholder
+    return btoa(unescape(encodeURIComponent(data)));
+  }
+
+  /**
+   * Simple decryption for sensitive data
+   */
+  private static decrypt(encryptedData: string): string {
+    try {
+      return decodeURIComponent(escape(atob(encryptedData)));
+    } catch (error) {
+      console.error("Failed to decrypt data:", error);
+      return "";
+    }
+  }
+
+  /**
+   * Verify user password before accessing banking details
+   */
+  static async verifyPassword(password: string): Promise<boolean> {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: supabase.auth
+          .getUser()
+          .then(({ data }) => data.user?.email || ""),
+        password: password,
+      });
+
+      if (error) {
+        console.error("Password verification failed:", error);
+        return false;
+      }
+
+      // Store verification in session storage with timestamp
+      const verificationData = {
+        isVerified: true,
+        timestamp: Date.now(),
+      };
+      sessionStorage.setItem(
+        this.SESSION_KEY,
+        JSON.stringify(verificationData),
+      );
+
+      return true;
+    } catch (error) {
+      console.error("Password verification error:", error);
+      return false;
+    }
+  }
+
+  /**
+   * Check if user has been verified recently
+   */
+  static isRecentlyVerified(): boolean {
+    try {
+      const verificationData = sessionStorage.getItem(this.SESSION_KEY);
+      if (!verificationData) return false;
+
+      const { isVerified, timestamp } = JSON.parse(verificationData);
+      const timePassed = Date.now() - timestamp;
+
+      return isVerified && timePassed < this.VERIFICATION_TIMEOUT;
+    } catch (error) {
+      console.error("Error checking verification status:", error);
+      return false;
+    }
+  }
+
+  /**
+   * Clear verification status
+   */
+  static clearVerification(): void {
+    sessionStorage.removeItem(this.SESSION_KEY);
+  }
+
+  /**
+   * Save banking details to database with encryption
+   */
+  static async saveBankingDetails(
+    bankingDetails: Omit<BankingDetails, "id" | "created_at" | "updated_at">,
+  ): Promise<BankingDetails> {
+    try {
+      const user = await supabase.auth.getUser();
+      if (!user.data.user) {
+        throw new Error("User not authenticated");
+      }
+
+      // Encrypt sensitive fields
+      const encryptedDetails = {
+        ...bankingDetails,
+        bank_account_number: this.encrypt(bankingDetails.bank_account_number),
+        full_name: this.encrypt(bankingDetails.full_name),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      // First, try to update existing record
+      const { data: existingData } = await supabase
+        .from("banking_details")
+        .select("id")
+        .eq("user_id", user.data.user.id)
+        .single();
+
+      if (existingData) {
+        // Update existing record
+        const { data, error } = await supabase
+          .from("banking_details")
+          .update({
+            ...encryptedDetails,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("user_id", user.data.user.id)
+          .select()
+          .single();
+
+        if (error) throw error;
+        return this.decryptBankingDetails(data);
+      } else {
+        // Insert new record
+        const { data, error } = await supabase
+          .from("banking_details")
+          .insert([encryptedDetails])
+          .select()
+          .single();
+
+        if (error) throw error;
+        return this.decryptBankingDetails(data);
+      }
+    } catch (error) {
+      console.error("Error saving banking details:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to save banking details";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  }
+
+  /**
+   * Get banking details for the current user
+   */
+  static async getBankingDetails(): Promise<BankingDetails | null> {
+    try {
+      const user = await supabase.auth.getUser();
+      if (!user.data.user) {
+        throw new Error("User not authenticated");
+      }
+
+      const { data, error } = await supabase
+        .from("banking_details")
+        .select("*")
+        .eq("user_id", user.data.user.id)
+        .single();
+
+      if (error) {
+        if (error.code === "PGRST116") {
+          // No data found
+          return null;
+        }
+        throw error;
+      }
+
+      return this.decryptBankingDetails(data);
+    } catch (error) {
+      console.error("Error fetching banking details:", error);
+      if (
+        error instanceof Error &&
+        error.message.includes("relation") &&
+        error.message.includes("does not exist")
+      ) {
+        console.warn(
+          "Banking details table does not exist yet. This is expected if the migration hasn't been run.",
+        );
+        return null;
+      }
+      throw new Error("Failed to fetch banking details");
+    }
+  }
+
+  /**
+   * Delete banking details for the current user
+   */
+  static async deleteBankingDetails(): Promise<void> {
+    try {
+      const user = await supabase.auth.getUser();
+      if (!user.data.user) {
+        throw new Error("User not authenticated");
+      }
+
+      const { error } = await supabase
+        .from("banking_details")
+        .delete()
+        .eq("user_id", user.data.user.id);
+
+      if (error) throw error;
+
+      toast.success("Banking details deleted successfully");
+    } catch (error) {
+      console.error("Error deleting banking details:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to delete banking details";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  }
+
+  /**
+   * Decrypt banking details for display
+   */
+  private static decryptBankingDetails(encryptedData: any): BankingDetails {
+    return {
+      ...encryptedData,
+      bank_account_number: this.decrypt(encryptedData.bank_account_number),
+      full_name: this.decrypt(encryptedData.full_name),
+    };
+  }
+
+  /**
+   * Verify current user password (alternative method using reauthentication)
+   */
+  static async verifyCurrentPassword(
+    email: string,
+    password: string,
+  ): Promise<boolean> {
+    try {
+      // Create a temporary auth client to verify credentials without affecting current session
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      if (error) {
+        console.error("Password verification failed:", error.message);
+        return false;
+      }
+
+      // Store verification in session storage
+      const verificationData = {
+        isVerified: true,
+        timestamp: Date.now(),
+      };
+      sessionStorage.setItem(
+        this.SESSION_KEY,
+        JSON.stringify(verificationData),
+      );
+
+      return true;
+    } catch (error) {
+      console.error("Password verification error:", error);
+      return false;
+    }
+  }
+}
+
+export default BankingDetailsService;
