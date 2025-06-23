@@ -892,15 +892,25 @@ const Checkout = () => {
                   </div>
                 </div>
 
-                <Button
-                  onClick={handlePayment}
-                  className="w-full bg-book-600 hover:bg-book-700 text-sm md:text-base py-2 md:py-3 min-h-[48px]"
-                  size="lg"
+                <PaymentProcessor
+                  amount={totalAmount}
+                  onPaymentSuccess={(reference) => {
+                    console.log(
+                      "Payment successful with reference:",
+                      reference,
+                    );
+                    handlePaymentSuccess(reference);
+                  }}
+                  onPaymentStart={() => {
+                    console.log("Payment started");
+                  }}
+                  bookId={isCartCheckout ? undefined : book?.id}
+                  bookTitle={isCartCheckout ? "Cart Items" : book?.title}
+                  sellerId={isCartCheckout ? undefined : book?.seller?.id}
+                  buyerId={user?.id || ""}
+                  buyerEmail={user?.email || ""}
                   disabled={!selectedDelivery}
-                >
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  Pay R{totalAmount.toFixed(2)}
-                </Button>
+                />
               </CardContent>
             </Card>
           </div>
