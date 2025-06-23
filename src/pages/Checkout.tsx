@@ -283,6 +283,9 @@ const Checkout = () => {
     try {
       toast.loading("Processing payment completion...", { id: "payment" });
 
+      // Store payment reference
+      setPaymentReference(reference);
+
       // Get the items to process
       const itemsToProcess = isCartCheckout ? cartData : book ? [book] : [];
 
@@ -291,12 +294,12 @@ const Checkout = () => {
         return;
       }
 
-      // Show commit reminder modal first
-      setShowCommitReminderModal(true);
+      toast.success("Payment successful! Processing shipment...", {
+        id: "payment",
+      });
 
-      // Create automatic shipments for purchased books
-      const purchasedBooks = isCartCheckout ? cartData : book ? [book] : [];
-
+      // Show payment success component first
+      setShowPaymentSuccess(true);
       for (const purchasedBook of purchasedBooks) {
         try {
           console.log(
