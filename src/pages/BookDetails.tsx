@@ -60,35 +60,18 @@ const BookDetails = () => {
       return;
     }
 
-    // Use simplified payment system that always works
+    // Use internal checkout system
     try {
-      // First try the enhanced system with proper error handling
-      const { EnhancedPaymentRedirect } = await import(
-        "@/utils/enhancedPaymentRedirect"
+      const { InternalPaymentRedirect } = await import(
+        "@/utils/internalPaymentRedirect"
       );
-
-      await EnhancedPaymentRedirect.initiateBuyNow({
-        bookId: book.id,
-        buyerId: user.id,
-        buyerEmail: user.email || "",
-        sellerId: book.seller?.id || "",
-        bookPrice: book.price,
-        bookTitle: book.title,
-        deliveryFee: 0,
-      });
+      InternalPaymentRedirect.redirectToBuyNow(book.id);
     } catch (error) {
-      // If anything fails, use the guaranteed working fallback
-      console.log("Enhanced payment failed, using guaranteed fallback:", error);
-      toast.info("Redirecting to payment...");
-
+      // Fallback to direct navigation
+      console.log("Payment redirect failed, using direct navigation:", error);
+      toast.success("Proceeding to checkout...");
       setTimeout(() => {
-        const fallbackUrl = `https://payments.rebookedsolutions.co.za/checkout?bookId=${book.id}`;
-        try {
-          window.location.href = fallbackUrl;
-        } catch (fallbackError) {
-          // Last resort - local checkout
-          navigate(`/checkout/${book.id}`);
-        }
+        navigate(`/checkout/${book.id}`);
       }, 500);
     }
   };
