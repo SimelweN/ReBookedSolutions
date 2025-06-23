@@ -1,10 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { CreditCard, Loader2, Shield } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  CreditCard,
+  Loader2,
+  Shield,
+  AlertTriangle,
+  CheckCircle,
+  Info,
+} from "lucide-react";
 import { toast } from "sonner";
+import { PAYSTACK_CONFIG } from "@/config/paystack";
 
 interface PaymentProcessorProps {
   amount: number;
@@ -33,6 +42,25 @@ const PaymentProcessor = ({
 }: PaymentProcessorProps) => {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("paystack");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isPaystackConfigured, setIsPaystackConfigured] = useState(false);
+  const [configError, setConfigError] = useState<string | null>(null);
+
+  // Check Paystack configuration on component mount
+  useEffect(() => {
+    const checkConfiguration = () => {
+      const configured = PAYSTACK_CONFIG.isConfigured();
+      setIsPaystackConfigured(configured);
+
+      if (!configured) {
+        setConfigError("Payment system is not properly configured");
+        setPaymentMethod("manual"); // Fall back to manual payment
+      } else {
+        setConfigError(null);
+      }
+    };
+
+    checkConfiguration();
+  }, []);
 
   const handlePaystackPayment = async () => {
     if (!bookId || !sellerId || !bookTitle) {
@@ -40,15 +68,24 @@ const PaymentProcessor = ({
       return;
     }
 
+    if (!isPaystackConfigured) {
+      toast.error(
+        "Payment system is not available. Please try manual payment.",
+      );
+      return;
+    }
+
     setIsProcessing(true);
     onPaymentStart();
 
     try {
+      toast.loading("Initializing secure payment...", { id: "payment-init" });
+
       const { TransactionService } = await import(
         "@/services/transactionService"
       );
 
-      const { payment_url, reference } =
+      const { payment_url, transaction_id } =
         await TransactionService.initializeBookPayment({
           bookId,
           buyerId,
@@ -59,13 +96,37 @@ const PaymentProcessor = ({
           bookTitle,
         });
 
-      toast.success("Redirecting to secure payment...");
+      toast.success("Redirecting to secure payment...", { id: "payment-init" });
 
-      // Redirect to Paystack payment page
-      window.location.href = payment_url;
+      // Store transaction ID for reference
+      sessionStorage.setItem("current_transaction_id", transaction_id);
+
+      // Add a small delay to ensure user sees the success message
+      setTimeout(() => {
+        window.location.href = payment_url;
+      }, 1500);
     } catch (error) {
       console.error("Paystack payment initialization failed:", error);
-      toast.error("Payment initialization failed. Please try again.");
+
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+
+      if (errorMessage.includes("SELLER_NO_BANKING_DETAILS")) {
+        toast.error(
+          "Seller payment details not configured. Please contact the seller.",
+          { id: "payment-init" },
+        );
+      } else if (errorMessage.includes("SELLER_NO_SUBACCOUNT")) {
+        toast.error(
+          "Seller account not ready for payments. Please contact the seller.",
+          { id: "payment-init" },
+        );
+      } else {
+        toast.error(`Payment initialization failed: ${errorMessage}`, {
+          id: "payment-init",
+        });
+      }
+
       setIsProcessing(false);
     }
   };
@@ -109,19 +170,50 @@ const PaymentProcessor = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Configuration Status */}
+        {configError && (
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              {configError}. Manual payment is available as an alternative.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {isPaystackConfigured && (
+          <Alert>
+            <CheckCircle className="h-4 w-4" />
+            <AlertDescription>
+              Secure payment system is ready. Your payment will be processed
+              safely.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <RadioGroup
           value={paymentMethod}
           onValueChange={(value: PaymentMethod) => setPaymentMethod(value)}
           disabled={isProcessing}
         >
-          <div className="flex items-center space-x-2 p-3 border rounded-lg">
-            <RadioGroupItem value="paystack" id="paystack" />
-            <Label htmlFor="paystack" className="flex-1 cursor-pointer">
+          <div
+            className={`flex items-center space-x-2 p-3 border rounded-lg ${!isPaystackConfigured ? "bg-gray-50 opacity-60" : ""}`}
+          >
+            <RadioGroupItem
+              value="paystack"
+              id="paystack"
+              disabled={!isPaystackConfigured}
+            />
+            <Label
+              htmlFor="paystack"
+              className={`flex-1 ${isPaystackConfigured ? "cursor-pointer" : "cursor-not-allowed"}`}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium">Secure Online Payment</p>
                   <p className="text-sm text-gray-600">
-                    Pay securely with card via Paystack
+                    {isPaystackConfigured
+                      ? "Pay securely with card via Paystack"
+                      : "Currently unavailable - configuration issue"}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -133,7 +225,9 @@ const PaymentProcessor = ({
                       e.currentTarget.style.display = "none";
                     }}
                   />
-                  <Shield className="h-4 w-4 text-green-600" />
+                  <Shield
+                    className={`h-4 w-4 ${isPaystackConfigured ? "text-green-600" : "text-gray-400"}`}
+                  />
                 </div>
               </div>
             </Label>
@@ -184,11 +278,31 @@ const PaymentProcessor = ({
           )}
         </Button>
 
-        {paymentMethod === "paystack" && (
-          <p className="text-xs text-gray-500 text-center">
-            You will be redirected to Paystack to complete your payment securely
-          </p>
-        )}
+        {/* Payment Method Information */}
+        <div className="bg-blue-50 p-3 rounded-lg">
+          <div className="flex items-start gap-2">
+            <Info className="h-4 w-4 text-blue-600 mt-0.5" />
+            <div className="text-sm text-blue-800">
+              {paymentMethod === "paystack" ? (
+                <>
+                  <p className="font-medium">Secure Online Payment</p>
+                  <p className="text-xs">
+                    You will be redirected to Paystack to complete your payment
+                    securely. Your card details are never stored on our servers.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="font-medium">Manual Payment Processing</p>
+                  <p className="text-xs">
+                    Your payment will be processed manually. You may be
+                    contacted for additional verification.
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
