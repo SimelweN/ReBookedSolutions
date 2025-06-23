@@ -33,19 +33,30 @@ export class BankingDetailsService {
   /**
    * Verify user password before accessing banking details
    */
-  static async verifyPassword(password: string): Promise<boolean> {
+  static async verifyPassword(
+    email: string,
+    password: string,
+  ): Promise<boolean> {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: supabase.auth
-          .getUser()
-          .then(({ data }) => data.user?.email || ""),
+      // Use a separate auth instance to verify without affecting current session
+      const { createClient } = await import("@supabase/supabase-js");
+      const tempClient = createClient(
+        import.meta.env.VITE_SUPABASE_URL!,
+        import.meta.env.VITE_SUPABASE_ANON_KEY!,
+      );
+
+      const { data, error } = await tempClient.auth.signInWithPassword({
+        email: email,
         password: password,
       });
 
       if (error) {
-        console.error("Password verification failed:", error);
+        console.error("Password verification failed:", error.message);
         return false;
       }
+
+      // Immediately sign out the temporary session
+      await tempClient.auth.signOut();
 
       // Store verification in session storage with timestamp
       const verificationData = {
@@ -232,42 +243,6 @@ export class BankingDetailsService {
       bank_account_number: this.decrypt(encryptedData.bank_account_number),
       full_name: this.decrypt(encryptedData.full_name),
     };
-  }
-
-  /**
-   * Verify current user password (alternative method using reauthentication)
-   */
-  static async verifyCurrentPassword(
-    email: string,
-    password: string,
-  ): Promise<boolean> {
-    try {
-      // Create a temporary auth client to verify credentials without affecting current session
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
-      });
-
-      if (error) {
-        console.error("Password verification failed:", error.message);
-        return false;
-      }
-
-      // Store verification in session storage
-      const verificationData = {
-        isVerified: true,
-        timestamp: Date.now(),
-      };
-      sessionStorage.setItem(
-        this.SESSION_KEY,
-        JSON.stringify(verificationData),
-      );
-
-      return true;
-    } catch (error) {
-      console.error("Password verification error:", error);
-      return false;
-    }
   }
 }
 
