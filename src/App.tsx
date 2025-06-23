@@ -58,6 +58,7 @@ const Report = React.lazy(() => import("./pages/Report"));
 const UserProfile = React.lazy(() => import("./pages/UserProfile"));
 const FAQ = React.lazy(() => import("./pages/FAQ"));
 const APSDemo = React.lazy(() => import("./pages/APSDemo"));
+const PaymentCallback = React.lazy(() => import("./pages/PaymentCallback"));
 
 // Create query client with optimized settings
 const queryClient = new QueryClient({
@@ -270,6 +271,14 @@ function App() {
                       element={
                         <LazyRoute>
                           <Shipping />
+                        </LazyRoute>
+                      }
+                    />
+                    <Route
+                      path="/payment-callback"
+                      element={
+                        <LazyRoute>
+                          <PaymentCallback />
                         </LazyRoute>
                       }
                     />

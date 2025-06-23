@@ -39,6 +39,8 @@ import { getUserBooks } from "@/services/book/bookQueries";
 import { deleteBook } from "@/services/book/bookMutations";
 import { Book } from "@/types/book";
 import { BookDeletionService } from "@/services/bookDeletionService";
+import { BankingDetailsService } from "@/services/bankingDetailsService";
+import SellerBankingSetupPrompt from "@/components/SellerBankingSetupPrompt";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -72,6 +74,8 @@ const Profile = () => {
   const [deletingBooks, setDeletingBooks] = useState<Set<string>>(new Set());
   const [isTemporarilyAway, setIsTemporarilyAway] = useState(false);
   const [showDangerZone, setShowDangerZone] = useState(false);
+  const [needsBankingSetup, setNeedsBankingSetup] = useState(false);
+  const [showBankingPrompt, setShowBankingPrompt] = useState(false);
 
   const loadUserAddresses = useCallback(async () => {
     if (!user?.id) return;
@@ -106,6 +110,23 @@ const Profile = () => {
     }
   }, [user?.id]);
 
+  const checkBankingSetup = useCallback(async () => {
+    if (!user?.id) return;
+
+    try {
+      const bankingDetails = await BankingDetailsService.getBankingDetails(
+        user.id,
+      );
+      const hasBankingSetup = bankingDetails?.paystack_subaccount_code;
+      const hasActiveListings = activeListings.length > 0;
+
+      setNeedsBankingSetup(!hasBankingSetup && hasActiveListings);
+      setShowBankingPrompt(!hasBankingSetup && hasActiveListings);
+    } catch (error) {
+      console.error("Error checking banking setup:", error);
+    }
+  }, [user?.id, activeListings.length]);
+
   useEffect(() => {
     if (user?.id) {
       loadUserAddresses();
@@ -117,6 +138,10 @@ const Profile = () => {
       setIsLoadingListings(false);
     }
   }, [user?.id, loadUserAddresses, loadActiveListings]);
+
+  useEffect(() => {
+    checkBankingSetup();
+  }, [checkBankingSetup]);
 
   const handleSaveAddresses = async (
     pickup: {
@@ -518,6 +543,12 @@ const Profile = () => {
 
             {/* Right Content - Tabs (Keep as-is) */}
             <div className="col-span-8">
+              {/* Banking Setup Prompt for Sellers */}
+              <SellerBankingSetupPrompt
+                isVisible={showBankingPrompt && !isMobile}
+                onDismiss={() => setShowBankingPrompt(false)}
+              />
+
               <UserProfileTabs
                 activeListings={activeListings}
                 isLoading={isLoadingListings}
@@ -612,6 +643,12 @@ const Profile = () => {
 
             {/* Main Content - Tabs (Keep as-is) */}
             <div className="w-full">
+              {/* Banking Setup Prompt for Sellers */}
+              <SellerBankingSetupPrompt
+                isVisible={showBankingPrompt && isMobile}
+                onDismiss={() => setShowBankingPrompt(false)}
+              />
+
               <UserProfileTabs
                 activeListings={activeListings}
                 isLoading={isLoadingListings}

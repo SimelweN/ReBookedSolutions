@@ -22,7 +22,7 @@ const ProtectedRoute = ({
         console.warn("[ProtectedRoute] Auth loading timeout - forcing render");
         setForceRender(true);
       }
-    }, 10000); // 10 second timeout
+    }, 5000); // 5 second timeout (reduced from 10 seconds)
 
     return () => clearTimeout(timeout);
   }, [isLoading]);

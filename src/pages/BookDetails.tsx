@@ -41,9 +41,9 @@ const BookDetails = () => {
 
   const { book, isLoading, error } = useBookDetails(id || "");
 
-  const handleBuyNow = () => {
+  const handleBuyNow = async () => {
     if (!user) {
-      toast.error("Please log in to purchase books");
+      toast.error("Please log in to buy this book");
       navigate("/login");
       return;
     }
@@ -60,7 +60,20 @@ const BookDetails = () => {
       return;
     }
 
-    navigate(`/checkout/${book.id}`);
+    // Use internal checkout system
+    try {
+      const { InternalPaymentRedirect } = await import(
+        "@/utils/internalPaymentRedirect"
+      );
+      InternalPaymentRedirect.redirectToBuyNow(book.id);
+    } catch (error) {
+      // Fallback to direct navigation
+      console.log("Payment redirect failed, using direct navigation:", error);
+      toast.success("Proceeding to checkout...");
+      setTimeout(() => {
+        navigate(`/checkout/${book.id}`);
+      }, 500);
+    }
   };
 
   const handleAddToCart = () => {

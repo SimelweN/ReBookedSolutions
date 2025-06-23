@@ -33,6 +33,11 @@ import {
 import { toast } from "sonner";
 import SaleSuccessPopup from "@/components/SaleSuccessPopup";
 import CommitReminderModal from "@/components/CommitReminderModal";
+import PaymentProcessor from "@/components/checkout/PaymentProcessor";
+import CartPaymentProcessor from "@/components/checkout/CartPaymentProcessor";
+import OrderSummary from "@/components/checkout/OrderSummary";
+import ShippingForm from "@/components/checkout/ShippingForm";
+import PaymentSuccess from "@/components/checkout/PaymentSuccess";
 
 interface AddressData {
   complex?: string;
@@ -85,6 +90,8 @@ const Checkout = () => {
   const [loadingQuotes, setLoadingQuotes] = useState(false);
   const [showSalePopup, setShowSalePopup] = useState(false);
   const [showCommitReminderModal, setShowCommitReminderModal] = useState(false);
+  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
+  const [paymentReference, setPaymentReference] = useState<string>("");
   const [saleData, setSaleData] = useState<{
     bookTitle: string;
     bookPrice: number;
@@ -272,32 +279,27 @@ const Checkout = () => {
     return true;
   };
 
-  const handlePayment = async () => {
-    if (!validateAddress()) {
-      return;
-    }
-
-    if (!user) {
-      toast.error("Please log in to complete your purchase.");
-      return;
-    }
-
+  const handlePaymentSuccess = async (reference: string) => {
     try {
-      toast.loading("Processing payment...", { id: "payment" });
+      toast.loading("Processing payment completion...", { id: "payment" });
 
-      // Simulate payment processing
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Store payment reference
+      setPaymentReference(reference);
+
+      // Get the items to process
+      const itemsToProcess = isCartCheckout ? cartData : book ? [book] : [];
+
+      if (itemsToProcess.length === 0) {
+        toast.error("No items to process", { id: "payment" });
+        return;
+      }
 
       toast.success("Payment successful! Processing shipment...", {
         id: "payment",
       });
 
-      // Show commit reminder modal first
-      setShowCommitReminderModal(true);
-
-      // Create automatic shipments for purchased books
-      const purchasedBooks = isCartCheckout ? cartData : book ? [book] : [];
-
+      // Show payment success component first
+      setShowPaymentSuccess(true);
       for (const purchasedBook of purchasedBooks) {
         try {
           console.log(
@@ -316,7 +318,7 @@ const Checkout = () => {
           // Log purchase activity
           try {
             await ActivityService.logBookPurchase(
-              user.id,
+              user!.id,
               purchasedBook.id,
               purchasedBook.title,
               purchasedBook.price,
@@ -334,7 +336,7 @@ const Checkout = () => {
                 purchasedBook.id,
                 purchasedBook.title,
                 purchasedBook.price,
-                user.id,
+                user!.id,
               );
               console.log("✅ Sale activity logged for seller");
             }
@@ -349,7 +351,7 @@ const Checkout = () => {
           try {
             const shipmentResult = await createAutomaticShipment(
               bookDetails,
-              user.id,
+              user!.id,
             );
 
             if (shipmentResult) {
@@ -391,11 +393,10 @@ const Checkout = () => {
         setSaleData({
           bookTitle: firstBook.title,
           bookPrice: firstBook.price,
-          buyerName: user.name || user.email || "Unknown Buyer",
-          buyerEmail: user.email || "",
-          saleId: "sale_" + Date.now(), // Generate a simple sale ID
+          buyerName: user!.name || user!.email || "Unknown Buyer",
+          buyerEmail: user!.email || "",
+          saleId: reference, // Use the payment reference as sale ID
         });
-        // setShowSalePopup(true); - Removed: will show after commit reminder
       }
 
       toast.success(
@@ -413,8 +414,10 @@ const Checkout = () => {
       // Note: Don't auto-redirect so user can see the popup
       // navigate("/shipping"); - removed
     } catch (error) {
-      console.error("Payment error:", error);
-      toast.error("Payment failed. Please try again.", { id: "payment" });
+      console.error("Payment completion error:", error);
+      toast.error("Payment completion failed. Please contact support.", {
+        id: "payment",
+      });
     }
   };
 
@@ -492,371 +495,94 @@ const Checkout = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
           {/* Shipping Information */}
+          <ShippingForm
+            savedAddresses={savedAddresses}
+            shippingAddress={shippingAddress}
+            setShippingAddress={setShippingAddress}
+            selectedAddress={selectedAddress}
+            onAddressSelection={handleAddressSelection}
+            deliveryQuotes={deliveryQuotes}
+            selectedDelivery={selectedDelivery}
+            setSelectedDelivery={setSelectedDelivery}
+            onGetQuotes={getDeliveryQuotesForAddress}
+            loadingQuotes={loadingQuotes}
+          />
+
+          {/* Order Summary and Payment */}
           <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg md:text-xl">
-                  Shipping Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* ... keep existing code (address selection and fields) */}
-                {savedAddresses &&
-                  (savedAddresses.pickup_address ||
-                    savedAddresses.shipping_address) && (
-                    <div>
-                      <Label className="text-base font-medium">
-                        Use saved address
-                      </Label>
-                      <Select
-                        value={selectedAddress}
-                        onValueChange={(value: "pickup" | "shipping" | "new") =>
-                          handleAddressSelection(value)
-                        }
-                      >
-                        <SelectTrigger className="mt-2 min-h-[44px]">
-                          <SelectValue placeholder="Select an address" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {savedAddresses.pickup_address && (
-                            <SelectItem value="pickup">
-                              Pickup Address
-                            </SelectItem>
-                          )}
-                          {savedAddresses.shipping_address && (
-                            <SelectItem value="shipping">
-                              Shipping Address
-                            </SelectItem>
-                          )}
-                          <SelectItem value="new">Enter new address</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
+            <OrderSummary
+              isCartCheckout={isCartCheckout}
+              book={book}
+              cartData={cartData}
+              selectedDelivery={selectedDelivery}
+              itemsTotal={itemsTotal}
+              totalAmount={totalAmount}
+            />
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="complex">Complex/Building</Label>
-                    <Input
-                      id="complex"
-                      value={shippingAddress.complex}
-                      onChange={(e) =>
-                        setShippingAddress((prev) => ({
-                          ...prev,
-                          complex: e.target.value,
-                        }))
-                      }
-                      placeholder="Optional"
-                      className="w-full min-h-[44px]"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="unitNumber">Unit Number</Label>
-                    <Input
-                      id="unitNumber"
-                      value={shippingAddress.unitNumber}
-                      onChange={(e) =>
-                        setShippingAddress((prev) => ({
-                          ...prev,
-                          unitNumber: e.target.value,
-                        }))
-                      }
-                      placeholder="Optional"
-                      className="w-full min-h-[44px]"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="streetAddress">Street Address *</Label>
-                  <Input
-                    id="streetAddress"
-                    value={shippingAddress.streetAddress}
-                    onChange={(e) =>
-                      setShippingAddress((prev) => ({
-                        ...prev,
-                        streetAddress: e.target.value,
-                      }))
-                    }
-                    placeholder="123 Main Street"
-                    required
-                    className="w-full min-h-[44px]"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="suburb">Suburb *</Label>
-                    <Input
-                      id="suburb"
-                      value={shippingAddress.suburb}
-                      onChange={(e) =>
-                        setShippingAddress((prev) => ({
-                          ...prev,
-                          suburb: e.target.value,
-                        }))
-                      }
-                      placeholder="Suburb"
-                      required
-                      className="w-full min-h-[44px]"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="city">City *</Label>
-                    <Input
-                      id="city"
-                      value={shippingAddress.city}
-                      onChange={(e) =>
-                        setShippingAddress((prev) => ({
-                          ...prev,
-                          city: e.target.value,
-                        }))
-                      }
-                      placeholder="City"
-                      required
-                      className="w-full min-h-[44px]"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="province">Province *</Label>
-                    <Select
-                      value={shippingAddress.province}
-                      onValueChange={(value) =>
-                        setShippingAddress((prev) => ({
-                          ...prev,
-                          province: value,
-                        }))
-                      }
-                    >
-                      <SelectTrigger className="w-full min-h-[44px]">
-                        <SelectValue placeholder="Select province" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Eastern Cape">
-                          Eastern Cape
-                        </SelectItem>
-                        <SelectItem value="Free State">Free State</SelectItem>
-                        <SelectItem value="Gauteng">Gauteng</SelectItem>
-                        <SelectItem value="KwaZulu-Natal">
-                          KwaZulu-Natal
-                        </SelectItem>
-                        <SelectItem value="Limpopo">Limpopo</SelectItem>
-                        <SelectItem value="Mpumalanga">Mpumalanga</SelectItem>
-                        <SelectItem value="Northern Cape">
-                          Northern Cape
-                        </SelectItem>
-                        <SelectItem value="North West">North West</SelectItem>
-                        <SelectItem value="Western Cape">
-                          Western Cape
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="postalCode">Postal Code *</Label>
-                    <Input
-                      id="postalCode"
-                      value={shippingAddress.postalCode}
-                      onChange={(e) =>
-                        setShippingAddress((prev) => ({
-                          ...prev,
-                          postalCode: e.target.value,
-                        }))
-                      }
-                      placeholder="1234"
-                      required
-                      className="w-full min-h-[44px]"
-                    />
-                  </div>
-                </div>
-
-                <div className="pt-4">
-                  <Button
-                    onClick={getDeliveryQuotesForAddress}
-                    disabled={loadingQuotes || !shippingAddress.streetAddress}
-                    className="w-full"
-                    variant="outline"
-                  >
-                    <Truck className="mr-2 h-4 w-4" />
-                    {loadingQuotes
-                      ? "Getting Quotes..."
-                      : "Get Delivery Quotes"}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Delivery Options */}
-            {deliveryQuotes.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg md:text-xl">
-                    Delivery Options
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <RadioGroup
-                    value={selectedDelivery?.courier || ""}
-                    onValueChange={(value) => {
-                      const quote = deliveryQuotes.find(
-                        (q) => q.courier === value,
-                      );
-                      setSelectedDelivery(quote || null);
-                    }}
-                  >
-                    {deliveryQuotes.map((quote) => (
-                      <div
-                        key={quote.courier}
-                        className="flex items-center space-x-2 p-3 border rounded-lg"
-                      >
-                        <RadioGroupItem
-                          value={quote.courier}
-                          id={quote.courier}
-                        />
-                        <div className="flex-1">
-                          <Label
-                            htmlFor={quote.courier}
-                            className="cursor-pointer"
-                          >
-                            <div className="flex justify-between items-center">
-                              <div>
-                                <p className="font-medium">
-                                  {quote.serviceName}
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                  Estimated delivery: {quote.estimatedDays} days
-                                </p>
-                              </div>
-                              <div className="text-right">
-                                <p className="font-bold">
-                                  R{quote.price.toFixed(2)}
-                                </p>
-                              </div>
-                            </div>
-                          </Label>
-                        </div>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                </CardContent>
-              </Card>
+            {isCartCheckout ? (
+              <CartPaymentProcessor
+                amount={totalAmount}
+                cartItems={cartData}
+                onPaymentSuccess={(reference) => {
+                  console.log(
+                    "Cart payment successful with reference:",
+                    reference,
+                  );
+                  handlePaymentSuccess(reference);
+                }}
+                onPaymentStart={() => {
+                  console.log("Cart payment started");
+                }}
+                buyerId={user?.id || ""}
+                buyerEmail={user?.email || ""}
+                disabled={!selectedDelivery}
+              />
+            ) : (
+              <PaymentProcessor
+                amount={totalAmount}
+                onPaymentSuccess={(reference) => {
+                  console.log("Payment successful with reference:", reference);
+                  handlePaymentSuccess(reference);
+                }}
+                onPaymentStart={() => {
+                  console.log("Payment started");
+                }}
+                bookId={book?.id}
+                bookTitle={book?.title}
+                sellerId={book?.seller?.id}
+                buyerId={user?.id || ""}
+                buyerEmail={user?.email || ""}
+                disabled={!selectedDelivery}
+              />
             )}
-          </div>
-
-          {/* Order Summary */}
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg md:text-xl">
-                  Order Summary
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-4 max-h-96 overflow-y-auto">
-                  {/* ... keep existing code (items display) */}
-                  {isCartCheckout ? (
-                    cartData.map(
-                      (item: {
-                        id: string;
-                        imageUrl: string;
-                        title: string;
-                        author: string;
-                        price: number;
-                      }) => (
-                        <div
-                          key={item.id}
-                          className="flex items-center gap-3 p-3 border rounded-lg"
-                        >
-                          <img
-                            src={item.imageUrl}
-                            alt={item.title}
-                            className="w-12 h-16 md:w-16 md:h-20 object-cover rounded flex-shrink-0"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-semibold text-sm md:text-base truncate">
-                              {item.title}
-                            </h4>
-                            <p className="text-xs md:text-sm text-gray-600 truncate">
-                              by {item.author}
-                            </p>
-                          </div>
-                          <div className="text-right flex-shrink-0">
-                            <p className="font-semibold text-sm md:text-base">
-                              R{item.price.toFixed(2)}
-                            </p>
-                          </div>
-                        </div>
-                      ),
-                    )
-                  ) : book ? (
-                    <div className="flex items-center gap-3 p-3 border rounded-lg">
-                      <img
-                        src={book.frontCover || book.imageUrl}
-                        alt={book.title}
-                        className="w-12 h-16 md:w-16 md:h-20 object-cover rounded flex-shrink-0"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-sm md:text-base truncate">
-                          {book.title}
-                        </h4>
-                        <p className="text-xs md:text-sm text-gray-600 truncate">
-                          by {book.author}
-                        </p>
-                      </div>
-                      <div className="text-right flex-shrink-0">
-                        <p className="font-semibold text-sm md:text-base">
-                          R{book.price}
-                        </p>
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
-
-                <Separator />
-
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Items Subtotal</span>
-                    <span className="text-sm">R{itemsTotal.toFixed(2)}</span>
-                  </div>
-                  {selectedDelivery && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">
-                        Delivery ({selectedDelivery.serviceName})
-                      </span>
-                      <span className="text-sm">
-                        R{selectedDelivery.price.toFixed(2)}
-                      </span>
-                    </div>
-                  )}
-                  <Separator />
-                  <div className="flex justify-between items-center">
-                    <span className="text-base md:text-lg font-bold">
-                      Total
-                    </span>
-                    <span className="text-base md:text-lg font-bold">
-                      R{totalAmount.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-
-                <Button
-                  onClick={handlePayment}
-                  className="w-full bg-book-600 hover:bg-book-700 text-sm md:text-base py-2 md:py-3 min-h-[48px]"
-                  size="lg"
-                  disabled={!selectedDelivery}
-                >
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  Pay R{totalAmount.toFixed(2)}
-                </Button>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>
+
+      {/* Payment Success Component */}
+      {showPaymentSuccess && (
+        <PaymentSuccess
+          reference={paymentReference}
+          amount={totalAmount}
+          items={
+            isCartCheckout
+              ? cartData.map((item) => ({
+                  id: item.id,
+                  title: item.title,
+                  price: item.price,
+                }))
+              : book
+                ? [{ id: book.id, title: book.title, price: book.price }]
+                : []
+          }
+          isCartCheckout={isCartCheckout}
+          onClose={() => {
+            setShowPaymentSuccess(false);
+            // Show commit reminder after payment success
+            setShowCommitReminderModal(true);
+          }}
+        />
+      )}
 
       {/* Sale Success Popup */}
       {saleData && (
