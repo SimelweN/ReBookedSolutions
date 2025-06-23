@@ -424,13 +424,46 @@ export function checkSubjectRequirements(
     if (bestMatch) {
       matchedSubjects.push(bestMatch);
     } else {
-      // Find alternatives from mapping
-      const mapping = findSubjectMapping(required.name);
-      missingSubjects.push({
-        name: required.name,
-        level: required.level,
-        alternatives: mapping?.synonyms || [],
-      });
+      // Before marking as missing, try one more comprehensive check
+      // Check if any user subject could possibly match with lower confidence threshold
+      let fallbackMatch = null;
+
+      for (const userSubject of userSubjects) {
+        const matchResult = matchSubjects(userSubject.name, required.name);
+
+        // Accept matches with confidence >= 40 as fallback
+        if (matchResult.isMatch && matchResult.confidence >= 40) {
+          const levelCheck = validateSubjectLevel(
+            userSubject.level,
+            required.level,
+            required.name,
+          );
+
+          fallbackMatch = {
+            required: required.name,
+            matched: userSubject.name,
+            confidence: matchResult.confidence,
+            levelValid: levelCheck.isValid,
+            userLevel: userSubject.level,
+            requiredLevel: required.level,
+            matchReason: matchResult.reason,
+            levelReason: levelCheck.reason,
+          };
+          break; // Take first acceptable fallback match
+        }
+      }
+
+      if (fallbackMatch) {
+        matchedSubjects.push(fallbackMatch);
+      } else {
+        // Find alternatives from mapping
+        const mapping = findSubjectMapping(required.name);
+        missingSubjects.push({
+          name: required.name,
+          level: required.level,
+          alternatives: mapping?.synonyms || [],
+        });
+      }
     }
   }
 
