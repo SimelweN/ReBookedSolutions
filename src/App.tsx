@@ -516,32 +516,9 @@ function App() {
 
 // Add debugging utilities to window in development
 if (import.meta.env.DEV) {
-  console.log("🔐 Secure banking features available in Profile > Banking tab");
-
-  // Add comprehensive payment testing
-  (async () => {
-    try {
-      const { PaymentFlowTester } = await import("@/utils/testPaymentFlow");
-      const { verifyPaymentSetup } = await import("@/utils/verifyPaymentSetup");
-
-      (window as any).PaymentFlowTester = PaymentFlowTester;
-      (window as any).verifyPaymentSetup = verifyPaymentSetup;
-
-      console.log("🧪 Payment testing available:");
-      console.log("  - window.verifyPaymentSetup() - Quick setup check");
-      console.log(
-        "  - window.PaymentFlowTester.testPaymentSystem() - Full system test",
-      );
-
-      // Auto-run basic verification
-      setTimeout(async () => {
-        console.log("\n🔍 Auto-running payment setup verification...");
-        await verifyPaymentSetup();
-      }, 2000);
-    } catch (error) {
-      console.warn("⚠️ Payment testing utilities not available:", error);
-    }
-  })();
+  console.log("🎉 Payment system is ready!");
+  console.log("💳 Secure banking features available in Profile > Banking tab");
+  console.log("🧪 Test utilities: window.PaymentTester.testPaymentSystem()");
 }
 
 export default App;
