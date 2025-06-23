@@ -18,28 +18,40 @@ const CampusNavbar = React.memo(() => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const isActive = useCallback((path: string) => {
-    if (path === "/university-info" && location.pathname === "/university-info")
-      return true;
-    if (
-      path.includes("aps-calculator") &&
-      location.search.includes("tool=aps-calculator")
-    )
-      return true;
-    if (
-      path.includes("bursaries") &&
-      location.search.includes("tool=bursaries")
-    )
-      return true;
-    if (path.includes("campus-books") && location.search.includes("tool=books"))
-      return true;
-    return false;
-  }, [location.pathname, location.search]);
+  const isActive = useCallback(
+    (path: string) => {
+      if (
+        path === "/university-info" &&
+        location.pathname === "/university-info"
+      )
+        return true;
+      if (
+        path.includes("aps-calculator") &&
+        location.search.includes("tool=aps-calculator")
+      )
+        return true;
+      if (
+        path.includes("bursaries") &&
+        location.search.includes("tool=bursaries")
+      )
+        return true;
+      if (
+        path.includes("campus-books") &&
+        location.search.includes("tool=books")
+      )
+        return true;
+      return false;
+    },
+    [location.pathname, location.search],
+  );
 
-  const handleNavigation = useCallback((path: string) => {
-    navigate(path);
-    setIsMobileMenuOpen(false);
-  }, [navigate]);
+  const handleNavigation = useCallback(
+    (path: string) => {
+      navigate(path);
+      setIsMobileMenuOpen(false);
+    },
+    [navigate],
+  );
 
   return (
     <nav className="sticky top-0 z-50 bg-white shadow-md border-b border-book-200">
@@ -345,6 +357,8 @@ const CampusNavbar = React.memo(() => {
       </div>
     </nav>
   );
-};
+});
+
+CampusNavbar.displayName = "CampusNavbar";
 
 export default CampusNavbar;
