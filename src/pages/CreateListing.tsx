@@ -92,19 +92,28 @@ const CreateListing = () => {
           );
         }
 
-        // Check banking details
-        const { data: bankingData } = await supabase
-          .from("banking_details")
-          .select("id, account_verified, paystack_subaccount_code")
-          .eq("user_id", user.id)
-          .single();
+        // Check banking details using improved service
+        const { ImprovedBankingService } = await import(
+          "@/services/improvedBankingService"
+        );
+        const hasVerifiedBanking =
+          await ImprovedBankingService.hasVerifiedBankingDetails(user.id);
 
-        if (!bankingData) {
-          errors.push("Please set up your banking details to receive payments");
-        } else if (!bankingData.account_verified) {
-          errors.push("Please verify your banking details");
-        } else if (!bankingData.paystack_subaccount_code) {
-          errors.push("Payment account setup is incomplete");
+        if (!hasVerifiedBanking) {
+          const bankingData = await ImprovedBankingService.getBankingDetails(
+            user.id,
+          );
+          if (!bankingData) {
+            errors.push(
+              "Please set up your banking details to receive payments",
+            );
+          } else if (!bankingData.account_verified) {
+            errors.push(
+              "Banking details saved but payment account setup is incomplete",
+            );
+          } else {
+            errors.push("Payment account verification is in progress");
+          }
         }
 
         setValidationErrors(errors);
