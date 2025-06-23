@@ -25,8 +25,40 @@ export class EnhancedPaymentRedirect {
     bookTitle: string;
     deliveryFee?: number;
   }): Promise<void> {
+    // Pre-check seller setup to avoid errors
+    console.log("🔍 Pre-checking seller payment setup...");
+
     try {
-      toast.loading("Initializing payment...");
+      const { BankingDetailsService } = await import(
+        "@/services/bankingDetailsService"
+      );
+      const sellerBankingDetails =
+        await BankingDetailsService.getBankingDetails(sellerId);
+
+      if (
+        !sellerBankingDetails ||
+        !sellerBankingDetails.paystack_subaccount_code
+      ) {
+        console.log(
+          "❌ Seller payment setup incomplete, using fallback immediately",
+        );
+        toast.warning("Using alternative payment method for this seller...");
+        this.fallbackToExistingPayment(bookId);
+        return;
+      }
+
+      console.log(
+        "✅ Seller has complete payment setup, proceeding with Paystack",
+      );
+    } catch (preCheckError) {
+      console.log("⚠️ Pre-check failed, using fallback:", preCheckError);
+      toast.warning("Using alternative payment method...");
+      this.fallbackToExistingPayment(bookId);
+      return;
+    }
+    // Since we pre-checked, this should work, but still wrap in try-catch
+    try {
+      toast.loading("Initializing secure payment...");
 
       const { payment_url } = await TransactionService.initializeBookPayment({
         bookId,
@@ -39,52 +71,15 @@ export class EnhancedPaymentRedirect {
       });
 
       toast.dismiss();
-      toast.success("Redirecting to payment...");
+      toast.success("Redirecting to secure payment...");
 
       // Redirect to Paystack payment page
       window.location.href = payment_url;
     } catch (error) {
+      // This should rarely happen since we pre-checked, but handle it anyway
       toast.dismiss();
-      console.log("Payment initialization error caught:", error);
-
-      // Handle specific seller setup errors
-      if (error instanceof Error) {
-        console.log("Error message:", error.message);
-
-        if (error.message === "SELLER_NO_BANKING_DETAILS") {
-          console.log(
-            "Handling SELLER_NO_BANKING_DETAILS - redirecting to fallback",
-          );
-          toast.warning(
-            "Seller hasn't set up banking details yet. Using alternative payment method...",
-          );
-          this.fallbackToExistingPayment(bookId);
-          return;
-        }
-
-        if (error.message === "SELLER_NO_SUBACCOUNT") {
-          console.log(
-            "Handling SELLER_NO_SUBACCOUNT - redirecting to fallback",
-          );
-          toast.warning(
-            "Seller's payment account is being set up. Using alternative payment method...",
-          );
-          this.fallbackToExistingPayment(bookId);
-          return;
-        }
-
-        // Handle other errors
-        console.error("Unhandled payment error:", error.message);
-        toast.error(
-          "Payment initialization failed. Using alternative payment method...",
-        );
-        this.fallbackToExistingPayment(bookId);
-        return;
-      }
-
-      // Fallback for any other error types
-      console.error("Non-Error object thrown:", error);
-      toast.warning("Using alternative payment method...");
+      console.error("Unexpected payment error after pre-check:", error);
+      toast.warning("Payment method unavailable. Using alternative...");
       this.fallbackToExistingPayment(bookId);
     }
   }
