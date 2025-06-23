@@ -33,6 +33,45 @@ export type Database = {
         };
         Relationships: [];
       };
+      banking_details: {
+        Row: {
+          id: string;
+          user_id: string;
+          recipient_type: string;
+          full_name: string;
+          bank_account_number: string;
+          bank_name: string;
+          branch_code: string;
+          account_type: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          recipient_type: string;
+          full_name: string;
+          bank_account_number: string;
+          bank_name: string;
+          branch_code: string;
+          account_type: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          recipient_type?: string;
+          full_name?: string;
+          bank_account_number?: string;
+          bank_name?: string;
+          branch_code?: string;
+          account_type?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       books: {
         Row: {
           author: string;
