@@ -118,12 +118,19 @@ const PaymentStatus = ({
           icon: <CheckCircle className="h-4 w-4" />,
           color: "bg-green-500",
           label: "Sale Confirmed",
-          description: "Seller has confirmed the sale",
+          description: "Seller has confirmed the sale - arrange collection",
+        };
+      case "collected":
+        return {
+          icon: <CheckCircle className="h-4 w-4" />,
+          color: "bg-green-600",
+          label: "Book Collected",
+          description: "Book has been collected - payment released to seller",
         };
       case "completed":
         return {
           icon: <CheckCircle className="h-4 w-4" />,
-          color: "bg-green-600",
+          color: "bg-green-700",
           label: "Completed",
           description: "Transaction completed successfully",
         };
