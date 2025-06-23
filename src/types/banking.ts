@@ -7,6 +7,9 @@ export interface BankingDetails {
   bank_name: string;
   branch_code: string;
   account_type: "savings" | "current";
+  paystack_subaccount_code?: string;
+  paystack_subaccount_id?: string;
+  subaccount_status?: "pending" | "active" | "inactive";
   created_at?: string;
   updated_at?: string;
 }

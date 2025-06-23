@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { BankingDetails } from "@/types/banking";
+import { PaystackService } from "@/services/paystackService";
 import { toast } from "sonner";
 
 /**
@@ -125,17 +126,40 @@ export class BankingDetailsService {
   }
 
   /**
-   * Save banking details to database with encryption
+   * Save banking details to database with encryption and create Paystack subaccount
    */
   static async saveBankingDetails(
     bankingDetails: Omit<BankingDetails, "id" | "created_at" | "updated_at">,
+    userEmail: string,
   ): Promise<BankingDetails> {
     try {
+      // Create Paystack subaccount first
+      let paystackData: {
+        subaccount_code: string;
+        subaccount_id: string;
+      } | null = null;
+
+      try {
+        paystackData = await PaystackService.createSubaccount(
+          bankingDetails as BankingDetails,
+          userEmail,
+        );
+        toast.success("Payment account created successfully!");
+      } catch (paystackError) {
+        console.warn("Paystack subaccount creation failed:", paystackError);
+        toast.warning(
+          "Banking details saved, but payment account setup needs completion. Please contact support.",
+        );
+      }
+
       // Encrypt sensitive fields
       const encryptedDetails = {
         ...bankingDetails,
         bank_account_number: this.encrypt(bankingDetails.bank_account_number),
         full_name: this.encrypt(bankingDetails.full_name),
+        paystack_subaccount_code: paystackData?.subaccount_code || null,
+        paystack_subaccount_id: paystackData?.subaccount_id || null,
+        subaccount_status: paystackData ? "active" : "pending",
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };

@@ -198,11 +198,15 @@ const BankingDetailsSection: React.FC = () => {
         account_type: formData.account_type! as "savings" | "current",
       };
 
-      const savedDetails =
-        await BankingDetailsService.saveBankingDetails(detailsToSave);
+      const savedDetails = await BankingDetailsService.saveBankingDetails(
+        detailsToSave,
+        user.email || "",
+      );
       setBankingDetails(savedDetails);
       setIsEditing(false);
-      toast.success("Banking details saved securely");
+      toast.success(
+        "Banking details and payment account configured successfully",
+      );
     } catch (error) {
       console.error("Error saving banking details:", error);
       // Error toast is handled in the service
