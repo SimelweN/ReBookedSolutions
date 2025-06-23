@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { BankingDetails } from "@/types/banking";
 import { PaystackService } from "@/services/paystackService";
+import { FallbackBankingService } from "@/services/fallbackBankingService";
 import { toast } from "sonner";
 
 /**
@@ -133,6 +134,18 @@ export class BankingDetailsService {
     userEmail: string,
   ): Promise<BankingDetails> {
     try {
+      // First check if the service is available
+      const serviceAvailable =
+        await FallbackBankingService.checkServiceAvailability();
+
+      if (!serviceAvailable) {
+        console.log(
+          "Banking details table not available, using fallback service",
+        );
+        return await FallbackBankingService.saveBankingDetailsFallback(
+          bankingDetails,
+        );
+      }
       // Create Paystack subaccount first
       let paystackData: {
         subaccount_code: string;
@@ -197,9 +210,17 @@ export class BankingDetailsService {
             selectError.message.includes("does not exist")) ||
           selectError.message.includes("permission denied")
         ) {
-          throw new Error(
-            "Banking details service is being set up. This feature will be available soon. Please try again later or contact support if this persists.",
-          );
+          // Try fallback service instead of failing
+          console.log("Database table not accessible, trying fallback service");
+          try {
+            return await FallbackBankingService.saveBankingDetailsFallback(
+              bankingDetails,
+            );
+          } catch (fallbackError) {
+            throw new Error(
+              "Banking details service is being set up. This feature will be available soon. Please try again later or contact support if this persists.",
+            );
+          }
         }
         console.error("Database error:", {
           code: selectError.code,
