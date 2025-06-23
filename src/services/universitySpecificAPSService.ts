@@ -496,6 +496,20 @@ export function calculateUniversitySpecificAPS(
 }
 
 /**
+ * Check if a university uses special APS calculation
+ */
+export function usesSpecialAPSCalculation(universityId: string): boolean {
+  const specialUniversities = [
+    "uct",
+    "wits",
+    "stellenbosch",
+    "rhodes",
+    "unisa",
+  ];
+  return specialUniversities.includes(universityId.toLowerCase());
+}
+
+/**
  * Get university scoring methodology explanation
  */
 export function getUniversityScoringMethodology(universityId: string): string {
