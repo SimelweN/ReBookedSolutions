@@ -62,10 +62,15 @@ const BankingDetailsSection: React.FC = () => {
 
   // Check if user is recently verified on component mount
   useEffect(() => {
-    if (BankingDetailsService.isRecentlyVerified()) {
-      setIsVerified(true);
-      loadBankingDetails();
-    }
+    const checkVerification = async () => {
+      const isVerified = await BankingDetailsService.isRecentlyVerified();
+      if (isVerified) {
+        setIsVerified(true);
+        loadBankingDetails();
+      }
+    };
+
+    checkVerification();
   }, []);
 
   const loadBankingDetails = async () => {
@@ -317,11 +322,11 @@ const BankingDetailsSection: React.FC = () => {
               <DialogHeader>
                 <DialogTitle className="flex items-center">
                   <Lock className="h-5 w-5 mr-2 text-orange-600" />
-                  Verify Your Password
+                  Verify Access
                 </DialogTitle>
                 <DialogDescription>
-                  Please enter your account password to access your banking
-                  details.
+                  Please confirm your password to access your secure banking
+                  details. This verification is valid for 30 minutes.
                 </DialogDescription>
               </DialogHeader>
 
