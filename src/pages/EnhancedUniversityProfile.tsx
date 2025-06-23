@@ -65,6 +65,10 @@ import {
   getUniversityLogoPath,
   createLogoFallbackHandler,
 } from "@/utils/universityLogoUtils";
+import {
+  getUniversitySpecificAPSDisplay,
+  getUniversityAPSMethodology,
+} from "@/utils/universitySpecificAPSDisplay";
 import { getUniversityFaculties } from "@/constants/universities/comprehensive-course-database";
 import { toast } from "sonner";
 import "@/styles/university-profile-mobile.css";
