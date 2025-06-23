@@ -285,10 +285,6 @@ const Checkout = () => {
         return;
       }
 
-      toast.success("Payment successful! Processing shipment...", {
-        id: "payment",
-      });
-
       // Show commit reminder modal first
       setShowCommitReminderModal(true);
 
@@ -313,7 +309,7 @@ const Checkout = () => {
           // Log purchase activity
           try {
             await ActivityService.logBookPurchase(
-              user.id,
+              user!.id,
               purchasedBook.id,
               purchasedBook.title,
               purchasedBook.price,
@@ -331,7 +327,7 @@ const Checkout = () => {
                 purchasedBook.id,
                 purchasedBook.title,
                 purchasedBook.price,
-                user.id,
+                user!.id,
               );
               console.log("✅ Sale activity logged for seller");
             }
@@ -346,7 +342,7 @@ const Checkout = () => {
           try {
             const shipmentResult = await createAutomaticShipment(
               bookDetails,
-              user.id,
+              user!.id,
             );
 
             if (shipmentResult) {
@@ -388,11 +384,10 @@ const Checkout = () => {
         setSaleData({
           bookTitle: firstBook.title,
           bookPrice: firstBook.price,
-          buyerName: user.name || user.email || "Unknown Buyer",
-          buyerEmail: user.email || "",
-          saleId: "sale_" + Date.now(), // Generate a simple sale ID
+          buyerName: user!.name || user!.email || "Unknown Buyer",
+          buyerEmail: user!.email || "",
+          saleId: reference, // Use the payment reference as sale ID
         });
-        // setShowSalePopup(true); - Removed: will show after commit reminder
       }
 
       toast.success(
@@ -410,8 +405,10 @@ const Checkout = () => {
       // Note: Don't auto-redirect so user can see the popup
       // navigate("/shipping"); - removed
     } catch (error) {
-      console.error("Payment error:", error);
-      toast.error("Payment failed. Please try again.", { id: "payment" });
+      console.error("Payment completion error:", error);
+      toast.error("Payment completion failed. Please contact support.", {
+        id: "payment",
+      });
     }
   };
 
