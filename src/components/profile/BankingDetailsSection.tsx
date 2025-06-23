@@ -78,7 +78,7 @@ const BankingDetailsSection: React.FC = () => {
 
     try {
       setIsLoading(true);
-      const details = await BankingDetailsService.getBankingDetails(user.id);
+      const details = await ImprovedBankingService.getBankingDetails(user.id);
       setBankingDetails(details);
       if (details) {
         setFormData(details);
