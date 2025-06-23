@@ -266,17 +266,67 @@ export function matchSubjects(
     }
   }
 
-  // Additional English language checks
-  const isUserEnglishSubject = userStandard.toLowerCase().includes("english");
-  const isRequiredEnglishSubject =
-    requiredStandard.toLowerCase().includes("english") ||
-    requiredStandard.toLowerCase() === "english";
+  // Enhanced English language subject matching
+  const userLower = userStandard.toLowerCase();
+  const requiredLower = requiredStandard.toLowerCase();
 
-  if (isUserEnglishSubject && isRequiredEnglishSubject) {
+  // Handle English language subjects more comprehensively
+  const englishVariants = [
+    "english",
+    "english home language",
+    "english hl",
+    "english first additional language",
+    "english fal",
+  ];
+  const isUserEnglish = englishVariants.some(
+    (variant) => userLower.includes(variant) || userLower === variant,
+  );
+  const isRequiredEnglish = englishVariants.some(
+    (variant) => requiredLower.includes(variant) || requiredLower === variant,
+  );
+
+  if (isUserEnglish && isRequiredEnglish) {
     return {
       isMatch: true,
-      confidence: 88,
-      reason: `Both are English language subjects: ${userSubject} matches ${requiredSubject}`,
+      confidence: 92,
+      reason: `English language subject match: "${userSubject}" satisfies "${requiredSubject}" requirement`,
+    };
+  }
+
+  // Handle Mathematics variants
+  const mathVariants = [
+    "mathematics",
+    "maths",
+    "math",
+    "mathematical literacy",
+  ];
+  const isUserMath = mathVariants.some(
+    (variant) => userLower.includes(variant) || userLower === variant,
+  );
+  const isRequiredMath = mathVariants.some(
+    (variant) => requiredLower.includes(variant) || requiredLower === variant,
+  );
+
+  if (isUserMath && isRequiredMath) {
+    // Check for Mathematical Literacy vs Mathematics mismatch
+    const userIsMathLit = userLower.includes("literacy");
+    const requiredIsMathLit = requiredLower.includes("literacy");
+
+    if (userIsMathLit !== requiredIsMathLit) {
+      return {
+        isMatch: false,
+        confidence: 100,
+        reason: `${userSubject} cannot substitute for ${requiredSubject} - different math types`,
+        alternatives: requiredIsMathLit
+          ? ["Mathematical Literacy"]
+          : ["Mathematics"],
+      };
+    }
+
+    return {
+      isMatch: true,
+      confidence: 94,
+      reason: `Mathematics subject match: "${userSubject}" satisfies "${requiredSubject}" requirement`,
     };
   }
 
