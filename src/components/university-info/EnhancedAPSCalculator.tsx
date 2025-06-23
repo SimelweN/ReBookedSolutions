@@ -159,7 +159,7 @@ const EnhancedAPSCalculator: React.FC = () => {
     const apsSubjects: APSSubject[] = subjects.map((subject) => ({
       name: subject.name,
       marks: subject.marks,
-      level: subject.level,
+      level: subject.points, // Ensure level matches points (APS level 1-7)
       points: subject.points,
     }));
 
@@ -252,11 +252,12 @@ const EnhancedAPSCalculator: React.FC = () => {
       return;
     }
 
+    const apsPoints = convertPercentageToPoints(marks);
     const newSubject: APSSubjectInput = {
       name: selectedSubject,
       marks,
-      level: convertPercentageToPoints(marks),
-      points: convertPercentageToPoints(marks),
+      level: apsPoints, // Level should be the APS points (1-7)
+      points: apsPoints, // Points should match level for consistency
       isRequired: ["English", "Mathematics", "Mathematical Literacy"].includes(
         selectedSubject,
       ),
@@ -314,7 +315,7 @@ const EnhancedAPSCalculator: React.FC = () => {
       const apsSubjects: APSSubject[] = subjects.map((subject) => ({
         name: subject.name,
         marks: subject.marks,
-        level: subject.level,
+        level: subject.points, // Ensure level matches points (APS level 1-7)
         points: subject.points,
       }));
       await updateUserSubjects(apsSubjects);
