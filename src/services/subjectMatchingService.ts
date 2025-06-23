@@ -1,7 +1,10 @@
 /**
  * Precise Subject Matching Service
  * Fixes critical issue: Subject matching is too loose causing false positives
+ * Enhanced with subject name normalization for better detection
  */
+
+import { normalizeSubjectName } from "@/utils/subjectNormalization";
 
 export interface SubjectMatchResult {
   isMatch: boolean;
@@ -133,15 +136,22 @@ export function matchSubjects(
   userSubject: string,
   requiredSubject: string,
 ): SubjectMatchResult {
-  const userNormalized = userSubject.toLowerCase().trim();
-  const requiredNormalized = requiredSubject.toLowerCase().trim();
+  // First normalize both subject names to standard forms
+  const userStandard = normalizeSubjectName(userSubject);
+  const requiredStandard = normalizeSubjectName(requiredSubject);
 
-  // Exact match - highest confidence
+  const userNormalized = userStandard.toLowerCase().trim();
+  const requiredNormalized = requiredStandard.toLowerCase().trim();
+
+  // Exact match after normalization - highest confidence
   if (userNormalized === requiredNormalized) {
     return {
       isMatch: true,
       confidence: 100,
-      reason: "Exact match",
+      reason:
+        userStandard === userSubject
+          ? "Exact match"
+          : `Normalized match: ${userSubject} → ${userStandard}`,
     };
   }
 
