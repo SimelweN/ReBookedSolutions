@@ -103,17 +103,3 @@ export function getUniversityAPSMethodology(universityId: string): string {
       return "Standard APS: Traditional 42-point system where each subject's symbol rating (A=7, B=6, C=5, D=4, E=3, F=2, G=1) contributes to the total score.";
   }
 }
-
-/**
- * Check if a university uses special APS calculation
- */
-export function usesSpecialAPSCalculation(universityId: string): boolean {
-  const specialUniversities = [
-    "uct",
-    "wits",
-    "stellenbosch",
-    "rhodes",
-    "unisa",
-  ];
-  return specialUniversities.includes(universityId.toLowerCase());
-}
