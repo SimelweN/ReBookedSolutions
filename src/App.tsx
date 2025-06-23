@@ -13,6 +13,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
 import LoadingSpinner from "./components/LoadingSpinner";
+import PerformanceMetrics from "./components/PerformanceMetrics";
 import "./App.css";
 
 // Lazy load components for better performance
@@ -454,6 +455,9 @@ function App() {
               </CartProvider>
             </AuthProvider>
           </GoogleMapsProvider>
+          {/* Performance monitoring */}
+          <PerformanceMetrics />
+
           {/* Vercel Analytics and Speed Insights */}
           <Analytics />
           <SpeedInsights />
