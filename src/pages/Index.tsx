@@ -2,6 +2,7 @@ import React, { useState, useCallback, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import SEO from "@/components/SEO";
+import OptimizedImage from "@/components/OptimizedImage";
 import { Button } from "@/components/ui/button";
 import { Search, BookOpen } from "lucide-react";
 
@@ -76,14 +77,14 @@ const Index = React.memo(() => {
             </div>
           </div>
           <div className="md:w-1/2 flex justify-center">
-            <img
-              src="https://cdn.builder.io/api/v1/assets/4b236342bc954bc3a0760c75cd3f3881/pexels-yankrukov-8199706-ad0e6d?format=webp&width=800"
+            <OptimizedImage
+              src="https://cdn.builder.io/api/v1/assets/4b236342bc954bc3a0760c75cd3f3881/pexels-yankrukov-8199706-ad0e6d"
               alt="Three diverse students smiling with stacks of textbooks in library"
-              width="600"
-              height="400"
+              width={600}
+              height={400}
+              priority={true}
               className="rounded-lg shadow-xl max-w-full h-auto w-full max-w-sm md:max-w-full"
-              loading="eager"
-              decoding="sync"
+              containerClassName="w-full"
             />
           </div>
         </div>
