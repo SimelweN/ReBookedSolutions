@@ -30,7 +30,7 @@ import ProfileEditDialog from "@/components/ProfileEditDialog";
 import AddressEditDialog from "@/components/AddressEditDialog";
 import GoogleMapsAddressDialog from "@/components/GoogleMapsAddressDialog";
 import UnavailableBookCard from "@/components/UnavailableBookCard";
-import BankingDetailsSection from "@/components/profile/BankingDetailsSection";
+import SecureBankingDetailsSection from "@/components/profile/SecureBankingDetailsSection";
 import { UserProfile, AddressData, Address } from "@/types/address";
 
 interface UserProfileTabsProps {
