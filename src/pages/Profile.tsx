@@ -39,7 +39,7 @@ import { getUserBooks } from "@/services/book/bookQueries";
 import { deleteBook } from "@/services/book/bookMutations";
 import { Book } from "@/types/book";
 import { BookDeletionService } from "@/services/bookDeletionService";
-import { BankingDetailsService } from "@/services/bankingDetailsService";
+import { ImprovedBankingService } from "@/services/improvedBankingService";
 import SellerBankingSetupPrompt from "@/components/SellerBankingSetupPrompt";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
