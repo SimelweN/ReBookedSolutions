@@ -371,6 +371,13 @@ export function checkSubjectRequirements(
   }>;
   details: string;
 } {
+  console.log("🔍 Subject Requirements Check:", {
+    userSubjects: userSubjects.map((s) => ({ name: s.name, level: s.level })),
+    requiredSubjects: requiredSubjects
+      .filter((s) => s.isRequired)
+      .map((s) => ({ name: s.name, level: s.level })),
+  });
+
   const matchedSubjects: any[] = [];
   const missingSubjects: any[] = [];
 
@@ -379,14 +386,29 @@ export function checkSubjectRequirements(
     let bestMatchConfidence = 0;
 
     // Find best matching user subject
+    console.log(
+      `🔍 Looking for matches for required subject: ${required.name} (Level ${required.level})`,
+    );
+
     for (const userSubject of userSubjects) {
       const matchResult = matchSubjects(userSubject.name, required.name);
+
+      console.log(
+        `  📝 Checking: "${userSubject.name}" (Level ${userSubject.level}) vs "${required.name}"`,
+      );
+      console.log(
+        `    Match: ${matchResult.isMatch}, Confidence: ${matchResult.confidence}, Reason: ${matchResult.reason}`,
+      );
 
       if (matchResult.isMatch && matchResult.confidence > bestMatchConfidence) {
         const levelCheck = validateSubjectLevel(
           userSubject.level,
           required.level,
           required.name,
+        );
+
+        console.log(
+          `    ✅ Level Check: ${levelCheck.isValid}, Reason: ${levelCheck.reason}`,
         );
 
         bestMatch = {
@@ -495,6 +517,25 @@ export function checkSubjectRequirements(
 
     details = issues.join("; ");
   }
+
+  console.log("📊 Final Results:", {
+    isEligible,
+    matchedSubjectsCount: matchedSubjects.length,
+    validMatchesCount: validMatches.length,
+    missingSubjectsCount: missingSubjects.length,
+    matchedSubjects: matchedSubjects.map((m) => ({
+      required: m.required,
+      matched: m.matched,
+      levelValid: m.levelValid,
+      userLevel: m.userLevel,
+      requiredLevel: m.requiredLevel,
+    })),
+    missingSubjects: missingSubjects.map((m) => ({
+      name: m.name,
+      level: m.level,
+    })),
+    details,
+  });
 
   return {
     isEligible,
