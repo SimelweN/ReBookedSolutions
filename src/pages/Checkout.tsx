@@ -33,7 +33,7 @@ import {
 import { toast } from "sonner";
 import SaleSuccessPopup from "@/components/SaleSuccessPopup";
 import CommitReminderModal from "@/components/CommitReminderModal";
-import { EnhancedPaymentRedirect } from "@/utils/enhancedPaymentRedirect";
+import PaymentProcessor from "@/components/checkout/PaymentProcessor";
 
 interface AddressData {
   complex?: string;
