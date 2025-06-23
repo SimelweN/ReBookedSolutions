@@ -12,7 +12,7 @@ import { toast } from "sonner";
 const Cart = () => {
   const { items, removeFromCart, clearCart, getTotalPrice, getSellerTotals } =
     useCart();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -38,24 +38,14 @@ const Cart = () => {
 
     setIsProcessing(true);
     try {
-      // Try new enhanced payment system first
-      const { EnhancedPaymentRedirect } = await import(
-        "@/utils/enhancedPaymentRedirect"
+      // Use internal checkout system
+      const { InternalPaymentRedirect } = await import(
+        "@/utils/internalPaymentRedirect"
       );
-
-      await EnhancedPaymentRedirect.initiateCartCheckout({
-        cartItems: items.map((item) => ({
-          id: item.id,
-          seller_id: item.seller?.id || "",
-          price: item.price,
-          title: item.title,
-        })),
-        buyerId: user.id,
-        buyerEmail: user.email || "",
-      });
+      InternalPaymentRedirect.redirectToCartCheckout();
     } catch (error) {
-      console.error("Enhanced payment failed, falling back:", error);
-      // Fallback to existing checkout
+      // Fallback to direct navigation
+      console.error("Payment redirect failed, using direct navigation:", error);
       navigate("/checkout/cart", { state: { cartItems: items } });
     } finally {
       setIsProcessing(false);
