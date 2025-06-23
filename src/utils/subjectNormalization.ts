@@ -149,6 +149,11 @@ export function normalizeSubjectName(subjectName: string): string {
     return "Life Sciences";
   }
 
+  // Special case: generic "english" should remain as "English" to match requirements
+  if (lowerCleaned === "english") {
+    return "English";
+  }
+
   // Return original if no normalization found
   return cleaned;
 }
