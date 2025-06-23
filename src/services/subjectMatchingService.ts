@@ -448,7 +448,33 @@ export function checkSubjectRequirements(
     );
 
     for (const userSubject of userSubjects) {
-      const matchResult = matchSubjects(userSubject.name, required.name);
+      let matchResult = matchSubjects(userSubject.name, required.name);
+
+      // Additional direct matching for common cases if primary matching fails
+      if (!matchResult.isMatch || matchResult.confidence < 50) {
+        const userLower = userSubject.name.toLowerCase().trim();
+        const reqLower = required.name.toLowerCase().trim();
+
+        // Direct English language matching
+        if (reqLower === "english" && userLower.includes("english")) {
+          matchResult = {
+            isMatch: true,
+            confidence: 95,
+            reason: `Direct English match: ${userSubject.name} satisfies English requirement`,
+          };
+        }
+        // Direct Mathematics matching
+        else if (
+          reqLower === "mathematics" &&
+          (userLower === "mathematics" || userLower === "maths")
+        ) {
+          matchResult = {
+            isMatch: true,
+            confidence: 98,
+            reason: `Direct Math match: ${userSubject.name} satisfies Mathematics requirement`,
+          };
+        }
+      }
 
       console.log(
         `  📝 Checking: "${userSubject.name}" (Level ${userSubject.level}) vs "${required.name}"`,
