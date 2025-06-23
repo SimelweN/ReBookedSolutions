@@ -6,6 +6,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { BankingDetails } from "@/types/banking";
 import { PaystackService } from "@/services/paystackService";
+import { DatabaseSetup } from "@/utils/databaseSetup";
 import { toast } from "sonner";
 
 export class ImprovedBankingService {
@@ -38,13 +39,8 @@ export class ImprovedBankingService {
     let databaseAvailable = false;
     let edgeFunctionsAvailable = false;
 
-    // Check database access
-    try {
-      await supabase.from("banking_details").select("id").limit(1);
-      databaseAvailable = true;
-    } catch (error) {
-      console.log("Banking details database not available:", error);
-    }
+    // Check database access using DatabaseSetup utility
+    databaseAvailable = await DatabaseSetup.checkBankingTableExists();
 
     // Check Edge Functions (simple test)
     try {
@@ -74,8 +70,10 @@ export class ImprovedBankingService {
         await this.checkServiceAvailability();
 
       if (!databaseAvailable) {
+        // Show setup instructions to help user understand the issue
+        await DatabaseSetup.showSetupInstructions();
         throw new Error(
-          "Banking details service is currently being set up. Please try again in a few minutes.",
+          "Banking details service is not available. Please contact support.",
         );
       }
 
