@@ -48,6 +48,18 @@ const SUBJECT_MAPPINGS: SubjectMapping[] = [
       "English First Additional Language",
       "English FAL",
       "English",
+      "English First Language",
+    ],
+    excludes: ["Afrikaans"],
+  },
+  {
+    canonical: "English",
+    synonyms: [
+      "English Home Language",
+      "English HL",
+      "English First Additional Language",
+      "English FAL",
+      "English First Language",
     ],
     excludes: ["Afrikaans"],
   },
