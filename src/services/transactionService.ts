@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { PaystackService } from "@/services/paystackService";
-import { BankingDetailsService } from "@/services/bankingDetailsService";
+import { ImprovedBankingService } from "@/services/improvedBankingService";
 import { PaymentDebugger } from "@/utils/paymentDebugger";
 import { toast } from "sonner";
 
@@ -61,7 +61,7 @@ export class TransactionService {
 
       // Get seller's banking details and subaccount
       const sellerBankingDetails =
-        await BankingDetailsService.getBankingDetails(sellerId);
+        await ImprovedBankingService.getBankingDetails(sellerId);
 
       if (!sellerBankingDetails) {
         console.warn(
