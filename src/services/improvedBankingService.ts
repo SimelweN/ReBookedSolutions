@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { BankingDetails } from "@/types/banking";
 import { PaystackService } from "@/services/paystackService";
 import { DatabaseSetup } from "@/utils/databaseSetup";
+import { LocalBankingFallback } from "@/services/localBankingFallback";
 import { toast } from "sonner";
 
 export class ImprovedBankingService {
@@ -78,11 +79,21 @@ export class ImprovedBankingService {
         const setupSuccess = await DatabaseSetup.ensureBankingTableExists();
 
         if (!setupSuccess) {
-          // Show setup instructions if automatic setup fails
-          await DatabaseSetup.showSetupInstructions();
-          throw new Error(
-            "Banking details table needs to be created. Please run the database setup script or contact support.",
+          console.log("Database setup failed, using localStorage fallback");
+
+          // Use localStorage fallback for temporary storage
+          LocalBankingFallback.showFallbackWarning();
+          const fallbackResult =
+            LocalBankingFallback.saveBankingDetails(bankingDetails);
+
+          toast.info(
+            "Banking details saved locally until database is available",
+            {
+              duration: 8000,
+            },
           );
+
+          return fallbackResult;
         }
 
         console.log("✅ Banking details table setup completed automatically");
@@ -217,16 +228,16 @@ export class ImprovedBankingService {
           return null; // No banking details found
         }
 
-        // Handle table not existing
+        // Handle table not existing - try localStorage fallback
         if (
           error.code === "42P01" ||
           (error.message?.includes("relation") &&
             error.message?.includes("does not exist"))
         ) {
           console.warn(
-            "Banking details table does not exist - user needs to set up database",
+            "Banking details table does not exist - checking localStorage fallback",
           );
-          return null;
+          return LocalBankingFallback.getBankingDetails(userId);
         }
 
         throw error;
