@@ -165,9 +165,18 @@ export class ImprovedBankingService {
         full_name: this.decrypt(result.full_name),
       } as BankingDetails;
     } catch (error) {
-      console.error("Error in saveBankingDetails:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
+      const errorCode = (error as any)?.code || "NO_CODE";
+
+      console.error(
+        `Error in saveBankingDetails: ${errorMessage} (${errorCode})`,
+      );
+      console.error("Save banking details error details:", {
+        message: errorMessage,
+        code: errorCode,
+      });
+
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -204,7 +213,19 @@ export class ImprovedBankingService {
         full_name: this.decrypt(data.full_name),
       } as BankingDetails;
     } catch (error) {
-      console.error("Error fetching banking details:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      const errorCode = (error as any)?.code || "NO_CODE";
+
+      console.error(
+        `Error fetching banking details: ${errorMessage} (${errorCode})`,
+      );
+      console.error("Error fetching banking details details:", {
+        message: errorMessage,
+        code: errorCode,
+        userId: userId,
+      });
+
       return null;
     }
   }
@@ -226,7 +247,11 @@ export class ImprovedBankingService {
         !!bankingDetails.paystack_subaccount_code
       );
     } catch (error) {
-      console.error("Error checking banking details verification:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error(
+        `Error checking banking details verification: ${errorMessage}`,
+      );
       return false;
     }
   }
