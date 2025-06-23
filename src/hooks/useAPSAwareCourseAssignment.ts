@@ -11,7 +11,7 @@ import { calculateAPS, validateAPSSubjects } from "@/utils/apsCalculation";
 
 /**
  * Enhanced hook for APS-aware course assignment with user state management
- * Uses sessionStorage for temporary storage - data clears on browser refresh
+ * Uses localStorage for persistent storage - retains data until manually cleared
  */
 
 export interface UserAPSProfile {
@@ -30,14 +30,14 @@ export interface APSAwareState {
   lastSearchResults: CoursesForUniversityResult | null;
 }
 
-// Custom hook for sessionStorage (temporary storage)
-function useSessionStorage<T>(key: string, initialValue: T) {
+// Custom hook for localStorage (persistent storage)
+function useLocalStorage<T>(key: string, initialValue: T) {
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
-      const item = sessionStorage.getItem(key);
+      const item = localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
-      console.warn(`Error reading sessionStorage key "${key}":`, error);
+      console.warn(`Error reading localStorage key "${key}":`, error);
       return initialValue;
     }
   });
@@ -50,12 +50,12 @@ function useSessionStorage<T>(key: string, initialValue: T) {
         setStoredValue(valueToStore);
 
         if (valueToStore === null || valueToStore === undefined) {
-          sessionStorage.removeItem(key);
+          localStorage.removeItem(key);
         } else {
-          sessionStorage.setItem(key, JSON.stringify(valueToStore));
+          localStorage.setItem(key, JSON.stringify(valueToStore));
         }
       } catch (error) {
-        console.warn(`Error setting sessionStorage key "${key}":`, error);
+        console.warn(`Error setting localStorage key "${key}":`, error);
       }
     },
     [key, storedValue],
@@ -65,9 +65,11 @@ function useSessionStorage<T>(key: string, initialValue: T) {
 }
 
 export function useAPSAwareCourseAssignment(universityId?: string) {
-  // Temporary user APS profile (session only)
-  const [userProfile, setUserProfile] =
-    useSessionStorage<UserAPSProfile | null>("userAPSProfile", null);
+  // Persistent user APS profile (localStorage)
+  const [userProfile, setUserProfile] = useLocalStorage<UserAPSProfile | null>(
+    "userAPSProfile",
+    null,
+  );
 
   // Component state
   const [isLoading, setIsLoading] = useState(false);
