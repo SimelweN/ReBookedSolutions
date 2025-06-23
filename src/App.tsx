@@ -514,4 +514,18 @@ function App() {
   );
 }
 
+// Add debugging utilities to window in development
+if (import.meta.env.DEV) {
+  // Test encryption functionality
+  (async () => {
+    try {
+      const { testEncryption } = await import("@/utils/testEncryption");
+      (window as any).testEncryption = testEncryption;
+      console.log("🔐 Encryption test available: window.testEncryption()");
+    } catch (error) {
+      console.warn("⚠️ Encryption test not available:", error);
+    }
+  })();
+}
+
 export default App;
