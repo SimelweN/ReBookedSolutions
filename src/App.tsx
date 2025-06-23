@@ -15,14 +15,16 @@ import ScrollToTop from "./components/ScrollToTop";
 import LoadingSpinner from "./components/LoadingSpinner";
 import PerformanceMetrics from "./components/PerformanceMetrics";
 import { debugConnection } from "./utils/debugConnection";
+import { validateApiKey } from "./utils/validateApiKey";
 import "./App.css";
 
-// Initialize debug utility in development
+// Initialize debug utilities in development
 if (import.meta.env.DEV) {
   (window as any).debugConnection = debugConnection;
-  console.log(
-    "🛠️ Debug utility available: call debugConnection() in console to test connection",
-  );
+  (window as any).validateApiKey = validateApiKey;
+  console.log("🛠️ Debug utilities available:");
+  console.log("  - debugConnection() - Full connection test");
+  console.log("  - validateApiKey() - Check API key validity");
 }
 
 // Lazy load components for better performance
