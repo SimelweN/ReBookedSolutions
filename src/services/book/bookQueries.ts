@@ -384,10 +384,7 @@ const getUserBooksWithFallback = async (userId: string): Promise<Book[]> => {
         `[getUserBooksWithFallback - books query failed] ${errorMessage} (${errorCode})`,
       );
 
-      logDetailedError(
-        "getUserBooksWithFallback - books query failed",
-        booksError,
-      );
+      safeLogError("getUserBooksWithFallback - books query failed", booksError);
 
       throw new Error(
         `Failed to fetch user books: ${errorMessage} (Code: ${errorCode})`,
@@ -419,7 +416,7 @@ const getUserBooksWithFallback = async (userId: string): Promise<Book[]> => {
           `[getUserBooksWithFallback - profile query failed] ${errorMessage} (${errorCode})`,
         );
 
-        logDetailedError(
+        safeLogError(
           "getUserBooksWithFallback - profile query failed",
           profileError,
         );
