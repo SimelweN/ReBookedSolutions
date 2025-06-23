@@ -203,6 +203,19 @@ export class ImprovedBankingService {
         if (error.code === "PGRST116") {
           return null; // No banking details found
         }
+
+        // Handle table not existing
+        if (
+          error.code === "42P01" ||
+          (error.message?.includes("relation") &&
+            error.message?.includes("does not exist"))
+        ) {
+          console.warn(
+            "Banking details table does not exist - user needs to set up database",
+          );
+          return null;
+        }
+
         throw error;
       }
 
