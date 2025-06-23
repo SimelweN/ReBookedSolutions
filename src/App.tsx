@@ -43,14 +43,39 @@ if (import.meta.env.DEV) {
   console.log("  - debugBankingDetails() - Debug banking details errors");
 }
 
-// Lazy load components for better performance
-const Index = React.lazy(() => import("./pages/Index"));
-const BookListing = React.lazy(() => import("./pages/BookListing"));
-const BookDetails = React.lazy(() => import("./pages/BookDetails"));
-const Login = React.lazy(() => import("./pages/Login"));
-const Register = React.lazy(() => import("./pages/Register"));
-const Profile = React.lazy(() => import("./pages/Profile"));
-const CreateListing = React.lazy(() => import("./pages/CreateListing"));
+// Helper function to retry dynamic imports with better error handling
+const retryImport = (
+  importFn: () => Promise<any>,
+  retries = 3,
+): Promise<any> => {
+  return importFn().catch((error) => {
+    console.warn(`Dynamic import failed, retries left: ${retries}`, error);
+    if (retries > 0) {
+      // Add delay before retry
+      return new Promise((resolve) => setTimeout(resolve, 1000)).then(() =>
+        retryImport(importFn, retries - 1),
+      );
+    }
+    throw error;
+  });
+};
+
+// Lazy load components with retry logic for better reliability
+const Index = React.lazy(() => retryImport(() => import("./pages/Index")));
+const BookListing = React.lazy(() =>
+  retryImport(() => import("./pages/BookListing")),
+);
+const BookDetails = React.lazy(() =>
+  retryImport(() => import("./pages/BookDetails")),
+);
+const Login = React.lazy(() => retryImport(() => import("./pages/Login")));
+const Register = React.lazy(() =>
+  retryImport(() => import("./pages/Register")),
+);
+const Profile = React.lazy(() => retryImport(() => import("./pages/Profile")));
+const CreateListing = React.lazy(() =>
+  retryImport(() => import("./pages/CreateListing")),
+);
 const GoogleMapsDemo = React.lazy(() => import("./pages/GoogleMapsDemo"));
 const MapsTest = React.lazy(() => import("./pages/MapsTest"));
 const BasicMapsExample = React.lazy(() => import("./pages/BasicMapsExample"));
