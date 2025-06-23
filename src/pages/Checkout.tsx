@@ -559,6 +559,31 @@ const Checkout = () => {
         </div>
       </div>
 
+      {/* Payment Success Component */}
+      {showPaymentSuccess && (
+        <PaymentSuccess
+          reference={paymentReference}
+          amount={totalAmount}
+          items={
+            isCartCheckout
+              ? cartData.map((item) => ({
+                  id: item.id,
+                  title: item.title,
+                  price: item.price,
+                }))
+              : book
+                ? [{ id: book.id, title: book.title, price: book.price }]
+                : []
+          }
+          isCartCheckout={isCartCheckout}
+          onClose={() => {
+            setShowPaymentSuccess(false);
+            // Show commit reminder after payment success
+            setShowCommitReminderModal(true);
+          }}
+        />
+      )}
+
       {/* Sale Success Popup */}
       {saleData && (
         <SaleSuccessPopup
