@@ -543,6 +543,12 @@ const Profile = () => {
 
             {/* Right Content - Tabs (Keep as-is) */}
             <div className="col-span-8">
+              {/* Banking Setup Prompt for Sellers */}
+              <SellerBankingSetupPrompt
+                isVisible={showBankingPrompt && !isMobile}
+                onDismiss={() => setShowBankingPrompt(false)}
+              />
+
               <UserProfileTabs
                 activeListings={activeListings}
                 isLoading={isLoadingListings}
@@ -637,6 +643,12 @@ const Profile = () => {
 
             {/* Main Content - Tabs (Keep as-is) */}
             <div className="w-full">
+              {/* Banking Setup Prompt for Sellers */}
+              <SellerBankingSetupPrompt
+                isVisible={showBankingPrompt && isMobile}
+                onDismiss={() => setShowBankingPrompt(false)}
+              />
+
               <UserProfileTabs
                 activeListings={activeListings}
                 isLoading={isLoadingListings}

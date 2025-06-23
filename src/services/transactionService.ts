@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { PaystackService } from "@/services/paystackService";
 import { BankingDetailsService } from "@/services/bankingDetailsService";
+import { PaymentDebugger } from "@/utils/paymentDebugger";
 import { toast } from "sonner";
 
 export interface Transaction {
@@ -52,6 +53,11 @@ export class TransactionService {
     bookTitle: string;
   }): Promise<{ payment_url: string; transaction_id: string }> {
     try {
+      // Debug seller setup in development
+      if (import.meta.env.DEV) {
+        await PaymentDebugger.debugForUser(sellerId);
+      }
+
       // Get seller's banking details and subaccount
       const sellerBankingDetails =
         await BankingDetailsService.getBankingDetails(sellerId);
@@ -67,6 +73,11 @@ export class TransactionService {
         console.warn(
           `Seller ${sellerId} has banking details but no Paystack subaccount, falling back to legacy payment`,
         );
+        console.warn("Banking details found:", {
+          hasDetails: true,
+          subaccountStatus: sellerBankingDetails.subaccount_status,
+          bankName: sellerBankingDetails.bank_name,
+        });
         throw new Error("SELLER_NO_SUBACCOUNT");
       }
 
