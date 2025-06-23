@@ -513,22 +513,42 @@ const Checkout = () => {
               totalAmount={totalAmount}
             />
 
-            <PaymentProcessor
-              amount={totalAmount}
-              onPaymentSuccess={(reference) => {
-                console.log("Payment successful with reference:", reference);
-                handlePaymentSuccess(reference);
-              }}
-              onPaymentStart={() => {
-                console.log("Payment started");
-              }}
-              bookId={isCartCheckout ? undefined : book?.id}
-              bookTitle={isCartCheckout ? "Cart Items" : book?.title}
-              sellerId={isCartCheckout ? undefined : book?.seller?.id}
-              buyerId={user?.id || ""}
-              buyerEmail={user?.email || ""}
-              disabled={!selectedDelivery}
-            />
+            {isCartCheckout ? (
+              <CartPaymentProcessor
+                amount={totalAmount}
+                cartItems={cartData}
+                onPaymentSuccess={(reference) => {
+                  console.log(
+                    "Cart payment successful with reference:",
+                    reference,
+                  );
+                  handlePaymentSuccess(reference);
+                }}
+                onPaymentStart={() => {
+                  console.log("Cart payment started");
+                }}
+                buyerId={user?.id || ""}
+                buyerEmail={user?.email || ""}
+                disabled={!selectedDelivery}
+              />
+            ) : (
+              <PaymentProcessor
+                amount={totalAmount}
+                onPaymentSuccess={(reference) => {
+                  console.log("Payment successful with reference:", reference);
+                  handlePaymentSuccess(reference);
+                }}
+                onPaymentStart={() => {
+                  console.log("Payment started");
+                }}
+                bookId={book?.id}
+                bookTitle={book?.title}
+                sellerId={book?.seller?.id}
+                buyerId={user?.id || ""}
+                buyerEmail={user?.email || ""}
+                disabled={!selectedDelivery}
+              />
+            )}
           </div>
         </div>
       </div>
