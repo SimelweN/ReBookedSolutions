@@ -87,13 +87,22 @@ export const safeLogError = (
 ) => {
   const formattedError = formatErrorForLogging(error);
   const errorMessage = error instanceof Error ? error.message : String(error);
+  const errorName = error instanceof Error ? error.name : typeof error;
+  const errorCode = (error as any)?.code || (error as any)?.error_code;
 
+  // Log a comprehensive error object
   console.error(`[${context}] Error:`, {
     message: errorMessage,
+    name: errorName,
+    code: errorCode,
     error: formattedError,
     additionalData,
     timestamp: new Date().toISOString(),
   });
+
+  // Also log a simple readable message for quick scanning
+  const simpleMessage = `${context}: ${errorMessage}${errorCode ? ` (${errorCode})` : ""}`;
+  console.error(simpleMessage);
 
   return formattedError;
 };
