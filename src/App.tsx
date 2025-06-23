@@ -14,7 +14,16 @@ import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
 import LoadingSpinner from "./components/LoadingSpinner";
 import PerformanceMetrics from "./components/PerformanceMetrics";
+import { debugConnection } from "./utils/debugConnection";
 import "./App.css";
+
+// Initialize debug connection utility in development
+if (import.meta.env.DEV) {
+  (window as any).debugConnection = debugConnection;
+  console.log(
+    "🛠️ Debug utility available: call debugConnection() in console to test connection",
+  );
+}
 
 // Lazy load components for better performance
 const Index = React.lazy(() => import("./pages/Index"));
