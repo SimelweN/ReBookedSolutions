@@ -69,11 +69,11 @@ const BankingDetailsSection: React.FC = () => {
   }, []);
 
   const loadBankingDetails = async () => {
-    if (!user) return;
+    if (!user?.id) return;
 
     try {
       setIsLoading(true);
-      const details = await BankingDetailsService.getBankingDetails();
+      const details = await BankingDetailsService.getBankingDetails(user.id);
       setBankingDetails(details);
       if (details) {
         setFormData(details);
@@ -233,7 +233,7 @@ const BankingDetailsSection: React.FC = () => {
 
     try {
       setIsLoading(true);
-      await BankingDetailsService.deleteBankingDetails();
+      await BankingDetailsService.deleteBankingDetails(user.id);
       setBankingDetails(null);
       setFormData({
         recipient_type: "",

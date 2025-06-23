@@ -38,14 +38,11 @@ export class BankingDetailsService {
     password: string,
   ): Promise<boolean> {
     try {
-      // Use a separate auth instance to verify without affecting current session
-      const { createClient } = await import("@supabase/supabase-js");
-      const tempClient = createClient(
-        import.meta.env.VITE_SUPABASE_URL!,
-        import.meta.env.VITE_SUPABASE_ANON_KEY!,
-      );
+      // Store original session
+      const originalSession = await supabase.auth.getSession();
 
-      const { data, error } = await tempClient.auth.signInWithPassword({
+      // Attempt to sign in with provided credentials
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: email,
         password: password,
       });
@@ -55,8 +52,11 @@ export class BankingDetailsService {
         return false;
       }
 
-      // Immediately sign out the temporary session
-      await tempClient.auth.signOut();
+      // Password is correct, but we need to restore the original session
+      if (originalSession.data.session) {
+        // Restore the original session
+        await supabase.auth.setSession(originalSession.data.session);
+      }
 
       // Store verification in session storage with timestamp
       const verificationData = {
@@ -165,19 +165,20 @@ export class BankingDetailsService {
   }
 
   /**
-   * Get banking details for the current user
+   * Get banking details for the specified user
    */
-  static async getBankingDetails(): Promise<BankingDetails | null> {
+  static async getBankingDetails(
+    userId: string,
+  ): Promise<BankingDetails | null> {
     try {
-      const user = await supabase.auth.getUser();
-      if (!user.data.user) {
-        throw new Error("User not authenticated");
+      if (!userId) {
+        throw new Error("User ID is required");
       }
 
       const { data, error } = await supabase
         .from("banking_details")
         .select("*")
-        .eq("user_id", user.data.user.id)
+        .eq("user_id", userId)
         .single();
 
       if (error) {
@@ -206,19 +207,18 @@ export class BankingDetailsService {
   }
 
   /**
-   * Delete banking details for the current user
+   * Delete banking details for the specified user
    */
-  static async deleteBankingDetails(): Promise<void> {
+  static async deleteBankingDetails(userId: string): Promise<void> {
     try {
-      const user = await supabase.auth.getUser();
-      if (!user.data.user) {
-        throw new Error("User not authenticated");
+      if (!userId) {
+        throw new Error("User ID is required");
       }
 
       const { error } = await supabase
         .from("banking_details")
         .delete()
-        .eq("user_id", user.data.user.id);
+        .eq("user_id", userId);
 
       if (error) throw error;
 
