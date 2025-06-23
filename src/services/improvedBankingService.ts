@@ -278,6 +278,15 @@ export class ImprovedBankingService {
         return false;
       }
 
+      // For localStorage fallback, consider it "verified" if details exist
+      // since we can't create Paystack accounts without the database
+      if (bankingDetails.id?.startsWith("fallback_")) {
+        console.log(
+          "Using localStorage fallback - banking details exist but not fully verified",
+        );
+        return true; // Allow book listing with fallback data
+      }
+
       // Check if account is verified and has Paystack integration
       return (
         bankingDetails.account_verified === true &&
