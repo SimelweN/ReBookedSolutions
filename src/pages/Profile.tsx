@@ -114,7 +114,7 @@ const Profile = () => {
     if (!user?.id) return;
 
     try {
-      const bankingDetails = await BankingDetailsService.getBankingDetails(
+      const bankingDetails = await ImprovedBankingService.getBankingDetails(
         user.id,
       );
       const hasBankingSetup = bankingDetails?.paystack_subaccount_code;
