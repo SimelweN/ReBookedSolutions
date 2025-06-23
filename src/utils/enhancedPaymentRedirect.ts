@@ -158,47 +158,36 @@ export class EnhancedPaymentRedirect {
   }
 
   /**
-   * Fallback to existing payment system
+   * Fallback to internal checkout system
    */
   private static fallbackToExistingPayment(bookId: string): void {
     try {
-      const fallbackUrl = `https://payments.rebookedsolutions.co.za/checkout?bookId=${bookId}`;
-      console.log("Redirecting to fallback payment URL:", fallbackUrl);
-
+      console.log("Redirecting to internal checkout for book:", bookId);
       // Add a small delay to ensure the toast message is visible
-      setTimeout(() => {
-        window.location.href = fallbackUrl;
-      }, 1000);
-    } catch (error) {
-      console.error("Error redirecting to fallback payment:", error);
-      // If fallback fails, navigate to local checkout as last resort
       setTimeout(() => {
         window.location.href = `/checkout/${bookId}`;
       }, 1000);
+    } catch (error) {
+      console.error("Error redirecting to internal checkout:", error);
+      toast.error("Unable to proceed to checkout. Please try again.");
     }
   }
 
   /**
-   * Fallback to existing cart checkout
+   * Fallback to internal cart checkout
    */
   private static fallbackToExistingCartCheckout(
     cartItems: Array<{ id: string }>,
   ): void {
     try {
-      const cartIds = cartItems.map((item) => item.id).join(",");
-      const fallbackUrl = `https://payments.rebookedsolutions.co.za/checkout?cart=${cartIds}`;
-      console.log("Redirecting to fallback cart checkout URL:", fallbackUrl);
-
+      console.log("Redirecting to internal cart checkout");
       // Add a small delay to ensure the toast message is visible
-      setTimeout(() => {
-        window.location.href = fallbackUrl;
-      }, 1000);
-    } catch (error) {
-      console.error("Error redirecting to fallback cart checkout:", error);
-      // If fallback fails, navigate to local checkout as last resort
       setTimeout(() => {
         window.location.href = `/checkout/cart`;
       }, 1000);
+    } catch (error) {
+      console.error("Error redirecting to internal cart checkout:", error);
+      toast.error("Unable to proceed to checkout. Please try again.");
     }
   }
 
