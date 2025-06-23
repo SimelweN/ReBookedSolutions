@@ -104,16 +104,56 @@ export class DatabaseSetup {
 
     console.log("⚠️ Banking details table not found, attempting to create...");
 
-    // In a production environment, you would need database admin access to create tables
-    // For now, we'll show a helpful message to the user
-    toast.error(
-      "Banking details table not found. Please contact support to set up the database.",
-      {
-        description:
-          "The banking details feature requires database setup by an administrator.",
-        duration: 10000,
-      },
+    // Try to create the table automatically using a simpler approach
+    try {
+      console.log("Attempting to create banking_details table...");
+
+      // First try a simple create table statement
+      const { error } = await supabase.rpc("exec_sql_if_exists", {
+        sql_statement: `
+          CREATE TABLE IF NOT EXISTS public.banking_details (
+              id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+              user_id UUID NOT NULL,
+              recipient_type TEXT NOT NULL,
+              full_name TEXT NOT NULL,
+              bank_account_number TEXT NOT NULL,
+              bank_name TEXT NOT NULL,
+              branch_code TEXT NOT NULL,
+              account_type TEXT NOT NULL,
+              paystack_subaccount_code TEXT,
+              paystack_subaccount_id TEXT,
+              subaccount_status TEXT DEFAULT 'pending',
+              account_verified BOOLEAN DEFAULT false,
+              created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+              updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+              UNIQUE(user_id)
+          );
+        `,
+      });
+
+      if (!error) {
+        // Verify table was created
+        const tableExists = await this.checkBankingTableExists();
+        if (tableExists) {
+          console.log("✅ Banking details table created successfully");
+          toast.success("Banking details feature is now available!");
+          return true;
+        }
+      }
+    } catch (createError) {
+      console.log("Automatic table creation failed:", createError);
+    }
+
+    // If automatic creation fails, show helpful instructions
+    console.log(
+      "⚠️ Automatic table creation not possible, showing setup instructions",
     );
+
+    toast.error("Banking details table needs to be created manually.", {
+      description:
+        "Please run the database_setup.sql script in your Supabase SQL editor, or contact support for assistance.",
+      duration: 15000,
+    });
 
     return false;
   }
