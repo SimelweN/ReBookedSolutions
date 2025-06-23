@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Menu,
@@ -13,12 +13,12 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const CampusNavbar = () => {
+const CampusNavbar = React.memo(() => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const isActive = (path: string) => {
+  const isActive = useCallback((path: string) => {
     if (path === "/university-info" && location.pathname === "/university-info")
       return true;
     if (
@@ -34,12 +34,12 @@ const CampusNavbar = () => {
     if (path.includes("campus-books") && location.search.includes("tool=books"))
       return true;
     return false;
-  };
+  }, [location.pathname, location.search]);
 
-  const handleNavigation = (path: string) => {
+  const handleNavigation = useCallback((path: string) => {
     navigate(path);
     setIsMobileMenuOpen(false);
-  };
+  }, [navigate]);
 
   return (
     <nav className="sticky top-0 z-50 bg-white shadow-md border-b border-book-200">
