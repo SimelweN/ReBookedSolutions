@@ -167,6 +167,24 @@ export function matchSubjects(
     };
   }
 
+  // Special case: Generic "English" requirement should match any English language subject
+  if (requiredStandard === "English" && userStandard.includes("English")) {
+    return {
+      isMatch: true,
+      confidence: 95,
+      reason: `${userSubject} satisfies English language requirement`,
+    };
+  }
+
+  // Special case: User has generic "English" but requirement is specific (rare but possible)
+  if (userStandard === "English" && requiredStandard.includes("English")) {
+    return {
+      isMatch: true,
+      confidence: 90,
+      reason: `English language subject satisfies ${requiredSubject} requirement`,
+    };
+  }
+
   // Find mappings for both subjects using standardized names
   const userMapping = findSubjectMapping(userStandard);
   const requiredMapping = findSubjectMapping(requiredStandard);
