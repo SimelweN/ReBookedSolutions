@@ -517,6 +517,19 @@ function App() {
 // Add debugging utilities to window in development
 if (import.meta.env.DEV) {
   console.log("🔐 Secure banking features available in Profile > Banking tab");
+
+  // Add comprehensive payment testing
+  (async () => {
+    try {
+      const { PaymentFlowTester } = await import("@/utils/testPaymentFlow");
+      (window as any).PaymentFlowTester = PaymentFlowTester;
+      console.log(
+        "🧪 Payment testing available: window.PaymentFlowTester.testPaymentSystem()",
+      );
+    } catch (error) {
+      console.warn("⚠️ Payment flow tester not available:", error);
+    }
+  })();
 }
 
 export default App;
