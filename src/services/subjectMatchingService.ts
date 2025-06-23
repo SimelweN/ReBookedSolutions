@@ -155,9 +155,9 @@ export function matchSubjects(
     };
   }
 
-  // Find mappings for both subjects
-  const userMapping = findSubjectMapping(userSubject);
-  const requiredMapping = findSubjectMapping(requiredSubject);
+  // Find mappings for both subjects using standardized names
+  const userMapping = findSubjectMapping(userStandard);
+  const requiredMapping = findSubjectMapping(requiredStandard);
 
   // Both subjects have mappings
   if (userMapping && requiredMapping) {
