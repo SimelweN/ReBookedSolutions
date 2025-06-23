@@ -125,20 +125,12 @@ export const getBooks = async (filters?: BookFilters): Promise<Book[]> => {
         const errorCode = booksError.code || "NO_CODE";
         const errorDetails = booksError.details || "No additional details";
 
-        logDetailedError("Books query failed", {
-          message: errorMessage,
-          code: errorCode,
-          details: errorDetails,
-          hint: booksError.hint,
-          originalError: booksError,
-        });
+        // Log with proper string messages
+        console.error(`[Books query failed] ${errorMessage}`);
+        console.error(`Books query failed: ${errorMessage} (${errorCode})`);
 
-        console.error(`[BookQueries - Books query failed] Error:`, {
-          message: errorMessage,
-          code: errorCode,
-          details: errorDetails,
-          hint: booksError.hint,
-        });
+        // Use safeLogError for detailed logging
+        logDetailedError("Books query failed", booksError);
 
         throw new Error(
           `Failed to fetch books: ${errorMessage} (Code: ${errorCode})`,
@@ -166,18 +158,11 @@ export const getBooks = async (filters?: BookFilters): Promise<Book[]> => {
             profilesError.message || "Unknown profiles error";
           const errorCode = profilesError.code || "NO_CODE";
 
-          console.error(`[BookQueries - Error fetching profiles]`, {
-            message: errorMessage,
-            code: errorCode,
-            details: profilesError.details,
-            hint: profilesError.hint,
-          });
+          console.error(
+            `[Error fetching profiles] ${errorMessage} (${errorCode})`,
+          );
 
-          logDetailedError("Error fetching profiles", {
-            message: errorMessage,
-            code: errorCode,
-            originalError: profilesError,
-          });
+          logDetailedError("Error fetching profiles", profilesError);
           // Continue without profile data rather than failing completely
         } else if (profilesData) {
           profilesData.forEach((profile) => {
@@ -216,17 +201,6 @@ export const getBooks = async (filters?: BookFilters): Promise<Book[]> => {
     return await retryWithConnection(fetchBooksOperation, 2, 1000);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    const errorName = error instanceof Error ? error.name : typeof error;
-
-    console.error(`[BookQueries - Error in getBooks] Error:`, {
-      message: errorMessage,
-      name: errorName,
-      stack: error instanceof Error ? error.stack : undefined,
-      isNetworkError:
-        errorMessage.includes("Failed to fetch") ||
-        errorMessage.includes("NetworkError"),
-      timestamp: new Date().toISOString(),
-    });
 
     console.error(`[Error in getBooks] ${errorMessage}`);
     console.error(`Error in getBooks: ${errorMessage}`);
