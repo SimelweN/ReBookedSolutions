@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { safeLogError } from "@/utils/errorHandling";
+import { ImprovedBankingService } from "@/services/improvedBankingService";
 
 interface Address {
   complex?: string;
@@ -47,26 +48,11 @@ export const canUserListBooks = async (userId: string): Promise<boolean> => {
       return false;
     }
 
-    // Check if user has banking details set up
-    const { data: bankingData, error: bankingError } = await supabase
-      .from("banking_details")
-      .select("id, account_verified, paystack_subaccount_code")
-      .eq("user_id", userId)
-      .single();
+    // Check if user has verified banking details
+    const hasVerifiedBanking =
+      await ImprovedBankingService.hasVerifiedBankingDetails(userId);
 
-    if (bankingError) {
-      // No banking details found or error accessing them
-      console.log(`User ${userId} cannot list books: no banking details found`);
-      return false;
-    }
-
-    // Check if banking details are properly set up and verified
-    const hasBankingSetup =
-      bankingData &&
-      bankingData.account_verified === true &&
-      bankingData.paystack_subaccount_code;
-
-    if (!hasBankingSetup) {
+    if (!hasVerifiedBanking) {
       console.log(
         `User ${userId} cannot list books: banking details not verified or incomplete`,
       );
