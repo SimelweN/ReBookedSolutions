@@ -45,32 +45,46 @@ export class EnhancedPaymentRedirect {
       window.location.href = payment_url;
     } catch (error) {
       toast.dismiss();
-      console.error("Payment initialization failed:", error);
+      console.log("Payment initialization error caught:", error);
 
       // Handle specific seller setup errors
       if (error instanceof Error) {
+        console.log("Error message:", error.message);
+
         if (error.message === "SELLER_NO_BANKING_DETAILS") {
+          console.log(
+            "Handling SELLER_NO_BANKING_DETAILS - redirecting to fallback",
+          );
           toast.warning(
-            "Seller hasn't set up banking details yet. Redirecting to alternative payment...",
+            "Seller hasn't set up banking details yet. Using alternative payment method...",
           );
           this.fallbackToExistingPayment(bookId);
           return;
         }
 
         if (error.message === "SELLER_NO_SUBACCOUNT") {
+          console.log(
+            "Handling SELLER_NO_SUBACCOUNT - redirecting to fallback",
+          );
           toast.warning(
-            "Seller's payment account is being set up. Redirecting to alternative payment...",
+            "Seller's payment account is being set up. Using alternative payment method...",
           );
           this.fallbackToExistingPayment(bookId);
           return;
         }
+
+        // Handle other errors
+        console.error("Unhandled payment error:", error.message);
+        toast.error(
+          "Payment initialization failed. Using alternative payment method...",
+        );
+        this.fallbackToExistingPayment(bookId);
+        return;
       }
 
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to initialize payment";
-      toast.error(errorMessage);
-
-      // Fallback to existing payment system if Paystack fails
+      // Fallback for any other error types
+      console.error("Non-Error object thrown:", error);
+      toast.warning("Using alternative payment method...");
       this.fallbackToExistingPayment(bookId);
     }
   }
@@ -152,8 +166,21 @@ export class EnhancedPaymentRedirect {
    * Fallback to existing payment system
    */
   private static fallbackToExistingPayment(bookId: string): void {
-    const fallbackUrl = `https://payments.rebookedsolutions.co.za/checkout?bookId=${bookId}`;
-    window.location.href = fallbackUrl;
+    try {
+      const fallbackUrl = `https://payments.rebookedsolutions.co.za/checkout?bookId=${bookId}`;
+      console.log("Redirecting to fallback payment URL:", fallbackUrl);
+
+      // Add a small delay to ensure the toast message is visible
+      setTimeout(() => {
+        window.location.href = fallbackUrl;
+      }, 1000);
+    } catch (error) {
+      console.error("Error redirecting to fallback payment:", error);
+      // If fallback fails, navigate to local checkout as last resort
+      setTimeout(() => {
+        window.location.href = `/checkout/${bookId}`;
+      }, 1000);
+    }
   }
 
   /**
@@ -162,9 +189,22 @@ export class EnhancedPaymentRedirect {
   private static fallbackToExistingCartCheckout(
     cartItems: Array<{ id: string }>,
   ): void {
-    const cartIds = cartItems.map((item) => item.id).join(",");
-    const fallbackUrl = `https://payments.rebookedsolutions.co.za/checkout?cart=${cartIds}`;
-    window.location.href = fallbackUrl;
+    try {
+      const cartIds = cartItems.map((item) => item.id).join(",");
+      const fallbackUrl = `https://payments.rebookedsolutions.co.za/checkout?cart=${cartIds}`;
+      console.log("Redirecting to fallback cart checkout URL:", fallbackUrl);
+
+      // Add a small delay to ensure the toast message is visible
+      setTimeout(() => {
+        window.location.href = fallbackUrl;
+      }, 1000);
+    } catch (error) {
+      console.error("Error redirecting to fallback cart checkout:", error);
+      // If fallback fails, navigate to local checkout as last resort
+      setTimeout(() => {
+        window.location.href = `/checkout/cart`;
+      }, 1000);
+    }
   }
 
   /**

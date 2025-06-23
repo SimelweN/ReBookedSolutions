@@ -66,6 +66,7 @@ const BookDetails = () => {
         "@/utils/enhancedPaymentRedirect"
       );
 
+      // This should handle all errors internally and redirect appropriately
       await EnhancedPaymentRedirect.initiateBuyNow({
         bookId: book.id,
         buyerId: user.id,
@@ -76,9 +77,12 @@ const BookDetails = () => {
         deliveryFee: 0, // Calculate delivery fee as needed
       });
     } catch (error) {
-      console.error("Enhanced payment failed, falling back:", error);
-      // Fallback to existing checkout
-      navigate(`/checkout/${book.id}`);
+      console.error("Critical error in payment flow:", error);
+      // This should rarely happen since EnhancedPaymentRedirect handles errors internally
+      toast.error("Payment system error. Redirecting to checkout...");
+      setTimeout(() => {
+        navigate(`/checkout/${book.id}`);
+      }, 1000);
     }
   };
 
