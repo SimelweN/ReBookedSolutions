@@ -21,6 +21,7 @@ const Checkout: React.FC = () => {
   const location = useLocation();
   const { user, isAuthenticated } = useAuth();
   const { items, getTotalPrice, clearCart } = useCart();
+  const { loadError } = useGoogleMaps();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [shippingData, setShippingData] = useState<any>(null);
