@@ -20,10 +20,7 @@ import { PaymentTester } from "./utils/paymentTester";
 import { testPaymentSetup } from "./utils/testPaymentSetup";
 import { DatabaseSetup } from "./utils/databaseSetup";
 import { debugBankingDetails } from "./utils/debugBankingDetails";
-import {
-  checkDatabaseStatus,
-  logDatabaseStatus,
-} from "./utils/databaseConnectivityHelper";
+import { checkDatabaseStatus, logDatabaseStatus } from "./utils/databaseConnectivityHelper";
 import { preloadCriticalRoutes } from "./utils/routePreloader";
 import EmergencyBypass from "./components/EmergencyBypass";
 import "./App.css";
@@ -42,12 +39,8 @@ if (import.meta.env.DEV) {
   console.log("  - debugConnection() - Full connection test");
   console.log("  - validateApiKey() - Check API key validity");
   console.log("  - PaymentTester.testPaymentSystem() - Test payment setup");
-  console.log(
-    "  - testPaymentSetup() - Test user requirements for listing books",
-  );
-  console.log(
-    "  - DatabaseSetup.showSetupInstructions() - Check database setup",
-  );
+  console.log("  - testPaymentSetup() - Test user requirements for listing books");
+  console.log("  - DatabaseSetup.showSetupInstructions() - Check database setup");
   console.log("  - debugBankingDetails() - Debug banking details errors");
   console.log("  - checkDatabaseStatus() - Check database connectivity");
   console.log("  - logDatabaseStatus() - Log current database status");
@@ -68,9 +61,7 @@ const WorkingMapsDemo = React.lazy(() => import("./pages/WorkingMapsDemo"));
 const Admin = React.lazy(() => import("./pages/Admin"));
 const AdminReports = React.lazy(() => import("./pages/AdminReports"));
 const UniversityInfo = React.lazy(() => import("./pages/UniversityInfo"));
-const ModernUniversityProfile = React.lazy(
-  () => import("./pages/ModernUniversityProfile"),
-);
+const ModernUniversityProfile = React.lazy(() => import("./pages/ModernUniversityProfile"));
 const UniversityProfile = React.lazy(() => import("./pages/UniversityProfile"));
 const Policies = React.lazy(() => import("./pages/Policies"));
 const Privacy = React.lazy(() => import("./pages/Privacy"));
@@ -88,9 +79,7 @@ const ContactUs = React.lazy(() => import("./pages/ContactUs"));
 const EditBook = React.lazy(() => import("./pages/EditBook"));
 const StudyResources = React.lazy(() => import("./pages/StudyResources"));
 const Confirm = React.lazy(() => import("./pages/Confirm"));
-const ConfirmEmailChange = React.lazy(
-  () => import("./pages/ConfirmEmailChange"),
-);
+const ConfirmEmailChange = React.lazy(() => import("./pages/ConfirmEmailChange"));
 const Report = React.lazy(() => import("./pages/Report"));
 const UserProfile = React.lazy(() => import("./pages/UserProfile"));
 const FAQ = React.lazy(() => import("./pages/FAQ"));
@@ -127,24 +116,13 @@ const ImportFailureFallback: React.FC<{ error?: Error }> = ({ error }) => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50">
     <div className="max-w-md mx-auto text-center p-6">
       <div className="mb-4">
-        <svg
-          className="mx-auto h-12 w-12 text-gray-400"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-          />
+        <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
         </svg>
       </div>
       <h3 className="text-lg font-medium text-gray-900 mb-2">Loading Error</h3>
       <p className="text-gray-600 mb-4">
-        There was a problem loading the page. This might be due to a network
-        issue.
+        There was a problem loading the page. This might be due to a network issue.
       </p>
       <button
         onClick={() => window.location.reload()}
@@ -165,7 +143,9 @@ const MinimalLoader = () => (
 
 // Simple route wrapper - no complex error boundaries
 const SimpleRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <Suspense fallback={<MinimalLoader />}>{children}</Suspense>
+  <Suspense fallback={<MinimalLoader />}>
+    {children}
+  </Suspense>
 );
 
 function App() {
@@ -175,12 +155,13 @@ function App() {
   }, []);
 
   return (
-    <ErrorBoundary level="app">
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute="class" defaultTheme="light">
-          <GoogleMapsProvider>
-            <AuthProvider>
-              <CartProvider>
+    <EmergencyBypass>
+      <ErrorBoundary level="app">
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider attribute="class" defaultTheme="light">
+            <GoogleMapsProvider>
+              <AuthProvider>
+                <CartProvider>
                 <Router>
                   <AuthErrorHandler />
                   <ScrollToTop />
@@ -582,9 +563,7 @@ if (import.meta.env.DEV) {
   console.log("🎉 Payment system frontend is ready!");
   console.log("💳 Complete payment integration implemented");
   console.log("🧪 Test utilities: window.PaymentTester.testPaymentSystem()");
-  console.log(
-    "🔄 Payment flow: PaymentButton → Paystack → PaymentCallback → TransactionStatus",
-  );
+  console.log("🔄 Payment flow: PaymentButton → Paystack → PaymentCallback → TransactionStatus");
 }
 
 export default App;
