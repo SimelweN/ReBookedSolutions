@@ -754,9 +754,9 @@ const Policies = () => {
                       </h3>
                       <p className="text-gray-700 leading-relaxed text-sm sm:text-base mb-3 sm:mb-4">
                         6.1 All payments are facilitated through our secure
-                        payment system at payment.rebookedsolutions.co.za.
-                        ReBooked does not store credit card information or
-                        process payments internally.
+                        integrated payment system powered by Paystack. ReBooked
+                        does not store credit card information or process
+                        payments internally.
                       </p>
                       <p className="text-gray-700 leading-relaxed text-sm sm:text-base mb-3 sm:mb-4">
                         6.2 ReBooked charges a 10% service fee per successful
