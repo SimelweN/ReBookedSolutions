@@ -198,6 +198,10 @@ const SimpleQADashboard: React.FC = () => {
             <SystemwideQAFixes />
           </TabsContent>
 
+          <TabsContent value="environment">
+            <EnvironmentChecker />
+          </TabsContent>
+
           <TabsContent value="overview" className="space-y-6">
             {/* Current Status Display - moved from below */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
