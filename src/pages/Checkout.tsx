@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ArrowLeft, CreditCard, Truck, MapPin, User } from "lucide-react";
 import CheckoutOrderSummary from "@/components/checkout/CheckoutOrderSummary";
-import CheckoutShippingForm from "@/components/checkout/CheckoutShippingForm";
+import EnhancedShippingForm from "@/components/checkout/EnhancedShippingForm";
 import CheckoutPaymentProcessor from "@/components/checkout/CheckoutPaymentProcessor";
 import { toast } from "sonner";
 
