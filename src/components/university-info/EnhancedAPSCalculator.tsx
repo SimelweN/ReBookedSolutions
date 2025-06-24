@@ -63,6 +63,7 @@ import {
   useAPSAwareCourseAssignment,
   useAPSFilterOptions,
 } from "@/hooks/useAPSAwareCourseAssignment";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { APSSubject } from "@/types/university";
 import {
