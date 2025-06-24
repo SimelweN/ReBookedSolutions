@@ -73,10 +73,31 @@ function useAPSLocalStorage() {
   const saveProfile = useCallback(async (profile: UserAPSProfile) => {
     try {
       console.log("💾 Saving APS profile to localStorage:", profile);
-      localStorage.setItem("userAPSProfile", JSON.stringify(profile));
-      setUserProfile(profile);
-      console.log("✅ APS Profile saved successfully");
-      return true;
+
+      // Add timestamp to ensure we track when it was saved
+      const profileWithTimestamp = {
+        ...profile,
+        lastUpdated: new Date().toISOString(),
+        savedAt: Date.now(),
+      };
+
+      localStorage.setItem(
+        "userAPSProfile",
+        JSON.stringify(profileWithTimestamp),
+      );
+      setUserProfile(profileWithTimestamp);
+
+      // Verify it was actually saved
+      const verification = localStorage.getItem("userAPSProfile");
+      console.log("🔍 Verification - saved data exists:", !!verification);
+
+      if (verification) {
+        console.log("✅ APS Profile saved and verified successfully");
+        return true;
+      } else {
+        console.error("❌ APS Profile save verification failed");
+        return false;
+      }
     } catch (error) {
       console.error("❌ Failed to save APS profile:", error);
       return false;
@@ -103,9 +124,23 @@ function useAPSLocalStorage() {
     }
   }, []);
 
-  // Load profile on mount
+  // Load profile on mount and whenever localStorage changes
   useEffect(() => {
     loadProfile();
+
+    // Listen for localStorage changes from other tabs/windows
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "userAPSProfile") {
+        console.log("📡 localStorage changed in another tab, reloading...");
+        loadProfile();
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
   }, [loadProfile]);
 
   return {
@@ -149,30 +184,48 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
         setIsLoading(true);
         setError(null);
 
-        // Validate subjects
+        // Validate subjects (but still save even if validation has warnings)
         const validation = validateAPSSubjects(subjects);
-        if (!validation.isValid) {
-          setError(validation.errors.join("; "));
-          return false;
-        }
 
         // Calculate total APS
         const apsCalculation = calculateAPS(subjects);
         const totalAPS = apsCalculation.totalScore || 0;
 
-        // Create profile
+        // Create profile - save regardless of validation to ensure persistence
         const profile: UserAPSProfile = {
           subjects,
           totalAPS,
           lastUpdated: new Date().toISOString(),
-          isValid: true,
+          isValid: validation.isValid,
           validationErrors: validation.errors,
           universitySpecificScores:
             apsCalculation.universitySpecificScores || [],
         };
 
-        // Save using authentication-aware storage
+        console.log(
+          "📊 Updating APS profile with subjects:",
+          subjects.length,
+          "Total APS:",
+          totalAPS,
+        );
+
+        // Save using simplified localStorage storage
         const success = await setUserProfile(profile);
+
+        // Only set error if saving failed, not validation warnings
+        if (!success) {
+          setError("Failed to save APS profile");
+          return false;
+        }
+
+        // Clear any previous errors since save was successful
+        setError(null);
+
+        // Show validation warnings but don't fail the operation
+        if (!validation.isValid) {
+          console.warn("⚠️ APS validation warnings:", validation.errors);
+        }
+
         return success;
       } catch (error) {
         console.error("Error updating user subjects:", error);
