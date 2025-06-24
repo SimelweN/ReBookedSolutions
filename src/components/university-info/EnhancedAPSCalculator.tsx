@@ -709,7 +709,9 @@ const EnhancedAPSCalculator: React.FC = () => {
                             <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                           ) : (
                             <Target className="w-5 h-5 mr-2" />
-                      )}
+                          )}
+                          Find Your Programs
+                        </Button>
                     </div>
                   </div>
                 </div>
