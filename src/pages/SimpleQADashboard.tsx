@@ -288,6 +288,10 @@ const SimpleQADashboard: React.FC = () => {
             <ComprehensiveQAChecker />
           </TabsContent>
 
+          <TabsContent value="quickfixes">
+            <QAQuickFixes />
+          </TabsContent>
+
           <TabsContent value="checklist">
             <Card className="border-red-200 bg-red-50">
               <CardHeader>
