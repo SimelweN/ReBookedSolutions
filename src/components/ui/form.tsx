@@ -124,7 +124,7 @@ const FormControl = forwardRef<
 });
 FormControl.displayName = "FormControl";
 
-const FormDescription = React.forwardRef<
+const FormDescription = forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => {
