@@ -147,7 +147,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             currentUserIdRef.current = session.user.id;
 
             // Batch state updates to prevent multiple re-renders and glitching
-            const fallbackProfile = createFallbackProfile(session.user);
+            const fallbackProfile = createUserFallbackProfile(session.user);
 
             // Use React's automatic batching by updating state synchronously
             setSession(session);
