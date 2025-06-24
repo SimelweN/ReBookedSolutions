@@ -76,6 +76,7 @@ const Checkout = React.lazy(() => import("./pages/Checkout"));
 const Notifications = React.lazy(() => import("./pages/Notifications"));
 const Shipping = React.lazy(() => import("./pages/Shipping"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
+const QADashboard = React.lazy(() => import("./pages/QADashboard"));
 const ForgotPassword = React.lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = React.lazy(() => import("./pages/ResetPassword"));
 const Verify = React.lazy(() => import("./pages/Verify"));
