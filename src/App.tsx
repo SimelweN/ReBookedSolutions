@@ -34,6 +34,8 @@ if (import.meta.env.DEV) {
   (window as any).testPaymentSetup = testPaymentSetup;
   (window as any).DatabaseSetup = DatabaseSetup;
   (window as any).debugBankingDetails = debugBankingDetails;
+  (window as any).checkDatabaseStatus = checkDatabaseStatus;
+  (window as any).logDatabaseStatus = logDatabaseStatus;
   console.log("🛠️ Debug utilities available:");
   console.log("  - debugConnection() - Full connection test");
   console.log("  - validateApiKey() - Check API key validity");
