@@ -31,6 +31,7 @@ import AddressEditDialog from "@/components/AddressEditDialog";
 import GoogleMapsAddressDialog from "@/components/GoogleMapsAddressDialog";
 import UnavailableBookCard from "@/components/UnavailableBookCard";
 import EnhancedBankingDetailsSection from "@/components/profile/EnhancedBankingDetailsSection";
+import SellerEarningsDashboard from "@/components/seller/SellerEarningsDashboard";
 import { UserProfile, AddressData, Address } from "@/types/address";
 
 interface UserProfileTabsProps {
@@ -128,6 +129,12 @@ const UserProfileTabs = ({
                 className={`${isMobile ? "h-12 text-xs px-1 flex-col" : "flex-1"} flex items-center justify-center`}
               >
                 <span className={isMobile ? "text-center" : ""}>Banking</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="earnings"
+                className={`${isMobile ? "h-12 text-xs px-1 flex-col" : "flex-1"} flex items-center justify-center`}
+              >
+                <span className={isMobile ? "text-center" : ""}>Earnings</span>
               </TabsTrigger>
             </>
           )}
