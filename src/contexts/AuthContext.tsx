@@ -549,7 +549,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     initializeAuth();
-  }, [initializeAuth]);
+
+    // Emergency backup to prevent infinite loading
+    const emergencyTimeout = setTimeout(() => {
+      if (!authInitialized) {
+        console.error(
+          "🚨 [AuthContext] Emergency timeout - auth never initialized",
+        );
+        console.error("🚨 [AuthContext] This indicates severe backend issues");
+        console.info(
+          "💡 [AuthContext] Check database setup and Supabase connection",
+        );
+
+        // Force initialization to prevent app from hanging
+        setAuthInitialized(true);
+        setIsLoading(false);
+        setUser(null);
+        setProfile(null);
+        setSession(null);
+        setInitError("Database connection failed. Please check setup.");
+      }
+    }, 8000); // 8 second emergency timeout
+
+    return () => clearTimeout(emergencyTimeout);
+  }, [initializeAuth, authInitialized]);
 
   // Separate effect for loading timeout to prevent infinite re-renders
   useEffect(() => {
