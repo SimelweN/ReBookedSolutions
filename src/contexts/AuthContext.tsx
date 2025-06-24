@@ -232,25 +232,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                 sessionStorage.setItem(sessionKey, now.toString());
                 localStorage.setItem(localStorageKey, now.toString());
 
-                // Wrap in startTransition to prevent Suspense issues
-                startTransition(() => {
-                  addNotification({
-                    userId: session.user.id,
-                    title: "Welcome back!",
-                    message: `Successfully logged in at ${new Date().toLocaleString()}`,
-                    type: "success",
-                    read: false,
-                  }).catch((notifError) => {
+                // Use safe notification operation to prevent Suspense issues
+                safeNotificationOperation(
+                  () =>
+                    addNotification({
+                      userId: session.user.id,
+                      title: "Welcome back!",
+                      message: `Successfully logged in at ${new Date().toLocaleString()}`,
+                      type: "success",
+                      read: false,
+                    }),
+                  () => {
+                    // Fallback if notification fails
                     console.warn(
-                      "[AuthContext] Login notification failed:",
-                      notifError,
+                      "[AuthContext] Login notification failed - removing locks",
                     );
-                    // Remove all timestamps if notification failed
                     sessionStorage.removeItem(sessionKey);
                     sessionStorage.removeItem(lockKey);
                     localStorage.removeItem(localStorageKey);
-                  });
-                });
+                  },
+                );
               } else {
                 console.log(
                   "[AuthContext] Skipping duplicate login notification - recent notification exists",
