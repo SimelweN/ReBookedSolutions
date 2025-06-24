@@ -351,7 +351,7 @@ const Profile = () => {
 
   const userData = {
     id: user.id,
-    name: profile.name || "Anonymous User",
+    name: effectiveProfile.name || "Anonymous User",
     joinDate: new Date().toISOString(),
     isVerified: false,
   };
