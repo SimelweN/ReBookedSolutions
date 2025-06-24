@@ -317,7 +317,7 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
           program.subjects || program.subjectRequirements || [];
 
         if (subjectRequirements.length > 0) {
-          const subjectCheck = checkSubjectEligibility(
+          const subjectCheck = checkSubjectMatching(
             userSubjects.map((s) => ({
               name: s.name,
               level: s.level,
@@ -333,11 +333,11 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
           if (!subjectCheck.isEligible) {
             return {
               eligible: false,
-              reason: `Subject requirements: ${subjectCheck.matchedCount}/${subjectCheck.requiredCount} met. ${subjectCheck.details}`,
+              reason: `Subject requirements: ${subjectCheck.matchedCount}/${subjectCheck.requiredCount} met. ${subjectCheck.summary}`,
               meetsAPS: true,
               matchedCount: subjectCheck.matchedCount,
               requiredCount: subjectCheck.requiredCount,
-              subjectDetails: subjectCheck.details,
+              subjectDetails: subjectCheck.summary,
             };
           }
         }
