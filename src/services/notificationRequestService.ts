@@ -150,12 +150,7 @@ export class NotificationRequestService {
       const { data, error } = await query.limit(1);
 
       if (error) {
-        console.error("Error checking existing notification request:", {
-          message: error.message,
-          code: error.code,
-          details: error.details,
-          hint: error.hint,
-        });
+        logError("Error checking existing notification request:", error);
 
         // Handle missing table gracefully
         if (error.message && error.message.includes("does not exist")) {
