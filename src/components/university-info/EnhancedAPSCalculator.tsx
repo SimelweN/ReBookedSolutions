@@ -250,23 +250,47 @@ const EnhancedAPSCalculator: React.FC = () => {
     ) {
       console.log("📥 Restoring APS subjects from saved profile:", userProfile);
 
-      // Convert UserAPSProfile subjects to APSSubjectInput format for UI
-      const restoredSubjects = userProfile.subjects.map((subject) => ({
-        name: subject.name,
-        marks: subject.marks || 0,
-        level: subject.level || subject.points || 0,
-        points: subject.points || 0,
-        isRequired: [
-          "English",
-          "Mathematics",
-          "Mathematical Literacy",
-        ].includes(subject.name),
-      }));
+      try {
+        // Convert UserAPSProfile subjects to APSSubjectInput format for UI
+        const restoredSubjects = userProfile.subjects
+          .filter(
+            (subject) =>
+              subject && subject.name && typeof subject.marks === "number",
+          )
+          .map((subject) => ({
+            name: subject.name.trim(),
+            marks: Math.max(0, Math.min(100, subject.marks || 0)),
+            level: subject.level || subject.points || 0,
+            points:
+              subject.points || convertPercentageToPoints(subject.marks || 0),
+            isRequired: [
+              "English",
+              "Mathematics",
+              "Mathematical Literacy",
+              "Afrikaans",
+              "Home Language",
+              "First Additional Language",
+            ].some((req) => subject.name.includes(req)),
+          }));
 
-      setSubjects(restoredSubjects);
-      console.log("✅ APS subjects restored successfully:", restoredSubjects);
+        // Only update if we have valid subjects to restore
+        if (restoredSubjects.length > 0) {
+          setSubjects(restoredSubjects);
+          console.log(
+            "✅ APS subjects restored successfully:",
+            restoredSubjects.length,
+            "subjects",
+          );
+        } else {
+          console.log("⚠️ No valid subjects found in profile to restore");
+        }
+      } catch (error) {
+        console.error("❌ Error restoring APS subjects:", error);
+        setSubjects([]);
+      }
     } else if (userProfile === null) {
       console.log("📭 No APS profile found - starting fresh");
+      setSubjects([]);
     } else {
       console.log("📭 APS profile exists but no subjects:", userProfile);
     }
