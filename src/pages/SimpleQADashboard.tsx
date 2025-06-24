@@ -264,59 +264,174 @@ const SimpleQADashboard: React.FC = () => {
           </Card>
         </div>
 
-        {/* Critical Issues Alert */}
-        <Card className="border-red-200 bg-red-50">
-          <CardHeader>
-            <CardTitle className="text-red-800 text-lg">
-              ⚠️ QA Checklist - Critical Items
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-red-700">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <h4 className="font-semibold mb-2">
-                  🔐 Authentication & Profile
-                </h4>
-                <ul className="space-y-1">
-                  <li>• User registration/login works</li>
-                  <li>• Password reset flow functional</li>
-                  <li>• Profile editing with Google Maps</li>
-                  <li>• Address autocomplete (South Africa)</li>
-                </ul>
-              </div>
+        {/* Enhanced QA Testing */}
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="overview">Quick Overview</TabsTrigger>
+            <TabsTrigger value="comprehensive">Comprehensive Tests</TabsTrigger>
+            <TabsTrigger value="checklist">QA Checklist</TabsTrigger>
+          </TabsList>
 
-              <div>
-                <h4 className="font-semibold mb-2">🛒 Cart & Checkout</h4>
-                <ul className="space-y-1">
-                  <li>• Cart persists across sessions</li>
-                  <li>• Checkout flow completes</li>
-                  <li>• Courier options load (Fastway/Courier Guy)</li>
-                  <li>• "Continue to Payment" button works</li>
-                </ul>
-              </div>
+          <TabsContent value="overview" className="space-y-6">
+            {/* Current Status Display - moved from below */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    Authentication
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-2">
+                    {isAuthenticated ? (
+                      <>
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <span className="text-sm text-green-600">
+                          Logged In
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className="w-4 h-4 text-red-600" />
+                        <span className="text-sm text-red-600">
+                          Not Logged In
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  {user && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      User ID: {user.id.slice(0, 8)}...
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
 
-              <div>
-                <h4 className="font-semibold mb-2">💳 Paystack Integration</h4>
-                <ul className="space-y-1">
-                  <li>• LIVE keys configured (not test)</li>
-                  <li>• Payment modal opens</li>
-                  <li>• Split payments: 90% seller, 10% platform</li>
-                  <li>• Webhook verification works</li>
-                </ul>
-              </div>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <ShoppingCart className="w-4 h-4" />
+                    Cart Status
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-2">
+                    {items.length > 0 ? (
+                      <>
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <span className="text-sm text-green-600">
+                          {items.length} items
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <AlertTriangle className="w-4 h-4 text-yellow-600" />
+                        <span className="text-sm text-yellow-600">
+                          Empty cart
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
 
-              <div>
-                <h4 className="font-semibold mb-2">🧑‍💼 Seller Onboarding</h4>
-                <ul className="space-y-1">
-                  <li>• Banking details required to sell</li>
-                  <li>• Address required to sell</li>
-                  <li>• "Become a Seller" guide works</li>
-                  <li>• 48-hour timeout enforced</li>
-                </ul>
-              </div>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <CreditCard className="w-4 h-4" />
+                    Payment Config
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-2">
+                    {import.meta.env.VITE_PAYSTACK_PUBLIC_KEY ? (
+                      <>
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <span className="text-sm text-green-600">
+                          {import.meta.env.VITE_PAYSTACK_PUBLIC_KEY.startsWith(
+                            "pk_live_",
+                          )
+                            ? "Live"
+                            : "Test"}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className="w-4 h-4 text-red-600" />
+                        <span className="text-sm text-red-600">
+                          Not configured
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </CardContent>
-        </Card>
+          </TabsContent>
+
+          <TabsContent value="comprehensive">
+            <ComprehensiveQAChecker />
+          </TabsContent>
+
+          <TabsContent value="checklist">
+            <Card className="border-red-200 bg-red-50">
+              <CardHeader>
+                <CardTitle className="text-red-800 text-lg flex items-center gap-2">
+                  <Shield className="w-5 h-5" />
+                  QA Checklist - Critical Items
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-red-700">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <h4 className="font-semibold mb-2">
+                      🔐 Authentication & Profile
+                    </h4>
+                    <ul className="space-y-1">
+                      <li>• User registration/login works</li>
+                      <li>• Password reset flow functional</li>
+                      <li>• Profile editing with Google Maps</li>
+                      <li>• Address autocomplete (South Africa)</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold mb-2">🛒 Cart & Checkout</h4>
+                    <ul className="space-y-1">
+                      <li>• Cart persists across sessions</li>
+                      <li>• Checkout flow completes</li>
+                      <li>• Courier options load (Fastway/Courier Guy)</li>
+                      <li>• "Continue to Payment" button works</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold mb-2">
+                      💳 Paystack Integration
+                    </h4>
+                    <ul className="space-y-1">
+                      <li>• LIVE keys configured (not test)</li>
+                      <li>• Payment modal opens</li>
+                      <li>• Split payments: 90% seller, 10% platform</li>
+                      <li>• Webhook verification works</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold mb-2">🧑‍💼 Seller Onboarding</h4>
+                    <ul className="space-y-1">
+                      <li>��� Banking details required to sell</li>
+                      <li>• Address required to sell</li>
+                      <li>• "Become a Seller" guide works</li>
+                      <li>• 48-hour timeout enforced</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </Layout>
   );
