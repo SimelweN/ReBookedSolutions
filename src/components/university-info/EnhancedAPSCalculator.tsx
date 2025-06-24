@@ -282,8 +282,8 @@ const EnhancedAPSCalculator: React.FC = () => {
     setValidationWarnings(warningMessages);
   }, [apsCalculation.validationResult]);
 
-  // Add subject function
-  const addSubject = useCallback(() => {
+  // Add subject function with immediate save
+  const addSubject = useCallback(async () => {
     if (!selectedSubject || !selectedMarks) {
       toast.error("Please select a subject and enter marks");
       return;
@@ -319,17 +319,56 @@ const EnhancedAPSCalculator: React.FC = () => {
       ),
     };
 
-    setSubjects((prev) => [...prev, newSubject]);
-    setSelectedSubject("");
-    setSelectedMarks("");
-    toast.success("Subject added successfully");
-  }, [selectedSubject, selectedMarks, subjects]);
+    const newSubjects = [...subjects, newSubject];
+    setSubjects(newSubjects);
 
-  // Remove subject function
-  const removeSubject = useCallback((index: number) => {
-    setSubjects((prev) => prev.filter((_, i) => i !== index));
-    toast.success("Subject removed");
-  }, []);
+    // Immediately save to profile to ensure persistence
+    const apsSubjects: APSSubject[] = newSubjects.map((s) => ({
+      name: s.name,
+      marks: s.marks,
+      level: s.points,
+      points: s.points,
+    }));
+
+    const success = await updateUserSubjects(apsSubjects);
+
+    if (success) {
+      console.log("✅ Subject added and profile saved:", newSubject);
+      setSelectedSubject("");
+      setSelectedMarks("");
+      toast.success("Subject added and saved");
+    } else {
+      console.warn("⚠️ Subject added but save failed");
+      setSelectedSubject("");
+      setSelectedMarks("");
+      toast.success("Subject added");
+    }
+  }, [selectedSubject, selectedMarks, subjects, updateUserSubjects]);
+
+  // Remove subject function with immediate save
+  const removeSubject = useCallback(
+    async (index: number) => {
+      const newSubjects = subjects.filter((_, i) => i !== index);
+      setSubjects(newSubjects);
+
+      // Immediately save updated profile
+      if (newSubjects.length > 0) {
+        const apsSubjects: APSSubject[] = newSubjects.map((s) => ({
+          name: s.name,
+          marks: s.marks,
+          level: s.points,
+          points: s.points,
+        }));
+        await updateUserSubjects(apsSubjects);
+      } else {
+        // If no subjects left, clear the profile
+        await clearAPSProfile();
+      }
+
+      toast.success("Subject removed");
+    },
+    [subjects, updateUserSubjects, clearAPSProfile],
+  );
 
   // Clear all subjects function with complete reset
   const clearAllSubjects = useCallback(() => {
