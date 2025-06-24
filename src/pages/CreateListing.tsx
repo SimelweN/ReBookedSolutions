@@ -47,6 +47,11 @@ const CreateListing = () => {
     insidePages: "",
   });
 
+  const [hasBankingDetails, setHasBankingDetails] = useState<boolean | null>(
+    null,
+  );
+  const [isCheckingBanking, setIsCheckingBanking] = useState(true);
+
   const [bookImages, setBookImages] = useState({
     frontCover: "",
     backCover: "",
