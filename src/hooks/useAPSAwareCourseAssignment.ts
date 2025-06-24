@@ -38,110 +38,68 @@ export interface APSAwareState {
   };
 }
 
-// Authentication-aware storage hook
-function useAuthAwareAPSStorage() {
-  const { user, isAuthenticated } = useAuth();
+// Simplified localStorage-first storage hook for reliability
+function useAPSLocalStorage() {
   const [userProfile, setUserProfile] = useState<UserAPSProfile | null>(null);
-  const [storageSource, setStorageSource] = useState<string>("none");
   const [isLoading, setIsLoading] = useState(false);
-  const [syncStatus, setSyncStatus] = useState<{
-    needsSync: boolean;
-    recommendation: "none" | "localToDb" | "dbToLocal";
-  }>({ needsSync: false, recommendation: "none" });
 
-  // Load profile when component mounts or user changes
-  const loadProfile = useCallback(async () => {
-    setIsLoading(true);
+  // Load profile from localStorage on mount
+  const loadProfile = useCallback(() => {
     try {
-      // Migrate any session data first
-      migrateSessionToLocal();
-
-      const { profile, source, error } = await loadAPSProfile(user);
-
-      // Only set profile if we actually found data or this is a fresh mount
-      if (profile) {
-        console.log("✅ APS Profile loaded from:", source, profile);
+      console.log("📦 Loading APS profile from localStorage...");
+      const stored = localStorage.getItem("userAPSProfile");
+      if (stored) {
+        const profile = JSON.parse(stored);
+        console.log("✅ APS Profile loaded from localStorage:", profile);
         setUserProfile(profile);
-        setStorageSource(source);
+        return profile;
       } else {
-        console.log("ℹ️ No APS profile found, maintaining current state");
-        setStorageSource("none");
-      }
-
-      if (error) {
-        console.warn("Profile load warning:", error);
-      }
-
-      // Check sync status for authenticated users
-      if (isAuthenticated && user) {
-        const syncInfo = await checkSyncStatus(user);
-        setSyncStatus(syncInfo);
-      }
-    } catch (error) {
-      console.error("Failed to load APS profile:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user, isAuthenticated]);
-
-  // Save profile with authentication awareness
-  const saveProfile = useCallback(
-    async (profile: UserAPSProfile) => {
-      setIsLoading(true);
-      try {
-        const result = await saveAPSProfile(profile, user);
-
-        if (result.success) {
-          setUserProfile(profile);
-          setStorageSource(result.source || "unknown");
-
-          // Update sync status
-          if (isAuthenticated && user) {
-            const syncInfo = await checkSyncStatus(user);
-            setSyncStatus(syncInfo);
-          }
-        } else {
-          console.error("Failed to save APS profile:", result.error);
-        }
-
-        return result.success;
-      } catch (error) {
-        console.error("Error saving APS profile:", error);
-        return false;
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [user, isAuthenticated],
-  );
-
-  // Clear profile from all storages
-  const clearProfile = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const result = await clearAPSProfileService(user);
-
-      if (result.success) {
+        console.log("ℹ️ No APS profile found in localStorage");
         setUserProfile(null);
-        setStorageSource("none");
-        setSyncStatus({ needsSync: false, recommendation: "none" });
-
-        // Trigger global state reset event
-        window.dispatchEvent(new CustomEvent("apsProfileCleared"));
-      } else {
-        console.error("Failed to clear APS profile:", result.error);
+        return null;
       }
-
-      return result.success;
     } catch (error) {
-      console.error("Error clearing APS profile:", error);
-      return false;
-    } finally {
-      setIsLoading(false);
+      console.error("❌ Failed to load APS profile from localStorage:", error);
+      setUserProfile(null);
+      return null;
     }
-  }, [user]);
+  }, []);
 
-  // Load profile when user auth state changes
+  // Save profile to localStorage
+  const saveProfile = useCallback(async (profile: UserAPSProfile) => {
+    try {
+      console.log("💾 Saving APS profile to localStorage:", profile);
+      localStorage.setItem("userAPSProfile", JSON.stringify(profile));
+      setUserProfile(profile);
+      console.log("✅ APS Profile saved successfully");
+      return true;
+    } catch (error) {
+      console.error("❌ Failed to save APS profile:", error);
+      return false;
+    }
+  }, []);
+
+  // Clear profile from localStorage
+  const clearProfile = useCallback(async () => {
+    try {
+      console.log("🗑️ Clearing APS profile from localStorage");
+      localStorage.removeItem("userAPSProfile");
+      localStorage.removeItem("apsSearchResults");
+      sessionStorage.removeItem("userAPSProfile");
+      sessionStorage.removeItem("apsSearchResults");
+      setUserProfile(null);
+
+      // Trigger global state reset event
+      window.dispatchEvent(new CustomEvent("apsProfileCleared"));
+      console.log("✅ APS Profile cleared successfully");
+      return true;
+    } catch (error) {
+      console.error("❌ Failed to clear APS profile:", error);
+      return false;
+    }
+  }, []);
+
+  // Load profile on mount
   useEffect(() => {
     loadProfile();
   }, [loadProfile]);
@@ -150,15 +108,15 @@ function useAuthAwareAPSStorage() {
     userProfile,
     setUserProfile: saveProfile,
     clearProfile,
-    storageSource,
-    syncStatus,
+    storageSource: userProfile ? "localStorage" : "none",
+    syncStatus: { needsSync: false, recommendation: "none" as const },
     isLoading,
     loadProfile,
   };
 }
 
 export function useAPSAwareCourseAssignment(universityId?: string) {
-  // Authentication-aware persistent storage
+  // Simplified localStorage-based persistent storage
   const {
     userProfile,
     setUserProfile,
@@ -167,7 +125,7 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
     syncStatus,
     isLoading: storageLoading,
     loadProfile,
-  } = useAuthAwareAPSStorage();
+  } = useAPSLocalStorage();
 
   // Component state
   const [isLoading, setIsLoading] = useState(false);

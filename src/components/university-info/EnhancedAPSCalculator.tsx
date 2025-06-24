@@ -207,37 +207,18 @@ const EnhancedAPSCalculator: React.FC = () => {
     }
   }, [apsCalculation.fullCalculation]);
 
-  // Load APS data when component mounts and listen for clearing events
+  // Load APS data when component mounts and restore subjects
   useEffect(() => {
-    // Trigger profile refresh on mount to ensure we have the latest data
-    if (refreshProfile) {
-      refreshProfile().catch((error) => {
-        console.warn("Failed to refresh APS profile on mount:", error);
-      });
-    }
-  }, []); // Run once on mount
+    console.log("🔄 APS Calculator mounted, checking for saved profile...");
 
-  useEffect(() => {
-    // Load existing APS profile when userProfile changes
-    if (userProfile && userProfile.subjects.length > 0) {
-      console.log("🔄 Restoring APS subjects from saved profile:", userProfile);
-      // Convert UserAPSProfile subjects to APSSubjectInput format for UI
-      const restoredSubjects = userProfile.subjects.map((subject) => ({
-        name: subject.name,
-        marks: subject.marks,
-        level: subject.level || subject.points,
-        points: subject.points,
-        isRequired: [
-          "English",
-          "Mathematics",
-          "Mathematical Literacy",
-        ].includes(subject.name),
-      }));
-      setSubjects(restoredSubjects);
-      console.log("✅ APS subjects restored successfully");
+    // Force refresh profile data on mount
+    if (refreshProfile) {
+      refreshProfile();
     }
 
     const handleAPSProfileCleared = () => {
+      console.log("🔄 APS Profile cleared event received");
+      setSubjects([]);
       setUniversitySpecificScores(null);
       setSearchResults([]);
       setSelectedProgram(null);
@@ -249,7 +230,38 @@ const EnhancedAPSCalculator: React.FC = () => {
     return () => {
       window.removeEventListener("apsProfileCleared", handleAPSProfileCleared);
     };
-  }, [userProfile, refreshProfile]);
+  }, [refreshProfile]);
+
+  // Restore subjects when userProfile changes
+  useEffect(() => {
+    if (
+      userProfile &&
+      userProfile.subjects &&
+      userProfile.subjects.length > 0
+    ) {
+      console.log("📥 Restoring APS subjects from saved profile:", userProfile);
+
+      // Convert UserAPSProfile subjects to APSSubjectInput format for UI
+      const restoredSubjects = userProfile.subjects.map((subject) => ({
+        name: subject.name,
+        marks: subject.marks || 0,
+        level: subject.level || subject.points || 0,
+        points: subject.points || 0,
+        isRequired: [
+          "English",
+          "Mathematics",
+          "Mathematical Literacy",
+        ].includes(subject.name),
+      }));
+
+      setSubjects(restoredSubjects);
+      console.log("✅ APS subjects restored successfully:", restoredSubjects);
+    } else if (userProfile === null) {
+      console.log("📭 No APS profile found - starting fresh");
+    } else {
+      console.log("📭 APS profile exists but no subjects:", userProfile);
+    }
+  }, [userProfile]);
 
   // Update validation messages
   useEffect(() => {
