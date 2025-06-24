@@ -267,9 +267,11 @@ const GoogleMapsAddressDialog = ({
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Loading Google Maps</DialogTitle>
+          </DialogHeader>
           <div className="flex flex-col items-center justify-center p-6">
             <Loader2 className="h-8 w-8 animate-spin text-book-600 mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Loading Google Maps</h3>
             <p className="text-sm text-gray-600 text-center">
               Please wait while we load the map for precise address selection...
             </p>
@@ -283,11 +285,11 @@ const GoogleMapsAddressDialog = ({
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Maps Unavailable</DialogTitle>
+          </DialogHeader>
           <div className="flex flex-col items-center justify-center p-6">
             <MapPin className="h-8 w-8 text-red-600 mb-4" />
-            <h3 className="text-lg font-semibold mb-2 text-red-800">
-              Maps Unavailable
-            </h3>
             <p className="text-sm text-gray-600 text-center mb-4">
               Google Maps couldn't load. Please check your internet connection
               and try again.
