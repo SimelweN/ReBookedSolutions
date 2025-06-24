@@ -6,6 +6,7 @@ import React, {
   useCallback,
   useMemo,
   useRef,
+  startTransition,
 } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
