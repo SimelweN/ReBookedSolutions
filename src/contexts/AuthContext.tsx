@@ -285,12 +285,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       console.log("🔄 [AuthContext] Initializing auth...");
 
-      // Quick database connectivity check to prevent hanging
+      // Ultra-fast database connectivity check
       try {
         const connectivityTimeout = new Promise((_, reject) =>
           setTimeout(
             () => reject(new Error("Database connectivity check timeout")),
-            3000,
+            800,
           ),
         );
 
@@ -303,8 +303,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         console.log("✅ [AuthContext] Database connectivity verified");
       } catch (dbError) {
         console.warn(
-          "⚠️ [AuthContext] Database connection issues detected:",
-          dbError instanceof Error ? dbError.message : String(dbError),
+          "⚠️ [AuthContext] Database connection issues detected, using fallback",
         );
         console.info(
           "ℹ️ [AuthContext] Continuing with fallback profile strategy",
