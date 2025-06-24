@@ -75,6 +75,7 @@ import { normalizeSubjectName } from "@/utils/subjectNormalization";
 import UniversitySpecificAPSDisplay from "./UniversitySpecificAPSDisplay";
 import EligibleProgramsSection from "./EligibleProgramsSection";
 import APSStorageIndicator from "./APSStorageIndicator";
+import APSRecoveryStatus from "./APSRecoveryStatus";
 
 /**
  * Enhanced APS Calculator with two-section layout:
