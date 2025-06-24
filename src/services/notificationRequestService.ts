@@ -49,10 +49,7 @@ export class NotificationRequestService {
           };
         }
 
-        console.error(
-          "Error submitting accommodation notification request:",
-          error instanceof Error ? error.message : String(error),
-        );
+        logError("Error submitting accommodation notification request:", error);
         return { success: false, error: error.message };
       }
 
