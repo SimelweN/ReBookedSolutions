@@ -140,6 +140,7 @@ const FAQ = React.lazy(() => import("./pages/FAQ"));
 const APSDemo = React.lazy(() => import("./pages/APSDemo"));
 const PaymentCallback = React.lazy(() => import("./pages/PaymentCallback"));
 const PaymentDashboard = React.lazy(() => import("./pages/PaymentDashboard"));
+const SystemStatus = React.lazy(() => import("./pages/SystemStatus"));
 
 // Create query client with optimized settings
 const queryClient = new QueryClient({
