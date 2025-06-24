@@ -190,6 +190,10 @@ const SimpleQADashboard: React.FC = () => {
             <TabsTrigger value="checklist">Checklist</TabsTrigger>
           </TabsList>
 
+          <TabsContent value="systemwide">
+            <SystemwideQAFixes />
+          </TabsContent>
+
           <TabsContent value="overview" className="space-y-6">
             {/* Current Status Display - moved from below */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
