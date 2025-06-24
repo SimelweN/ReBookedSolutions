@@ -42,8 +42,11 @@ const BookListing = () => {
 
   // Memoize loadBooks function to prevent infinite loops
   const loadBooks = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
+    // Use startTransition to prevent React Suspense errors
+    startTransition(() => {
+      setIsLoading(true);
+      setError(null);
+    });
 
     try {
       const searchQuery = searchParams.get("search") || "";
@@ -79,7 +82,12 @@ const BookListing = () => {
 
       // Ensure we have an array
       const booksArray = Array.isArray(loadedBooks) ? loadedBooks : [];
-      setBooks(booksArray);
+
+      // Use startTransition for state updates
+      startTransition(() => {
+        setBooks(booksArray);
+        setIsLoading(false);
+      });
 
       if (booksArray.length === 0) {
         console.log("No books found with current filters");
@@ -99,11 +107,20 @@ const BookListing = () => {
           ? "Unable to connect to the book database. Please check your internet connection and try again."
           : "Failed to load books. Please try again later.";
 
-      toast.error(userMessage);
-      setBooks([]);
-      setError(error instanceof Error ? error.message : String(error));
-    } finally {
-      setIsLoading(false);
+      // Don't show toast for connection errors to avoid spam
+      if (
+        !userMessage.includes("connection") &&
+        !userMessage.includes("timeout")
+      ) {
+        toast.error(userMessage);
+      }
+
+      // Use startTransition for error state updates
+      startTransition(() => {
+        setBooks([]);
+        setError(error instanceof Error ? error.message : String(error));
+        setIsLoading(false);
+      });
     }
   }, [searchParams, selectedCondition, selectedUniversity, priceRange]);
 
