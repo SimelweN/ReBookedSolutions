@@ -8,23 +8,23 @@ import {
   APSAwareCourseSearchService,
 } from "@/services/apsAwareCourseAssignmentService";
 import { calculateAPS, validateAPSSubjects } from "@/utils/apsCalculation";
-import { useAuth } from "@/contexts/AuthContext";
-import {
-  saveAPSProfile,
-  loadAPSProfile,
-  clearAPSProfile as clearAPSProfileService,
-  checkSyncStatus,
-  migrateSessionToLocal,
-  UserAPSProfile,
-} from "@/services/apsPersistenceService";
 
 /**
- * Enhanced hook for APS-aware course assignment with authentication-aware persistence
- * - Authenticated users: Database + localStorage backup
- * - Non-authenticated users: localStorage only
- * - Automatic sync between storages
+ * Enhanced hook for APS-aware course assignment with localStorage persistence
+ * - Simple, reliable localStorage-based storage
+ * - Auto-save functionality to prevent data loss
  * - Persistent data until manually cleared
  */
+
+export interface UserAPSProfile {
+  subjects: APSSubject[];
+  totalAPS: number;
+  lastUpdated: string;
+  isValid?: boolean;
+  validationErrors?: string[];
+  universitySpecificScores?: any[];
+  savedAt?: number;
+}
 
 export interface APSAwareState {
   userProfile: UserAPSProfile | null;
