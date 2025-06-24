@@ -58,8 +58,8 @@ export function testUserScenario() {
   console.log("Math Level Check:", mathLevel);
 
   // Test complete requirement checking
-  console.log("\n🎯 Complete Requirement Check:");
-  const result = checkSubjectRequirements(userSubjects, programRequirements);
+  console.log("\n🎯 NEW ENGINE Requirement Check:");
+  const result = checkSubjectMatching(userSubjects, programRequirements);
 
   console.log("Final Result:", {
     isEligible: result.isEligible,
