@@ -38,15 +38,8 @@ const Cart = () => {
 
     setIsProcessing(true);
     try {
-      // Redirect to payment subdomain
-      const cartData = {
-        items: items,
-        userId: user.id,
-        totalPrice: totalPrice,
-      };
-
-      // Store cart data in session storage for payment subdomain
-      sessionStorage.setItem("cart_data", JSON.stringify(cartData));
+      // Navigate to integrated checkout page
+      navigate("/checkout");
 
       // Redirect to payment subdomain
       window.location.href = `https://payment.rebookedsolutions.co.za/cart-checkout?userId=${user.id}`;
