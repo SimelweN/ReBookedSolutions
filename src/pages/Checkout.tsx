@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ArrowLeft, CreditCard, Truck, MapPin, User } from "lucide-react";
 import CheckoutOrderSummary from "@/components/checkout/CheckoutOrderSummary";
 import EnhancedShippingForm from "@/components/checkout/EnhancedShippingForm";
+import SimpleShippingForm from "@/components/checkout/SimpleShippingForm";
 import CheckoutPaymentProcessor from "@/components/checkout/CheckoutPaymentProcessor";
 import { toast } from "sonner";
 
