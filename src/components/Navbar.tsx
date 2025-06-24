@@ -21,7 +21,7 @@ import { toast } from "sonner";
 import { preloadOnHover } from "@/utils/routePreloader";
 
 const Navbar = () => {
-  const { user, logout, isAuthenticated, isLoading, profile } = useAuth();
+  const { user, logout, isAuthenticated, profile } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
