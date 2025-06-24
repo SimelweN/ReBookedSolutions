@@ -20,7 +20,10 @@ import { PaymentTester } from "./utils/paymentTester";
 import { testPaymentSetup } from "./utils/testPaymentSetup";
 import { DatabaseSetup } from "./utils/databaseSetup";
 import { debugBankingDetails } from "./utils/debugBankingDetails";
-import { checkDatabaseStatus, logDatabaseStatus } from "./utils/databaseConnectivityHelper";
+import {
+  checkDatabaseStatus,
+  logDatabaseStatus,
+} from "./utils/databaseConnectivityHelper";
 import { preloadCriticalRoutes } from "./utils/routePreloader";
 import EmergencyBypass from "./components/EmergencyBypass";
 import "./App.css";
@@ -39,8 +42,12 @@ if (import.meta.env.DEV) {
   console.log("  - debugConnection() - Full connection test");
   console.log("  - validateApiKey() - Check API key validity");
   console.log("  - PaymentTester.testPaymentSystem() - Test payment setup");
-  console.log("  - testPaymentSetup() - Test user requirements for listing books");
-  console.log("  - DatabaseSetup.showSetupInstructions() - Check database setup");
+  console.log(
+    "  - testPaymentSetup() - Test user requirements for listing books",
+  );
+  console.log(
+    "  - DatabaseSetup.showSetupInstructions() - Check database setup",
+  );
   console.log("  - debugBankingDetails() - Debug banking details errors");
   console.log("  - checkDatabaseStatus() - Check database connectivity");
   console.log("  - logDatabaseStatus() - Log current database status");
@@ -49,6 +56,8 @@ if (import.meta.env.DEV) {
 // Import Index directly for instant loading
 import IndexPage from "./pages/Index";
 const Index = () => <IndexPage />;
+
+// Simple lazy loading for other pages
 const BookListing = React.lazy(() => import("./pages/BookListing"));
 const BookDetails = React.lazy(() => import("./pages/BookDetails"));
 const Login = React.lazy(() => import("./pages/Login"));
@@ -62,7 +71,9 @@ const WorkingMapsDemo = React.lazy(() => import("./pages/WorkingMapsDemo"));
 const Admin = React.lazy(() => import("./pages/Admin"));
 const AdminReports = React.lazy(() => import("./pages/AdminReports"));
 const UniversityInfo = React.lazy(() => import("./pages/UniversityInfo"));
-const ModernUniversityProfile = React.lazy(() => import("./pages/ModernUniversityProfile"));
+const ModernUniversityProfile = React.lazy(
+  () => import("./pages/ModernUniversityProfile"),
+);
 const UniversityProfile = React.lazy(() => import("./pages/UniversityProfile"));
 const Policies = React.lazy(() => import("./pages/Policies"));
 const Privacy = React.lazy(() => import("./pages/Privacy"));
@@ -80,7 +91,9 @@ const ContactUs = React.lazy(() => import("./pages/ContactUs"));
 const EditBook = React.lazy(() => import("./pages/EditBook"));
 const StudyResources = React.lazy(() => import("./pages/StudyResources"));
 const Confirm = React.lazy(() => import("./pages/Confirm"));
-const ConfirmEmailChange = React.lazy(() => import("./pages/ConfirmEmailChange"));
+const ConfirmEmailChange = React.lazy(
+  () => import("./pages/ConfirmEmailChange"),
+);
 const Report = React.lazy(() => import("./pages/Report"));
 const UserProfile = React.lazy(() => import("./pages/UserProfile"));
 const FAQ = React.lazy(() => import("./pages/FAQ"));
@@ -105,10 +118,10 @@ const queryClient = new QueryClient({
   },
 });
 
-// Optimized loading component
-const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-50">
-    <LoadingSpinner size="lg" />
+// Minimal loading component
+const MinimalLoader = () => (
+  <div className="flex items-center justify-center h-24">
+    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
   </div>
 );
 
@@ -117,13 +130,24 @@ const ImportFailureFallback: React.FC<{ error?: Error }> = ({ error }) => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50">
     <div className="max-w-md mx-auto text-center p-6">
       <div className="mb-4">
-        <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+        <svg
+          className="mx-auto h-12 w-12 text-gray-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+          />
         </svg>
       </div>
       <h3 className="text-lg font-medium text-gray-900 mb-2">Loading Error</h3>
       <p className="text-gray-600 mb-4">
-        There was a problem loading the page. This might be due to a network issue.
+        There was a problem loading the page. This might be due to a network
+        issue.
       </p>
       <button
         onClick={() => window.location.reload()}
@@ -135,14 +159,12 @@ const ImportFailureFallback: React.FC<{ error?: Error }> = ({ error }) => (
   </div>
 );
 
-// Minimal loading component
-const MinimalLoader = () => (
-  <div className="flex items-center justify-center h-24">
-    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-  </div>
+// Simple route wrapper for lazy components
+const LazyWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <Suspense fallback={<MinimalLoader />}>
+    <ErrorBoundary fallback={ImportFailureFallback}>{children}</ErrorBoundary>
+  </Suspense>
 );
-
-// No route wrapper needed - components render directly
 
 function App() {
   // Preload critical routes for faster navigation
@@ -158,375 +180,401 @@ function App() {
             <GoogleMapsProvider>
               <AuthProvider>
                 <CartProvider>
-                <Router>
-                  <AuthErrorHandler />
-                  <ScrollToTop />
-                  <Routes>
-                    <Route
-                      path="/"
-                      element={<Index />}
-                    />
-                    <Route
-                      path="/books"
-                      element={
-                        <LazyRoute>
-                          <BookListing />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/books/:id"
-                      element={<BookDetails />}
-                    />
-                    <Route
-                      path="/book/:id"
-                      element={<BookDetails />}
-                    />
-                    <Route
-                      path="/login"
-                      element={<Login />}
-                    />
-                    <Route
-                      path="/register"
-                      element={
-                        <LazyRoute>
-                          <Register />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/forgot-password"
-                      element={
-                        <LazyRoute>
-                          <ForgotPassword />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/reset-password"
-                      element={
-                        <LazyRoute>
-                          <ResetPassword />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/verify"
-                      element={
-                        <LazyRoute>
-                          <Verify />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/confirm"
-                      element={
-                        <LazyRoute>
-                          <Confirm />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/confirm-email-change"
-                      element={
-                        <LazyRoute>
-                          <ConfirmEmailChange />
-                        </LazyRoute>
-                      }
-                    />
+                  <Router>
+                    <AuthErrorHandler />
+                    <ScrollToTop />
+                    <Routes>
+                      {/* Home route - loads instantly */}
+                      <Route path="/" element={<Index />} />
 
-                    {/* University and Campus Routes */}
-                    <Route
-                      path="/university-info"
-                      element={
-                        <LazyRoute>
-                          <UniversityInfo />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/university-profile"
-                      element={
-                        <LazyRoute>
-                          <ModernUniversityProfile />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/university/:id"
-                      element={
-                        <LazyRoute>
-                          <UniversityProfile />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/study-resources"
-                      element={
-                        <LazyRoute>
-                          <StudyResources />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/study-tips"
-                      element={
-                        <LazyRoute>
-                          <StudyResources />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/aps-demo"
-                      element={
-                        <LazyRoute>
-                          <APSDemo />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/system-status"
-                      element={
-                        <LazyRoute>
-                          <SystemStatus />
-                        </LazyRoute>
-                      }
-                    />
+                      {/* Public routes */}
+                      <Route
+                        path="/books"
+                        element={
+                          <LazyWrapper>
+                            <BookListing />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/books/:id"
+                        element={
+                          <LazyWrapper>
+                            <BookDetails />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/book/:id"
+                        element={
+                          <LazyWrapper>
+                            <BookDetails />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/login"
+                        element={
+                          <LazyWrapper>
+                            <Login />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/register"
+                        element={
+                          <LazyWrapper>
+                            <Register />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/forgot-password"
+                        element={
+                          <LazyWrapper>
+                            <ForgotPassword />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/reset-password"
+                        element={
+                          <LazyWrapper>
+                            <ResetPassword />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/verify"
+                        element={
+                          <LazyWrapper>
+                            <Verify />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/confirm"
+                        element={
+                          <LazyWrapper>
+                            <Confirm />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/confirm-email-change"
+                        element={
+                          <LazyWrapper>
+                            <ConfirmEmailChange />
+                          </LazyWrapper>
+                        }
+                      />
 
-                    {/* Shopping and Cart Routes */}
-                    <Route
-                      path="/cart"
-                      element={
-                        <LazyRoute>
-                          <Cart />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/checkout/:id"
-                      element={
-                        <LazyRoute>
-                          <Checkout />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/checkout/cart"
-                      element={
-                        <LazyRoute>
-                          <Checkout />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/shipping"
-                      element={
-                        <LazyRoute>
-                          <Shipping />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/payment-callback"
-                      element={
-                        <LazyRoute>
-                          <PaymentCallback />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/payments"
-                      element={
-                        <LazyRoute>
+                      {/* University and Campus Routes */}
+                      <Route
+                        path="/university-info"
+                        element={
+                          <LazyWrapper>
+                            <UniversityInfo />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/university-profile"
+                        element={
+                          <LazyWrapper>
+                            <ModernUniversityProfile />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/university/:id"
+                        element={
+                          <LazyWrapper>
+                            <UniversityProfile />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/study-resources"
+                        element={
+                          <LazyWrapper>
+                            <StudyResources />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/study-tips"
+                        element={
+                          <LazyWrapper>
+                            <StudyResources />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/aps-demo"
+                        element={
+                          <LazyWrapper>
+                            <APSDemo />
+                          </LazyWrapper>
+                        }
+                      />
+
+                      {/* Shopping and Cart Routes */}
+                      <Route
+                        path="/cart"
+                        element={
+                          <LazyWrapper>
+                            <Cart />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/checkout/:id"
+                        element={
+                          <LazyWrapper>
+                            <Checkout />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/checkout/cart"
+                        element={
+                          <LazyWrapper>
+                            <Checkout />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/shipping"
+                        element={
+                          <LazyWrapper>
+                            <Shipping />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/payment-callback"
+                        element={
+                          <LazyWrapper>
+                            <PaymentCallback />
+                          </LazyWrapper>
+                        }
+                      />
+
+                      {/* Payment Routes */}
+                      <Route
+                        path="/payments"
+                        element={
                           <ProtectedRoute>
-                            <PaymentDashboard />
+                            <LazyWrapper>
+                              <PaymentDashboard />
+                            </LazyWrapper>
                           </ProtectedRoute>
-                        </LazyRoute>
-                      }
-                    />
+                        }
+                      />
 
-                    {/* Support and Info Pages */}
-                    <Route
-                      path="/contact"
-                      element={
-                        <LazyRoute>
-                          <ContactUs />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/faq"
-                      element={
-                        <LazyRoute>
-                          <FAQ />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/policies"
-                      element={
-                        <LazyRoute>
-                          <Policies />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/privacy"
-                      element={
-                        <LazyRoute>
-                          <Privacy />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/terms"
-                      element={
-                        <LazyRoute>
-                          <Terms />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/google-maps-demo"
-                      element={
-                        <LazyRoute>
-                          <GoogleMapsDemo />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/maps-test"
-                      element={
-                        <LazyRoute>
-                          <MapsTest />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/basic-maps"
-                      element={
-                        <LazyRoute>
-                          <BasicMapsExample />
-                        </LazyRoute>
-                      }
-                    />
-                    <Route
-                      path="/working-maps"
-                      element={
-                        <LazyRoute>
-                          <WorkingMapsDemo />
-                        </LazyRoute>
-                      }
-                    />
+                      {/* Support and Info Pages */}
+                      <Route
+                        path="/contact"
+                        element={
+                          <LazyWrapper>
+                            <ContactUs />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/faq"
+                        element={
+                          <LazyWrapper>
+                            <FAQ />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/policies"
+                        element={
+                          <LazyWrapper>
+                            <Policies />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/privacy"
+                        element={
+                          <LazyWrapper>
+                            <Privacy />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/terms"
+                        element={
+                          <LazyWrapper>
+                            <Terms />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/system-status"
+                        element={
+                          <LazyWrapper>
+                            <SystemStatus />
+                          </LazyWrapper>
+                        }
+                      />
 
-                    {/* Protected Routes */}
-                    <Route
-                      path="/register"
-                      element={<Register />}
-                    />
-                    <Route
-                      path="/books"
-                      element={<BookListing />}
-                    />
-                          </LazyRoute>
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/create-listing"
-                      element={
-                        <ProtectedRoute>
-                          <LazyRoute>
-                            <CreateListing />
-                          </LazyRoute>
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/edit-book/:id"
-                      element={
-                        <ProtectedRoute>
-                          <LazyRoute>
-                            <EditBook />
-                          </LazyRoute>
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/notifications"
-                      element={
-                        <ProtectedRoute>
-                          <LazyRoute>
-                            <Notifications />
-                          </LazyRoute>
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/activity"
-                      element={
-                        <ProtectedRoute>
-                          <LazyRoute>
-                            <ActivityLog />
-                          </LazyRoute>
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/report"
-                      element={
-                        <ProtectedRoute>
-                          <LazyRoute>
-                            <Report />
-                          </LazyRoute>
-                        </ProtectedRoute>
-                      }
-                    />
+                      {/* Maps demo routes */}
+                      <Route
+                        path="/google-maps-demo"
+                        element={
+                          <LazyWrapper>
+                            <GoogleMapsDemo />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/maps-test"
+                        element={
+                          <LazyWrapper>
+                            <MapsTest />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/basic-maps"
+                        element={
+                          <LazyWrapper>
+                            <BasicMapsExample />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/working-maps"
+                        element={
+                          <LazyWrapper>
+                            <WorkingMapsDemo />
+                          </LazyWrapper>
+                        }
+                      />
 
-                    {/* Admin Routes */}
-                    <Route
-                      path="/admin"
-                      element={
-                        <AdminProtectedRoute>
-                          <InstantRoute>
-                            <Admin />
-                          </InstantRoute>
-                        </AdminProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/admin/reports"
-                      element={
-                        <AdminProtectedRoute>
-                          <LazyRoute>
-                            <AdminReports />
-                          </LazyRoute>
-                        </AdminProtectedRoute>
-                      }
-                    />
+                      {/* Protected Routes */}
+                      <Route
+                        path="/profile"
+                        element={
+                          <ProtectedRoute>
+                            <LazyWrapper>
+                              <Profile />
+                            </LazyWrapper>
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/user-profile"
+                        element={
+                          <ProtectedRoute>
+                            <LazyWrapper>
+                              <UserProfile />
+                            </LazyWrapper>
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/create-listing"
+                        element={
+                          <ProtectedRoute>
+                            <LazyWrapper>
+                              <CreateListing />
+                            </LazyWrapper>
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/edit-book/:id"
+                        element={
+                          <ProtectedRoute>
+                            <LazyWrapper>
+                              <EditBook />
+                            </LazyWrapper>
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/notifications"
+                        element={
+                          <ProtectedRoute>
+                            <LazyWrapper>
+                              <Notifications />
+                            </LazyWrapper>
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/activity"
+                        element={
+                          <ProtectedRoute>
+                            <LazyWrapper>
+                              <ActivityLog />
+                            </LazyWrapper>
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/report"
+                        element={
+                          <ProtectedRoute>
+                            <LazyWrapper>
+                              <Report />
+                            </LazyWrapper>
+                          </ProtectedRoute>
+                        }
+                      />
 
-                    <Route
-                      path="*"
-                      element={
-                        <LazyRoute>
-                          <NotFound />
-                        </LazyRoute>
-                      }
-                    />
-                  </Routes>
-                </Router>
-              </CartProvider>
-            </AuthProvider>
-          </GoogleMapsProvider>
-          {/* Performance monitoring */}
-          <PerformanceMetrics />
+                      {/* Admin Routes */}
+                      <Route
+                        path="/admin"
+                        element={
+                          <AdminProtectedRoute>
+                            <LazyWrapper>
+                              <Admin />
+                            </LazyWrapper>
+                          </AdminProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/reports"
+                        element={
+                          <AdminProtectedRoute>
+                            <LazyWrapper>
+                              <AdminReports />
+                            </LazyWrapper>
+                          </AdminProtectedRoute>
+                        }
+                      />
 
-          {/* Vercel Analytics and Speed Insights */}
-          <Analytics />
-          <SpeedInsights />
-        </ThemeProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
+                      {/* 404 Route */}
+                      <Route
+                        path="*"
+                        element={
+                          <LazyWrapper>
+                            <NotFound />
+                          </LazyWrapper>
+                        }
+                      />
+                    </Routes>
+                  </Router>
+                </CartProvider>
+              </AuthProvider>
+            </GoogleMapsProvider>
+
+            {/* Performance monitoring */}
+            <PerformanceMetrics />
+
+            {/* Vercel Analytics and Speed Insights */}
+            <Analytics />
+            <SpeedInsights />
+          </ThemeProvider>
+        </QueryClientProvider>
+      </ErrorBoundary>
     </EmergencyBypass>
   );
 }
@@ -536,7 +584,9 @@ if (import.meta.env.DEV) {
   console.log("🎉 Payment system frontend is ready!");
   console.log("💳 Complete payment integration implemented");
   console.log("🧪 Test utilities: window.PaymentTester.testPaymentSystem()");
-  console.log("🔄 Payment flow: PaymentButton → Paystack → PaymentCallback → TransactionStatus");
+  console.log(
+    "🔄 Payment flow: PaymentButton → Paystack → PaymentCallback → TransactionStatus",
+  );
 }
 
 export default App;
