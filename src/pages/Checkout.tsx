@@ -11,7 +11,7 @@ import { ArrowLeft, CreditCard, Truck, MapPin, User } from "lucide-react";
 import CheckoutOrderSummary from "@/components/checkout/CheckoutOrderSummary";
 import EnhancedShippingForm from "@/components/checkout/EnhancedShippingForm";
 import SimpleShippingForm from "@/components/checkout/SimpleShippingForm";
-import CheckoutPaymentProcessor from "@/components/checkout/CheckoutPaymentProcessor";
+import PaystackPaymentButton from "@/components/payment/PaystackPaymentButton";
 import GoogleMapsErrorHandler from "@/components/GoogleMapsErrorHandler";
 import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
 import { toast } from "sonner";
