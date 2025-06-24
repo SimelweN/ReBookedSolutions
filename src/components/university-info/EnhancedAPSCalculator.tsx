@@ -324,21 +324,29 @@ const EnhancedAPSCalculator: React.FC = () => {
 
   // Update validation messages
   useEffect(() => {
-    // Extract just the message strings from validation error objects
-    const errorMessages = (apsCalculation.validationResult.errors || []).map(
-      (error) =>
-        typeof error === "string" ? error : error.message || "Validation error",
-    );
-    const warningMessages = (
-      apsCalculation.validationResult.warnings || []
-    ).map((warning) =>
-      typeof warning === "string"
-        ? warning
-        : warning.message || "Validation warning",
-    );
+    try {
+      // Extract messages from validation result
+      const errorMessages = (apsCalculation.validationResult.errors || []).map(
+        (error) =>
+          typeof error === "string"
+            ? error
+            : error.message || "Validation error",
+      );
+      const warningMessages = (
+        apsCalculation.validationResult.warnings || []
+      ).map((warning) =>
+        typeof warning === "string"
+          ? warning
+          : warning.message || "Validation warning",
+      );
 
-    setValidationErrors(errorMessages);
-    setValidationWarnings(warningMessages);
+      setValidationErrors(errorMessages);
+      setValidationWarnings(warningMessages);
+    } catch (error) {
+      console.error("Error processing validation messages:", error);
+      setValidationErrors([]);
+      setValidationWarnings([]);
+    }
   }, [apsCalculation.validationResult]);
 
   // Add subject function with immediate save
