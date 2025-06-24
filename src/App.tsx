@@ -35,13 +35,17 @@ if (import.meta.env.DEV) {
   (window as any).checkDatabaseStatus = checkDatabaseStatus;
   (window as any).logDatabaseStatus = logDatabaseStatus;
 
-  // Test NEW SUBJECT ENGINE
-  import("./services/newSubjectEngine").then(({ testNewEngine }) => {
-    setTimeout(() => {
-      console.log("🔥 Testing NEW SUBJECT ENGINE...");
-      testNewEngine();
-    }, 1000);
-  });
+  // Test NEW SUBJECT ENGINE - wrapped to prevent Suspense issues
+  setTimeout(() => {
+    import("./services/newSubjectEngine")
+      .then(({ testNewEngine }) => {
+        console.log("🔥 Testing NEW SUBJECT ENGINE...");
+        testNewEngine();
+      })
+      .catch((error) => {
+        console.warn("Subject engine test failed:", error);
+      });
+  }, 2000); // Delayed to prevent initialization conflicts
 
   console.log("🛠️ Debug utilities available:");
   console.log("  - debugConnection() - Full connection test");
