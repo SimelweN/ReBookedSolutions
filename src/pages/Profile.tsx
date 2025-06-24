@@ -147,6 +147,43 @@ const Profile = () => {
     checkBankingSetup();
   }, [checkBankingSetup]);
 
+  // Check user setup status for Become a Seller guide
+  useEffect(() => {
+    const checkUserSetup = async () => {
+      if (!user?.id) {
+        setHasAddress(false);
+        setHasBankingDetails(false);
+        return;
+      }
+
+      try {
+        // Check if user has address
+        const addressExists =
+          addressData &&
+          addressData.street_address &&
+          addressData.city &&
+          addressData.province;
+        setHasAddress(!!addressExists);
+
+        // Check if user has verified banking details
+        const { data: bankingData } = await supabase
+          .from("banking_details")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("is_verified", true)
+          .single();
+
+        setHasBankingDetails(!!bankingData);
+      } catch (error) {
+        console.error("Error checking user setup:", error);
+        setHasAddress(false);
+        setHasBankingDetails(false);
+      }
+    };
+
+    checkUserSetup();
+  }, [user?.id, addressData]);
+
   const handleSaveAddresses = async (
     pickup: {
       complex: string;
