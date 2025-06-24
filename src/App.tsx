@@ -51,59 +51,14 @@ if (import.meta.env.DEV) {
   console.log("  - logDatabaseStatus() - Log current database status");
 }
 
-// Helper function to retry dynamic imports with better error handling
-const retryImport = (
-  importFn: () => Promise<any>,
-  retries = 3,
-): Promise<any> => {
-  return importFn().catch((error) => {
-    console.warn(`Dynamic import failed, retries left: ${retries}`, error);
-
-    // Check if it's a network-related error
-    const isNetworkError =
-      error.message?.includes("Failed to fetch") ||
-      error.message?.includes("NetworkError") ||
-      error.message?.includes("dynamically imported module");
-
-    if (retries > 0 && isNetworkError) {
-      // Add exponential backoff for network errors
-      const delay = (4 - retries) * 1500;
-      console.log(`Retrying dynamic import in ${delay}ms...`);
-
-      return new Promise((resolve) => setTimeout(resolve, delay)).then(() =>
-        retryImport(importFn, retries - 1),
-      );
-    }
-
-    // Log detailed error information
-    console.error("Dynamic import failed permanently:", {
-      error: error.message,
-      stack: error.stack,
-      url: window.location.href,
-      userAgent: navigator.userAgent,
-      online: navigator.onLine,
-    });
-
-    throw error;
-  });
-};
-
-// Lazy load components with retry logic for better reliability
-const Index = React.lazy(() => retryImport(() => import("./pages/Index")));
-const BookListing = React.lazy(() =>
-  retryImport(() => import("./pages/BookListing")),
-);
-const BookDetails = React.lazy(() =>
-  retryImport(() => import("./pages/BookDetails")),
-);
-const Login = React.lazy(() => retryImport(() => import("./pages/Login")));
-const Register = React.lazy(() =>
-  retryImport(() => import("./pages/Register")),
-);
-const Profile = React.lazy(() => retryImport(() => import("./pages/Profile")));
-const CreateListing = React.lazy(() =>
-  retryImport(() => import("./pages/CreateListing")),
-);
+// Simple lazy loading without retry logic for faster performance
+const Index = React.lazy(() => import("./pages/Index"));
+const BookListing = React.lazy(() => import("./pages/BookListing"));
+const BookDetails = React.lazy(() => import("./pages/BookDetails"));
+const Login = React.lazy(() => import("./pages/Login"));
+const Register = React.lazy(() => import("./pages/Register"));
+const Profile = React.lazy(() => import("./pages/Profile"));
+const CreateListing = React.lazy(() => import("./pages/CreateListing"));
 const GoogleMapsDemo = React.lazy(() => import("./pages/GoogleMapsDemo"));
 const MapsTest = React.lazy(() => import("./pages/MapsTest"));
 const BasicMapsExample = React.lazy(() => import("./pages/BasicMapsExample"));
