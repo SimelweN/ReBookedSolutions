@@ -80,7 +80,6 @@ const Privacy = React.lazy(() => import("./pages/Privacy"));
 const Terms = React.lazy(() => import("./pages/Terms"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 const Cart = React.lazy(() => import("./pages/Cart"));
-const Checkout = React.lazy(() => import("./pages/Checkout"));
 const Notifications = React.lazy(() => import("./pages/Notifications"));
 const Shipping = React.lazy(() => import("./pages/Shipping"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
@@ -98,8 +97,6 @@ const Report = React.lazy(() => import("./pages/Report"));
 const UserProfile = React.lazy(() => import("./pages/UserProfile"));
 const FAQ = React.lazy(() => import("./pages/FAQ"));
 const APSDemo = React.lazy(() => import("./pages/APSDemo"));
-const PaymentCallback = React.lazy(() => import("./pages/PaymentCallback"));
-const PaymentDashboard = React.lazy(() => import("./pages/PaymentDashboard"));
 const SystemStatus = React.lazy(() => import("./pages/SystemStatus"));
 
 // Create query client with optimized settings
@@ -329,47 +326,11 @@ function App() {
                         }
                       />
                       <Route
-                        path="/checkout/:id"
-                        element={
-                          <LazyWrapper>
-                            <Checkout />
-                          </LazyWrapper>
-                        }
-                      />
-                      <Route
-                        path="/checkout/cart"
-                        element={
-                          <LazyWrapper>
-                            <Checkout />
-                          </LazyWrapper>
-                        }
-                      />
-                      <Route
                         path="/shipping"
                         element={
                           <LazyWrapper>
                             <Shipping />
                           </LazyWrapper>
-                        }
-                      />
-                      <Route
-                        path="/payment-callback"
-                        element={
-                          <LazyWrapper>
-                            <PaymentCallback />
-                          </LazyWrapper>
-                        }
-                      />
-
-                      {/* Payment Routes */}
-                      <Route
-                        path="/payments"
-                        element={
-                          <ProtectedRoute>
-                            <LazyWrapper>
-                              <PaymentDashboard />
-                            </LazyWrapper>
-                          </ProtectedRoute>
                         }
                       />
 
