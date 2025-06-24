@@ -47,176 +47,190 @@ const shouldLogBookError = (): boolean => {
 };
 
 // Enhanced error logging function with spam protection
-const logDetailedError = (context: string, error: unknown) => {
-  // Check if we should log this error (spam protection)
-  if (!shouldLogBookError()) {
-    return;
-  }
-
-  // Use safe error logging to prevent [object Object] issues
-  safeLogError(`BookQueries - ${context}`, error);
-
-  // Extract and log key error information
-  const errorInfo = {
-    message: error instanceof Error ? error.message : String(error),
-    name: error instanceof Error ? error.name : typeof error,
-    code: (error as any)?.code || (error as any)?.error_code,
-    details: (error as any)?.details,
-    hint: (error as any)?.hint,
-    status: (error as any)?.status,
-    statusText: (error as any)?.statusText,
-  };
-
-  // Log both the safe error and a readable summary
-  console.error(`[${context}] ${errorInfo.message}`, errorInfo);
-
-  // Also log to our error utility (but don't spam it)
-  if (logError && bookQueryErrorCount <= 3) {
+const logDetailedError = (context: string, error: any, details?: any) => {
+  if (shouldLogBookError()) {
     logError(context, error);
   }
 };
 
+// Safe error logging utility
+const safeBooksLogError = (context: string, error: any) => {
+  try {
+    logError(context, error);
+  } catch (loggingError) {
+    console.error(`Failed to log error for ${context}:`, loggingError);
+    logError(context, error);
+  }
+};
+
+/**
+ * Fetch books with applied filters
+ */
 export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
   try {
     console.log("🔄 [BookQueries] Starting getBooks with filters:", filters);
 
-    // Use connection retry utility with reduced attempts
-    return await retryWithConnection(async () => {
-      // First get books
-      let query = supabase
-        .from("books")
-        .select("*")
-        .eq("sold", false)
-        .order("created_at", { ascending: false });
+    // Use connection retry utility with reduced attempts for faster failure
+    return await retryWithConnection(
+      async () => {
+        // First get books with timeout
+        const booksPromise = (async () => {
+          let query = supabase
+            .from("books")
+            .select("*")
+            .eq("sold", false)
+            .order("created_at", { ascending: false });
 
-      // Apply filters if provided
-      if (filters) {
-        if (filters.search) {
-          query = query.or(
-            `title.ilike.%${filters.search}%,author.ilike.%${filters.search}%`,
-          );
-        }
-        if (filters.category) {
-          query = query.eq("category", filters.category);
-        }
-        if (filters.condition) {
-          query = query.eq("condition", filters.condition);
-        }
-        if (filters.grade) {
-          query = query.eq("grade", filters.grade);
-        }
-        if (filters.universityYear) {
-          query = query.eq("university_year", filters.universityYear);
-        }
-        if (filters.university) {
-          query = query.eq("university", filters.university);
-        }
-        if (filters.minPrice !== undefined) {
-          query = query.gte("price", filters.minPrice);
-        }
-        if (filters.maxPrice !== undefined) {
-          query = query.lte("price", filters.maxPrice);
-        }
-      }
+          // Apply filters if provided
+          if (filters) {
+            if (filters.search) {
+              query = query.or(
+                `title.ilike.%${filters.search}%,author.ilike.%${filters.search}%`,
+              );
+            }
+            if (filters.category) {
+              query = query.eq("category", filters.category);
+            }
+            if (filters.condition) {
+              query = query.eq("condition", filters.condition);
+            }
+            if (filters.grade) {
+              query = query.eq("grade", filters.grade);
+            }
+            if (filters.universityYear) {
+              query = query.eq("university_year", filters.universityYear);
+            }
+            if (filters.university) {
+              query = query.eq("university", filters.university);
+            }
+            if (filters.minPrice !== undefined) {
+              query = query.gte("price", filters.minPrice);
+            }
+            if (filters.maxPrice !== undefined) {
+              query = query.lte("price", filters.maxPrice);
+            }
+          }
 
-      const { data: booksData, error: booksError } = await query;
+          return await query;
+        })();
 
-      if (booksError) {
-        const errorMessage = booksError.message || "Unknown database error";
-        const errorCode = booksError.code || "NO_CODE";
-        const errorDetails = booksError.details || "No additional details";
-
-        // Log with proper string messages only
-        console.error(`[Books query failed] ${errorMessage}`);
-        console.error(`Books query failed: ${errorMessage} (${errorCode})`);
-
-        // Use safeLogError for detailed logging (no object output)
-        safeLogError("Books query failed", booksError);
-
-        throw new Error(
-          `Failed to fetch books: ${errorMessage} (Code: ${errorCode})`,
+        // Add timeout to prevent hanging
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Query timeout")), 5000),
         );
-      }
 
-      if (!booksData || booksData.length === 0) {
-        console.log("No books found");
-        return [];
-      }
+        const { data: booksData, error: booksError } = (await Promise.race([
+          booksPromise,
+          timeoutPromise,
+        ])) as any;
 
-      // Get unique seller IDs
-      const sellerIds = [...new Set(booksData.map((book) => book.seller_id))];
+        if (booksError) {
+          const errorMessage = booksError.message || "Unknown database error";
+          const errorCode = booksError.code || "NO_CODE";
 
-      // Fetch seller profiles separately with error handling
-      let profilesMap = new Map();
-      try {
-        const { data: profilesData, error: profilesError } = await supabase
-          .from("profiles")
-          .select("id, name, email")
-          .in("id", sellerIds);
+          console.error(`[Books query failed] ${errorMessage}`);
+          safeBooksLogError("Books query failed", booksError);
 
-        if (profilesError) {
-          const errorMessage =
-            profilesError.message || "Unknown profiles error";
-          const errorCode = profilesError.code || "NO_CODE";
+          throw new Error(
+            `Failed to fetch books: ${errorMessage} (Code: ${errorCode})`,
+          );
+        }
 
-          console.error(
-            `[Error fetching profiles] ${errorMessage} (${errorCode})`,
+        if (!booksData || booksData.length === 0) {
+          console.log("No books found");
+          return [];
+        }
+
+        // Get unique seller IDs
+        const sellerIds = [...new Set(booksData.map((book) => book.seller_id))];
+
+        // Fetch seller profiles with fallback
+        let profilesMap = new Map();
+        try {
+          const profilesPromise = supabase
+            .from("profiles")
+            .select("id, name, email")
+            .in("id", sellerIds);
+
+          const profilesTimeout = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("Profiles timeout")), 3000),
           );
 
-          safeLogError("Error fetching profiles", profilesError);
-          // Continue without profile data rather than failing completely
-        } else if (profilesData) {
-          profilesData.forEach((profile) => {
-            profilesMap.set(profile.id, profile);
-          });
+          const { data: profilesData, error: profilesError } =
+            (await Promise.race([profilesPromise, profilesTimeout])) as any;
+
+          if (profilesError) {
+            console.warn("Failed to fetch seller profiles, using fallbacks");
+          } else if (profilesData) {
+            profilesData.forEach((profile: any) => {
+              profilesMap.set(profile.id, profile);
+            });
+          }
+        } catch (profileError) {
+          console.warn("Error fetching profiles:", profileError);
         }
-      } catch (profileFetchError) {
-        logDetailedError("Exception fetching profiles", profileFetchError);
-        // Continue with empty profiles map
-      }
 
-      // Combine books with profile data
-      const books: Book[] = booksData.map((book: any) => {
-        const profile = profilesMap.get(book.seller_id);
-        const bookData: BookQueryResult = {
-          ...book,
-          profiles: profile
-            ? {
-                id: profile.id,
-                name: profile.name,
-                email: profile.email,
-              }
-            : null,
-        };
-        return mapBookFromDatabase(bookData);
-      });
+        // Ensure all seller IDs have profiles (fallback)
+        sellerIds.forEach((id) => {
+          if (!profilesMap.has(id)) {
+            profilesMap.set(id, {
+              id,
+              name: "Unknown Seller",
+              email: "unknown@example.com",
+            });
+          }
+        });
 
-      console.log(
-        "✅ [BookQueries] Successfully processed books:",
-        books.length,
-      );
-      return books;
-    };
+        // Map books to include seller information
+        const books: Book[] = booksData.map((bookData: any) => {
+          const sellerProfile = profilesMap.get(bookData.seller_id) || {
+            id: bookData.seller_id,
+            name: "Unknown Seller",
+            email: "unknown@example.com",
+          };
 
-    // Use retry logic for network resilience
-    return await retryWithConnection(fetchBooksOperation, 2, 1000);
+          // Create book object with safe fallbacks
+          return {
+            id: bookData.id,
+            title: bookData.title || "Untitled",
+            author: bookData.author || "Unknown Author",
+            price: bookData.price || 0,
+            condition: bookData.condition || "unknown",
+            category: bookData.category || "uncategorized",
+            grade: bookData.grade || "",
+            university: bookData.university || "",
+            universityYear: bookData.university_year || "",
+            description: bookData.description || "",
+            imageUrl: bookData.image_url || bookData.front_cover || "",
+            frontCover: bookData.front_cover || "",
+            backCover: bookData.back_cover || "",
+            sold: bookData.sold || false,
+            createdAt: bookData.created_at || new Date().toISOString(),
+            sellerId: bookData.seller_id,
+            seller: {
+              id: sellerProfile.id,
+              name: sellerProfile.name,
+              email: sellerProfile.email,
+            },
+          };
+        });
+
+        console.log(
+          "✅ [BookQueries] Successfully processed books:",
+          books.length,
+        );
+        return books;
+      },
+      2,
+      500,
+    ); // Reduced retries and delay for faster response
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
 
     console.error(`[Error in getBooks] ${errorMessage}`);
-    console.error(`Error in getBooks: ${errorMessage}`);
+    safeBooksLogError("Error in getBooks", error);
 
-    safeLogError("Error in getBooks", error);
-
-    // Provide user-friendly error message
-    const userMessage =
-      error instanceof Error && error.message.includes("Failed to fetch")
-        ? "Unable to connect to the book database. Please check your internet connection and try again."
-        : `Failed to load books: ${errorMessage}. Please try again later.`;
-
-    console.warn(`[BookQueries] ${userMessage}`);
-
-    // Return empty array instead of throwing to prevent app crashes
+    // Always return empty array instead of throwing to prevent app crashes
     return [];
   }
 };
@@ -233,244 +247,220 @@ export const getBookById = async (id: string): Promise<Book | null> => {
         "Invalid book ID format. Please check the link and try again.",
       );
       logDetailedError("Invalid UUID format for book ID", { id, error });
-      throw error;
+      return null;
     }
 
-    const fetchBookOperation = async () => {
-      // Get book first
-      const { data: bookData, error: bookError } = await supabase
-        .from("books")
-        .select("*")
-        .eq("id", id)
-        .single();
+    return await retryWithConnection(
+      async () => {
+        const { data: bookData, error: bookError } = await supabase
+          .from("books")
+          .select("*")
+          .eq("id", id)
+          .single();
 
-      if (bookError) {
-        if (bookError.code === "PGRST116") {
-          return null; // Book not found
+        if (bookError) {
+          if (bookError.code === "PGRST116") {
+            // Not found - not an error, just return null
+            console.log(`Book not found with ID: ${id}`);
+            return null;
+          }
+
+          const errorMessage = bookError.message || "Unknown database error";
+          const errorCode = bookError.code || "NO_CODE";
+
+          logDetailedError("Failed to fetch book by ID", {
+            bookId: id,
+            error: bookError,
+            code: errorCode,
+          });
+
+          throw new Error(
+            `Failed to fetch book: ${errorMessage} (Code: ${errorCode})`,
+          );
         }
-        logDetailedError("Error fetching book", bookError);
-        throw new Error(
-          `Failed to fetch book: ${bookError.message || "Unknown database error"}`,
-        );
-      }
 
-      if (!bookData) {
-        console.log("No book found with ID:", id);
-        return null;
-      }
+        if (!bookData) {
+          console.log(`No book found with ID: ${id}`);
+          return null;
+        }
 
-      console.log("Found book data:", bookData);
-
-      // Get seller profile separately - handle case where profile might not exist
-      let profileData = null;
-      try {
-        const { data: profile, error: profileError } = await supabase
+        // Fetch seller profile separately
+        const { data: sellerProfile, error: sellerError } = await supabase
           .from("profiles")
           .select("id, name, email")
           .eq("id", bookData.seller_id)
-          .maybeSingle();
+          .single();
 
-        if (profileError) {
-          logDetailedError("Error fetching seller profile", profileError);
-          // Continue without profile data rather than failing
-        } else {
-          profileData = profile;
+        if (sellerError) {
+          console.warn(
+            `Failed to fetch seller profile for book ${id}:`,
+            sellerError.message,
+          );
+          // Continue with fallback seller data instead of failing
         }
-      } catch (profileFetchError) {
-        logDetailedError(
-          "Exception fetching seller profile",
-          profileFetchError,
-        );
-        // Continue with null profile
-      }
 
-      console.log("Found profile data:", profileData);
+        // Use mapBookFromDatabase with fallback seller data
+        const fallbackSeller = {
+          id: bookData.seller_id,
+          name: "Unknown Seller",
+          email: "unknown@example.com",
+        };
 
-      const bookWithProfile: BookQueryResult = {
-        ...bookData,
-        profiles: profileData
-          ? {
-              id: profileData.id,
-              name: profileData.name,
-              email: profileData.email,
-            }
-          : null,
-      };
-
-      const mappedBook = mapBookFromDatabase(bookWithProfile);
-      console.log("Final mapped book:", mappedBook);
-
-      return mappedBook;
-    };
-
-    // Use retry logic for network resilience
-    return await retryWithConnection(fetchBookOperation, 2, 1000);
+        return mapBookFromDatabase(bookData, sellerProfile || fallbackSeller);
+      },
+      2,
+      500,
+    );
   } catch (error) {
-    logDetailedError("Error in getBookById", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
 
-    if (
-      error instanceof Error &&
-      error.message.includes("Invalid book ID format")
-    ) {
-      throw error; // Re-throw validation errors
-    }
+    logDetailedError("Error in getBookById", {
+      bookId: id,
+      error,
+      errorMessage,
+    });
 
-    // For other errors, return null instead of throwing
+    console.error(`Failed to fetch book ${id}: ${errorMessage}`);
+
+    // Return null instead of throwing to prevent crashes
     return null;
   }
 };
 
-export const getUserBooks = async (userId: string): Promise<Book[]> => {
+export const getBooksByUser = async (userId: string): Promise<Book[]> => {
   try {
-    console.log(`[BookQueries] Fetching user books for ID: ${userId}`);
-
     if (!userId) {
-      console.log("[BookQueries] No userId provided to getUserBooks");
+      console.warn("getBooksByUser called with empty userId");
       return [];
     }
 
-    // Use fallback function with retry logic
+    console.log("Fetching books for user:", userId);
+
     return await retryWithConnection(
-      () => getUserBooksWithFallback(userId),
+      async () => {
+        const { data: booksData, error: booksError } = await supabase
+          .from("books")
+          .select("*")
+          .eq("seller_id", userId)
+          .order("created_at", { ascending: false });
+
+        if (booksError) {
+          const errorMessage = booksError.message || "Unknown database error";
+          const errorCode = booksError.code || "NO_CODE";
+
+          logDetailedError("Failed to fetch books by user", {
+            userId,
+            error: booksError,
+            code: errorCode,
+          });
+
+          throw new Error(
+            `Failed to fetch user books: ${errorMessage} (Code: ${errorCode})`,
+          );
+        }
+
+        if (!booksData || booksData.length === 0) {
+          console.log(`No books found for user: ${userId}`);
+          return [];
+        }
+
+        // Fetch seller profile
+        const { data: sellerProfile, error: sellerError } = await supabase
+          .from("profiles")
+          .select("id, name, email")
+          .eq("id", userId)
+          .single();
+
+        const fallbackSeller = {
+          id: userId,
+          name: "Unknown Seller",
+          email: "unknown@example.com",
+        };
+
+        const seller = sellerProfile || fallbackSeller;
+
+        if (sellerError) {
+          console.warn(
+            `Failed to fetch seller profile for user ${userId}:`,
+            sellerError.message,
+          );
+        }
+
+        // Map books using the seller profile
+        const books = booksData.map((bookData) =>
+          mapBookFromDatabase(bookData, seller),
+        );
+
+        console.log(
+          `✅ Successfully fetched ${books.length} books for user ${userId}`,
+        );
+        return books;
+      },
       2,
-      1000,
+      500,
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error(`[BookQueries] Error in getUserBooks:`, {
-      message: errorMessage,
+
+    logDetailedError("Error in getBooksByUser", {
       userId,
-      error: error instanceof Error ? error.stack : error,
+      error,
+      errorMessage,
     });
 
-    // Try one more time without retry wrapper as a final fallback
-    try {
-      console.log(`[BookQueries] Attempting final fallback for user ${userId}`);
-      return await getUserBooksWithFallback(userId);
-    } catch (fallbackError) {
-      const fallbackMessage =
-        fallbackError instanceof Error
-          ? fallbackError.message
-          : String(fallbackError);
-      console.error(`[BookQueries] Final fallback also failed:`, {
-        message: fallbackMessage,
-        userId,
-        error:
-          fallbackError instanceof Error ? fallbackError.stack : fallbackError,
-      });
-      return [];
-    }
+    console.error(`Failed to fetch books for user ${userId}: ${errorMessage}`);
+
+    // Return empty array instead of throwing
+    return [];
   }
 };
 
-// Enhanced fallback function with better error handling
-const getUserBooksWithFallback = async (userId: string): Promise<Book[]> => {
+export const searchBooks = async (
+  searchQuery: string,
+  filters: BookFilters = {},
+): Promise<BookQueryResult> => {
   try {
-    console.log(
-      `[BookQueries] getUserBooksWithFallback started for user: ${userId}`,
-    );
-
-    // Get books for user
-    const { data: booksData, error: booksError } = await supabase
-      .from("books")
-      .select("*")
-      .eq("seller_id", userId)
-      .order("created_at", { ascending: false });
-
-    if (booksError) {
-      const errorMessage = booksError.message || "Unknown database error";
-      const errorCode = booksError.code || "NO_CODE";
-
-      console.error(
-        `[getUserBooksWithFallback - books query failed] ${errorMessage} (${errorCode})`,
-      );
-
-      safeLogError("getUserBooksWithFallback - books query failed", booksError);
-
-      throw new Error(
-        `Failed to fetch user books: ${errorMessage} (Code: ${errorCode})`,
-      );
-    }
-
-    console.log(
-      `[BookQueries] Found ${booksData?.length || 0} books for user ${userId}`,
-    );
-
-    if (!booksData || booksData.length === 0) {
-      return [];
-    }
-
-    // Get user profile separately with error handling
-    let profileData = null;
-    try {
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("id, name, email")
-        .eq("id", userId)
-        .maybeSingle();
-
-      if (profileError) {
-        const errorMessage = profileError.message || "Unknown profile error";
-        const errorCode = profileError.code || "NO_CODE";
-
-        console.error(
-          `[getUserBooksWithFallback - profile query failed] ${errorMessage} (${errorCode})`,
-        );
-
-        safeLogError(
-          "getUserBooksWithFallback - profile query failed",
-          profileError,
-        );
-      } else {
-        profileData = profile;
-        console.log(
-          `[BookQueries] Found profile for user ${userId}: ${profile?.name || "Anonymous"}`,
-        );
-      }
-    } catch (profileFetchError) {
-      logDetailedError("Exception fetching user profile", profileFetchError);
-    }
-
-    const mappedBooks = booksData.map((book: any) => {
-      const bookData: BookQueryResult = {
-        ...book,
-        profiles: profileData || {
-          id: userId,
-          name: "Anonymous",
-          email: "",
-        },
+    if (!searchQuery || searchQuery.trim().length === 0) {
+      return {
+        books: [],
+        total: 0,
+        hasMore: false,
+        error: null,
       };
-      return mapBookFromDatabase(bookData);
-    });
+    }
 
-    console.log(
-      `[BookQueries] Successfully mapped ${mappedBooks.length} books for user ${userId}`,
-    );
-    return mappedBooks;
+    console.log("Searching books with query:", searchQuery);
+
+    const searchFilters: BookFilters = {
+      ...filters,
+      search: searchQuery.trim(),
+    };
+
+    const books = await getBooks(searchFilters);
+
+    return {
+      books,
+      total: books.length,
+      hasMore: false, // For now, we return all results
+      error: null,
+    };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error(`[BookQueries] Error in getUserBooksWithFallback:`, {
-      message: errorMessage,
-      userId,
-      error: error instanceof Error ? error.stack : error,
+
+    logDetailedError("Error in searchBooks", {
+      searchQuery,
+      filters,
+      error,
+      errorMessage,
     });
 
-    // If it's a network error, throw it so retry can handle it
-    if (
-      error instanceof Error &&
-      (error.message.includes("Failed to fetch") ||
-        error.message.includes("NetworkError") ||
-        error.message.includes("fetch") ||
-        error.message.includes("timeout") ||
-        error.name === "NetworkError" ||
-        error.name === "TypeError")
-    ) {
-      console.log(
-        `[BookQueries] Network error detected, allowing retry: ${error.message}`,
-      );
-      throw error;
-    }
+    console.error(`Search failed for query "${searchQuery}": ${errorMessage}`);
 
-    return [];
+    return {
+      books: [],
+      total: 0,
+      hasMore: false,
+      error: errorMessage,
+    };
   }
 };
