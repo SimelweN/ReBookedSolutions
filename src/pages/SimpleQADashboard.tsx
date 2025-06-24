@@ -22,6 +22,7 @@ import {
   Shield,
 } from "lucide-react";
 import ComprehensiveQAChecker from "@/components/ComprehensiveQAChecker";
+import QAQuickFixes from "@/components/QAQuickFixes";
 
 const SimpleQADashboard: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
