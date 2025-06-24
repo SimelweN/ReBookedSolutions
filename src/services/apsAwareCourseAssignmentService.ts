@@ -10,7 +10,7 @@ import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/complet
 import { calculateAPS, validateAPSSubjects } from "@/utils/apsCalculation";
 import { validateAssignmentRule } from "@/utils/enhancedValidation";
 import { logError } from "./systemMonitoringService";
-import { convertToFixedFormat } from "./fixedSubjectMatching";
+import { adaptToOldFormat } from "./newSubjectEngine";
 
 /**
  * Enhanced APS-aware course assignment service
