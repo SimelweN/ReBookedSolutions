@@ -260,10 +260,12 @@ const EnhancedAPSCalculator: React.FC = () => {
 
     window.addEventListener("apsProfileCleared", handleAPSProfileCleared);
     window.addEventListener("popstate", handlePopState);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
       window.removeEventListener("apsProfileCleared", handleAPSProfileCleared);
       window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [refreshProfile, clearError]);
 
