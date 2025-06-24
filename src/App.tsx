@@ -75,8 +75,9 @@ const NotFound = React.lazy(() => import("./pages/NotFound"));
 const Cart = React.lazy(() => import("./pages/Cart"));
 const Checkout = React.lazy(() => import("./pages/Checkout"));
 const Notifications = React.lazy(() => import("./pages/Notifications"));
-const Shipping = React.lazy(() => import("./pages/Shipping"));
-const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
+const SimpleQADashboard = React.lazy(() => import("./pages/SimpleQADashboard"));
+const QADashboard = React.lazy(() => import("./pages/QADashboard"));
+const QAFunctionalityDashboard = React.lazy(() => import("./components/QADashboard"));
 const QADashboard = React.lazy(() => import("./pages/QADashboard"));
 const ForgotPassword = React.lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = React.lazy(() => import("./pages/ResetPassword"));
@@ -529,14 +530,22 @@ function App() {
                       />
 
                       {/* Admin Routes */}
-                      <Route
-                        path="/admin"
-                        element={
-                          <AdminProtectedRoute>
+                        <Route
+                          path="/qa-dashboard"
+                          element={
                             <LazyWrapper>
-                              <Admin />
+                              <QADashboard />
                             </LazyWrapper>
-                          </AdminProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/qa-functionality"
+                          element={
+                            <LazyWrapper>
+                              <QAFunctionalityDashboard />
+                            </LazyWrapper>
+                          }
+                        />
                         }
                       />
                       <Route
