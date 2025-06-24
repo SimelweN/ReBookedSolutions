@@ -47,6 +47,7 @@ if (import.meta.env.DEV) {
 
 // Import Index directly for instant loading
 import IndexPage from "./pages/Index";
+import SimpleQADashboard from "./pages/SimpleQADashboard";
 const Index = () => <IndexPage />;
 
 // Simple lazy loading for other pages
