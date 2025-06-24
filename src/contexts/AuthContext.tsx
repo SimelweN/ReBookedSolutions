@@ -102,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         console.log("✅ Profile refreshed successfully");
       } else {
         // Use fallback profile
-        const fallbackProfile = createFallbackProfile(user);
+        const fallbackProfile = createUserFallbackProfile(user);
         setProfile(fallbackProfile);
         console.log("ℹ️ Using fallback profile after refresh");
       }
