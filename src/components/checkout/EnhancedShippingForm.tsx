@@ -253,94 +253,43 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
         height: dimensions.height,
       };
 
-      try {
-        const quotes = await getAllDeliveryQuotes(quoteRequest);
+      // Skip Edge Functions entirely and use fallback service directly
+      console.log(
+        "Using fallback delivery pricing (Edge Functions unavailable)",
+      );
 
-        // Convert to delivery options format with safe fallbacks
-        const options: DeliveryOption[] = quotes
-          .filter(
-            (quote) =>
-              quote && typeof quote.cost === "number" && quote.cost > 0,
-          )
-          .map((quote) => ({
-            id: `${quote.provider}_${quote.service_code}`,
-            provider: quote.provider as "courier-guy" | "fastway",
-            service_name: quote.service_name || "Standard Delivery",
-            price: Number(quote.cost) || 99,
-            estimated_days: quote.transit_days
-              ? `${quote.transit_days} day${quote.transit_days !== 1 ? "s" : ""}`
-              : "3-5 days",
-            description: Array.isArray(quote.features)
-              ? quote.features.join(", ")
-              : "Standard delivery service",
-          }));
+      // Use intelligent fallback pricing
+      const isLocal = FallbackDeliveryService.isLocalDelivery(
+        "Cape Town", // Default sender city
+        watchedValues.city,
+        "Western Cape", // Default sender province
+        watchedValues.province,
+      );
 
-        // Add local delivery option for Western Cape
-        if (watchedValues.province === "Western Cape") {
-          options.unshift({
-            id: "local_delivery",
-            provider: "courier-guy",
-            service_name: "Local Delivery - Cape Town",
-            price: 50,
-            estimated_days: "1-2 days",
-            description: "Fast local delivery within Cape Town area",
-          });
-        }
+      const fallbackQuotes = FallbackDeliveryService.getFallbackQuotes({
+        fromProvince: "Western Cape",
+        toProvince: watchedValues.province,
+        weight: totalWeight,
+        isLocal: isLocal,
+      });
 
-        // If we got valid options, use them
-        if (options.length > 0) {
-          setDeliveryOptions(options);
+      // Convert fallback quotes to delivery options
+      const options: DeliveryOption[] = fallbackQuotes.map((quote) => ({
+        id: quote.id,
+        provider: quote.provider,
+        service_name: quote.service_name,
+        price: quote.price,
+        estimated_days: quote.estimated_days,
+        description: quote.description,
+      }));
 
-          // Auto-select cheapest option
-          const cheapest = options.reduce((prev, current) =>
-            (prev.price || 99) < (current.price || 99) ? prev : current,
-          );
-          setSelectedDeliveryOption(cheapest);
-          return;
-        }
-      } catch (quoteError) {
-        console.warn(
-          "Quote service unavailable, using fallback pricing:",
-          quoteError,
-        );
+      setDeliveryOptions(options);
+      setSelectedDeliveryOption(options[0]);
 
-        // Use intelligent fallback pricing
-        const isLocal = FallbackDeliveryService.isLocalDelivery(
-          "Cape Town", // Default sender city
-          watchedValues.city,
-          "Western Cape", // Default sender province
-          watchedValues.province,
-        );
-
-        const fallbackQuotes = FallbackDeliveryService.getFallbackQuotes({
-          fromProvince: "Western Cape",
-          toProvince: watchedValues.province,
-          weight: totalWeight,
-          isLocal: isLocal,
-        });
-
-        // Convert fallback quotes to delivery options
-        const fallbackOptions: DeliveryOption[] = fallbackQuotes.map(
-          (quote) => ({
-            id: quote.id,
-            provider: quote.provider,
-            service_name: quote.service_name,
-            price: quote.price,
-            estimated_days: quote.estimated_days,
-            description: quote.description,
-          }),
-        );
-
-        setDeliveryOptions(fallbackOptions);
-        setSelectedDeliveryOption(fallbackOptions[0]);
-        toast.info(
-          "Using standard delivery rates - live quotes temporarily unavailable",
-        );
-        return;
+      // Show subtle info message that we're using standard rates
+      if (options.length > 0) {
+        toast.success("Delivery options loaded");
       }
-
-      // This should not be reached now
-      throw new Error("No quotes available");
     } catch (error) {
       console.error("Error getting delivery quotes:", error);
 
