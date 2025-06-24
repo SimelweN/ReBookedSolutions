@@ -163,7 +163,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             setIsLoading(false); // Immediately stop loading for UI responsiveness
 
             console.log(
-              "ℹ️ [AuthContext] Auth state updated for new user:",
+              "ℹ��� [AuthContext] Auth state updated for new user:",
               session.user.id,
             );
           } else {
@@ -181,12 +181,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                 console.log(
                   "✅ [AuthContext] Background profile load successful",
                 );
+              } else {
+                console.log(
+                  "ℹ️ [AuthContext] No profile data returned, keeping fallback profile",
+                );
               }
             })
             .catch((profileError) => {
               console.log(
-                "ℹ️ [AuthContext] Background profile load failed, keeping fallback",
+                "ℹ️ [AuthContext] Background profile load failed, keeping fallback:",
+                profileError instanceof Error
+                  ? profileError.message
+                  : String(profileError),
               );
+              // Keep the fallback profile - don't change loading state
             });
 
           // Add login notification for new sign-ins only (prevent duplicates)
