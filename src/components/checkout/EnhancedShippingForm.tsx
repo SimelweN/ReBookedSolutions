@@ -350,12 +350,18 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   };
 
   const onSubmit = async (data: ShippingFormData) => {
-    console.log("🔥 FORM SUBMIT TRIGGERED!", { data, errors, deliveryOptions });
+    console.log("🔥 FORM SUBMIT TRIGGERED!");
+    console.log("📋 Form data:", data);
+    console.log("❌ Current errors:", errors);
+    console.log("🚛 Delivery options:", deliveryOptions);
 
     // Check for form validation errors
     if (Object.keys(errors).length > 0) {
-      console.error("❌ Form has validation errors:", errors);
-      toast.error("Please fix the form errors before continuing");
+      console.error("❌ Form has validation errors:");
+      console.table(errors);
+
+      const errorFields = Object.keys(errors);
+      toast.error(`Please fix these fields: ${errorFields.join(", ")}`);
       return;
     }
 
@@ -457,9 +463,21 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
       </CardHeader>
       <CardContent>
         <form
-          onSubmit={handleSubmit(onSubmit, (errors) => {
-            console.error("🚨 FORM VALIDATION FAILED:", errors);
-            toast.error("Please fill in all required fields correctly");
+          onSubmit={handleSubmit(onSubmit, (validationErrors) => {
+            console.error("🚨 FORM VALIDATION FAILED:");
+            console.table(validationErrors);
+
+            // Show specific error messages
+            const errorMessages = Object.entries(validationErrors).map(
+              ([field, error]) => {
+                return `${field}: ${error?.message || "Invalid"}`;
+              },
+            );
+
+            console.error("Detailed errors:", errorMessages);
+            toast.error(
+              `Please fix these fields: ${Object.keys(validationErrors).join(", ")}`,
+            );
           })}
           className="space-y-6"
         >
@@ -601,7 +619,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
                     <Select
                       value={watchedValues.province || ""}
                       onValueChange={(value) => {
-                        setValue("province", value);
+                        setValue("province", value, { shouldValidate: true });
                         // Trigger validation
                         setTimeout(() => {
                           if (watchedValues.city && watchedValues.postal_code) {
@@ -812,6 +830,31 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
               <>Continue (Get delivery options on next step)</>
             )}
           </Button>
+
+          {/* Debug Panel */}
+          <div className="mt-4 p-3 bg-gray-100 rounded text-xs">
+            <p>
+              <strong>Form State Debug:</strong>
+            </p>
+            <p>
+              Errors:{" "}
+              {Object.keys(errors).length > 0
+                ? Object.keys(errors).join(", ")
+                : "None"}
+            </p>
+            <p>
+              Values:{" "}
+              {JSON.stringify({
+                name: watchedValues.recipient_name ? "✓" : "✗",
+                phone: watchedValues.phone ? "✓" : "✗",
+                address: watchedValues.street_address ? "✓" : "✗",
+                city: watchedValues.city ? "✓" : "✗",
+                province: watchedValues.province ? "✓" : "✗",
+                postal: watchedValues.postal_code ? "✓" : "✗",
+              })}
+            </p>
+            <p>Delivery Options: {deliveryOptions.length}</p>
+          </div>
 
           {/* Emergency bypass button for debugging */}
           <Button
