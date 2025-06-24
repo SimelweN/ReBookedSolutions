@@ -116,8 +116,8 @@ export class EnhancedAPSMatching {
       );
     }
 
-    // Use FIXED subject matching logic
-    const subjectCheck = checkSubjectEligibility(
+    // Use NEW SUBJECT ENGINE for 100% accurate matching
+    const subjectCheck = checkSubjectMatching(
       userSubjects.map((s) => ({
         name: s.name,
         level: s.level,
@@ -130,41 +130,31 @@ export class EnhancedAPSMatching {
       })),
     );
 
-    // Update result details with fixed logic
+    // Update result details with new engine results
     result.details = [];
 
-    subjectCheck.matchedSubjects.forEach((match) => {
-      if (match.levelMet) {
-        result.details.push(
-          `✓ ${match.required} requirement satisfied by ${match.matched} (Level ${match.userLevel})`,
-        );
-      } else {
-        result.details.push(
-          `⚠ ${match.required} matched by ${match.matched} but level too low (need ${match.requiredLevel}, have ${match.userLevel})`,
-        );
-      }
+    subjectCheck.matches.forEach((match) => {
+      result.details.push(match.matchReason);
     });
 
     subjectCheck.missingSubjects.forEach((missing) => {
-      result.details.push(
-        `✗ Missing: ${missing.name} (Level ${missing.level}+)`,
-      );
+      result.details.push(`✗ ${missing.reason}`);
     });
 
-    // Calculate match percentage based on valid matches
-    const requiredCount = subjectCheck.requiredCount;
-    const validMatchCount = subjectCheck.matchedCount;
+    // Calculate match percentage based on new engine results
     const matchPercentage =
-      requiredCount > 0
-        ? Math.round((validMatchCount / requiredCount) * 100)
+      subjectCheck.requiredCount > 0
+        ? Math.round(
+            (subjectCheck.matchedCount / subjectCheck.requiredCount) * 100,
+          )
         : 100;
 
     result.subjectMatch = {
       hasAllRequired: subjectCheck.isEligible,
       missingSubjects: subjectCheck.missingSubjects.map((s) => s.name),
-      satisfiedSubjects: subjectCheck.matchedSubjects
-        .filter((m) => m.levelMet)
-        .map((m) => m.required),
+      satisfiedSubjects: subjectCheck.matches
+        .filter((m) => m.subjectMatched && m.levelSatisfied)
+        .map((m) => m.userSubjectName),
       matchPercentage,
     };
 
