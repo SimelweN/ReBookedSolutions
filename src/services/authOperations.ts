@@ -158,6 +158,42 @@ export const fetchUserProfileQuick = async (
       const isAdmin = profile.is_admin === true ||
                      adminEmails.includes(userEmail.toLowerCase());
 
+      const profileData = {
+        id: profile.id,
+        name:
+          profile.name ||
+          user.user_metadata?.name ||
+          user.email?.split("@")[0] ||
+          "User",
+        email: profile.email || user.email || "",
+        isAdmin,
+        status: profile.status || "active",
+        profile_picture_url: profile.profile_picture_url,
+        bio: profile.bio,
+      };
+
+      console.log("✅ Quick profile fetch successful");
+      return profileData;
+    } catch (profileFetchError) {
+      console.warn("⚠️ Profile fetch failed:", profileFetchError);
+      return null;
+    }
+  } catch (error) {
+    // Enhanced error logging to debug the timeout issue
+    const errorDetails = {
+      message: error instanceof Error ? error.message : String(error),
+      name: error instanceof Error ? error.name : "Unknown",
+      isTimeout: (error as any)?.isTimeout || false,
+      stack: error instanceof Error ? error.stack?.split("\n")[0] : undefined,
+    };
+
+    console.warn("⚠️ Quick profile fetch failed:", errorDetails);
+
+    // Don't log as error since this is expected to fail sometimes
+    // Just use fallback profile
+    return null;
+  }
+
     const profileData = {
       id: profile.id,
       name:
