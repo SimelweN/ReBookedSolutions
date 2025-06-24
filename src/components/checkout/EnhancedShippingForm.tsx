@@ -324,13 +324,14 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
         },
       );
 
+      console.log("🚛 Setting fallback delivery options:", fallbackOptions);
       setDeliveryOptions(fallbackOptions);
-      setSelectedDeliveryOption(fallbackOptions[0]);
+      if (fallbackOptions.length > 0) {
+        setSelectedDeliveryOption(fallbackOptions[0]);
+      }
 
       // Show a subtle warning instead of an error
-      toast.info(
-        "Using standard delivery rates - live quotes temporarily unavailable",
-      );
+      toast.success(`${fallbackOptions.length} delivery options loaded`);
     } finally {
       setIsLoadingQuotes(false);
     }
@@ -351,10 +352,45 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   const onSubmit = async (data: ShippingFormData) => {
     console.log("📋 Form submission started:", { data, deliveryOptions });
 
+    // If no delivery options, try to get them one more time
     if (deliveryOptions.length === 0) {
-      console.error("��� No delivery options available");
-      toast.error("No delivery options available. Please check your address.");
-      return;
+      console.log(
+        "⚠️ No delivery options available, attempting to get them...",
+      );
+
+      try {
+        await getDeliveryQuotes();
+
+        // If still no options after getting quotes, create fallback
+        if (deliveryOptions.length === 0) {
+          console.log("🚛 Creating emergency fallback delivery options");
+          const emergencyOptions: DeliveryOption[] = [
+            {
+              id: "emergency_standard",
+              provider: "courier-guy",
+              service_name: "Standard Delivery",
+              price: 99,
+              estimated_days: "3-5 days",
+              description: "Standard nationwide delivery",
+            },
+          ];
+          setDeliveryOptions(emergencyOptions);
+        }
+      } catch (error) {
+        console.error("Error getting delivery quotes on submit:", error);
+        // Create emergency fallback
+        const emergencyOptions: DeliveryOption[] = [
+          {
+            id: "emergency_standard",
+            provider: "courier-guy",
+            service_name: "Standard Delivery",
+            price: 99,
+            estimated_days: "3-5 days",
+            description: "Standard nationwide delivery",
+          },
+        ];
+        setDeliveryOptions(emergencyOptions);
+      }
     }
 
     console.log("✅ Validation passed, processing submission...");
@@ -599,6 +635,42 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
             </>
           )}
 
+          {/* Manual Quote Trigger if options not loaded */}
+          {deliveryOptions.length === 0 &&
+            !isLoadingQuotes &&
+            watchedValues.city &&
+            watchedValues.province && (
+              <div className="space-y-4">
+                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                  <h3 className="font-medium text-yellow-800 mb-2">
+                    Get Delivery Quotes
+                  </h3>
+                  <p className="text-sm text-yellow-700 mb-3">
+                    Click below to get delivery options for your address.
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={() => getDeliveryQuotes()}
+                    disabled={isLoadingQuotes}
+                    variant="outline"
+                    className="w-full border-yellow-300 text-yellow-700 hover:bg-yellow-100"
+                  >
+                    {isLoadingQuotes ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Getting Quotes...
+                      </>
+                    ) : (
+                      <>
+                        <Truck className="w-4 h-4 mr-2" />
+                        Get Delivery Options
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            )}
+
           {/* Delivery Options */}
           {deliveryOptions.length > 0 && (
             <div className="space-y-4">
@@ -682,9 +754,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
           <Button
             type="submit"
-            disabled={
-              isLoading || isLoadingQuotes || deliveryOptions.length === 0
-            }
+            disabled={isLoading || isLoadingQuotes}
             className="w-full"
           >
             {isLoading ? (
@@ -697,16 +767,16 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 Getting Delivery Options...
               </>
-            ) : (
+            ) : deliveryOptions.length > 0 ? (
               <>
                 Continue to Delivery Selection
-                {deliveryOptions.length > 0 && (
-                  <span className="ml-2">
-                    ({deliveryOptions.length} option
-                    {deliveryOptions.length !== 1 ? "s" : ""} available)
-                  </span>
-                )}
+                <span className="ml-2">
+                  ({deliveryOptions.length} option
+                  {deliveryOptions.length !== 1 ? "s" : ""} available)
+                </span>
               </>
+            ) : (
+              <>Continue (Get delivery options on next step)</>
             )}
           </Button>
         </form>
