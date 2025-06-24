@@ -20,6 +20,10 @@ import { PaymentTester } from "./utils/paymentTester";
 import { testPaymentSetup } from "./utils/testPaymentSetup";
 import { DatabaseSetup } from "./utils/databaseSetup";
 import { debugBankingDetails } from "./utils/debugBankingDetails";
+import {
+  checkDatabaseStatus,
+  logDatabaseStatus,
+} from "./utils/databaseConnectivityHelper";
 import "./App.css";
 
 // Initialize debug utilities in development
