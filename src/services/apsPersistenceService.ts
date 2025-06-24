@@ -386,14 +386,28 @@ function isValidAPSProfile(profile: any): profile is UserAPSProfile {
 
   const required = ["subjects", "totalAPS", "lastUpdated"];
   for (const field of required) {
-    if (!(field in profile)) return false;
+    if (!(field in profile)) {
+      console.warn(`Missing required field in APS profile: ${field}`);
+      return false;
+    }
   }
 
-  return (
+  const isValid =
     Array.isArray(profile.subjects) &&
     typeof profile.totalAPS === "number" &&
-    typeof profile.lastUpdated === "string"
-  );
+    typeof profile.lastUpdated === "string" &&
+    profile.subjects.length >= 0; // Allow empty subjects array
+
+  if (!isValid) {
+    console.warn("Invalid APS profile structure:", {
+      subjectsIsArray: Array.isArray(profile.subjects),
+      totalAPSIsNumber: typeof profile.totalAPS === "number",
+      lastUpdatedIsString: typeof profile.lastUpdated === "string",
+      subjects: profile.subjects,
+    });
+  }
+
+  return isValid;
 }
 
 /**

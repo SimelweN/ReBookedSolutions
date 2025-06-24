@@ -543,7 +543,12 @@ export function checkSubjectRequirements(
         `    Match: ${matchResult.isMatch}, Confidence: ${matchResult.confidence}, Reason: ${matchResult.reason}`,
       );
 
-      if (matchResult.isMatch && matchResult.confidence > bestMatchConfidence) {
+      // Accept matches with confidence >= 50% to be more inclusive
+      if (
+        matchResult.isMatch &&
+        matchResult.confidence >= 50 &&
+        matchResult.confidence > bestMatchConfidence
+      ) {
         const levelCheck = validateSubjectLevel(
           userSubject.level,
           required.level,
