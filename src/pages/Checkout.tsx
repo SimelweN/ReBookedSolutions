@@ -25,6 +25,7 @@ const Checkout: React.FC = () => {
   const [deliveryQuotes, setDeliveryQuotes] = useState<any[]>([]);
   const [selectedDelivery, setSelectedDelivery] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [useSimpleForm, setUseSimpleForm] = useState(false);
 
   // Redirect if not authenticated
   useEffect(() => {
