@@ -180,8 +180,9 @@ const SimpleQADashboard: React.FC = () => {
         </Card>
 
         {/* Enhanced QA Testing */}
-        <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+        <Tabs defaultValue="systemwide" className="w-full">
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="systemwide">Systemwide</TabsTrigger>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="comprehensive">Tests</TabsTrigger>
             <TabsTrigger value="quickfixes">Fixes</TabsTrigger>
