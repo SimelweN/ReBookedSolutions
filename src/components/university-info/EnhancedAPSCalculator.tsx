@@ -683,6 +683,14 @@ const EnhancedAPSCalculator: React.FC = () => {
         </p>
       </div>
 
+      {/* APS Recovery Status */}
+      <APSRecoveryStatus
+        userProfile={userProfile}
+        storageSource={storageSource || "none"}
+        onRefresh={refreshProfile}
+        className="max-w-4xl mx-auto"
+      />
+
       {/* Alerts Section - Compact and Clean */}
       <div className="space-y-3">
         {error && (
