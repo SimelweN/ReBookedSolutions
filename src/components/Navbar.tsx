@@ -46,65 +46,7 @@ const Navbar = () => {
     return location.pathname === path;
   };
 
-  // Only show minimal loading during critical auth initialization
-  if (isLoading && !user && !profile && !isAuthenticated) {
-    return (
-      <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <div className="flex items-center min-w-0">
-              <Link
-                to="/"
-                className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
-              >
-                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-book-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                </div>
-                <span className="text-lg sm:text-xl font-bold text-book-600 truncate">
-                  ReBooked Solutions
-                </span>
-              </Link>
-            </div>
-
-            {/* Show basic navigation even during loading */}
-            <div className="hidden md:flex items-center space-x-4">
-              <Link
-                to="/books"
-                className="text-gray-700 hover:text-book-600 px-3 py-2 text-sm font-medium transition-colors"
-              >
-                Books
-              </Link>
-              <Link
-                to="/university-info"
-                className="text-gray-700 hover:text-book-600 px-3 py-2 text-sm font-medium transition-colors"
-              >
-                Campus
-              </Link>
-              <div className="w-20 h-10 bg-gray-200 rounded animate-pulse"></div>
-            </div>
-
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleMenu}
-                className="p-2"
-                aria-label="Toggle menu"
-              >
-                {isMenuOpen ? (
-                  <X className="h-5 w-5" />
-                ) : (
-                  <Menu className="h-5 w-5" />
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav>
-    );
-  }
+  // Always render full navbar - no loading states
 
   return (
     <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
