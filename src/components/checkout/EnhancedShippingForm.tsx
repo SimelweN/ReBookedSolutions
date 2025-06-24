@@ -585,27 +585,29 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
                 <div>
                   <Label htmlFor="street_address">Street Address *</Label>
-              <input
-                ref={addressInputRef}
-                {...register("street_address", {
-                  required: "Street address is required",
-                })}
-                type="text"
-                placeholder="Start typing your address..."
-                className={`w-full p-3 border rounded-lg bg-white ${
-                  errors.street_address ? "border-red-500" : "border-gray-300"
-                } focus:ring-2 focus:ring-book-500 focus:border-book-500`}
-                style={{ fontSize: '16px' }} // Prevents zoom on iOS and ensures consistent behavior
-                autoComplete="street-address"
-                required
-              />
-                    </p>
-                  ) : (
+                  <input
+                    ref={addressInputRef}
+                    {...register("street_address", {
+                      required: "Street address is required",
+                    })}
+                    type="text"
+                    placeholder="Start typing your address..."
+                    className={`w-full p-3 border rounded-lg bg-white ${
+                      errors.street_address
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    } focus:ring-2 focus:ring-book-500 focus:border-book-500`}
+                    style={{ fontSize: "16px" }} // Prevents zoom on iOS and ensures consistent behavior
+                    autoComplete="street-address"
+                    required
+                  />
+
+                  {!isLoaded ? (
                     <p className="text-xs text-yellow-600 mt-1">
                       ⚠️ Address autocomplete unavailable - Google Maps API key
                       not configured
                     </p>
-                  )}
+                  ) : null}
                 </div>
 
                 <div>
