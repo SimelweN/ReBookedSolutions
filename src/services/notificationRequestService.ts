@@ -172,34 +172,53 @@ export class NotificationRequestService {
   }
 
   /**
-   * Cancel a notification request
+   * Check if user has existing notification request
    */
-  static async cancelNotificationRequest(
-    requestId: string,
+  static async hasExistingRequest(
     userId: string,
-  ): Promise<{ success: boolean; error?: string }> {
+    type: NotificationType,
+    identifier: string,
+  ): Promise<{ exists: boolean; error?: string }> {
     try {
-      const { error } = await supabase
+      let query = supabase
         .from("notification_requests")
-        .update({ status: "cancelled" })
-        .eq("id", requestId)
-        .eq("user_id", userId);
+        .select("id")
+        .eq("user_id", userId)
+        .eq("type", type)
+        .eq("status", "pending");
 
-      if (error) {
-        console.error("Error cancelling notification request:", error);
-        return { success: false, error: error.message };
+      // Add specific filters based on type
+      if (type === "program") {
+        query = query.eq("program_id", identifier);
+      } else if (type === "university") {
+        query = query.eq("university_id", identifier);
+      } else if (type === "accommodation") {
+        query = query.eq("accommodation_type", identifier);
       }
 
-      return { success: true };
+      const { data, error } = await query.limit(1);
+
+      if (error) {
+        console.error("Error checking existing notification request:", error);
+
+        // Handle missing table gracefully
+        if (error.message && error.message.includes("does not exist")) {
+          console.log("💡 Notification system not yet set up - table missing");
+          return { exists: false, error: "Notification system is being set up. Please check back later." };
+        }
+
+        return { exists: false, error: error.message };
+      }
+
+      return { exists: (data && data.length > 0) || false };
     } catch (error) {
-      console.error("Error in cancelNotificationRequest:", error);
+      console.error("Error in hasExistingRequest:", error);
       return {
-        success: false,
+        exists: false,
         error:
           error instanceof Error
             ? error.message
-            : "Failed to cancel notification request",
+            : "Failed to check existing request",
       };
     }
   }
-}
