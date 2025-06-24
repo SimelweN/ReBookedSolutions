@@ -282,15 +282,24 @@ const EnhancedBankingDetailsSection: React.FC = () => {
             </div>
             <div>
               <Label>Status</Label>
-              <Badge
-                variant={
-                  bankingDetails.account_verified ? "secondary" : "outline"
-                }
-              >
-                {bankingDetails.account_verified
-                  ? "Verified"
-                  : "Pending Verification"}
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge
+                  variant={
+                    bankingDetails.account_verified ? "secondary" : "outline"
+                  }
+                >
+                  {bankingDetails.account_verified
+                    ? "Verified"
+                    : bankingDetails.subaccount_status === "pending_setup"
+                      ? "Pending Setup"
+                      : "Pending Verification"}
+                </Badge>
+                {bankingDetails.subaccount_status === "pending_setup" && (
+                  <span className="text-xs text-blue-600">
+                    Payment integration will complete automatically
+                  </span>
+                )}
+              </div>
             </div>
             <Button onClick={() => setIsEditing(true)} variant="outline">
               <Edit className="h-4 w-4 mr-2" />
