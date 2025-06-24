@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import PaystackValidation from "@/services/paystackValidation";
 
 declare global {
   interface Window {
@@ -91,6 +92,11 @@ const CheckoutPaymentProcessor: React.FC<CheckoutPaymentProcessorProps> = ({
   }, [cartItems]);
 
   const processPayment = async () => {
+    // Validate Paystack configuration
+    if (!PaystackValidation.validateConfiguration()) {
+      return;
+    }
+
     if (!paystackLoaded || !window.PaystackPop) {
       toast.error("Payment system not ready. Please try again.");
       return;
@@ -101,18 +107,37 @@ const CheckoutPaymentProcessor: React.FC<CheckoutPaymentProcessorProps> = ({
       return;
     }
 
-    // Check if all sellers have subaccounts
-    const sellersWithoutSubaccounts = cartItems.filter(
-      (item) => !sellerSubaccounts[item.sellerId],
+    // Validate payment data
+    const paymentData = {
+      amount: totalAmount,
+      email: user.email,
+      cartItems,
+      shippingData,
+      deliveryData,
+    };
+
+    if (!PaystackValidation.validatePaymentData(paymentData)) {
+      return;
+    }
+
+    // Validate seller subaccounts
+    if (
+      !PaystackValidation.validateSellerSubaccounts(
+        sellerSubaccounts,
+        cartItems,
+      )
+    ) {
+      return;
+    }
+
+    // Calculate and validate payment splits
+    const splitCalculation = PaystackValidation.calculatePaymentSplits(
+      cartItems,
+      deliveryData?.price || 0,
     );
 
-    if (sellersWithoutSubaccounts.length > 0) {
-      const sellerNames = sellersWithoutSubaccounts
-        .map((item) => item.sellerName)
-        .join(", ");
-      toast.error(
-        `Payment setup incomplete for sellers: ${sellerNames}. Please contact support.`,
-      );
+    if (!splitCalculation.isValid) {
+      toast.error("Payment calculation error. Please contact support.");
       return;
     }
 
@@ -167,7 +192,16 @@ const CheckoutPaymentProcessor: React.FC<CheckoutPaymentProcessorProps> = ({
       const { authorization_url, access_code, reference } =
         paymentInit.data.data;
 
-      // Configure Paystack popup
+      // Log payment attempt
+      PaystackValidation.logPaymentAttempt({
+        amount: totalAmount,
+        reference,
+        email: user.email,
+        cartItems,
+        splits: splitCalculation.splits,
+      });
+
+      // Configure Paystack popup with validated data
       const paystack = window.PaystackPop.setup({
         key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
         email: user.email,
@@ -180,19 +214,24 @@ const CheckoutPaymentProcessor: React.FC<CheckoutPaymentProcessorProps> = ({
           seller_id: firstItem.sellerId,
           shipping_data: shippingData,
           delivery_data: deliveryData,
+          platform_fee: splitCalculation.platformFee,
+          seller_splits: splitCalculation.splits,
+          total_books: cartItems.length,
+          validation_passed: true,
         },
         callback: async (response: any) => {
-          console.log("Payment successful:", response);
+          console.log("💳 Payment successful:", response);
           await handlePaymentSuccess(response);
         },
         onClose: () => {
-          console.log("Payment cancelled");
+          console.log("💳 Payment cancelled by user");
           setIsInitializing(false);
           toast.info("Payment cancelled");
         },
       });
 
       // Open payment popup
+      console.log("💳 Opening Paystack payment popup...");
       paystack.openIframe();
     } catch (error) {
       console.error("Error processing payment:", error);
