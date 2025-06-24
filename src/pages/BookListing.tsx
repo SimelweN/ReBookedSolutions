@@ -4,6 +4,7 @@ import Layout from "@/components/Layout";
 import SEO from "@/components/SEO";
 import BookFilters from "@/components/book-listing/BookFilters";
 import BookGrid from "@/components/book-listing/BookGrid";
+import ConnectionErrorFallback from "@/components/ConnectionErrorFallback";
 import { getBooks } from "@/services/book/bookQueries";
 import { Book } from "@/types/book";
 import { toast } from "sonner";
