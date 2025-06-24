@@ -285,27 +285,74 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
 
   /**
    * Check if user qualifies for a specific program
-   * Supports both userProfile and direct APS value from URL params
+   * Enhanced eligibility check with subject requirements and APS validation
    */
   const checkProgramEligibility = useCallback(
     (program: any, directAPS?: number) => {
       const apsToUse = directAPS || userProfile?.totalAPS;
+      const userSubjects = userProfile?.subjects || [];
 
-      if (!apsToUse) return { eligible: false, reason: "No APS profile" };
+      if (!apsToUse)
+        return { eligible: false, reason: "No APS profile available" };
 
       try {
-        // Basic eligibility check - can be enhanced
-        const requiredAPS = program.apsRequirement || program.defaultAps || 20;
+        // Enhanced eligibility check
+        const requiredAPS =
+          program.apsRequirement || program.defaultAps || program.aps || 20;
+        const apsGap = apsToUse >= requiredAPS ? 0 : requiredAPS - apsToUse;
+
+        // Check basic APS requirement
+        if (apsToUse < requiredAPS) {
+          return {
+            eligible: false,
+            reason: `Need ${apsGap} more APS points (require ${requiredAPS}, have ${apsToUse})`,
+            apsGap,
+            meetsAPS: false,
+          };
+        }
+
+        // Check subject requirements if available
+        const subjectRequirements =
+          program.subjects || program.subjectRequirements || [];
+        const unmetSubjects = [];
+
+        for (const reqSubject of subjectRequirements) {
+          if (reqSubject.isRequired || reqSubject.required) {
+            const userSubject = userSubjects.find(
+              (s) =>
+                s.name.toLowerCase().includes(reqSubject.name.toLowerCase()) ||
+                reqSubject.name.toLowerCase().includes(s.name.toLowerCase()),
+            );
+
+            if (!userSubject) {
+              unmetSubjects.push(`Missing ${reqSubject.name}`);
+            } else if (
+              userSubject.level < (reqSubject.level || reqSubject.minLevel || 4)
+            ) {
+              unmetSubjects.push(
+                `${reqSubject.name} level too low (need level ${reqSubject.level || reqSubject.minLevel || 4}, have ${userSubject.level})`,
+              );
+            }
+          }
+        }
+
+        if (unmetSubjects.length > 0) {
+          return {
+            eligible: false,
+            reason: `Subject requirements not met: ${unmetSubjects.join(", ")}`,
+            meetsAPS: true,
+            unmetSubjects,
+          };
+        }
 
         return {
-          eligible: apsToUse >= requiredAPS,
-          reason:
-            apsToUse >= requiredAPS
-              ? "Meets APS requirement"
-              : `APS too low (need ${requiredAPS}, have ${apsToUse})`,
+          eligible: true,
+          reason: "Meets all requirements",
+          meetsAPS: true,
+          apsGap: 0,
         };
       } catch (error) {
-        console.error("Error checking eligibility:", error);
+        console.error("Error checking program eligibility:", error);
         return { eligible: false, reason: "Error checking eligibility" };
       }
     },
