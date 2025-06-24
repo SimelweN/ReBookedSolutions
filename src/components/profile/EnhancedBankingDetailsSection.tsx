@@ -240,6 +240,24 @@ const EnhancedBankingDetailsSection: React.FC = () => {
               </p>
             </div>
 
+            {bankingDetails.subaccount_status === "pending_setup" && (
+              <Alert className="border-blue-200 bg-blue-50">
+                <Shield className="h-4 w-4 text-blue-600" />
+                <AlertDescription className="text-blue-800">
+                  <div className="space-y-1">
+                    <div className="font-medium">
+                      Payment Integration Pending
+                    </div>
+                    <div className="text-sm">
+                      Your banking details are saved securely. Payment account
+                      setup will complete automatically when the payment service
+                      becomes available. You can still list books for sale.
+                    </div>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            )}
+
             <div>
               <Label>Account Holder</Label>
               <p className="text-sm text-gray-600">
