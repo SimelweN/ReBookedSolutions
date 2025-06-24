@@ -41,7 +41,7 @@ import { Book } from "@/types/book";
 import { BookDeletionService } from "@/services/bookDeletionService";
 import { ImprovedBankingService } from "@/services/improvedBankingService";
 import SellerBankingSetupPrompt from "@/components/SellerBankingSetupPrompt";
-import BecomeSellerGuide from "@/components/BecomeSellerGuide";
+import EnhancedBecomeSellerGuide from "@/components/EnhancedBecomeSellerGuide";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -770,11 +770,9 @@ const Profile = () => {
           type="buyer"
         />
 
-        <BecomeSellerGuide
+        <EnhancedBecomeSellerGuide
           isOpen={showBecomeSellerGuide}
           onClose={() => setShowBecomeSellerGuide(false)}
-          userHasAddress={hasAddress}
-          userHasBanking={hasBankingDetails}
         />
       </div>
     </Layout>
