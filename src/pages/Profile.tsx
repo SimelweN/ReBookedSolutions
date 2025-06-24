@@ -527,6 +527,14 @@ const Profile = () => {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <Button
+                    onClick={() => setShowBecomeSellerGuide(true)}
+                    className="w-full text-left justify-start bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    Become a Seller
+                  </Button>
+
+                  <Button
                     onClick={handleBookNotSelling}
                     variant="outline"
                     className="w-full text-left justify-start"
