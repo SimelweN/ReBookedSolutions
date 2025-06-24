@@ -112,8 +112,8 @@ const Checkout: React.FC = () => {
       // Clear cart after successful payment
       clearCart();
 
-      // Navigate to success page with order details
-      navigate("/checkout/success", {
+      // Navigate to payment status page with order details
+      navigate(`/payment-status?reference=${paymentData.paystack_reference}`, {
         state: {
           orderId: paymentData.order_id,
           paymentReference: paymentData.paystack_reference,
