@@ -12,6 +12,8 @@ import CheckoutOrderSummary from "@/components/checkout/CheckoutOrderSummary";
 import EnhancedShippingForm from "@/components/checkout/EnhancedShippingForm";
 import SimpleShippingForm from "@/components/checkout/SimpleShippingForm";
 import CheckoutPaymentProcessor from "@/components/checkout/CheckoutPaymentProcessor";
+import GoogleMapsErrorHandler from "@/components/GoogleMapsErrorHandler";
+import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
 import { toast } from "sonner";
 
 const Checkout: React.FC = () => {
