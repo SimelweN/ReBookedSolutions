@@ -527,9 +527,9 @@ function App() {
                         path="/admin"
                         element={
                           <AdminProtectedRoute>
-                            <InstantRoute>
+                            
                               <Admin />
-                            </InstantRoute>
+                            
                           </AdminProtectedRoute>
                         }
                       />
