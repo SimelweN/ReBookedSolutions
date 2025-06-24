@@ -8,74 +8,167 @@ import {
   APSAwareCourseSearchService,
 } from "@/services/apsAwareCourseAssignmentService";
 import { calculateAPS, validateAPSSubjects } from "@/utils/apsCalculation";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  saveAPSProfile,
+  loadAPSProfile,
+  clearAPSProfile as clearAPSProfileService,
+  checkSyncStatus,
+  migrateSessionToLocal,
+  UserAPSProfile,
+} from "@/services/apsPersistenceService";
 
 /**
- * Enhanced hook for APS-aware course assignment with user state management
- * Uses localStorage for persistent storage - retains data until manually cleared
+ * Enhanced hook for APS-aware course assignment with authentication-aware persistence
+ * - Authenticated users: Database + localStorage backup
+ * - Non-authenticated users: localStorage only
+ * - Automatic sync between storages
+ * - Persistent data until manually cleared
  */
-
-export interface UserAPSProfile {
-  subjects: APSSubject[];
-  totalAPS: number;
-  lastUpdated: string;
-  isValid?: boolean;
-  validationErrors?: string[];
-  universitySpecificScores?: import("@/types/university").UniversityAPSResult[];
-}
 
 export interface APSAwareState {
   userProfile: UserAPSProfile | null;
   isLoading: boolean;
   error: string | null;
   lastSearchResults: CoursesForUniversityResult | null;
+  storageSource?: string;
+  syncStatus?: {
+    needsSync: boolean;
+    recommendation: "none" | "localToDb" | "dbToLocal";
+  };
 }
 
-// Custom hook for localStorage (persistent storage)
-function useLocalStorage<T>(key: string, initialValue: T) {
-  const [storedValue, setStoredValue] = useState<T>(() => {
+// Authentication-aware storage hook
+function useAuthAwareAPSStorage() {
+  const { user, isAuthenticated } = useAuth();
+  const [userProfile, setUserProfile] = useState<UserAPSProfile | null>(null);
+  const [storageSource, setStorageSource] = useState<string>("none");
+  const [isLoading, setIsLoading] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<{
+    needsSync: boolean;
+    recommendation: "none" | "localToDb" | "dbToLocal";
+  }>({ needsSync: false, recommendation: "none" });
+
+  // Load profile when component mounts or user changes
+  const loadProfile = useCallback(async () => {
+    setIsLoading(true);
     try {
-      const item = localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
+      // Migrate any session data first
+      migrateSessionToLocal();
+
+      const { profile, source, error } = await loadAPSProfile(user);
+      setUserProfile(profile);
+      setStorageSource(source);
+
+      if (error) {
+        console.warn("Profile load warning:", error);
+      }
+
+      // Check sync status for authenticated users
+      if (isAuthenticated && user) {
+        const syncInfo = await checkSyncStatus(user);
+        setSyncStatus(syncInfo);
+      }
     } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error);
-      return initialValue;
+      console.error("Failed to load APS profile:", error);
+    } finally {
+      setIsLoading(false);
     }
-  });
+  }, [user, isAuthenticated]);
 
-  const setValue = useCallback(
-    (value: T | ((val: T) => T)) => {
+  // Save profile with authentication awareness
+  const saveProfile = useCallback(
+    async (profile: UserAPSProfile) => {
+      setIsLoading(true);
       try {
-        const valueToStore =
-          value instanceof Function ? value(storedValue) : value;
-        setStoredValue(valueToStore);
+        const result = await saveAPSProfile(profile, user);
 
-        if (valueToStore === null || valueToStore === undefined) {
-          localStorage.removeItem(key);
+        if (result.success) {
+          setUserProfile(profile);
+          setStorageSource(result.source || "unknown");
+
+          // Update sync status
+          if (isAuthenticated && user) {
+            const syncInfo = await checkSyncStatus(user);
+            setSyncStatus(syncInfo);
+          }
         } else {
-          localStorage.setItem(key, JSON.stringify(valueToStore));
+          console.error("Failed to save APS profile:", result.error);
         }
+
+        return result.success;
       } catch (error) {
-        console.warn(`Error setting localStorage key "${key}":`, error);
+        console.error("Error saving APS profile:", error);
+        return false;
+      } finally {
+        setIsLoading(false);
       }
     },
-    [key, storedValue],
+    [user, isAuthenticated],
   );
 
-  return [storedValue, setValue] as const;
+  // Clear profile from all storages
+  const clearProfile = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const result = await clearAPSProfileService(user);
+
+      if (result.success) {
+        setUserProfile(null);
+        setStorageSource("none");
+        setSyncStatus({ needsSync: false, recommendation: "none" });
+
+        // Trigger global state reset event
+        window.dispatchEvent(new CustomEvent("apsProfileCleared"));
+      } else {
+        console.error("Failed to clear APS profile:", result.error);
+      }
+
+      return result.success;
+    } catch (error) {
+      console.error("Error clearing APS profile:", error);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user]);
+
+  // Load profile when user auth state changes
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
+
+  return {
+    userProfile,
+    setUserProfile: saveProfile,
+    clearProfile,
+    storageSource,
+    syncStatus,
+    isLoading,
+    loadProfile,
+  };
 }
 
 export function useAPSAwareCourseAssignment(universityId?: string) {
-  // Persistent user APS profile (localStorage)
-  const [userProfile, setUserProfile] = useLocalStorage<UserAPSProfile | null>(
-    "userAPSProfile",
-    null,
-  );
+  // Authentication-aware persistent storage
+  const {
+    userProfile,
+    setUserProfile,
+    clearProfile,
+    storageSource,
+    syncStatus,
+    isLoading: storageLoading,
+    loadProfile,
+  } = useAuthAwareAPSStorage();
 
   // Component state
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastSearchResults, setLastSearchResults] =
     useState<CoursesForUniversityResult | null>(null);
+
+  // Combine storage loading with component loading
+  const totalLoading = storageLoading || isLoading;
 
   /**
    * Update user's APS subjects and recalculate profile
@@ -94,7 +187,8 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
         }
 
         // Calculate total APS
-        const totalAPS = calculateAPS(subjects);
+        const apsCalculation = calculateAPS(subjects);
+        const totalAPS = apsCalculation.totalScore || 0;
 
         // Create profile
         const profile: UserAPSProfile = {
@@ -102,11 +196,14 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
           totalAPS,
           lastUpdated: new Date().toISOString(),
           isValid: true,
+          validationErrors: validation.errors,
+          universitySpecificScores:
+            apsCalculation.universitySpecificScores || [],
         };
 
-        // Save to session storage
-        setUserProfile(profile);
-        return true;
+        // Save using authentication-aware storage
+        const success = await setUserProfile(profile);
+        return success;
       } catch (error) {
         console.error("Error updating user subjects:", error);
         setError("Failed to update subjects. Please try again.");
@@ -184,26 +281,26 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
   );
 
   /**
-   * Clear user's APS profile
+   * Clear user's APS profile from all storage locations
    */
-  const clearAPSProfile = useCallback(() => {
+  const clearAPSProfile = useCallback(async () => {
     try {
-      // Clear from both localStorage and sessionStorage to ensure clean state
-      localStorage.removeItem("userAPSProfile");
-      localStorage.removeItem("apsSearchResults");
-      sessionStorage.removeItem("userAPSProfile");
-      sessionStorage.removeItem("apsSearchResults");
+      const success = await clearProfile();
 
-      setUserProfile(null);
-      setLastSearchResults(null);
-      setError(null);
+      if (success) {
+        setLastSearchResults(null);
+        setError(null);
+      } else {
+        setError("Failed to clear APS profile completely");
+      }
 
-      // Trigger global state reset event
-      window.dispatchEvent(new CustomEvent("apsProfileCleared"));
+      return success;
     } catch (error) {
       console.error("Error clearing APS profile:", error);
+      setError("Failed to clear APS profile");
+      return false;
     }
-  }, [setUserProfile]);
+  }, [clearProfile]);
 
   /**
    * Clear any errors
@@ -214,7 +311,7 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
 
   return {
     userProfile,
-    isLoading,
+    isLoading: totalLoading,
     error,
     hasValidProfile: !!(
       userProfile?.subjects && userProfile.subjects.length >= 4
@@ -226,11 +323,14 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
           isValid: userProfile.isValid || false,
         }
       : null,
+    storageSource,
+    syncStatus,
     updateUserSubjects,
     searchCoursesForUniversity,
     checkProgramEligibility,
     clearAPSProfile,
     clearError,
+    refreshProfile: loadProfile,
   };
 }
 

@@ -74,6 +74,7 @@ import { validateAPSSubjectsEnhanced } from "@/utils/enhancedValidation";
 import { normalizeSubjectName } from "@/utils/subjectNormalization";
 import UniversitySpecificAPSDisplay from "./UniversitySpecificAPSDisplay";
 import EligibleProgramsSection from "./EligibleProgramsSection";
+import APSStorageIndicator from "./APSStorageIndicator";
 
 /**
  * Enhanced APS Calculator with two-section layout:
@@ -92,6 +93,9 @@ interface APSSubjectInput {
 const EnhancedAPSCalculator: React.FC = () => {
   const navigate = useNavigate();
 
+  // Authentication context
+  const { isAuthenticated } = useAuth();
+
   // APS-aware state management
   const {
     userProfile,
@@ -99,11 +103,14 @@ const EnhancedAPSCalculator: React.FC = () => {
     error,
     hasValidProfile,
     qualificationSummary,
+    storageSource,
+    syncStatus,
     updateUserSubjects,
     searchCoursesForUniversity,
     checkProgramEligibility,
     clearAPSProfile,
     clearError,
+    refreshProfile,
   } = useAPSAwareCourseAssignment();
 
   // Local state
@@ -297,18 +304,28 @@ const EnhancedAPSCalculator: React.FC = () => {
   }, [clearError]);
 
   // Clear APS profile from all universities
-  const handleClearAPSProfile = useCallback(() => {
-    clearAPSProfile();
-    setSubjects([]);
-    setSelectedSubject("");
-    setSelectedMarks("");
-    setSearchResults([]);
-    setSelectedProgram(null);
-    setIsDetailsModalOpen(false);
-    setShowProgramsSection(false);
-    setUniversitySpecificScores(null);
-    clearError();
-    toast.success("APS profile cleared from all universities");
+  const handleClearAPSProfile = useCallback(async () => {
+    try {
+      const success = await clearAPSProfile();
+
+      if (success) {
+        setSubjects([]);
+        setSelectedSubject("");
+        setSelectedMarks("");
+        setSearchResults([]);
+        setSelectedProgram(null);
+        setIsDetailsModalOpen(false);
+        setShowProgramsSection(false);
+        setUniversitySpecificScores(null);
+        clearError();
+        toast.success("APS profile cleared from all storage locations");
+      } else {
+        toast.error("Failed to clear APS profile completely");
+      }
+    } catch (error) {
+      console.error("Error clearing APS profile:", error);
+      toast.error("Error clearing APS profile");
+    }
   }, [clearAPSProfile, clearError]);
 
   // Search programs function
@@ -692,13 +709,24 @@ const EnhancedAPSCalculator: React.FC = () => {
                             <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                           ) : (
                             <Target className="w-5 h-5 mr-2" />
-                          )}
-                          Find Your Programs
-                        </Button>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
+              )}
+
+              {/* Storage Status Indicator */}
+              {subjects.length > 0 && (
+                <APSStorageIndicator
+                  storageSource={storageSource}
+                  syncStatus={syncStatus}
+                  isAuthenticated={isAuthenticated}
+                  onRefresh={refreshProfile}
+                  className="mt-4"
+                />
+              )}
+            </CardContent>
+          </Card>
               )}
             </CardContent>
           </Card>
