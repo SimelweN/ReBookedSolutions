@@ -88,30 +88,40 @@ export const fetchUserProfileQuick = async (
 
     // Test if profiles table exists with a very quick check
     try {
-      const { error: tableCheckError } = await withTimeout(
+      const { error: tableCheckError } = (await withTimeout(
         supabase.from("profiles").select("id").limit(1),
         2000, // Very short timeout for existence check
-        "Table check timeout"
-      ) as any;
+        "Table check timeout",
+      )) as any;
 
       if (tableCheckError) {
         // Handle specific table missing error
-        if (tableCheckError.message?.includes("relation") &&
-            tableCheckError.message?.includes("does not exist")) {
-          console.warn("❌ Profiles table does not exist - using fallback profile");
+        if (
+          tableCheckError.message?.includes("relation") &&
+          tableCheckError.message?.includes("does not exist")
+        ) {
+          console.warn(
+            "❌ Profiles table does not exist - using fallback profile",
+          );
           return null;
         }
 
         // Handle permission errors
-        if (tableCheckError.message?.includes("permission denied") ||
-            tableCheckError.code === "42501") {
-          console.warn("❌ No permission to access profiles table - using fallback");
+        if (
+          tableCheckError.message?.includes("permission denied") ||
+          tableCheckError.code === "42501"
+        ) {
+          console.warn(
+            "❌ No permission to access profiles table - using fallback",
+          );
           return null;
         }
 
         // Handle network/connection errors
         if (isNetworkError(tableCheckError)) {
-          console.warn("⚠️ Network error checking profiles table - using fallback");
+          console.warn(
+            "⚠️ Network error checking profiles table - using fallback",
+          );
           return null;
         }
       }
@@ -155,8 +165,9 @@ export const fetchUserProfileQuick = async (
       // Quick admin check
       const adminEmails = ["AdminSimnLi@gmail.com", "adminsimnli@gmail.com"];
       const userEmail = profile.email || user.email || "";
-      const isAdmin = profile.is_admin === true ||
-                     adminEmails.includes(userEmail.toLowerCase());
+      const isAdmin =
+        profile.is_admin === true ||
+        adminEmails.includes(userEmail.toLowerCase());
 
       const profileData = {
         id: profile.id,
@@ -178,38 +189,6 @@ export const fetchUserProfileQuick = async (
       console.warn("⚠️ Profile fetch failed:", profileFetchError);
       return null;
     }
-  } catch (error) {
-    // Enhanced error logging to debug the timeout issue
-    const errorDetails = {
-      message: error instanceof Error ? error.message : String(error),
-      name: error instanceof Error ? error.name : "Unknown",
-      isTimeout: (error as any)?.isTimeout || false,
-      stack: error instanceof Error ? error.stack?.split("\n")[0] : undefined,
-    };
-
-    console.warn("⚠️ Quick profile fetch failed:", errorDetails);
-
-    // Don't log as error since this is expected to fail sometimes
-    // Just use fallback profile
-    return null;
-  }
-
-    const profileData = {
-      id: profile.id,
-      name:
-        profile.name ||
-        user.user_metadata?.name ||
-        user.email?.split("@")[0] ||
-        "User",
-      email: profile.email || user.email || "",
-      isAdmin,
-      status: profile.status || "active",
-      profile_picture_url: profile.profile_picture_url,
-      bio: profile.bio,
-    };
-
-    console.log("✅ Quick profile fetch successful");
-    return profileData;
   } catch (error) {
     // Enhanced error logging to debug the timeout issue
     const errorDetails = {
