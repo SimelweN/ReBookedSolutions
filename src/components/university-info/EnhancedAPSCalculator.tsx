@@ -263,6 +263,32 @@ const EnhancedAPSCalculator: React.FC = () => {
     }
   }, [userProfile]);
 
+  // Auto-save subjects whenever they change (ensuring persistence)
+  useEffect(() => {
+    if (subjects.length > 0) {
+      console.log(
+        "🔄 Subjects changed, auto-saving to ensure persistence...",
+        subjects.length,
+      );
+
+      // Convert to APS format and save
+      const apsSubjects: APSSubject[] = subjects.map((s) => ({
+        name: s.name,
+        marks: s.marks,
+        level: s.points,
+        points: s.points,
+      }));
+
+      // Auto-save with a small delay to debounce rapid changes
+      const timeoutId = setTimeout(async () => {
+        await updateUserSubjects(apsSubjects);
+        console.log("💾 Auto-save completed for", subjects.length, "subjects");
+      }, 500);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [subjects, updateUserSubjects]);
+
   // Update validation messages
   useEffect(() => {
     // Extract just the message strings from validation error objects
