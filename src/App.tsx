@@ -455,6 +455,26 @@ function App() {
                         }
                       />
                       <Route
+                        path="/checkout"
+                        element={
+                          <ProtectedRoute>
+                            <LazyWrapper>
+                              <Checkout />
+                            </LazyWrapper>
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/checkout/success"
+                        element={
+                          <ProtectedRoute>
+                            <LazyWrapper>
+                              <CheckoutSuccess />
+                            </LazyWrapper>
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
                         path="/notifications"
                         element={
                           <ProtectedRoute>
