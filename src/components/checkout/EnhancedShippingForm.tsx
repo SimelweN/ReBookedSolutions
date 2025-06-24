@@ -349,10 +349,15 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   };
 
   const onSubmit = async (data: ShippingFormData) => {
+    console.log("📋 Form submission started:", { data, deliveryOptions });
+
     if (deliveryOptions.length === 0) {
+      console.error("��� No delivery options available");
       toast.error("No delivery options available. Please check your address.");
       return;
     }
+
+    console.log("✅ Validation passed, processing submission...");
 
     try {
       setIsLoading(true);
@@ -362,6 +367,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
+        console.log("💾 Saving shipping address for user:", user.id);
         await supabase
           .from("profiles")
           .update({
@@ -378,11 +384,18 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
           .eq("id", user.id);
       }
 
+      console.log("🚀 Calling onComplete with data:", {
+        data,
+        deliveryOptionsCount: deliveryOptions.length,
+      });
+
       // Pass both shipping data and all delivery options to parent
       onComplete(data, deliveryOptions);
+
+      console.log("✅ Form submission completed successfully");
       toast.success("Proceeding to delivery selection");
     } catch (error) {
-      console.error("Error processing shipping form:", error);
+      console.error("❌ Error processing shipping form:", error);
       toast.error("Failed to process shipping information");
     } finally {
       setIsLoading(false);
