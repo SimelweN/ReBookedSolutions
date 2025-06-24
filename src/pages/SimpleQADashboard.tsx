@@ -24,6 +24,7 @@ import {
 import ComprehensiveQAChecker from "@/components/ComprehensiveQAChecker";
 import QAQuickFixes from "@/components/QAQuickFixes";
 import CheckoutTroubleshooting from "@/components/CheckoutTroubleshooting";
+import SystemwideQAFixes from "@/components/SystemwideQAFixes";
 
 const SimpleQADashboard: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
