@@ -168,7 +168,7 @@ const CommitReminderModal = ({
               <div>
                 <p className="font-medium text-sm">Order placed:</p>
                 <p className="text-xs text-gray-600">
-                  Payments processed securely on payment.rebookedsolutions.co.za
+                  Payments processed securely with Paystack encryption
                 </p>
               </div>
             </div>

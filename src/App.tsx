@@ -72,6 +72,7 @@ const Privacy = React.lazy(() => import("./pages/Privacy"));
 const Terms = React.lazy(() => import("./pages/Terms"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 const Cart = React.lazy(() => import("./pages/Cart"));
+const Checkout = React.lazy(() => import("./pages/Checkout"));
 const Notifications = React.lazy(() => import("./pages/Notifications"));
 const Shipping = React.lazy(() => import("./pages/Shipping"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
@@ -90,6 +91,7 @@ const UserProfile = React.lazy(() => import("./pages/UserProfile"));
 const FAQ = React.lazy(() => import("./pages/FAQ"));
 const APSDemo = React.lazy(() => import("./pages/APSDemo"));
 const SystemStatus = React.lazy(() => import("./pages/SystemStatus"));
+const CheckoutSuccess = React.lazy(() => import("./pages/CheckoutSuccess"));
 
 // Create query client with optimized settings
 const queryClient = new QueryClient({
@@ -317,6 +319,7 @@ function App() {
                           </LazyWrapper>
                         }
                       />
+
                       <Route
                         path="/shipping"
                         element={
@@ -447,6 +450,26 @@ function App() {
                           <ProtectedRoute>
                             <LazyWrapper>
                               <EditBook />
+                            </LazyWrapper>
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/checkout"
+                        element={
+                          <ProtectedRoute>
+                            <LazyWrapper>
+                              <Checkout />
+                            </LazyWrapper>
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/checkout/success"
+                        element={
+                          <ProtectedRoute>
+                            <LazyWrapper>
+                              <CheckoutSuccess />
                             </LazyWrapper>
                           </ProtectedRoute>
                         }

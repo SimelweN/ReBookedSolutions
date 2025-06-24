@@ -47,6 +47,40 @@ const CreateListing = () => {
     insidePages: "",
   });
 
+  const [hasBankingDetails, setHasBankingDetails] = useState<boolean | null>(
+    null,
+  );
+  const [isCheckingBanking, setIsCheckingBanking] = useState(true);
+
+  // Check banking details specifically
+  useEffect(() => {
+    const checkBankingDetails = async () => {
+      if (!user) {
+        setHasBankingDetails(false);
+        setIsCheckingBanking(false);
+        return;
+      }
+
+      try {
+        const { data: bankingData } = await supabase
+          .from("banking_details")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("is_verified", true)
+          .single();
+
+        setHasBankingDetails(!!bankingData);
+      } catch (error) {
+        console.error("Error checking banking details:", error);
+        setHasBankingDetails(false);
+      } finally {
+        setIsCheckingBanking(false);
+      }
+    };
+
+    checkBankingDetails();
+  }, [user]);
+
   const [bookImages, setBookImages] = useState({
     frontCover: "",
     backCover: "",

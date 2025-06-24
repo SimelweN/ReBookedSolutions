@@ -41,6 +41,8 @@ import { Book } from "@/types/book";
 import { BookDeletionService } from "@/services/bookDeletionService";
 import { ImprovedBankingService } from "@/services/improvedBankingService";
 import SellerBankingSetupPrompt from "@/components/SellerBankingSetupPrompt";
+import BecomeSellerGuide from "@/components/BecomeSellerGuide";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -76,6 +78,9 @@ const Profile = () => {
   const [showDangerZone, setShowDangerZone] = useState(false);
   const [needsBankingSetup, setNeedsBankingSetup] = useState(false);
   const [showBankingPrompt, setShowBankingPrompt] = useState(false);
+  const [showBecomeSellerGuide, setShowBecomeSellerGuide] = useState(false);
+  const [hasAddress, setHasAddress] = useState(false);
+  const [hasBankingDetails, setHasBankingDetails] = useState(false);
 
   const loadUserAddresses = useCallback(async () => {
     if (!user?.id) return;
@@ -142,6 +147,43 @@ const Profile = () => {
   useEffect(() => {
     checkBankingSetup();
   }, [checkBankingSetup]);
+
+  // Check user setup status for Become a Seller guide
+  useEffect(() => {
+    const checkUserSetup = async () => {
+      if (!user?.id) {
+        setHasAddress(false);
+        setHasBankingDetails(false);
+        return;
+      }
+
+      try {
+        // Check if user has address
+        const addressExists =
+          addressData &&
+          addressData.street_address &&
+          addressData.city &&
+          addressData.province;
+        setHasAddress(!!addressExists);
+
+        // Check if user has verified banking details
+        const { data: bankingData } = await supabase
+          .from("banking_details")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("is_verified", true)
+          .single();
+
+        setHasBankingDetails(!!bankingData);
+      } catch (error) {
+        console.error("Error checking user setup:", error);
+        setHasAddress(false);
+        setHasBankingDetails(false);
+      }
+    };
+
+    checkUserSetup();
+  }, [user?.id, addressData]);
 
   const handleSaveAddresses = async (
     pickup: {
@@ -523,6 +565,14 @@ const Profile = () => {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <Button
+                    onClick={() => setShowBecomeSellerGuide(true)}
+                    className="w-full text-left justify-start bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    Become a Seller
+                  </Button>
+
+                  <Button
                     onClick={handleBookNotSelling}
                     variant="outline"
                     className="w-full text-left justify-start"
@@ -718,6 +768,13 @@ const Profile = () => {
           isOpen={isBuyerHowItWorksOpen}
           onClose={() => setIsBuyerHowItWorksOpen(false)}
           type="buyer"
+        />
+
+        <BecomeSellerGuide
+          isOpen={showBecomeSellerGuide}
+          onClose={() => setShowBecomeSellerGuide(false)}
+          userHasAddress={hasAddress}
+          userHasBanking={hasBankingDetails}
         />
       </div>
     </Layout>

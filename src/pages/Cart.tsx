@@ -38,21 +38,12 @@ const Cart = () => {
 
     setIsProcessing(true);
     try {
-      // Redirect to payment subdomain
-      const cartData = {
-        items: items,
-        userId: user.id,
-        totalPrice: totalPrice,
-      };
-
-      // Store cart data in session storage for payment subdomain
-      sessionStorage.setItem("cart_data", JSON.stringify(cartData));
-
-      // Redirect to payment subdomain
-      window.location.href = `https://payment.rebookedsolutions.co.za/cart-checkout?userId=${user.id}`;
+      // Navigate to integrated checkout page
+      navigate("/checkout");
+      toast.success("Proceeding to checkout...");
     } catch (error) {
-      console.error("Error redirecting to payment system:", error);
-      toast.error("Unable to proceed to payment. Please try again.");
+      console.error("Checkout error:", error);
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setIsProcessing(false);
     }
