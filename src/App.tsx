@@ -24,6 +24,7 @@ import {
   checkDatabaseStatus,
   logDatabaseStatus,
 } from "./utils/databaseConnectivityHelper";
+import { preloadCriticalRoutes } from "./utils/routePreloader";
 import "./App.css";
 
 // Initialize debug utilities in development
