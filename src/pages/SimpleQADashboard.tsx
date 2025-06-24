@@ -176,94 +176,6 @@ const SimpleQADashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Current Status Display */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <User className="w-4 h-4" />
-                Authentication
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2">
-                {isAuthenticated ? (
-                  <>
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span className="text-sm text-green-600">Logged In</span>
-                  </>
-                ) : (
-                  <>
-                    <XCircle className="w-4 h-4 text-red-600" />
-                    <span className="text-sm text-red-600">Not Logged In</span>
-                  </>
-                )}
-              </div>
-              {user && (
-                <p className="text-xs text-gray-500 mt-1">
-                  User ID: {user.id.slice(0, 8)}...
-                </p>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <ShoppingCart className="w-4 h-4" />
-                Cart Status
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2">
-                {items.length > 0 ? (
-                  <>
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span className="text-sm text-green-600">
-                      {items.length} items
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <AlertTriangle className="w-4 h-4 text-yellow-600" />
-                    <span className="text-sm text-yellow-600">Empty cart</span>
-                  </>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <CreditCard className="w-4 h-4" />
-                Payment Config
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2">
-                {import.meta.env.VITE_PAYSTACK_PUBLIC_KEY ? (
-                  <>
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span className="text-sm text-green-600">
-                      {import.meta.env.VITE_PAYSTACK_PUBLIC_KEY.startsWith(
-                        "pk_live_",
-                      )
-                        ? "Live"
-                        : "Test"}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <XCircle className="w-4 h-4 text-red-600" />
-                    <span className="text-sm text-red-600">Not configured</span>
-                  </>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
         {/* Enhanced QA Testing */}
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
@@ -421,7 +333,7 @@ const SimpleQADashboard: React.FC = () => {
                   <div>
                     <h4 className="font-semibold mb-2">🧑‍💼 Seller Onboarding</h4>
                     <ul className="space-y-1">
-                      <li>��� Banking details required to sell</li>
+                      <li>• Banking details required to sell</li>
                       <li>• Address required to sell</li>
                       <li>• "Become a Seller" guide works</li>
                       <li>• 48-hour timeout enforced</li>
