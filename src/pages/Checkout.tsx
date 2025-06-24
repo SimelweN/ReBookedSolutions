@@ -37,14 +37,24 @@ const Checkout: React.FC = () => {
 
   // Redirect if cart is empty
   useEffect(() => {
-    if (items.length === 0) {
+    if (isAuthenticated && items.length === 0) {
       toast.error("Your cart is empty");
       navigate("/cart");
     }
-  }, [items, navigate]);
+  }, [items, navigate, isAuthenticated]);
 
+  // Show loading while checking authentication/cart
   if (!isAuthenticated || items.length === 0) {
-    return null;
+    return (
+      <Layout>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading checkout...</p>
+          </div>
+        </div>
+      </Layout>
+    );
   }
 
   const bookTotal = getTotalPrice();
