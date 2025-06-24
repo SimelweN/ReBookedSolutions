@@ -73,6 +73,7 @@ const Terms = React.lazy(() => import("./pages/Terms"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 const Cart = React.lazy(() => import("./pages/Cart"));
 const Checkout = React.lazy(() => import("./pages/Checkout"));
+const Shipping = React.lazy(() => import("./pages/Shipping"));
 const Notifications = React.lazy(() => import("./pages/Notifications"));
 const SimpleQADashboard = React.lazy(() => import("./pages/SimpleQADashboard"));
 const QADashboard = React.lazy(() => import("./pages/QADashboard"));
