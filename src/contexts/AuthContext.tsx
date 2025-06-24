@@ -272,7 +272,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setIsLoading(false);
       }
     },
-    [createFallbackProfile, upgradeProfileIfNeeded, isInitializing],
+    [createUserFallbackProfile, upgradeProfileIfNeeded, isInitializing],
   );
 
   const initializeAuth = useCallback(async () => {
