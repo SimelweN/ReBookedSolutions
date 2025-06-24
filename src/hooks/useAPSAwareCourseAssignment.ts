@@ -57,8 +57,16 @@ function useAuthAwareAPSStorage() {
       migrateSessionToLocal();
 
       const { profile, source, error } = await loadAPSProfile(user);
-      setUserProfile(profile);
-      setStorageSource(source);
+
+      // Only set profile if we actually found data or this is a fresh mount
+      if (profile) {
+        console.log("✅ APS Profile loaded from:", source, profile);
+        setUserProfile(profile);
+        setStorageSource(source);
+      } else {
+        console.log("ℹ️ No APS profile found, maintaining current state");
+        setStorageSource("none");
+      }
 
       if (error) {
         console.warn("Profile load warning:", error);

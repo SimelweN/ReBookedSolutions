@@ -450,28 +450,88 @@ export function checkSubjectRequirements(
     for (const userSubject of userSubjects) {
       let matchResult = matchSubjects(userSubject.name, required.name);
 
-      // Additional direct matching for common cases if primary matching fails
+      // Enhanced direct matching for common cases
       if (!matchResult.isMatch || matchResult.confidence < 50) {
         const userLower = userSubject.name.toLowerCase().trim();
         const reqLower = required.name.toLowerCase().trim();
 
-        // Direct English language matching
-        if (reqLower === "english" && userLower.includes("english")) {
+        // Enhanced English language matching - handle all variants
+        const englishVariants = [
+          "english",
+          "english home language",
+          "english hl",
+          "english first additional language",
+          "english fal",
+        ];
+        const userIsEnglish = englishVariants.some(
+          (variant) => userLower.includes(variant) || userLower === variant,
+        );
+        const reqIsEnglish = englishVariants.some(
+          (variant) => reqLower.includes(variant) || reqLower === variant,
+        );
+
+        if (userIsEnglish && reqIsEnglish) {
           matchResult = {
             isMatch: true,
             confidence: 95,
-            reason: `Direct English match: ${userSubject.name} satisfies English requirement`,
+            reason: `English language match: ${userSubject.name} satisfies ${required.name}`,
           };
         }
-        // Direct Mathematics matching
+        // Enhanced Mathematics matching
         else if (
-          reqLower === "mathematics" &&
-          (userLower === "mathematics" || userLower === "maths")
+          (reqLower === "mathematics" || reqLower === "maths") &&
+          (userLower === "mathematics" ||
+            userLower === "maths" ||
+            userLower === "math")
         ) {
           matchResult = {
             isMatch: true,
             confidence: 98,
-            reason: `Direct Math match: ${userSubject.name} satisfies Mathematics requirement`,
+            reason: `Mathematics match: ${userSubject.name} satisfies ${required.name}`,
+          };
+        }
+        // Physical Sciences matching
+        else if (
+          (reqLower === "physical sciences" || reqLower === "physics") &&
+          (userLower === "physical sciences" || userLower === "physics")
+        ) {
+          matchResult = {
+            isMatch: true,
+            confidence: 98,
+            reason: `Physical Sciences match: ${userSubject.name} satisfies ${required.name}`,
+          };
+        }
+        // Life Sciences matching
+        else if (
+          (reqLower === "life sciences" || reqLower === "biology") &&
+          (userLower === "life sciences" || userLower === "biology")
+        ) {
+          matchResult = {
+            isMatch: true,
+            confidence: 98,
+            reason: `Life Sciences match: ${userSubject.name} satisfies ${required.name}`,
+          };
+        }
+        // Generic matching for exact name matches (case insensitive)
+        else if (userLower === reqLower) {
+          matchResult = {
+            isMatch: true,
+            confidence: 100,
+            reason: `Exact match (case insensitive): ${userSubject.name} = ${required.name}`,
+          };
+        }
+        // Partial matching for subjects with common words
+        else if (userLower.includes(reqLower) || reqLower.includes(userLower)) {
+          const confidence = Math.max(
+            60,
+            (Math.min(userLower.length, reqLower.length) /
+              Math.max(userLower.length, reqLower.length)) *
+              100,
+          );
+          matchResult = {
+            isMatch: true,
+            confidence: Math.floor(confidence),
+            reason: `Partial match: ${userSubject.name} contains ${required.name}`,
           };
         }
       }

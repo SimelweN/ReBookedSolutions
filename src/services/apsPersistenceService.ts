@@ -353,12 +353,27 @@ export async function checkSyncStatus(user?: User | null): Promise<{
 function getLocalStorageProfile(): UserAPSProfile | null {
   try {
     const stored = localStorage.getItem(APS_STORAGE_KEY);
-    if (!stored) return null;
+    if (!stored) {
+      console.log("No APS profile found in localStorage");
+      return null;
+    }
 
     const parsed = JSON.parse(stored);
-    return isValidAPSProfile(parsed) ? parsed : null;
+    const isValid = isValidAPSProfile(parsed);
+
+    if (isValid) {
+      console.log("✅ Valid APS profile loaded from localStorage:", parsed);
+      return parsed;
+    } else {
+      console.warn(
+        "❌ Invalid APS profile structure in localStorage, clearing it",
+      );
+      localStorage.removeItem(APS_STORAGE_KEY);
+      return null;
+    }
   } catch (error) {
     console.warn("Failed to parse localStorage APS profile:", error);
+    localStorage.removeItem(APS_STORAGE_KEY); // Clear corrupted data
     return null;
   }
 }
