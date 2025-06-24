@@ -170,6 +170,11 @@ const LazyRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 );
 
 function App() {
+  // Preload critical routes for faster navigation
+  React.useEffect(() => {
+    preloadCriticalRoutes();
+  }, []);
+
   return (
     <ErrorBoundary level="app">
       <QueryClientProvider client={queryClient}>
