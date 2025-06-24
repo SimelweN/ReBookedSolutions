@@ -3,7 +3,7 @@ import {
   ComprehensiveCourse,
   getAPSRequirement,
 } from "@/constants/universities/comprehensive-course-database";
-import { convertToFixedFormat } from "./fixedSubjectMatching";
+import { adaptToOldFormat } from "./newSubjectEngine";
 import { logError } from "./systemMonitoringService";
 import {
   calculateUniversitySpecificAPS,
