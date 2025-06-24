@@ -470,38 +470,76 @@ const EnhancedAPSCalculator: React.FC = () => {
   // Search programs function
   const searchPrograms = useCallback(async () => {
     if (!apsCalculation.isCalculationValid) {
-      toast.error("Please add at least 6 valid subjects first");
+      toast.error(
+        "Please add at least 4 valid subjects with your English/Afrikaans and Mathematics/Mathematical Literacy",
+      );
+      return;
+    }
+
+    if (subjects.length < 4) {
+      toast.error("Please add at least 4 subjects to search for programs");
       return;
     }
 
     try {
-      // Update user profile with current subjects - properly convert APSSubjectInput to APSSubject
+      // Ensure profile is saved before searching
       const apsSubjects: APSSubject[] = subjects.map((subject) => ({
-        name: subject.name,
-        marks: subject.marks,
-        level: subject.points, // Ensure level matches points (APS level 1-7)
+        name: subject.name.trim(),
+        marks: Math.max(0, Math.min(100, subject.marks)),
+        level: subject.points,
         points: subject.points,
       }));
-      await updateUserSubjects(apsSubjects);
 
-      // Search across all universities
+      console.log(
+        "💾 Saving APS profile before program search...",
+        apsSubjects,
+      );
+      const saveSuccess = await updateUserSubjects(apsSubjects);
+
+      if (!saveSuccess) {
+        console.warn("⚠️ Profile save failed, but continuing with search...");
+      }
+
+      // Search across all universities with better error handling
       const results = [];
+      let successfulSearches = 0;
+      let failedSearches = 0;
+
       for (const universityId of ALL_UNIVERSITY_IDS) {
         try {
           const universityResults =
             await searchCoursesForUniversity(universityId);
-          results.push(...(universityResults || []));
+          if (universityResults && Array.isArray(universityResults)) {
+            results.push(...universityResults);
+            successfulSearches++;
+          }
         } catch (err) {
           console.warn(`Failed to search courses for ${universityId}:`, err);
+          failedSearches++;
         }
       }
 
+      console.log(
+        `🔍 Search completed: ${successfulSearches} successful, ${failedSearches} failed`,
+      );
+
       setSearchResults(results);
       setShowProgramsSection(true);
-      toast.success(`Found ${results.length} programs across all universities`);
+
+      if (results.length > 0) {
+        toast.success(
+          `Found ${results.length} programs across ${successfulSearches} universities`,
+        );
+      } else {
+        toast.warning(
+          "No programs found. This might be due to very specific requirements or system issues.",
+        );
+      }
     } catch (err) {
       console.error("Error searching programs:", err);
-      toast.error("Failed to search programs. Please try again.");
+      toast.error(
+        "Failed to search programs. Please check your internet connection and try again.",
+      );
     }
   }, [
     apsCalculation.isCalculationValid,
