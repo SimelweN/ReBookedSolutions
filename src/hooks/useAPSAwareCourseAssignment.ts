@@ -47,10 +47,14 @@ function useAPSLocalStorage() {
   const loadProfile = useCallback(() => {
     try {
       console.log("📦 Loading APS profile from localStorage...");
+      console.log("📦 All localStorage keys:", Object.keys(localStorage));
       const stored = localStorage.getItem("userAPSProfile");
+      console.log("📦 Raw stored data:", stored);
+
       if (stored) {
         const profile = JSON.parse(stored);
         console.log("✅ APS Profile loaded from localStorage:", profile);
+        console.log("✅ Profile has subjects:", profile.subjects?.length || 0);
         setUserProfile(profile);
         return profile;
       } else {
