@@ -47,6 +47,7 @@ if (import.meta.env.DEV) {
 
 // Import Index directly for instant loading
 import IndexPage from "./pages/Index";
+import SimpleQADashboard from "./pages/SimpleQADashboard";
 const Index = () => <IndexPage />;
 
 // Simple lazy loading for other pages
@@ -76,6 +77,7 @@ const Checkout = React.lazy(() => import("./pages/Checkout"));
 const Notifications = React.lazy(() => import("./pages/Notifications"));
 const Shipping = React.lazy(() => import("./pages/Shipping"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
+const QADashboard = React.lazy(() => import("./pages/QADashboard"));
 const ForgotPassword = React.lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = React.lazy(() => import("./pages/ResetPassword"));
 const Verify = React.lazy(() => import("./pages/Verify"));
@@ -152,9 +154,7 @@ const ImportFailureFallback: React.FC<{ error?: Error }> = ({ error }) => (
 
 // Simple route wrapper for lazy components
 const LazyWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <Suspense fallback={<MinimalLoader />}>
-    <ErrorBoundary fallback={ImportFailureFallback}>{children}</ErrorBoundary>
-  </Suspense>
+  <Suspense fallback={<MinimalLoader />}>{children}</Suspense>
 );
 
 function App() {
@@ -176,9 +176,12 @@ function App() {
                     <ScrollToTop />
                     <Routes>
                       {/* Home route - loads instantly */}
-                      <Route path="/" element={<Index />} />
+                      <Route path="/" element={<IndexPage />} />
 
                       {/* Public routes */}
+                      <Route path="/register" element={<Register />} />
+                      <Route path="/user-profile" element={<UserProfile />} />
+                      <Route path="/qa" element={<SimpleQADashboard />} />
                       <Route
                         path="/books"
                         element={
@@ -414,12 +417,22 @@ function App() {
                       />
 
                       {/* Protected Routes */}
+                      <Route path="/user-profile" element={<UserProfile />} />
+                      <Route path="/qa" element={<SimpleQADashboard />} />
                       <Route
-                        path="/profile"
+                        path="/books"
+                        element={
+                          <LazyWrapper>
+                            <BookListing />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/qa-dashboard"
                         element={
                           <ProtectedRoute>
                             <LazyWrapper>
-                              <Profile />
+                              <QADashboard />
                             </LazyWrapper>
                           </ProtectedRoute>
                         }
@@ -480,6 +493,16 @@ function App() {
                           <ProtectedRoute>
                             <LazyWrapper>
                               <Notifications />
+                            </LazyWrapper>
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/profile"
+                        element={
+                          <ProtectedRoute>
+                            <LazyWrapper>
+                              <Profile />
                             </LazyWrapper>
                           </ProtectedRoute>
                         }

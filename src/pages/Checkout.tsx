@@ -9,8 +9,11 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ArrowLeft, CreditCard, Truck, MapPin, User } from "lucide-react";
 import CheckoutOrderSummary from "@/components/checkout/CheckoutOrderSummary";
-import CheckoutShippingForm from "@/components/checkout/CheckoutShippingForm";
+import EnhancedShippingForm from "@/components/checkout/EnhancedShippingForm";
+import SimpleShippingForm from "@/components/checkout/SimpleShippingForm";
 import CheckoutPaymentProcessor from "@/components/checkout/CheckoutPaymentProcessor";
+import GoogleMapsErrorHandler from "@/components/GoogleMapsErrorHandler";
+import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
 import { toast } from "sonner";
 
 const Checkout: React.FC = () => {
@@ -18,12 +21,14 @@ const Checkout: React.FC = () => {
   const location = useLocation();
   const { user, isAuthenticated } = useAuth();
   const { items, getTotalPrice, clearCart } = useCart();
+  const { loadError } = useGoogleMaps();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [shippingData, setShippingData] = useState<any>(null);
   const [deliveryQuotes, setDeliveryQuotes] = useState<any[]>([]);
   const [selectedDelivery, setSelectedDelivery] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [useSimpleForm, setUseSimpleForm] = useState(false);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -44,13 +49,34 @@ const Checkout: React.FC = () => {
   }, [items, navigate, isAuthenticated]);
 
   // Show loading while checking authentication/cart
-  if (!isAuthenticated || items.length === 0) {
+  if (!isAuthenticated) {
     return (
       <Layout>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading checkout...</p>
+            <p className="text-gray-600">Please log in to continue...</p>
+            <Button onClick={() => navigate("/login")} className="mt-4">
+              Go to Login
+            </Button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <Layout>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              Your cart is empty
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Add some books to your cart to proceed with checkout.
+            </p>
+            <Button onClick={() => navigate("/")}>Browse Books</Button>
           </div>
         </div>
       </Layout>
@@ -67,10 +93,11 @@ const Checkout: React.FC = () => {
     { number: 3, title: "Payment", icon: CreditCard },
   ];
 
-  const handleShippingComplete = (data: any, quotes: any[]) => {
+  const handleShippingComplete = (data: any, deliveryOptions: any[]) => {
     setShippingData(data);
-    setDeliveryQuotes(quotes);
+    setDeliveryQuotes(deliveryOptions);
     setCurrentStep(2);
+    toast.success("Address saved! Please select your delivery option.");
   };
 
   const handleDeliverySelected = (delivery: any) => {
@@ -180,7 +207,7 @@ const Checkout: React.FC = () => {
                   )}
                 </div>
                 <div className="text-right">
-                  <p className="font-bold">R{quote.price.toFixed(2)}</p>
+                  <p className="font-bold">R{(quote.price || 0).toFixed(2)}</p>
                   <p className="text-sm text-gray-500">Incl. VAT</p>
                 </div>
               </div>
@@ -232,10 +259,46 @@ const Checkout: React.FC = () => {
             {/* Main Content */}
             <div className="lg:col-span-2">
               {currentStep === 1 && (
-                <CheckoutShippingForm
-                  onComplete={handleShippingComplete}
-                  cartItems={items}
-                />
+                <div className="space-y-4">
+                  {/* Google Maps Status */}
+                  {loadError && (
+                    <GoogleMapsErrorHandler
+                      error={loadError}
+                      variant="minimal"
+                    />
+                  )}
+
+                  {/* Form Selector */}
+                  <div className="flex gap-2 justify-end">
+                    <Button
+                      variant={useSimpleForm ? "outline" : "default"}
+                      size="sm"
+                      onClick={() => setUseSimpleForm(false)}
+                    >
+                      Enhanced Form
+                    </Button>
+                    <Button
+                      variant={useSimpleForm ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setUseSimpleForm(true)}
+                    >
+                      Simple Form
+                    </Button>
+                  </div>
+
+                  {/* Shipping Form */}
+                  {useSimpleForm ? (
+                    <SimpleShippingForm
+                      onComplete={handleShippingComplete}
+                      cartItems={items}
+                    />
+                  ) : (
+                    <EnhancedShippingForm
+                      onComplete={handleShippingComplete}
+                      cartItems={items}
+                    />
+                  )}
+                </div>
               )}
 
               {currentStep === 2 && <DeliverySelection />}

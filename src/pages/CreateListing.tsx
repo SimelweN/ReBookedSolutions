@@ -23,9 +23,10 @@ import { BookInformationForm } from "@/components/create-listing/BookInformation
 import { PricingSection } from "@/components/create-listing/PricingSection";
 import { BookTypeSection } from "@/components/create-listing/BookTypeSection";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { canUserListBooks } from "@/services/addressValidationService";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
+import { SellerValidationService } from "@/services/sellerValidationService";
+import SellerRestrictionBanner from "@/components/SellerRestrictionBanner";
 
 const CreateListing = () => {
   const { user, profile } = useAuth();
@@ -47,39 +48,8 @@ const CreateListing = () => {
     insidePages: "",
   });
 
-  const [hasBankingDetails, setHasBankingDetails] = useState<boolean | null>(
-    null,
-  );
-  const [isCheckingBanking, setIsCheckingBanking] = useState(true);
-
-  // Check banking details specifically
-  useEffect(() => {
-    const checkBankingDetails = async () => {
-      if (!user) {
-        setHasBankingDetails(false);
-        setIsCheckingBanking(false);
-        return;
-      }
-
-      try {
-        const { data: bankingData } = await supabase
-          .from("banking_details")
-          .select("*")
-          .eq("user_id", user.id)
-          .eq("is_verified", true)
-          .single();
-
-        setHasBankingDetails(!!bankingData);
-      } catch (error) {
-        console.error("Error checking banking details:", error);
-        setHasBankingDetails(false);
-      } finally {
-        setIsCheckingBanking(false);
-      }
-    };
-
-    checkBankingDetails();
-  }, [user]);
+  const [sellerValidation, setSellerValidation] = useState<any>(null);
+  const [isCheckingRequirements, setIsCheckingRequirements] = useState(true);
 
   const [bookImages, setBookImages] = useState({
     frontCover: "",
@@ -106,63 +76,29 @@ const CreateListing = () => {
       if (!user) {
         setCanListBooks(false);
         setValidationErrors(["Please log in to list books"]);
-        setIsCheckingAddress(false);
+        setIsCheckingRequirements(false);
         return;
       }
 
       try {
-        const errors: string[] = [];
+        const validation =
+          await SellerValidationService.validateSellerRequirements(user.id);
+        setSellerValidation(validation);
+        setCanListBooks(validation.canSell);
+        setValidationErrors(validation.missingRequirements);
 
-        // Check addresses
-        const { data: profileData } = await supabase
-          .from("profiles")
-          .select("addresses_same")
-          .eq("id", user.id)
-          .single();
-
-        if (!profileData || profileData.addresses_same === null) {
-          errors.push(
-            "Please set up your pickup and shipping addresses in your profile",
+        if (!validation.canSell) {
+          console.log(
+            "User cannot list books. Missing requirements:",
+            validation.missingRequirements,
           );
-        }
-
-        // Check banking details using improved service
-        const { ImprovedBankingService } = await import(
-          "@/services/improvedBankingService"
-        );
-        const hasVerifiedBanking =
-          await ImprovedBankingService.hasVerifiedBankingDetails(user.id);
-
-        if (!hasVerifiedBanking) {
-          const bankingData = await ImprovedBankingService.getBankingDetails(
-            user.id,
-          );
-          if (!bankingData) {
-            errors.push(
-              "Please set up your banking details to receive payments",
-            );
-          } else if (!bankingData.account_verified) {
-            errors.push(
-              "Banking details saved but payment account setup is incomplete",
-            );
-          } else {
-            errors.push("Payment account verification is in progress");
-          }
-        }
-
-        setValidationErrors(errors);
-        const canList = errors.length === 0;
-        setCanListBooks(canList);
-
-        if (!canList) {
-          console.log("User cannot list books. Missing requirements:", errors);
         }
       } catch (error) {
         console.error("Error checking user requirements:", error);
         setCanListBooks(false);
         setValidationErrors(["Error checking account requirements"]);
       } finally {
-        setIsCheckingAddress(false);
+        setIsCheckingRequirements(false);
       }
     };
 
@@ -368,61 +304,23 @@ const CreateListing = () => {
       <div
         className={`container mx-auto ${isMobile ? "px-2" : "px-4"} py-4 md:py-8 max-w-2xl`}
       >
-        {/* Requirements Validation Alert */}
-        {!isCheckingAddress &&
-          canListBooks === false &&
-          validationErrors.length > 0 && (
-            <Alert className="mb-6 border-red-200 bg-red-50">
-              <AlertTriangle className="h-4 w-4 text-red-600" />
-              <AlertDescription className="text-red-800">
-                <div>
-                  <span className="font-medium">Account Setup Required</span>
-                  <p className="text-sm mt-1 mb-3">
-                    Please complete the following requirements before listing
-                    books:
-                  </p>
-                  <ul className="text-sm space-y-1 mb-4">
-                    {validationErrors.map((error, index) => (
-                      <li key={index} className="flex items-start">
-                        <span className="text-red-600 mr-2">•</span>
-                        {error}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="flex gap-2 flex-wrap">
-                    <Button
-                      variant="outline"
-                      onClick={() => navigate("/profile")}
-                      className="border-red-300 text-red-700 hover:bg-red-100"
-                      size="sm"
-                    >
-                      Complete Profile
-                    </Button>
-                    {validationErrors.some((error) =>
-                      error.includes("banking"),
-                    ) && (
-                      <Button
-                        variant="outline"
-                        onClick={() => navigate("/profile?tab=banking")}
-                        className="border-red-300 text-red-700 hover:bg-red-100"
-                        size="sm"
-                      >
-                        Setup Banking
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </AlertDescription>
-            </Alert>
+        {/* Requirements Validation */}
+        {!isCheckingRequirements &&
+          sellerValidation &&
+          !sellerValidation.canSell && (
+            <SellerRestrictionBanner
+              isVisible={true}
+              missingRequirements={sellerValidation.missingRequirements}
+              hasAddress={sellerValidation.hasAddress}
+              hasBankingDetails={sellerValidation.hasBankingDetails}
+            />
           )}
 
-        {/* Loading Address Check */}
-        {isCheckingAddress && (
+        {/* Loading Requirements Check */}
+        {isCheckingRequirements && (
           <Alert className="mb-6">
             <Loader2 className="h-4 w-4 animate-spin" />
-            <AlertDescription>
-              Checking address requirements...
-            </AlertDescription>
+            <AlertDescription>Checking seller requirements...</AlertDescription>
           </Alert>
         )}
 
@@ -554,7 +452,7 @@ const CreateListing = () => {
               type="submit"
               disabled={
                 isSubmitting ||
-                isCheckingAddress ||
+                isCheckingRequirements ||
                 canListBooks === false ||
                 !sellerPolicyAccepted
               }
@@ -571,13 +469,13 @@ const CreateListing = () => {
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   Creating Listing...
                 </>
-              ) : isCheckingAddress ? (
+              ) : isCheckingRequirements ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Checking Address...
+                  Checking Requirements...
                 </>
               ) : canListBooks === false ? (
-                "❌ Pickup Address Required"
+                "❌ Complete Setup Required"
               ) : !sellerPolicyAccepted ? (
                 "Accept Policy to Continue"
               ) : (

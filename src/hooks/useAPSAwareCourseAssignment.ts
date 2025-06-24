@@ -188,8 +188,12 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
    */
   const clearAPSProfile = useCallback(() => {
     try {
+      // Clear from both localStorage and sessionStorage to ensure clean state
+      localStorage.removeItem("userAPSProfile");
+      localStorage.removeItem("apsSearchResults");
       sessionStorage.removeItem("userAPSProfile");
       sessionStorage.removeItem("apsSearchResults");
+
       setUserProfile(null);
       setLastSearchResults(null);
       setError(null);
