@@ -320,6 +320,7 @@ export const validateAPSSubjects = (
   isValid: boolean;
   errors: string[];
   warnings: string[];
+  score: number;
 } => {
   try {
     const errors: string[] = [];
@@ -327,32 +328,45 @@ export const validateAPSSubjects = (
 
     if (!subjects || !Array.isArray(subjects)) {
       errors.push("Subjects must be provided as an array");
-      return { isValid: false, errors, warnings };
+      return { isValid: false, errors, warnings, score: 0 };
     }
 
+    // Filter valid subjects
+    const validSubjects = subjects.filter(
+      (s) =>
+        s &&
+        s.name &&
+        typeof s.marks === "number" &&
+        s.marks >= 0 &&
+        s.marks <= 100,
+    );
+
     // Check for required subjects using normalized names
-    const hasEnglish = subjects.some((s) => {
-      if (!s.name || s.marks <= 0) return false;
+    const hasEnglish = validSubjects.some((s) => {
       const normalized = normalizeSubjectName(s.name);
       return (
         normalized.includes("English") ||
         normalized.includes("Afrikaans") ||
         normalized.includes("Home Language") ||
-        normalized.includes("First Additional Language")
+        normalized.includes("First Additional Language") ||
+        normalized.toLowerCase().includes("home language") ||
+        normalized.toLowerCase().includes("first additional")
       );
     });
 
-    const hasMath = subjects.some((s) => {
-      if (!s.name || s.marks <= 0) return false;
+    const hasMath = validSubjects.some((s) => {
       const normalized = normalizeSubjectName(s.name);
       return (
-        normalized === "Mathematics" || normalized === "Mathematical Literacy"
+        normalized === "Mathematics" ||
+        normalized === "Mathematical Literacy" ||
+        normalized.toLowerCase() === "mathematics" ||
+        normalized.toLowerCase() === "mathematical literacy"
       );
     });
 
     if (!hasEnglish) {
       errors.push(
-        "At least one home language subject is required (any official SA language)",
+        "At least one home language subject is required (English, Afrikaans, or any SA official language)",
       );
     }
 
