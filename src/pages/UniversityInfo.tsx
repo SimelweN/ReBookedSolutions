@@ -53,6 +53,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationRequestService } from "@/services/notificationRequestService";
 import { toast } from "sonner";
+import { safeNotificationRequest } from "@/utils/asyncWrapper";
 
 // Direct import for APS calculator to fix loading issues
 import APSCalculatorSection from "@/components/university-info/APSCalculatorSection";
