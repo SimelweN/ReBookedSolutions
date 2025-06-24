@@ -43,9 +43,9 @@ const SellerBankingSetupPrompt: React.FC<SellerBankingSetupPromptProps> = ({
             <div className="space-y-2">
               <p className="font-medium">Payment Account Required</p>
               <p className="text-sm">
-                To receive payments instantly when your books sell, you need to
-                set up your banking details. This enables our automatic 90/10
-                split payment system.
+                To receive payments when your books sell, you need to set up
+                your banking details. This ensures smooth payment processing
+                through our secure system.
               </p>
             </div>
           </AlertDescription>
@@ -64,7 +64,9 @@ const SellerBankingSetupPrompt: React.FC<SellerBankingSetupPromptProps> = ({
             </div>
             <div className="flex items-center">
               <CreditCard className="h-4 w-4 mr-2 text-blue-600" />
-              <span>Secure payment processing via Paystack</span>
+              <span>
+                Secure payment processing via dedicated payment system
+              </span>
             </div>
             <div className="flex items-center">
               <ArrowRight className="h-4 w-4 mr-2 text-purple-600" />
@@ -78,10 +80,10 @@ const SellerBankingSetupPrompt: React.FC<SellerBankingSetupPromptProps> = ({
             ⚠️ What Happens Without Banking Setup?
           </h4>
           <ul className="text-sm text-yellow-800 space-y-1">
-            <li>• Buyers will use alternative payment methods</li>
-            <li>• You'll need manual payout processing</li>
+            <li>• Payment processing may be delayed</li>
+            <li>• Manual verification required for payouts</li>
             <li>• Payments may take 2-3 business days longer</li>
-            <li>• You'll miss out on instant payment features</li>
+            <li>• Limited access to payment tracking features</li>
           </ul>
         </div>
 
