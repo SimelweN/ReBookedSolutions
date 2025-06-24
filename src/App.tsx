@@ -25,6 +25,7 @@ import {
   logDatabaseStatus,
 } from "./utils/databaseConnectivityHelper";
 import { preloadCriticalRoutes } from "./utils/routePreloader";
+import EmergencyBypass from "./components/EmergencyBypass";
 import "./App.css";
 
 // Initialize debug utilities in development
@@ -195,81 +196,81 @@ function App() {
                     <Route
                       path="/books"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <BookListing />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/books/:id"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <BookDetails />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/book/:id"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <BookDetails />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/login"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <Login />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/register"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <Register />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/forgot-password"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <ForgotPassword />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/reset-password"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <ResetPassword />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/verify"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <Verify />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/confirm"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <Confirm />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/confirm-email-change"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <ConfirmEmailChange />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
 
@@ -277,57 +278,57 @@ function App() {
                     <Route
                       path="/university-info"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <UniversityInfo />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/university-profile"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <ModernUniversityProfile />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/university/:id"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <UniversityProfile />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/study-resources"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <StudyResources />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/study-tips"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <StudyResources />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/aps-demo"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <APSDemo />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/system-status"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <SystemStatus />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
 
@@ -335,51 +336,51 @@ function App() {
                     <Route
                       path="/cart"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <Cart />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/checkout/:id"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <Checkout />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/checkout/cart"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <Checkout />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/shipping"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <Shipping />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/payment-callback"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <PaymentCallback />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/payments"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <ProtectedRoute>
                             <PaymentDashboard />
                           </ProtectedRoute>
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
 
@@ -387,73 +388,73 @@ function App() {
                     <Route
                       path="/contact"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <ContactUs />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/faq"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <FAQ />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/policies"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <Policies />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/privacy"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <Privacy />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/terms"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <Terms />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/google-maps-demo"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <GoogleMapsDemo />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/maps-test"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <MapsTest />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/basic-maps"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <BasicMapsExample />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                     <Route
                       path="/working-maps"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <WorkingMapsDemo />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
 
@@ -462,9 +463,9 @@ function App() {
                       path="/profile"
                       element={
                         <ProtectedRoute>
-                          <SimpleRoute>
+                          <LazyRoute>
                             <Profile />
-                          </SimpleRoute>
+                          </LazyRoute>
                         </ProtectedRoute>
                       }
                     />
@@ -472,9 +473,9 @@ function App() {
                       path="/user-profile"
                       element={
                         <ProtectedRoute>
-                          <SimpleRoute>
+                          <LazyRoute>
                             <UserProfile />
-                          </SimpleRoute>
+                          </LazyRoute>
                         </ProtectedRoute>
                       }
                     />
@@ -482,9 +483,9 @@ function App() {
                       path="/create-listing"
                       element={
                         <ProtectedRoute>
-                          <SimpleRoute>
+                          <LazyRoute>
                             <CreateListing />
-                          </SimpleRoute>
+                          </LazyRoute>
                         </ProtectedRoute>
                       }
                     />
@@ -492,9 +493,9 @@ function App() {
                       path="/edit-book/:id"
                       element={
                         <ProtectedRoute>
-                          <SimpleRoute>
+                          <LazyRoute>
                             <EditBook />
-                          </SimpleRoute>
+                          </LazyRoute>
                         </ProtectedRoute>
                       }
                     />
@@ -502,9 +503,9 @@ function App() {
                       path="/notifications"
                       element={
                         <ProtectedRoute>
-                          <SimpleRoute>
+                          <LazyRoute>
                             <Notifications />
-                          </SimpleRoute>
+                          </LazyRoute>
                         </ProtectedRoute>
                       }
                     />
@@ -512,9 +513,9 @@ function App() {
                       path="/activity"
                       element={
                         <ProtectedRoute>
-                          <SimpleRoute>
+                          <LazyRoute>
                             <ActivityLog />
-                          </SimpleRoute>
+                          </LazyRoute>
                         </ProtectedRoute>
                       }
                     />
@@ -522,9 +523,9 @@ function App() {
                       path="/report"
                       element={
                         <ProtectedRoute>
-                          <SimpleRoute>
+                          <LazyRoute>
                             <Report />
-                          </SimpleRoute>
+                          </LazyRoute>
                         </ProtectedRoute>
                       }
                     />
@@ -534,9 +535,9 @@ function App() {
                       path="/admin"
                       element={
                         <AdminProtectedRoute>
-                          <SimpleRoute>
+                          <LazyRoute>
                             <Admin />
-                          </SimpleRoute>
+                          </LazyRoute>
                         </AdminProtectedRoute>
                       }
                     />
@@ -544,9 +545,9 @@ function App() {
                       path="/admin/reports"
                       element={
                         <AdminProtectedRoute>
-                          <SimpleRoute>
+                          <LazyRoute>
                             <AdminReports />
-                          </SimpleRoute>
+                          </LazyRoute>
                         </AdminProtectedRoute>
                       }
                     />
@@ -554,9 +555,9 @@ function App() {
                     <Route
                       path="*"
                       element={
-                        <SimpleRoute>
+                        <LazyRoute>
                           <NotFound />
-                        </SimpleRoute>
+                        </LazyRoute>
                       }
                     />
                   </Routes>
