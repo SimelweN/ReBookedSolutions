@@ -8,7 +8,7 @@ import {
   APSAwareCourseSearchService,
 } from "@/services/apsAwareCourseAssignmentService";
 import { calculateAPS, validateAPSSubjects } from "@/utils/apsCalculation";
-import { checkSubjectEligibility } from "@/services/fixedSubjectMatching";
+import { checkSubjectMatching } from "@/services/newSubjectEngine";
 
 /**
  * Enhanced hook for APS-aware course assignment with localStorage persistence
