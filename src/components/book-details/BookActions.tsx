@@ -1,6 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ShoppingCart, CreditCard, Edit, User, Clock } from "lucide-react";
+import {
+  ShoppingCart,
+  CreditCard,
+  Edit,
+  User,
+  Clock,
+  Package,
+} from "lucide-react";
 import { Book } from "@/types/book";
 import { UserProfile } from "@/types/address"; // UserProfile includes id
 import { toast } from "sonner";
@@ -12,9 +19,11 @@ interface BookActionsProps {
   onAddToCart: () => void;
   onEditBook: () => void;
   onCommit?: () => void; // New commit action
+  onMarkCollected?: () => void; // New collection confirmation action
   onShare: () => void; // This prop seems unused in the component
   onViewSellerProfile: () => void; // This prop seems unused in the component
   showCommitButton?: boolean; // Flag to show commit button
+  showCollectionButton?: boolean; // Flag to show collection confirmation button
 }
 
 const BookActions = ({
@@ -24,13 +33,17 @@ const BookActions = ({
   onAddToCart,
   onEditBook,
   onCommit,
+  onMarkCollected,
   showCommitButton = false,
+  showCollectionButton = false,
   // onShare, // Prop was unused
   // onViewSellerProfile, // Prop was unused
 }: BookActionsProps) => {
   const isOwner = user?.id === book.seller?.id; // seller is an object with id
   const isSold = book.sold;
   const isPendingCommit = book.status === "pending_commit" || showCommitButton;
+  const isCommittedAwaitingCollection =
+    book.status === "committed" && showCollectionButton;
 
   return (
     <Card className="sticky top-4">
@@ -79,6 +92,30 @@ const BookActions = ({
                 <Edit className="mr-2 h-4 w-4" />
                 Edit Book
               </Button>
+            </div>
+          ) : isCommittedAwaitingCollection && onMarkCollected ? (
+            <div className="space-y-3">
+              <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <Package className="mx-auto h-5 w-5 text-blue-600 mb-2" />
+                <p className="text-sm text-blue-800 font-medium">
+                  Awaiting Collection
+                </p>
+                <p className="text-xs text-blue-600">
+                  {isOwner
+                    ? "Mark as collected once buyer picks up the book"
+                    : "Arrange pickup with the seller"}
+                </p>
+              </div>
+              {isOwner && (
+                <Button
+                  onClick={onMarkCollected}
+                  className="w-full bg-green-600 hover:bg-green-700"
+                  size="lg"
+                >
+                  <Package className="mr-2 h-4 w-4" />
+                  Mark as Collected
+                </Button>
+              )}
             </div>
           ) : isOwner ? (
             <Button

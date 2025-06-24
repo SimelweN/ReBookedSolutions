@@ -86,63 +86,109 @@ export const fetchUserProfileQuick = async (
   try {
     console.log("🔄 Quick profile fetch for user:", user.id);
 
-    // Simplified approach with just one try and longer timeout
-    const { data: profile, error: profileError } = (await withTimeout(
-      supabase
-        .from("profiles")
-        .select("id, name, email, status, profile_picture_url, bio, is_admin")
-        .eq("id", user.id)
-        .single(),
-      12000, // Increased to 12 seconds
-      "Quick profile fetch timed out after 12 seconds",
-    )) as any;
+    // Test if profiles table exists with a very quick check
+    try {
+      const { error: tableCheckError } = (await withTimeout(
+        supabase.from("profiles").select("id").limit(1),
+        800, // Ultra-fast timeout for existence check
+        "Table check timeout",
+      )) as any;
 
-    if (profileError) {
-      // Profile not found is normal for new users
-      if (profileError.code === "PGRST116") {
-        console.log(
-          "ℹ️ Profile not found in quick fetch, will create in background",
-        );
-        return null; // Return null so fallback is used
+      if (tableCheckError) {
+        // Handle specific table missing error
+        if (
+          tableCheckError.message?.includes("relation") &&
+          tableCheckError.message?.includes("does not exist")
+        ) {
+          console.warn(
+            "❌ Profiles table does not exist - using fallback profile",
+          );
+          return null;
+        }
+
+        // Handle permission errors
+        if (
+          tableCheckError.message?.includes("permission denied") ||
+          tableCheckError.code === "42501"
+        ) {
+          console.warn(
+            "❌ No permission to access profiles table - using fallback",
+          );
+          return null;
+        }
+
+        // Handle network/connection errors
+        if (isNetworkError(tableCheckError)) {
+          console.warn(
+            "⚠️ Network error checking profiles table - using fallback",
+          );
+          return null;
+        }
+      }
+    } catch (tableCheckError) {
+      console.warn("⚠️ Table existence check failed - using fallback profile");
+      return null;
+    }
+
+    // Attempt to fetch user profile with short timeout
+    try {
+      const { data: profile, error: profileError } = (await withTimeout(
+        supabase
+          .from("profiles")
+          .select("id, name, email, status, profile_picture_url, bio, is_admin")
+          .eq("id", user.id)
+          .single(),
+        1000, // 1 second timeout for much faster response
+        "Profile fetch timed out after 1 second",
+      )) as any;
+
+      if (profileError) {
+        // Profile not found is normal for new users
+        if (profileError.code === "PGRST116") {
+          console.log("ℹ️ Profile not found - will use fallback");
+          return null;
+        }
+
+        // Log other errors but continue with fallback
+        console.warn("⚠️ Profile fetch error:", {
+          message: profileError.message || "Unknown error",
+          code: profileError.code || "No code",
+        });
+        return null;
       }
 
-      // For other errors, log details but don't spam
-      console.warn("⚠️ Quick profile fetch error:", {
-        message: profileError.message || "Unknown error",
-        code: profileError.code || "No code",
-        hint: profileError.hint || "No hint",
-      });
-      return null; // Use fallback on any error
+      if (!profile) {
+        console.log("ℹ️ No profile data returned - using fallback");
+        return null;
+      }
+
+      // Quick admin check
+      const adminEmails = ["AdminSimnLi@gmail.com", "adminsimnli@gmail.com"];
+      const userEmail = profile.email || user.email || "";
+      const isAdmin =
+        profile.is_admin === true ||
+        adminEmails.includes(userEmail.toLowerCase());
+
+      const profileData = {
+        id: profile.id,
+        name:
+          profile.name ||
+          user.user_metadata?.name ||
+          user.email?.split("@")[0] ||
+          "User",
+        email: profile.email || user.email || "",
+        isAdmin,
+        status: profile.status || "active",
+        profile_picture_url: profile.profile_picture_url,
+        bio: profile.bio,
+      };
+
+      console.log("✅ Quick profile fetch successful");
+      return profileData;
+    } catch (profileFetchError) {
+      console.warn("⚠️ Profile fetch failed:", profileFetchError);
+      return null;
     }
-
-    if (!profile) {
-      console.log("ℹ️ No profile data returned, using fallback");
-      return null; // Use fallback profile
-    }
-
-    // Quick admin check without background updates
-    const adminEmails = ["AdminSimnLi@gmail.com", "adminsimnli@gmail.com"];
-    const userEmail = profile.email || user.email || "";
-    const isAdmin =
-      profile.is_admin === true ||
-      adminEmails.includes(userEmail.toLowerCase());
-
-    const profileData = {
-      id: profile.id,
-      name:
-        profile.name ||
-        user.user_metadata?.name ||
-        user.email?.split("@")[0] ||
-        "User",
-      email: profile.email || user.email || "",
-      isAdmin,
-      status: profile.status || "active",
-      profile_picture_url: profile.profile_picture_url,
-      bio: profile.bio,
-    };
-
-    console.log("✅ Quick profile fetch successful");
-    return profileData;
   } catch (error) {
     // Enhanced error logging to debug the timeout issue
     const errorDetails = {

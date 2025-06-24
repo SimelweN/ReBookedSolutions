@@ -30,7 +30,7 @@ import ProfileEditDialog from "@/components/ProfileEditDialog";
 import AddressEditDialog from "@/components/AddressEditDialog";
 import GoogleMapsAddressDialog from "@/components/GoogleMapsAddressDialog";
 import UnavailableBookCard from "@/components/UnavailableBookCard";
-import BankingDetailsSection from "@/components/profile/BankingDetailsSection";
+import EnhancedBankingDetailsSection from "@/components/profile/EnhancedBankingDetailsSection";
 import { UserProfile, AddressData, Address } from "@/types/address";
 
 interface UserProfileTabsProps {
@@ -575,7 +575,7 @@ const UserProfileTabs = ({
             </TabsContent>
 
             <TabsContent value="banking" className="space-y-4">
-              <BankingDetailsSection />
+              <EnhancedBankingDetailsSection />
             </TabsContent>
           </>
         )}

@@ -264,7 +264,11 @@ export const retryWithConnection = async <T>(
       if (attempt > 1) {
         const isConnected = await quickConnectionTest();
         if (!isConnected) {
-          throw new Error("No connection available");
+          const connectionError = new Error("No connection available");
+          console.error(
+            `[ConnectionHealthCheck] Connection test failed on attempt ${attempt}: No connection available`,
+          );
+          throw connectionError;
         }
       }
 
@@ -272,22 +276,39 @@ export const retryWithConnection = async <T>(
     } catch (error) {
       lastError = error;
 
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      const errorCode = (error as any)?.code || "NO_CODE";
+
+      console.error(
+        `[ConnectionHealthCheck] Operation failed on attempt ${attempt}: ${errorMessage} (${errorCode})`,
+      );
+
       // Don't retry on certain errors
       if (
         error?.message?.includes("JWT") ||
         error?.message?.includes("auth") ||
         error?.code === "PGRST116" // Not found
       ) {
+        devLog(`Not retrying error: ${errorMessage} (non-retryable)`);
         throw error;
       }
 
       if (attempt < maxRetries) {
-        devLog(`Retry attempt ${attempt}/${maxRetries} in ${delay}ms`);
+        devLog(
+          `Retry attempt ${attempt}/${maxRetries} in ${delay}ms for error: ${errorMessage}`,
+        );
         await new Promise((resolve) => setTimeout(resolve, delay));
         delay *= 1.5; // Exponential backoff
       }
     }
   }
+
+  const finalErrorMessage =
+    lastError instanceof Error ? lastError.message : String(lastError);
+  console.error(
+    `[ConnectionHealthCheck] All retry attempts failed: ${finalErrorMessage}`,
+  );
 
   throw lastError;
 };

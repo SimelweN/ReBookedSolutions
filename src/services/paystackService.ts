@@ -74,7 +74,33 @@ export class PaystackService {
       );
 
       if (error) {
-        throw new Error(error.message || "Failed to create subaccount");
+        console.error("Edge Function error:", error);
+
+        // Check if it's a network/connectivity issue (Edge Functions not deployed/accessible)
+        if (
+          error.message?.includes("Failed to send a request") ||
+          error.message?.includes("FunctionsFetchError") ||
+          error.message?.includes("NetworkError")
+        ) {
+          throw new Error(
+            "Edge Functions are not available in this environment. Banking details can still be saved without immediate Paystack integration.",
+          );
+        }
+
+        // Check if it's a configuration issue
+        if (
+          error.message?.includes("MISSING_SECRET_KEY") ||
+          error.message?.includes("configuration")
+        ) {
+          throw new Error(
+            "Payment service configuration incomplete. Banking details will be saved for later setup.",
+          );
+        }
+
+        // Generic error with helpful message
+        throw new Error(
+          `Paystack setup failed: ${error.message || "Unknown error"}. Banking details will still be saved.`,
+        );
       }
 
       if (!data.success) {

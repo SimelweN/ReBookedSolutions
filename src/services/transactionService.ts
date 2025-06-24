@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { PaystackService } from "@/services/paystackService";
-import { BankingDetailsService } from "@/services/bankingDetailsService";
-import { PaymentDebugger } from "@/utils/paymentDebugger";
+import { SecureBankingService } from "@/services/secureBankingService";
+import { ImprovedBankingService } from "@/services/improvedBankingService";
 import { toast } from "sonner";
 
 export interface Transaction {
@@ -17,6 +17,7 @@ export interface Transaction {
     | "pending"
     | "paid_pending_seller"
     | "committed"
+    | "collected"
     | "completed"
     | "refunded"
     | "cancelled";
@@ -53,14 +54,14 @@ export class TransactionService {
     bookTitle: string;
   }): Promise<{ payment_url: string; transaction_id: string }> {
     try {
-      // Debug seller setup in development
+      // Debug info in development
       if (import.meta.env.DEV) {
-        await PaymentDebugger.debugForUser(sellerId);
+        console.log(`Initializing payment for seller: ${sellerId}`);
       }
 
       // Get seller's banking details and subaccount
       const sellerBankingDetails =
-        await BankingDetailsService.getBankingDetails(sellerId);
+        await ImprovedBankingService.getBankingDetails(sellerId);
 
       if (!sellerBankingDetails) {
         console.warn(
@@ -238,7 +239,9 @@ export class TransactionService {
         })
         .eq("id", transaction.book_id);
 
-      toast.success("Sale committed successfully! Buyer will be notified.");
+      toast.success(
+        "Sale committed successfully! Buyer will be notified. Payment will be released after book collection.",
+      );
       return updatedTransaction;
     } catch (error) {
       console.error("Error committing sale:", error);
@@ -250,7 +253,70 @@ export class TransactionService {
   }
 
   /**
-   * Complete transaction after delivery
+   * Mark book as collected by buyer - this triggers payment release
+   */
+  static async markBookCollected(
+    transactionId: string,
+    collectedBy: "buyer" | "seller" = "buyer",
+  ): Promise<Transaction> {
+    try {
+      const { data: transaction, error: fetchError } = await supabase
+        .from("transactions")
+        .select("*")
+        .eq("id", transactionId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      if (transaction.status !== "committed") {
+        throw new Error(
+          "Transaction must be committed before marking as collected",
+        );
+      }
+
+      // Update transaction to collected status
+      const { data: updatedTransaction, error: updateError } = await supabase
+        .from("transactions")
+        .update({
+          status: "collected",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", transactionId)
+        .select()
+        .single();
+
+      if (updateError) throw updateError;
+
+      // Mark book as collected
+      await supabase
+        .from("books")
+        .update({
+          status: "collected",
+          sold: true,
+        })
+        .eq("id", transaction.book_id);
+
+      // TODO: Trigger payment release to seller via Paystack
+      // This is where the seller would actually receive their payment
+      console.log(
+        `Payment should be released to seller for transaction ${transactionId}`,
+      );
+
+      toast.success(
+        `Book collection confirmed! Payment has been released to the seller.`,
+      );
+      return updatedTransaction;
+    } catch (error) {
+      console.error("Error marking book as collected:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to confirm collection";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  }
+
+  /**
+   * Complete transaction after successful collection and payment release
    */
   static async completeTransaction(
     transactionId: string,

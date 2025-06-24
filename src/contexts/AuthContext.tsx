@@ -20,6 +20,8 @@ import {
 } from "@/services/authOperations";
 import { addNotification } from "@/services/notificationService";
 import { logError, getErrorMessage } from "@/utils/errorUtils";
+import { createFallbackProfile } from "@/utils/databaseConnectivityHelper";
+import { shouldSkipAuthLoading } from "@/utils/instantStartup";
 
 // Simple logging for development
 const devLog = (message: string, data?: unknown) => {
@@ -73,7 +75,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(
+    shouldSkipAuthLoading() ? false : false,
+  ); // Always start as false
   const [authInitialized, setAuthInitialized] = useState(false);
   const [initError, setInitError] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
@@ -84,16 +88,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const isAuthenticated = !!user && !!session;
   const isAdmin = profile?.isAdmin === true;
 
-  const createFallbackProfile = useCallback(
-    (user: User): UserProfile => ({
-      id: user.id,
-      name: user.user_metadata?.name || user.email?.split("@")[0] || "User",
-      email: user.email || "",
-      isAdmin: false,
-      status: "active",
-      profile_picture_url: user.user_metadata?.avatar_url,
-      bio: undefined,
-    }),
+  const createUserFallbackProfile = useCallback(
+    (user: User): UserProfile => createFallbackProfile(user) as UserProfile,
     [],
   );
 
@@ -109,7 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         console.log("✅ Profile refreshed successfully");
       } else {
         // Use fallback profile
-        const fallbackProfile = createFallbackProfile(user);
+        const fallbackProfile = createUserFallbackProfile(user);
         setProfile(fallbackProfile);
         console.log("ℹ️ Using fallback profile after refresh");
       }
@@ -154,7 +150,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             currentUserIdRef.current = session.user.id;
 
             // Batch state updates to prevent multiple re-renders and glitching
-            const fallbackProfile = createFallbackProfile(session.user);
+            const fallbackProfile = createUserFallbackProfile(session.user);
 
             // Use React's automatic batching by updating state synchronously
             setSession(session);
@@ -181,12 +177,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                 console.log(
                   "✅ [AuthContext] Background profile load successful",
                 );
+              } else {
+                console.log(
+                  "ℹ️ [AuthContext] No profile data returned, keeping fallback profile",
+                );
               }
             })
             .catch((profileError) => {
               console.log(
-                "ℹ️ [AuthContext] Background profile load failed, keeping fallback",
+                "ℹ️ [AuthContext] Background profile load failed, keeping fallback:",
+                profileError instanceof Error
+                  ? profileError.message
+                  : String(profileError),
               );
+              // Keep the fallback profile - don't change loading state
             });
 
           // Add login notification for new sign-ins only (prevent duplicates)
@@ -265,13 +269,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
         // Don't throw - use fallback profile and ensure loading resolves
         if (session.user) {
-          const fallbackProfile = createFallbackProfile(session.user);
+          const fallbackProfile = createUserFallbackProfile(session.user);
           setProfile(fallbackProfile);
         }
         setIsLoading(false);
       }
     },
-    [createFallbackProfile, upgradeProfileIfNeeded, isInitializing],
+    [createUserFallbackProfile, upgradeProfileIfNeeded, isInitializing],
   );
 
   const initializeAuth = useCallback(async () => {
@@ -282,7 +286,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setInitError(null);
       setIsInitializing(true);
 
-      console.log("🔄 [AuthContext] Initializing auth...");
+      console.log("🔄 [AuthContext] Fast auth initialization...");
+
+      // Immediate fallback timeout to prevent hanging
+      const immediateTimeout = setTimeout(() => {
+        console.warn("⚠️ [AuthContext] Immediate fallback - preventing hang");
+        setIsLoading(false);
+        setAuthInitialized(true);
+      }, 500); // 500ms immediate fallback
+
+      // Ultra-fast database connectivity check
+      try {
+        const connectivityTimeout = new Promise((_, reject) =>
+          setTimeout(
+            () => reject(new Error("Database connectivity check timeout")),
+            800,
+          ),
+        );
+
+        const connectivityCheck = supabase
+          .from("profiles")
+          .select("id")
+          .limit(1);
+
+        await Promise.race([connectivityCheck, connectivityTimeout]);
+        console.log("✅ [AuthContext] Database connectivity verified");
+      } catch (dbError) {
+        console.warn(
+          "⚠️ [AuthContext] Database connection issues detected, using fallback",
+        );
+        console.info(
+          "ℹ️ [AuthContext] Continuing with fallback profile strategy",
+        );
+      }
 
       // Check if there are auth code parameters in the URL
       const urlParams = new URLSearchParams(window.location.search);
@@ -429,6 +465,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       setAuthInitialized(true);
+      clearTimeout(immediateTimeout);
       console.log("✅ [AuthContext] Auth initialized successfully");
     } catch (error) {
       const errorMessage = getErrorMessage(
@@ -460,6 +497,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Ensure loading is turned off on error to prevent infinite loading
       setIsLoading(false);
+      clearTimeout(immediateTimeout);
     } finally {
       setIsInitializing(false);
     }
@@ -522,15 +560,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     initializeAuth();
-  }, [initializeAuth]);
+
+    // Emergency backup to prevent infinite loading
+    const emergencyTimeout = setTimeout(() => {
+      if (!authInitialized) {
+        console.error(
+          "🚨 [AuthContext] Emergency timeout - auth never initialized",
+        );
+        console.error("🚨 [AuthContext] This indicates severe backend issues");
+        console.info(
+          "💡 [AuthContext] Check database setup and Supabase connection",
+        );
+
+        // Force initialization to prevent app from hanging
+        setAuthInitialized(true);
+        setIsLoading(false);
+        setUser(null);
+        setProfile(null);
+        setSession(null);
+        setInitError("Database connection failed. Please check setup.");
+      }
+    }, 3000); // 3 second emergency timeout
+
+    return () => clearTimeout(emergencyTimeout);
+  }, [initializeAuth, authInitialized]);
 
   // Separate effect for loading timeout to prevent infinite re-renders
   useEffect(() => {
     if (isLoading) {
       const loadingTimeout = setTimeout(() => {
         console.warn("⚠️ [AuthContext] Loading timeout - forcing resolution");
+        console.warn(
+          "⚠️ [AuthContext] This usually means database tables are missing",
+        );
+        console.info(
+          "💡 [AuthContext] Run complete_database_setup.sql in Supabase to fix this",
+        );
+
+        // Force resolution to unauthenticated state to stop loading spinner
+        setUser(null);
+        setProfile(null);
+        setSession(null);
         setIsLoading(false);
-      }, 5000); // 5 second timeout
+        setAuthInitialized(true);
+      }, 1500); // Very aggressive 1.5 second timeout
 
       return () => clearTimeout(loadingTimeout);
     }

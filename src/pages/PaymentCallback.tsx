@@ -1,46 +1,88 @@
+/**
+ * Payment Callback Page
+ * Handles users returning from Paystack after payment
+ */
+
 import React, { useEffect, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TransactionService } from "@/services/transactionService";
-import { CheckCircle, XCircle, Loader2, AlertTriangle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CheckCircle, XCircle, Loader2, ArrowRight } from "lucide-react";
+import { PaymentIntegrationService } from "@/services/paymentIntegrationService";
 import { toast } from "sonner";
 
 const PaymentCallback: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [status, setStatus] = useState<
-    "processing" | "success" | "failed" | "error"
+    "processing" | "success" | "failed" | "unknown"
   >("processing");
-  const [transactionData, setTransactionData] = useState<any>(null);
-  const [error, setError] = useState<string>("");
+  const [message, setMessage] = useState("Processing payment...");
+  const [transactionId, setTransactionId] = useState<string | null>(null);
 
   useEffect(() => {
     const handlePaymentCallback = async () => {
       try {
+        // Get payment reference from URL
         const reference = searchParams.get("reference");
         const trxref = searchParams.get("trxref");
         const paymentReference = reference || trxref;
 
         if (!paymentReference) {
-          setStatus("error");
-          setError("Payment reference not found");
+          setStatus("failed");
+          setMessage(
+            "No payment reference found. Payment may have been cancelled.",
+          );
           return;
         }
 
-        // Handle successful payment callback
-        const transaction =
-          await TransactionService.handlePaymentCallback(paymentReference);
+        console.log(
+          "🔍 Processing payment callback for reference:",
+          paymentReference,
+        );
 
-        setTransactionData(transaction);
+        // Step 3: Verify payment with Paystack
+        const verificationResult =
+          await PaymentIntegrationService.verifyPayment(paymentReference);
+
+        if (!verificationResult.success) {
+          setStatus("failed");
+          setMessage(
+            "Payment verification failed. Please contact support if you were charged.",
+          );
+          return;
+        }
+
+        // Step 4: Update transaction status
+        await PaymentIntegrationService.updateTransactionAfterPayment(
+          paymentReference,
+          verificationResult,
+        );
+
+        // Get transaction ID from session storage
+        const storedTransactionId = sessionStorage.getItem(
+          "current_transaction_id",
+        );
+        if (storedTransactionId) {
+          setTransactionId(storedTransactionId);
+        }
+
         setStatus("success");
+        setMessage(
+          `Payment successful! Amount: R${verificationResult.amount.toFixed(2)}`,
+        );
 
-        toast.success("Payment successful! Seller has been notified.");
+        // Clear stored data
+        sessionStorage.removeItem("current_transaction_id");
+        sessionStorage.removeItem("payment_book_id");
+
+        console.log("✅ Payment callback processing completed successfully");
       } catch (error) {
-        console.error("Payment callback error:", error);
+        console.error("Payment callback processing failed:", error);
         setStatus("failed");
-        setError(
+        setMessage(
           error instanceof Error ? error.message : "Payment processing failed",
         );
         toast.error("Payment processing failed");
@@ -51,173 +93,129 @@ const PaymentCallback: React.FC = () => {
   }, [searchParams]);
 
   const handleContinue = () => {
-    if (status === "success" && transactionData) {
-      navigate(`/profile?tab=activity&transaction=${transactionData.id}`);
+    const returnUrl = sessionStorage.getItem("payment_return_url");
+    sessionStorage.removeItem("payment_return_url");
+
+    if (status === "success" && transactionId) {
+      // Go to transaction details or payment dashboard
+      navigate(`/payment-dashboard?transaction=${transactionId}`);
+    } else if (returnUrl) {
+      navigate(returnUrl);
     } else {
-      navigate("/books");
+      navigate("/");
+    }
+  };
+
+  const getStatusIcon = () => {
+    switch (status) {
+      case "processing":
+        return <Loader2 className="h-12 w-12 animate-spin text-blue-600" />;
+      case "success":
+        return <CheckCircle className="h-12 w-12 text-green-600" />;
+      case "failed":
+        return <XCircle className="h-12 w-12 text-red-600" />;
+      default:
+        return <XCircle className="h-12 w-12 text-gray-400" />;
+    }
+  };
+
+  const getStatusTitle = () => {
+    switch (status) {
+      case "processing":
+        return "Processing Payment...";
+      case "success":
+        return "Payment Successful!";
+      case "failed":
+        return "Payment Failed";
+      default:
+        return "Payment Status Unknown";
+    }
+  };
+
+  const getStatusColor = () => {
+    switch (status) {
+      case "processing":
+        return "border-blue-200 bg-blue-50";
+      case "success":
+        return "border-green-200 bg-green-50";
+      case "failed":
+        return "border-red-200 bg-red-50";
+      default:
+        return "border-gray-200 bg-gray-50";
     }
   };
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
-        <Card>
-          <CardHeader className="text-center">
-            <CardTitle className="flex items-center justify-center text-2xl">
-              {status === "processing" && (
-                <>
-                  <Loader2 className="h-6 w-6 mr-2 animate-spin text-blue-600" />
-                  Processing Payment
-                </>
-              )}
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-md mx-auto">
+          <Card className={`${getStatusColor()}`}>
+            <CardHeader className="text-center">
+              <div className="flex justify-center mb-4">{getStatusIcon()}</div>
+              <CardTitle className="text-xl font-semibold">
+                {getStatusTitle()}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-center text-gray-700">{message}</p>
+
               {status === "success" && (
-                <>
-                  <CheckCircle className="h-6 w-6 mr-2 text-green-600" />
-                  Payment Successful
-                </>
-              )}
-              {status === "failed" && (
-                <>
-                  <XCircle className="h-6 w-6 mr-2 text-red-600" />
-                  Payment Failed
-                </>
-              )}
-              {status === "error" && (
-                <>
-                  <AlertTriangle className="h-6 w-6 mr-2 text-orange-600" />
-                  Processing Error
-                </>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {status === "processing" && (
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-book-600 mx-auto mb-4"></div>
-                <p className="text-gray-600">
-                  Please wait while we process your payment...
-                </p>
-              </div>
-            )}
-
-            {status === "success" && transactionData && (
-              <div className="space-y-4">
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <h3 className="font-medium text-green-900 mb-2">
-                    🎉 Payment Completed Successfully!
-                  </h3>
-                  <p className="text-green-800 text-sm">
-                    Your payment has been processed and the seller has been
-                    notified. They have 48 hours to commit to the sale.
-                  </p>
-                </div>
-
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h4 className="font-medium text-blue-900 mb-3">
-                    Transaction Details
-                  </h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-blue-700">Book:</span>
-                      <span className="text-blue-900 font-medium">
-                        {transactionData.book_title}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-blue-700">Amount:</span>
-                      <span className="text-blue-900 font-medium">
-                        R{transactionData.price?.toFixed(2)}
-                      </span>
-                    </div>
-                    {transactionData.delivery_fee > 0 && (
-                      <div className="flex justify-between">
-                        <span className="text-blue-700">Delivery Fee:</span>
-                        <span className="text-blue-900">
-                          R{transactionData.delivery_fee?.toFixed(2)}
-                        </span>
+                <Alert className="border-green-200 bg-green-50">
+                  <CheckCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    <div className="space-y-2">
+                      <div className="font-medium">What happens next?</div>
+                      <div className="text-sm">
+                        1. The seller has 48 hours to confirm the sale
+                        <br />
+                        2. Once confirmed, you'll be notified about delivery
+                        <br />
+                        3. After receiving the book, confirm delivery to
+                        complete the transaction
                       </div>
-                    )}
-                    <div className="flex justify-between border-t border-blue-200 pt-2">
-                      <span className="text-blue-700 font-medium">
-                        Total Paid:
-                      </span>
-                      <span className="text-blue-900 font-bold">
-                        R
-                        {(
-                          (transactionData.price || 0) +
-                          (transactionData.delivery_fee || 0)
-                        ).toFixed(2)}
-                      </span>
                     </div>
-                  </div>
-                </div>
-
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                  <h4 className="font-medium text-yellow-900 mb-2">
-                    What happens next?
-                  </h4>
-                  <ul className="text-sm text-yellow-800 space-y-1">
-                    <li>• The seller has 48 hours to commit to the sale</li>
-                    <li>
-                      • You'll receive email notifications about the status
-                    </li>
-                    <li>
-                      • If the seller doesn't commit, you'll get a full refund
-                    </li>
-                    <li>• Once committed, delivery arrangements will begin</li>
-                  </ul>
-                </div>
-              </div>
-            )}
-
-            {(status === "failed" || status === "error") && (
-              <div className="space-y-4">
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <h3 className="font-medium text-red-900 mb-2">
-                    Payment Processing Failed
-                  </h3>
-                  <p className="text-red-800 text-sm mb-3">
-                    {error ||
-                      "There was an issue processing your payment. Please try again."}
-                  </p>
-                  <p className="text-red-700 text-xs">
-                    If you were charged but see this error, please contact our
-                    support team.
-                  </p>
-                </div>
-
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h4 className="font-medium text-blue-900 mb-2">Need Help?</h4>
-                  <p className="text-blue-800 text-sm">
-                    Contact our support team at support@rebookedsolutions.co.za
-                    with your transaction details.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            <div className="flex gap-3">
-              <Button
-                onClick={handleContinue}
-                className="flex-1 bg-book-600 hover:bg-book-700"
-              >
-                {status === "success"
-                  ? "View Transaction"
-                  : "Continue Shopping"}
-              </Button>
-
-              {status !== "success" && (
-                <Button
-                  variant="outline"
-                  onClick={() => navigate("/contact")}
-                  className="flex-1"
-                >
-                  Contact Support
-                </Button>
+                  </AlertDescription>
+                </Alert>
               )}
-            </div>
-          </CardContent>
-        </Card>
+
+              {status === "failed" && (
+                <Alert variant="destructive">
+                  <XCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    If you were charged but the payment failed, please contact
+                    our support team with your payment reference for assistance.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleContinue}
+                  className="flex-1"
+                  disabled={status === "processing"}
+                >
+                  {status === "success" ? (
+                    <>
+                      View Transaction <ArrowRight className="ml-2 h-4 w-4" />
+                    </>
+                  ) : (
+                    "Continue"
+                  )}
+                </Button>
+
+                {status === "failed" && (
+                  <Button
+                    onClick={() => navigate("/")}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    Go Home
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </Layout>
   );

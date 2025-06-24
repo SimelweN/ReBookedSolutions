@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { safeLogError } from "@/utils/errorHandling";
+import { ImprovedBankingService } from "@/services/improvedBankingService";
 
 interface Address {
   complex?: string;
@@ -24,19 +25,42 @@ export const validateAddress = (address: Address): boolean => {
 export const canUserListBooks = async (userId: string): Promise<boolean> => {
   try {
     // Check if user has addresses set up (addresses_same indicates address setup completion)
-    const { data, error } = await supabase
+    const { data: profileData, error: profileError } = await supabase
       .from("profiles")
       .select("addresses_same")
       .eq("id", userId)
       .single();
 
-    if (error) {
-      safeLogError("Error checking if user can list books", error, { userId });
+    if (profileError) {
+      safeLogError(
+        "Error checking user profile for book listing",
+        profileError,
+        { userId },
+      );
       return false;
     }
 
-    // User can list books if they have completed address setup
-    return data?.addresses_same !== null;
+    // Check if addresses are set up
+    const hasAddresses = profileData?.addresses_same !== null;
+
+    if (!hasAddresses) {
+      console.log(`User ${userId} cannot list books: addresses not set up`);
+      return false;
+    }
+
+    // Check if user has verified banking details
+    const hasVerifiedBanking =
+      await ImprovedBankingService.hasVerifiedBankingDetails(userId);
+
+    if (!hasVerifiedBanking) {
+      console.log(
+        `User ${userId} cannot list books: banking details not verified or incomplete`,
+      );
+      return false;
+    }
+
+    console.log(`User ${userId} can list books: all requirements met`);
+    return true;
   } catch (error) {
     safeLogError("Error in canUserListBooks", error, { userId });
     return false;

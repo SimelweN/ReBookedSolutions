@@ -12,14 +12,16 @@ import {
   UserPlus,
   Truck,
   GraduationCap,
+  CreditCard,
 } from "lucide-react";
 import AdminAccess from "./AdminAccess";
 import CartButton from "./CartButton";
 import NotificationBadge from "./NotificationBadge";
 import { toast } from "sonner";
+import { preloadOnHover } from "@/utils/routePreloader";
 
 const Navbar = () => {
-  const { user, logout, isAuthenticated, isLoading, profile } = useAuth();
+  const { user, logout, isAuthenticated, profile } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -44,65 +46,7 @@ const Navbar = () => {
     return location.pathname === path;
   };
 
-  // Only show minimal loading during critical auth initialization
-  if (isLoading && !user && !profile && !isAuthenticated) {
-    return (
-      <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <div className="flex items-center min-w-0">
-              <Link
-                to="/"
-                className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
-              >
-                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-book-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                </div>
-                <span className="text-lg sm:text-xl font-bold text-book-600 truncate">
-                  ReBooked Solutions
-                </span>
-              </Link>
-            </div>
-
-            {/* Show basic navigation even during loading */}
-            <div className="hidden md:flex items-center space-x-4">
-              <Link
-                to="/books"
-                className="text-gray-700 hover:text-book-600 px-3 py-2 text-sm font-medium transition-colors"
-              >
-                Books
-              </Link>
-              <Link
-                to="/university-info"
-                className="text-gray-700 hover:text-book-600 px-3 py-2 text-sm font-medium transition-colors"
-              >
-                Campus
-              </Link>
-              <div className="w-20 h-10 bg-gray-200 rounded animate-pulse"></div>
-            </div>
-
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleMenu}
-                className="p-2"
-                aria-label="Toggle menu"
-              >
-                {isMenuOpen ? (
-                  <X className="h-5 w-5" />
-                ) : (
-                  <Menu className="h-5 w-5" />
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav>
-    );
-  }
+  // Always render full navbar - no loading states
 
   return (
     <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
@@ -128,6 +72,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-4 lg:space-x-8">
             <Link
               to="/books"
+              onMouseEnter={() => preloadOnHover("/books")}
               className={`text-sm font-medium transition-colors hover:text-book-600 ${
                 isActive("/books") ? "text-book-600" : "text-gray-700"
               }`}
@@ -164,29 +109,18 @@ const Navbar = () => {
             {isAuthenticated ? (
               <>
                 <CartButton />
-                <Link
-                  to="/notifications"
-                  className="relative p-2 text-gray-600 hover:text-book-600 transition-colors"
-                  title="View notifications"
-                >
-                  <NotificationBadge
-                    allowRetry={true}
-                    showErrorIndicator={true}
-                  />
-                </Link>
 
-                <Link to="/create-listing">
-                  <Button className="bg-book-600 hover:bg-book-700 text-white px-3 lg:px-4 h-10 text-sm">
-                    <Plus className="w-4 h-4" />
-                    <span className="ml-1 lg:ml-2 hidden lg:inline">
-                      Sell Book
-                    </span>
-                    <span className="ml-1 lg:hidden">Sell</span>
-                  </Button>
-                </Link>
+                <NotificationBadge
+                  allowRetry={true}
+                  showErrorIndicator={true}
+                  className="text-gray-700 hover:text-book-600"
+                />
 
                 <div className="flex items-center space-x-1 lg:space-x-2">
-                  <Link to="/profile">
+                  <Link
+                    to="/profile"
+                    onMouseEnter={() => preloadOnHover("/profile")}
+                  >
                     <Button
                       variant="ghost"
                       className="text-gray-700 hover:text-book-600 p-2 h-10 w-10 rounded-full"
@@ -307,6 +241,19 @@ const Navbar = () => {
                       Sell Book
                     </Link>
                   </div>
+
+                  <Link
+                    to="/payments"
+                    className={`flex items-center px-4 py-3 text-base font-medium rounded-md min-h-[44px] transition-colors ${
+                      isActive("/payments")
+                        ? "bg-book-50 text-book-600"
+                        : "text-gray-700 hover:bg-gray-50 hover:text-book-600"
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <CreditCard className="w-5 h-5 mr-3" />
+                    Payments
+                  </Link>
 
                   <Link
                     to="/notifications"
