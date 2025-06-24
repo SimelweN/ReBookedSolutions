@@ -21,6 +21,7 @@ import {
 import { addNotification } from "@/services/notificationService";
 import { logError, getErrorMessage } from "@/utils/errorUtils";
 import { createFallbackProfile } from "@/utils/databaseConnectivityHelper";
+import { shouldSkipAuthLoading } from "@/utils/instantStartup";
 
 // Simple logging for development
 const devLog = (message: string, data?: unknown) => {
