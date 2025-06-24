@@ -34,6 +34,10 @@ if (import.meta.env.DEV) {
   (window as any).debugBankingDetails = debugBankingDetails;
   (window as any).checkDatabaseStatus = checkDatabaseStatus;
   (window as any).logDatabaseStatus = logDatabaseStatus;
+
+  // Test fixed subject matching
+  import("./utils/testFixedSubjectMatching");
+
   console.log("🛠️ Debug utilities available:");
   console.log("  - debugConnection() - Full connection test");
   console.log("  - validateApiKey() - Check API key validity");
@@ -43,6 +47,7 @@ if (import.meta.env.DEV) {
   console.log("  - debugBankingDetails() - Debug banking details errors");
   console.log("  - checkDatabaseStatus() - Check database connectivity");
   console.log("  - logDatabaseStatus() - Log current database status");
+  console.log("  🧪 Fixed subject matching tests will run automatically");
 }
 
 // Import Index directly for instant loading
