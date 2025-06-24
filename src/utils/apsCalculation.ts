@@ -374,17 +374,26 @@ export const validateAPSSubjects = (
       errors.push("Mathematics or Mathematical Literacy is required");
     }
 
-    // Check minimum number of subjects
-    const validSubjects = subjects.filter(
-      (s) =>
-        s.name &&
-        s.name.trim() !== "" &&
-        !s.name.toLowerCase().includes("additional subject") &&
-        s.marks > 0,
-    );
-
+    // Check minimum number of subjects (use validSubjects from above)
     if (validSubjects.length < 4) {
       errors.push("At least 4 valid subjects with marks are required");
+    } else if (validSubjects.length < 6) {
+      warnings.push(
+        "6 or more subjects recommended for better university options",
+      );
+    }
+
+    // Check for Life Orientation (should be present but doesn't count toward APS)
+    const hasLifeOrientation = validSubjects.some(
+      (s) =>
+        s.name.toLowerCase().includes("life orientation") ||
+        s.name.toLowerCase().includes("life skills"),
+    );
+
+    if (!hasLifeOrientation) {
+      warnings.push(
+        "Life Orientation is typically required (but doesn't count toward APS)",
+      );
     }
 
     // Check individual subject validity
@@ -404,7 +413,7 @@ export const validateAPSSubjects = (
         subject.marks > 100
       ) {
         warnings.push(
-          `Subject ${index + 1} has invalid marks: ${subject.marks}`,
+          `Subject ${index + 1} has invalid marks: ${subject.marks}%`,
         );
       }
 
@@ -417,12 +426,32 @@ export const validateAPSSubjects = (
           `Subject ${index + 1} has invalid points: ${subject.points}`,
         );
       }
+
+      // Check for low marks
+      if (subject.marks < 30) {
+        warnings.push(`${subject.name} mark is very low (${subject.marks}%)`);
+      }
     });
+
+    // Calculate quality score
+    const totalMarks = validSubjects.reduce((sum, s) => sum + s.marks, 0);
+    const averageMark =
+      validSubjects.length > 0 ? totalMarks / validSubjects.length : 0;
+    const qualityScore = Math.min(
+      100,
+      Math.round(
+        (validSubjects.length >= 6 ? 30 : 20) + // Base score for subject count
+          (hasEnglish ? 20 : 0) + // Language requirement
+          (hasMath ? 20 : 0) + // Math requirement
+          averageMark * 0.3, // Average performance
+      ),
+    );
 
     return {
       isValid: errors.length === 0,
       errors,
       warnings,
+      score: qualityScore,
     };
   } catch (error) {
     console.error("Error validating APS subjects:", error);
