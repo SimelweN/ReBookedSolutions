@@ -53,8 +53,9 @@ if (import.meta.env.DEV) {
   console.log("  - logDatabaseStatus() - Log current database status");
 }
 
-// Simple lazy loading without retry logic for faster performance
-const Index = React.lazy(() => import("./pages/Index"));
+// Import Index directly for instant loading
+import IndexPage from "./pages/Index";
+const Index = () => <IndexPage />;
 const BookListing = React.lazy(() => import("./pages/BookListing"));
 const BookDetails = React.lazy(() => import("./pages/BookDetails"));
 const Login = React.lazy(() => import("./pages/Login"));
