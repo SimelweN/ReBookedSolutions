@@ -14,6 +14,8 @@ export interface NotificationRequest {
   status?: "pending" | "sent" | "cancelled";
 }
 
+type NotificationType = "accommodation" | "program" | "general";
+
 export class NotificationRequestService {
   /**
    * Submit a notification request for accommodation
@@ -39,7 +41,11 @@ export class NotificationRequestService {
         // Handle missing table gracefully
         if (error.message && error.message.includes("does not exist")) {
           console.log("💡 Notification system not yet set up - table missing");
-          return { success: false, error: "Notification system is being set up. Please check back later." };
+          return {
+            success: false,
+            error:
+              "Notification system is being set up. Please check back later.",
+          };
         }
 
         console.error(
@@ -87,6 +93,16 @@ export class NotificationRequestService {
       });
 
       if (error) {
+        // Handle missing table gracefully
+        if (error.message && error.message.includes("does not exist")) {
+          console.log("💡 Notification system not yet set up - table missing");
+          return {
+            success: false,
+            error:
+              "Notification system is being set up. Please check back later.",
+          };
+        }
+
         console.error("Error submitting program notification request:", error);
         return { success: false, error: error.message };
       }
@@ -105,80 +121,6 @@ export class NotificationRequestService {
   }
 
   /**
-   * Check if user already has a pending notification request
-   */
-  static async hasExistingRequest(
-    userId: string,
-    notificationType: "accommodation" | "program",
-    universityId: string,
-    programId?: string,
-  ): Promise<{ exists: boolean; error?: string }> {
-    try {
-      let query = supabase
-        .from("notification_requests")
-        .select("id")
-        .eq("user_id", userId)
-        .eq("notification_type", notificationType)
-        .eq("university_id", universityId)
-        .eq("status", "pending");
-
-      if (programId) {
-        query = query.eq("program_id", programId);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.error("Error checking existing notification request:", error);
-        return { exists: false, error: error.message };
-      }
-
-      return { exists: (data?.length || 0) > 0 };
-    } catch (error) {
-      console.error("Error in hasExistingRequest:", error);
-      return {
-        exists: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to check existing request",
-      };
-    }
-  }
-}
-
-  /**
-   * Get user's notification requests
-   */
-  static async getUserNotificationRequests(
-    userId: string,
-  ): Promise<{ requests: NotificationRequest[]; error?: string }> {
-    try {
-      const { data, error } = await supabase
-        .from("notification_requests")
-        .select("*")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error("Error fetching user notification requests:", error);
-        return { requests: [], error: error.message };
-      }
-
-      return { requests: data || [] };
-    } catch (error) {
-      console.error("Error in getUserNotificationRequests:", error);
-      return {
-        requests: [],
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to fetch notification requests",
-      };
-    }
-  }
-
-  /**
    * Check if user has existing notification request
    */
   static async hasExistingRequest(
@@ -191,16 +133,14 @@ export class NotificationRequestService {
         .from("notification_requests")
         .select("id")
         .eq("user_id", userId)
-        .eq("type", type)
+        .eq("notification_type", type)
         .eq("status", "pending");
 
       // Add specific filters based on type
       if (type === "program") {
         query = query.eq("program_id", identifier);
-      } else if (type === "university") {
-        query = query.eq("university_id", identifier);
       } else if (type === "accommodation") {
-        query = query.eq("accommodation_type", identifier);
+        query = query.eq("university_id", identifier);
       }
 
       const { data, error } = await query.limit(1);
@@ -211,7 +151,11 @@ export class NotificationRequestService {
         // Handle missing table gracefully
         if (error.message && error.message.includes("does not exist")) {
           console.log("💡 Notification system not yet set up - table missing");
-          return { exists: false, error: "Notification system is being set up. Please check back later." };
+          return {
+            exists: false,
+            error:
+              "Notification system is being set up. Please check back later.",
+          };
         }
 
         return { exists: false, error: error.message };
@@ -229,3 +173,87 @@ export class NotificationRequestService {
       };
     }
   }
+
+  /**
+   * Get user's notification requests
+   */
+  static async getUserNotificationRequests(
+    userId: string,
+  ): Promise<{ requests: NotificationRequest[]; error?: string }> {
+    try {
+      const { data, error } = await supabase
+        .from("notification_requests")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching user notification requests:", error);
+
+        // Handle missing table gracefully
+        if (error.message && error.message.includes("does not exist")) {
+          console.log("💡 Notification system not yet set up - table missing");
+          return {
+            requests: [],
+            error:
+              "Notification system is being set up. Please check back later.",
+          };
+        }
+
+        return { requests: [], error: error.message };
+      }
+
+      return { requests: data || [] };
+    } catch (error) {
+      console.error("Error in getUserNotificationRequests:", error);
+      return {
+        requests: [],
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch notification requests",
+      };
+    }
+  }
+
+  /**
+   * Cancel a notification request
+   */
+  static async cancelNotificationRequest(
+    requestId: string,
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      const { error } = await supabase
+        .from("notification_requests")
+        .update({ status: "cancelled" })
+        .eq("id", requestId);
+
+      if (error) {
+        console.error("Error cancelling notification request:", error);
+
+        // Handle missing table gracefully
+        if (error.message && error.message.includes("does not exist")) {
+          console.log("💡 Notification system not yet set up - table missing");
+          return {
+            success: false,
+            error:
+              "Notification system is being set up. Please check back later.",
+          };
+        }
+
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error in cancelNotificationRequest:", error);
+      return {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to cancel notification request",
+      };
+    }
+  }
+}
