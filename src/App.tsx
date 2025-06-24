@@ -187,14 +187,7 @@ function App() {
                     <AuthErrorHandler />
                     <ScrollToTop />
                     <Routes>
-                      <Route
-                        path="/"
-                        element={
-                          <SimpleRoute>
-                            <Index />
-                          </SimpleRoute>
-                        }
-                      />
+                      <Route path="/" element={<Index />} />
                       <Route
                         path="/books"
                         element={
