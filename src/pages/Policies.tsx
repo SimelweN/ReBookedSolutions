@@ -753,8 +753,8 @@ const Policies = () => {
                         6. TRANSACTIONS, FEES, AND PAYMENTS
                       </h3>
                       <p className="text-gray-700 leading-relaxed text-sm sm:text-base mb-3 sm:mb-4">
-                        6.1 All payments are facilitated through trusted
-                        third-party payment processors (e.g., Paystack).
+                        6.1 All payments are facilitated through our secure
+                        payment system at payment.rebookedsolutions.co.za.
                         ReBooked does not store credit card information or
                         process payments internally.
                       </p>
