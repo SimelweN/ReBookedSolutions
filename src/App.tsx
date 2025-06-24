@@ -163,10 +163,10 @@ const MinimalLoader = () => (
   </div>
 );
 
-// Simple route wrapper - no complex error boundaries
-const SimpleRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <Suspense fallback={<MinimalLoader />}>{children}</Suspense>
-);
+// Instant route wrapper - no loading at all
+const InstantRoute: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => <React.Fragment>{children}</React.Fragment>;
 
 function App() {
   // Preload critical routes for faster navigation
