@@ -591,7 +591,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setSession(null);
         setIsLoading(false);
         setAuthInitialized(true);
-      }, 3000); // Reduced to 3 second timeout for faster user experience
+      }, 1500); // Very aggressive 1.5 second timeout
 
       return () => clearTimeout(loadingTimeout);
     }
