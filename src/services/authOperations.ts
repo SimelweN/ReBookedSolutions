@@ -90,7 +90,7 @@ export const fetchUserProfileQuick = async (
     try {
       const { error: tableCheckError } = (await withTimeout(
         supabase.from("profiles").select("id").limit(1),
-        2000, // Very short timeout for existence check
+        800, // Ultra-fast timeout for existence check
         "Table check timeout",
       )) as any;
 
