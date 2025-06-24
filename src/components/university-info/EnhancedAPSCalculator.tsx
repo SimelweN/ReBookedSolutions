@@ -63,7 +63,6 @@ import {
   useAPSAwareCourseAssignment,
   useAPSFilterOptions,
 } from "@/hooks/useAPSAwareCourseAssignment";
-import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { APSSubject } from "@/types/university";
 import {
@@ -93,9 +92,6 @@ interface APSSubjectInput {
 
 const EnhancedAPSCalculator: React.FC = () => {
   const navigate = useNavigate();
-
-  // Authentication context
-  const { isAuthenticated } = useAuth();
 
   // APS-aware state management
   const {
@@ -829,7 +825,7 @@ const EnhancedAPSCalculator: React.FC = () => {
                 <APSStorageIndicator
                   storageSource={storageSource}
                   syncStatus={syncStatus}
-                  isAuthenticated={isAuthenticated}
+                  isAuthenticated={false}
                   onRefresh={refreshProfile}
                   className="mt-4"
                 />
