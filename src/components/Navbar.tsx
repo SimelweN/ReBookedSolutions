@@ -130,6 +130,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-4 lg:space-x-8">
             <Link
               to="/books"
+              onMouseEnter={() => preloadOnHover("/books")}
               className={`text-sm font-medium transition-colors hover:text-book-600 ${
                 isActive("/books") ? "text-book-600" : "text-gray-700"
               }`}
