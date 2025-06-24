@@ -420,13 +420,28 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
           .eq("id", user.id);
       }
 
+      // Ensure we always have delivery options to pass
+      const optionsToPass =
+        deliveryOptions.length > 0
+          ? deliveryOptions
+          : [
+              {
+                id: "default_standard",
+                provider: "courier-guy" as const,
+                service_name: "Standard Delivery",
+                price: 99,
+                estimated_days: "3-5 days",
+                description: "Standard nationwide delivery",
+              },
+            ];
+
       console.log("🚀 Calling onComplete with data:", {
         data,
-        deliveryOptionsCount: deliveryOptions.length,
+        deliveryOptionsCount: optionsToPass.length,
       });
 
       // Pass both shipping data and all delivery options to parent
-      onComplete(data, deliveryOptions);
+      onComplete(data, optionsToPass);
 
       console.log("✅ Form submission completed successfully");
       toast.success("Proceeding to delivery selection");
