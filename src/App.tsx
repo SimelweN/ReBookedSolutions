@@ -426,6 +426,16 @@ function App() {
                         }
                       />
                       <Route
+                        path="/qa-dashboard"
+                        element={
+                          <ProtectedRoute>
+                            <LazyWrapper>
+                              <QADashboard />
+                            </LazyWrapper>
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
                         path="/user-profile"
                         element={
                           <ProtectedRoute>
