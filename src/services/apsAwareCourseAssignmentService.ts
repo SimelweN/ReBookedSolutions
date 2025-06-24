@@ -389,9 +389,8 @@ function calculateSubjectMatch(
     };
   }
 
-  // Use precise subject matching
-  // Map APSSubject to the expected format for checkSubjectRequirements
-  const result = checkSubjectRequirements(
+  // Use FIXED subject matching for accurate results
+  const result = convertToFixedFormat(
     userSubjects.map((s) => ({
       name: s.name,
       level: s.level, // Use level directly (should be APS points 1-7)
