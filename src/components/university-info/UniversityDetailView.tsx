@@ -27,6 +27,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { NotificationRequestService } from "@/services/notificationRequestService";
 import { toast } from "sonner";
+import { safeNotificationRequest } from "@/utils/asyncWrapper";
 import { useState } from "react";
 
 interface UniversityDetailViewProps {
