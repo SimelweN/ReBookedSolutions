@@ -214,20 +214,24 @@ const UniversityInfo = () => {
 
   // Handle notification request for accommodation
   const handleNotifyRequest = async () => {
-    if (!isAuthenticated || !user) {
-      toast.error("Please log in to get notified");
-      navigate("/login");
+    if (!user) {
+      toast.error("Please sign in to get notified about accommodation");
       return;
     }
 
     setNotifyLoading(true);
-    try {
-      // Check if notification system is available
-      const { exists, error: checkError } =
-        await NotificationRequestService.hasExistingRequest(
-          user.id,
-          "accommodation",
-          "general", // General accommodation notification
+
+    // Wrap async operations with startTransition to prevent Suspense issues
+    startTransition(() => {
+      (async () => {
+        try {
+          // Check if notification system is available
+          const { exists, error: checkError } =
+            await NotificationRequestService.hasExistingRequest(
+              user.id,
+              "accommodation",
+              "general", // General accommodation notification
+            );
         );
 
       if (checkError) {
