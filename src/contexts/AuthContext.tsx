@@ -462,6 +462,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       setAuthInitialized(true);
+      clearTimeout(immediateTimeout);
       console.log("✅ [AuthContext] Auth initialized successfully");
     } catch (error) {
       const errorMessage = getErrorMessage(
