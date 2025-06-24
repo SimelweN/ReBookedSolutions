@@ -233,7 +233,7 @@ const Policies = () => {
                         <li>
                           Payment-related information: payout details or payment
                           references, collected and processed securely through
-                          trusted third-party providers like Paystack.
+                          our dedicated payment system.
                         </li>
                         <li>
                           Educational data: input used in APS calculators, study
@@ -351,9 +351,8 @@ const Policies = () => {
                           and providing tracking updates.
                         </li>
                         <li>
-                          Payment processors like Paystack for secure handling
-                          of funds, subject to their own privacy and security
-                          frameworks.
+                          Payment processors for secure handling of funds,
+                          subject to their own privacy and security frameworks.
                         </li>
                         <li>
                           Legal or regulatory authorities if required by law,
@@ -754,8 +753,8 @@ const Policies = () => {
                         6. TRANSACTIONS, FEES, AND PAYMENTS
                       </h3>
                       <p className="text-gray-700 leading-relaxed text-sm sm:text-base mb-3 sm:mb-4">
-                        6.1 All payments are facilitated through trusted
-                        third-party payment processors (e.g., Paystack).
+                        6.1 All payments are facilitated through our secure
+                        payment system at payment.rebookedsolutions.co.za.
                         ReBooked does not store credit card information or
                         process payments internally.
                       </p>

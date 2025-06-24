@@ -16,8 +16,6 @@ import LoadingSpinner from "./components/LoadingSpinner";
 import PerformanceMetrics from "./components/PerformanceMetrics";
 import { debugConnection } from "./utils/debugConnection";
 import { validateApiKey } from "./utils/validateApiKey";
-import { PaymentTester } from "./utils/paymentTester";
-import { testPaymentSetup } from "./utils/testPaymentSetup";
 import { DatabaseSetup } from "./utils/databaseSetup";
 import { debugBankingDetails } from "./utils/debugBankingDetails";
 import {
@@ -32,8 +30,6 @@ import "./App.css";
 if (import.meta.env.DEV) {
   (window as any).debugConnection = debugConnection;
   (window as any).validateApiKey = validateApiKey;
-  (window as any).PaymentTester = PaymentTester;
-  (window as any).testPaymentSetup = testPaymentSetup;
   (window as any).DatabaseSetup = DatabaseSetup;
   (window as any).debugBankingDetails = debugBankingDetails;
   (window as any).checkDatabaseStatus = checkDatabaseStatus;
@@ -41,10 +37,6 @@ if (import.meta.env.DEV) {
   console.log("🛠️ Debug utilities available:");
   console.log("  - debugConnection() - Full connection test");
   console.log("  - validateApiKey() - Check API key validity");
-  console.log("  - PaymentTester.testPaymentSystem() - Test payment setup");
-  console.log(
-    "  - testPaymentSetup() - Test user requirements for listing books",
-  );
   console.log(
     "  - DatabaseSetup.showSetupInstructions() - Check database setup",
   );
@@ -80,7 +72,6 @@ const Privacy = React.lazy(() => import("./pages/Privacy"));
 const Terms = React.lazy(() => import("./pages/Terms"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 const Cart = React.lazy(() => import("./pages/Cart"));
-const Checkout = React.lazy(() => import("./pages/Checkout"));
 const Notifications = React.lazy(() => import("./pages/Notifications"));
 const Shipping = React.lazy(() => import("./pages/Shipping"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
@@ -98,8 +89,6 @@ const Report = React.lazy(() => import("./pages/Report"));
 const UserProfile = React.lazy(() => import("./pages/UserProfile"));
 const FAQ = React.lazy(() => import("./pages/FAQ"));
 const APSDemo = React.lazy(() => import("./pages/APSDemo"));
-const PaymentCallback = React.lazy(() => import("./pages/PaymentCallback"));
-const PaymentDashboard = React.lazy(() => import("./pages/PaymentDashboard"));
 const SystemStatus = React.lazy(() => import("./pages/SystemStatus"));
 
 // Create query client with optimized settings
@@ -329,47 +318,11 @@ function App() {
                         }
                       />
                       <Route
-                        path="/checkout/:id"
-                        element={
-                          <LazyWrapper>
-                            <Checkout />
-                          </LazyWrapper>
-                        }
-                      />
-                      <Route
-                        path="/checkout/cart"
-                        element={
-                          <LazyWrapper>
-                            <Checkout />
-                          </LazyWrapper>
-                        }
-                      />
-                      <Route
                         path="/shipping"
                         element={
                           <LazyWrapper>
                             <Shipping />
                           </LazyWrapper>
-                        }
-                      />
-                      <Route
-                        path="/payment-callback"
-                        element={
-                          <LazyWrapper>
-                            <PaymentCallback />
-                          </LazyWrapper>
-                        }
-                      />
-
-                      {/* Payment Routes */}
-                      <Route
-                        path="/payments"
-                        element={
-                          <ProtectedRoute>
-                            <LazyWrapper>
-                              <PaymentDashboard />
-                            </LazyWrapper>
-                          </ProtectedRoute>
                         }
                       />
 
@@ -581,12 +534,8 @@ function App() {
 
 // Add debugging utilities to window in development
 if (import.meta.env.DEV) {
-  console.log("🎉 Payment system frontend is ready!");
-  console.log("💳 Complete payment integration implemented");
-  console.log("🧪 Test utilities: window.PaymentTester.testPaymentSystem()");
-  console.log(
-    "🔄 Payment flow: PaymentButton → Paystack → PaymentCallback → TransactionStatus",
-  );
+  console.log("🎉 ReBooked Solutions frontend is ready!");
+  console.log("📚 Book listing and user management system");
 }
 
 export default App;

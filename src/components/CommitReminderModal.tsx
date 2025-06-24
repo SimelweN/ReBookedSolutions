@@ -154,7 +154,7 @@ const CommitReminderModal = ({
                 <p className="text-sm text-blue-700">
                   The seller has <strong>48 hours</strong> to confirm your
                   order. If they do not commit within that time, your payment
-                  (including delivery) will be fully refunded.
+                  will be fully refunded through our secure payment system.
                 </p>
               </div>
             </div>
@@ -168,7 +168,7 @@ const CommitReminderModal = ({
               <div>
                 <p className="font-medium text-sm">Order placed:</p>
                 <p className="text-xs text-gray-600">
-                  Your payment is held securely
+                  Payments processed securely on payment.rebookedsolutions.co.za
                 </p>
               </div>
             </div>
@@ -206,10 +206,11 @@ const CommitReminderModal = ({
               </span>
             </div>
             <ul className="text-xs text-green-700 space-y-1">
-              <li>• Payment held until seller commits</li>
+              <li>• Payment held securely until seller commits</li>
               <li>• Automatic refund if seller doesn't respond</li>
               <li>• Full refund includes delivery fees</li>
               <li>• Email updates on order status</li>
+              <li>• Secure payment processing on dedicated platform</li>
             </ul>
           </div>
 

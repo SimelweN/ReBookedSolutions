@@ -38,15 +38,21 @@ const Cart = () => {
 
     setIsProcessing(true);
     try {
-      // Use internal checkout system
-      const { InternalPaymentRedirect } = await import(
-        "@/utils/internalPaymentRedirect"
-      );
-      InternalPaymentRedirect.redirectToCartCheckout();
+      // Redirect to payment subdomain
+      const cartData = {
+        items: items,
+        userId: user.id,
+        totalPrice: totalPrice,
+      };
+
+      // Store cart data in session storage for payment subdomain
+      sessionStorage.setItem("cart_data", JSON.stringify(cartData));
+
+      // Redirect to payment subdomain
+      window.location.href = `https://payment.rebookedsolutions.co.za/cart-checkout?userId=${user.id}`;
     } catch (error) {
-      // Fallback to direct navigation
-      console.error("Payment redirect failed, using direct navigation:", error);
-      navigate("/checkout/cart", { state: { cartItems: items } });
+      console.error("Error redirecting to payment system:", error);
+      toast.error("Unable to proceed to payment. Please try again.");
     } finally {
       setIsProcessing(false);
     }

@@ -117,7 +117,7 @@ const Profile = () => {
       const bankingDetails = await ImprovedBankingService.getBankingDetails(
         user.id,
       );
-      const hasBankingSetup = bankingDetails?.paystack_subaccount_code;
+      const hasBankingSetup = bankingDetails?.bank_account_number;
       const hasActiveListings = activeListings.length > 0;
 
       setNeedsBankingSetup(!hasBankingSetup && hasActiveListings);

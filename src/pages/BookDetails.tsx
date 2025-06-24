@@ -60,19 +60,26 @@ const BookDetails = () => {
       return;
     }
 
-    // Use internal checkout system
+    // Redirect to payment subdomain
     try {
-      const { InternalPaymentRedirect } = await import(
-        "@/utils/internalPaymentRedirect"
-      );
-      InternalPaymentRedirect.redirectToBuyNow(book.id);
-    } catch (error) {
-      // Fallback to direct navigation
-      console.log("Payment redirect failed, using direct navigation:", error);
-      toast.success("Proceeding to checkout...");
+      const bookData = {
+        id: book.id,
+        title: book.title,
+        price: book.price,
+        sellerId: book.seller?.id,
+        userId: user.id,
+      };
+
+      // Store book data in session storage for payment subdomain
+      sessionStorage.setItem("book_data", JSON.stringify(bookData));
+
+      toast.success("Proceeding to payment...");
       setTimeout(() => {
-        navigate(`/checkout/${book.id}`);
+        window.location.href = `https://payment.rebookedsolutions.co.za/book-checkout?bookId=${book.id}&userId=${user.id}`;
       }, 500);
+    } catch (error) {
+      console.error("Error redirecting to payment system:", error);
+      toast.error("Unable to proceed to payment. Please try again.");
     }
   };
 
