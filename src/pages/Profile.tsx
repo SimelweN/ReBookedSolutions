@@ -316,7 +316,10 @@ const Profile = () => {
     setIsBookNotSellingDialogOpen(true);
   };
 
-  if (!profile || !user) {
+  // Show loading spinner while authentication is loading
+  const { isLoading: authIsLoading } = useAuth();
+
+  if (authIsLoading) {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-8">
@@ -328,6 +331,23 @@ const Profile = () => {
       </Layout>
     );
   }
+
+  // If not loading but no user, redirect to login
+  if (!user) {
+    navigate("/login");
+    return null;
+  }
+
+  // Create fallback profile if profile is missing but user exists
+  const effectiveProfile = profile || {
+    id: user.id,
+    name: user.user_metadata?.name || user.email?.split("@")[0] || "User",
+    email: user.email || "",
+    isAdmin: false,
+    status: "active",
+    profile_picture_url: user.user_metadata?.avatar_url,
+    bio: undefined,
+  };
 
   const userData = {
     id: user.id,
