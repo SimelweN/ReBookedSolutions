@@ -568,7 +568,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setSession(null);
         setInitError("Database connection failed. Please check setup.");
       }
-    }, 8000); // 8 second emergency timeout
+    }, 3000); // 3 second emergency timeout
 
     return () => clearTimeout(emergencyTimeout);
   }, [initializeAuth, authInitialized]);
