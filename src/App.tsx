@@ -47,7 +47,6 @@ if (import.meta.env.DEV) {
 
 // Import Index directly for instant loading
 import IndexPage from "./pages/Index";
-import SimpleQADashboard from "./pages/SimpleQADashboard";
 const Index = () => <IndexPage />;
 
 // Simple lazy loading for other pages
@@ -80,7 +79,6 @@ const QADashboard = React.lazy(() => import("./pages/QADashboard"));
 const QAFunctionalityDashboard = React.lazy(
   () => import("./components/QADashboard"),
 );
-const QADashboard = React.lazy(() => import("./pages/QADashboard"));
 const ForgotPassword = React.lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = React.lazy(() => import("./pages/ResetPassword"));
 const Verify = React.lazy(() => import("./pages/Verify"));
