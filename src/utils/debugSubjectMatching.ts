@@ -4,10 +4,9 @@
  */
 
 import {
-  matchSubjects,
-  validateSubjectLevel,
-  checkSubjectRequirements,
-} from "../services/subjectMatchingService";
+  checkSubjectMatching,
+  testNewEngine,
+} from "../services/newSubjectEngine";
 
 /**
  * Test the exact scenario from the user's issue
