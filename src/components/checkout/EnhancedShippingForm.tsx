@@ -20,11 +20,7 @@ import { MapPin, Loader2, Truck, Clock, DollarSign, Edit2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
-import {
-  getAllDeliveryQuotes,
-  UnifiedQuoteRequest,
-} from "@/services/unifiedDeliveryService";
-import FallbackDeliveryService from "@/services/fallbackDeliveryService";
+import RealCourierPricing from "@/services/realCourierPricing";
 
 const shippingSchema = z.object({
   recipient_name: z.string().min(2, "Recipient name is required"),
@@ -226,55 +222,53 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
     setIsLoadingQuotes(true);
     try {
-      // Calculate total weight and dimensions for quotes
-      const totalWeight = cartItems.length * 0.5; // Assume 500g per book
-      const dimensions = {
-        length: 25,
-        width: 20,
-        height: cartItems.length * 2,
-      };
+      // Calculate total weight for quotes (estimate for books)
+      const totalWeight = cartItems.length * 0.6; // More realistic 600g per book
+      const estimatedValue = cartItems.reduce(
+        (sum, item) => sum + (item.price || 0),
+        0,
+      );
 
-      const quoteRequest: UnifiedQuoteRequest = {
+      const quoteRequest = {
         from: {
-          streetAddress: "123 Business St", // Seller's address (placeholder)
-          city: "Cape Town",
+          city: "Cape Town", // Default seller location
           province: "Western Cape",
-          postalCode: "7500",
+          postal_code: "7500",
         },
         to: {
-          streetAddress: watchedValues.street_address,
           city: watchedValues.city,
           province: watchedValues.province,
-          postalCode: watchedValues.postal_code,
+          postal_code: watchedValues.postal_code,
         },
-        weight: totalWeight,
-        length: dimensions.length,
-        width: dimensions.width,
-        height: dimensions.height,
+        parcel: {
+          weight: totalWeight,
+          length: 25, // Standard book package dimensions
+          width: 20,
+          height: cartItems.length * 2,
+          value: estimatedValue,
+        },
       };
 
-      // Skip Edge Functions entirely and use fallback service directly
-      console.log(
-        "Using fallback delivery pricing (Edge Functions unavailable)",
-      );
+      console.log("Getting real courier quotes for:", quoteRequest);
 
-      // Use intelligent fallback pricing
-      const isLocal = FallbackDeliveryService.isLocalDelivery(
-        "Cape Town", // Default sender city
-        watchedValues.city,
-        "Western Cape", // Default sender province
-        watchedValues.province,
-      );
+      // Get real courier quotes
+      const courierQuotes = await RealCourierPricing.getAllQuotes(quoteRequest);
 
-      const fallbackQuotes = FallbackDeliveryService.getFallbackQuotes({
-        fromProvince: "Western Cape",
-        toProvince: watchedValues.province,
-        weight: totalWeight,
-        isLocal: isLocal,
-      });
+      // Add Cape Town local delivery if applicable
+      const isCapeTownLocal =
+        watchedValues.province === "Western Cape" &&
+        (watchedValues.city.toLowerCase().includes("cape town") ||
+          watchedValues.city.toLowerCase().includes("stellenbosch") ||
+          watchedValues.city.toLowerCase().includes("paarl"));
 
-      // Convert fallback quotes to delivery options
-      const options: DeliveryOption[] = fallbackQuotes.map((quote) => ({
+      let allQuotes = [...courierQuotes];
+      if (isCapeTownLocal) {
+        const localQuotes = RealCourierPricing.getCapeTownLocalRates();
+        allQuotes.unshift(...localQuotes);
+      }
+
+      // Convert to delivery options format
+      const options: DeliveryOption[] = allQuotes.map((quote) => ({
         id: quote.id,
         provider: quote.provider,
         service_name: quote.service_name,
@@ -284,12 +278,14 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
       }));
 
       setDeliveryOptions(options);
-      setSelectedDeliveryOption(options[0]);
-
-      // Show subtle info message that we're using standard rates
       if (options.length > 0) {
-        toast.success("Delivery options loaded");
+        setSelectedDeliveryOption(options[0]); // Auto-select cheapest option
       }
+
+      toast.success(
+        `${options.length} delivery option${options.length !== 1 ? "s" : ""} found`,
+      );
+      console.log("Delivery options loaded:", options);
     } catch (error) {
       console.error("Error getting delivery quotes:", error);
 

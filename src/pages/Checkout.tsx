@@ -67,10 +67,11 @@ const Checkout: React.FC = () => {
     { number: 3, title: "Payment", icon: CreditCard },
   ];
 
-  const handleShippingComplete = (data: any, quotes: any[]) => {
+  const handleShippingComplete = (data: any, deliveryOptions: any[]) => {
     setShippingData(data);
-    setDeliveryQuotes(quotes);
+    setDeliveryQuotes(deliveryOptions);
     setCurrentStep(2);
+    toast.success("Address saved! Please select your delivery option.");
   };
 
   const handleDeliverySelected = (delivery: any) => {
@@ -180,7 +181,7 @@ const Checkout: React.FC = () => {
                   )}
                 </div>
                 <div className="text-right">
-                  <p className="font-bold">R{quote.price.toFixed(2)}</p>
+                  <p className="font-bold">R{(quote.price || 0).toFixed(2)}</p>
                   <p className="text-sm text-gray-500">Incl. VAT</p>
                 </div>
               </div>
