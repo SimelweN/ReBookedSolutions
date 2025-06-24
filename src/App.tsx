@@ -72,6 +72,7 @@ const Privacy = React.lazy(() => import("./pages/Privacy"));
 const Terms = React.lazy(() => import("./pages/Terms"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 const Cart = React.lazy(() => import("./pages/Cart"));
+const Checkout = React.lazy(() => import("./pages/Checkout"));
 const Notifications = React.lazy(() => import("./pages/Notifications"));
 const Shipping = React.lazy(() => import("./pages/Shipping"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
