@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { logError, serializeError } from "@/utils/asyncWrapper";
 
 export interface NotificationRequest {
   id?: string;
