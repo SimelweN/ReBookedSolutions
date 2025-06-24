@@ -77,34 +77,47 @@ const CheckoutShippingForm: React.FC<CheckoutShippingFormProps> = ({
         } = await supabase.auth.getUser();
         if (!user) return;
 
+        // First try to get address from profiles table
         const { data: profile } = await supabase
           .from("profiles")
           .select("*")
           .eq("id", user.id)
           .single();
 
-        if (profile) {
-          // Pre-fill with user profile data if available
-          setValue("recipient_name", profile.name || "");
+        // Then try to get from addresses/banking_details table
+        const { data: savedAddress } = await supabase
+          .from("addresses")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("is_default", true)
+          .single();
 
-          // Load from address fields if they exist
-          const addressFields = [
+        const addressData = savedAddress || profile;
+
+        if (addressData) {
+          // Pre-fill with saved data
+          setValue(
+            "recipient_name",
+            addressData.recipient_name || addressData.name || "",
+          );
+          setValue("phone", addressData.phone || "");
+          setValue(
             "street_address",
+            addressData.street_address || addressData.address_line_1 || "",
+          );
+          setValue(
             "apartment",
-            "city",
-            "province",
-            "postal_code",
-            "phone",
-          ];
+            addressData.apartment || addressData.address_line_2 || "",
+          );
+          setValue("city", addressData.city || "");
+          setValue("province", addressData.province || "");
+          setValue("postal_code", addressData.postal_code || "");
 
-          addressFields.forEach((field) => {
-            if (profile[field]) {
-              setValue(field as keyof ShippingFormData, profile[field]);
-            }
-          });
+          toast.success("Loaded your saved address");
         }
       } catch (error) {
         console.error("Error loading saved address:", error);
+        // Don't show error to user, just let them fill manually
       }
     };
 
