@@ -192,7 +192,7 @@ const CheckoutShippingForm: React.FC<CheckoutShippingFormProps> = ({
 
       results.forEach((result, index) => {
         if (result.status === "fulfilled" && result.value.data) {
-          const serviceNames = ["RAM Couriers", "Fastway"];
+          const serviceNames = ["Fastway", "The Courier Guy"];
           const data = result.value.data;
 
           if (data.success && data.quotes) {
@@ -206,6 +206,17 @@ const CheckoutShippingForm: React.FC<CheckoutShippingFormProps> = ({
                 service_code: quote.service_code,
                 provider: serviceNames[index].toLowerCase().replace(" ", "_"),
               });
+            });
+          } else if (data.price || data.cost) {
+            // Handle single quote response
+            quotes.push({
+              id: `${serviceNames[index]}_standard`,
+              service_name: `${serviceNames[index]} - Standard`,
+              price: data.price || data.cost || 0,
+              estimated_days: data.estimated_days || "3-5",
+              description: data.description || "Standard delivery",
+              service_code: data.service_code || "STANDARD",
+              provider: serviceNames[index].toLowerCase().replace(" ", "_"),
             });
           }
         }
