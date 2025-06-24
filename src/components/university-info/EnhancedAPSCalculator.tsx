@@ -209,7 +209,16 @@ const EnhancedAPSCalculator: React.FC = () => {
 
   // Load APS data when component mounts and listen for clearing events
   useEffect(() => {
-    // Load existing APS profile when component mounts
+    // Trigger profile refresh on mount to ensure we have the latest data
+    if (refreshProfile) {
+      refreshProfile().catch((error) => {
+        console.warn("Failed to refresh APS profile on mount:", error);
+      });
+    }
+  }, []); // Run once on mount
+
+  useEffect(() => {
+    // Load existing APS profile when userProfile changes
     if (userProfile && userProfile.subjects.length > 0) {
       console.log("🔄 Restoring APS subjects from saved profile:", userProfile);
       // Convert UserAPSProfile subjects to APSSubjectInput format for UI
@@ -240,7 +249,7 @@ const EnhancedAPSCalculator: React.FC = () => {
     return () => {
       window.removeEventListener("apsProfileCleared", handleAPSProfileCleared);
     };
-  }, [userProfile]);
+  }, [userProfile, refreshProfile]);
 
   // Update validation messages
   useEffect(() => {
