@@ -77,7 +77,9 @@ const Checkout = React.lazy(() => import("./pages/Checkout"));
 const Notifications = React.lazy(() => import("./pages/Notifications"));
 const SimpleQADashboard = React.lazy(() => import("./pages/SimpleQADashboard"));
 const QADashboard = React.lazy(() => import("./pages/QADashboard"));
-const QAFunctionalityDashboard = React.lazy(() => import("./components/QADashboard"));
+const QAFunctionalityDashboard = React.lazy(
+  () => import("./components/QADashboard"),
+);
 const QADashboard = React.lazy(() => import("./pages/QADashboard"));
 const ForgotPassword = React.lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = React.lazy(() => import("./pages/ResetPassword"));
@@ -530,22 +532,20 @@ function App() {
                       />
 
                       {/* Admin Routes */}
-                        <Route
-                          path="/qa-dashboard"
-                          element={
-                            <LazyWrapper>
-                              <QADashboard />
-                            </LazyWrapper>
-                          }
-                        />
-                        <Route
-                          path="/qa-functionality"
-                          element={
-                            <LazyWrapper>
-                              <QAFunctionalityDashboard />
-                            </LazyWrapper>
-                          }
-                        />
+                      <Route
+                        path="/qa-dashboard"
+                        element={
+                          <LazyWrapper>
+                            <QADashboard />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/qa-functionality"
+                        element={
+                          <LazyWrapper>
+                            <QAFunctionalityDashboard />
+                          </LazyWrapper>
                         }
                       />
                       <Route
