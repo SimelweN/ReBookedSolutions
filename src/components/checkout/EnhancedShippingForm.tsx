@@ -45,7 +45,10 @@ interface DeliveryOption {
 }
 
 interface EnhancedShippingFormProps {
-  onComplete: (shippingData: ShippingFormData, deliveryOptions: DeliveryOption[]) => void;
+  onComplete: (
+    shippingData: ShippingFormData,
+    deliveryOptions: DeliveryOption[],
+  ) => void;
   cartItems: any[];
 }
 
@@ -73,7 +76,8 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   const [savedAddress, setSavedAddress] = useState<any>(null);
   const [isEditingAddress, setIsEditingAddress] = useState(false);
   const [deliveryOptions, setDeliveryOptions] = useState<DeliveryOption[]>([]);
-  const [selectedDeliveryOption, setSelectedDeliveryOption] = useState<DeliveryOption | null>(null);
+  const [selectedDeliveryOption, setSelectedDeliveryOption] =
+    useState<DeliveryOption | null>(null);
   const [isLoadingQuotes, setIsLoadingQuotes] = useState(false);
 
   const {
@@ -91,23 +95,35 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
   // Initialize Google Maps Autocomplete
   useEffect(() => {
-    if (isLoaded && addressInputRef.current && !autocompleteRef.current && window.google) {
+    if (
+      isLoaded &&
+      addressInputRef.current &&
+      !autocompleteRef.current &&
+      window.google
+    ) {
       try {
         autocompleteRef.current = new google.maps.places.Autocomplete(
           addressInputRef.current,
           {
             componentRestrictions: { country: "za" },
             fields: ["address_components", "formatted_address", "geometry"],
-          types: ["address"],
-        }
-      );
+            types: ["address"],
+          },
+        );
 
-      autocompleteRef.current.addListener("place_changed", handlePlaceSelect);
+        autocompleteRef.current.addListener("place_changed", handlePlaceSelect);
+      } catch (error) {
+        console.warn("Google Maps Autocomplete failed to initialize:", error);
+      }
     }
 
     return () => {
-      if (autocompleteRef.current) {
-        google.maps.event.clearInstanceListeners(autocompleteRef.current);
+      if (autocompleteRef.current && window.google) {
+        try {
+          google.maps.event.clearInstanceListeners(autocompleteRef.current);
+        } catch (error) {
+          console.warn("Failed to clear Google Maps listeners:", error);
+        }
       }
     };
   }, [isLoaded]);
@@ -119,14 +135,20 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
   // Get delivery quotes when address is complete
   useEffect(() => {
-    if (watchedValues.city && watchedValues.province && watchedValues.postal_code) {
+    if (
+      watchedValues.city &&
+      watchedValues.province &&
+      watchedValues.postal_code
+    ) {
       getDeliveryQuotes();
     }
   }, [watchedValues.city, watchedValues.province, watchedValues.postal_code]);
 
   const loadSavedAddress = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       // Try to get address from profiles table first
@@ -152,7 +174,10 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   const populateFormWithAddress = (address: any) => {
     setValue("recipient_name", address.name || "");
     setValue("phone", address.phone || "");
-    setValue("street_address", address.streetAddress || address.street_address || "");
+    setValue(
+      "street_address",
+      address.streetAddress || address.street_address || "",
+    );
     setValue("apartment", address.apartment || address.unit_number || "");
     setValue("city", address.city || "");
     setValue("province", address.province || "");
@@ -200,7 +225,11 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   };
 
   const getDeliveryQuotes = async () => {
-    if (!watchedValues.city || !watchedValues.province || !watchedValues.postal_code) {
+    if (
+      !watchedValues.city ||
+      !watchedValues.province ||
+      !watchedValues.postal_code
+    ) {
       return;
     }
 
@@ -208,7 +237,10 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
     try {
       // Calculate total weight for quotes (estimate for books)
       const totalWeight = cartItems.length * 0.6; // More realistic 600g per book
-      const estimatedValue = cartItems.reduce((sum, item) => sum + (item.price || 0), 0);
+      const estimatedValue = cartItems.reduce(
+        (sum, item) => sum + (item.price || 0),
+        0,
+      );
 
       const quoteRequest = {
         from: {
@@ -239,8 +271,8 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
       const isCapeTownLocal =
         watchedValues.province === "Western Cape" &&
         (watchedValues.city.toLowerCase().includes("cape town") ||
-         watchedValues.city.toLowerCase().includes("stellenbosch") ||
-         watchedValues.city.toLowerCase().includes("paarl"));
+          watchedValues.city.toLowerCase().includes("stellenbosch") ||
+          watchedValues.city.toLowerCase().includes("paarl"));
 
       let allQuotes = [...courierQuotes];
       if (isCapeTownLocal) {
@@ -249,7 +281,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
       }
 
       // Convert to delivery options format
-      const options: DeliveryOption[] = allQuotes.map(quote => ({
+      const options: DeliveryOption[] = allQuotes.map((quote) => ({
         id: quote.id,
         provider: quote.provider,
         service_name: quote.service_name,
@@ -263,9 +295,10 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
         setSelectedDeliveryOption(options[0]); // Auto-select cheapest option
       }
 
-      toast.success(`${options.length} delivery option${options.length !== 1 ? 's' : ''} found`);
+      toast.success(
+        `${options.length} delivery option${options.length !== 1 ? "s" : ""} found`,
+      );
       console.log("Delivery options loaded:", options);
-
     } catch (error) {
       console.error("Error getting delivery quotes:", error);
 
@@ -301,7 +334,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
           price: 99,
           estimated_days: "2-4 days",
           description: "Fast express delivery",
-        }
+        },
       );
 
       console.log("🚛 Setting fallback delivery options:", fallbackOptions);
@@ -341,7 +374,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
       console.table(errors);
 
       const errorFields = Object.keys(errors);
-      toast.error(`Please fix these fields: ${errorFields.join(', ')}`);
+      toast.error(`Please fix these fields: ${errorFields.join(", ")}`);
       return;
     }
 
@@ -362,7 +395,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
               price: 99,
               estimated_days: "3-5 days",
               description: "Standard nationwide delivery",
-            }
+            },
           ];
           setDeliveryOptions(emergencyOptions);
         }
@@ -377,7 +410,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
             price: 99,
             estimated_days: "3-5 days",
             description: "Standard nationwide delivery",
-          }
+          },
         ];
         setDeliveryOptions(emergencyOptions);
       }
@@ -387,9 +420,10 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
       setIsLoading(true);
 
       // Save address for future use
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
-
         await supabase
           .from("profiles")
           .update({
@@ -401,22 +435,25 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
               city: data.city,
               province: data.province,
               postalCode: data.postal_code,
-            }
+            },
           })
           .eq("id", user.id);
       }
 
       // Ensure we always have delivery options to pass
-      const optionsToPass = deliveryOptions.length > 0 ? deliveryOptions : [
-        {
-          id: "default_standard",
-          provider: "courier-guy" as const,
-          service_name: "Standard Delivery",
-          price: 99,
-          estimated_days: "3-5 days",
-          description: "Standard nationwide delivery",
-        }
-      ];
+      const optionsToPass =
+        deliveryOptions.length > 0
+          ? deliveryOptions
+          : [
+              {
+                id: "default_standard",
+                provider: "courier-guy" as const,
+                service_name: "Standard Delivery",
+                price: 99,
+                estimated_days: "3-5 days",
+                description: "Standard nationwide delivery",
+              },
+            ];
 
       // Pass both shipping data and all delivery options to parent
       onComplete(data, optionsToPass);
@@ -444,12 +481,16 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
             console.table(validationErrors);
 
             // Show specific error messages
-            const errorMessages = Object.entries(validationErrors).map(([field, error]) => {
-              return `${field}: ${error?.message || 'Invalid'}`;
-            });
+            const errorMessages = Object.entries(validationErrors).map(
+              ([field, error]) => {
+                return `${field}: ${error?.message || "Invalid"}`;
+              },
+            );
 
             console.error("Detailed errors:", errorMessages);
-            toast.error(`Please fix these fields: ${Object.keys(validationErrors).join(', ')}`);
+            toast.error(
+              `Please fix these fields: ${Object.keys(validationErrors).join(", ")}`,
+            );
           })}
           className="space-y-6"
         >
@@ -458,11 +499,17 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
             <div className="bg-green-50 p-4 rounded-lg border border-green-200">
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="font-medium text-green-800 mb-2">Using Saved Address</h3>
+                  <h3 className="font-medium text-green-800 mb-2">
+                    Using Saved Address
+                  </h3>
                   <div className="text-sm text-green-700">
                     <p>{savedAddress.name}</p>
                     <p>{savedAddress.streetAddress}</p>
-                    <p>{savedAddress.apartment && `${savedAddress.apartment}, `}{savedAddress.city}, {savedAddress.province} {savedAddress.postalCode}</p>
+                    <p>
+                      {savedAddress.apartment && `${savedAddress.apartment}, `}
+                      {savedAddress.city}, {savedAddress.province}{" "}
+                      {savedAddress.postalCode}
+                    </p>
                     <p>{savedAddress.phone}</p>
                   </div>
                 </div>
@@ -644,35 +691,40 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
           )}
 
           {/* Manual Quote Trigger if options not loaded */}
-          {deliveryOptions.length === 0 && !isLoadingQuotes && watchedValues.city && watchedValues.province && (
-            <div className="space-y-4">
-              <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                <h3 className="font-medium text-yellow-800 mb-2">Get Delivery Quotes</h3>
-                <p className="text-sm text-yellow-700 mb-3">
-                  Click below to get delivery options for your address.
-                </p>
-                <Button
-                  type="button"
-                  onClick={() => getDeliveryQuotes()}
-                  disabled={isLoadingQuotes}
-                  variant="outline"
-                  className="w-full border-yellow-300 text-yellow-700 hover:bg-yellow-100"
-                >
-                  {isLoadingQuotes ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Getting Quotes...
-                    </>
-                  ) : (
-                    <>
-                      <Truck className="w-4 h-4 mr-2" />
-                      Get Delivery Options
-                    </>
-                  )}
-                </Button>
+          {deliveryOptions.length === 0 &&
+            !isLoadingQuotes &&
+            watchedValues.city &&
+            watchedValues.province && (
+              <div className="space-y-4">
+                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                  <h3 className="font-medium text-yellow-800 mb-2">
+                    Get Delivery Quotes
+                  </h3>
+                  <p className="text-sm text-yellow-700 mb-3">
+                    Click below to get delivery options for your address.
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={() => getDeliveryQuotes()}
+                    disabled={isLoadingQuotes}
+                    variant="outline"
+                    className="w-full border-yellow-300 text-yellow-700 hover:bg-yellow-100"
+                  >
+                    {isLoadingQuotes ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Getting Quotes...
+                      </>
+                    ) : (
+                      <>
+                        <Truck className="w-4 h-4 mr-2" />
+                        Get Delivery Options
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           {/* Delivery Options */}
           {deliveryOptions.length > 0 && (
@@ -702,23 +754,31 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className={`w-4 h-4 rounded-full border-2 ${
-                          selectedDeliveryOption?.id === option.id
-                            ? "border-blue-500 bg-blue-500"
-                            : "border-gray-300"
-                        }`}>
+                        <div
+                          className={`w-4 h-4 rounded-full border-2 ${
+                            selectedDeliveryOption?.id === option.id
+                              ? "border-blue-500 bg-blue-500"
+                              : "border-gray-300"
+                          }`}
+                        >
                           {selectedDeliveryOption?.id === option.id && (
                             <div className="w-2 h-2 bg-white rounded-full m-0.5" />
                           )}
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <h4 className="font-medium">{option.service_name}</h4>
+                            <h4 className="font-medium">
+                              {option.service_name}
+                            </h4>
                             <Badge variant="outline" className="text-xs">
-                              {option.provider === "courier-guy" ? "🚚 Courier Guy" : "🏃‍♂️ Fastway"}
+                              {option.provider === "courier-guy"
+                                ? "🚚 Courier Guy"
+                                : "🏃‍♂️ Fastway"}
                             </Badge>
                           </div>
-                          <p className="text-sm text-gray-600">{option.description}</p>
+                          <p className="text-sm text-gray-600">
+                            {option.description}
+                          </p>
                           <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
                             <span className="flex items-center gap-1">
                               <Clock className="w-3 h-3" />
@@ -742,7 +802,8 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
           <Alert>
             <Truck className="w-4 h-4" />
             <AlertDescription>
-              We'll find the best delivery options for your location. Delivery times may vary based on your area and the courier service.
+              We'll find the best delivery options for your location. Delivery
+              times may vary based on your area and the courier service.
             </AlertDescription>
           </Alert>
 
@@ -755,7 +816,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
                 isLoading,
                 isLoadingQuotes,
                 deliveryOptionsCount: deliveryOptions.length,
-                formErrors: errors
+                formErrors: errors,
               });
               // Let the form handle the submit, don't prevent default
             }}
@@ -774,28 +835,37 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
               <>
                 Continue to Delivery Selection
                 <span className="ml-2">
-                  ({deliveryOptions.length} option{deliveryOptions.length !== 1 ? 's' : ''} available)
+                  ({deliveryOptions.length} option
+                  {deliveryOptions.length !== 1 ? "s" : ""} available)
                 </span>
               </>
             ) : (
-              <>
-                Continue (Get delivery options on next step)
-              </>
+              <>Continue (Get delivery options on next step)</>
             )}
           </Button>
 
           {/* Debug Panel */}
           <div className="mt-4 p-3 bg-gray-100 rounded text-xs">
-            <p><strong>Form State Debug:</strong></p>
-            <p>Errors: {Object.keys(errors).length > 0 ? Object.keys(errors).join(', ') : 'None'}</p>
-            <p>Values: {JSON.stringify({
-              name: watchedValues.recipient_name ? '✓' : '✗',
-              phone: watchedValues.phone ? '✓' : '✗',
-              address: watchedValues.street_address ? '✓' : '✗',
-              city: watchedValues.city ? '✓' : '✗',
-              province: watchedValues.province ? '✓' : '✗',
-              postal: watchedValues.postal_code ? '✓' : '✗'
-            })}</p>
+            <p>
+              <strong>Form State Debug:</strong>
+            </p>
+            <p>
+              Errors:{" "}
+              {Object.keys(errors).length > 0
+                ? Object.keys(errors).join(", ")
+                : "None"}
+            </p>
+            <p>
+              Values:{" "}
+              {JSON.stringify({
+                name: watchedValues.recipient_name ? "✓" : "✗",
+                phone: watchedValues.phone ? "✓" : "✗",
+                address: watchedValues.street_address ? "✓" : "✗",
+                city: watchedValues.city ? "✓" : "✗",
+                province: watchedValues.province ? "✓" : "✗",
+                postal: watchedValues.postal_code ? "✓" : "✗",
+              })}
+            </p>
             <p>Delivery Options: {deliveryOptions.length}</p>
           </div>
 
@@ -809,7 +879,8 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
               const emergencyData = {
                 recipient_name: watchedValues.recipient_name || "Test User",
                 phone: watchedValues.phone || "0123456789",
-                street_address: watchedValues.street_address || "123 Test Street",
+                street_address:
+                  watchedValues.street_address || "123 Test Street",
                 apartment: watchedValues.apartment || "",
                 city: watchedValues.city || "Cape Town",
                 province: watchedValues.province || "Western Cape",
@@ -825,7 +896,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
                   price: 99,
                   estimated_days: "3-5 days",
                   description: "Standard nationwide delivery",
-                }
+                },
               ];
 
               onComplete(emergencyData, emergencyOptions);
