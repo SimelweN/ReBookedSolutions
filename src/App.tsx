@@ -16,8 +16,6 @@ import LoadingSpinner from "./components/LoadingSpinner";
 import PerformanceMetrics from "./components/PerformanceMetrics";
 import { debugConnection } from "./utils/debugConnection";
 import { validateApiKey } from "./utils/validateApiKey";
-import { PaymentTester } from "./utils/paymentTester";
-import { testPaymentSetup } from "./utils/testPaymentSetup";
 import { DatabaseSetup } from "./utils/databaseSetup";
 import { debugBankingDetails } from "./utils/debugBankingDetails";
 import {
@@ -32,8 +30,6 @@ import "./App.css";
 if (import.meta.env.DEV) {
   (window as any).debugConnection = debugConnection;
   (window as any).validateApiKey = validateApiKey;
-  (window as any).PaymentTester = PaymentTester;
-  (window as any).testPaymentSetup = testPaymentSetup;
   (window as any).DatabaseSetup = DatabaseSetup;
   (window as any).debugBankingDetails = debugBankingDetails;
   (window as any).checkDatabaseStatus = checkDatabaseStatus;
@@ -41,10 +37,6 @@ if (import.meta.env.DEV) {
   console.log("🛠️ Debug utilities available:");
   console.log("  - debugConnection() - Full connection test");
   console.log("  - validateApiKey() - Check API key validity");
-  console.log("  - PaymentTester.testPaymentSystem() - Test payment setup");
-  console.log(
-    "  - testPaymentSetup() - Test user requirements for listing books",
-  );
   console.log(
     "  - DatabaseSetup.showSetupInstructions() - Check database setup",
   );
@@ -542,12 +534,8 @@ function App() {
 
 // Add debugging utilities to window in development
 if (import.meta.env.DEV) {
-  console.log("🎉 Payment system frontend is ready!");
-  console.log("💳 Complete payment integration implemented");
-  console.log("🧪 Test utilities: window.PaymentTester.testPaymentSystem()");
-  console.log(
-    "🔄 Payment flow: PaymentButton → Paystack → PaymentCallback → TransactionStatus",
-  );
+  console.log("🎉 ReBooked Solutions frontend is ready!");
+  console.log("📚 Book listing and user management system");
 }
 
 export default App;
