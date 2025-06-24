@@ -14,12 +14,11 @@ const PaymentInfoBanner: React.FC = () => {
       <AlertDescription className="text-blue-800">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-1">
-            <div className="font-medium">Enhanced Security Notice</div>
+            <div className="font-medium">Secure Payment System</div>
             <p className="text-sm">
-              All payments are now processed on our secure payment platform for
-              your protection. You'll be redirected to{" "}
-              <strong>payment.rebookedsolutions.co.za</strong> when making
-              purchases.
+              All payments are processed securely with Paystack encryption. Your
+              financial information is protected with enterprise-grade security
+              and never stored on our servers.
             </p>
           </div>
           <div className="flex items-center gap-2">
