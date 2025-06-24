@@ -42,6 +42,7 @@ import { BookDeletionService } from "@/services/bookDeletionService";
 import { ImprovedBankingService } from "@/services/improvedBankingService";
 import SellerBankingSetupPrompt from "@/components/SellerBankingSetupPrompt";
 import EnhancedBecomeSellerGuide from "@/components/EnhancedBecomeSellerGuide";
+import SellerEarningsDashboard from "@/components/seller/SellerEarningsDashboard";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
