@@ -283,7 +283,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setInitError(null);
       setIsInitializing(true);
 
-      console.log("🔄 [AuthContext] Initializing auth...");
+      console.log("🔄 [AuthContext] Fast auth initialization...");
+
+      // Immediate fallback timeout to prevent hanging
+      const immediateTimeout = setTimeout(() => {
+        console.warn("⚠️ [AuthContext] Immediate fallback - preventing hang");
+        setIsLoading(false);
+        setAuthInitialized(true);
+      }, 500); // 500ms immediate fallback
 
       // Ultra-fast database connectivity check
       try {
