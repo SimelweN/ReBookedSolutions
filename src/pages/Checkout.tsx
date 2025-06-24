@@ -44,13 +44,34 @@ const Checkout: React.FC = () => {
   }, [items, navigate, isAuthenticated]);
 
   // Show loading while checking authentication/cart
-  if (!isAuthenticated || items.length === 0) {
+  if (!isAuthenticated) {
     return (
       <Layout>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading checkout...</p>
+            <p className="text-gray-600">Please log in to continue...</p>
+            <Button onClick={() => navigate("/login")} className="mt-4">
+              Go to Login
+            </Button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <Layout>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              Your cart is empty
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Add some books to your cart to proceed with checkout.
+            </p>
+            <Button onClick={() => navigate("/")}>Browse Books</Button>
           </div>
         </div>
       </Layout>
