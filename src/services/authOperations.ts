@@ -138,8 +138,8 @@ export const fetchUserProfileQuick = async (
           .select("id, name, email, status, profile_picture_url, bio, is_admin")
           .eq("id", user.id)
           .single(),
-        3000, // 3 second timeout to prevent hanging
-        "Profile fetch timed out after 3 seconds",
+        1000, // 1 second timeout for much faster response
+        "Profile fetch timed out after 1 second",
       )) as any;
 
       if (profileError) {
