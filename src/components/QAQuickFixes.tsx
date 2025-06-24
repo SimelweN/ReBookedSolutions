@@ -155,25 +155,38 @@ const QAQuickFixes: React.FC = () => {
         const mapsKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
         if (!mapsKey) {
-          toast.warning(
-            "Google Maps API key not configured - Address autocomplete will not work",
-          );
+          console.log("🗺️ Google Maps Setup Instructions:");
           console.log(
-            "💡 To fix: Set VITE_GOOGLE_MAPS_API_KEY in your environment variables",
+            "1. Get API key: https://developers.google.com/maps/documentation/javascript/get-api-key",
           );
+          console.log("2. Enable Places API in Google Cloud Console");
           console.log(
-            "📖 Get API key from: https://developers.google.com/maps/documentation/javascript/get-api-key",
+            "3. Add to .env file: VITE_GOOGLE_MAPS_API_KEY=your_api_key",
           );
+          console.log("4. Restart development server");
+
+          toast.warning("Google Maps API key not configured", {
+            description:
+              "Address autocomplete will use manual input only. Check console for setup instructions.",
+          });
           return;
         }
 
-        // Test if Google Maps script can be loaded (simplified check)
+        if (!mapsKey.startsWith("AIza")) {
+          toast.error("Invalid Google Maps API key format");
+          console.log("❌ API key should start with 'AIza'");
+          return;
+        }
+
+        // Test if Google Maps script can be loaded
         if (typeof window.google === "undefined") {
-          toast.info(
-            "Google Maps script not loaded yet - this is normal on first page load",
-          );
+          toast.info("Google Maps script loading...", {
+            description: "This is normal on first page load",
+          });
         } else {
-          toast.success("Google Maps API available and working!");
+          toast.success("Google Maps API working!", {
+            description: "Address autocomplete is available",
+          });
         }
       },
     },
