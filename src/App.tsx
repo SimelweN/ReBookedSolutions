@@ -498,6 +498,16 @@ function App() {
                         }
                       />
                       <Route
+                        path="/profile"
+                        element={
+                          <ProtectedRoute>
+                            <LazyWrapper>
+                              <Profile />
+                            </LazyWrapper>
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
                         path="/activity"
                         element={
                           <ProtectedRoute>
