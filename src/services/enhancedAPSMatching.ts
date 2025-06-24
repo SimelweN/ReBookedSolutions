@@ -1,5 +1,5 @@
 import { APSSubject } from "@/types/university";
-import { checkSubjectEligibility } from "./fixedSubjectMatching";
+import { checkSubjectMatching } from "./newSubjectEngine";
 
 export interface SubjectRequirement {
   name: string;
