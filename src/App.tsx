@@ -155,18 +155,16 @@ const ImportFailureFallback: React.FC<{ error?: Error }> = ({ error }) => (
   </div>
 );
 
-// Lightweight loading for better performance
-const LightweightLoader = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+// Minimal loading component
+const MinimalLoader = () => (
+  <div className="flex items-center justify-center h-24">
+    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
   </div>
 );
 
-// LazyRoute wrapper with lightweight loading
-const LazyRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <Suspense fallback={<LightweightLoader />}>
-    <ErrorBoundary fallback={ImportFailureFallback}>{children}</ErrorBoundary>
-  </Suspense>
+// Simple route wrapper - no complex error boundaries
+const SimpleRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <Suspense fallback={<MinimalLoader />}>{children}</Suspense>
 );
 
 function App() {
