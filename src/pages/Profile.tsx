@@ -731,6 +731,13 @@ const Profile = () => {
           onClose={() => setIsBuyerHowItWorksOpen(false)}
           type="buyer"
         />
+
+        <BecomeSellerGuide
+          isOpen={showBecomeSellerGuide}
+          onClose={() => setShowBecomeSellerGuide(false)}
+          userHasAddress={hasAddress}
+          userHasBanking={hasBankingDetails}
+        />
       </div>
     </Layout>
   );
