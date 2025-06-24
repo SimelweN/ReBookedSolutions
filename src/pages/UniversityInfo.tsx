@@ -221,7 +221,7 @@ const UniversityInfo = () => {
 
     setNotifyLoading(true);
     try {
-      // Check if user already has a pending request
+      // Check if notification system is available
       const { exists, error: checkError } =
         await NotificationRequestService.hasExistingRequest(
           user.id,
@@ -230,7 +230,12 @@ const UniversityInfo = () => {
         );
 
       if (checkError) {
-        throw new Error(checkError);
+        // If notification system is not available, show a helpful message
+        console.log("Notification system not available:", checkError);
+        toast.info(
+          "Notification system is currently being set up. Please check back later or contact support.",
+        );
+        return;
       }
 
       if (exists) {
@@ -248,6 +253,13 @@ const UniversityInfo = () => {
         );
 
       if (!success) {
+        // Handle gracefully if system not available
+        if (error && error.includes("does not exist")) {
+          toast.info(
+            "Notification system is currently being set up. Please check back later.",
+          );
+          return;
+        }
         throw new Error(error || "Failed to submit request");
       }
 
@@ -256,7 +268,16 @@ const UniversityInfo = () => {
       );
     } catch (error) {
       console.error("Error submitting notification request:", error);
-      toast.error("Failed to submit notification request. Please try again.");
+      // More graceful error handling
+      if (error instanceof Error && error.message.includes("does not exist")) {
+        toast.info(
+          "Notification system is currently being set up. Please check back later.",
+        );
+      } else {
+        toast.error(
+          "Unable to submit notification request at this time. Please try again later.",
+        );
+      }
     } finally {
       setNotifyLoading(false);
     }
