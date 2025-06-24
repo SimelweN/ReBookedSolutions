@@ -233,7 +233,7 @@ const Policies = () => {
                         <li>
                           Payment-related information: payout details or payment
                           references, collected and processed securely through
-                          trusted third-party providers like Paystack.
+                          our dedicated payment system.
                         </li>
                         <li>
                           Educational data: input used in APS calculators, study
@@ -351,9 +351,8 @@ const Policies = () => {
                           and providing tracking updates.
                         </li>
                         <li>
-                          Payment processors like Paystack for secure handling
-                          of funds, subject to their own privacy and security
-                          frameworks.
+                          Payment processors for secure handling of funds,
+                          subject to their own privacy and security frameworks.
                         </li>
                         <li>
                           Legal or regulatory authorities if required by law,
