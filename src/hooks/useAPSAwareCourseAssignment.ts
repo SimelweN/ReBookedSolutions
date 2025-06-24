@@ -317,34 +317,29 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
           program.subjects || program.subjectRequirements || [];
 
         if (subjectRequirements.length > 0) {
-          // Import the fixed subject matching
-          import("@/services/fixedSubjectMatching").then(
-            ({ checkSubjectEligibility }) => {
-              const subjectCheck = checkSubjectEligibility(
-                userSubjects.map((s) => ({
-                  name: s.name,
-                  level: s.level,
-                  points: s.points,
-                })),
-                subjectRequirements.map((s) => ({
-                  name: s.name,
-                  level: s.level || s.minLevel || 4,
-                  isRequired: s.isRequired || s.required || false,
-                })),
-              );
-
-              if (!subjectCheck.isEligible) {
-                return {
-                  eligible: false,
-                  reason: `Subject requirements: ${subjectCheck.matchedCount}/${subjectCheck.requiredCount} met. ${subjectCheck.details}`,
-                  meetsAPS: true,
-                  matchedCount: subjectCheck.matchedCount,
-                  requiredCount: subjectCheck.requiredCount,
-                  subjectDetails: subjectCheck.details,
-                };
-              }
-            },
+          const subjectCheck = checkSubjectEligibility(
+            userSubjects.map((s) => ({
+              name: s.name,
+              level: s.level,
+              points: s.points,
+            })),
+            subjectRequirements.map((s) => ({
+              name: s.name,
+              level: s.level || s.minLevel || 4,
+              isRequired: s.isRequired || s.required || false,
+            })),
           );
+
+          if (!subjectCheck.isEligible) {
+            return {
+              eligible: false,
+              reason: `Subject requirements: ${subjectCheck.matchedCount}/${subjectCheck.requiredCount} met. ${subjectCheck.details}`,
+              meetsAPS: true,
+              matchedCount: subjectCheck.matchedCount,
+              requiredCount: subjectCheck.requiredCount,
+              subjectDetails: subjectCheck.details,
+            };
+          }
         }
 
         return {
