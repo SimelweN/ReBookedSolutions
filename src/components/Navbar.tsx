@@ -18,6 +18,7 @@ import AdminAccess from "./AdminAccess";
 import CartButton from "./CartButton";
 import NotificationBadge from "./NotificationBadge";
 import { toast } from "sonner";
+import { preloadOnHover } from "@/utils/routePreloader";
 
 const Navbar = () => {
   const { user, logout, isAuthenticated, isLoading, profile } = useAuth();
