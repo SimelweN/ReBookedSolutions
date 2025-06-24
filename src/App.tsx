@@ -37,15 +37,24 @@ if (import.meta.env.DEV) {
 
   // Test NEW SUBJECT ENGINE - wrapped to prevent Suspense issues
   setTimeout(() => {
-    import("./services/newSubjectEngine")
-      .then(({ testNewEngine }) => {
-        console.log("🔥 Testing NEW SUBJECT ENGINE...");
-        testNewEngine();
-      })
-      .catch((error) => {
-        console.warn("Subject engine test failed:", error);
-      });
-  }, 2000); // Delayed to prevent initialization conflicts
+    try {
+      import("./services/newSubjectEngine")
+        .then(({ testNewEngine }) => {
+          try {
+            console.log("🔥 Testing NEW SUBJECT ENGINE...");
+            testNewEngine();
+            console.log("✅ Subject engine test completed successfully");
+          } catch (testError) {
+            console.warn("Subject engine test execution failed:", testError);
+          }
+        })
+        .catch((importError) => {
+          console.warn("Subject engine import failed:", importError);
+        });
+    } catch (error) {
+      console.warn("Subject engine test setup failed:", error);
+    }
+  }, 3000); // Extended delay to prevent initialization conflicts
 
   console.log("🛠️ Debug utilities available:");
   console.log("  - debugConnection() - Full connection test");
