@@ -176,7 +176,7 @@ function App() {
                     <ScrollToTop />
                     <Routes>
                       {/* Home route - loads instantly */}
-                      <Route path="/" element={<Index />} />
+                      <Route path="/" element={<IndexPage />} />
 
                       {/* Public routes */}
                       <Route path="/register" element={<Register />} />
