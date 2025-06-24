@@ -24,6 +24,7 @@ const Layout = ({ children }: LayoutProps) => {
           duration: 4000,
         }}
       />
+      <QAQuickAccess />
     </div>
   );
 };
