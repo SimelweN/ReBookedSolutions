@@ -86,15 +86,44 @@ export const fetchUserProfileQuick = async (
   try {
     console.log("🔄 Quick profile fetch for user:", user.id);
 
-    // Simplified approach with just one try and longer timeout
+    // Test if profiles table exists first with a quick check
+    const { error: tableCheckError } = await supabase
+      .from("profiles")
+      .select("id")
+      .limit(1);
+
+    if (tableCheckError) {
+      // If profiles table doesn't exist or has permission issues
+      if (
+        tableCheckError.message?.includes("relation") &&
+        tableCheckError.message?.includes("does not exist")
+      ) {
+        console.warn(
+          "❌ Profiles table does not exist - using fallback profile",
+        );
+        return null; // Will trigger fallback profile creation
+      }
+
+      if (
+        tableCheckError.message?.includes("permission denied") ||
+        tableCheckError.code === "42501"
+      ) {
+        console.warn(
+          "❌ No permission to access profiles table - using fallback",
+        );
+        return null;
+      }
+    }
+
+    // Simplified approach with shorter timeout to prevent hanging
     const { data: profile, error: profileError } = (await withTimeout(
       supabase
         .from("profiles")
         .select("id, name, email, status, profile_picture_url, bio, is_admin")
         .eq("id", user.id)
         .single(),
-      12000, // Increased to 12 seconds
-      "Quick profile fetch timed out after 12 seconds",
+      5000, // Reduced to 5 seconds to prevent hanging
+      "Quick profile fetch timed out after 5 seconds",
     )) as any;
 
     if (profileError) {
