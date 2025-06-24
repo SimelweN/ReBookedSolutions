@@ -937,7 +937,9 @@ const EnhancedAPSCalculator: React.FC = () => {
                         <Button
                           onClick={searchPrograms}
                           className="w-full bg-book-600 hover:bg-book-700"
-                          disabled={isLoading}
+                          disabled={
+                            isLoading || !apsCalculation.isCalculationValid
+                          }
                           size="lg"
                         >
                           {isLoading ? (
@@ -947,6 +949,15 @@ const EnhancedAPSCalculator: React.FC = () => {
                           )}
                           Find Your Programs
                         </Button>
+
+                        {!apsCalculation.isCalculationValid &&
+                          subjects.length > 0 && (
+                            <div className="text-xs text-center text-gray-500 mt-2">
+                              Add at least 4 subjects including
+                              English/Afrikaans and Mathematics/Mathematical
+                              Literacy
+                            </div>
+                          )}
                       </div>
                     )}
                   </div>
