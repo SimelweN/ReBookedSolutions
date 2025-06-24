@@ -227,10 +227,7 @@ export class NotificationRequestService {
         .eq("id", requestId);
 
       if (error) {
-        console.error(
-          "Error cancelling notification request:",
-          error instanceof Error ? error.message : String(error),
-        );
+        logError("Error cancelling notification request:", error);
 
         // Handle missing table gracefully
         if (error.message && error.message.includes("does not exist")) {
