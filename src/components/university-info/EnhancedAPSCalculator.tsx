@@ -415,24 +415,46 @@ const EnhancedAPSCalculator: React.FC = () => {
   // Remove subject function with immediate save
   const removeSubject = useCallback(
     async (index: number) => {
+      if (index < 0 || index >= subjects.length) {
+        toast.error("Invalid subject index");
+        return;
+      }
+
+      const subjectToRemove = subjects[index];
       const newSubjects = subjects.filter((_, i) => i !== index);
       setSubjects(newSubjects);
 
-      // Immediately save updated profile
-      if (newSubjects.length > 0) {
-        const apsSubjects: APSSubject[] = newSubjects.map((s) => ({
-          name: s.name,
-          marks: s.marks,
-          level: s.points,
-          points: s.points,
-        }));
-        await updateUserSubjects(apsSubjects);
-      } else {
-        // If no subjects left, clear the profile
-        await clearAPSProfile();
-      }
+      try {
+        // Immediately save updated profile
+        if (newSubjects.length > 0) {
+          const apsSubjects: APSSubject[] = newSubjects.map((s) => ({
+            name: s.name,
+            marks: s.marks,
+            level: s.points,
+            points: s.points,
+          }));
+          const success = await updateUserSubjects(apsSubjects);
 
-      toast.success("Subject removed");
+          if (success) {
+            toast.success(
+              `${subjectToRemove.name} removed and profile updated`,
+            );
+          } else {
+            toast.success(`${subjectToRemove.name} removed`);
+          }
+        } else {
+          // If no subjects left, clear the profile
+          const success = await clearAPSProfile();
+          if (success) {
+            toast.success("Last subject removed and profile cleared");
+          } else {
+            toast.success("Subject removed");
+          }
+        }
+      } catch (error) {
+        console.error("Error removing subject:", error);
+        toast.success("Subject removed");
+      }
     },
     [subjects, updateUserSubjects, clearAPSProfile],
   );
