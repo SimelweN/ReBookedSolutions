@@ -27,6 +27,7 @@ const Layout = ({ children }: LayoutProps) => {
         }}
       />
       <QAQuickAccess />
+      <DevToolsQuickAccess />
     </div>
   );
 };
