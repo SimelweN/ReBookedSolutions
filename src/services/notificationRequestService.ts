@@ -103,7 +103,10 @@ export class NotificationRequestService {
           };
         }
 
-        console.error("Error submitting program notification request:", error);
+        console.error(
+          "Error submitting program notification request:",
+          error instanceof Error ? error.message : String(error),
+        );
         return { success: false, error: error.message };
       }
 
