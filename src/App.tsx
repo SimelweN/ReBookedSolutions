@@ -35,8 +35,13 @@ if (import.meta.env.DEV) {
   (window as any).checkDatabaseStatus = checkDatabaseStatus;
   (window as any).logDatabaseStatus = logDatabaseStatus;
 
-  // Test fixed subject matching
-  import("./utils/testFixedSubjectMatching");
+  // Test NEW SUBJECT ENGINE
+  import("./services/newSubjectEngine").then(({ testNewEngine }) => {
+    setTimeout(() => {
+      console.log("🔥 Testing NEW SUBJECT ENGINE...");
+      testNewEngine();
+    }, 1000);
+  });
 
   console.log("🛠️ Debug utilities available:");
   console.log("  - debugConnection() - Full connection test");
