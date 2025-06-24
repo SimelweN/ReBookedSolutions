@@ -416,14 +416,14 @@ function App() {
                       />
 
                       {/* Protected Routes */}
+                      <Route path="/user-profile" element={<UserProfile />} />
+                      <Route path="/qa" element={<SimpleQADashboard />} />
                       <Route
-                        path="/profile"
+                        path="/books"
                         element={
-                          <ProtectedRoute>
-                            <LazyWrapper>
-                              <Profile />
-                            </LazyWrapper>
-                          </ProtectedRoute>
+                          <LazyWrapper>
+                            <BookListing />
+                          </LazyWrapper>
                         }
                       />
                       <Route
