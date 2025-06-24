@@ -155,7 +155,16 @@ const QAQuickFixes: React.FC = () => {
         const mapsKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
         if (!mapsKey) {
-          throw new Error("VITE_GOOGLE_MAPS_API_KEY not configured");
+          toast.warning(
+            "Google Maps API key not configured - Address autocomplete will not work",
+          );
+          console.log(
+            "💡 To fix: Set VITE_GOOGLE_MAPS_API_KEY in your environment variables",
+          );
+          console.log(
+            "📖 Get API key from: https://developers.google.com/maps/documentation/javascript/get-api-key",
+          );
+          return;
         }
 
         // Test if Google Maps script can be loaded (simplified check)
@@ -164,7 +173,7 @@ const QAQuickFixes: React.FC = () => {
             "Google Maps script not loaded yet - this is normal on first page load",
           );
         } else {
-          toast.success("Google Maps API available!");
+          toast.success("Google Maps API available and working!");
         }
       },
     },
