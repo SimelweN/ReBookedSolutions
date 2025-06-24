@@ -294,6 +294,10 @@ const SimpleQADashboard: React.FC = () => {
             <QAQuickFixes />
           </TabsContent>
 
+          <TabsContent value="checkout">
+            <CheckoutTroubleshooting />
+          </TabsContent>
+
           <TabsContent value="checklist">
             <Card className="border-red-200 bg-red-50">
               <CardHeader>
