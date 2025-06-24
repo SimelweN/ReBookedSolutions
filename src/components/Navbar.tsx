@@ -175,7 +175,10 @@ const Navbar = () => {
                 />
 
                 <div className="flex items-center space-x-1 lg:space-x-2">
-                  <Link to="/profile">
+                  <Link
+                    to="/profile"
+                    onMouseEnter={() => preloadOnHover("/profile")}
+                  >
                     <Button
                       variant="ghost"
                       className="text-gray-700 hover:text-book-600 p-2 h-10 w-10 rounded-full"
