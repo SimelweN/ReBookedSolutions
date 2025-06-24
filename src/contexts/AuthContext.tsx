@@ -494,6 +494,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Ensure loading is turned off on error to prevent infinite loading
       setIsLoading(false);
+      clearTimeout(immediateTimeout);
     } finally {
       setIsInitializing(false);
     }
