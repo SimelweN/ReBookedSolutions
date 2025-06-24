@@ -260,6 +260,14 @@ const Checkout: React.FC = () => {
             <div className="lg:col-span-2">
               {currentStep === 1 && (
                 <div className="space-y-4">
+                  {/* Google Maps Status */}
+                  {loadError && (
+                    <GoogleMapsErrorHandler
+                      error={loadError}
+                      variant="minimal"
+                    />
+                  )}
+
                   {/* Form Selector */}
                   <div className="flex gap-2 justify-end">
                     <Button
