@@ -96,6 +96,7 @@ const FAQ = React.lazy(() => import("./pages/FAQ"));
 const APSDemo = React.lazy(() => import("./pages/APSDemo"));
 const SystemStatus = React.lazy(() => import("./pages/SystemStatus"));
 const CheckoutSuccess = React.lazy(() => import("./pages/CheckoutSuccess"));
+const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
 
 // Create query client with optimized settings
 const queryClient = new QueryClient({
