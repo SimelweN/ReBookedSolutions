@@ -61,48 +61,56 @@ const UniversityDetailView: React.FC<UniversityDetailViewProps> = ({
     }
 
     setNotifyLoading(true);
-    try {
-      // Check if user already has a pending request for this university
-      const { exists, error: checkError } =
-        await NotificationRequestService.hasExistingRequest(
-          user.id,
-          "accommodation",
-          university.id,
-        );
 
-      if (checkError) {
-        throw new Error(checkError);
-      }
+    // Wrap async operations with startTransition to prevent Suspense issues
+    startTransition(() => {
+      (async () => {
+        try {
+          // Check if user already has a pending request for this university
+          const { exists, error: checkError } =
+            await NotificationRequestService.hasExistingRequest(
+              user.id,
+              "accommodation",
+              university.id,
+            );
 
-      if (exists) {
-        toast.info(
-          `You're already on the notification list for ${university.name}!`,
-        );
-        return;
-      }
+          if (checkError) {
+            throw new Error(checkError);
+          }
 
-      // Submit notification request
-      const { success, error } =
-        await NotificationRequestService.requestAccommodationNotification(
-          user.id,
-          user.email || "",
-          university.id,
-          university.name,
-        );
+          if (exists) {
+            toast.info(
+              `You're already on the notification list for ${university.name}!`,
+            );
+            return;
+          }
 
-      if (!success) {
-        throw new Error(error || "Failed to submit request");
-      }
+          // Submit notification request
+          const { success, error } =
+            await NotificationRequestService.requestAccommodationNotification(
+              user.id,
+              user.email || "",
+              university.id,
+              university.name,
+            );
 
-      toast.success(
-        `You'll be notified when accommodation services are available at ${university.name}!`,
-      );
-    } catch (error) {
-      console.error("Error submitting notification request:", error);
-      toast.error("Failed to submit notification request. Please try again.");
-    } finally {
-      setNotifyLoading(false);
-    }
+          if (!success) {
+            throw new Error(error || "Failed to submit request");
+          }
+
+          toast.success(
+            `You'll be notified when accommodation services are available at ${university.name}!`,
+          );
+        } catch (error) {
+          console.error("Error submitting notification request:", error);
+          toast.error(
+            "Failed to submit notification request. Please try again.",
+          );
+        } finally {
+          setNotifyLoading(false);
+        }
+      })();
+    });
   };
 
   return (
