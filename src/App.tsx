@@ -47,6 +47,8 @@ if (import.meta.env.DEV) {
     "  - DatabaseSetup.showSetupInstructions() - Check database setup",
   );
   console.log("  - debugBankingDetails() - Debug banking details errors");
+  console.log("  - checkDatabaseStatus() - Check database connectivity");
+  console.log("  - logDatabaseStatus() - Log current database status");
 }
 
 // Helper function to retry dynamic imports with better error handling
