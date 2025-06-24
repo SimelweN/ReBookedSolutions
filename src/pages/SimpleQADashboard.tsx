@@ -306,6 +306,10 @@ const SimpleQADashboard: React.FC = () => {
             <CheckoutTroubleshooting />
           </TabsContent>
 
+          <TabsContent value="maps">
+            <GoogleMapsSetupHelper />
+          </TabsContent>
+
           <TabsContent value="checklist">
             <Card className="border-red-200 bg-red-50">
               <CardHeader>
