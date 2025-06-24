@@ -712,7 +712,8 @@ const EnhancedAPSCalculator: React.FC = () => {
                           )}
                           Find Your Programs
                         </Button>
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -726,9 +727,6 @@ const EnhancedAPSCalculator: React.FC = () => {
                   onRefresh={refreshProfile}
                   className="mt-4"
                 />
-              )}
-            </CardContent>
-          </Card>
               )}
             </CardContent>
           </Card>
