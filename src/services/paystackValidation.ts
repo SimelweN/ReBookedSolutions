@@ -119,19 +119,66 @@ export class PaystackValidation {
     sellerSubaccounts: Record<string, string>,
     cartItems: any[],
   ): boolean {
-    const sellersWithoutSubaccounts = cartItems.filter(
+    // Filter out invalid/anonymous sellers and ensure we have valid cart items
+    const validCartItems = cartItems.filter((item) => {
+      // Check if item has valid seller information
+      if (!item.sellerId || !item.sellerName) {
+        console.warn("⚠️ Cart item missing seller information:", item);
+        return false;
+      }
+
+      // Filter out anonymous/placeholder sellers
+      if (
+        item.sellerName === "Anonymous" ||
+        item.sellerName === "Anonymous User" ||
+        item.sellerName === "Unknown Seller" ||
+        item.sellerId === "anonymous" ||
+        !item.sellerId.trim()
+      ) {
+        console.warn("⚠️ Filtering out anonymous seller:", item.sellerName);
+        return false;
+      }
+
+      return true;
+    });
+
+    if (validCartItems.length === 0) {
+      console.error("❌ No valid cart items with proper seller information");
+      toast.error(
+        "Unable to process payment - seller information missing. Please refresh and try again.",
+      );
+      return false;
+    }
+
+    if (validCartItems.length !== cartItems.length) {
+      console.warn(
+        `⚠️ Filtered ${cartItems.length - validCartItems.length} invalid cart items`,
+      );
+    }
+
+    const sellersWithoutSubaccounts = validCartItems.filter(
       (item) => !sellerSubaccounts[item.sellerId],
     );
 
     if (sellersWithoutSubaccounts.length > 0) {
       const sellerNames = sellersWithoutSubaccounts
         .map((item) => item.sellerName || item.sellerId)
+        .filter(
+          (name) => name && name !== "Anonymous" && name !== "Unknown Seller",
+        ) // Additional filter
         .join(", ");
 
-      console.error("❌ Sellers without payment setup:", sellerNames);
-      toast.error(
-        `Payment setup incomplete for sellers: ${sellerNames}. Please contact support.`,
-      );
+      if (sellerNames) {
+        console.error("❌ Sellers without payment setup:", sellerNames);
+        toast.error(
+          `Payment setup incomplete for sellers: ${sellerNames}. Please contact support.`,
+        );
+      } else {
+        console.error("❌ Payment setup issues detected");
+        toast.error(
+          "Payment configuration issue detected. Please contact support.",
+        );
+      }
       return false;
     }
 
