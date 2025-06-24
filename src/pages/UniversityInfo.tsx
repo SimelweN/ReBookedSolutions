@@ -214,65 +214,63 @@ const UniversityInfo = () => {
   }, []);
 
   // Handle notification request for accommodation
-  const handleNotifyRequest = async () => {
+  const handleNotifyRequest = () => {
     if (!user) {
       toast.error("Please sign in to get notified about accommodation");
       return;
     }
 
-    setNotifyLoading(true);
-
-    // Wrap async operations with startTransition to prevent Suspense issues
-    startTransition(() => {
-      (async () => {
-        try {
-          // Check if notification system is available
-          const { exists, error: checkError } =
-            await NotificationRequestService.hasExistingRequest(
-              user.id,
-              "accommodation",
-              "general", // General accommodation notification
-            );
-
-          if (checkError) {
-            // If notification system is not available, show a helpful message
-            console.log("Notification system not available:", checkError);
-            toast.info(
-              "Notification system is currently being set up. Please check back later or contact support.",
-            );
-            return;
-          }
-
-          if (exists) {
-            toast.info("You're already on the notification list!");
-            return;
-          }
-
-          // Submit notification request
-          const { success, error } =
-            await NotificationRequestService.requestAccommodationNotification(
-              user.id,
-              user.email || "",
-              "general",
-              "General Accommodation Services",
-            );
-
-          if (!success) {
-            // Handle gracefully if system not available
-            if (error && error.includes("does not exist")) {
-              toast.info(
-                "Notification system is currently being set up. Please check back later.",
-              );
-              return;
-            }
-            throw new Error(error || "Failed to submit request");
-          }
-
-          toast.success(
-            "You'll be notified when accommodation services are available!",
+    safeNotificationRequest(
+      async () => {
+        // Check if notification system is available
+        const { exists, error: checkError } =
+          await NotificationRequestService.hasExistingRequest(
+            user.id,
+            "accommodation",
+            "general", // General accommodation notification
           );
-        } catch (error) {
-          console.error("Error submitting notification request:", error);
+
+        if (checkError) {
+          // If notification system is not available, show a helpful message
+          console.log("Notification system not available:", checkError);
+          toast.info(
+            "Notification system is currently being set up. Please check back later or contact support.",
+          );
+          return;
+        }
+
+        if (exists) {
+          toast.info("You're already on the notification list!");
+          return;
+        }
+
+        // Submit notification request
+        const { success, error } =
+          await NotificationRequestService.requestAccommodationNotification(
+            user.id,
+            user.email || "",
+            "general",
+            "General Accommodation Services",
+          );
+
+        if (!success) {
+          // Handle gracefully if system not available
+          if (error && error.includes("does not exist")) {
+            toast.info(
+              "Notification system is currently being set up. Please check back later.",
+            );
+            return;
+          }
+          throw new Error(error || "Failed to submit request");
+        }
+
+        toast.success(
+          "You'll be notified when accommodation services are available!",
+        );
+      },
+      {
+        setLoading: setNotifyLoading,
+        onError: (error) => {
           // More graceful error handling
           if (
             error instanceof Error &&
@@ -286,11 +284,9 @@ const UniversityInfo = () => {
               "Unable to submit notification request at this time. Please try again later.",
             );
           }
-        } finally {
-          setNotifyLoading(false);
-        }
-      })();
-    });
+        },
+      },
+    );
   };
 
   // Loading component for lazy-loaded sections
