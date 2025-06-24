@@ -5,6 +5,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { ENV } from "@/config/environment";
+import { runAPSVerification } from "./apsVerificationTest";
 
 export interface QATestResult {
   name: string;
