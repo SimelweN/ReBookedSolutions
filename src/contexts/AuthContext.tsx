@@ -19,7 +19,8 @@ import {
   createUserProfile,
   upgradeToUserProfile,
 } from "@/services/authOperations";
-import { addNotification } from "@/services/notificationService";
+import { addNotification } from "../services/notificationService";
+import { safeNotificationOperation } from "../utils/safeAuthOperations";
 import { logError, getErrorMessage } from "@/utils/errorUtils";
 import { createFallbackProfile } from "@/utils/databaseConnectivityHelper";
 import { shouldSkipAuthLoading } from "@/utils/instantStartup";
