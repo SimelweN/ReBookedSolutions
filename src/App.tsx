@@ -319,6 +319,22 @@ function App() {
                         }
                       />
                       <Route
+                        path="/checkout"
+                        element={
+                          <LazyWrapper>
+                            <Checkout />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
+                        path="/checkout/success"
+                        element={
+                          <LazyWrapper>
+                            <CheckoutSuccess />
+                          </LazyWrapper>
+                        }
+                      />
+                      <Route
                         path="/shipping"
                         element={
                           <LazyWrapper>
