@@ -256,10 +256,38 @@ const Checkout: React.FC = () => {
             {/* Main Content */}
             <div className="lg:col-span-2">
               {currentStep === 1 && (
-                <EnhancedShippingForm
-                  onComplete={handleShippingComplete}
-                  cartItems={items}
-                />
+                <div className="space-y-4">
+                  {/* Form Selector */}
+                  <div className="flex gap-2 justify-end">
+                    <Button
+                      variant={useSimpleForm ? "outline" : "default"}
+                      size="sm"
+                      onClick={() => setUseSimpleForm(false)}
+                    >
+                      Enhanced Form
+                    </Button>
+                    <Button
+                      variant={useSimpleForm ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setUseSimpleForm(true)}
+                    >
+                      Simple Form
+                    </Button>
+                  </div>
+
+                  {/* Shipping Form */}
+                  {useSimpleForm ? (
+                    <SimpleShippingForm
+                      onComplete={handleShippingComplete}
+                      cartItems={items}
+                    />
+                  ) : (
+                    <EnhancedShippingForm
+                      onComplete={handleShippingComplete}
+                      cartItems={items}
+                    />
+                  )}
+                </div>
               )}
 
               {currentStep === 2 && <DeliverySelection />}
