@@ -207,8 +207,27 @@ const EnhancedAPSCalculator: React.FC = () => {
     }
   }, [apsCalculation.fullCalculation]);
 
-  // Listen for global APS profile clearing event
+  // Load APS data when component mounts and listen for clearing events
   useEffect(() => {
+    // Load existing APS profile when component mounts
+    if (userProfile && userProfile.subjects.length > 0) {
+      console.log("🔄 Restoring APS subjects from saved profile:", userProfile);
+      // Convert UserAPSProfile subjects to APSSubjectInput format for UI
+      const restoredSubjects = userProfile.subjects.map((subject) => ({
+        name: subject.name,
+        marks: subject.marks,
+        level: subject.level || subject.points,
+        points: subject.points,
+        isRequired: [
+          "English",
+          "Mathematics",
+          "Mathematical Literacy",
+        ].includes(subject.name),
+      }));
+      setSubjects(restoredSubjects);
+      console.log("✅ APS subjects restored successfully");
+    }
+
     const handleAPSProfileCleared = () => {
       setUniversitySpecificScores(null);
       setSearchResults([]);
@@ -221,7 +240,7 @@ const EnhancedAPSCalculator: React.FC = () => {
     return () => {
       window.removeEventListener("apsProfileCleared", handleAPSProfileCleared);
     };
-  }, []);
+  }, [userProfile]);
 
   // Update validation messages
   useEffect(() => {
