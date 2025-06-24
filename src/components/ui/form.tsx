@@ -22,7 +22,7 @@ type FormFieldContextValue<
   name: TName;
 };
 
-const FormFieldContext = React.createContext<FormFieldContextValue>(
+const FormFieldContext = createContext<FormFieldContextValue>(
   {} as FormFieldContextValue,
 );
 
