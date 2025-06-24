@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, startTransition } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
@@ -155,10 +155,47 @@ const ImportFailureFallback: React.FC<{ error?: Error }> = ({ error }) => (
   </div>
 );
 
-// Simple route wrapper for lazy components
-const LazyWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <Suspense fallback={<MinimalLoader />}>{children}</Suspense>
-);
+// Enhanced route wrapper for lazy components with proper error handling
+const LazyWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [error, setError] = React.useState<Error | null>(null);
+
+  React.useEffect(() => {
+    // Reset error when children change
+    setError(null);
+  }, [children]);
+
+  const errorBoundary = React.useCallback((error: Error) => {
+    setError(error);
+    console.error("LazyWrapper caught error:", error);
+  }, []);
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center p-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            Something went wrong
+          </h2>
+          <p className="text-gray-600 mb-4">
+            Failed to load this page. Please try refreshing.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <ErrorBoundary level="route" onError={errorBoundary}>
+      <Suspense fallback={<MinimalLoader />}>{children}</Suspense>
+    </ErrorBoundary>
+  );
+};
 
 function App() {
   // Preload critical routes for faster navigation
