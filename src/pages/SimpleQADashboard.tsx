@@ -196,6 +196,10 @@ const SimpleQADashboard: React.FC = () => {
             <TabsTrigger value="checklist">Checklist</TabsTrigger>
           </TabsList>
 
+          <TabsContent value="devtools">
+            <DevelopmentToolsDashboard />
+          </TabsContent>
+
           <TabsContent value="systemwide">
             <SystemwideQAFixes />
           </TabsContent>
