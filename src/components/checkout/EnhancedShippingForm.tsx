@@ -51,7 +51,7 @@ interface DeliveryOption {
 interface EnhancedShippingFormProps {
   onComplete: (
     shippingData: ShippingFormData,
-    selectedDeliveryOption: DeliveryOption,
+    deliveryOptions: DeliveryOption[],
   ) => void;
   cartItems: any[];
 }
@@ -353,8 +353,8 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   };
 
   const onSubmit = async (data: ShippingFormData) => {
-    if (!selectedDeliveryOption) {
-      toast.error("Please select a delivery option");
+    if (deliveryOptions.length === 0) {
+      toast.error("No delivery options available. Please check your address.");
       return;
     }
 
@@ -382,8 +382,9 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
           .eq("id", user.id);
       }
 
-      onComplete(data, selectedDeliveryOption);
-      toast.success("Shipping information saved!");
+      // Pass both shipping data and all delivery options to parent
+      onComplete(data, deliveryOptions);
+      toast.success("Proceeding to delivery selection");
     } catch (error) {
       console.error("Error processing shipping form:", error);
       toast.error("Failed to process shipping information");
@@ -672,7 +673,9 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
           <Button
             type="submit"
-            disabled={isLoading || isLoadingQuotes || !selectedDeliveryOption}
+            disabled={
+              isLoading || isLoadingQuotes || deliveryOptions.length === 0
+            }
             className="w-full"
           >
             {isLoading ? (
@@ -680,13 +683,18 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 Processing...
               </>
+            ) : isLoadingQuotes ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Getting Delivery Options...
+              </>
             ) : (
               <>
-                Continue to Payment
-                {selectedDeliveryOption && (
+                Continue to Delivery Selection
+                {deliveryOptions.length > 0 && (
                   <span className="ml-2">
-                    (+R{(selectedDeliveryOption.price || 0).toFixed(2)}{" "}
-                    shipping)
+                    ({deliveryOptions.length} option
+                    {deliveryOptions.length !== 1 ? "s" : ""} available)
                   </span>
                 )}
               </>
