@@ -25,6 +25,7 @@ import ComprehensiveQAChecker from "@/components/ComprehensiveQAChecker";
 import QAQuickFixes from "@/components/QAQuickFixes";
 import CheckoutTroubleshooting from "@/components/CheckoutTroubleshooting";
 import SystemwideQAFixes from "@/components/SystemwideQAFixes";
+import GoogleMapsSetupHelper from "@/components/GoogleMapsSetupHelper";
 
 const SimpleQADashboard: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
