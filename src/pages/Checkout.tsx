@@ -232,7 +232,7 @@ const Checkout: React.FC = () => {
             {/* Main Content */}
             <div className="lg:col-span-2">
               {currentStep === 1 && (
-                <CheckoutShippingForm
+                <EnhancedShippingForm
                   onComplete={handleShippingComplete}
                   cartItems={items}
                 />
