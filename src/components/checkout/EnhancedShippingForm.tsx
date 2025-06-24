@@ -585,20 +585,20 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
                 <div>
                   <Label htmlFor="street_address">Street Address *</Label>
-                  <Input
-                    id="street_address"
-                    ref={addressInputRef}
-                    {...register("street_address")}
-                    placeholder="Start typing your address..."
-                  />
-                  {errors.street_address && (
-                    <p className="text-sm text-red-600 mt-1">
-                      {errors.street_address.message}
-                    </p>
-                  )}
-                  {isLoaded && window.google ? (
-                    <p className="text-xs text-gray-500 mt-1">
-                      ✅ Powered by Google Maps - Start typing for suggestions
+              <input
+                ref={addressInputRef}
+                {...register("street_address", {
+                  required: "Street address is required",
+                })}
+                type="text"
+                placeholder="Start typing your address..."
+                className={`w-full p-3 border rounded-lg bg-white ${
+                  errors.street_address ? "border-red-500" : "border-gray-300"
+                } focus:ring-2 focus:ring-book-500 focus:border-book-500`}
+                style={{ fontSize: '16px' }} // Prevents zoom on iOS and ensures consistent behavior
+                autoComplete="street-address"
+                required
+              />
                     </p>
                   ) : (
                     <p className="text-xs text-yellow-600 mt-1">
