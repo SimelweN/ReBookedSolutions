@@ -198,31 +198,15 @@ const LazyWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 function App() {
-  const [isReady, setIsReady] = React.useState(false);
-
-  // Initialize app with startTransition for better performance
+  // Initialize app and preload routes in the background
   React.useEffect(() => {
+    // Use startTransition for non-urgent preloading
     startTransition(() => {
-      // Preload critical routes for faster navigation
-      preloadCriticalRoutes()
-        .then(() => {
-          setIsReady(true);
-        })
-        .catch((error) => {
-          console.warn("Failed to preload routes:", error);
-          setIsReady(true); // Continue anyway
-        });
+      preloadCriticalRoutes().catch((error) => {
+        console.warn("Failed to preload routes:", error);
+      });
     });
   }, []);
-
-  // Show minimal loading state during initial app load
-  if (!isReady) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
 
   return (
     <EmergencyBypass>

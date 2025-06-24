@@ -40,18 +40,27 @@ export const preloadRoute = async (routePath: string) => {
 };
 
 // Preload critical routes on app start
-export const preloadCriticalRoutes = () => {
-  setTimeout(() => {
-    preloadRoute("/");
-    preloadRoute("/login");
-    preloadRoute("/books");
-  }, 100);
+export const preloadCriticalRoutes = async (): Promise<void> => {
+  try {
+    // First batch - critical routes
+    await Promise.all([
+      preloadRoute("/"),
+      preloadRoute("/login"),
+      preloadRoute("/books"),
+    ]);
 
-  setTimeout(() => {
-    preloadRoute("/register");
-    preloadRoute("/profile");
-    preloadRoute("/cart");
-  }, 500);
+    // Second batch - important but less critical
+    await Promise.all([
+      preloadRoute("/register"),
+      preloadRoute("/profile"),
+      preloadRoute("/cart"),
+    ]);
+
+    console.log("✅ All critical routes preloaded successfully");
+  } catch (error) {
+    console.warn("⚠️ Some routes failed to preload:", error);
+    // Don't throw - app should continue even if preloading fails
+  }
 };
 
 // Preload on hover/focus for instant navigation
