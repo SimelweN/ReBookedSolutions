@@ -85,16 +85,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const isAuthenticated = !!user && !!session;
   const isAdmin = profile?.isAdmin === true;
 
-  const createFallbackProfile = useCallback(
-    (user: User): UserProfile => ({
-      id: user.id,
-      name: user.user_metadata?.name || user.email?.split("@")[0] || "User",
-      email: user.email || "",
-      isAdmin: false,
-      status: "active",
-      profile_picture_url: user.user_metadata?.avatar_url,
-      bio: undefined,
-    }),
+  const createUserFallbackProfile = useCallback(
+    (user: User): UserProfile => createFallbackProfile(user) as UserProfile,
     [],
   );
 
