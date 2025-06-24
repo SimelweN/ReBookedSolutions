@@ -104,7 +104,7 @@ export function assessEligibility(
       })),
     });
 
-    const subjectResult = checkSubjectRequirements(
+    const subjectResult = convertToFixedFormat(
       userSubjects.map((s) => ({
         name: s.name,
         level: s.level,
