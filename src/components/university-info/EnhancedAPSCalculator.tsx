@@ -207,11 +207,12 @@ const EnhancedAPSCalculator: React.FC = () => {
   useEffect(() => {
     console.log("🔄 APS Calculator mounted, checking for saved profile...");
 
-    // Force refresh profile data on mount
+    // Force refresh profile data on mount to ensure we have latest data
     if (refreshProfile) {
       refreshProfile();
     }
 
+    // Listen for profile cleared events
     const handleAPSProfileCleared = () => {
       console.log("🔄 APS Profile cleared event received");
       setSubjects([]);
@@ -220,13 +221,25 @@ const EnhancedAPSCalculator: React.FC = () => {
       setSelectedProgram(null);
       setIsDetailsModalOpen(false);
       setShowProgramsSection(false);
+      clearError();
+    };
+
+    // Listen for browser back/forward navigation
+    const handlePopState = () => {
+      console.log("🔄 Navigation detected, refreshing APS profile...");
+      if (refreshProfile) {
+        refreshProfile();
+      }
     };
 
     window.addEventListener("apsProfileCleared", handleAPSProfileCleared);
+    window.addEventListener("popstate", handlePopState);
+
     return () => {
       window.removeEventListener("apsProfileCleared", handleAPSProfileCleared);
+      window.removeEventListener("popstate", handlePopState);
     };
-  }, [refreshProfile]);
+  }, [refreshProfile, clearError]);
 
   // Restore subjects when userProfile changes
   useEffect(() => {
