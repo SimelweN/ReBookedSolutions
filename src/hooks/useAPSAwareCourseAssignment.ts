@@ -311,38 +311,39 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
           };
         }
 
-        // Check subject requirements if available
+        // Use FIXED subject requirement checking
         const subjectRequirements =
           program.subjects || program.subjectRequirements || [];
-        const unmetSubjects = [];
 
-        for (const reqSubject of subjectRequirements) {
-          if (reqSubject.isRequired || reqSubject.required) {
-            const userSubject = userSubjects.find(
-              (s) =>
-                s.name.toLowerCase().includes(reqSubject.name.toLowerCase()) ||
-                reqSubject.name.toLowerCase().includes(s.name.toLowerCase()),
-            );
-
-            if (!userSubject) {
-              unmetSubjects.push(`Missing ${reqSubject.name}`);
-            } else if (
-              userSubject.level < (reqSubject.level || reqSubject.minLevel || 4)
-            ) {
-              unmetSubjects.push(
-                `${reqSubject.name} level too low (need level ${reqSubject.level || reqSubject.minLevel || 4}, have ${userSubject.level})`,
+        if (subjectRequirements.length > 0) {
+          // Import the fixed subject matching
+          import("@/services/fixedSubjectMatching").then(
+            ({ checkSubjectEligibility }) => {
+              const subjectCheck = checkSubjectEligibility(
+                userSubjects.map((s) => ({
+                  name: s.name,
+                  level: s.level,
+                  points: s.points,
+                })),
+                subjectRequirements.map((s) => ({
+                  name: s.name,
+                  level: s.level || s.minLevel || 4,
+                  isRequired: s.isRequired || s.required || false,
+                })),
               );
-            }
-          }
-        }
 
-        if (unmetSubjects.length > 0) {
-          return {
-            eligible: false,
-            reason: `Subject requirements not met: ${unmetSubjects.join(", ")}`,
-            meetsAPS: true,
-            unmetSubjects,
-          };
+              if (!subjectCheck.isEligible) {
+                return {
+                  eligible: false,
+                  reason: `Subject requirements: ${subjectCheck.matchedCount}/${subjectCheck.requiredCount} met. ${subjectCheck.details}`,
+                  meetsAPS: true,
+                  matchedCount: subjectCheck.matchedCount,
+                  requiredCount: subjectCheck.requiredCount,
+                  subjectDetails: subjectCheck.details,
+                };
+              }
+            },
+          );
         }
 
         return {
