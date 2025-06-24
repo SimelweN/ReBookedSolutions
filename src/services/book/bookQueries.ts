@@ -76,7 +76,12 @@ const logDetailedError = (context: string, error: unknown) => {
   }
 };
 
-export const getBooks = async (filters?: BookFilters): Promise<Book[]> => {
+export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
+  try {
+    console.log("Starting getBooks with filters:", filters);
+
+    // Use connection retry utility with reduced attempts
+    return await retryWithConnection(async () => {
   try {
     console.log("🔄 [BookQueries] Starting getBooks with filters:", filters);
 
