@@ -77,6 +77,9 @@ const Profile = () => {
   const [showDangerZone, setShowDangerZone] = useState(false);
   const [needsBankingSetup, setNeedsBankingSetup] = useState(false);
   const [showBankingPrompt, setShowBankingPrompt] = useState(false);
+  const [showBecomeSellerGuide, setShowBecomeSellerGuide] = useState(false);
+  const [hasAddress, setHasAddress] = useState(false);
+  const [hasBankingDetails, setHasBankingDetails] = useState(false);
 
   const loadUserAddresses = useCallback(async () => {
     if (!user?.id) return;
