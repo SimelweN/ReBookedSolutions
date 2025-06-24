@@ -23,13 +23,13 @@ import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
 import RealCourierPricing from "@/services/realCourierPricing";
 
 const shippingSchema = z.object({
-  recipient_name: z.string().min(2, "Recipient name is required"),
-  phone: z.string().min(10, "Valid phone number is required"),
-  street_address: z.string().min(5, "Street address is required"),
+  recipient_name: z.string().min(1, "Recipient name is required"),
+  phone: z.string().min(8, "Valid phone number is required"), // More lenient
+  street_address: z.string().min(3, "Street address is required"), // More lenient
   apartment: z.string().optional(),
-  city: z.string().min(2, "City is required"),
-  province: z.string().min(2, "Province is required"),
-  postal_code: z.string().min(4, "Valid postal code is required"),
+  city: z.string().min(1, "City is required"), // More lenient
+  province: z.string().min(1, "Province is required"), // More lenient
+  postal_code: z.string().min(3, "Valid postal code is required"), // More lenient
   special_instructions: z.string().optional(),
 });
 
@@ -456,7 +456,13 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form
+          onSubmit={handleSubmit(onSubmit, (errors) => {
+            console.error("🚨 FORM VALIDATION FAILED:", errors);
+            toast.error("Please fill in all required fields correctly");
+          })}
+          className="space-y-6"
+        >
           {/* Saved Address Section */}
           {savedAddress && !isEditingAddress && (
             <div className="bg-green-50 p-4 rounded-lg border border-green-200">
