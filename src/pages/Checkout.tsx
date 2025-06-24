@@ -68,19 +68,9 @@ const Checkout: React.FC = () => {
   ];
 
   const handleShippingComplete = (data: any, deliveryOptions: any[]) => {
-    console.log("🏪 Checkout: handleShippingComplete called", {
-      data,
-      deliveryOptionsCount: deliveryOptions?.length,
-      currentStep: currentStep,
-    });
-
     setShippingData(data);
     setDeliveryQuotes(deliveryOptions);
-
-    console.log("🏪 Checkout: Setting current step to 2");
     setCurrentStep(2);
-
-    console.log("🏪 Checkout: Step transition completed");
     toast.success("Address saved! Please select your delivery option.");
   };
 

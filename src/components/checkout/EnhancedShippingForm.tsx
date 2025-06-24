@@ -350,20 +350,13 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   };
 
   const onSubmit = async (data: ShippingFormData) => {
-    console.log("📋 Form submission started:", { data, deliveryOptions });
-
     // If no delivery options, try to get them one more time
     if (deliveryOptions.length === 0) {
-      console.log(
-        "⚠️ No delivery options available, attempting to get them...",
-      );
-
       try {
         await getDeliveryQuotes();
 
         // If still no options after getting quotes, create fallback
         if (deliveryOptions.length === 0) {
-          console.log("🚛 Creating emergency fallback delivery options");
           const emergencyOptions: DeliveryOption[] = [
             {
               id: "emergency_standard",
@@ -393,8 +386,6 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
       }
     }
 
-    console.log("✅ Validation passed, processing submission...");
-
     try {
       setIsLoading(true);
 
@@ -403,7 +394,6 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
-        console.log("💾 Saving shipping address for user:", user.id);
         await supabase
           .from("profiles")
           .update({
@@ -435,15 +425,8 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
               },
             ];
 
-      console.log("🚀 Calling onComplete with data:", {
-        data,
-        deliveryOptionsCount: optionsToPass.length,
-      });
-
       // Pass both shipping data and all delivery options to parent
       onComplete(data, optionsToPass);
-
-      console.log("✅ Form submission completed successfully");
       toast.success("Proceeding to delivery selection");
     } catch (error) {
       console.error("❌ Error processing shipping form:", error);
