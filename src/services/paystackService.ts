@@ -76,10 +76,14 @@ export class PaystackService {
       if (error) {
         console.error("Edge Function error:", error);
 
-        // Check if it's a network/connectivity issue
-        if (error.message?.includes("Failed to send a request")) {
+        // Check if it's a network/connectivity issue (Edge Functions not deployed/accessible)
+        if (
+          error.message?.includes("Failed to send a request") ||
+          error.message?.includes("FunctionsFetchError") ||
+          error.message?.includes("NetworkError")
+        ) {
           throw new Error(
-            "Payment service is temporarily unavailable. Please try again later or contact support.",
+            "Edge Functions are not available in this environment. Banking details can still be saved without immediate Paystack integration.",
           );
         }
 
@@ -89,11 +93,14 @@ export class PaystackService {
           error.message?.includes("configuration")
         ) {
           throw new Error(
-            "Payment service is not properly configured. Please contact support.",
+            "Payment service configuration incomplete. Banking details will be saved for later setup.",
           );
         }
 
-        throw new Error(error.message || "Failed to create payment account");
+        // Generic error with helpful message
+        throw new Error(
+          `Paystack setup failed: ${error.message || "Unknown error"}. Banking details will still be saved.`,
+        );
       }
 
       if (!data.success) {
