@@ -153,9 +153,7 @@ const ImportFailureFallback: React.FC<{ error?: Error }> = ({ error }) => (
 
 // Simple route wrapper for lazy components
 const LazyWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <Suspense fallback={<MinimalLoader />}>
-    {children}
-  </Suspense>
+  <Suspense fallback={<MinimalLoader />}>{children}</Suspense>
 );
 
 function App() {
@@ -183,6 +181,8 @@ function App() {
                       <Route path="/register" element={<Register />} />
                       <Route path="/user-profile" element={<UserProfile />} />
                       <Route path="/qa" element={<SimpleQADashboard />} />
+                      <Route
+                        path="/books"
                         element={
                           <LazyWrapper>
                             <BookListing />
