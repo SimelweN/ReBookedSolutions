@@ -126,6 +126,7 @@ function useAPSLocalStorage() {
 
   // Load profile on mount and whenever localStorage changes
   useEffect(() => {
+    console.log("🚀 Initializing APS localStorage hook...");
     loadProfile();
 
     // Listen for localStorage changes from other tabs/windows
@@ -136,10 +137,18 @@ function useAPSLocalStorage() {
       }
     };
 
+    // Listen for manual profile clear events
+    const handleProfileCleared = () => {
+      console.log("🗑️ APS profile cleared event received");
+      setUserProfile(null);
+    };
+
     window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("apsProfileCleared", handleProfileCleared);
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("apsProfileCleared", handleProfileCleared);
     };
   }, [loadProfile]);
 
