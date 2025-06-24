@@ -598,6 +598,21 @@ if (import.meta.env.DEV) {
   console.log("🎉 Payment system is operational!");
   console.log("💳 Banking details: Profile → Banking tab");
   console.log("🧪 Test utilities: window.PaymentTester.testPaymentSystem()");
+
+  // Auto-run backend diagnostic
+  (async () => {
+    try {
+      const { diagnoseBackend } = await import("@/utils/diagnoseBackend");
+      (window as any).diagnoseBackend = diagnoseBackend;
+
+      // Auto-run diagnostic in 2 seconds
+      setTimeout(async () => {
+        await diagnoseBackend();
+      }, 2000);
+    } catch (error) {
+      console.warn("⚠️ Backend diagnostic not available:", error);
+    }
+  })();
 }
 
 export default App;
