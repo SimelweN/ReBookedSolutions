@@ -1,19 +1,24 @@
 import React, { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { 
-  MapPin, 
-  CreditCard, 
-  Clock, 
-  AlertTriangle, 
-  CheckCircle, 
+import {
+  MapPin,
+  CreditCard,
+  Clock,
+  AlertTriangle,
+  CheckCircle,
   ArrowRight,
   DollarSign,
   Truck,
-  BookOpen
+  BookOpen,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -39,13 +44,17 @@ const BecomeSellerGuide: React.FC<BecomeSellerGuideProps> = ({
       icon: BookOpen,
       content: (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Start earning from your textbooks!</h3>
+          <h3 className="text-lg font-semibold">
+            Start earning from your textbooks!
+          </h3>
           <p className="text-gray-600">
-            Turn your used textbooks into cash by selling them to other students. 
-            Here's everything you need to know to get started.
+            Turn your used textbooks into cash by selling them to other
+            students. Here's everything you need to know to get started.
           </p>
           <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-            <h4 className="font-medium text-green-800 mb-2">Why sell with ReBooked?</h4>
+            <h4 className="font-medium text-green-800 mb-2">
+              Why sell with ReBooked?
+            </h4>
             <ul className="text-sm text-green-700 space-y-1">
               <li>• Keep 90% of your sale price</li>
               <li>• Secure payment processing</li>
@@ -61,13 +70,21 @@ const BecomeSellerGuide: React.FC<BecomeSellerGuideProps> = ({
       icon: CheckCircle,
       content: (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Before you can sell, you need:</h3>
-          
+          <h3 className="text-lg font-semibold">
+            Before you can sell, you need:
+          </h3>
+
           <div className="space-y-3">
-            <div className={`flex items-center gap-3 p-3 rounded-lg border ${
-              userHasAddress ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'
-            }`}>
-              <MapPin className={`w-5 h-5 ${userHasAddress ? 'text-green-600' : 'text-yellow-600'}`} />
+            <div
+              className={`flex items-center gap-3 p-3 rounded-lg border ${
+                userHasAddress
+                  ? "bg-green-50 border-green-200"
+                  : "bg-yellow-50 border-yellow-200"
+              }`}
+            >
+              <MapPin
+                className={`w-5 h-5 ${userHasAddress ? "text-green-600" : "text-yellow-600"}`}
+              />
               <div className="flex-1">
                 <p className="font-medium">Pickup Address</p>
                 <p className="text-sm text-gray-600">
@@ -77,8 +94,8 @@ const BecomeSellerGuide: React.FC<BecomeSellerGuideProps> = ({
               {userHasAddress ? (
                 <CheckCircle className="w-5 h-5 text-green-600" />
               ) : (
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   variant="outline"
                   onClick={() => navigate("/profile?tab=address")}
                 >
@@ -87,10 +104,16 @@ const BecomeSellerGuide: React.FC<BecomeSellerGuideProps> = ({
               )}
             </div>
 
-            <div className={`flex items-center gap-3 p-3 rounded-lg border ${
-              userHasBanking ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'
-            }`}>
-              <CreditCard className={`w-5 h-5 ${userHasBanking ? 'text-green-600' : 'text-yellow-600'}`} />
+            <div
+              className={`flex items-center gap-3 p-3 rounded-lg border ${
+                userHasBanking
+                  ? "bg-green-50 border-green-200"
+                  : "bg-yellow-50 border-yellow-200"
+              }`}
+            >
+              <CreditCard
+                className={`w-5 h-5 ${userHasBanking ? "text-green-600" : "text-yellow-600"}`}
+              />
               <div className="flex-1">
                 <p className="font-medium">Banking Details</p>
                 <p className="text-sm text-gray-600">
@@ -100,8 +123,8 @@ const BecomeSellerGuide: React.FC<BecomeSellerGuideProps> = ({
               {userHasBanking ? (
                 <CheckCircle className="w-5 h-5 text-green-600" />
               ) : (
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   variant="outline"
                   onClick={() => navigate("/profile?tab=banking")}
                 >
@@ -118,16 +141,20 @@ const BecomeSellerGuide: React.FC<BecomeSellerGuideProps> = ({
       icon: Clock,
       content: (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Important: 48-Hour Commitment</h3>
-          
+          <h3 className="text-lg font-semibold">
+            Important: 48-Hour Commitment
+          </h3>
+
           <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
             <div className="flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-orange-600 mt-0.5" />
               <div>
-                <h4 className="font-medium text-orange-800">Critical Timeline</h4>
+                <h4 className="font-medium text-orange-800">
+                  Critical Timeline
+                </h4>
                 <p className="text-sm text-orange-700 mt-1">
-                  When a buyer purchases your book, you have exactly 48 hours to confirm the sale 
-                  and prepare the book for courier collection.
+                  When a buyer purchases your book, you have exactly 48 hours to
+                  confirm the sale and prepare the book for courier collection.
                 </p>
               </div>
             </div>
@@ -135,34 +162,52 @@ const BecomeSellerGuide: React.FC<BecomeSellerGuideProps> = ({
 
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
+              <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                1
+              </div>
               <div>
                 <p className="font-medium">Buyer pays for your book</p>
-                <p className="text-sm text-gray-600">Payment is held securely by ReBooked</p>
+                <p className="text-sm text-gray-600">
+                  Payment is held securely by ReBooked
+                </p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
+              <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                2
+              </div>
               <div>
                 <p className="font-medium">You have 48 hours to commit</p>
-                <p className="text-sm text-gray-600">Confirm the sale and prepare book for pickup</p>
+                <p className="text-sm text-gray-600">
+                  Confirm the sale and prepare book for pickup
+                </p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
+              <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                3
+              </div>
               <div>
                 <p className="font-medium">Courier collects your book</p>
-                <p className="text-sm text-gray-600">You receive payment after successful collection</p>
+                <p className="text-sm text-gray-600">
+                  You receive payment after successful collection
+                </p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-bold">⚠</div>
+              <div className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                ⚠
+              </div>
               <div>
-                <p className="font-medium text-red-700">If you miss the 48-hour deadline</p>
-                <p className="text-sm text-red-600">Buyer gets automatic refund, you forfeit the sale</p>
+                <p className="font-medium text-red-700">
+                  If you miss the 48-hour deadline
+                </p>
+                <p className="text-sm text-red-600">
+                  Buyer gets automatic refund, you forfeit the sale
+                </p>
               </div>
             </div>
           </div>
@@ -175,12 +220,16 @@ const BecomeSellerGuide: React.FC<BecomeSellerGuideProps> = ({
       content: (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">How payments work</h3>
-          
+
           <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-            <h4 className="font-medium text-blue-800 mb-2">Payment Breakdown</h4>
+            <h4 className="font-medium text-blue-800 mb-2">
+              Payment Breakdown
+            </h4>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-blue-700">Your book price (example):</span>
+                <span className="text-blue-700">
+                  Your book price (example):
+                </span>
                 <span className="font-medium">R200.00</span>
               </div>
               <div className="flex justify-between">
@@ -220,8 +269,10 @@ const BecomeSellerGuide: React.FC<BecomeSellerGuideProps> = ({
       icon: BookOpen,
       content: (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">You're all set to start selling!</h3>
-          
+          <h3 className="text-lg font-semibold">
+            You're all set to start selling!
+          </h3>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardContent className="p-4">
@@ -249,9 +300,12 @@ const BecomeSellerGuide: React.FC<BecomeSellerGuideProps> = ({
           </div>
 
           <div className="bg-green-50 p-4 rounded-lg border border-green-200 text-center">
-            <h4 className="font-medium text-green-800 mb-2">Ready to list your first book?</h4>
+            <h4 className="font-medium text-green-800 mb-2">
+              Ready to list your first book?
+            </h4>
             <p className="text-sm text-green-700 mb-3">
-              Complete the setup requirements above, then start earning from your textbooks!
+              Complete the setup requirements above, then start earning from
+              your textbooks!
             </p>
           </div>
         </div>
@@ -278,7 +332,9 @@ const BecomeSellerGuide: React.FC<BecomeSellerGuideProps> = ({
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <steps[currentStep].icon className="w-5 h-5" />
+            {React.createElement(steps[currentStep].icon, {
+              className: "w-5 h-5",
+            })}
             {steps[currentStep].title}
           </DialogTitle>
         </DialogHeader>
@@ -309,9 +365,7 @@ const BecomeSellerGuide: React.FC<BecomeSellerGuideProps> = ({
           </div>
 
           {/* Step Content */}
-          <div className="min-h-[400px]">
-            {steps[currentStep].content}
-          </div>
+          <div className="min-h-[400px]">{steps[currentStep].content}</div>
 
           {/* Navigation */}
           <div className="flex justify-between">
@@ -335,7 +389,7 @@ const BecomeSellerGuide: React.FC<BecomeSellerGuideProps> = ({
                     Close Guide
                   </Button>
                   {canStartSelling ? (
-                    <Button 
+                    <Button
                       onClick={() => {
                         onClose();
                         navigate("/create-listing");
@@ -346,7 +400,7 @@ const BecomeSellerGuide: React.FC<BecomeSellerGuideProps> = ({
                       <BookOpen className="w-4 h-4 ml-2" />
                     </Button>
                   ) : (
-                    <Button 
+                    <Button
                       onClick={() => navigate("/profile")}
                       variant="outline"
                     >
