@@ -47,6 +47,13 @@ const Cart = () => {
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  if (items.length === 0) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-8">
+          <Button
             variant="ghost"
             onClick={() => navigate(-1)}
             className="mb-6 text-book-600"
