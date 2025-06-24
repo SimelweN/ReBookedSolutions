@@ -139,30 +139,7 @@ const CheckoutShippingForm: React.FC<CheckoutShippingFormProps> = ({
         height: cartItems.length * 2, // Stack height
       };
 
-      // RAM Couriers
-      quotePromises.push(
-        supabase.functions.invoke("get-delivery-quotes", {
-          body: {
-            service: "ram",
-            pickup_address: {
-              city: "Cape Town", // Default pickup location
-              province: "Western Cape",
-              postal_code: "7500",
-            },
-            delivery_address: {
-              city: shippingData.city,
-              province: shippingData.province,
-              postal_code: shippingData.postal_code,
-            },
-            parcel_details: {
-              weight: totalWeight,
-              ...dimensions,
-            },
-          },
-        }),
-      );
-
-      // Fastway
+      // Fastway Couriers
       quotePromises.push(
         supabase.functions.invoke("fastway-quote", {
           body: {
@@ -178,7 +155,33 @@ const CheckoutShippingForm: React.FC<CheckoutShippingFormProps> = ({
             },
             parcel_details: {
               weight: totalWeight,
-              ...dimensions,
+              length: dimensions.length,
+              width: dimensions.width,
+              height: dimensions.height,
+            },
+          },
+        }),
+      );
+
+      // The Courier Guy
+      quotePromises.push(
+        supabase.functions.invoke("courier-guy-quote", {
+          body: {
+            pickup_address: {
+              city: "Cape Town",
+              province: "Western Cape",
+              postal_code: "7500",
+            },
+            delivery_address: {
+              city: shippingData.city,
+              province: shippingData.province,
+              postal_code: shippingData.postal_code,
+            },
+            parcel_details: {
+              weight: totalWeight,
+              length: dimensions.length,
+              width: dimensions.width,
+              height: dimensions.height,
             },
           },
         }),
