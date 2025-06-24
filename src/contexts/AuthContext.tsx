@@ -163,7 +163,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             setIsLoading(false); // Immediately stop loading for UI responsiveness
 
             console.log(
-              "ℹ��� [AuthContext] Auth state updated for new user:",
+              "ℹ️ [AuthContext] Auth state updated for new user:",
               session.user.id,
             );
           } else {
@@ -291,6 +291,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setIsInitializing(true);
 
       console.log("🔄 [AuthContext] Initializing auth...");
+
+      // Quick database connectivity check to prevent hanging
+      try {
+        const connectivityTimeout = new Promise((_, reject) =>
+          setTimeout(
+            () => reject(new Error("Database connectivity check timeout")),
+            3000,
+          ),
+        );
+
+        const connectivityCheck = supabase
+          .from("profiles")
+          .select("id")
+          .limit(1);
+
+        await Promise.race([connectivityCheck, connectivityTimeout]);
+        console.log("✅ [AuthContext] Database connectivity verified");
+      } catch (dbError) {
+        console.warn(
+          "⚠️ [AuthContext] Database connection issues detected:",
+          dbError instanceof Error ? dbError.message : String(dbError),
+        );
+        console.info(
+          "ℹ️ [AuthContext] Continuing with fallback profile strategy",
+        );
+      }
 
       // Check if there are auth code parameters in the URL
       const urlParams = new URLSearchParams(window.location.search);
