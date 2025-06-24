@@ -20,9 +20,9 @@ const PaymentSystemNotice: React.FC<PaymentSystemNoticeProps> = ({
               <span className="font-medium">Secure Payment Processing</span>
             </div>
             <p className="text-sm">
-              All payments are securely processed on our dedicated payment
-              platform at <strong>payment.rebookedsolutions.co.za</strong>. Your
-              financial information is protected with enterprise-grade security.
+              All payments are securely processed with Paystack integration.
+              Your financial information is protected with enterprise-grade
+              security and 256-bit SSL encryption.
             </p>
           </div>
           <ExternalLink className="h-4 w-4 text-blue-600 flex-shrink-0 mt-1" />
