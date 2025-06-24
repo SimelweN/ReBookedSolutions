@@ -3,6 +3,7 @@ import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +18,10 @@ import {
   Database,
   MapPin,
   Truck,
+  PlayCircle,
+  Shield,
 } from "lucide-react";
+import ComprehensiveQAChecker from "@/components/ComprehensiveQAChecker";
 
 const SimpleQADashboard: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
