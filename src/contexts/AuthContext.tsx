@@ -556,8 +556,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (isLoading) {
       const loadingTimeout = setTimeout(() => {
         console.warn("⚠️ [AuthContext] Loading timeout - forcing resolution");
+        console.warn(
+          "⚠️ [AuthContext] This usually means database tables are missing",
+        );
+        console.info(
+          "💡 [AuthContext] Run complete_database_setup.sql in Supabase to fix this",
+        );
+
+        // Force resolution to unauthenticated state to stop loading spinner
+        setUser(null);
+        setProfile(null);
+        setSession(null);
         setIsLoading(false);
-      }, 5000); // 5 second timeout
+        setAuthInitialized(true);
+      }, 3000); // Reduced to 3 second timeout for faster user experience
 
       return () => clearTimeout(loadingTimeout);
     }
