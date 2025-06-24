@@ -356,6 +356,14 @@ function App() {
                         </LazyRoute>
                       }
                     />
+                    <Route
+                      path="/system-status"
+                      element={
+                        <LazyRoute>
+                          <SystemStatus />
+                        </LazyRoute>
+                      }
+                    />
 
                     {/* Shopping and Cart Routes */}
                     <Route
