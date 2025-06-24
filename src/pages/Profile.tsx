@@ -41,6 +41,7 @@ import { Book } from "@/types/book";
 import { BookDeletionService } from "@/services/bookDeletionService";
 import { ImprovedBankingService } from "@/services/improvedBankingService";
 import SellerBankingSetupPrompt from "@/components/SellerBankingSetupPrompt";
+import BecomeSellerGuide from "@/components/BecomeSellerGuide";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
