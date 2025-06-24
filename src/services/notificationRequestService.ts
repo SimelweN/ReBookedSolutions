@@ -145,6 +145,7 @@ export class NotificationRequestService {
       };
     }
   }
+}
 
   /**
    * Get user's notification requests
