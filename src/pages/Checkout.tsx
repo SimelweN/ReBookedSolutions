@@ -304,15 +304,84 @@ const Checkout: React.FC = () => {
               {currentStep === 2 && <DeliverySelection />}
 
               {currentStep === 3 && (
-                <CheckoutPaymentProcessor
-                  cartItems={items}
-                  shippingData={shippingData}
-                  deliveryData={selectedDelivery}
-                  totalAmount={totalAmount}
-                  onSuccess={handlePaymentSuccess}
-                  onBack={() => setCurrentStep(2)}
-                  isProcessing={isProcessing}
-                />
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <CreditCard className="w-5 h-5" />
+                      <span>Payment</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Payment Summary */}
+                    <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Books ({items.length} items):</span>
+                        <span>R{(bookTotal / 100).toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Delivery:</span>
+                        <span>R{(deliveryFee / 100).toFixed(2)}</span>
+                      </div>
+                      <Separator />
+                      <div className="flex justify-between font-bold">
+                        <span>Total:</span>
+                        <span>R{(totalAmount / 100).toFixed(2)}</span>
+                      </div>
+                    </div>
+
+                    {/* Shipping & Delivery Confirmation */}
+                    <div className="space-y-3">
+                      <div className="flex items-start space-x-3">
+                        <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
+                        <div className="text-sm">
+                          <p className="font-medium">Shipping to:</p>
+                          <p className="text-gray-600">
+                            {shippingData?.street}, {shippingData?.city}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <Truck className="w-5 h-5 text-gray-400 mt-0.5" />
+                        <div className="text-sm">
+                          <p className="font-medium">Delivery:</p>
+                          <p className="text-gray-600">
+                            {selectedDelivery?.service_name} -
+                            {selectedDelivery?.estimated_days} business days
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Payment Button */}
+                    <PaystackPaymentButton
+                      amount={totalAmount * 100} // Convert to kobo
+                      onSuccess={(reference) => {
+                        handlePaymentSuccess({
+                          paystack_reference: reference,
+                          order_id: `order_${Date.now()}`,
+                        });
+                      }}
+                      onError={(error) => {
+                        toast.error(`Payment failed: ${error}`);
+                      }}
+                      metadata={{
+                        shipping_address: shippingData,
+                        delivery_option: selectedDelivery,
+                        items_count: items.length,
+                      }}
+                    />
+
+                    {/* Back Button */}
+                    <Button
+                      variant="outline"
+                      onClick={() => setCurrentStep(2)}
+                      className="w-full"
+                    >
+                      <ArrowLeft className="w-4 h-4 mr-2" />
+                      Back to Delivery Options
+                    </Button>
+                  </CardContent>
+                </Card>
               )}
             </div>
 
