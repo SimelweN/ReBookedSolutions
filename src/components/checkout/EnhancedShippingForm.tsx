@@ -350,13 +350,24 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   };
 
   const onSubmit = async (data: ShippingFormData) => {
+    console.log("🔥 FORM SUBMIT TRIGGERED!", { data, errors, deliveryOptions });
+
+    // Check for form validation errors
+    if (Object.keys(errors).length > 0) {
+      console.error("❌ Form has validation errors:", errors);
+      toast.error("Please fix the form errors before continuing");
+      return;
+    }
+
     // If no delivery options, try to get them one more time
     if (deliveryOptions.length === 0) {
+      console.log("⚠️ No delivery options, attempting to get them...");
       try {
         await getDeliveryQuotes();
 
         // If still no options after getting quotes, create fallback
         if (deliveryOptions.length === 0) {
+          console.log("🚛 Creating emergency delivery options");
           const emergencyOptions: DeliveryOption[] = [
             {
               id: "emergency_standard",
@@ -754,6 +765,15 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
             type="submit"
             disabled={isLoading || isLoadingQuotes}
             className="w-full"
+            onClick={(e) => {
+              console.log("🔥 BUTTON CLICKED!", {
+                isLoading,
+                isLoadingQuotes,
+                deliveryOptionsCount: deliveryOptions.length,
+                formErrors: errors,
+              });
+              // Let the form handle the submit, don't prevent default
+            }}
           >
             {isLoading ? (
               <>
