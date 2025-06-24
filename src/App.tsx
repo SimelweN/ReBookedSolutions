@@ -595,27 +595,9 @@ function App() {
 
 // Add debugging utilities to window in development
 if (import.meta.env.DEV) {
-  console.log("🎉 Payment system is ready!");
-  console.log("💳 Secure banking features available in Profile > Banking tab");
+  console.log("🎉 Payment system is operational!");
+  console.log("💳 Banking details: Profile → Banking tab");
   console.log("🧪 Test utilities: window.PaymentTester.testPaymentSystem()");
-
-  // Auto-complete payment system setup
-  (async () => {
-    try {
-      const { PaymentSystemCompleter } = await import(
-        "@/utils/completePaymentSystem"
-      );
-      (window as any).PaymentSystemCompleter = PaymentSystemCompleter;
-
-      // Auto-run system completion in 3 seconds
-      setTimeout(async () => {
-        console.log("\n🔧 Auto-running payment system completion...");
-        await PaymentSystemCompleter.completeAndTest();
-      }, 3000);
-    } catch (error) {
-      console.warn("⚠️ Payment system completer not available:", error);
-    }
-  })();
 }
 
 export default App;
