@@ -104,53 +104,79 @@ export class ImprovedBankingService {
         subaccount_id: string;
       } | null = null;
 
-      // Try to create Paystack subaccount if Edge Functions are available
-      if (edgeFunctionsAvailable) {
-        try {
-          paystackData = await PaystackService.createSubaccount(
-            bankingDetails as BankingDetails,
-            userEmail,
+      // Try to create Paystack subaccount for enhanced functionality
+      try {
+        console.log("Attempting to create Paystack subaccount...");
+        const paystackResult = await PaystackService.createSubaccount(
+          bankingDetails,
+          userEmail,
+        );
+
+        // Update the saved record with Paystack details
+        await supabase
+          .from("banking_details")
+          .update({
+            paystack_subaccount_code: paystackResult.subaccount_code,
+            paystack_subaccount_id: paystackResult.subaccount_id,
+            account_verified: true,
+            subaccount_status: "active",
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", savedData.id);
+
+        console.log("✅ Paystack subaccount created successfully");
+        toast.success("Banking details saved and payment account created!");
+
+        // Return updated record
+        return {
+          ...savedData,
+          paystack_subaccount_code: paystackResult.subaccount_code,
+          paystack_subaccount_id: paystackResult.subaccount_id,
+          account_verified: true,
+          subaccount_status: "active",
+        } as BankingDetails;
+      } catch (paystackError) {
+        console.warn("Paystack subaccount creation failed:", paystackError);
+
+        // Check if it's specifically an Edge Function issue
+        const errorMessage =
+          paystackError instanceof Error
+            ? paystackError.message
+            : String(paystackError);
+
+        if (
+          errorMessage.includes("Failed to send a request") ||
+          errorMessage.includes("temporarily unavailable") ||
+          errorMessage.includes("Edge Function")
+        ) {
+          toast.success("Banking details saved successfully!", {
+            description:
+              "Payment account will be set up automatically when needed for transactions.",
+          });
+
+          console.log(
+            "ℹ️ Banking details saved without Paystack integration (Edge Functions unavailable)",
           );
-          toast.success("Payment account created successfully!");
-        } catch (paystackError) {
-          console.warn(
-            "Paystack subaccount creation failed, proceeding without it:",
-            paystackError,
-          );
-          toast.warning(
-            "Banking details saved. Payment account will be set up automatically.",
+        } else {
+          toast.success(
+            "Banking details saved! Payment account setup will be retried later.",
           );
         }
-      } else {
-        console.log(
-          "Edge Functions not available, saving banking details without Paystack integration",
-        );
-        toast.info(
-          "Banking details saved. Payment integration will be activated automatically.",
-        );
+
+        // Mark as pending setup and still return the saved banking details
+        await supabase
+          .from("banking_details")
+          .update({
+            subaccount_status: "pending_setup",
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", savedData.id);
+
+        return {
+          ...savedData,
+          subaccount_status: "pending_setup",
+        } as BankingDetails;
       }
-
-      // Prepare encrypted banking details
-      const encryptedDetails = {
-        ...bankingDetails,
-        bank_account_number: this.encrypt(bankingDetails.bank_account_number),
-        full_name: this.encrypt(bankingDetails.full_name),
-        paystack_subaccount_code: paystackData?.subaccount_code || null,
-        paystack_subaccount_id: paystackData?.subaccount_id || null,
-        subaccount_status: paystackData ? "active" : "pending_setup",
-        account_verified: !!paystackData, // Will be ignored if column doesn't exist
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-
-      // Check for existing record
-      const { data: existingData } = await supabase
-        .from("banking_details")
-        .select("id")
-        .eq("user_id", bankingDetails.user_id)
-        .single();
-
-      let result;
       if (existingData) {
         // Update existing record
         const { data, error } = await supabase
