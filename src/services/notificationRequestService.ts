@@ -196,7 +196,10 @@ export class NotificationRequestService {
         .order("created_at", { ascending: false });
 
       if (error) {
-        console.error("Error fetching user notification requests:", error);
+        console.error(
+          "Error fetching user notification requests:",
+          error instanceof Error ? error.message : String(error),
+        );
 
         // Handle missing table gracefully
         if (error.message && error.message.includes("does not exist")) {
