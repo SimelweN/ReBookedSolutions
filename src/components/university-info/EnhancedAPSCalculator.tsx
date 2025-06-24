@@ -232,6 +232,32 @@ const EnhancedAPSCalculator: React.FC = () => {
       }
     };
 
+    // Listen for beforeunload to save any pending changes
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (subjects.length > 0) {
+        // Save current state before navigation
+        const apsSubjects: APSSubject[] = subjects.map((s) => ({
+          name: s.name,
+          marks: s.marks,
+          level: s.points,
+          points: s.points,
+        }));
+
+        // Synchronous save to localStorage for immediate persistence
+        try {
+          const profile = {
+            subjects: apsSubjects,
+            totalAPS: apsCalculation.totalAPS,
+            lastUpdated: new Date().toISOString(),
+            isValid: apsCalculation.isCalculationValid,
+          };
+          localStorage.setItem("userAPSProfile", JSON.stringify(profile));
+        } catch (error) {
+          console.warn("Failed to save APS profile before navigation:", error);
+        }
+      }
+    };
+
     window.addEventListener("apsProfileCleared", handleAPSProfileCleared);
     window.addEventListener("popstate", handlePopState);
 
