@@ -68,9 +68,11 @@ if (import.meta.env.DEV) {
   console.log("  🧪 Fixed subject matching tests will run automatically");
 }
 
-// Import Index directly for instant loading
+// Import critical pages directly for instant loading
 import IndexPage from "./pages/Index";
+import UniversityInfoPage from "./pages/UniversityInfo";
 const Index = () => <IndexPage />;
+const UniversityInfo = () => <UniversityInfoPage />;
 
 // Simple lazy loading for other pages
 const BookListing = React.lazy(() => import("./pages/BookListing"));
@@ -85,7 +87,6 @@ const BasicMapsExample = React.lazy(() => import("./pages/BasicMapsExample"));
 const WorkingMapsDemo = React.lazy(() => import("./pages/WorkingMapsDemo"));
 const Admin = React.lazy(() => import("./pages/Admin"));
 const AdminReports = React.lazy(() => import("./pages/AdminReports"));
-const UniversityInfo = React.lazy(() => import("./pages/UniversityInfo"));
 const ModernUniversityProfile = React.lazy(
   () => import("./pages/ModernUniversityProfile"),
 );
@@ -335,11 +336,7 @@ function App() {
                         {/* University and Campus Routes */}
                         <Route
                           path="/university-info"
-                          element={
-                            <LazyWrapper>
-                              <UniversityInfo />
-                            </LazyWrapper>
-                          }
+                          element={<UniversityInfo />}
                         />
                         <Route
                           path="/university-profile"
