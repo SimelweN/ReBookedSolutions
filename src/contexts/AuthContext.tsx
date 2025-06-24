@@ -266,7 +266,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
         // Don't throw - use fallback profile and ensure loading resolves
         if (session.user) {
-          const fallbackProfile = createFallbackProfile(session.user);
+          const fallbackProfile = createUserFallbackProfile(session.user);
           setProfile(fallbackProfile);
         }
         setIsLoading(false);
