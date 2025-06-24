@@ -268,13 +268,25 @@ const BookListing = () => {
             onClearFilters={clearFilters}
           />
 
-          <BookGrid
-            books={books}
-            isLoading={isLoading}
-            onClearFilters={clearFilters}
-            currentUserId={user?.id}
-            onCommitBook={handleCommitBook}
-          />
+          {error &&
+          (error.includes("connection") ||
+            error.includes("timeout") ||
+            error.includes("No connection available")) ? (
+            <ConnectionErrorFallback
+              error={error}
+              onRetry={loadBooks}
+              onGoHome={() => (window.location.href = "/")}
+              showRetry={true}
+            />
+          ) : (
+            <BookGrid
+              books={books}
+              isLoading={isLoading}
+              onClearFilters={clearFilters}
+              currentUserId={user?.id}
+              onCommitBook={handleCommitBook}
+            />
+          )}
         </div>
       </div>
     </Layout>
