@@ -5,6 +5,7 @@ import {
   useCallback,
   lazy,
   Suspense,
+  startTransition,
 } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -52,6 +53,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationRequestService } from "@/services/notificationRequestService";
 import { toast } from "sonner";
+import { safeNotificationRequest } from "@/utils/asyncWrapper";
 
 // Direct import for APS calculator to fix loading issues
 import APSCalculatorSection from "@/components/university-info/APSCalculatorSection";
@@ -212,75 +214,79 @@ const UniversityInfo = () => {
   }, []);
 
   // Handle notification request for accommodation
-  const handleNotifyRequest = async () => {
-    if (!isAuthenticated || !user) {
-      toast.error("Please log in to get notified");
-      navigate("/login");
+  const handleNotifyRequest = () => {
+    if (!user) {
+      toast.error("Please sign in to get notified about accommodation");
       return;
     }
 
-    setNotifyLoading(true);
-    try {
-      // Check if notification system is available
-      const { exists, error: checkError } =
-        await NotificationRequestService.hasExistingRequest(
-          user.id,
-          "accommodation",
-          "general", // General accommodation notification
-        );
+    safeNotificationRequest(
+      async () => {
+        // Check if notification system is available
+        const { exists, error: checkError } =
+          await NotificationRequestService.hasExistingRequest(
+            user.id,
+            "accommodation",
+            "general", // General accommodation notification
+          );
 
-      if (checkError) {
-        // If notification system is not available, show a helpful message
-        console.log("Notification system not available:", checkError);
-        toast.info(
-          "Notification system is currently being set up. Please check back later or contact support.",
-        );
-        return;
-      }
-
-      if (exists) {
-        toast.info("You're already on the notification list!");
-        return;
-      }
-
-      // Submit notification request
-      const { success, error } =
-        await NotificationRequestService.requestAccommodationNotification(
-          user.id,
-          user.email || "",
-          "general",
-          "General Accommodation Services",
-        );
-
-      if (!success) {
-        // Handle gracefully if system not available
-        if (error && error.includes("does not exist")) {
+        if (checkError) {
+          // If notification system is not available, show a helpful message
+          console.log("Notification system not available:", checkError);
           toast.info(
-            "Notification system is currently being set up. Please check back later.",
+            "Notification system is currently being set up. Please check back later or contact support.",
           );
           return;
         }
-        throw new Error(error || "Failed to submit request");
-      }
 
-      toast.success(
-        "You'll be notified when accommodation services are available!",
-      );
-    } catch (error) {
-      console.error("Error submitting notification request:", error);
-      // More graceful error handling
-      if (error instanceof Error && error.message.includes("does not exist")) {
-        toast.info(
-          "Notification system is currently being set up. Please check back later.",
+        if (exists) {
+          toast.info("You're already on the notification list!");
+          return;
+        }
+
+        // Submit notification request
+        const { success, error } =
+          await NotificationRequestService.requestAccommodationNotification(
+            user.id,
+            user.email || "",
+            "general",
+            "General Accommodation Services",
+          );
+
+        if (!success) {
+          // Handle gracefully if system not available
+          if (error && error.includes("does not exist")) {
+            toast.info(
+              "Notification system is currently being set up. Please check back later.",
+            );
+            return;
+          }
+          throw new Error(error || "Failed to submit request");
+        }
+
+        toast.success(
+          "You'll be notified when accommodation services are available!",
         );
-      } else {
-        toast.error(
-          "Unable to submit notification request at this time. Please try again later.",
-        );
-      }
-    } finally {
-      setNotifyLoading(false);
-    }
+      },
+      {
+        setLoading: setNotifyLoading,
+        onError: (error) => {
+          // More graceful error handling
+          if (
+            error instanceof Error &&
+            error.message.includes("does not exist")
+          ) {
+            toast.info(
+              "Notification system is currently being set up. Please check back later.",
+            );
+          } else {
+            toast.error(
+              "Unable to submit notification request at this time. Please try again later.",
+            );
+          }
+        },
+      },
+    );
   };
 
   // Loading component for lazy-loaded sections

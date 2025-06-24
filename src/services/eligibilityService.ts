@@ -3,7 +3,7 @@ import {
   ComprehensiveCourse,
   getAPSRequirement,
 } from "@/constants/universities/comprehensive-course-database";
-import { checkSubjectRequirements } from "./subjectMatchingService";
+import { adaptToOldFormat } from "./newSubjectEngine";
 import { logError } from "./systemMonitoringService";
 import {
   calculateUniversitySpecificAPS,
@@ -104,7 +104,7 @@ export function assessEligibility(
       })),
     });
 
-    const subjectResult = checkSubjectRequirements(
+    const subjectResult = adaptToOldFormat(
       userSubjects.map((s) => ({
         name: s.name,
         level: s.level,

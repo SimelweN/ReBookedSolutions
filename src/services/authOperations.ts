@@ -20,8 +20,20 @@ export interface Profile {
 }
 
 export const loginUser = async (email: string, password: string) => {
+  if (!email || !password) {
+    throw new Error("Email and password are required");
+  }
+
+  if (!email.includes("@") || email.length < 5) {
+    throw new Error("Please enter a valid email address");
+  }
+
+  if (password.length < 6) {
+    throw new Error("Password must be at least 6 characters long");
+  }
+
   const { data, error } = await supabase.auth.signInWithPassword({
-    email,
+    email: email.trim().toLowerCase(),
     password,
   });
 
@@ -31,7 +43,23 @@ export const loginUser = async (email: string, password: string) => {
       code: error.name || error.code,
       details: error.details || error.hint,
     });
-    throw error;
+
+    // Provide user-friendly error messages
+    if (error.message.includes("Invalid login credentials")) {
+      throw new Error(
+        "Invalid email or password. Please check your credentials and try again.",
+      );
+    } else if (error.message.includes("Email not confirmed")) {
+      throw new Error(
+        "Please verify your email address before logging in. Check your inbox for a verification email.",
+      );
+    } else if (error.message.includes("Too many requests")) {
+      throw new Error(
+        "Too many login attempts. Please wait a few minutes before trying again.",
+      );
+    } else {
+      throw new Error(`Login failed: ${error.message}`);
+    }
   }
 
   console.log("Login successful for:", email);
@@ -43,8 +71,32 @@ export const registerUser = async (
   email: string,
   password: string,
 ) => {
+  // Input validation
+  if (!name || name.trim().length < 2) {
+    throw new Error("Name must be at least 2 characters long");
+  }
+
+  if (!email || !email.includes("@") || email.length < 5) {
+    throw new Error("Please enter a valid email address");
+  }
+
+  if (!password || password.length < 8) {
+    throw new Error("Password must be at least 8 characters long");
+  }
+
+  // Check password strength
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumbers = /\d/.test(password);
+
+  if (!hasUpperCase || !hasLowerCase || !hasNumbers) {
+    throw new Error(
+      "Password must contain at least one uppercase letter, one lowercase letter, and one number",
+    );
+  }
+
   const { data, error } = await supabase.auth.signUp({
-    email,
+    email: email.trim().toLowerCase(),
     password,
     options: {
       data: {

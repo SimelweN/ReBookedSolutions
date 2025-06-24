@@ -154,6 +154,42 @@ export function normalizeSubjectName(subjectName: string): string {
     return "English";
   }
 
+  // Additional common subject variations
+  if (
+    lowerCleaned === "maths literacy" ||
+    lowerCleaned === "mathematical literacy"
+  ) {
+    return "Mathematical Literacy";
+  }
+
+  if (lowerCleaned === "business") {
+    return "Business Studies";
+  }
+
+  if (lowerCleaned === "cat") {
+    return "Computer Applications Technology";
+  }
+
+  if (lowerCleaned === "it") {
+    return "Information Technology";
+  }
+
+  if (lowerCleaned === "egd") {
+    return "Engineering Graphics and Design";
+  }
+
+  // Handle language subjects more robustly
+  if (lowerCleaned.includes("afrikaans") && lowerCleaned.includes("home")) {
+    return "Afrikaans Home Language";
+  }
+
+  if (
+    lowerCleaned.includes("afrikaans") &&
+    (lowerCleaned.includes("first") || lowerCleaned.includes("fal"))
+  ) {
+    return "Afrikaans First Additional Language";
+  }
+
   // Return original if no normalization found
   return cleaned;
 }

@@ -267,9 +267,11 @@ const GoogleMapsAddressDialog = ({
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Loading Google Maps</DialogTitle>
+          </DialogHeader>
           <div className="flex flex-col items-center justify-center p-6">
             <Loader2 className="h-8 w-8 animate-spin text-book-600 mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Loading Google Maps</h3>
             <p className="text-sm text-gray-600 text-center">
               Please wait while we load the map for precise address selection...
             </p>
@@ -283,11 +285,11 @@ const GoogleMapsAddressDialog = ({
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Maps Unavailable</DialogTitle>
+          </DialogHeader>
           <div className="flex flex-col items-center justify-center p-6">
             <MapPin className="h-8 w-8 text-red-600 mb-4" />
-            <h3 className="text-lg font-semibold mb-2 text-red-800">
-              Maps Unavailable
-            </h3>
             <p className="text-sm text-gray-600 text-center mb-4">
               Google Maps couldn't load. Please check your internet connection
               and try again.
@@ -333,11 +335,12 @@ const GoogleMapsAddressDialog = ({
                   }
                   onPlaceChanged={handlePickupPlaceChanged}
                 >
-                  <Input
+                  <input
                     id="pickup-google-input"
                     placeholder="Start typing your pickup address..."
-                    className="w-full"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     defaultValue={formatAddressForDisplay(pickupAddress)}
+                    style={{ fontSize: "16px" }} // Prevent zoom on mobile
                   />
                 </Autocomplete>
                 <p className="text-xs text-gray-600 mt-1">
@@ -428,11 +431,12 @@ const GoogleMapsAddressDialog = ({
                     }
                     onPlaceChanged={handleShippingPlaceChanged}
                   >
-                    <Input
+                    <input
                       id="shipping-google-input"
                       placeholder="Start typing your shipping address..."
-                      className="w-full"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       defaultValue={formatAddressForDisplay(shippingAddress)}
+                      style={{ fontSize: "16px" }} // Prevent zoom on mobile
                     />
                   </Autocomplete>
                 </div>

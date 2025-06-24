@@ -74,6 +74,8 @@ import { validateAPSSubjectsEnhanced } from "@/utils/enhancedValidation";
 import { normalizeSubjectName } from "@/utils/subjectNormalization";
 import UniversitySpecificAPSDisplay from "./UniversitySpecificAPSDisplay";
 import EligibleProgramsSection from "./EligibleProgramsSection";
+import APSStorageIndicator from "./APSStorageIndicator";
+import APSRecoveryStatus from "./APSRecoveryStatus";
 
 /**
  * Enhanced APS Calculator with two-section layout:
@@ -99,11 +101,14 @@ const EnhancedAPSCalculator: React.FC = () => {
     error,
     hasValidProfile,
     qualificationSummary,
+    storageSource,
+    syncStatus,
     updateUserSubjects,
     searchCoursesForUniversity,
     checkProgramEligibility,
     clearAPSProfile,
     clearError,
+    refreshProfile,
   } = useAPSAwareCourseAssignment();
 
   // Local state
@@ -199,43 +204,182 @@ const EnhancedAPSCalculator: React.FC = () => {
     }
   }, [apsCalculation.fullCalculation]);
 
-  // Listen for global APS profile clearing event
+  // Load APS data when component mounts and restore subjects
   useEffect(() => {
+    console.log("🔄 APS Calculator mounted, checking for saved profile...");
+
+    // Force refresh profile data on mount to ensure we have latest data
+    if (refreshProfile) {
+      refreshProfile();
+    }
+
+    // Listen for profile cleared events
     const handleAPSProfileCleared = () => {
+      console.log("🔄 APS Profile cleared event received");
+      setSubjects([]);
       setUniversitySpecificScores(null);
       setSearchResults([]);
       setSelectedProgram(null);
       setIsDetailsModalOpen(false);
       setShowProgramsSection(false);
+      clearError();
+    };
+
+    // Listen for browser back/forward navigation
+    const handlePopState = () => {
+      console.log("🔄 Navigation detected, refreshing APS profile...");
+      if (refreshProfile) {
+        refreshProfile();
+      }
+    };
+
+    // Listen for beforeunload to save any pending changes
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (subjects.length > 0) {
+        // Save current state before navigation
+        const apsSubjects: APSSubject[] = subjects.map((s) => ({
+          name: s.name,
+          marks: s.marks,
+          level: s.points,
+          points: s.points,
+        }));
+
+        // Synchronous save to localStorage for immediate persistence
+        try {
+          const profile = {
+            subjects: apsSubjects,
+            totalAPS: apsCalculation.totalAPS,
+            lastUpdated: new Date().toISOString(),
+            isValid: apsCalculation.isCalculationValid,
+          };
+          localStorage.setItem("userAPSProfile", JSON.stringify(profile));
+        } catch (error) {
+          console.warn("Failed to save APS profile before navigation:", error);
+        }
+      }
     };
 
     window.addEventListener("apsProfileCleared", handleAPSProfileCleared);
+    window.addEventListener("popstate", handlePopState);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
     return () => {
       window.removeEventListener("apsProfileCleared", handleAPSProfileCleared);
+      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, []);
+  }, [refreshProfile, clearError]);
+
+  // Restore subjects when userProfile changes
+  useEffect(() => {
+    if (
+      userProfile &&
+      userProfile.subjects &&
+      userProfile.subjects.length > 0
+    ) {
+      console.log("📥 Restoring APS subjects from saved profile:", userProfile);
+
+      try {
+        // Convert UserAPSProfile subjects to APSSubjectInput format for UI
+        const restoredSubjects = userProfile.subjects
+          .filter(
+            (subject) =>
+              subject && subject.name && typeof subject.marks === "number",
+          )
+          .map((subject) => ({
+            name: subject.name.trim(),
+            marks: Math.max(0, Math.min(100, subject.marks || 0)),
+            level: subject.level || subject.points || 0,
+            points:
+              subject.points || convertPercentageToPoints(subject.marks || 0),
+            isRequired: [
+              "English",
+              "Mathematics",
+              "Mathematical Literacy",
+              "Afrikaans",
+              "Home Language",
+              "First Additional Language",
+            ].some((req) => subject.name.includes(req)),
+          }));
+
+        // Only update if we have valid subjects to restore
+        if (restoredSubjects.length > 0) {
+          setSubjects(restoredSubjects);
+          console.log(
+            "✅ APS subjects restored successfully:",
+            restoredSubjects.length,
+            "subjects",
+          );
+        } else {
+          console.log("⚠️ No valid subjects found in profile to restore");
+        }
+      } catch (error) {
+        console.error("❌ Error restoring APS subjects:", error);
+        setSubjects([]);
+      }
+    } else if (userProfile === null) {
+      console.log("📭 No APS profile found - starting fresh");
+      setSubjects([]);
+    } else {
+      console.log("📭 APS profile exists but no subjects:", userProfile);
+    }
+  }, [userProfile]);
+
+  // Auto-save subjects whenever they change (ensuring persistence)
+  useEffect(() => {
+    if (subjects.length > 0) {
+      console.log(
+        "🔄 Subjects changed, auto-saving to ensure persistence...",
+        subjects.length,
+      );
+
+      // Convert to APS format and save
+      const apsSubjects: APSSubject[] = subjects.map((s) => ({
+        name: s.name,
+        marks: s.marks,
+        level: s.points,
+        points: s.points,
+      }));
+
+      // Auto-save with a small delay to debounce rapid changes
+      const timeoutId = setTimeout(async () => {
+        await updateUserSubjects(apsSubjects);
+        console.log("💾 Auto-save completed for", subjects.length, "subjects");
+      }, 500);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [subjects, updateUserSubjects]);
 
   // Update validation messages
   useEffect(() => {
-    // Extract just the message strings from validation error objects
-    const errorMessages = (apsCalculation.validationResult.errors || []).map(
-      (error) =>
-        typeof error === "string" ? error : error.message || "Validation error",
-    );
-    const warningMessages = (
-      apsCalculation.validationResult.warnings || []
-    ).map((warning) =>
-      typeof warning === "string"
-        ? warning
-        : warning.message || "Validation warning",
-    );
+    try {
+      // Extract messages from validation result
+      const errorMessages = (apsCalculation.validationResult.errors || []).map(
+        (error) =>
+          typeof error === "string"
+            ? error
+            : error.message || "Validation error",
+      );
+      const warningMessages = (
+        apsCalculation.validationResult.warnings || []
+      ).map((warning) =>
+        typeof warning === "string"
+          ? warning
+          : warning.message || "Validation warning",
+      );
 
-    setValidationErrors(errorMessages);
-    setValidationWarnings(warningMessages);
+      setValidationErrors(errorMessages);
+      setValidationWarnings(warningMessages);
+    } catch (error) {
+      console.error("Error processing validation messages:", error);
+      setValidationErrors([]);
+      setValidationWarnings([]);
+    }
   }, [apsCalculation.validationResult]);
 
-  // Add subject function
-  const addSubject = useCallback(() => {
+  // Add subject function with immediate save
+  const addSubject = useCallback(async () => {
     if (!selectedSubject || !selectedMarks) {
       toast.error("Please select a subject and enter marks");
       return;
@@ -271,17 +415,78 @@ const EnhancedAPSCalculator: React.FC = () => {
       ),
     };
 
-    setSubjects((prev) => [...prev, newSubject]);
-    setSelectedSubject("");
-    setSelectedMarks("");
-    toast.success("Subject added successfully");
-  }, [selectedSubject, selectedMarks, subjects]);
+    const newSubjects = [...subjects, newSubject];
+    setSubjects(newSubjects);
 
-  // Remove subject function
-  const removeSubject = useCallback((index: number) => {
-    setSubjects((prev) => prev.filter((_, i) => i !== index));
-    toast.success("Subject removed");
-  }, []);
+    // Immediately save to profile to ensure persistence
+    const apsSubjects: APSSubject[] = newSubjects.map((s) => ({
+      name: s.name,
+      marks: s.marks,
+      level: s.points,
+      points: s.points,
+    }));
+
+    const success = await updateUserSubjects(apsSubjects);
+
+    if (success) {
+      console.log("✅ Subject added and profile saved:", newSubject);
+      setSelectedSubject("");
+      setSelectedMarks("");
+      toast.success("Subject added and saved");
+    } else {
+      console.warn("⚠️ Subject added but save failed");
+      setSelectedSubject("");
+      setSelectedMarks("");
+      toast.success("Subject added");
+    }
+  }, [selectedSubject, selectedMarks, subjects, updateUserSubjects]);
+
+  // Remove subject function with immediate save
+  const removeSubject = useCallback(
+    async (index: number) => {
+      if (index < 0 || index >= subjects.length) {
+        toast.error("Invalid subject index");
+        return;
+      }
+
+      const subjectToRemove = subjects[index];
+      const newSubjects = subjects.filter((_, i) => i !== index);
+      setSubjects(newSubjects);
+
+      try {
+        // Immediately save updated profile
+        if (newSubjects.length > 0) {
+          const apsSubjects: APSSubject[] = newSubjects.map((s) => ({
+            name: s.name,
+            marks: s.marks,
+            level: s.points,
+            points: s.points,
+          }));
+          const success = await updateUserSubjects(apsSubjects);
+
+          if (success) {
+            toast.success(
+              `${subjectToRemove.name} removed and profile updated`,
+            );
+          } else {
+            toast.success(`${subjectToRemove.name} removed`);
+          }
+        } else {
+          // If no subjects left, clear the profile
+          const success = await clearAPSProfile();
+          if (success) {
+            toast.success("Last subject removed and profile cleared");
+          } else {
+            toast.success("Subject removed");
+          }
+        }
+      } catch (error) {
+        console.error("Error removing subject:", error);
+        toast.success("Subject removed");
+      }
+    },
+    [subjects, updateUserSubjects, clearAPSProfile],
+  );
 
   // Clear all subjects function with complete reset
   const clearAllSubjects = useCallback(() => {
@@ -297,55 +502,103 @@ const EnhancedAPSCalculator: React.FC = () => {
   }, [clearError]);
 
   // Clear APS profile from all universities
-  const handleClearAPSProfile = useCallback(() => {
-    clearAPSProfile();
-    setSubjects([]);
-    setSelectedSubject("");
-    setSelectedMarks("");
-    setSearchResults([]);
-    setSelectedProgram(null);
-    setIsDetailsModalOpen(false);
-    setShowProgramsSection(false);
-    setUniversitySpecificScores(null);
-    clearError();
-    toast.success("APS profile cleared from all universities");
+  const handleClearAPSProfile = useCallback(async () => {
+    try {
+      const success = await clearAPSProfile();
+
+      if (success) {
+        setSubjects([]);
+        setSelectedSubject("");
+        setSelectedMarks("");
+        setSearchResults([]);
+        setSelectedProgram(null);
+        setIsDetailsModalOpen(false);
+        setShowProgramsSection(false);
+        setUniversitySpecificScores(null);
+        clearError();
+        toast.success("APS profile cleared from all storage locations");
+      } else {
+        toast.error("Failed to clear APS profile completely");
+      }
+    } catch (error) {
+      console.error("Error clearing APS profile:", error);
+      toast.error("Error clearing APS profile");
+    }
   }, [clearAPSProfile, clearError]);
 
   // Search programs function
   const searchPrograms = useCallback(async () => {
     if (!apsCalculation.isCalculationValid) {
-      toast.error("Please add at least 6 valid subjects first");
+      toast.error(
+        "Please add at least 4 valid subjects with your English/Afrikaans and Mathematics/Mathematical Literacy",
+      );
+      return;
+    }
+
+    if (subjects.length < 4) {
+      toast.error("Please add at least 4 subjects to search for programs");
       return;
     }
 
     try {
-      // Update user profile with current subjects - properly convert APSSubjectInput to APSSubject
+      // Ensure profile is saved before searching
       const apsSubjects: APSSubject[] = subjects.map((subject) => ({
-        name: subject.name,
-        marks: subject.marks,
-        level: subject.points, // Ensure level matches points (APS level 1-7)
+        name: subject.name.trim(),
+        marks: Math.max(0, Math.min(100, subject.marks)),
+        level: subject.points,
         points: subject.points,
       }));
-      await updateUserSubjects(apsSubjects);
 
-      // Search across all universities
+      console.log(
+        "💾 Saving APS profile before program search...",
+        apsSubjects,
+      );
+      const saveSuccess = await updateUserSubjects(apsSubjects);
+
+      if (!saveSuccess) {
+        console.warn("⚠️ Profile save failed, but continuing with search...");
+      }
+
+      // Search across all universities with better error handling
       const results = [];
+      let successfulSearches = 0;
+      let failedSearches = 0;
+
       for (const universityId of ALL_UNIVERSITY_IDS) {
         try {
           const universityResults =
             await searchCoursesForUniversity(universityId);
-          results.push(...(universityResults || []));
+          if (universityResults && Array.isArray(universityResults)) {
+            results.push(...universityResults);
+            successfulSearches++;
+          }
         } catch (err) {
           console.warn(`Failed to search courses for ${universityId}:`, err);
+          failedSearches++;
         }
       }
 
+      console.log(
+        `🔍 Search completed: ${successfulSearches} successful, ${failedSearches} failed`,
+      );
+
       setSearchResults(results);
       setShowProgramsSection(true);
-      toast.success(`Found ${results.length} programs across all universities`);
+
+      if (results.length > 0) {
+        toast.success(
+          `Found ${results.length} programs across ${successfulSearches} universities`,
+        );
+      } else {
+        toast.warning(
+          "No programs found. This might be due to very specific requirements or system issues.",
+        );
+      }
     } catch (err) {
       console.error("Error searching programs:", err);
-      toast.error("Failed to search programs. Please try again.");
+      toast.error(
+        "Failed to search programs. Please check your internet connection and try again.",
+      );
     }
   }, [
     apsCalculation.isCalculationValid,
@@ -429,6 +682,14 @@ const EnhancedAPSCalculator: React.FC = () => {
           African universities
         </p>
       </div>
+
+      {/* APS Recovery Status */}
+      <APSRecoveryStatus
+        userProfile={userProfile}
+        storageSource={storageSource || "none"}
+        onRefresh={refreshProfile}
+        className="max-w-4xl mx-auto"
+      />
 
       {/* Alerts Section - Compact and Clean */}
       <div className="space-y-3">
@@ -685,7 +946,9 @@ const EnhancedAPSCalculator: React.FC = () => {
                         <Button
                           onClick={searchPrograms}
                           className="w-full bg-book-600 hover:bg-book-700"
-                          disabled={isLoading}
+                          disabled={
+                            isLoading || !apsCalculation.isCalculationValid
+                          }
                           size="lg"
                         >
                           {isLoading ? (
@@ -695,10 +958,30 @@ const EnhancedAPSCalculator: React.FC = () => {
                           )}
                           Find Your Programs
                         </Button>
+
+                        {!apsCalculation.isCalculationValid &&
+                          subjects.length > 0 && (
+                            <div className="text-xs text-center text-gray-500 mt-2">
+                              Add at least 4 subjects including
+                              English/Afrikaans and Mathematics/Mathematical
+                              Literacy
+                            </div>
+                          )}
                       </div>
                     )}
                   </div>
                 </div>
+              )}
+
+              {/* Storage Status Indicator */}
+              {subjects.length > 0 && (
+                <APSStorageIndicator
+                  storageSource={storageSource}
+                  syncStatus={syncStatus}
+                  isAuthenticated={false}
+                  onRefresh={refreshProfile}
+                  className="mt-4"
+                />
               )}
             </CardContent>
           </Card>

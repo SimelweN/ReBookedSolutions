@@ -10,7 +10,7 @@ import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/complet
 import { calculateAPS, validateAPSSubjects } from "@/utils/apsCalculation";
 import { validateAssignmentRule } from "@/utils/enhancedValidation";
 import { logError } from "./systemMonitoringService";
-import { checkSubjectRequirements } from "./subjectMatchingService";
+import { adaptToOldFormat } from "./newSubjectEngine";
 
 /**
  * Enhanced APS-aware course assignment service
@@ -389,9 +389,8 @@ function calculateSubjectMatch(
     };
   }
 
-  // Use precise subject matching
-  // Map APSSubject to the expected format for checkSubjectRequirements
-  const result = checkSubjectRequirements(
+  // Use NEW SUBJECT ENGINE for 100% accurate results
+  const result = adaptToOldFormat(
     userSubjects.map((s) => ({
       name: s.name,
       level: s.level, // Use level directly (should be APS points 1-7)

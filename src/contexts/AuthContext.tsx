@@ -6,6 +6,7 @@ import React, {
   useCallback,
   useMemo,
   useRef,
+  startTransition,
 } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,7 +19,8 @@ import {
   createUserProfile,
   upgradeToUserProfile,
 } from "@/services/authOperations";
-import { addNotification } from "@/services/notificationService";
+import { addNotification } from "../services/notificationService";
+import { safeNotificationOperation } from "../utils/safeAuthOperations";
 import { logError, getErrorMessage } from "@/utils/errorUtils";
 import { createFallbackProfile } from "@/utils/databaseConnectivityHelper";
 import { shouldSkipAuthLoading } from "@/utils/instantStartup";
@@ -213,25 +215,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                   now - parseInt(lastLocalNotificationTime) > 1800000); // 30 minutes
 
               if (shouldSendNotification) {
-                // Prevent race conditions by setting both timestamps immediately
+                // ENHANCED: Add session-wide lock to prevent multiple notifications
+                const lockKey = `notification_lock_${session.user.id}`;
+                const existingLock = sessionStorage.getItem(lockKey);
+
+                if (existingLock && now - parseInt(existingLock) < 5000) {
+                  // 5 second lock
+                  console.log(
+                    "[AuthContext] Skipping notification - recent lock exists",
+                  );
+                  return;
+                }
+
+                // Set lock immediately
+                sessionStorage.setItem(lockKey, now.toString());
                 sessionStorage.setItem(sessionKey, now.toString());
                 localStorage.setItem(localStorageKey, now.toString());
 
-                addNotification({
-                  userId: session.user.id,
-                  title: "Welcome back!",
-                  message: `Successfully logged in at ${new Date().toLocaleString()}`,
-                  type: "success",
-                  read: false,
-                }).catch((notifError) => {
-                  console.warn(
-                    "[AuthContext] Login notification failed:",
-                    notifError,
-                  );
-                  // Remove the timestamps if notification failed
-                  sessionStorage.removeItem(sessionKey);
-                  localStorage.removeItem(localStorageKey);
-                });
+                // Use safe notification operation to prevent Suspense issues
+                safeNotificationOperation(
+                  () =>
+                    addNotification({
+                      userId: session.user.id,
+                      title: "Welcome back!",
+                      message: `Successfully logged in at ${new Date().toLocaleString()}`,
+                      type: "success",
+                      read: false,
+                    }),
+                  () => {
+                    // Fallback if notification fails
+                    console.warn(
+                      "[AuthContext] Login notification failed - removing locks",
+                    );
+                    sessionStorage.removeItem(sessionKey);
+                    sessionStorage.removeItem(lockKey);
+                    localStorage.removeItem(localStorageKey);
+                  },
+                );
               } else {
                 console.log(
                   "[AuthContext] Skipping duplicate login notification - recent notification exists",

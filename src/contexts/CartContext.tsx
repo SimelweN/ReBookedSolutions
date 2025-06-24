@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { CartItem, CartContextType } from "@/types/cart";
+import { Book } from "@/types/book";
 import { toast } from "sonner";
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -17,15 +18,47 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [items, setItems] = useState<CartItem[]>([]);
 
-  // Load cart from localStorage on mount
+  // Load cart from localStorage on mount with validation
   useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      try {
-        setItems(JSON.parse(savedCart));
-      } catch (error) {
-        console.error("Error loading cart:", error);
+    try {
+      const savedCart = localStorage.getItem("cart");
+      if (savedCart) {
+        const parsed = JSON.parse(savedCart);
+
+        // Validate cart structure
+        if (Array.isArray(parsed)) {
+          // Filter out invalid items
+          const validItems = parsed.filter(
+            (item) =>
+              item &&
+              typeof item === "object" &&
+              item.id &&
+              item.bookId &&
+              item.title &&
+              typeof item.price === "number" &&
+              item.price > 0 &&
+              item.sellerId,
+          );
+
+          setItems(validItems);
+
+          // If we filtered out items, update localStorage
+          if (validItems.length !== parsed.length) {
+            localStorage.setItem("cart", JSON.stringify(validItems));
+            console.log(
+              `Cleaned ${parsed.length - validItems.length} invalid items from cart`,
+            );
+          }
+        } else {
+          console.warn("Invalid cart format in localStorage, clearing cart");
+          localStorage.removeItem("cart");
+          setItems([]);
+        }
       }
+    } catch (error) {
+      console.error("Error parsing saved cart:", error);
+      localStorage.removeItem("cart");
+      setItems([]);
     }
   }, []);
 
@@ -35,14 +68,35 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [items]);
 
   const addToCart = (book: Book) => {
-    // Check if book and seller exist
+    // Comprehensive book validation
     if (!book) {
       toast.error("Book information is missing");
       return;
     }
 
+    if (!book.id) {
+      toast.error("Book ID is missing");
+      return;
+    }
+
+    if (!book.title || book.title.trim() === "") {
+      toast.error("Book title is missing");
+      return;
+    }
+
+    if (!book.price || typeof book.price !== "number" || book.price <= 0) {
+      toast.error("Invalid book price");
+      return;
+    }
+
     if (!book.seller || !book.seller.id) {
       toast.error("Seller information is missing");
+      return;
+    }
+
+    // Check if book is available (not sold)
+    if (book.sold) {
+      toast.error("This book has already been sold");
       return;
     }
 
