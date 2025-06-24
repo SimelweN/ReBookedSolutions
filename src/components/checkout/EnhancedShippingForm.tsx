@@ -386,7 +386,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
         // If still no options after getting quotes, create fallback
         if (deliveryOptions.length === 0) {
-          console.log("🚛 Creating emergency delivery options");
+          console.log("��� Creating emergency delivery options");
           const emergencyOptions: DeliveryOption[] = [
             {
               id: "emergency_standard",
@@ -596,9 +596,14 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
                       {errors.street_address.message}
                     </p>
                   )}
-                  {isLoaded && (
+                  {isLoaded && window.google ? (
                     <p className="text-xs text-gray-500 mt-1">
-                      Powered by Google Maps - Start typing for suggestions
+                      ✅ Powered by Google Maps - Start typing for suggestions
+                    </p>
+                  ) : (
+                    <p className="text-xs text-yellow-600 mt-1">
+                      ⚠️ Address autocomplete unavailable - Google Maps API key
+                      not configured
                     </p>
                   )}
                 </div>
