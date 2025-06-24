@@ -187,9 +187,9 @@ function App() {
                     <Route
                       path="/"
                       element={
-                        <LazyRoute>
+                        <SimpleRoute>
                           <Index />
-                        </LazyRoute>
+                        </SimpleRoute>
                       }
                     />
                     <Route
