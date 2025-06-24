@@ -193,30 +193,9 @@ function App() {
                           </LazyRoute>
                         }
                       />
-                      <Route
-                        path="/books/:id"
-                        element={
-                          <LazyRoute>
-                            <BookDetails />
-                          </LazyRoute>
-                        }
-                      />
-                      <Route
-                        path="/book/:id"
-                        element={
-                          <LazyRoute>
-                            <BookDetails />
-                          </LazyRoute>
-                        }
-                      />
-                      <Route
-                        path="/login"
-                        element={
-                          <LazyRoute>
-                            <Login />
-                          </LazyRoute>
-                        }
-                      />
+                      <Route path="/books/:id" element={<BookDetails />} />
+                      <Route path="/book/:id" element={<BookDetails />} />
+                      <Route path="/login" element={<Login />} />
                       <Route
                         path="/register"
                         element={
@@ -527,9 +506,9 @@ function App() {
                         path="/admin"
                         element={
                           <AdminProtectedRoute>
-                            
+                            <InstantRoute>
                               <Admin />
-                            
+                            </InstantRoute>
                           </AdminProtectedRoute>
                         }
                       />
