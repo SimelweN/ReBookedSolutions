@@ -40,22 +40,13 @@ const Cart = () => {
     try {
       // Navigate to integrated checkout page
       navigate("/checkout");
-
-      // Redirect to payment subdomain
-      window.location.href = `https://payment.rebookedsolutions.co.za/cart-checkout?userId=${user.id}`;
+      toast.success("Proceeding to checkout...");
     } catch (error) {
-      console.error("Error redirecting to payment system:", error);
-      toast.error("Unable to proceed to payment. Please try again.");
+      console.error("Checkout error:", error);
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setIsProcessing(false);
     }
-  };
-
-  if (items.length === 0) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-8">
-          <Button
             variant="ghost"
             onClick={() => navigate(-1)}
             className="mb-6 text-book-600"
