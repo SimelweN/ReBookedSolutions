@@ -154,6 +154,27 @@ export class PaystackPaymentService {
    */
   static async createOrder(orderData: Partial<OrderData>): Promise<OrderData> {
     try {
+      // Validate required fields
+      if (!orderData.buyer_email) {
+        throw new Error("Buyer email is required");
+      }
+      if (!orderData.seller_id) {
+        throw new Error("Seller ID is required");
+      }
+      if (!orderData.amount || orderData.amount <= 0) {
+        throw new Error("Valid amount is required");
+      }
+      if (!orderData.paystack_ref) {
+        throw new Error("Paystack reference is required");
+      }
+      if (
+        !orderData.items ||
+        !Array.isArray(orderData.items) ||
+        orderData.items.length === 0
+      ) {
+        throw new Error("Order items are required");
+      }
+
       const { data, error } = await supabase
         .from("orders")
         .insert([
@@ -168,13 +189,28 @@ export class PaystackPaymentService {
         .single();
 
       if (error) {
-        throw new Error(`Failed to create order: ${error.message}`);
+        console.error("Database error details:", error);
+        throw new Error(
+          `Failed to create order: ${error.message || error.details || "Unknown database error"}`,
+        );
+      }
+
+      if (!data) {
+        throw new Error(
+          "Failed to create order: No data returned from database",
+        );
       }
 
       return data;
     } catch (error) {
       console.error("Create order error:", error);
-      throw error;
+
+      // Enhance error message for better debugging
+      if (error instanceof Error) {
+        throw new Error(`Order creation failed: ${error.message}`);
+      } else {
+        throw new Error(`Order creation failed: ${String(error)}`);
+      }
     }
   }
 
