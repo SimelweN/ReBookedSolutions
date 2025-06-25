@@ -343,18 +343,29 @@ export class PaystackPaymentService {
         items_count: orderData.items.length,
       });
 
+      // Prepare the order data for insertion
+      const insertData = {
+        buyer_email: orderData.buyer_email,
+        seller_id: orderData.seller_id,
+        amount: orderData.amount,
+        paystack_ref: orderData.paystack_ref,
+        items: orderData.items,
+        status: "pending" as const,
+        shipping_address: orderData.shipping_address || {},
+        metadata: orderData.metadata || {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      console.log("📤 Inserting order data:", insertData);
+
       const { data, error } = await supabase
         .from("orders")
-        .insert([
-          {
-            ...orderData,
-            status: "pending",
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-        ])
+        .insert([insertData])
         .select()
         .single();
+
+      console.log("📥 Supabase response:", { data, error });
 
       if (error) {
         // Comprehensive error logging
