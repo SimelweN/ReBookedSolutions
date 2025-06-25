@@ -19,6 +19,45 @@ export interface Profile {
   bio?: string;
 }
 
+// Test basic internet connectivity
+const testNetworkConnectivity = async (): Promise<void> => {
+  if (!navigator.onLine) {
+    throw new Error(
+      "You appear to be offline. Please check your internet connection.",
+    );
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    await fetch("https://httpbin.org/get", {
+      method: "GET",
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+  } catch (error) {
+    // Fallback test with Google
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      await fetch("https://www.google.com/favicon.ico", {
+        method: "GET",
+        signal: controller.signal,
+        mode: "no-cors",
+      });
+
+      clearTimeout(timeoutId);
+    } catch (fallbackError) {
+      throw new Error(
+        "Cannot reach internet servers. Please check your network connection and try again.",
+      );
+    }
+  }
+};
+
 export const loginUser = async (email: string, password: string) => {
   if (!email || !password) {
     throw new Error("Email and password are required");
@@ -30,6 +69,25 @@ export const loginUser = async (email: string, password: string) => {
 
   if (password.length < 6) {
     throw new Error("Password must be at least 6 characters long");
+  }
+
+  // Quick network connectivity check
+  await testNetworkConnectivity();
+
+  // Verify Supabase configuration
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error(
+      "Authentication service configuration missing. Please contact support.",
+    );
+  }
+
+  if (!supabaseKey.startsWith("eyJ")) {
+    throw new Error(
+      "Authentication service configuration invalid. Please contact support.",
+    );
   }
 
   try {
