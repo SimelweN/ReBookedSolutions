@@ -63,9 +63,9 @@ const HowItWorksDialog = ({ isOpen, onClose, type }: HowItWorksDialogProps) => {
     },
     {
       icon: <DollarSign className="h-6 w-6 text-green-600" />,
-      title: "Get Paid",
+      title: "Get Paid After Delivery",
       description:
-        "Once the buyer confirms delivery, your money is sent (minus our 10% commission).",
+        "You receive payment ONLY after the book is successfully delivered to the buyer. This protects both parties and ensures fair transactions.",
     },
     {
       icon: <Share2 className="h-6 w-6 text-purple-600" />,
