@@ -315,19 +315,55 @@ export class PaystackPaymentService {
         .single();
 
       if (error) {
+        // Comprehensive error logging
         console.error("Database error details:", {
           message: error.message,
           details: error.details,
           hint: error.hint,
           code: error.code,
-          fullError: error,
+          errorString: String(error),
+          errorJSON: JSON.stringify(error, Object.getOwnPropertyNames(error)),
         });
 
-        const errorMessage =
-          error.message ||
-          error.details ||
-          error.hint ||
-          "Unknown database error";
+        // Log the full error object properties
+        console.error("Full error object:", error);
+        console.error("Error constructor name:", error?.constructor?.name);
+
+        // Common Supabase/PostgreSQL error patterns
+        let errorMessage = "Unknown database error";
+
+        if (error.message) {
+          errorMessage = error.message;
+        } else if (error.details) {
+          errorMessage = error.details;
+        } else if (error.hint) {
+          errorMessage = error.hint;
+        } else if (typeof error === "string") {
+          errorMessage = error;
+        } else {
+          // Try to extract any meaningful information
+          errorMessage = JSON.stringify(
+            error,
+            Object.getOwnPropertyNames(error),
+          );
+        }
+
+        // Add context for common issues
+        if (
+          errorMessage.includes("RLS") ||
+          errorMessage.includes("row-level security")
+        ) {
+          errorMessage +=
+            " (Row Level Security policy issue - check user permissions)";
+        } else if (
+          errorMessage.includes("relation") &&
+          errorMessage.includes("does not exist")
+        ) {
+          errorMessage += " (Table may not exist - check database migrations)";
+        } else if (errorMessage.includes("violates check constraint")) {
+          errorMessage += " (Data validation failed - check input values)";
+        }
+
         throw new Error(`Failed to create order: ${errorMessage}`);
       }
 
