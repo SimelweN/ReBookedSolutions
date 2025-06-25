@@ -45,7 +45,10 @@ const HowItWorksDialog = ({ isOpen, onClose, type }: HowItWorksDialogProps) => {
       title: "Ship the Book",
       description: (
         <div className="space-y-2">
-          <p>Use our built-in courier system to get a shipping label.</p>
+          <p>
+            Use our built-in courier system to get a shipping label.{" "}
+            <strong>The buyer pays all shipping costs - not you!</strong>
+          </p>
           <div className="text-sm text-gray-600 space-y-1">
             <p>
               <strong>No printer?</strong>
