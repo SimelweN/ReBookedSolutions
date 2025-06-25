@@ -578,10 +578,6 @@ const UserProfileTabs = ({
             <TabsContent value="banking" className="space-y-4">
               <EnhancedBankingDetailsSection />
             </TabsContent>
-
-            <TabsContent value="earnings" className="space-y-4">
-              <SellerEarningsDashboard />
-            </TabsContent>
           </>
         )}
       </Tabs>
