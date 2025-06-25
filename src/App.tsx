@@ -126,6 +126,7 @@ const SystemStatus = React.lazy(() => import("./pages/SystemStatus"));
 const CheckoutSuccess = React.lazy(() => import("./pages/CheckoutSuccess"));
 const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
+const PaystackTest = React.lazy(() => import("./pages/PaystackTest"));
 
 // Create query client with optimized settings
 const queryClient = new QueryClient({
