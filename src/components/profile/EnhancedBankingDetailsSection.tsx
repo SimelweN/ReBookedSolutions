@@ -151,10 +151,24 @@ const EnhancedBankingDetailsSection: React.FC = () => {
 
       setBankingDetails(savedDetails);
       setIsEditing(false);
-      toast.success("Banking details saved successfully!", {
-        description:
-          "Your payment account is being set up for future transactions.",
-      });
+
+      // The success message is already handled by the service
+      // Check if Paystack was successfully integrated
+      if (
+        savedDetails.account_verified &&
+        savedDetails.paystack_subaccount_code
+      ) {
+        // Success message already shown by service for successful Paystack integration
+        console.log("✅ Banking details saved with Paystack integration");
+      } else if (savedDetails.subaccount_status === "pending_setup") {
+        // Success message already shown by service for pending setup
+        console.log("✅ Banking details saved, Paystack setup pending");
+      } else {
+        toast.success("Banking details saved successfully!", {
+          description:
+            "Your payment account is being set up for future transactions.",
+        });
+      }
     } catch (error) {
       console.error("Error saving banking details:", error);
       const errorMessage =
