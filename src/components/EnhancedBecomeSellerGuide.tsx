@@ -431,8 +431,15 @@ const EnhancedBecomeSellerGuide: React.FC<EnhancedBecomeSellerGuideProps> = ({
                   Payment Timeline
                 </h4>
                 <ul className="text-sm space-y-2 text-gray-600">
-                  <li>• Payment released after courier collects your book</li>
-                  <li>• Funds arrive within 1-3 business days</li>
+                  <li>
+                    •{" "}
+                    <strong>
+                      Payment released ONLY after successful delivery to buyer
+                    </strong>
+                  </li>
+                  <li>
+                    • Funds arrive within 1-3 business days after delivery
+                  </li>
                   <li>• Direct deposit to your verified bank account</li>
                   <li>• Email confirmation when payment is sent</li>
                 </ul>
