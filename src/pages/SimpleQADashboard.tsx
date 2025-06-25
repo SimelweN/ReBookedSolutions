@@ -185,7 +185,7 @@ const SimpleQADashboard: React.FC = () => {
 
         {/* Enhanced QA Testing */}
         <Tabs defaultValue="devtools" className="w-full">
-          <TabsList className="grid w-full grid-cols-9">
+          <TabsList className="grid w-full grid-cols-10">
             <TabsTrigger value="devtools">Dev Tools</TabsTrigger>
             <TabsTrigger value="systemwide">Systemwide</TabsTrigger>
             <TabsTrigger value="environment">Environment</TabsTrigger>
@@ -193,6 +193,7 @@ const SimpleQADashboard: React.FC = () => {
             <TabsTrigger value="comprehensive">Tests</TabsTrigger>
             <TabsTrigger value="quickfixes">Fixes</TabsTrigger>
             <TabsTrigger value="checkout">Checkout</TabsTrigger>
+            <TabsTrigger value="paystack">Paystack</TabsTrigger>
             <TabsTrigger value="maps">Maps</TabsTrigger>
             <TabsTrigger value="checklist">Checklist</TabsTrigger>
           </TabsList>
