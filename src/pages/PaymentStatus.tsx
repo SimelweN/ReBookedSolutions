@@ -1,5 +1,4 @@
-import * as React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import PaymentStatusTracker from "@/components/payment/PaymentStatusTracker";
@@ -108,16 +107,16 @@ const PaymentStatus: React.FC = () => {
     // Generate a simple receipt
     const receiptContent = `
       ReBooked Solutions - Order Receipt
-      
+
       Order ID: ${order.id}
       Reference: ${order.paystack_ref}
       Date: ${new Date(order.created_at).toLocaleDateString()}
       Amount: R${(order.amount / 100).toFixed(2)}
       Status: ${order.status}
-      
+
       Items:
       ${order.items.map((item) => `- ${item.title}: R${(item.price / 100).toFixed(2)}`).join("\n")}
-      
+
       Thank you for your purchase!
     `;
 
