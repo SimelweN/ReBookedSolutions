@@ -83,7 +83,9 @@ const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({
         status: "pending" as const,
       };
 
+      console.log("Creating order with data:", orderData);
       const order = await PaystackPaymentService.createOrder(orderData);
+      console.log("Order created successfully:", order);
 
       // Initialize Paystack payment
       await PaystackPaymentService.initializePayment({
