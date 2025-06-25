@@ -227,8 +227,14 @@ const LazyWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 function App() {
+  // Track initialization state to prevent suspense issues
+  const [isInitialized, setIsInitialized] = React.useState(false);
+
   // Initialize app and preload routes in the background
   React.useEffect(() => {
+    // Set initialized immediately to prevent suspense
+    setIsInitialized(true);
+
     // Use startTransition for non-urgent preloading
     startTransition(() => {
       preloadCriticalRoutes().catch((error) => {
@@ -236,6 +242,15 @@ function App() {
       });
     });
   }, []);
+
+  // Add a minimal loading fallback for the initial render
+  if (!isInitialized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <EmergencyBypass>
@@ -246,10 +261,11 @@ function App() {
               <AuthProvider>
                 <CartProvider>
                   <ErrorBoundary level="router">
-                    <Router>
-                      <AuthErrorHandler />
-                      <ScrollToTop />
-                      <Routes>
+                    <Suspense fallback={<MinimalLoader />}>
+                      <Router>
+                        <AuthErrorHandler />
+                        <ScrollToTop />
+                        <Routes>
                         {/* Home route - loads instantly */}
                         <Route path="/" element={<IndexPage />} />
 
