@@ -27,6 +27,7 @@ import CheckoutTroubleshooting from "@/components/CheckoutTroubleshooting";
 import SystemwideQAFixes from "@/components/SystemwideQAFixes";
 import GoogleMapsSetupHelper from "@/components/GoogleMapsSetupHelper";
 import EnvironmentChecker from "@/components/EnvironmentChecker";
+import PaystackTestComponent from "@/components/PaystackTestComponent";
 import DevelopmentToolsDashboard from "@/components/DevelopmentToolsDashboard";
 
 const SimpleQADashboard: React.FC = () => {
