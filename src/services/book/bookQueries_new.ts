@@ -221,8 +221,8 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
         );
         return books;
       },
-      1,
-      1000,
+      2,
+      500,
     ); // Reduced retries and delay for faster response
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -308,8 +308,8 @@ export const getBookById = async (id: string): Promise<Book | null> => {
 
         return mapBookFromDatabase(bookData, sellerProfile || fallbackSeller);
       },
-      1,
-      1000,
+      2,
+      500,
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -396,8 +396,8 @@ export const getBooksByUser = async (userId: string): Promise<Book[]> => {
         );
         return books;
       },
-      1,
-      1000,
+      2,
+      500,
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -464,6 +464,3 @@ export const searchBooks = async (
     };
   }
 };
-
-// Export alias for backward compatibility
-export const getUserBooks = getBooksByUser;

@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import * as React from "react";
+import { useEffect } from "react";
 
 // Emergency component to bypass all loading states
 const EmergencyBypass: React.FC<{ children: React.ReactNode }> = ({

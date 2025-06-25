@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import * as React from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -131,17 +132,155 @@ const QAQuickFixes: React.FC = () => {
       severity: "critical",
       status: "pending",
       action: async () => {
-        // Test basic connection
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("id")
-          .limit(1);
+        try {
+          // Check configuration first
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+          const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-        if (error) {
-          throw new Error(`Database connection failed: ${error.message}`);
+          if (!supabaseUrl || !supabaseKey) {
+            throw new Error(
+              "❌ Configuration missing: Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables",
+            );
+          }
+
+          // Validate URL format
+          try {
+            new URL(supabaseUrl);
+          } catch {
+            throw new Error(`❌ Invalid Supabase URL format: ${supabaseUrl}`);
+          }
+
+          // Validate API key format
+          if (!supabaseKey.startsWith("eyJ")) {
+            throw new Error(
+              `❌ Invalid API key format: Key should start with 'eyJ' (JWT token)`,
+            );
+          }
+
+          // Test basic network connectivity first
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+            await fetch("https://httpbin.org/get", {
+              signal: controller.signal,
+              method: "GET",
+            });
+
+            clearTimeout(timeoutId);
+          } catch (networkError) {
+            throw new Error(
+              "❌ Network connectivity failed: Check your internet connection",
+            );
+          }
+
+          // Test Supabase URL accessibility
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+            const response = await fetch(`${supabaseUrl}/rest/v1/`, {
+              method: "HEAD",
+              signal: controller.signal,
+              headers: {
+                apikey: supabaseKey,
+                Authorization: `Bearer ${supabaseKey}`,
+              },
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+              throw new Error(
+                `❌ Supabase server returned ${response.status}: Check your project URL and API key`,
+              );
+            }
+          } catch (supabaseError) {
+            if (supabaseError instanceof Error) {
+              if (supabaseError.message.includes("abort")) {
+                throw new Error(
+                  `❌ Supabase server timeout: ${supabaseUrl} is not responding (may be wrong URL)`,
+                );
+              }
+              throw new Error(
+                `❌ Cannot reach Supabase: ${supabaseError.message} (Check project URL: ${supabaseUrl})`,
+              );
+            }
+            throw supabaseError;
+          }
+
+          // Now test actual database query
+          const connectionPromise = supabase
+            .from("profiles")
+            .select("id")
+            .limit(1);
+
+          const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(
+              () =>
+                reject(new Error("Database query timeout after 10 seconds")),
+              10000,
+            ),
+          );
+
+          const { data, error } = await Promise.race([
+            connectionPromise,
+            timeoutPromise,
+          ]);
+
+          if (error) {
+            // Handle specific Supabase errors
+            if (error.code === "42P01") {
+              throw new Error(
+                `⚠️ Table 'profiles' doesn't exist in database (${error.message})`,
+              );
+            } else if (
+              error.code === "PGRST301" ||
+              error.message?.includes("permission")
+            ) {
+              throw new Error(
+                `⚠️ Database permissions issue: ${error.message} (Check RLS policies)`,
+              );
+            } else if (error.message?.includes("Failed to fetch")) {
+              throw new Error(
+                `❌ Network error during query: Cannot reach ${supabaseUrl}`,
+              );
+            } else if (
+              error.message?.includes("JWT") ||
+              error.message?.includes("Invalid API key")
+            ) {
+              throw new Error(
+                `❌ Authentication failed: Invalid API key (${supabaseKey.substring(0, 10)}...)`,
+              );
+            } else {
+              throw new Error(
+                `❌ Database query failed: ${error.message} (Code: ${error.code || "unknown"})`,
+              );
+            }
+          }
+
+          toast.success(
+            `✅ Database connection verified! Found ${data?.length || 0} profiles.`,
+            {
+              description: `Connected to: ${supabaseUrl}`,
+            },
+          );
+        } catch (error) {
+          if (error instanceof Error) {
+            // Log detailed error for debugging
+            console.error("Database connection test failed:", {
+              message: error.message,
+              url: import.meta.env.VITE_SUPABASE_URL,
+              keyPrefix: import.meta.env.VITE_SUPABASE_ANON_KEY?.substring(
+                0,
+                10,
+              ),
+            });
+
+            throw error;
+          }
+          throw new Error("��� Unknown error during database connection test");
         }
-
-        toast.success("Database connection verified!");
       },
     },
     {
@@ -199,20 +338,29 @@ const QAQuickFixes: React.FC = () => {
       status: "pending",
       action: async () => {
         if (!user?.id) {
-          throw new Error("Must be logged in to test seller validation");
+          toast.warning("Login required to test seller validation", {
+            description: "Please log in to test the seller validation system.",
+          });
+          return;
         }
 
-        const { SellerValidationService } = await import(
-          "@/services/sellerValidationService"
-        );
-        const validation =
-          await SellerValidationService.validateSellerRequirements(user.id);
+        try {
+          const { SellerValidationService } = await import(
+            "@/services/sellerValidationService"
+          );
+          const validation =
+            await SellerValidationService.validateSellerRequirements(user.id);
 
-        const statusMessage = validation.canSell
-          ? "User can sell books"
-          : `Missing: ${validation.missingRequirements.length} requirements`;
+          const statusMessage = validation.canSell
+            ? "User can sell books"
+            : `Missing: ${validation.missingRequirements.length} requirements`;
 
-        toast.success(`Seller validation working: ${statusMessage}`);
+          toast.success(`Seller validation working: ${statusMessage}`);
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : "Unknown error";
+          toast.error(`Seller validation failed: ${errorMessage}`);
+        }
       },
     },
     {

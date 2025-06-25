@@ -194,13 +194,21 @@ export const quickConnectionTest = async (): Promise<boolean> => {
   try {
     const { error } = (await Promise.race([
       supabase.from("profiles").select("id").limit(1),
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Timeout")), 3000),
+      new Promise(
+        (_, reject) => setTimeout(() => reject(new Error("Timeout")), 1500), // Reduced timeout
       ),
     ])) as any;
 
-    return !error;
-  } catch {
+    if (error) {
+      console.warn("Connection test failed:", error.message);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.warn(
+      "Connection test exception:",
+      error instanceof Error ? error.message : String(error),
+    );
     return false;
   }
 };
@@ -253,23 +261,32 @@ export const handleConnectionError = (
  */
 export const retryWithConnection = async <T>(
   operation: () => Promise<T>,
-  maxRetries: number = 3,
-  delay: number = 1000,
+  maxRetries: number = 2, // Reduced retries
+  delay: number = 500, // Reduced delay
 ): Promise<T> => {
   let lastError: any;
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      // Check connection before retry (except first attempt)
-      if (attempt > 1) {
-        const isConnected = await quickConnectionTest();
-        if (!isConnected) {
-          const connectionError = new Error("No connection available");
-          console.error(
-            `[ConnectionHealthCheck] Connection test failed on attempt ${attempt}: No connection available`,
-          );
-          throw connectionError;
-        }
+      // For first attempt, just try the operation directly
+      if (attempt === 1) {
+        return await operation();
+      }
+
+      // For subsequent attempts, do a quick connection check with longer timeout
+      const isConnected = await Promise.race([
+        quickConnectionTest(),
+        new Promise<boolean>(
+          (resolve) => setTimeout(() => resolve(false), 3000), // Increased timeout
+        ),
+      ]);
+
+      if (!isConnected) {
+        console.warn(
+          `[ConnectionHealthCheck] Connection test failed on attempt ${attempt}, but continuing anyway`,
+        );
+        // Don't throw "No connection available" - just try the operation
+        // Only throw if the actual operation fails
       }
 
       return await operation();
@@ -280,7 +297,7 @@ export const retryWithConnection = async <T>(
         error instanceof Error ? error.message : String(error);
       const errorCode = (error as any)?.code || "NO_CODE";
 
-      console.error(
+      console.warn(
         `[ConnectionHealthCheck] Operation failed on attempt ${attempt}: ${errorMessage} (${errorCode})`,
       );
 
@@ -288,14 +305,16 @@ export const retryWithConnection = async <T>(
       if (
         error?.message?.includes("JWT") ||
         error?.message?.includes("auth") ||
-        error?.code === "PGRST116" // Not found
+        error?.code === "PGRST116" || // Not found
+        error?.message?.includes("permission") ||
+        error?.message?.includes("unauthorized")
       ) {
-        devLog(`Not retrying error: ${errorMessage} (non-retryable)`);
+        console.warn(`Not retrying error: ${errorMessage} (non-retryable)`);
         throw error;
       }
 
       if (attempt < maxRetries) {
-        devLog(
+        console.warn(
           `Retry attempt ${attempt}/${maxRetries} in ${delay}ms for error: ${errorMessage}`,
         );
         await new Promise((resolve) => setTimeout(resolve, delay));

@@ -1,4 +1,5 @@
-import React, { Suspense, startTransition } from "react";
+import * as React from "react";
+import { Suspense, startTransition } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
@@ -68,24 +69,28 @@ if (import.meta.env.DEV) {
   console.log("  🧪 Fixed subject matching tests will run automatically");
 }
 
-// Import Index directly for instant loading
+// Import critical pages directly for instant loading (prevents Suspense errors)
 import IndexPage from "./pages/Index";
+import UniversityInfoPage from "./pages/UniversityInfo";
+import LoginPage from "./pages/Login";
+import RegisterPage from "./pages/Register";
+import AdminPage from "./pages/Admin";
 const Index = () => <IndexPage />;
+const UniversityInfo = () => <UniversityInfoPage />;
+const Login = () => <LoginPage />;
+const Register = () => <RegisterPage />;
+const Admin = () => <AdminPage />;
 
-// Simple lazy loading for other pages
+// Simple lazy loading for less critical pages
 const BookListing = React.lazy(() => import("./pages/BookListing"));
 const BookDetails = React.lazy(() => import("./pages/BookDetails"));
-const Login = React.lazy(() => import("./pages/Login"));
-const Register = React.lazy(() => import("./pages/Register"));
 const Profile = React.lazy(() => import("./pages/Profile"));
 const CreateListing = React.lazy(() => import("./pages/CreateListing"));
 const GoogleMapsDemo = React.lazy(() => import("./pages/GoogleMapsDemo"));
 const MapsTest = React.lazy(() => import("./pages/MapsTest"));
 const BasicMapsExample = React.lazy(() => import("./pages/BasicMapsExample"));
 const WorkingMapsDemo = React.lazy(() => import("./pages/WorkingMapsDemo"));
-const Admin = React.lazy(() => import("./pages/Admin"));
 const AdminReports = React.lazy(() => import("./pages/AdminReports"));
-const UniversityInfo = React.lazy(() => import("./pages/UniversityInfo"));
 const ModernUniversityProfile = React.lazy(
   () => import("./pages/ModernUniversityProfile"),
 );
@@ -119,6 +124,7 @@ const FAQ = React.lazy(() => import("./pages/FAQ"));
 const APSDemo = React.lazy(() => import("./pages/APSDemo"));
 const SystemStatus = React.lazy(() => import("./pages/SystemStatus"));
 const CheckoutSuccess = React.lazy(() => import("./pages/CheckoutSuccess"));
+const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
 
 // Create query client with optimized settings
@@ -335,11 +341,7 @@ function App() {
                         {/* University and Campus Routes */}
                         <Route
                           path="/university-info"
-                          element={
-                            <LazyWrapper>
-                              <UniversityInfo />
-                            </LazyWrapper>
-                          }
+                          element={<UniversityInfo />}
                         />
                         <Route
                           path="/university-profile"
@@ -557,6 +559,16 @@ function App() {
                           }
                         />
                         <Route
+                          path="/payment-status/:orderId?"
+                          element={
+                            <ProtectedRoute>
+                              <LazyWrapper>
+                                <PaymentStatus />
+                              </LazyWrapper>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
                           path="/notifications"
                           element={
                             <ProtectedRoute>
@@ -612,6 +624,16 @@ function App() {
                             <LazyWrapper>
                               <QAFunctionalityDashboard />
                             </LazyWrapper>
+                          }
+                        />
+                        <Route
+                          path="/admin"
+                          element={
+                            <AdminProtectedRoute>
+                              <LazyWrapper>
+                                <Admin />
+                              </LazyWrapper>
+                            </AdminProtectedRoute>
                           }
                         />
                         <Route

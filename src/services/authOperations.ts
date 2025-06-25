@@ -19,6 +19,45 @@ export interface Profile {
   bio?: string;
 }
 
+// Test basic internet connectivity
+const testNetworkConnectivity = async (): Promise<void> => {
+  if (!navigator.onLine) {
+    throw new Error(
+      "You appear to be offline. Please check your internet connection.",
+    );
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    await fetch("https://httpbin.org/get", {
+      method: "GET",
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+  } catch (error) {
+    // Fallback test with Google
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      await fetch("https://www.google.com/favicon.ico", {
+        method: "GET",
+        signal: controller.signal,
+        mode: "no-cors",
+      });
+
+      clearTimeout(timeoutId);
+    } catch (fallbackError) {
+      throw new Error(
+        "Cannot reach internet servers. Please check your network connection and try again.",
+      );
+    }
+  }
+};
+
 export const loginUser = async (email: string, password: string) => {
   if (!email || !password) {
     throw new Error("Email and password are required");
@@ -32,38 +71,99 @@ export const loginUser = async (email: string, password: string) => {
     throw new Error("Password must be at least 6 characters long");
   }
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: email.trim().toLowerCase(),
-    password,
-  });
+  // Quick network connectivity check
+  await testNetworkConnectivity();
 
-  if (error) {
-    console.error("Login error:", {
-      message: error.message,
-      code: error.name || error.code,
-      details: error.details || error.hint,
-    });
+  // Verify Supabase configuration
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-    // Provide user-friendly error messages
-    if (error.message.includes("Invalid login credentials")) {
-      throw new Error(
-        "Invalid email or password. Please check your credentials and try again.",
-      );
-    } else if (error.message.includes("Email not confirmed")) {
-      throw new Error(
-        "Please verify your email address before logging in. Check your inbox for a verification email.",
-      );
-    } else if (error.message.includes("Too many requests")) {
-      throw new Error(
-        "Too many login attempts. Please wait a few minutes before trying again.",
-      );
-    } else {
-      throw new Error(`Login failed: ${error.message}`);
-    }
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error(
+      "Authentication service configuration missing. Please contact support.",
+    );
   }
 
-  console.log("Login successful for:", email);
-  return data;
+  if (!supabaseKey.startsWith("eyJ")) {
+    throw new Error(
+      "Authentication service configuration invalid. Please contact support.",
+    );
+  }
+
+  try {
+    // Use retry logic for network failures
+    const result = await retryWithExponentialBackoff(
+      async () => {
+        return await withTimeout(
+          supabase.auth.signInWithPassword({
+            email: email.trim().toLowerCase(),
+            password,
+          }),
+          15000, // 15 second timeout for authentication
+          "Login request timed out",
+        );
+      },
+      {
+        maxRetries: 3,
+        baseDelay: 1000,
+        maxDelay: 5000,
+        retryCondition: (error) => {
+          // Retry on network errors but not on authentication errors
+          return (
+            isNetworkError(error) &&
+            !error.message?.includes("Invalid login credentials")
+          );
+        },
+      },
+    );
+
+    const { data, error } = result;
+
+    if (error) {
+      console.error("Login error:", {
+        message: error.message,
+        code: error.name || error.code,
+        details: error.details || error.hint,
+      });
+
+      // Handle network errors specifically
+      if (isNetworkError(error)) {
+        throw new Error(
+          "Network connection failed. Please check your internet connection and try again.",
+        );
+      }
+
+      // Provide user-friendly error messages
+      if (error.message.includes("Invalid login credentials")) {
+        throw new Error(
+          "Invalid email or password. Please check your credentials and try again.",
+        );
+      } else if (error.message.includes("Email not confirmed")) {
+        throw new Error(
+          "Please verify your email address before logging in. Check your inbox for a verification email.",
+        );
+      } else if (error.message.includes("Too many requests")) {
+        throw new Error(
+          "Too many login attempts. Please wait a few minutes before trying again.",
+        );
+      } else {
+        throw new Error(`Login failed: ${error.message}`);
+      }
+    }
+
+    console.log("Login successful for:", email);
+    return data;
+  } catch (error) {
+    // Enhanced error handling for network issues
+    if (isNetworkError(error)) {
+      throw new Error(
+        "Network connection failed. Please check your internet connection and try again.",
+      );
+    }
+
+    // Re-throw other errors as-is
+    throw error;
+  }
 };
 
 export const registerUser = async (
