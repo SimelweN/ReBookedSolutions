@@ -57,16 +57,27 @@ const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({
       // Generate payment reference
       const reference = PaystackPaymentService.generateReference();
 
+      // Validate data before creating order
+      if (!user.email) {
+        throw new Error("User email is required for payment");
+      }
+      if (items.length === 0) {
+        throw new Error("No items in cart");
+      }
+      if (!items[0]?.sellerId) {
+        throw new Error("Invalid seller information");
+      }
+
       // Create order in database first
       const orderData = {
-        buyer_email: user.email || "",
-        seller_id: items[0]?.sellerId || "", // For multi-seller, handle differently
-        amount: amount, // in kobo (ZAR cents)
+        buyer_email: user.email,
+        seller_id: items[0].sellerId, // For multi-seller, handle differently
+        amount: amount, // already in kobo (ZAR cents)
         paystack_ref: reference,
         items: items.map((item) => ({
           book_id: item.bookId,
           title: item.title,
-          price: item.price * 100, // Convert to kobo
+          price: item.price, // price is already in rands, keep as is for the items array
           seller_id: item.sellerId,
         })),
         status: "pending" as const,
