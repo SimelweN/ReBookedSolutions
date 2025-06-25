@@ -320,6 +320,21 @@ const SimpleQADashboard: React.FC = () => {
             <CheckoutTroubleshooting />
           </TabsContent>
 
+          <TabsContent value="paystack">
+            <div className="space-y-6">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold mb-2">
+                  Paystack Payment Integration Test
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Test your Paystack configuration and payment flow
+                  independently
+                </p>
+              </div>
+              <PaystackTestComponent />
+            </div>
+          </TabsContent>
+
           <TabsContent value="maps">
             <GoogleMapsSetupHelper />
           </TabsContent>
