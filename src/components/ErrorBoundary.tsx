@@ -1,5 +1,4 @@
-import * as React from "react";
-import { Component, ErrorInfo, ReactNode } from "react";
+import React, { Component, ErrorInfo, ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
