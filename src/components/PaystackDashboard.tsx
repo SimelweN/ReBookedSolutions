@@ -677,6 +677,18 @@ const PaystackDashboard: React.FC = () => {
                     <span>User authentication working</span>
                   </div>
                   <div className="flex items-center gap-2">
+                    <StatusIcon
+                      status={
+                        databaseTest.status === "success"
+                          ? "success"
+                          : databaseTest.status === "error"
+                            ? "error"
+                            : "warning"
+                      }
+                    />
+                    <span>Database orders table accessible</span>
+                  </div>
+                  <div className="flex items-center gap-2">
                     <StatusIcon status="warning" />
                     <span>Webhook endpoint configured</span>
                   </div>
@@ -684,6 +696,49 @@ const PaystackDashboard: React.FC = () => {
                     <StatusIcon status="warning" />
                     <span>Subaccounts and transfers tested</span>
                   </div>
+                </div>
+
+                <div className="mt-4 space-y-2">
+                  <Button
+                    onClick={testDatabaseConnection}
+                    disabled={databaseTest.status === "testing"}
+                    size="sm"
+                    variant="outline"
+                    className="w-full"
+                  >
+                    {databaseTest.status === "testing" ? (
+                      <>
+                        <Loader2 className="w-3 h-3 mr-2 animate-spin" />
+                        Testing Database...
+                      </>
+                    ) : (
+                      <>
+                        <Database className="w-3 h-3 mr-2" />
+                        Test Database Connection
+                      </>
+                    )}
+                  </Button>
+
+                  {databaseTest.status !== "idle" && (
+                    <Alert
+                      className={
+                        databaseTest.status === "success"
+                          ? "border-green-200 bg-green-50"
+                          : "border-red-200 bg-red-50"
+                      }
+                    >
+                      <StatusIcon status={databaseTest.status} />
+                      <AlertDescription
+                        className={
+                          databaseTest.status === "success"
+                            ? "text-green-800"
+                            : "text-red-800"
+                        }
+                      >
+                        {databaseTest.message}
+                      </AlertDescription>
+                    </Alert>
+                  )}
                 </div>
               </div>
             </CardContent>
