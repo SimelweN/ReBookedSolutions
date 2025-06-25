@@ -112,7 +112,7 @@ export class PaystackPaymentService {
             });
         },
         onClose: () => {
-          reject(new Error("Payment window was closed"));
+          reject(new Error("Payment cancelled by user"));
         },
       });
 
