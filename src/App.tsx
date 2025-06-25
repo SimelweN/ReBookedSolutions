@@ -66,7 +66,7 @@ if (import.meta.env.DEV) {
   console.log("  - debugBankingDetails() - Debug banking details errors");
   console.log("  - checkDatabaseStatus() - Check database connectivity");
   console.log("  - logDatabaseStatus() - Log current database status");
-  console.log("  🧪 Fixed subject matching tests will run automatically");
+  console.log("  �� Fixed subject matching tests will run automatically");
 }
 
 // Import critical pages directly for instant loading (prevents Suspense errors)
@@ -419,6 +419,14 @@ function App() {
                             element={
                               <LazyWrapper>
                                 <APSDemo />
+                              </LazyWrapper>
+                            }
+                          />
+                          <Route
+                            path="/paystack-test"
+                            element={
+                              <LazyWrapper>
+                                <PaystackTest />
                               </LazyWrapper>
                             }
                           />
