@@ -68,25 +68,27 @@ if (import.meta.env.DEV) {
   console.log("  🧪 Fixed subject matching tests will run automatically");
 }
 
-// Import critical pages directly for instant loading
+// Import critical pages directly for instant loading (prevents Suspense errors)
 import IndexPage from "./pages/Index";
 import UniversityInfoPage from "./pages/UniversityInfo";
 import LoginPage from "./pages/Login";
+import RegisterPage from "./pages/Register";
+import AdminPage from "./pages/Admin";
 const Index = () => <IndexPage />;
 const UniversityInfo = () => <UniversityInfoPage />;
 const Login = () => <LoginPage />;
+const Register = () => <RegisterPage />;
+const Admin = () => <AdminPage />;
 
-// Simple lazy loading for other pages
+// Simple lazy loading for less critical pages
 const BookListing = React.lazy(() => import("./pages/BookListing"));
 const BookDetails = React.lazy(() => import("./pages/BookDetails"));
-const Register = React.lazy(() => import("./pages/Register"));
 const Profile = React.lazy(() => import("./pages/Profile"));
 const CreateListing = React.lazy(() => import("./pages/CreateListing"));
 const GoogleMapsDemo = React.lazy(() => import("./pages/GoogleMapsDemo"));
 const MapsTest = React.lazy(() => import("./pages/MapsTest"));
 const BasicMapsExample = React.lazy(() => import("./pages/BasicMapsExample"));
 const WorkingMapsDemo = React.lazy(() => import("./pages/WorkingMapsDemo"));
-const Admin = React.lazy(() => import("./pages/Admin"));
 const AdminReports = React.lazy(() => import("./pages/AdminReports"));
 const ModernUniversityProfile = React.lazy(
   () => import("./pages/ModernUniversityProfile"),
