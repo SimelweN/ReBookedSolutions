@@ -9,7 +9,8 @@ export interface BankingDetails {
   account_type: "savings" | "current";
   paystack_subaccount_code?: string;
   paystack_subaccount_id?: string;
-  subaccount_status?: "pending" | "active" | "inactive";
+  subaccount_status?: "pending" | "active" | "inactive" | "pending_setup";
+  account_verified?: boolean;
   created_at?: string;
   updated_at?: string;
 }
