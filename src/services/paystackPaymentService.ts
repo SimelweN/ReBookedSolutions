@@ -506,10 +506,47 @@ export class PaystackPaymentService {
         .eq("paystack_ref", reference);
 
       if (error) {
-        throw new Error(`Failed to update order: ${error.message}`);
+        // Proper error message extraction
+        let errorMessage = "Unknown error";
+
+        if (error.message && typeof error.message === "string") {
+          errorMessage = error.message;
+        } else if (error.details && typeof error.details === "string") {
+          errorMessage = error.details;
+        } else if (typeof error === "string") {
+          errorMessage = error;
+        } else if (error && typeof error === "object") {
+          try {
+            errorMessage = JSON.stringify(error, null, 2);
+          } catch (e) {
+            errorMessage = error.toString();
+          }
+        }
+
+        console.error("❌ Failed to update order status:", {
+          reference,
+          status,
+          error: errorMessage,
+        });
+
+        throw new Error(`Failed to update order: ${errorMessage}`);
       }
+
+      console.log("✅ Order status updated successfully:", {
+        reference,
+        status,
+      });
     } catch (error) {
       console.error("Update order status error:", error);
+
+      // In development, don't fail completely for order updates
+      if (import.meta.env.DEV) {
+        console.warn(
+          "⚠️ Order status update failed in development mode, continuing...",
+        );
+        return; // Don't throw in dev mode
+      }
+
       throw error;
     }
   }
