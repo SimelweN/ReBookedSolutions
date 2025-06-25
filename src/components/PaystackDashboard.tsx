@@ -164,6 +164,32 @@ const PaystackDashboard: React.FC = () => {
     }
   };
 
+  const testDatabaseConnection = async () => {
+    setDatabaseTest({
+      status: "testing",
+      message: "Testing database connection...",
+    });
+
+    try {
+      // Run the debug function
+      await PaystackPaymentService.debugOrdersTable();
+
+      setDatabaseTest({
+        status: "success",
+        message: "Database connection successful! Check console for details.",
+      });
+      toast.success("Database test completed - check console for details");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Database test failed";
+      setDatabaseTest({
+        status: "error",
+        message: errorMessage,
+      });
+      toast.error(`Database test failed: ${errorMessage}`);
+    }
+  };
+
   const loadOrderHistory = async () => {
     setLoadingOrders(true);
     try {
