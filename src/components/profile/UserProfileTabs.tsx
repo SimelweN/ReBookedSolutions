@@ -575,7 +575,7 @@ const UserProfileTabs = ({
             </TabsContent>
 
             <TabsContent value="banking" className="space-y-4">
-              <EnhancedBankingDetailsSection />
+              <PasswordProtectedBankingSection />
             </TabsContent>
           </>
         )}
