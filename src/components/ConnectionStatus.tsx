@@ -43,7 +43,10 @@ const ConnectionStatus = () => {
       const health = await checkConnectionHealth();
       setConnectionHealth(health);
     } catch (error) {
-      console.error("Connection check failed:", error);
+      // Reduce console noise - only log in dev mode
+      if (import.meta.env.DEV) {
+        console.warn("Connection check failed:", error);
+      }
     } finally {
       setIsChecking(false);
     }
