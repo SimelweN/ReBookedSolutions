@@ -21,8 +21,18 @@ const EmergencyBypass: React.FC<{ children: React.ReactNode }> = ({
         '[style*="display: none"]',
       );
       hiddenContent.forEach((content) => {
-        if (!content.className.includes("animate-spin")) {
-          (content as HTMLElement).style.display = "";
+        const element = content as HTMLElement;
+        const className = element.className;
+        // Check if className exists and is a string before calling includes
+        if (
+          className &&
+          typeof className === "string" &&
+          !className.includes("animate-spin")
+        ) {
+          element.style.display = "";
+        } else if (!className) {
+          // If no className, it's safe to show (not a spinner)
+          element.style.display = "";
         }
       });
 

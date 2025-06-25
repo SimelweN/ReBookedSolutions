@@ -27,6 +27,7 @@ import CheckoutTroubleshooting from "@/components/CheckoutTroubleshooting";
 import SystemwideQAFixes from "@/components/SystemwideQAFixes";
 import GoogleMapsSetupHelper from "@/components/GoogleMapsSetupHelper";
 import EnvironmentChecker from "@/components/EnvironmentChecker";
+import PaystackTestComponent from "@/components/PaystackTestComponent";
 import DevelopmentToolsDashboard from "@/components/DevelopmentToolsDashboard";
 
 const SimpleQADashboard: React.FC = () => {
@@ -184,7 +185,7 @@ const SimpleQADashboard: React.FC = () => {
 
         {/* Enhanced QA Testing */}
         <Tabs defaultValue="devtools" className="w-full">
-          <TabsList className="grid w-full grid-cols-9">
+          <TabsList className="grid w-full grid-cols-10">
             <TabsTrigger value="devtools">Dev Tools</TabsTrigger>
             <TabsTrigger value="systemwide">Systemwide</TabsTrigger>
             <TabsTrigger value="environment">Environment</TabsTrigger>
@@ -192,6 +193,7 @@ const SimpleQADashboard: React.FC = () => {
             <TabsTrigger value="comprehensive">Tests</TabsTrigger>
             <TabsTrigger value="quickfixes">Fixes</TabsTrigger>
             <TabsTrigger value="checkout">Checkout</TabsTrigger>
+            <TabsTrigger value="paystack">Paystack</TabsTrigger>
             <TabsTrigger value="maps">Maps</TabsTrigger>
             <TabsTrigger value="checklist">Checklist</TabsTrigger>
           </TabsList>
@@ -316,6 +318,21 @@ const SimpleQADashboard: React.FC = () => {
 
           <TabsContent value="checkout">
             <CheckoutTroubleshooting />
+          </TabsContent>
+
+          <TabsContent value="paystack">
+            <div className="space-y-6">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold mb-2">
+                  Paystack Payment Integration Test
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Test your Paystack configuration and payment flow
+                  independently
+                </p>
+              </div>
+              <PaystackTestComponent />
+            </div>
           </TabsContent>
 
           <TabsContent value="maps">

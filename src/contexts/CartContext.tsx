@@ -4,6 +4,13 @@ import { CartItem, CartContextType } from "@/types/cart";
 import { Book } from "@/types/book";
 import { toast } from "sonner";
 
+// Ensure React is available before using createContext
+if (typeof React === "undefined" || !React.createContext) {
+  throw new Error(
+    "React is not properly loaded. Please check your imports and bundler configuration.",
+  );
+}
+
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const useCart = () => {
