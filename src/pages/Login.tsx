@@ -105,12 +105,18 @@ const Login = () => {
       console.error("Login error in component:", errorMessage);
 
       // Handle network errors specifically
-      if (errorMessage.includes("Network connection failed") ||
-          errorMessage.includes("Failed to fetch") ||
-          errorMessage.includes("timeout")) {
-        setLoginError("Connection failed. Please check your internet connection and try again.");
+      if (
+        errorMessage.includes("Network connection failed") ||
+        errorMessage.includes("Failed to fetch") ||
+        errorMessage.includes("timeout")
+      ) {
+        setLoginError(
+          "Connection failed. Please check your internet connection and try again.",
+        );
         setErrorType(null);
-        toast.error("Network error. Please check your connection and try again.");
+        toast.error(
+          "Network error. Please check your connection and try again.",
+        );
       } else {
         setLoginError(errorMessage);
 
@@ -131,7 +137,8 @@ const Login = () => {
         ) {
           setErrorType("reset_password");
         } else {
-        setErrorType("general");
+          setErrorType("general");
+        }
       }
     } finally {
       setIsLoading(false);
