@@ -341,6 +341,29 @@ export class PaystackPaymentService {
     } catch (error) {
       console.error("Create order error:", error);
 
+      // In development, create a mock order for testing
+      if (import.meta.env.DEV) {
+        console.warn(
+          "🛠️ Database order creation failed in development, using mock order",
+        );
+
+        const mockOrder: OrderData = {
+          id: `mock_${Date.now()}`,
+          buyer_email: orderData.buyer_email || "test@example.com",
+          seller_id: orderData.seller_id || "mock_seller",
+          amount: orderData.amount || 10000,
+          status: "pending",
+          paystack_ref: orderData.paystack_ref || `mock_${Date.now()}`,
+          items: orderData.items || [],
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+
+        console.log("✅ Mock order created for development:", mockOrder);
+        toast.warning("Using mock order for development testing");
+        return mockOrder;
+      }
+
       // Enhance error message for better debugging
       if (error instanceof Error) {
         throw new Error(`Order creation failed: ${error.message}`);
