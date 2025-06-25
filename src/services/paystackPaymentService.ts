@@ -276,10 +276,44 @@ export class PaystackPaymentService {
   }
 
   /**
+   * Debug function to check orders table structure
+   */
+  static async debugOrdersTable(): Promise<void> {
+    try {
+      console.log("🔍 Checking orders table structure...");
+
+      // Test basic table access
+      const { data: testData, error: testError } = await supabase
+        .from("orders")
+        .select("id")
+        .limit(1);
+
+      if (testError) {
+        console.error("❌ Cannot access orders table:", testError);
+        return;
+      }
+
+      console.log("✅ Orders table accessible");
+
+      // Check current user
+      const { data: user } = await supabase.auth.getUser();
+      console.log("👤 Current user:", user?.user?.id, user?.user?.email);
+    } catch (error) {
+      console.error("❌ Debug orders table failed:", error);
+    }
+  }
+
+  /**
    * Create order in database
    */
   static async createOrder(orderData: Partial<OrderData>): Promise<OrderData> {
     try {
+      // Debug in development
+      if (import.meta.env.DEV) {
+        console.log("🛠️ Development mode: Running orders table debug check");
+        await this.debugOrdersTable();
+      }
+
       // Validate required fields
       if (!orderData.buyer_email) {
         throw new Error("Buyer email is required");
@@ -300,6 +334,14 @@ export class PaystackPaymentService {
       ) {
         throw new Error("Order items are required");
       }
+
+      console.log("✅ Order data validation passed:", {
+        buyer_email: orderData.buyer_email,
+        seller_id: orderData.seller_id,
+        amount: orderData.amount,
+        paystack_ref: orderData.paystack_ref,
+        items_count: orderData.items.length,
+      });
 
       const { data, error } = await supabase
         .from("orders")
