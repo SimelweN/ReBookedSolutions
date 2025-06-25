@@ -136,10 +136,26 @@ export class PaystackService {
       };
     } catch (error) {
       console.error("Error creating Paystack subaccount:", error);
+
       const errorMessage =
         error instanceof Error
           ? error.message
           : "Failed to create payment account";
+
+      // Handle specific error codes without showing error toast
+      if (
+        errorMessage === "EDGE_FUNCTION_UNAVAILABLE" ||
+        errorMessage === "PAYSTACK_CONFIG_INCOMPLETE" ||
+        errorMessage === "PAYSTACK_SETUP_FAILED"
+      ) {
+        console.log(
+          "🔄 Paystack setup will be retried later when service is available",
+        );
+        // Don't show error toast for expected failures
+        throw error;
+      }
+
+      // For unexpected errors, show error toast
       toast.error(`Failed to setup payment account: ${errorMessage}`);
       throw new Error(errorMessage);
     }
