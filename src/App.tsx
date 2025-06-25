@@ -184,18 +184,26 @@ const ImportFailureFallback: React.FC<{ error?: Error }> = ({ error }) => (
   </div>
 );
 
-// Enhanced route wrapper for lazy components with proper error handling
+// Enhanced route wrapper for lazy components with proper error handling and transition management
 const LazyWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [error, setError] = React.useState<Error | null>(null);
+  const [isTransitioning, setIsTransitioning] = React.useState(false);
 
   React.useEffect(() => {
     // Reset error when children change
     setError(null);
+    setIsTransitioning(true);
+
+    // Use startTransition to prevent suspense issues during route changes
+    startTransition(() => {
+      setIsTransitioning(false);
+    });
   }, [children]);
 
   const errorBoundary = React.useCallback((error: Error) => {
     setError(error);
     console.error("LazyWrapper caught error:", error);
+    setIsTransitioning(false);
   }, []);
 
   if (error) {
@@ -209,8 +217,17 @@ const LazyWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             Failed to load this page. Please try refreshing.
           </p>
           <button
+            onClick={() => {
+              setError(null);
+              setIsTransitioning(false);
+            }}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 mr-2"
+          >
+            Try Again
+          </button>
+          <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
           >
             Refresh Page
           </button>
@@ -221,7 +238,9 @@ const LazyWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <ErrorBoundary level="route" onError={errorBoundary}>
-      <Suspense fallback={<MinimalLoader />}>{children}</Suspense>
+      <Suspense fallback={<MinimalLoader />}>
+        {isTransitioning ? <MinimalLoader /> : children}
+      </Suspense>
     </ErrorBoundary>
   );
 };
