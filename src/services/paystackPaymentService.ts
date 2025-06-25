@@ -112,7 +112,12 @@ export class PaystackPaymentService {
             });
         },
         onClose: () => {
-          reject(new Error("Payment cancelled by user"));
+          console.log("💡 Payment window was closed by user");
+          setPaymentStatus("idle"); // Reset status when user closes popup
+          toast.info("Payment was cancelled", {
+            description: "You can try again when ready.",
+          });
+          resolve({ status: "cancelled", reference: params.reference });
         },
       });
 
