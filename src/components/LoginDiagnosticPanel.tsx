@@ -20,6 +20,7 @@ import {
   testLogin,
   LoginDiagnosticResult,
 } from "@/utils/loginDiagnostic";
+import QuickEnvironmentCheck from "./QuickEnvironmentCheck";
 import { toast } from "sonner";
 
 const LoginDiagnosticPanel: React.FC = () => {
@@ -102,6 +103,9 @@ const LoginDiagnosticPanel: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Quick Environment Check */}
+      <QuickEnvironmentCheck />
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
