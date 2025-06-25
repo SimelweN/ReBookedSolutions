@@ -25,6 +25,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import PaystackPaymentService from "@/services/paystackPaymentService";
 import { toast } from "sonner";
+import PaystackConfigChecker from "./PaystackConfigChecker";
 
 const PaystackDashboard: React.FC = () => {
   const { user } = useAuth();
