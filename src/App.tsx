@@ -71,13 +71,14 @@ if (import.meta.env.DEV) {
 // Import critical pages directly for instant loading
 import IndexPage from "./pages/Index";
 import UniversityInfoPage from "./pages/UniversityInfo";
+import LoginPage from "./pages/Login";
 const Index = () => <IndexPage />;
 const UniversityInfo = () => <UniversityInfoPage />;
+const Login = () => <LoginPage />;
 
 // Simple lazy loading for other pages
 const BookListing = React.lazy(() => import("./pages/BookListing"));
 const BookDetails = React.lazy(() => import("./pages/BookDetails"));
-const Login = React.lazy(() => import("./pages/Login"));
 const Register = React.lazy(() => import("./pages/Register"));
 const Profile = React.lazy(() => import("./pages/Profile"));
 const CreateListing = React.lazy(() => import("./pages/CreateListing"));
