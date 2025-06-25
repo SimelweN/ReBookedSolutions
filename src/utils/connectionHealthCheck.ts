@@ -273,22 +273,20 @@ export const retryWithConnection = async <T>(
         return await operation();
       }
 
-      // For subsequent attempts, do a quick connection check with short timeout
+      // For subsequent attempts, do a quick connection check with longer timeout
       const isConnected = await Promise.race([
         quickConnectionTest(),
-        new Promise<boolean>((resolve) =>
-          setTimeout(() => resolve(false), 1000),
+        new Promise<boolean>(
+          (resolve) => setTimeout(() => resolve(false), 3000), // Increased timeout
         ),
       ]);
 
       if (!isConnected) {
         console.warn(
-          `[ConnectionHealthCheck] Connection unavailable on attempt ${attempt}`,
+          `[ConnectionHealthCheck] Connection test failed on attempt ${attempt}, but continuing anyway`,
         );
-        // Don't throw immediately, try the operation anyway as a last resort
-        if (attempt === maxRetries) {
-          throw new Error("No connection available");
-        }
+        // Don't throw "No connection available" - just try the operation
+        // Only throw if the actual operation fails
       }
 
       return await operation();
