@@ -52,12 +52,13 @@ const ConnectionStatus = () => {
     }
   };
 
-  // Don't show anything if everything is working fine
-  if (
-    isOnline &&
-    connectionHealth?.supabaseConnected &&
-    connectionHealth?.authStatus === "connected"
-  ) {
+  // Only show connection issues for real problems - be more lenient
+  if (isOnline && connectionHealth?.supabaseConnected) {
+    return null;
+  }
+
+  // Don't show anything if we haven't checked yet or if it's just auth issues
+  if (!connectionHealth || connectionHealth.authStatus === "disconnected") {
     return null;
   }
 
