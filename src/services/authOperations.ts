@@ -32,38 +32,80 @@ export const loginUser = async (email: string, password: string) => {
     throw new Error("Password must be at least 6 characters long");
   }
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: email.trim().toLowerCase(),
-    password,
-  });
+  try {
+    // Use retry logic for network failures
+    const result = await retryWithExponentialBackoff(
+      async () => {
+        return await withTimeout(
+          supabase.auth.signInWithPassword({
+            email: email.trim().toLowerCase(),
+            password,
+          }),
+          15000, // 15 second timeout for authentication
+          "Login request timed out",
+        );
+      },
+      {
+        maxRetries: 3,
+        baseDelay: 1000,
+        maxDelay: 5000,
+        retryCondition: (error) => {
+          // Retry on network errors but not on authentication errors
+          return (
+            isNetworkError(error) &&
+            !error.message?.includes("Invalid login credentials")
+          );
+        },
+      },
+    );
 
-  if (error) {
-    console.error("Login error:", {
-      message: error.message,
-      code: error.name || error.code,
-      details: error.details || error.hint,
-    });
+    const { data, error } = result;
 
-    // Provide user-friendly error messages
-    if (error.message.includes("Invalid login credentials")) {
-      throw new Error(
-        "Invalid email or password. Please check your credentials and try again.",
-      );
-    } else if (error.message.includes("Email not confirmed")) {
-      throw new Error(
-        "Please verify your email address before logging in. Check your inbox for a verification email.",
-      );
-    } else if (error.message.includes("Too many requests")) {
-      throw new Error(
-        "Too many login attempts. Please wait a few minutes before trying again.",
-      );
-    } else {
-      throw new Error(`Login failed: ${error.message}`);
+    if (error) {
+      console.error("Login error:", {
+        message: error.message,
+        code: error.name || error.code,
+        details: error.details || error.hint,
+      });
+
+      // Handle network errors specifically
+      if (isNetworkError(error)) {
+        throw new Error(
+          "Network connection failed. Please check your internet connection and try again.",
+        );
+      }
+
+      // Provide user-friendly error messages
+      if (error.message.includes("Invalid login credentials")) {
+        throw new Error(
+          "Invalid email or password. Please check your credentials and try again.",
+        );
+      } else if (error.message.includes("Email not confirmed")) {
+        throw new Error(
+          "Please verify your email address before logging in. Check your inbox for a verification email.",
+        );
+      } else if (error.message.includes("Too many requests")) {
+        throw new Error(
+          "Too many login attempts. Please wait a few minutes before trying again.",
+        );
+      } else {
+        throw new Error(`Login failed: ${error.message}`);
+      }
     }
-  }
 
-  console.log("Login successful for:", email);
-  return data;
+    console.log("Login successful for:", email);
+    return data;
+  } catch (error) {
+    // Enhanced error handling for network issues
+    if (isNetworkError(error)) {
+      throw new Error(
+        "Network connection failed. Please check your internet connection and try again.",
+      );
+    }
+
+    // Re-throw other errors as-is
+    throw error;
+  }
 };
 
 export const registerUser = async (
