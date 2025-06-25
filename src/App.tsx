@@ -623,6 +623,16 @@ function App() {
                           }
                         />
                         <Route
+                          path="/admin"
+                          element={
+                            <AdminProtectedRoute>
+                              <LazyWrapper>
+                                <Admin />
+                              </LazyWrapper>
+                            </AdminProtectedRoute>
+                          }
+                        />
+                        <Route
                           path="/admin/reports"
                           element={
                             <AdminProtectedRoute>
