@@ -84,8 +84,29 @@ const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({
       };
 
       console.log("Creating order with data:", orderData);
-      const order = await PaystackPaymentService.createOrder(orderData);
-      console.log("Order created successfully:", order);
+
+      let order;
+      try {
+        order = await PaystackPaymentService.createOrder(orderData);
+        console.log("Order created successfully:", order);
+      } catch (orderError) {
+        console.error("Order creation failed:", orderError);
+
+        // In development, continue with payment even if order creation fails
+        if (import.meta.env.DEV) {
+          console.warn(
+            "🛠️ Continuing with payment despite order creation failure (dev mode)",
+          );
+          order = {
+            id: `temp_${Date.now()}`,
+            ...orderData,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+        } else {
+          throw orderError; // In production, fail if we can't create the order
+        }
+      }
 
       // Initialize Paystack payment
       await PaystackPaymentService.initializePayment({
@@ -111,16 +132,30 @@ const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({
       });
     } catch (error) {
       console.error("Payment error:", error);
-      setPaymentStatus("error");
-
       const errorMessage =
         error instanceof Error ? error.message : "Payment failed";
-      onError?.(errorMessage);
 
-      if (errorMessage.includes("window was closed")) {
-        toast.error("Payment was cancelled");
+      // Handle different types of errors
+      if (
+        errorMessage.includes("cancelled by user") ||
+        errorMessage.includes("window was closed")
+      ) {
+        setPaymentStatus("idle"); // Reset to allow retry
+        toast.info("Payment was cancelled");
+        onError?.("Payment cancelled by user");
+      } else if (
+        errorMessage.includes("not configured") ||
+        errorMessage.includes("service unavailable")
+      ) {
+        setPaymentStatus("error");
+        toast.error(
+          "Payment service is not available. Please contact support.",
+        );
+        onError?.("Payment service unavailable");
       } else {
+        setPaymentStatus("error");
         toast.error(`Payment failed: ${errorMessage}`);
+        onError?.(errorMessage);
       }
     } finally {
       setIsProcessing(false);

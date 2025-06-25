@@ -45,7 +45,10 @@ const HowItWorksDialog = ({ isOpen, onClose, type }: HowItWorksDialogProps) => {
       title: "Ship the Book",
       description: (
         <div className="space-y-2">
-          <p>Use our built-in courier system to get a shipping label.</p>
+          <p>
+            Use our built-in courier system to get a shipping label.{" "}
+            <strong>The buyer pays all shipping costs - not you!</strong>
+          </p>
           <div className="text-sm text-gray-600 space-y-1">
             <p>
               <strong>No printer?</strong>
@@ -63,9 +66,9 @@ const HowItWorksDialog = ({ isOpen, onClose, type }: HowItWorksDialogProps) => {
     },
     {
       icon: <DollarSign className="h-6 w-6 text-green-600" />,
-      title: "Get Paid",
+      title: "Get Paid After Delivery",
       description:
-        "Once the buyer confirms delivery, your money is sent (minus our 10% commission).",
+        "You receive payment ONLY after the book is successfully delivered to the buyer. This protects both parties and ensures fair transactions.",
     },
     {
       icon: <Share2 className="h-6 w-6 text-purple-600" />,
@@ -89,7 +92,7 @@ const HowItWorksDialog = ({ isOpen, onClose, type }: HowItWorksDialogProps) => {
       icon: <ShoppingCart className="h-6 w-6 text-orange-600" />,
       title: "Place Your Order",
       description:
-        "Complete your purchase through our secure payment system. You'll receive updates as the book ships.",
+        "Pay securely online (including shipping costs). Your payment is held safely until delivery is confirmed. The seller only gets paid after you receive your book.",
     },
     {
       icon: <Truck className="h-6 w-6 text-red-600" />,

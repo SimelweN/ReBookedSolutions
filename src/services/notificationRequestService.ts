@@ -39,13 +39,17 @@ export class NotificationRequestService {
       });
 
       if (error) {
-        // Handle missing table gracefully
-        if (error.message && error.message.includes("does not exist")) {
-          console.log("💡 Notification system not yet set up - table missing");
+        // Handle missing table gracefully and silently
+        if (
+          error.code === "42P01" ||
+          (error.message && error.message.includes("does not exist"))
+        ) {
+          console.debug(
+            "💡 Notification system not yet implemented - table missing",
+          );
           return {
             success: false,
-            error:
-              "Notification system is being set up. Please check back later.",
+            error: "Notification feature coming soon",
           };
         }
 
@@ -91,13 +95,17 @@ export class NotificationRequestService {
       });
 
       if (error) {
-        // Handle missing table gracefully
-        if (error.message && error.message.includes("does not exist")) {
-          console.log("💡 Notification system not yet set up - table missing");
+        // Handle missing table gracefully and silently
+        if (
+          error.code === "42P01" ||
+          (error.message && error.message.includes("does not exist"))
+        ) {
+          console.debug(
+            "💡 Notification system not yet implemented - table missing",
+          );
           return {
             success: false,
-            error:
-              "Notification system is being set up. Please check back later.",
+            error: "Notification feature coming soon",
           };
         }
 
@@ -144,18 +152,18 @@ export class NotificationRequestService {
       const { data, error } = await query.limit(1);
 
       if (error) {
-        logError("Error checking existing notification request:", error);
-
-        // Handle missing table gracefully
-        if (error.message && error.message.includes("does not exist")) {
-          console.log("💡 Notification system not yet set up - table missing");
-          return {
-            exists: false,
-            error:
-              "Notification system is being set up. Please check back later.",
-          };
+        // Handle missing table gracefully and silently
+        if (
+          error.code === "42P01" ||
+          (error.message && error.message.includes("does not exist"))
+        ) {
+          console.debug(
+            "💡 Notification system not yet implemented - table missing",
+          );
+          return { exists: false }; // Return no error for missing table
         }
 
+        logError("Error checking existing notification request:", error);
         return { exists: false, error: error.message };
       }
 
@@ -186,18 +194,18 @@ export class NotificationRequestService {
         .order("created_at", { ascending: false });
 
       if (error) {
-        logError("Error fetching user notification requests:", error);
-
-        // Handle missing table gracefully
-        if (error.message && error.message.includes("does not exist")) {
-          console.log("💡 Notification system not yet set up - table missing");
-          return {
-            requests: [],
-            error:
-              "Notification system is being set up. Please check back later.",
-          };
+        // Handle missing table gracefully and silently
+        if (
+          error.code === "42P01" ||
+          (error.message && error.message.includes("does not exist"))
+        ) {
+          console.debug(
+            "💡 Notification system not yet implemented - table missing",
+          );
+          return { requests: [] }; // Return empty array, no error for missing table
         }
 
+        logError("Error fetching user notification requests:", error);
         return { requests: [], error: error.message };
       }
 
@@ -227,18 +235,21 @@ export class NotificationRequestService {
         .eq("id", requestId);
 
       if (error) {
-        logError("Error cancelling notification request:", error);
-
-        // Handle missing table gracefully
-        if (error.message && error.message.includes("does not exist")) {
-          console.log("💡 Notification system not yet set up - table missing");
+        // Handle missing table gracefully and silently
+        if (
+          error.code === "42P01" ||
+          (error.message && error.message.includes("does not exist"))
+        ) {
+          console.debug(
+            "💡 Notification system not yet implemented - table missing",
+          );
           return {
             success: false,
-            error:
-              "Notification system is being set up. Please check back later.",
+            error: "Notification feature coming soon",
           };
         }
 
+        logError("Error cancelling notification request:", error);
         return { success: false, error: error.message };
       }
 

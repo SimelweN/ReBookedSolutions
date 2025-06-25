@@ -398,6 +398,34 @@ const EnhancedBecomeSellerGuide: React.FC<EnhancedBecomeSellerGuideProps> = ({
             </p>
           </div>
 
+          {/* Important Payment & Shipping Terms */}
+          <div className="bg-blue-50 p-6 rounded-lg border-2 border-blue-200">
+            <h4 className="font-bold text-blue-800 mb-3 text-center">
+              🔑 Key Payment & Shipping Terms
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div className="bg-white p-3 rounded border border-blue-200">
+                <h5 className="font-semibold text-blue-800 mb-2">
+                  💰 When You Get Paid
+                </h5>
+                <p className="text-blue-700">
+                  <strong>AFTER DELIVERY ONLY</strong> - You receive payment
+                  only when the book is successfully delivered to the buyer.
+                  Never before.
+                </p>
+              </div>
+              <div className="bg-white p-3 rounded border border-blue-200">
+                <h5 className="font-semibold text-blue-800 mb-2">
+                  📦 Shipping Costs
+                </h5>
+                <p className="text-blue-700">
+                  <strong>BUYER PAYS ALL SHIPPING</strong> - The buyer covers
+                  all courier and delivery costs. You pay nothing for shipping.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
             <h4 className="font-medium text-blue-800 mb-4 text-center">
               Payment Breakdown Example
@@ -412,7 +440,9 @@ const EnhancedBecomeSellerGuide: React.FC<EnhancedBecomeSellerGuideProps> = ({
                 <span className="font-medium text-red-600">-R20.00</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-blue-700">Courier pickup (we pay):</span>
+                <span className="text-blue-700">
+                  Shipping cost (buyer pays):
+                </span>
                 <span className="font-medium text-green-600">R0.00</span>
               </div>
               <Separator />
@@ -431,8 +461,15 @@ const EnhancedBecomeSellerGuide: React.FC<EnhancedBecomeSellerGuideProps> = ({
                   Payment Timeline
                 </h4>
                 <ul className="text-sm space-y-2 text-gray-600">
-                  <li>• Payment released after courier collects your book</li>
-                  <li>• Funds arrive within 1-3 business days</li>
+                  <li>
+                    •{" "}
+                    <strong>
+                      Payment released ONLY after successful delivery to buyer
+                    </strong>
+                  </li>
+                  <li>
+                    • Funds arrive within 1-3 business days after delivery
+                  </li>
                   <li>• Direct deposit to your verified bank account</li>
                   <li>• Email confirmation when payment is sent</li>
                 </ul>
@@ -446,8 +483,13 @@ const EnhancedBecomeSellerGuide: React.FC<EnhancedBecomeSellerGuideProps> = ({
                   Payment Protection
                 </h4>
                 <ul className="text-sm space-y-2 text-gray-600">
-                  <li>• Money is held securely until delivery</li>
-                  <li>• No payment until book is confirmed collected</li>
+                  <li>• Money is held securely until successful delivery</li>
+                  <li>
+                    •{" "}
+                    <strong>
+                      NO payment until book is confirmed DELIVERED to buyer
+                    </strong>
+                  </li>
                   <li>• Dispute resolution if issues arise</li>
                   <li>• Your banking details are encrypted</li>
                 </ul>

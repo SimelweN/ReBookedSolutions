@@ -1,5 +1,4 @@
-import * as React from "react";
-import {
+import React, {
   createContext,
   useContext,
   useEffect,
@@ -9,13 +8,6 @@ import {
   useRef,
   startTransition,
 } from "react";
-
-// Ensure React is available before using createContext
-if (typeof React === "undefined" || !React.createContext) {
-  throw new Error(
-    "React is not properly loaded. Please check your imports and bundler configuration.",
-  );
-}
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import {

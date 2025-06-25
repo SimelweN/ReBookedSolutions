@@ -1,5 +1,4 @@
-import * as React from "react";
-import { Suspense, startTransition } from "react";
+import React, { Suspense, startTransition } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
@@ -67,7 +66,7 @@ if (import.meta.env.DEV) {
   console.log("  - debugBankingDetails() - Debug banking details errors");
   console.log("  - checkDatabaseStatus() - Check database connectivity");
   console.log("  - logDatabaseStatus() - Log current database status");
-  console.log("  🧪 Fixed subject matching tests will run automatically");
+  console.log("  �� Fixed subject matching tests will run automatically");
 }
 
 // Import critical pages directly for instant loading (prevents Suspense errors)
@@ -127,6 +126,7 @@ const SystemStatus = React.lazy(() => import("./pages/SystemStatus"));
 const CheckoutSuccess = React.lazy(() => import("./pages/CheckoutSuccess"));
 const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
+const PaystackTest = React.lazy(() => import("./pages/PaystackTest"));
 
 // Create query client with optimized settings
 const queryClient = new QueryClient({
@@ -419,6 +419,14 @@ function App() {
                             element={
                               <LazyWrapper>
                                 <APSDemo />
+                              </LazyWrapper>
+                            }
+                          />
+                          <Route
+                            path="/paystack-test"
+                            element={
+                              <LazyWrapper>
+                                <PaystackTest />
                               </LazyWrapper>
                             }
                           />

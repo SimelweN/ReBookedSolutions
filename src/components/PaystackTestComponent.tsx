@@ -46,19 +46,29 @@ const PaystackTestComponent: React.FC = () => {
 
   const initializePaystack = () => {
     try {
+      // Ensure PaystackPop is available
+      if (!(window as any).PaystackPop) {
+        setTestStatus("error");
+        setTestMessage(
+          "Paystack script not loaded. Please wait and try again.",
+        );
+        return;
+      }
+
       const config = {
         key: paystackKey,
         email: "test@example.com",
         amount: 10000, // 100 ZAR in kobo
         currency: "ZAR",
         reference: `test_${new Date().getTime()}`,
-        callback: (response: any) => {
+        callback: function (response: any) {
+          console.log("Payment callback:", response);
           setTestStatus("success");
           setTestMessage(
             `Test payment successful! Reference: ${response.reference}`,
           );
         },
-        onClose: () => {
+        onClose: function () {
           if (testStatus === "testing") {
             setTestStatus("error");
             setTestMessage("Payment popup was closed without completion");
@@ -66,9 +76,11 @@ const PaystackTestComponent: React.FC = () => {
         },
       };
 
+      console.log("Initializing Paystack with config:", config);
       const handler = (window as any).PaystackPop.setup(config);
       handler.openIframe();
     } catch (error) {
+      console.error("Paystack initialization error:", error);
       setTestStatus("error");
       setTestMessage(
         `Paystack initialization error: ${error instanceof Error ? error.message : String(error)}`,

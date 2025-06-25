@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App.tsx";
@@ -87,12 +87,7 @@ const registerServiceWorker = async () => {
 
 // Performance optimizations
 const optimizePerformance = () => {
-  // Preload critical resources
-  const preloadLink = document.createElement("link");
-  preloadLink.rel = "preload";
-  preloadLink.as = "style";
-  preloadLink.href = "/src/index.css";
-  document.head.appendChild(preloadLink);
+  // Note: CSS is already loaded by Vite, no need to preload manually
 
   // Add performance observer for Core Web Vitals
   if ("PerformanceObserver" in window) {
