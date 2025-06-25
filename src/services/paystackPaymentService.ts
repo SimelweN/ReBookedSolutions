@@ -101,13 +101,15 @@ export class PaystackPaymentService {
           ...params.metadata,
           payment_method: "paystack_inline",
         },
-        callback: async (response: any) => {
-          try {
-            await this.verifyPayment(response.reference);
-            resolve();
-          } catch (error) {
-            reject(error);
-          }
+        callback: (response: any) => {
+          // Handle payment verification in the background
+          this.verifyPayment(response.reference)
+            .then(() => {
+              resolve(response);
+            })
+            .catch((error) => {
+              reject(error);
+            });
         },
         onClose: () => {
           reject(new Error("Payment window was closed"));
