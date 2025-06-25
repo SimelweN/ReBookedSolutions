@@ -2,6 +2,7 @@ import * as React from "react";
 import Layout from "@/components/Layout";
 import QAStatusChecker from "@/components/QAStatusChecker";
 import ComprehensiveQATests from "@/components/ComprehensiveQATests";
+import LoginDiagnosticPanel from "@/components/LoginDiagnosticPanel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -65,9 +66,17 @@ const QADashboard: React.FC = () => {
         </div>
 
         {/* Tabbed Interface */}
-        <Tabs defaultValue="comprehensive" className="space-y-6">
+        <Tabs defaultValue="login-fix" className="space-y-6">
           <div className="flex justify-center">
-            <TabsList className="grid w-full max-w-md grid-cols-3">
+            <TabsList className="grid w-full max-w-2xl grid-cols-4">
+              <TabsTrigger
+                value="login-fix"
+                className="flex items-center gap-2"
+              >
+                <User className="h-4 w-4" />
+                <span className="hidden sm:inline">Login Fix</span>
+                <span className="sm:hidden">Login</span>
+              </TabsTrigger>
               <TabsTrigger
                 value="comprehensive"
                 className="flex items-center gap-2"
@@ -88,6 +97,29 @@ const QADashboard: React.FC = () => {
               </TabsTrigger>
             </TabsList>
           </div>
+          {/* Login Fix Tab */}
+          <TabsContent value="login-fix" className="space-y-6">
+            <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-lg p-6 border border-red-200">
+              <div className="flex items-center gap-3 mb-4">
+                <User className="h-6 w-6 text-red-600" />
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    Login Issue Diagnostics
+                  </h2>
+                  <p className="text-gray-600">
+                    Debug and fix login problems with automatic checks
+                  </p>
+                </div>
+              </div>
+              <div className="text-sm text-red-700 bg-red-100 rounded p-3">
+                <strong>Quick Fix:</strong> Run the diagnostic tool below to
+                identify configuration issues, network problems, or
+                authentication errors preventing login.
+              </div>
+            </div>
+
+            <LoginDiagnosticPanel />
+          </TabsContent>
 
           {/* Production Tests Tab */}
           <TabsContent value="comprehensive" className="space-y-6">
