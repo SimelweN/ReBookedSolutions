@@ -152,18 +152,18 @@ export class NotificationRequestService {
       const { data, error } = await query.limit(1);
 
       if (error) {
-        logError("Error checking existing notification request:", error);
-
-        // Handle missing table gracefully
-        if (error.message && error.message.includes("does not exist")) {
-          console.log("💡 Notification system not yet set up - table missing");
-          return {
-            exists: false,
-            error:
-              "Notification system is being set up. Please check back later.",
-          };
+        // Handle missing table gracefully and silently
+        if (
+          error.code === "42P01" ||
+          (error.message && error.message.includes("does not exist"))
+        ) {
+          console.debug(
+            "💡 Notification system not yet implemented - table missing",
+          );
+          return { exists: false }; // Return no error for missing table
         }
 
+        logError("Error checking existing notification request:", error);
         return { exists: false, error: error.message };
       }
 
