@@ -453,8 +453,13 @@ const EnhancedBecomeSellerGuide: React.FC<EnhancedBecomeSellerGuideProps> = ({
                   Payment Protection
                 </h4>
                 <ul className="text-sm space-y-2 text-gray-600">
-                  <li>• Money is held securely until delivery</li>
-                  <li>• No payment until book is confirmed collected</li>
+                  <li>• Money is held securely until successful delivery</li>
+                  <li>
+                    •{" "}
+                    <strong>
+                      NO payment until book is confirmed DELIVERED to buyer
+                    </strong>
+                  </li>
                   <li>• Dispute resolution if issues arise</li>
                   <li>• Your banking details are encrypted</li>
                 </ul>
