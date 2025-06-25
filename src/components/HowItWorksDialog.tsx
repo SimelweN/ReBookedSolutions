@@ -89,7 +89,7 @@ const HowItWorksDialog = ({ isOpen, onClose, type }: HowItWorksDialogProps) => {
       icon: <ShoppingCart className="h-6 w-6 text-orange-600" />,
       title: "Place Your Order",
       description:
-        "Complete your purchase through our secure payment system. You'll receive updates as the book ships.",
+        "Pay securely online (including shipping costs). Your payment is held safely until delivery is confirmed. The seller only gets paid after you receive your book.",
     },
     {
       icon: <Truck className="h-6 w-6 text-red-600" />,
