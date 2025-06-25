@@ -1,13 +1,5 @@
-import * as React from "react";
-import { createContext, useContext, ReactNode } from "react";
+import React, { createContext, useContext, ReactNode } from "react";
 import { useJsApiLoader } from "@react-google-maps/api";
-
-// Ensure React is available before using createContext
-if (typeof React === "undefined" || !React.createContext) {
-  throw new Error(
-    "React is not properly loaded. Please check your imports and bundler configuration.",
-  );
-}
 
 // Define the libraries array with proper typing
 const libraries: "places"[] = ["places"];
