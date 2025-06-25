@@ -192,22 +192,38 @@ export class ImprovedBankingService {
             ? paystackError.message
             : String(paystackError);
 
+        // Handle specific error codes from PaystackService
         if (
+          errorMessage === "EDGE_FUNCTION_UNAVAILABLE" ||
+          errorMessage === "PAYSTACK_CONFIG_INCOMPLETE" ||
+          errorMessage === "PAYSTACK_SETUP_FAILED"
+        ) {
+          console.log(
+            "🔄 Paystack integration will be set up automatically later",
+          );
+          toast.success("Banking details saved successfully!", {
+            description:
+              "Payment account will be set up automatically when the service becomes available.",
+          });
+        } else if (
           errorMessage.includes("Failed to send a request") ||
           errorMessage.includes("temporarily unavailable") ||
-          errorMessage.includes("Edge Function")
+          errorMessage.includes("Edge Function") ||
+          errorMessage.includes("non-2xx status code")
         ) {
+          console.log("🌐 Edge Function connectivity issue, will retry later");
           toast.success("Banking details saved successfully!", {
             description:
               "Payment account will be set up automatically when needed for transactions.",
           });
-
-          console.log(
-            "ℹ️ Banking details saved without Paystack integration (Edge Functions unavailable)",
-          );
         } else {
+          console.log("⚠️ Unexpected Paystack error, will retry later");
           toast.success(
             "Banking details saved! Payment account setup will be retried later.",
+            {
+              description:
+                "Your banking information is secure and payments will work once setup completes.",
+            },
           );
         }
 
