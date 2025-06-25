@@ -221,8 +221,8 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
         );
         return books;
       },
-      2,
-      500,
+      1,
+      1000,
     ); // Reduced retries and delay for faster response
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
