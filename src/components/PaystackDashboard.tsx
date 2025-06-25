@@ -122,14 +122,35 @@ const PaystackDashboard: React.FC = () => {
       console.error("Payment error:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Payment failed";
-      setTestPayment((prev) => ({
-        ...prev,
-        status: "error",
-        message: errorMessage,
-      }));
 
-      // Don't show toast for user-cancelled payments
-      if (!errorMessage.includes("window was closed")) {
+      // Handle different types of errors
+      if (
+        errorMessage.includes("cancelled by user") ||
+        errorMessage.includes("window was closed")
+      ) {
+        setTestPayment((prev) => ({
+          ...prev,
+          status: "idle",
+          message: "",
+        }));
+        toast.info("Payment was cancelled");
+      } else if (
+        errorMessage.includes("not configured") ||
+        errorMessage.includes("service unavailable")
+      ) {
+        setTestPayment((prev) => ({
+          ...prev,
+          status: "error",
+          message:
+            "Payment service configuration issue. Please contact support.",
+        }));
+        toast.error("Payment service not properly configured");
+      } else {
+        setTestPayment((prev) => ({
+          ...prev,
+          status: "error",
+          message: errorMessage,
+        }));
         toast.error(`Payment failed: ${errorMessage}`);
       }
     } finally {
