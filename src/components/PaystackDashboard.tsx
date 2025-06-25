@@ -84,6 +84,11 @@ const PaystackDashboard: React.FC = () => {
       return;
     }
 
+    if (!paystackStatus.scriptLoaded) {
+      toast.error("Paystack script still loading. Please wait and try again.");
+      return;
+    }
+
     setTestPayment((prev) => ({
       ...prev,
       loading: true,
@@ -92,8 +97,9 @@ const PaystackDashboard: React.FC = () => {
 
     try {
       const reference = PaystackPaymentService.generateReference();
+      console.log("Initializing test payment with reference:", reference);
 
-      await PaystackPaymentService.initializePayment({
+      const result = await PaystackPaymentService.initializePayment({
         email: testPayment.email,
         amount: testPayment.amount,
         reference,
@@ -104,6 +110,7 @@ const PaystackDashboard: React.FC = () => {
         },
       });
 
+      console.log("Payment result:", result);
       setTestPayment((prev) => ({
         ...prev,
         status: "success",
@@ -112,6 +119,7 @@ const PaystackDashboard: React.FC = () => {
 
       toast.success("Test payment completed successfully!");
     } catch (error) {
+      console.error("Payment error:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Payment failed";
       setTestPayment((prev) => ({
@@ -119,7 +127,11 @@ const PaystackDashboard: React.FC = () => {
         status: "error",
         message: errorMessage,
       }));
-      toast.error(`Payment failed: ${errorMessage}`);
+
+      // Don't show toast for user-cancelled payments
+      if (!errorMessage.includes("window was closed")) {
+        toast.error(`Payment failed: ${errorMessage}`);
+      }
     } finally {
       setTestPayment((prev) => ({ ...prev, loading: false }));
     }
