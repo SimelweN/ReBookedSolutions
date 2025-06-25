@@ -308,8 +308,8 @@ export const getBookById = async (id: string): Promise<Book | null> => {
 
         return mapBookFromDatabase(bookData, sellerProfile || fallbackSeller);
       },
-      2,
-      500,
+      1,
+      1000,
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
