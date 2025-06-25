@@ -111,16 +111,30 @@ const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({
       });
     } catch (error) {
       console.error("Payment error:", error);
-      setPaymentStatus("error");
-
       const errorMessage =
         error instanceof Error ? error.message : "Payment failed";
-      onError?.(errorMessage);
 
-      if (errorMessage.includes("window was closed")) {
-        toast.error("Payment was cancelled");
+      // Handle different types of errors
+      if (
+        errorMessage.includes("cancelled by user") ||
+        errorMessage.includes("window was closed")
+      ) {
+        setPaymentStatus("idle"); // Reset to allow retry
+        toast.info("Payment was cancelled");
+        onError?.("Payment cancelled by user");
+      } else if (
+        errorMessage.includes("not configured") ||
+        errorMessage.includes("service unavailable")
+      ) {
+        setPaymentStatus("error");
+        toast.error(
+          "Payment service is not available. Please contact support.",
+        );
+        onError?.("Payment service unavailable");
       } else {
+        setPaymentStatus("error");
         toast.error(`Payment failed: ${errorMessage}`);
+        onError?.(errorMessage);
       }
     } finally {
       setIsProcessing(false);
