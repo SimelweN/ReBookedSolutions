@@ -52,6 +52,10 @@ const PaystackDashboard: React.FC = () => {
 
   const [orderHistory, setOrderHistory] = useState<any[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
+  const [databaseTest, setDatabaseTest] = useState<{
+    status: "idle" | "testing" | "success" | "error";
+    message: string;
+  }>({ status: "idle", message: "" });
 
   // Check Paystack configuration on mount
   useEffect(() => {
