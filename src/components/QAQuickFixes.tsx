@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import * as React from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -278,7 +279,7 @@ const QAQuickFixes: React.FC = () => {
 
             throw error;
           }
-          throw new Error("❌ Unknown error during database connection test");
+          throw new Error("��� Unknown error during database connection test");
         }
       },
     },
