@@ -464,3 +464,6 @@ export const searchBooks = async (
     };
   }
 };
+
+// Export alias for backward compatibility
+export const getUserBooks = getBooksByUser;
