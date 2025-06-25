@@ -15,6 +15,7 @@ import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
 import LoadingSpinner from "./components/LoadingSpinner";
 import PerformanceMetrics from "./components/PerformanceMetrics";
+import ConfigurationChecker from "./components/ConfigurationChecker";
 import { debugConnection } from "./utils/debugConnection";
 import { validateApiKey } from "./utils/validateApiKey";
 import { DatabaseSetup } from "./utils/databaseSetup";
