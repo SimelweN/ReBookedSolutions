@@ -315,10 +315,20 @@ export class PaystackPaymentService {
         .single();
 
       if (error) {
-        console.error("Database error details:", error);
-        throw new Error(
-          `Failed to create order: ${error.message || error.details || "Unknown database error"}`,
-        );
+        console.error("Database error details:", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+          fullError: error,
+        });
+
+        const errorMessage =
+          error.message ||
+          error.details ||
+          error.hint ||
+          "Unknown database error";
+        throw new Error(`Failed to create order: ${errorMessage}`);
       }
 
       if (!data) {
