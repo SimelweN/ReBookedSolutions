@@ -20,6 +20,7 @@ import {
   ExternalLink,
   Copy,
   RefreshCw,
+  Database,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
