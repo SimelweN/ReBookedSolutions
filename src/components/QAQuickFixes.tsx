@@ -131,17 +131,49 @@ const QAQuickFixes: React.FC = () => {
       severity: "critical",
       status: "pending",
       action: async () => {
-        // Test basic connection
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("id")
-          .limit(1);
+        try {
+          // Test basic connection with timeout
+          const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(
+              () => reject(new Error("Connection timeout after 10 seconds")),
+              10000,
+            ),
+          );
 
-        if (error) {
-          throw new Error(`Database connection failed: ${error.message}`);
+          const connectionPromise = supabase
+            .from("profiles")
+            .select("id")
+            .limit(1);
+
+          const { data, error } = await Promise.race([
+            connectionPromise,
+            timeoutPromise,
+          ]);
+
+          if (error) {
+            // Handle different types of errors
+            if (error.message?.includes("Failed to fetch")) {
+              throw new Error(
+                "Network error: Cannot reach Supabase server. Check internet connection.",
+              );
+            } else if (error.message?.includes("JWT")) {
+              throw new Error(
+                "Authentication error: Invalid API key or session expired.",
+              );
+            } else {
+              throw new Error(`Database error: ${error.message}`);
+            }
+          }
+
+          toast.success("Database connection verified!");
+        } catch (error) {
+          if (error instanceof Error && error.message.includes("timeout")) {
+            throw new Error(
+              "Database connection timed out. Server may be slow or unreachable.",
+            );
+          }
+          throw error;
         }
-
-        toast.success("Database connection verified!");
       },
     },
     {
@@ -199,20 +231,29 @@ const QAQuickFixes: React.FC = () => {
       status: "pending",
       action: async () => {
         if (!user?.id) {
-          throw new Error("Must be logged in to test seller validation");
+          toast.warning("Login required to test seller validation", {
+            description: "Please log in to test the seller validation system.",
+          });
+          return;
         }
 
-        const { SellerValidationService } = await import(
-          "@/services/sellerValidationService"
-        );
-        const validation =
-          await SellerValidationService.validateSellerRequirements(user.id);
+        try {
+          const { SellerValidationService } = await import(
+            "@/services/sellerValidationService"
+          );
+          const validation =
+            await SellerValidationService.validateSellerRequirements(user.id);
 
-        const statusMessage = validation.canSell
-          ? "User can sell books"
-          : `Missing: ${validation.missingRequirements.length} requirements`;
+          const statusMessage = validation.canSell
+            ? "User can sell books"
+            : `Missing: ${validation.missingRequirements.length} requirements`;
 
-        toast.success(`Seller validation working: ${statusMessage}`);
+          toast.success(`Seller validation working: ${statusMessage}`);
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : "Unknown error";
+          toast.error(`Seller validation failed: ${errorMessage}`);
+        }
       },
     },
     {
