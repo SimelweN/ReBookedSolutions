@@ -532,11 +532,13 @@ const PaystackDashboard: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="configuration" className="space-y-4">
+          <PaystackConfigChecker />
+
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Settings className="w-5 h-5" />
-                Paystack Configuration
+                Configuration Details
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
