@@ -235,18 +235,21 @@ export class NotificationRequestService {
         .eq("id", requestId);
 
       if (error) {
-        logError("Error cancelling notification request:", error);
-
-        // Handle missing table gracefully
-        if (error.message && error.message.includes("does not exist")) {
-          console.log("💡 Notification system not yet set up - table missing");
+        // Handle missing table gracefully and silently
+        if (
+          error.code === "42P01" ||
+          (error.message && error.message.includes("does not exist"))
+        ) {
+          console.debug(
+            "💡 Notification system not yet implemented - table missing",
+          );
           return {
             success: false,
-            error:
-              "Notification system is being set up. Please check back later.",
+            error: "Notification feature coming soon",
           };
         }
 
+        logError("Error cancelling notification request:", error);
         return { success: false, error: error.message };
       }
 
