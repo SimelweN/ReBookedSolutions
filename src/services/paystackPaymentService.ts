@@ -139,21 +139,41 @@ export class PaystackPaymentService {
       );
 
       if (error) {
-        console.error("Edge function error:", error);
+        // Extract error message properly
+        const errorMsg =
+          error.message || error.details || JSON.stringify(error, null, 2);
+        console.error("❌ Edge function error:", errorMsg);
+        console.error("❌ Full error details:", {
+          message: error.message,
+          details: error.details,
+          code: error.code,
+          status: error.status,
+        });
 
         // Check if it's a configuration issue
         if (
-          error.message?.includes("secret key") ||
-          error.message?.includes("not configured")
+          errorMsg.includes("secret key") ||
+          errorMsg.includes("not configured") ||
+          errorMsg.includes("MISSING_SECRET_KEY")
         ) {
-          toast.error(
-            "Payment system configuration error. Please contact support.",
+          console.warn(
+            "🔧 Payment service configuration issue, using fallback",
           );
-          throw new Error("Payment verification service not configured");
+          return await this.fallbackPaymentVerification(reference);
+        }
+
+        // Check if it's an Edge Function deployment issue
+        if (
+          errorMsg.includes("non-2xx status code") ||
+          errorMsg.includes("FunctionsHttpError") ||
+          errorMsg.includes("Failed to send a request")
+        ) {
+          console.warn("🌐 Edge Function deployment issue, using fallback");
+          return await this.fallbackPaymentVerification(reference);
         }
 
         // For other errors, try fallback verification
-        console.warn("Primary verification failed, attempting fallback...");
+        console.warn("⚠️ Primary verification failed, attempting fallback...");
         return await this.fallbackPaymentVerification(reference);
       }
 
