@@ -706,6 +706,9 @@ function App() {
               </AuthProvider>
             </GoogleMapsProvider>
 
+            {/* Configuration checker for development */}
+            {import.meta.env.DEV && <ConfigurationChecker />}
+
             {/* Performance monitoring */}
             <PerformanceMetrics />
 
