@@ -84,8 +84,29 @@ const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({
       };
 
       console.log("Creating order with data:", orderData);
-      const order = await PaystackPaymentService.createOrder(orderData);
-      console.log("Order created successfully:", order);
+
+      let order;
+      try {
+        order = await PaystackPaymentService.createOrder(orderData);
+        console.log("Order created successfully:", order);
+      } catch (orderError) {
+        console.error("Order creation failed:", orderError);
+
+        // In development, continue with payment even if order creation fails
+        if (import.meta.env.DEV) {
+          console.warn(
+            "🛠️ Continuing with payment despite order creation failure (dev mode)",
+          );
+          order = {
+            id: `temp_${Date.now()}`,
+            ...orderData,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+        } else {
+          throw orderError; // In production, fail if we can't create the order
+        }
+      }
 
       // Initialize Paystack payment
       await PaystackPaymentService.initializePayment({
