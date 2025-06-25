@@ -132,18 +132,95 @@ const QAQuickFixes: React.FC = () => {
       status: "pending",
       action: async () => {
         try {
-          // Test basic connection with timeout
-          const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(
-              () => reject(new Error("Connection timeout after 10 seconds")),
-              10000,
-            ),
-          );
+          // Check configuration first
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+          const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+          if (!supabaseUrl || !supabaseKey) {
+            throw new Error(
+              "❌ Configuration missing: Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables",
+            );
+          }
+
+          // Validate URL format
+          try {
+            new URL(supabaseUrl);
+          } catch {
+            throw new Error(`❌ Invalid Supabase URL format: ${supabaseUrl}`);
+          }
+
+          // Validate API key format
+          if (!supabaseKey.startsWith("eyJ")) {
+            throw new Error(
+              `❌ Invalid API key format: Key should start with 'eyJ' (JWT token)`,
+            );
+          }
+
+          // Test basic network connectivity first
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+            await fetch("https://httpbin.org/get", {
+              signal: controller.signal,
+              method: "GET",
+            });
+
+            clearTimeout(timeoutId);
+          } catch (networkError) {
+            throw new Error(
+              "❌ Network connectivity failed: Check your internet connection",
+            );
+          }
+
+          // Test Supabase URL accessibility
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+            const response = await fetch(`${supabaseUrl}/rest/v1/`, {
+              method: "HEAD",
+              signal: controller.signal,
+              headers: {
+                apikey: supabaseKey,
+                Authorization: `Bearer ${supabaseKey}`,
+              },
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+              throw new Error(
+                `❌ Supabase server returned ${response.status}: Check your project URL and API key`,
+              );
+            }
+          } catch (supabaseError) {
+            if (supabaseError instanceof Error) {
+              if (supabaseError.message.includes("abort")) {
+                throw new Error(
+                  `❌ Supabase server timeout: ${supabaseUrl} is not responding (may be wrong URL)`,
+                );
+              }
+              throw new Error(
+                `❌ Cannot reach Supabase: ${supabaseError.message} (Check project URL: ${supabaseUrl})`,
+              );
+            }
+            throw supabaseError;
+          }
+
+          // Now test actual database query
           const connectionPromise = supabase
             .from("profiles")
             .select("id")
             .limit(1);
+
+          const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(
+              () =>
+                reject(new Error("Database query timeout after 10 seconds")),
+              10000,
+            ),
+          );
 
           const { data, error } = await Promise.race([
             connectionPromise,
@@ -151,28 +228,57 @@ const QAQuickFixes: React.FC = () => {
           ]);
 
           if (error) {
-            // Handle different types of errors
-            if (error.message?.includes("Failed to fetch")) {
+            // Handle specific Supabase errors
+            if (error.code === "42P01") {
               throw new Error(
-                "Network error: Cannot reach Supabase server. Check internet connection.",
+                `⚠️ Table 'profiles' doesn't exist in database (${error.message})`,
               );
-            } else if (error.message?.includes("JWT")) {
+            } else if (
+              error.code === "PGRST301" ||
+              error.message?.includes("permission")
+            ) {
               throw new Error(
-                "Authentication error: Invalid API key or session expired.",
+                `⚠️ Database permissions issue: ${error.message} (Check RLS policies)`,
+              );
+            } else if (error.message?.includes("Failed to fetch")) {
+              throw new Error(
+                `❌ Network error during query: Cannot reach ${supabaseUrl}`,
+              );
+            } else if (
+              error.message?.includes("JWT") ||
+              error.message?.includes("Invalid API key")
+            ) {
+              throw new Error(
+                `❌ Authentication failed: Invalid API key (${supabaseKey.substring(0, 10)}...)`,
               );
             } else {
-              throw new Error(`Database error: ${error.message}`);
+              throw new Error(
+                `❌ Database query failed: ${error.message} (Code: ${error.code || "unknown"})`,
+              );
             }
           }
 
-          toast.success("Database connection verified!");
+          toast.success(
+            `✅ Database connection verified! Found ${data?.length || 0} profiles.`,
+            {
+              description: `Connected to: ${supabaseUrl}`,
+            },
+          );
         } catch (error) {
-          if (error instanceof Error && error.message.includes("timeout")) {
-            throw new Error(
-              "Database connection timed out. Server may be slow or unreachable.",
-            );
+          if (error instanceof Error) {
+            // Log detailed error for debugging
+            console.error("Database connection test failed:", {
+              message: error.message,
+              url: import.meta.env.VITE_SUPABASE_URL,
+              keyPrefix: import.meta.env.VITE_SUPABASE_ANON_KEY?.substring(
+                0,
+                10,
+              ),
+            });
+
+            throw error;
           }
-          throw error;
+          throw new Error("❌ Unknown error during database connection test");
         }
       },
     },
