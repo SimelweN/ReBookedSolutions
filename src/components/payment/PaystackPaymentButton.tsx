@@ -136,12 +136,16 @@ const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({
 
       // Handle different types of errors
       if (
+        errorMessage.includes("PAYMENT_CANCELLED_BY_USER") ||
         errorMessage.includes("cancelled by user") ||
         errorMessage.includes("window was closed")
       ) {
         setPaymentStatus("idle"); // Reset to allow retry
-        toast.info("Payment was cancelled");
+        console.log(
+          "💡 Payment was cancelled by user, resetting to idle state",
+        );
         onError?.("Payment cancelled by user");
+        return; // Don't show error toast, already handled by service
       } else if (
         errorMessage.includes("not configured") ||
         errorMessage.includes("service unavailable")
