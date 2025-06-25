@@ -293,7 +293,17 @@ export class PaystackPaymentService {
         .limit(1);
 
       if (testError) {
-        console.error("❌ Cannot access orders table:", testError);
+        const errorMsg =
+          testError.message ||
+          testError.details ||
+          JSON.stringify(testError, null, 2);
+        console.error("❌ Cannot access orders table:", errorMsg);
+        console.error("❌ Full error details:", {
+          message: testError.message,
+          details: testError.details,
+          hint: testError.hint,
+          code: testError.code,
+        });
         return;
       }
 
