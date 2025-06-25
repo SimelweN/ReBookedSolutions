@@ -109,7 +109,7 @@ const SimpleQADashboard: React.FC = () => {
         </div>
 
         {/* Quick Actions Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           <Button
             onClick={() => navigate("/")}
             className="h-20 flex flex-col items-center justify-center bg-blue-600 hover:bg-blue-700 text-white"
@@ -131,7 +131,15 @@ const SimpleQADashboard: React.FC = () => {
             className="h-20 flex flex-col items-center justify-center bg-purple-600 hover:bg-purple-700 text-white"
           >
             <CreditCard className="w-6 h-6 mb-1" />
-            <span className="text-sm">Test Payment</span>
+            <span className="text-sm">Test Checkout</span>
+          </Button>
+
+          <Button
+            onClick={() => navigate("/paystack-test")}
+            className="h-20 flex flex-col items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white"
+          >
+            <CreditCard className="w-6 h-6 mb-1" />
+            <span className="text-sm">Paystack Tests</span>
           </Button>
 
           <Button
