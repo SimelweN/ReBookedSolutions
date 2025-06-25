@@ -412,7 +412,9 @@ const EnhancedBecomeSellerGuide: React.FC<EnhancedBecomeSellerGuideProps> = ({
                 <span className="font-medium text-red-600">-R20.00</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-blue-700">Courier pickup (we pay):</span>
+                <span className="text-blue-700">
+                  Shipping cost (buyer pays):
+                </span>
                 <span className="font-medium text-green-600">R0.00</span>
               </div>
               <Separator />
