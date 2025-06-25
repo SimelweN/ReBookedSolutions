@@ -101,27 +101,36 @@ const Login = () => {
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "Login failed";
+      console.error("Login error:", error);
       console.error("Login error in component:", errorMessage);
 
-      setLoginError(errorMessage);
-
-      // Determine error type for better UX
-      if (
-        errorMessage.includes("verification") ||
-        errorMessage.includes("verified")
-      ) {
-        setErrorType("verify_email");
-      } else if (
-        errorMessage.includes("No account") ||
-        errorMessage.includes("not found")
-      ) {
-        setErrorType("register");
-      } else if (
-        errorMessage.includes("password") ||
-        errorMessage.includes("credentials")
-      ) {
-        setErrorType("reset_password");
+      // Handle network errors specifically
+      if (errorMessage.includes("Network connection failed") ||
+          errorMessage.includes("Failed to fetch") ||
+          errorMessage.includes("timeout")) {
+        setLoginError("Connection failed. Please check your internet connection and try again.");
+        setErrorType(null);
+        toast.error("Network error. Please check your connection and try again.");
       } else {
+        setLoginError(errorMessage);
+
+        // Determine error type for better UX
+        if (
+          errorMessage.includes("verification") ||
+          errorMessage.includes("verified")
+        ) {
+          setErrorType("verify_email");
+        } else if (
+          errorMessage.includes("No account") ||
+          errorMessage.includes("not found")
+        ) {
+          setErrorType("register");
+        } else if (
+          errorMessage.includes("password") ||
+          errorMessage.includes("credentials")
+        ) {
+          setErrorType("reset_password");
+        } else {
         setErrorType("general");
       }
     } finally {
