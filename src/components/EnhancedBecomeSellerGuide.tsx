@@ -398,6 +398,34 @@ const EnhancedBecomeSellerGuide: React.FC<EnhancedBecomeSellerGuideProps> = ({
             </p>
           </div>
 
+          {/* Important Payment & Shipping Terms */}
+          <div className="bg-blue-50 p-6 rounded-lg border-2 border-blue-200">
+            <h4 className="font-bold text-blue-800 mb-3 text-center">
+              🔑 Key Payment & Shipping Terms
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div className="bg-white p-3 rounded border border-blue-200">
+                <h5 className="font-semibold text-blue-800 mb-2">
+                  💰 When You Get Paid
+                </h5>
+                <p className="text-blue-700">
+                  <strong>AFTER DELIVERY ONLY</strong> - You receive payment
+                  only when the book is successfully delivered to the buyer.
+                  Never before.
+                </p>
+              </div>
+              <div className="bg-white p-3 rounded border border-blue-200">
+                <h5 className="font-semibold text-blue-800 mb-2">
+                  📦 Shipping Costs
+                </h5>
+                <p className="text-blue-700">
+                  <strong>BUYER PAYS ALL SHIPPING</strong> - The buyer covers
+                  all courier and delivery costs. You pay nothing for shipping.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
             <h4 className="font-medium text-blue-800 mb-4 text-center">
               Payment Breakdown Example
