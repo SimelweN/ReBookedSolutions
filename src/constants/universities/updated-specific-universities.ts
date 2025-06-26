@@ -241,6 +241,62 @@ export const UL_FACULTIES: Faculty[] = [
         subjects: [{ name: "English", level: 4, isRequired: true }],
         careerProspects: ["Journalist", "Media Producer", "Content Creator"],
       },
+      // Additional missing programs based on user's requirements
+      {
+        id: createDegreeId("Bachelor of Arts Criminology Psychology Stream 23"),
+        name: "Bachelor of Arts (Criminology & Psychology Stream)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 23,
+        description:
+          "Alternative entry route for criminology and psychology studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Criminologist", "Psychologist", "Social Worker"],
+      },
+      {
+        id: createDegreeId("Bachelor of Arts Sociology Anthropology 23"),
+        name: "Bachelor of Arts (Sociology & Anthropology Stream)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 23,
+        description:
+          "Alternative entry route for sociology and anthropology studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "History", level: 3, isRequired: false },
+        ],
+        careerProspects: ["Sociologist", "Anthropologist", "Social Researcher"],
+      },
+      {
+        id: createDegreeId("Bachelor of Psychology 23"),
+        name: "Bachelor of Psychology",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 23,
+        description: "Alternative entry route for psychology studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Psychologist", "Counselor", "Research Psychologist"],
+      },
+      {
+        id: createDegreeId("Bachelor of Arts Criminology Psychology ECP 22"),
+        name: "Bachelor of Arts (Criminology & Psychology Stream) - Extended Curriculum Programme",
+        faculty: "Humanities",
+        duration: "4 years",
+        apsRequirement: 22,
+        description:
+          "Extended programme for criminology and psychology studies with foundation support",
+        subjects: [
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Criminologist", "Psychologist", "Social Worker"],
+      },
     ],
   },
   {
