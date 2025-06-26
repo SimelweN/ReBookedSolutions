@@ -2250,7 +2250,11 @@ export function getUpdatedUniversityFaculties(
     spu: SPU_FACULTIES,
     ump: UMP_FACULTIES,
     cput: CPUT_FACULTIES,
-    // Will add remaining universities
+    cut: CUT_FACULTIES,
+    dut: DUT_FACULTIES,
+    mut: MUT_FACULTIES,
+    tut: TUT_FACULTIES,
+    vut: VUT_FACULTIES,
   };
 
   return universityFaculties[universityId] || null;
@@ -2265,5 +2269,26 @@ export const UPDATED_UNIVERSITY_DATA = {
   SPU_FACULTIES,
   UMP_FACULTIES,
   CPUT_FACULTIES,
+  CUT_FACULTIES,
+  DUT_FACULTIES,
+  MUT_FACULTIES,
+  TUT_FACULTIES,
+  VUT_FACULTIES,
   getUpdatedUniversityFaculties,
 };
+
+// List of universities that have been updated with specific data
+export const UPDATED_UNIVERSITIES = [
+  "ul", // University of Limpopo
+  "nwu", // North-West University
+  "wsu", // Walter Sisulu University
+  "unizulu", // University of Zululand
+  "spu", // Sol Plaatje University
+  "ump", // University of Mpumalanga
+  "cput", // Cape Peninsula University of Technology
+  "cut", // Central University of Technology
+  "dut", // Durban University of Technology
+  "mut", // Mangosuthu University of Technology
+  "tut", // Tshwane University of Technology
+  "vut", // Vaal University of Technology
+];
