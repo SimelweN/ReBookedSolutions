@@ -45,7 +45,13 @@ import { toast } from "sonner";
 
 // Extract all programs from real university data
 const extractUniversityPrograms = () => {
-  const programs: any[] = [];
+  const programs: Array<{
+    id: string;
+    name: string;
+    apsRequired: number;
+    universityId: string;
+    faculty: string;
+  }> = [];
 
   try {
     if (

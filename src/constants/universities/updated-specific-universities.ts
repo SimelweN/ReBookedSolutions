@@ -241,6 +241,62 @@ export const UL_FACULTIES: Faculty[] = [
         subjects: [{ name: "English", level: 4, isRequired: true }],
         careerProspects: ["Journalist", "Media Producer", "Content Creator"],
       },
+      // Additional missing programs based on user's requirements
+      {
+        id: createDegreeId("Bachelor of Arts Criminology Psychology Stream 23"),
+        name: "Bachelor of Arts (Criminology & Psychology Stream)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 23,
+        description:
+          "Alternative entry route for criminology and psychology studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Criminologist", "Psychologist", "Social Worker"],
+      },
+      {
+        id: createDegreeId("Bachelor of Arts Sociology Anthropology 23"),
+        name: "Bachelor of Arts (Sociology & Anthropology Stream)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 23,
+        description:
+          "Alternative entry route for sociology and anthropology studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "History", level: 3, isRequired: false },
+        ],
+        careerProspects: ["Sociologist", "Anthropologist", "Social Researcher"],
+      },
+      {
+        id: createDegreeId("Bachelor of Psychology 23"),
+        name: "Bachelor of Psychology",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 23,
+        description: "Alternative entry route for psychology studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Psychologist", "Counselor", "Research Psychologist"],
+      },
+      {
+        id: createDegreeId("Bachelor of Arts Criminology Psychology ECP 22"),
+        name: "Bachelor of Arts (Criminology & Psychology Stream) - Extended Curriculum Programme",
+        faculty: "Humanities",
+        duration: "4 years",
+        apsRequirement: 22,
+        description:
+          "Extended programme for criminology and psychology studies with foundation support",
+        subjects: [
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Criminologist", "Psychologist", "Social Worker"],
+      },
     ],
   },
   {
@@ -1651,6 +1707,2068 @@ export const UL_FACULTIES: Faculty[] = [
         description: "Christian ministry and pastoral studies",
         subjects: [{ name: "English", level: 4, isRequired: true }],
         careerProspects: ["Minister", "Youth Pastor", "Chaplain"],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Health Sciences"),
+    name: "Faculty of Health Sciences",
+    description: "Health sciences, sports science, and related programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Coaching Science"),
+        name: "Diploma in Coaching Science",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 18,
+        description: "Sports coaching and fitness training",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Sports Coach",
+          "Fitness Trainer",
+          "Sports Development Officer",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Health Sciences Physiology Biochemistry",
+        ),
+        name: "Bachelor of Health Sciences (with Physiology and Biochemistry)",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Health sciences with physiology and biochemistry focus",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Health Scientist",
+          "Researcher",
+          "Laboratory Technologist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Health Sciences Physiology Psychology"),
+        name: "Bachelor of Health Sciences (with Physiology and Psychology)",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Health sciences with physiology and psychology",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Health Psychologist",
+          "Researcher",
+          "Health Consultant",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Health Sciences Sport Coaching Human Movement",
+        ),
+        name: "Bachelor of Health Sciences (with Sport Coaching and Human Movement Sciences)",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Health sciences with sport coaching and human movement",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Sports Scientist",
+          "Movement Analyst",
+          "Performance Coach",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Health Sciences Recreation Sciences Psychology",
+        ),
+        name: "Bachelor of Health Sciences (with Recreation Sciences and Psychology)",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Health sciences with recreation sciences and psychology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Recreation Therapist",
+          "Sports Psychologist",
+          "Wellness Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Health Sciences Recreation Tourism Sport Administration",
+        ),
+        name: "Bachelor of Health Sciences (with Recreation Science and Tourism Management, with Sport and Recreation Administration)",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description:
+          "Health sciences with recreation, tourism and sport administration",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 3, isRequired: false },
+          { name: "Geography", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Recreation Manager",
+          "Tourism Officer",
+          "Sports Administrator",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Arts Behavioural Sciences Psychology Geography",
+        ),
+        name: "Bachelor of Arts in Behavioural Sciences (with Psychology and Geography and Environmental Management, with Psychology and Tourism Management)",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description:
+          "Behavioural sciences with psychology and geography/tourism",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Behavioural Analyst",
+          "Environmental Psychologist",
+          "Tourism Psychologist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Social Sciences Psychology"),
+        name: "Bachelor of Social Sciences (with Psychology)",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Social sciences with psychology specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Psychologist", "Social Researcher", "Counselor"],
+      },
+      {
+        id: createDegreeId("Bachelor of Consumer Studies"),
+        name: "Bachelor of Consumer Studies",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Consumer studies and household sciences",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Consumer Advisor",
+          "Product Developer",
+          "Market Researcher",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Consumer Studies Food Production Management",
+        ),
+        name: "Bachelor of Consumer Studies (in Food Production Management)",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Consumer studies with food production management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Food Production Manager",
+          "Quality Controller",
+          "Food Technologist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Consumer Studies Fashion Retail Management",
+        ),
+        name: "Bachelor of Consumer Studies (in Fashion Retail Management)",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Consumer studies with fashion retail management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Fashion Buyer",
+          "Retail Manager",
+          "Fashion Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Social Work NWU"),
+        name: "Bachelor of Social Work",
+        faculty: "Health Sciences",
+        duration: "4 years",
+        apsRequirement: 28,
+        description: "Professional social work training",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Social Worker",
+          "Community Developer",
+          "Child Protection Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Pharmacy NWU"),
+        name: "Bachelor of Pharmacy",
+        faculty: "Health Sciences",
+        duration: "4 years",
+        apsRequirement: 32,
+        description: "Pharmaceutical sciences",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Pharmacist",
+          "Clinical Pharmacist",
+          "Pharmaceutical Researcher",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Science Dietetics NWU"),
+        name: "Bachelor of Science in Dietetics",
+        faculty: "Health Sciences",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Nutrition and dietetics",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Dietitian", "Nutritionist", "Health Consultant"],
+      },
+      {
+        id: createDegreeId("Bachelor of Health Science Occupational Hygiene"),
+        name: "Bachelor of Health Science in Occupational Hygiene",
+        faculty: "Health Sciences",
+        duration: "4 years",
+        apsRequirement: 27,
+        description: "Occupational health and safety",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Occupational Hygienist",
+          "Health and Safety Officer",
+          "Environmental Health Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Health Science Biokinetics"),
+        name: "Bachelor of Health Science in Biokinetics",
+        faculty: "Health Sciences",
+        duration: "4 years",
+        apsRequirement: 32,
+        description: "Exercise science and rehabilitation",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Biokineticist",
+          "Exercise Physiologist",
+          "Rehabilitation Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Nursing NWU"),
+        name: "Bachelor of Nursing",
+        faculty: "Health Sciences",
+        duration: "4 years",
+        apsRequirement: 25,
+        description: "Professional nursing education",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Professional Nurse",
+          "Clinical Nurse",
+          "Community Health Nurse",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Humanities NWU"),
+    name: "Faculty of Humanities",
+    description:
+      "Liberal arts, social sciences, languages, and creative disciplines",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Bachelor Arts Public Governance Public Administration NWU",
+        ),
+        name: "Bachelor of Arts (BA) in Public Governance (with Public Administration, Politics and Public Administration, Social Studies, Geography, Labour Relations Management)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 25,
+        description: "Public governance with multiple specializations",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "History", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Public Administrator",
+          "Government Official",
+          "Policy Analyst",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Arts Public Governance Municipal Management NWU",
+        ),
+        name: "Bachelor of Arts (BA) in Public Governance (with Municipal Management and Leadership)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 25,
+        description: "Public governance with municipal management focus",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Municipal Manager",
+          "Local Government Leader",
+          "Public Administrator",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Arts Public Governance Policing Practice NWU",
+        ),
+        name: "Bachelor of Arts (BA) in Public Governance (with Policing Practice)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 25,
+        description: "Public governance with policing focus",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Police Officer",
+          "Law Enforcement Manager",
+          "Security Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Social Sciences Political Studies International Relations NWU",
+        ),
+        name: "Bachelor of Social Sciences (BSocSc) (with Political Studies and International Relations)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Social sciences with political studies focus",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "History", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Political Analyst",
+          "Diplomat",
+          "International Relations Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Administration Development Management Local Government NWU",
+        ),
+        name: "Bachelor of Administration in Development and Management (with Local Government Management)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Development administration with local government focus",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Development Administrator",
+          "Local Government Manager",
+          "Community Developer",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Administration Development Management NWU",
+        ),
+        name: "Extended Bachelor of Administration in Development and Management (with Local Government Management)",
+        faculty: "Humanities",
+        duration: "4 years",
+        apsRequirement: 20,
+        description: "Extended programme for development administration",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Development Administrator",
+          "Local Government Manager",
+          "Community Developer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Communication NWU"),
+        name: "Bachelor of Arts (BA) in Communication",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Communication studies and media",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "Communications Specialist",
+          "Media Producer",
+          "Public Relations Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Graphic Design NWU"),
+        name: "Bachelor of Arts (BA) in Graphic Design",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Visual communication and graphic design",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Graphic Designer",
+          "Visual Communications Designer",
+          "Creative Director",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Graphic Design Communication NWU"),
+        name: "Bachelor of Arts (BA) in Graphic Design (with Communication)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Graphic design with communication focus",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "Communication Designer",
+          "Brand Designer",
+          "Marketing Designer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Language Literary Studies NWU"),
+        name: "Bachelor of Arts (BA) in Language and Literary Studies",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Language and literature studies",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: ["Language Teacher", "Editor", "Translator"],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Arts Language Literary Studies Practice NWU",
+        ),
+        name: "Bachelor of Arts (BA) in Language and Literary Studies (with Languages, Language Practice, Language Practice and Communication)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Language and literary studies with practical application",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "Language Practitioner",
+          "Communications Specialist",
+          "Editorial Assistant",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Language Technology NWU"),
+        name: "Bachelor of Arts (BA) in Language Technology",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Language technology and computational linguistics",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Language Technologist",
+          "Computational Linguist",
+          "Software Developer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Music NWU"),
+        name: "Diploma in Music (DM)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 18,
+        description: "Music performance and theory",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: ["Musician", "Music Teacher", "Music Therapist"],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Music Society NWU"),
+        name: "Bachelor of Arts (BA) in Music and Society",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Music in social and cultural context",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Music Educator",
+          "Community Music Coordinator",
+          "Music Therapist",
+        ],
+      },
+      {
+        id: createDegreeId("Baccalaureus Musicae NWU"),
+        name: "Baccalaureus Musicae (BMus)",
+        faculty: "Humanities",
+        duration: "4 years",
+        apsRequirement: 24,
+        description: "Professional music degree",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Professional Musician",
+          "Music Director",
+          "Composer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Philosophy Politics Economics NWU"),
+        name: "Bachelor of Philosophy (BPhil) (with Philosophy, Politics and Economics)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Philosophy, politics and economics integration",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Policy Analyst",
+          "Political Consultant",
+          "Economic Researcher",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Humanities Afrikaans Dutch NWU"),
+        name: "Bachelor of Arts (BA) Humanities (with Afrikaans and Dutch)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Humanities with Afrikaans and Dutch languages",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Afrikaans", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Language Teacher", "Translator", "Cultural Officer"],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Humanities English NWU"),
+        name: "Bachelor of Arts (BA) Humanities (with English)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Humanities with English specialization",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "English Teacher",
+          "Editor",
+          "Communications Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Humanities Setswana NWU"),
+        name: "Bachelor of Arts (BA) Humanities (with Setswana)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Humanities with Setswana language",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Setswana", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Setswana Teacher", "Translator", "Cultural Advisor"],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Humanities Sesotho NWU"),
+        name: "Bachelor of Arts (BA) Humanities (with Sesotho)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Humanities with Sesotho language",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Sesotho", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Sesotho Teacher", "Translator", "Cultural Advisor"],
+      },
+      // Multiple specialization BA Humanities program
+      {
+        id: createDegreeId(
+          "Bachelor Arts Humanities Multiple Specializations NWU",
+        ),
+        name: "Bachelor of Arts (BA) Humanities (with Social Sciences, Psychology, History, Geography, French, German, History of Art, Latin, Politics, Social Anthropology, Sociology, Philosophy, History and Society, Psychology and Society, Geography and Society, Politics and Society)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 24,
+        description:
+          "Humanities with various specialization options across campuses",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Various based on specialization",
+          "Teacher",
+          "Researcher",
+          "Social Worker",
+        ],
+      },
+      // Social Sciences programs
+      {
+        id: createDegreeId(
+          "Bachelor Social Sciences Multiple Specializations NWU",
+        ),
+        name: "Bachelor of Social Sciences (BSocSc) (with Development Studies, Geography, History, Population Studies, Psychology and Social Sciences, Social Anthropology, Sociology)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Social sciences with various specializations",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Social Researcher",
+          "Community Developer",
+          "Policy Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Social Sciences Economics NWU"),
+        name: "Bachelor of Social Sciences (BSocSc) (with Economics)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Social sciences with economics focus",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Economist", "Economic Analyst", "Policy Researcher"],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Sociology Geography NWU"),
+        name: "Bachelor of Arts (BA) (with Sociology and Geography, with Sociology and Labour Relations Management)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Arts with sociology and geography/labour relations",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Sociologist",
+          "Community Developer",
+          "Labour Relations Officer",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Arts Behavioural Sciences Sociology Psychology NWU",
+        ),
+        name: "Bachelor of Arts (BA) in Behavioural Sciences (with Sociology and Psychology)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Behavioural sciences with sociology and psychology",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: ["Social Worker", "Counselor", "Behavioural Analyst"],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Law NWU"),
+    name: "Faculty of Law",
+    description: "Legal studies and jurisprudence",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Arts Law Psychology NWU"),
+        name: "Bachelor of Arts in Law (BA in Law) (with Psychology, Politics, Industrial Psychology)",
+        faculty: "Law",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "Arts in law with various specializations",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Legal Advisor", "Paralegal", "Court Officer"],
+      },
+      {
+        id: createDegreeId("Bachelor Commerce Law NWU"),
+        name: "Bachelor of Commerce in Law (BCom in Law)",
+        faculty: "Law",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Commerce with legal studies",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Legal Advisor",
+          "Business Law Specialist",
+          "Corporate Compliance Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Laws LLB NWU"),
+        name: "Bachelor of Laws (LLB)",
+        faculty: "Law",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Professional law degree",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Attorney", "Advocate", "Legal Advisor"],
+      },
+      {
+        id: createDegreeId("Extended Bachelor Laws LLB NWU"),
+        name: "Extended Bachelor of Laws (LLB)",
+        faculty: "Law",
+        duration: "5 years",
+        apsRequirement: 28,
+        description: "Extended programme for law studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Attorney", "Advocate", "Legal Advisor"],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Natural and Agricultural Sciences NWU"),
+    name: "Faculty of Natural and Agricultural Sciences",
+    description:
+      "Natural sciences, mathematics, agriculture, and technology programs",
+    degrees: [
+      // Diploma programs
+      {
+        id: createDegreeId("Diploma Animal Health NWU"),
+        name: "Diploma in Animal Health",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Animal health and veterinary technology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Animal Health Technician",
+          "Veterinary Assistant",
+          "Animal Care Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Animal Science NWU"),
+        name: "Diploma in Animal Science",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Animal production and management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Animal Production Manager",
+          "Livestock Specialist",
+          "Farm Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Plant Science Crop Production NWU"),
+        name: "Diploma in Plant Science (Crop Production)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Plant science and crop production",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Crop Production Manager",
+          "Agricultural Advisor",
+          "Plant Specialist",
+        ],
+      },
+      // Bachelor of Science programs
+      {
+        id: createDegreeId("Bachelor Science Chemistry Physics NWU"),
+        name: "Bachelor of Science (with Chemistry and Physics, Physics and Mathematics, Physics and Applied Mathematics, Physics and Computer Sciences)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Science degree with physics-based combinations",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Physicist", "Research Scientist", "Data Analyst"],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Science Computer Sciences Mathematics NWU",
+        ),
+        name: "Bachelor of Science (with Computer Sciences and Mathematics)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Computer science and mathematics combination",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Software Developer",
+          "Data Scientist",
+          "Systems Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Biochemistry Chemistry NWU"),
+        name: "Bachelor of Science (with Biochemistry and Chemistry)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Biochemistry and chemistry combination",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Biochemist",
+          "Chemical Analyst",
+          "Research Scientist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Science Geography Applied Mathematics NWU",
+        ),
+        name: "Bachelor of Science (with Geography and Applied Mathematics)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Geography and applied mathematics combination",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "GIS Specialist",
+          "Environmental Analyst",
+          "Cartographer",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Science Applied Mathematics Chemistry NWU",
+        ),
+        name: "Bachelor of Science (with Applied Mathematics and Chemistry, Chemistry and Mathematics)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Applied mathematics with chemistry/mathematics",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Mathematician",
+          "Chemical Engineer",
+          "Research Scientist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Electronics Combinations NWU"),
+        name: "Bachelor of Science (with Applied Mathematics and Electronics, Electronics and Mathematics, Electronics and Physics, Chemistry and Computer Science, Computer Science and Electronics)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Electronics and technology combinations",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Electronics Engineer",
+          "Computer Scientist",
+          "Systems Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Computer Sciences Statistics NWU"),
+        name: "Bachelor of Science (with Computer Sciences and Statistics)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Computer science and statistics combination",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Data Scientist",
+          "Statistical Analyst",
+          "Business Intelligence Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Computer Sciences Economics NWU"),
+        name: "Bachelor of Science (with Computer Sciences and Economics, Mathematics and Economy)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Computer science with economics/mathematics and economy",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Economic Analyst",
+          "Financial Modeler",
+          "Business Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Extended Bachelor Science NWU"),
+        name: "Extended Bachelor of Science",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "4 years",
+        apsRequirement: 24,
+        description: "Extended programme for science studies",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Research Assistant",
+          "Laboratory Technician",
+          "Science Educator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Information Technology NWU"),
+        name: "Bachelor of Science in Information Technology",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Information technology and computer science",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Software Developer",
+          "IT Consultant",
+          "Systems Analyst",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Science Information Technology NWU",
+        ),
+        name: "Extended Bachelor of Science in Information Technology",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "4 years",
+        apsRequirement: 24,
+        description: "Extended programme for information technology",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Software Developer",
+          "IT Support Specialist",
+          "Database Administrator",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Science Mathematical Sciences Statistics Mathematics NWU",
+        ),
+        name: "Bachelor of Science in Mathematical Sciences (with Statistics and Mathematics, Mathematics, Applied Mathematics and Mathematics)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Mathematical sciences with various specializations",
+        subjects: [
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Mathematician", "Statistician", "Data Scientist"],
+      },
+      {
+        id: createDegreeId("Bachelor Science Biological Sciences NWU"),
+        name: "Bachelor of Science in Biological Sciences (with Microbiology and Biochemistry, Microbiology and Botany, Botany and Biochemistry, Zoology and Biochemistry, Chemistry and Physiology, Zoology and Botany, Zoology and Microbiology, Zoology and Physiology, Microbiology and Physiology)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Biological sciences with various combinations",
+        subjects: [
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Biologist",
+          "Research Scientist",
+          "Laboratory Technologist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Environmental Sciences NWU"),
+        name: "Bachelor of Science in Environmental Sciences (various combinations with Chemistry, Microbiology, Botany, Geography, Computer Sciences, Zoology, Geology, Tourism)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description:
+          "Environmental sciences with multiple specialization options",
+        subjects: [
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Environmental Scientist",
+          "Conservation Officer",
+          "Environmental Consultant",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Science Environmental Sciences Chemistry Geography Special NWU",
+        ),
+        name: "Bachelor of Science in Environmental Sciences with Chemistry and Geography",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 32,
+        description:
+          "Specialized environmental sciences with chemistry and geography - higher entry requirement",
+        subjects: [
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Geography", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Environmental Chemist",
+          "Environmental Consultant",
+          "Research Scientist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Science Financial Mathematics NWU",
+        ),
+        name: "Extended Bachelor of Science in Financial Mathematics",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "4 years",
+        apsRequirement: 28,
+        description: "Extended programme for financial mathematics",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Financial Analyst",
+          "Risk Analyst",
+          "Quantitative Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Business Analytics NWU"),
+        name: "Bachelor of Science in Business Analytics",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 32,
+        description: "Business analytics and data science",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Business Analyst",
+          "Data Scientist",
+          "Analytics Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Extended Bachelor Science Business Analytics NWU"),
+        name: "Extended Bachelor of Science in Business Analytics",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "4 years",
+        apsRequirement: 28,
+        description: "Extended programme for business analytics",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Business Analyst",
+          "Data Analyst",
+          "Research Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Quantitative Risk Management NWU"),
+        name: "Bachelor of Science in Quantitative Risk Management",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 32,
+        description: "Quantitative risk management and analysis",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Risk Manager",
+          "Quantitative Analyst",
+          "Insurance Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Science Quantitative Risk Management NWU",
+        ),
+        name: "Extended Bachelor of Science in Quantitative Risk Management",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "4 years",
+        apsRequirement: 28,
+        description: "Extended programme for quantitative risk management",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Risk Analyst",
+          "Insurance Analyst",
+          "Financial Risk Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Actuarial Science NWU"),
+        name: "Bachelor of Science in Actuarial Science",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 32,
+        description: "Actuarial science and financial modeling",
+        subjects: [
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Actuary", "Risk Analyst", "Insurance Specialist"],
+      },
+      {
+        id: createDegreeId("Bachelor Science Urban Regional Planning NWU"),
+        name: "Bachelor of Science in Urban and Regional Planning",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "4 years",
+        apsRequirement: 28,
+        description: "Urban and regional planning",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Urban Planner",
+          "Regional Planner",
+          "Development Planner",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Agricultural Sciences NWU"),
+        name: "Bachelor of Science in Agricultural Sciences (with Agricultural Economics, Animal Sciences, Animal Health, Agronomy and Horticulture, Agronomy and Soil Sciences, Agronomy and Agricultural Economics)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Agricultural sciences with various specializations",
+        subjects: [
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Scientist",
+          "Farm Manager",
+          "Agricultural Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Indigenous Knowledge Systems NWU"),
+        name: "Bachelor of Science in Indigenous Knowledge Systems",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Indigenous knowledge systems and traditional sciences",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Indigenous Language", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Cultural Advisor",
+          "Traditional Medicine Practitioner",
+          "Community Development Officer",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Theology NWU"),
+    name: "Faculty of Theology",
+    description: "Theological studies and religious education",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Arts Ancient Languages NWU"),
+        name: "BA in Ancient Languages",
+        faculty: "Theology",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Ancient languages and biblical studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Additional Language", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Translator",
+          "Theologian",
+          "Religious Studies Teacher",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Divinity BDiv NWU"),
+        name: "Bachelor of Divinity (BDiv)",
+        faculty: "Theology",
+        duration: "4 years",
+        apsRequirement: 24,
+        description: "Professional theological training",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Additional Language", level: 3, isRequired: false },
+        ],
+        careerProspects: ["Pastor", "Chaplain", "Religious Counselor"],
+      },
+      {
+        id: createDegreeId("BTh Bible Languages Bible Translation NWU"),
+        name: "BTh with Bible Languages & Bible Translation",
+        faculty: "Theology",
+        duration: "4 years",
+        apsRequirement: 24,
+        description: "Theology with Bible languages and translation focus",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Additional Language", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Bible Translator",
+          "Missionary",
+          "Religious Scholar",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Pastoral Psychology NWU"),
+        name: "BA in Pastoral Psychology",
+        faculty: "Theology",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Pastoral care and psychology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Pastoral Counselor",
+          "Chaplain",
+          "Religious Therapist",
+        ],
+      },
+      {
+        id: createDegreeId("BTh Christian Ministry NWU"),
+        name: "BTh in Christian Ministry",
+        faculty: "Theology",
+        duration: "4 years",
+        apsRequirement: 24,
+        description: "Christian ministry and pastoral training",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Additional Language", level: 3, isRequired: false },
+        ],
+        careerProspects: ["Minister", "Pastor", "Youth Pastor"],
+      },
+    ],
+  },
+];
+
+// Walter Sisulu University (WSU) - Comprehensive Data
+export const WSU_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Education WSU"),
+    name: "Faculty of Education",
+    description: "Teacher training and educational programs",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Bachelor of Education Foundation Phase Teaching WSU",
+        ),
+        name: "Bachelor of Education in Foundation Phase Teaching",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Foundation phase teaching (Grades R-3)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Foundation Phase Teacher",
+          "Primary School Teacher",
+          "Educational Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Education Senior Phase FET Economic Management Sciences WSU",
+        ),
+        name: "Bachelor of Education in Senior Phase and Further Education and Training Teaching (Economic & Management Sciences)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description:
+          "Senior and FET phase teaching in economic and management sciences",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "EMS Teacher",
+          "Business Studies Teacher",
+          "Economics Teacher",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Education Senior Phase FET Consumer Management Sciences WSU",
+        ),
+        name: "Bachelor of Education in Senior Phase and Further Education and Training Teaching (Consumer and Management Sciences)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description:
+          "Senior and FET phase teaching in consumer and management sciences",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Consumer Studies Teacher",
+          "Life Skills Teacher",
+          "Home Economics Teacher",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Education Senior Phase FET Creative Arts WSU",
+        ),
+        name: "Bachelor of Education in Senior Phase and Further Education and Training Teaching (Creative Arts)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Senior and FET phase teaching in creative arts",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 4, isRequired: false },
+        ],
+        careerProspects: ["Arts Teacher", "Drama Teacher", "Music Teacher"],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Education Senior Phase FET Humanities WSU",
+        ),
+        name: "Bachelor of Education in Senior Phase and Further Education and Training Teaching (Humanities)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Senior and FET phase teaching in humanities",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "History", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "History Teacher",
+          "Geography Teacher",
+          "Social Sciences Teacher",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Education Senior Phase FET Languages WSU",
+        ),
+        name: "Bachelor of Education in Senior Phase and Further Education and Training Teaching (Languages)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Senior and FET phase teaching in languages",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Additional Language", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Language Teacher",
+          "English Teacher",
+          "Literature Teacher",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Education Senior Phase FET Mathematics Science Technology WSU",
+        ),
+        name: "Bachelor of Education in Senior Phase and Further Education and Training Teaching (Mathematics, Science & Technology)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description:
+          "Senior and FET phase teaching in mathematics, science and technology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Mathematics Teacher",
+          "Science Teacher",
+          "Technology Teacher",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Education Senior Phase FET Technical Vocational Education WSU",
+        ),
+        name: "Bachelor of Education in Senior Phase and Further Education and Training Teaching (Technical and Vocational Education)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description:
+          "Senior and FET phase teaching in technical and vocational education - complex criteria based on subject combinations",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Technical Teacher",
+          "Vocational Trainer",
+          "Skills Development Facilitator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Adult Community Education Training WSU"),
+        name: "Diploma in Adult and Community Education and Training (ACET)",
+        faculty: "Education",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Adult and community education training",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Adult Educator",
+          "Community Education Coordinator",
+          "Training Facilitator",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Law, Humanities and Social Sciences WSU"),
+    name: "Faculty of Law, Humanities and Social Sciences",
+    description:
+      "Legal studies, humanities, social sciences, and creative arts",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Fine Art WSU"),
+        name: "Diploma in Fine Art",
+        faculty: "Law, Humanities and Social Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description: "Fine arts and visual arts",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 4, isRequired: false },
+        ],
+        careerProspects: ["Artist", "Art Teacher", "Gallery Curator"],
+      },
+      {
+        id: createDegreeId("Advanced Diploma Fine Art WSU"),
+        name: "Advanced Diploma in Fine Art",
+        faculty: "Law, Humanities and Social Sciences",
+        duration: "1 year",
+        apsRequirement: 20,
+        description: "Advanced fine arts specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Professional Artist",
+          "Art Director",
+          "Creative Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Fashion WSU"),
+        name: "Diploma in Fashion",
+        faculty: "Law, Humanities and Social Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Fashion design and technology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Fashion Designer",
+          "Fashion Stylist",
+          "Garment Technologist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Arts WSU"),
+        name: "Bachelor of Arts",
+        faculty: "Law, Humanities and Social Sciences",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "General arts and humanities",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Additional Language", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Various based on specialization",
+          "Writer",
+          "Communications Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Social Science WSU"),
+        name: "Bachelor of Social Science",
+        faculty: "Law, Humanities and Social Sciences",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Social sciences and community studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "History", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Social Researcher",
+          "Community Developer",
+          "Policy Analyst",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Social Science Extended Curriculum Programme WSU",
+        ),
+        name: "Bachelor of Social Science (Extended Curriculum Programme)",
+        faculty: "Law, Humanities and Social Sciences",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Extended programme for social sciences",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "History", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Social Researcher",
+          "Community Developer",
+          "Policy Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Laws LLB WSU"),
+        name: "Bachelor of Laws (LLB)",
+        faculty: "Law, Humanities and Social Sciences",
+        duration: "4 years",
+        apsRequirement: 28,
+        description: "Professional law degree",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Attorney", "Advocate", "Legal Advisor"],
+      },
+      {
+        id: createDegreeId("Bachelor Social Work WSU"),
+        name: "Bachelor of Social Work",
+        faculty: "Law, Humanities and Social Sciences",
+        duration: "4 years",
+        apsRequirement: 28,
+        description: "Professional social work training",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Social Worker",
+          "Community Developer",
+          "Child Protection Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Psychology WSU"),
+        name: "Bachelor of Psychology",
+        faculty: "Law, Humanities and Social Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "Psychological sciences and therapy",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Psychologist", "Counselor", "Research Psychologist"],
+      },
+    ],
+  },
+  {
+    id: createFacultyId(
+      "Faculty of Management and Public Administration Sciences WSU",
+    ),
+    name: "Faculty of Management and Public Administration Sciences",
+    description: "Management, administration, and business sciences",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Administration WSU"),
+        name: "Bachelor of Administration",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Public and business administration",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Administrator",
+          "Public Manager",
+          "Business Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Administrative Management WSU"),
+        name: "Diploma in Administrative Management",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Administrative management principles",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Administrative Officer",
+          "Office Manager",
+          "Operations Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Journalism WSU"),
+        name: "Diploma in Journalism",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Journalism and media studies",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: ["Journalist", "Reporter", "Media Producer"],
+      },
+      {
+        id: createDegreeId("Diploma Public Relations WSU"),
+        name: "Diploma in Public Relations",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Public relations and communications",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "PR Officer",
+          "Communications Specialist",
+          "Media Relations Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Public Management WSU"),
+        name: "Diploma in Public Management",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Public sector management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Public Manager",
+          "Government Official",
+          "Policy Administrator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Policing WSU"),
+        name: "Diploma in Policing",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Law enforcement and policing",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Police Officer",
+          "Security Manager",
+          "Law Enforcement Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Local Government Finance WSU"),
+        name: "Diploma in Local Government Finance",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Local government financial management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Financial Officer",
+          "Municipal Treasurer",
+          "Budget Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Management WSU"),
+        name: "Diploma in Management",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "General management principles",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Manager", "Supervisor", "Team Leader"],
+      },
+      {
+        id: createDegreeId("Diploma Small Business Management WSU"),
+        name: "Diploma in Small Business Management",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Small business and entrepreneurship",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Entrepreneur",
+          "Small Business Manager",
+          "Business Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Office Management Technology WSU"),
+        name: "Diploma in Office Management and Technology",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Office management and technology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Office Manager",
+          "Executive Assistant",
+          "Administrative Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Human Resources Management WSU"),
+        name: "Diploma in Human Resources Management",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Human resource management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "HR Officer",
+          "Recruitment Specialist",
+          "Training Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Tourism Management WSU"),
+        name: "Diploma in Tourism Management",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Tourism and hospitality management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Tourism Manager",
+          "Travel Consultant",
+          "Tour Operator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Hospitality Management WSU"),
+        name: "Diploma in Hospitality Management",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Hospitality and accommodation management",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Hotel Manager",
+          "Restaurant Manager",
+          "Event Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Sport Management WSU"),
+        name: "Diploma in Sport Management",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Sports management and administration",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Sports Manager",
+          "Event Manager",
+          "Sports Development Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Financial Information Systems WSU"),
+        name: "Diploma in Financial Information Systems",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Financial information systems",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Financial Systems Analyst",
+          "Database Administrator",
+          "IT Support Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Accountancy WSU"),
+        name: "Diploma in Accountancy",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Financial accounting and bookkeeping",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Bookkeeper",
+          "Accounting Clerk",
+          "Financial Assistant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Internal Auditing WSU"),
+        name: "Diploma in Internal Auditing",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Internal auditing and risk management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Internal Auditor",
+          "Risk Analyst",
+          "Compliance Officer",
+        ],
+      },
+      // Extended Curriculum Programme versions
+      {
+        id: createDegreeId("Diploma Office Management Technology ECP WSU"),
+        name: "Diploma in Office Management and Technology (ECP)",
+        faculty: "Management and Public Administration Sciences",
+        duration: "4 years",
+        apsRequirement: 21,
+        description:
+          "Extended curriculum programme for office management and technology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Office Manager",
+          "Executive Assistant",
+          "Administrative Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Local Government Finance ECP WSU"),
+        name: "Diploma in Local Government Finance (ECP)",
+        faculty: "Management and Public Administration Sciences",
+        duration: "4 years",
+        apsRequirement: 21,
+        description:
+          "Extended curriculum programme for local government finance",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Financial Officer",
+          "Municipal Treasurer",
+          "Budget Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Management ECP WSU"),
+        name: "Diploma in Management (ECP)",
+        faculty: "Management and Public Administration Sciences",
+        duration: "4 years",
+        apsRequirement: 21,
+        description: "Extended curriculum programme for management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Manager", "Supervisor", "Team Leader"],
+      },
+      {
+        id: createDegreeId("Diploma Human Resources Management ECP WSU"),
+        name: "Diploma in Human Resources Management (ECP)",
+        faculty: "Management and Public Administration Sciences",
+        duration: "4 years",
+        apsRequirement: 21,
+        description:
+          "Extended curriculum programme for human resources management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "HR Officer",
+          "Recruitment Specialist",
+          "Training Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Public Relations ECP WSU"),
+        name: "Diploma in Public Relations (ECP)",
+        faculty: "Management and Public Administration Sciences",
+        duration: "4 years",
+        apsRequirement: 21,
+        description: "Extended curriculum programme for public relations",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "PR Officer",
+          "Communications Specialist",
+          "Media Relations Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Internal Auditing ECP WSU"),
+        name: "Diploma in Internal Auditing (ECP)",
+        faculty: "Management and Public Administration Sciences",
+        duration: "4 years",
+        apsRequirement: 21,
+        description: "Extended curriculum programme for internal auditing",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Internal Auditor",
+          "Risk Analyst",
+          "Compliance Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Higher Certificate Versatile Broadcasting WSU"),
+        name: "Higher Certificate in Versatile Broadcasting",
+        faculty: "Management and Public Administration Sciences",
+        duration: "1 year",
+        apsRequirement: 18,
+        description:
+          "Broadcasting and media production - requires English level 4 & one additional language level 3",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Additional Language", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Radio Broadcaster",
+          "TV Producer",
+          "Media Technician",
+        ],
       },
     ],
   },
@@ -6487,6 +8605,3990 @@ export function getUpdatedUniversityFaculties(
 // Faculty arrays are already exported above as individual const declarations
 
 // List of universities that have been updated with specific data
+// North-West University (NWU) - Comprehensive Data
+export const NWU_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Economic and Management Sciences"),
+    name: "Faculty of Economic and Management Sciences",
+    description: "Commerce, economics, and business management programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor of Commerce Accounting"),
+        name: "Bachelor of Commerce in Accounting",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "General accounting studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Accountant", "Financial Analyst", "Bookkeeper"],
+      },
+      {
+        id: createDegreeId("Bachelor of Commerce Chartered Accountancy"),
+        name: "Bachelor of Commerce in Chartered Accountancy",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 32,
+        description: "Professional chartered accountancy program",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Chartered Accountant",
+          "Auditor",
+          "Financial Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Extended Bachelor Commerce Chartered Accountancy"),
+        name: "Extended Bachelor of Commerce in Chartered Accountancy",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 28,
+        description: "Extended programme for chartered accountancy",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Chartered Accountant",
+          "Auditor",
+          "Financial Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Commerce Financial Accountancy"),
+        name: "Bachelor of Commerce in Financial Accountancy",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "Financial accounting specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Financial Accountant",
+          "Financial Analyst",
+          "Auditor",
+        ],
+      },
+      {
+        id: createDegreeId("Extended Bachelor Commerce Financial Accountancy"),
+        name: "Extended Bachelor of Commerce in Financial Accountancy",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 24,
+        description: "Extended programme for financial accountancy",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Financial Accountant",
+          "Financial Analyst",
+          "Auditor",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Commerce Forensic Accountancy"),
+        name: "Bachelor of Commerce in Forensic Accountancy",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 36,
+        description: "Forensic accounting and fraud investigation",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Forensic Accountant",
+          "Fraud Investigator",
+          "Auditor",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Commerce Management Accountancy"),
+        name: "Bachelor of Commerce in Management Accountancy",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Management accounting and cost control",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Management Accountant",
+          "Cost Analyst",
+          "Budget Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Commerce Operations Research"),
+        name: "Bachelor of Commerce in Operations Research",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Operations research and optimization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Operations Research Analyst",
+          "Data Analyst",
+          "Business Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Commerce Statistics"),
+        name: "Bachelor of Commerce in Statistics",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Statistical analysis and data science",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+        ],
+        careerProspects: ["Statistician", "Data Analyst", "Research Analyst"],
+      },
+      {
+        id: createDegreeId("Extended Bachelor Commerce Statistics"),
+        name: "Extended Bachelor of Commerce in Statistics",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 20,
+        description: "Extended programme for statistics",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Statistician", "Data Analyst", "Research Analyst"],
+      },
+      // Business Operations programs
+      {
+        id: createDegreeId(
+          "Bachelor of Commerce Business Operations Logistics",
+        ),
+        name: "Bachelor of Commerce in Business Operations (with Logistics Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Business operations with logistics specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Logistics Manager",
+          "Supply Chain Manager",
+          "Operations Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Commerce Business Operations Logistics",
+        ),
+        name: "Extended Bachelor of Commerce in Business Operations (with Logistics Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 20,
+        description:
+          "Extended programme for business operations with logistics",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Logistics Manager",
+          "Supply Chain Manager",
+          "Operations Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Commerce Business Operations Transport",
+        ),
+        name: "Bachelor of Commerce in Business Operations (with Transport Economics)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Business operations with transport economics",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Transport Manager",
+          "Logistics Specialist",
+          "Supply Chain Analyst",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Commerce Business Operations Transport",
+        ),
+        name: "Extended Bachelor of Commerce in Business Operations (with Transport Economics)",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 20,
+        description:
+          "Extended programme for business operations with transport economics",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Transport Manager",
+          "Logistics Specialist",
+          "Supply Chain Analyst",
+        ],
+      },
+      // Economic Sciences programs
+      {
+        id: createDegreeId(
+          "Bachelor of Commerce Economic Sciences Agricultural Economics",
+        ),
+        name: "Bachelor of Commerce in Economic Sciences (with Agricultural Economics and Risk Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Economic sciences with agricultural economics focus",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Economist",
+          "Risk Manager",
+          "Policy Analyst",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Commerce Economic Sciences Econometrics",
+        ),
+        name: "Bachelor of Commerce in Economic Sciences (with Econometrics)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Economic sciences with econometrics specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Econometrician",
+          "Economic Analyst",
+          "Research Economist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Commerce Economic Sciences Econometrics",
+        ),
+        name: "Extended Bachelor of Commerce in Economic Sciences (with Econometrics)",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 20,
+        description:
+          "Extended programme for economic sciences with econometrics",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Econometrician",
+          "Economic Analyst",
+          "Research Economist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Commerce Economic Sciences International Trade",
+        ),
+        name: "Bachelor of Commerce in Economic Sciences (with International Trade)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Economic sciences with international trade focus",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Trade Analyst",
+          "Export Manager",
+          "International Business Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Commerce Economic Sciences International Trade",
+        ),
+        name: "Extended Bachelor of Commerce in Economic Sciences (with International Trade)",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 20,
+        description:
+          "Extended programme for economic sciences with international trade",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Trade Analyst",
+          "Export Manager",
+          "International Business Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Commerce Economic Sciences Informatics",
+        ),
+        name: "Bachelor of Commerce in Economic Sciences (with Informatics)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Economic sciences with informatics integration",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Business Analyst",
+          "Economic Informatician",
+          "Data Analyst",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Commerce Economic Sciences Information Systems",
+        ),
+        name: "Bachelor of Commerce in Economic Sciences (with Information Systems)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Economic sciences with information systems",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Systems Analyst",
+          "Business Intelligence Analyst",
+          "IT Consultant",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Commerce Economic Sciences Information Systems",
+        ),
+        name: "Extended Bachelor of Commerce in Economic Sciences (with Information Systems)",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 20,
+        description:
+          "Extended programme for economic sciences with information systems",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Systems Analyst",
+          "Business Intelligence Analyst",
+          "IT Consultant",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Commerce Economic Sciences Risk Management",
+        ),
+        name: "Bachelor of Commerce in Economic Sciences (with Risk Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Economic sciences with risk management focus",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Risk Manager",
+          "Risk Analyst",
+          "Insurance Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Commerce Economic Sciences Risk Management",
+        ),
+        name: "Extended Bachelor of Commerce in Economic Sciences (with Risk Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 24,
+        description:
+          "Extended programme for economic sciences with risk management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Risk Manager",
+          "Risk Analyst",
+          "Insurance Specialist",
+        ],
+      },
+      // Human Resource Management programs
+      {
+        id: createDegreeId(
+          "Bachelor of Administration Human Resource Management",
+        ),
+        name: "Bachelor of Administration in Human Resource Management",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description: "Human resource management and administration",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "HR Manager",
+          "HR Specialist",
+          "Recruitment Consultant",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Administration Human Resource Management",
+        ),
+        name: "Extended Bachelor of Administration in Human Resource Management",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 21,
+        description: "Extended programme for human resource management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "HR Manager",
+          "HR Specialist",
+          "Recruitment Consultant",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Administration Industrial Organisational Psychology",
+        ),
+        name: "Bachelor of Administration in Industrial and Organisational Psychology",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description: "Industrial and organisational psychology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Industrial Psychologist",
+          "HR Consultant",
+          "Organisational Development Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Administration Industrial Organisational Psychology",
+        ),
+        name: "Extended Bachelor of Administration in Industrial and Organisational Psychology",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 21,
+        description:
+          "Extended programme for industrial and organisational psychology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Industrial Psychologist",
+          "HR Consultant",
+          "Organisational Development Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Arts Industrial Organisational Psychology Labour Relations",
+        ),
+        name: "Bachelor of Arts (with Industrial and Organisational Psychology and Labour Relations Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Industrial psychology with labour relations",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Labour Relations Specialist",
+          "Industrial Psychologist",
+          "HR Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Commerce Human Resource Management"),
+        name: "Bachelor of Commerce (Human Resource Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Commerce with human resource management specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "HR Manager",
+          "HR Business Partner",
+          "Talent Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Commerce Industrial Organisational Psychology",
+        ),
+        name: "Bachelor of Commerce (in Industrial and Organisational Psychology)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Commerce with industrial and organisational psychology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Industrial Psychologist",
+          "Organisational Consultant",
+          "HR Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Human Resource Development"),
+        name: "Bachelor of Human Resource Development",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Human resource development - 20-22 APS range",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "HR Development Specialist",
+          "Training Manager",
+          "Learning and Development Coordinator",
+        ],
+      },
+      // Tourism and Management Sciences programs
+      {
+        id: createDegreeId("Bachelor of Arts Tourism Management"),
+        name: "Bachelor of Arts (with Tourism Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Arts with tourism management focus",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Tourism Manager",
+          "Travel Consultant",
+          "Hospitality Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Commerce Management Sciences Tourism Management",
+        ),
+        name: "Bachelor of Commerce in Management Sciences (with Tourism Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Management sciences with tourism specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Tourism Manager",
+          "Destination Manager",
+          "Tourism Development Officer",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Commerce Management Sciences Tourism Recreation",
+        ),
+        name: "Bachelor of Commerce in Management Sciences (with Tourism and Recreation Skills)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Management sciences with tourism and recreation",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Recreation Manager",
+          "Tourism Specialist",
+          "Events Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Commerce Management Sciences Business Management",
+        ),
+        name: "Bachelor of Commerce in Management Sciences (with Business Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Management sciences with business management focus",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Business Manager",
+          "Operations Manager",
+          "General Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Commerce Management Sciences Business Management",
+        ),
+        name: "Extended Bachelor of Commerce in Management Sciences (with Business Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 24,
+        description:
+          "Extended programme for management sciences with business management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Business Manager",
+          "Operations Manager",
+          "General Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Commerce Management Sciences Communication Management",
+        ),
+        name: "Bachelor of Commerce in Management Sciences (with Communication Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Management sciences with communication management",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Communications Manager",
+          "Public Relations Manager",
+          "Marketing Communications Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Commerce Management Sciences Marketing Management",
+        ),
+        name: "Bachelor of Commerce in Management Sciences (with Marketing Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Management sciences with marketing specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Marketing Manager",
+          "Brand Manager",
+          "Digital Marketing Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Commerce Management Sciences Marketing Management",
+        ),
+        name: "Extended Bachelor of Commerce in Management Sciences (with Marketing Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 20,
+        description:
+          "Extended programme for management sciences with marketing",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Marketing Manager",
+          "Brand Manager",
+          "Digital Marketing Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Commerce Management Sciences Sport Business Management",
+        ),
+        name: "Bachelor of Commerce in Management Sciences (with Sport and Business Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Management sciences with sport and business focus",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Sports Manager",
+          "Sports Marketing Manager",
+          "Event Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Commerce Management Sciences Safety Management",
+        ),
+        name: "Bachelor of Commerce in Management Sciences (with Safety Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Management sciences with safety management focus",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Safety Manager",
+          "Health and Safety Officer",
+          "Risk Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Commerce Management Sciences Marketing Tourism Management",
+        ),
+        name: "Bachelor of Commerce in Management Sciences (with Marketing & Tourism Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Management sciences with marketing and tourism focus",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Tourism Marketing Manager",
+          "Destination Marketing Manager",
+          "Travel Marketing Specialist",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Education"),
+    name: "Faculty of Education",
+    description: "Teacher training and educational programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor of Education Early Childhood Care"),
+        name: "Bachelor of Education Early Childhood Care and Education",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Early childhood care and education",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Early Childhood Teacher",
+          "Pre-school Principal",
+          "Childhood Development Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Education Foundation Phase"),
+        name: "Bachelor of Education Foundation Phase",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Foundation phase teaching (Grades R-3)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Foundation Phase Teacher",
+          "Primary School Teacher",
+          "Educational Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Education Intermediate Phase"),
+        name: "Bachelor of Education Intermediate Phase",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Intermediate phase teaching (Grades 4-6)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Intermediate Phase Teacher",
+          "Subject Specialist",
+          "Curriculum Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Education Senior Further Education"),
+        name: "Bachelor of Education Senior and Further Education",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Senior and further education teaching (Grades 7-12)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "High School Teacher",
+          "Subject Specialist",
+          "Educational Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Engineering"),
+    name: "Faculty of Engineering",
+    description: "Engineering programs across multiple disciplines",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor of Engineering Chemical"),
+        name: "Bachelor of Engineering (Chemical)",
+        faculty: "Engineering",
+        duration: "4 years",
+        apsRequirement: 34,
+        description: "Chemical engineering",
+        subjects: [
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Chemical Engineer",
+          "Process Engineer",
+          "Plant Engineer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Engineering Electrical"),
+        name: "Bachelor of Engineering (Electrical)",
+        faculty: "Engineering",
+        duration: "4 years",
+        apsRequirement: 34,
+        description: "Electrical engineering",
+        subjects: [
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Electrical Engineer",
+          "Power Systems Engineer",
+          "Control Systems Engineer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Engineering Computer Electronic"),
+        name: "Bachelor of Engineering (Computer & Electronic)",
+        faculty: "Engineering",
+        duration: "4 years",
+        apsRequirement: 34,
+        description: "Computer and electronic engineering",
+        subjects: [
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Computer Engineer",
+          "Electronics Engineer",
+          "Software Engineer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Engineering Electromechanical"),
+        name: "Bachelor of Engineering (Electromechanical)",
+        faculty: "Engineering",
+        duration: "4 years",
+        apsRequirement: 34,
+        description: "Electromechanical engineering",
+        subjects: [
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Electromechanical Engineer",
+          "Automation Engineer",
+          "Maintenance Engineer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Engineering Mechanical"),
+        name: "Bachelor of Engineering (Mechanical)",
+        faculty: "Engineering",
+        duration: "4 years",
+        apsRequirement: 34,
+        description: "Mechanical engineering",
+        subjects: [
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Mechanical Engineer",
+          "Design Engineer",
+          "Manufacturing Engineer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Engineering Industrial"),
+        name: "Bachelor of Engineering (Industrial)",
+        faculty: "Engineering",
+        duration: "4 years",
+        apsRequirement: 34,
+        description: "Industrial engineering",
+        subjects: [
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Industrial Engineer",
+          "Operations Engineer",
+          "Quality Engineer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Engineering Mechatronic"),
+        name: "Bachelor of Engineering (Mechatronic)",
+        faculty: "Engineering",
+        duration: "4 years",
+        apsRequirement: 34,
+        description: "Mechatronic engineering",
+        subjects: [
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Mechatronic Engineer",
+          "Robotics Engineer",
+          "Automation Specialist",
+        ],
+      },
+    ],
+  },
+];
+
+// University of Zululand (UNIZULU) - Comprehensive Data
+export const UNIZULU_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Commerce, Administration & Law UNIZULU"),
+    name: "Faculty of Commerce, Administration & Law (FCAL)",
+    description: "Commerce, administration, and legal studies",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Commerce Accounting UNIZULU"),
+        name: "Bachelor of Commerce in Accounting",
+        faculty: "Commerce, Administration & Law",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "Commerce with accounting specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Accountant", "Financial Analyst", "Bookkeeper"],
+      },
+      {
+        id: createDegreeId("Bachelor Commerce Accounting Science CTA UNIZULU"),
+        name: "Bachelor of Commerce in Accounting Science (CTA stream)",
+        faculty: "Commerce, Administration & Law",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "Accounting science for CTA qualification",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Chartered Accountant",
+          "Auditor",
+          "Financial Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Extended Bachelor Commerce UNIZULU"),
+        name: "Extended Bachelor of Commerce (Extended Programme)",
+        faculty: "Commerce, Administration & Law",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Extended programme for commerce studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Business Professional",
+          "Administrator",
+          "Financial Analyst",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Commerce Management Information Systems UNIZULU",
+        ),
+        name: "Bachelor of Commerce in Management Information Systems",
+        faculty: "Commerce, Administration & Law",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "Commerce with management information systems",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Systems Analyst", "IT Manager", "Business Analyst"],
+      },
+      {
+        id: createDegreeId("Bachelor Administration UNIZULU"),
+        name: "Bachelor of Administration",
+        faculty: "Commerce, Administration & Law",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "Public and business administration",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Administrator",
+          "Public Manager",
+          "Operations Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Laws LLB UNIZULU"),
+        name: "Bachelor of Laws (LLB)",
+        faculty: "Commerce, Administration & Law",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Professional law degree",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Attorney", "Advocate", "Legal Advisor"],
+      },
+      {
+        id: createDegreeId("Higher Certificate Accountancy UNIZULU"),
+        name: "Higher Certificate in Accountancy",
+        faculty: "Commerce, Administration & Law",
+        duration: "1 year",
+        apsRequirement: 22,
+        description: "Basic accounting qualification",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Accounts Clerk",
+          "Bookkeeper",
+          "Financial Assistant",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId(
+      "Faculty of Science, Agriculture & Engineering UNIZULU",
+    ),
+    name: "Faculty of Science, Agriculture & Engineering",
+    description: "Science, agriculture, engineering, and health sciences",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Engineering Mechanical UNIZULU"),
+        name: "Bachelor of Engineering (Mechanical Engineering)",
+        faculty: "Science, Agriculture & Engineering",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Mechanical engineering",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Mechanical Engineer",
+          "Design Engineer",
+          "Manufacturing Engineer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Engineering Electrical UNIZULU"),
+        name: "Bachelor of Engineering (Electrical Engineering)",
+        faculty: "Science, Agriculture & Engineering",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Electrical engineering",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Electrical Engineer",
+          "Power Systems Engineer",
+          "Control Systems Engineer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Mainstream UNIZULU"),
+        name: "Bachelor of Science (Mainstream BSc)",
+        faculty: "Science, Agriculture & Engineering",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "General science degree",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Research Scientist",
+          "Laboratory Technician",
+          "Science Educator",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Science Agriculture Agronomy Animal Science UNIZULU",
+        ),
+        name: "Bachelor of Science in Agriculture (Agronomy / Animal Science)",
+        faculty: "Science, Agriculture & Engineering",
+        duration: "4 years",
+        apsRequirement: 28,
+        description:
+          "Agricultural sciences with agronomy or animal science specialization",
+        subjects: [
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Scientist",
+          "Farm Manager",
+          "Agricultural Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Foundational Augmented UNIZULU"),
+        name: "Bachelor of Science Foundational/Augmented Stream",
+        faculty: "Science, Agriculture & Engineering",
+        duration: "4 years",
+        apsRequirement: 28,
+        description: "Science degree with foundational support",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Research Assistant",
+          "Laboratory Technician",
+          "Science Teacher",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Education BSc UNIZULU"),
+        name: "Bachelor of Education stream BSc",
+        faculty: "Science, Agriculture & Engineering",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Science education degree (foundation)",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Science Teacher",
+          "Educational Specialist",
+          "Curriculum Developer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Nursing Science UNIZULU"),
+        name: "Bachelor of Nursing Science",
+        faculty: "Science, Agriculture & Engineering",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Professional nursing education",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Professional Nurse",
+          "Clinical Nurse",
+          "Community Health Nurse",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Consumer Science Extension Rural Development UNIZULU",
+        ),
+        name: "Bachelor of Consumer Science: Extension & Rural Development",
+        faculty: "Science, Agriculture & Engineering",
+        duration: "4 years",
+        apsRequirement: 28,
+        description:
+          "Consumer science with extension and rural development focus",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: false },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Extension Officer",
+          "Rural Development Specialist",
+          "Community Developer",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Consumer Science Hospitality Tourism UNIZULU",
+        ),
+        name: "Bachelor of Consumer Science: Hospitality & Tourism",
+        faculty: "Science, Agriculture & Engineering",
+        duration: "4 years",
+        apsRequirement: 28,
+        description: "Consumer science with hospitality and tourism focus",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Hospitality Manager",
+          "Tourism Officer",
+          "Event Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Sport Exercise UNIZULU"),
+        name: "Diploma in Sport & Exercise",
+        faculty: "Science, Agriculture & Engineering",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Sport and exercise science",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Sports Scientist",
+          "Fitness Trainer",
+          "Exercise Physiologist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Hospitality Management UNIZULU"),
+        name: "Diploma in Hospitality Management",
+        faculty: "Science, Agriculture & Engineering",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Hospitality and accommodation management",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Hotel Manager",
+          "Restaurant Manager",
+          "Event Coordinator",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Education UNIZULU"),
+    name: "Faculty of Education",
+    description: "Teacher training and educational programs",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Bachelor Education Foundation Phase Teaching UNIZULU",
+        ),
+        name: "Bachelor of Education (Foundation Phase Teaching)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Foundation phase teaching (Grades R-3)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Foundation Phase Teacher",
+          "Primary School Teacher",
+          "Educational Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Education Intermediate Phase Teaching Languages UNIZULU",
+        ),
+        name: "Bachelor of Education (Intermediate Phase Teaching: Languages)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Intermediate phase language teaching",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Additional Language", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Language Teacher",
+          "English Teacher",
+          "Literature Teacher",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Education Intermediate Phase Languages Maths Natural Science Tech UNIZULU",
+        ),
+        name: "Bachelor of Education (Intermediate Phase: Languages, Maths, Natural Science & Tech)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description:
+          "Intermediate phase teaching in languages, mathematics, natural science and technology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Mathematics Teacher",
+          "Science Teacher",
+          "Technology Teacher",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Education Senior Social Science Education UNIZULU",
+        ),
+        name: "Bachelor of Education (Senior & Social Science Education)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Senior phase social science education",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "History", level: 4, isRequired: false },
+          { name: "Geography", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "History Teacher",
+          "Geography Teacher",
+          "Social Sciences Teacher",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Education Senior Science Technology Education UNIZULU",
+        ),
+        name: "Bachelor of Education (Senior Science & Technology Education)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Senior phase science and technology education",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Science Teacher",
+          "Technology Teacher",
+          "Mathematics Teacher",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Education Senior Management Sciences EMS UNIZULU",
+        ),
+        name: "Bachelor of Education (Senior Management Sciences – EMS)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Senior phase economic and management sciences education",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "EMS Teacher",
+          "Business Studies Teacher",
+          "Economics Teacher",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Humanities & Social Sciences UNIZULU"),
+    name: "Faculty of Humanities & Social Sciences",
+    description: "Humanities, social sciences, and communication studies",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Public Relations Management UNIZULU"),
+        name: "Diploma in Public Relations Management",
+        faculty: "Humanities & Social Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Public relations and communications management",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "PR Manager",
+          "Communications Specialist",
+          "Media Relations Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Media Studies UNIZULU"),
+        name: "Diploma in Media Studies",
+        faculty: "Humanities & Social Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Media studies and journalism",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: ["Journalist", "Media Producer", "Content Creator"],
+      },
+      {
+        id: createDegreeId("Diploma Tourism Management UNIZULU"),
+        name: "Diploma in Tourism Management",
+        faculty: "Humanities & Social Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Tourism management and planning",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Tourism Manager",
+          "Travel Consultant",
+          "Tour Operator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Anthropology History UNIZULU"),
+        name: "Bachelor of Arts (Anthropology & History)",
+        faculty: "Humanities & Social Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Arts with anthropology and history specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "History", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Anthropologist", "Historian", "Cultural Researcher"],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Linguistics English UNIZULU"),
+        name: "Bachelor of Arts (Linguistics & English)",
+        faculty: "Humanities & Social Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Arts with linguistics and English specialization",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: ["Linguist", "English Teacher", "Editor"],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Geography History UNIZULU"),
+        name: "Bachelor of Arts (Geography & History)",
+        faculty: "Humanities & Social Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Arts with geography and history specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+          { name: "History", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Geographer", "Historian", "Environmental Planner"],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Geography Tourism UNIZULU"),
+        name: "Bachelor of Arts (Geography & Tourism)",
+        faculty: "Humanities & Social Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Arts with geography and tourism specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Tourism Geographer",
+          "Destination Planner",
+          "Environmental Tourist Guide",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Arts History IsiZulu UNIZULU"),
+        name: "Bachelor of Arts (History & IsiZulu)",
+        faculty: "Humanities & Social Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Arts with history and IsiZulu specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "IsiZulu", level: 4, isRequired: true },
+          { name: "History", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Historian", "IsiZulu Teacher", "Cultural Advisor"],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Philosophy Psychology UNIZULU"),
+        name: "Bachelor of Arts (Philosophy & Psychology)",
+        faculty: "Humanities & Social Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Arts with philosophy and psychology specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Philosopher", "Psychologist", "Counselor"],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Correctional Studies UNIZULU"),
+        name: "Bachelor of Arts in Correctional Studies",
+        faculty: "Humanities & Social Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Correctional services and criminology",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Correctional Officer",
+          "Probation Officer",
+          "Rehabilitation Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Development Studies UNIZULU"),
+        name: "Bachelor of Arts in Development Studies",
+        faculty: "Humanities & Social Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Development studies and community development",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Development Worker",
+          "Project Manager",
+          "Community Developer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Social Work UNIZULU"),
+        name: "Bachelor of Social Work",
+        faculty: "Humanities & Social Sciences",
+        duration: "4 years",
+        apsRequirement: 28,
+        description: "Professional social work training",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Social Worker",
+          "Community Developer",
+          "Child Protection Officer",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Arts Environmental Planning Development UNIZULU",
+        ),
+        name: "Bachelor of Arts in Environmental Planning & Development",
+        faculty: "Humanities & Social Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Environmental planning and sustainable development",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Environmental Planner",
+          "Development Consultant",
+          "Sustainability Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Industrial Sociology UNIZULU"),
+        name: "Bachelor of Arts in Industrial Sociology",
+        faculty: "Humanities & Social Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Industrial sociology and labour relations",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Industrial Sociologist",
+          "Labour Relations Officer",
+          "HR Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Intercultural Communication UNIZULU"),
+        name: "Bachelor of Arts in Intercultural Communication",
+        faculty: "Humanities & Social Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Intercultural communication and linguistics",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Additional Language", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Communications Specialist",
+          "Cultural Liaison Officer",
+          "Translator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Library Information Science UNIZULU"),
+        name: "Bachelor of Library & Information Science",
+        faculty: "Humanities & Social Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Library and information science",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Librarian",
+          "Information Manager",
+          "Knowledge Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Psychology UNIZULU"),
+        name: "Bachelor of Psychology",
+        faculty: "Humanities & Social Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "Psychological sciences and therapy",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Psychologist", "Counselor", "Research Psychologist"],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Social Science Political International Studies UNIZULU",
+        ),
+        name: "Bachelor of Social Science in Political & International Studies",
+        faculty: "Humanities & Social Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Political science and international relations",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "History", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Political Analyst",
+          "Diplomat",
+          "International Relations Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Tourism Studies UNIZULU"),
+        name: "Bachelor of Tourism Studies",
+        faculty: "Humanities & Social Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Tourism studies and management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Tourism Specialist",
+          "Destination Manager",
+          "Travel Consultant",
+        ],
+      },
+    ],
+  },
+];
+
+// Sol Plaatje University (SPU) - Comprehensive Data
+export const SPU_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Education SPU"),
+    name: "Faculty of Education",
+    description: "Teacher training and educational programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Education Foundation Phase Grade R-3 SPU"),
+        name: "Bachelor of Education (Foundation Phase, Grade R–3)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Foundation phase teaching (Grade R-3)",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Foundation Phase Teacher",
+          "Early Childhood Teacher",
+          "Educational Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Education Intermediate Phase Grades 4-6 SPU",
+        ),
+        name: "Bachelor of Education (Intermediate Phase, Grades 4–6)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Intermediate phase teaching (Grades 4-6)",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Intermediate Phase Teacher",
+          "Subject Specialist",
+          "Curriculum Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Education Senior FET Phase Grades 7-12 SPU",
+        ),
+        name: "Bachelor of Education (Senior & FET Phase, Grades 7–12)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Senior and FET phase teaching (Grades 7-12)",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "High School Teacher",
+          "Subject Specialist",
+          "Educational Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Natural & Applied Sciences SPU"),
+    name: "Faculty of Natural & Applied Sciences",
+    description: "Natural sciences and data science programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Science BSc SPU"),
+        name: "Bachelor of Science (BSc)",
+        faculty: "Natural & Applied Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "General science degree",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Research Scientist",
+          "Laboratory Technician",
+          "Science Educator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Data Science SPU"),
+        name: "Bachelor of Science in Data Science",
+        faculty: "Natural & Applied Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Data science and analytics",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Data Scientist",
+          "Data Analyst",
+          "Business Intelligence Analyst",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Economic & Management Sciences SPU"),
+    name: "Faculty of Economic & Management Sciences (EMS)",
+    description: "Economics, commerce, and business management",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Commerce Accounting SPU"),
+        name: "Bachelor of Commerce in Accounting",
+        faculty: "Economic & Management Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Commerce with accounting specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+        ],
+        careerProspects: ["Accountant", "Financial Analyst", "Auditor"],
+      },
+      {
+        id: createDegreeId("Bachelor Commerce Economics SPU"),
+        name: "Bachelor of Commerce in Economics",
+        faculty: "Economic & Management Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Commerce with economics specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+        ],
+        careerProspects: ["Economist", "Economic Analyst", "Policy Researcher"],
+      },
+      {
+        id: createDegreeId("Diploma Retail Business Management SPU"),
+        name: "Diploma in Retail Business Management",
+        faculty: "Economic & Management Sciences",
+        duration: "3 years",
+        apsRequirement: 25,
+        description: "Retail business management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Retail Manager",
+          "Store Manager",
+          "Merchandising Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Humanities & Heritage Studies SPU"),
+    name: "Faculty of Humanities & Heritage Studies",
+    description: "Humanities, heritage studies, and language services",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Arts BA SPU"),
+        name: "Bachelor of Arts (BA)",
+        faculty: "Humanities & Heritage Studies",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "General arts and humanities",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "Various based on specialization",
+          "Writer",
+          "Communications Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Higher Certificate Heritage Studies SPU"),
+        name: "Higher Certificate in Heritage Studies",
+        faculty: "Humanities & Heritage Studies",
+        duration: "1 year",
+        apsRequirement: 25,
+        description: "Heritage studies and cultural management",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Heritage Officer",
+          "Museum Curator",
+          "Cultural Advisor",
+        ],
+      },
+      {
+        id: createDegreeId("Higher Certificate Court Interpreting SPU"),
+        name: "Higher Certificate in Court Interpreting",
+        faculty: "Humanities & Heritage Studies",
+        duration: "1 year",
+        apsRequirement: 25,
+        description: "Court interpreting and translation services",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Additional Language", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Court Interpreter",
+          "Legal Translator",
+          "Language Service Provider",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("School of ICT SPU"),
+    name: "School of ICT",
+    description: "Information and communication technology programs",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Diploma Information Communication Technology Applications Development SPU",
+        ),
+        name: "Diploma in Information & Communication Technology (Applications Development)",
+        faculty: "ICT",
+        duration: "3 years",
+        apsRequirement: 25,
+        description: "ICT with applications development focus",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Software Developer",
+          "Applications Developer",
+          "Web Developer",
+        ],
+      },
+    ],
+  },
+];
+
+// University of Mpumalanga (UMP) - Comprehensive Data
+export const UMP_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Social Sciences UMP"),
+    name: "Faculty of Social Sciences",
+    description: "Social sciences and social work programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Arts General UMP"),
+        name: "Bachelor of Arts (General)",
+        faculty: "Social Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description:
+          "General arts degree - requires English Level 4; Mathematics Level 2 or Math level 3",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Various based on specialization",
+          "Social Worker",
+          "Community Developer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Social Work UMP"),
+        name: "Bachelor of Social Work",
+        faculty: "Social Sciences",
+        duration: "4 years",
+        apsRequirement: 32,
+        description:
+          "Professional social work training - requires English Level 4; Mathematics Level 2 or Math level 3",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Social Worker",
+          "Community Developer",
+          "Child Protection Officer",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Agriculture & Natural Sciences UMP"),
+    name: "Faculty of Agriculture & Natural Sciences",
+    description: "Agricultural sciences, forestry, and environmental sciences",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Bachelor Science Agriculture Agricultural Extension Rural Resource Management UMP",
+        ),
+        name: "Bachelor of Science in Agriculture (Agricultural Extension & Rural Resource Management)",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "4 years",
+        apsRequirement: 26,
+        description:
+          "Agriculture with extension and rural resource management - 26 APS (with Math) / 28 APS (with Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Extension Officer",
+          "Rural Development Specialist",
+          "Agricultural Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Forestry UMP"),
+        name: "Bachelor of Science in Forestry",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Forestry science and management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Forester",
+          "Conservation Officer",
+          "Environmental Scientist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science General UMP"),
+        name: "Bachelor of Science (General)",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "General science degree",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Research Scientist",
+          "Laboratory Technician",
+          "Science Educator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Environmental Science UMP"),
+        name: "Bachelor of Science in Environmental Science",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Environmental science and conservation",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Environmental Scientist",
+          "Conservation Officer",
+          "Environmental Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Plant Production UMP"),
+        name: "Diploma in Plant Production",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description: "Plant production - 23 APS (Math) / 24 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Plant Production Manager",
+          "Agricultural Technician",
+          "Crop Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Animal Production UMP"),
+        name: "Diploma in Animal Production",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Animal production - 24 APS (Math) / 27 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Animal Production Manager",
+          "Livestock Specialist",
+          "Farm Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId(
+      "Faculty of Development Studies & Business Sciences UMP",
+    ),
+    name: "Faculty of Development Studies & Business Sciences",
+    description: "Development studies, business, and administration",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Commerce General UMP"),
+        name: "Bachelor of Commerce (General)",
+        faculty: "Development Studies & Business Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description:
+          "General commerce degree - 30 APS (Math required; Math Lit not accepted)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Business Professional",
+          "Financial Analyst",
+          "Commerce Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Administration UMP"),
+        name: "Bachelor of Administration",
+        faculty: "Development Studies & Business Sciences",
+        duration: "3 years",
+        apsRequirement: 32,
+        description: "Public and business administration",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Administrator",
+          "Public Manager",
+          "Operations Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Development Studies UMP"),
+        name: "Bachelor of Development Studies",
+        faculty: "Development Studies & Business Sciences",
+        duration: "3 years",
+        apsRequirement: 32,
+        description: "Development studies - 32 APS (Math) / 31 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Development Worker",
+          "Project Manager",
+          "Policy Analyst",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Education UMP"),
+    name: "Faculty of Education",
+    description: "Teacher training and educational programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Education Foundation Phase Teaching UMP"),
+        name: "Bachelor of Education (Foundation Phase Teaching)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description:
+          "Foundation phase teaching - 26 APS (Math) / 27 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Foundation Phase Teacher",
+          "Primary School Teacher",
+          "Educational Specialist",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of ICT & Computing UMP"),
+    name: "Faculty of ICT & Computing",
+    description: "Information and communication technology programs",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Bachelor Information Communication Technology ICT UMP",
+        ),
+        name: "Bachelor of Information & Communication Technology (ICT)",
+        faculty: "ICT & Computing",
+        duration: "4 years",
+        apsRequirement: 32,
+        description:
+          "ICT and computing - requires English Level 4 and Math/Math Lit at Level 4",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Professional",
+          "Software Developer",
+          "Systems Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma ICT Applications Development UMP"),
+        name: "Diploma in ICT (Applications Development)",
+        faculty: "ICT & Computing",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "ICT applications development",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Applications Developer",
+          "Software Developer",
+          "Web Developer",
+        ],
+      },
+      {
+        id: createDegreeId("Higher Certificate ICT User Support UMP"),
+        name: "Higher Certificate in ICT (User Support)",
+        faculty: "ICT & Computing",
+        duration: "1 year",
+        apsRequirement: 20,
+        description: "ICT user support - 20 APS (Math) / 22 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Support Technician",
+          "Help Desk Specialist",
+          "Computer Technician",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Hospitality & Tourism UMP"),
+    name: "Faculty of Hospitality & Tourism",
+    description: "Hospitality management and tourism programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Hospitality Management UMP"),
+        name: "Diploma in Hospitality Management",
+        faculty: "Hospitality & Tourism",
+        duration: "3 years",
+        apsRequirement: 24,
+        description:
+          "Hospitality management - 24 APS (Math) / 25 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Hotel Manager",
+          "Restaurant Manager",
+          "Event Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Higher Certificate Event Management UMP"),
+        name: "Higher Certificate in Event Management",
+        faculty: "Hospitality & Tourism",
+        duration: "1 year",
+        apsRequirement: 19,
+        description: "Event management - 19 APS (Math) / 21 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Event Coordinator",
+          "Event Planner",
+          "Conference Organizer",
+        ],
+      },
+    ],
+  },
+];
+
+// Cape Peninsula University of Technology (CPUT) - Comprehensive Data
+export const CPUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Agriculture & Natural Sciences CPUT"),
+    name: "Faculty of Agriculture & Natural Sciences",
+    description:
+      "Agricultural sciences, chemistry, biotechnology, and environmental management",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Agriculture CPUT"),
+        name: "Diploma in Agriculture",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description:
+          "Agriculture - 28 APS (with Maths) / 29 APS (with Tech Maths); mainstream requires 30 APS w/Maths or 31 APS w/Tech Maths",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Technician",
+          "Farm Manager",
+          "Agricultural Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Agricultural Management CPUT"),
+        name: "Diploma in Agricultural Management",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description:
+          "Agricultural management - 28 APS (w/Maths) / 29 APS (Tech Maths) / 30 APS (Maths Literacy); mainstream 30/31/32 APS respectively",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Manager",
+          "Farm Supervisor",
+          "Agricultural Business Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Analytical Chemistry CPUT"),
+        name: "Diploma in Analytical Chemistry",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description:
+          "Analytical chemistry - 28 APS (Maths) or 29 APS (Tech Maths); mainstream 30/31 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Analytical Chemist",
+          "Quality Controller",
+          "Laboratory Technician",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Biotechnology CPUT"),
+        name: "Diploma in Biotechnology",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description:
+          "Biotechnology - 28 APS (Maths) or 29 APS (Tech Maths); mainstream 30/31 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Biotechnologist",
+          "Research Technician",
+          "Quality Control Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Consumer Science Food Nutrition CPUT"),
+        name: "Diploma in Consumer Science: Food & Nutrition",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description:
+          "Consumer science food and nutrition - 26 APS (Maths) / 27 APS (Tech Maths); mainstream 28/29 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Nutritionist",
+          "Food Technologist",
+          "Consumer Advisor",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Environmental Management CPUT"),
+        name: "Diploma in Environmental Management",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description:
+          "Environmental management - 26 APS (Maths) / 27 APS (Tech Maths) / 28 APS (Maths Lit); mainstream 28/29/30 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Environmental Manager",
+          "Environmental Consultant",
+          "Conservation Officer",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Health & Wellness Sciences CPUT"),
+    name: "Faculty of Health & Wellness Sciences",
+    description: "Health sciences and medical technology programs",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Bachelor Health Sciences Medical Laboratory Science CPUT",
+        ),
+        name: "Bachelor of Health Sciences: Medical Laboratory Science",
+        faculty: "Health & Wellness Sciences",
+        duration: "4 years",
+        apsRequirement: 38,
+        description:
+          "Medical laboratory science - 38+ APS (Mainstream) / 30–37 APS (Extended)",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Medical Laboratory Scientist",
+          "Clinical Laboratory Technologist",
+          "Research Technologist",
+        ],
+      },
+    ],
+  },
+];
+
+// Central University of Technology (CUT) - Comprehensive Data
+export const CUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId(
+      "Faculty of Engineering, Built Environment & Information Technology CUT",
+    ),
+    name: "Faculty of Engineering, Built Environment & Information Technology",
+    description:
+      "Engineering, construction, and information technology programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Civil Engineering CUT"),
+        name: "Diploma in Civil Engineering",
+        faculty: "Engineering, Built Environment & Information Technology",
+        duration: "3 years",
+        apsRequirement: 27,
+        description:
+          "Civil engineering - 27 APS (NSC 2008+) or 32 APS for degree + subject-level requirements",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Civil Engineering Technician",
+          "Construction Supervisor",
+          "Project Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Mechanical Engineering Technology CUT"),
+        name: "Diploma in Mechanical Engineering Technology",
+        faculty: "Engineering, Built Environment & Information Technology",
+        duration: "3 years",
+        apsRequirement: 27,
+        description:
+          "Mechanical engineering technology - 27 APS plus subject-level thresholds",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Mechanical Engineering Technician",
+          "Maintenance Technician",
+          "Production Technician",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Engineering Technology Mechanical Engineering CUT",
+        ),
+        name: "Bachelor of Engineering Technology in Mechanical Engineering",
+        faculty: "Engineering, Built Environment & Information Technology",
+        duration: "4 years",
+        apsRequirement: 32,
+        description:
+          "Mechanical engineering technology degree - 32 APS, with subject-level conditions",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Mechanical Engineer Technologist",
+          "Design Engineer",
+          "Manufacturing Engineer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Information Technology CUT"),
+        name: "Diploma in Information Technology",
+        faculty: "Engineering, Built Environment & Information Technology",
+        duration: "3 years",
+        apsRequirement: 27,
+        description:
+          "Information technology - 27 APS plus English & Maths levels",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Technician",
+          "Software Developer",
+          "Network Administrator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor IT CUT"),
+        name: "Bachelor's-level IT (BTech/Bachelor)",
+        faculty: "Engineering, Built Environment & Information Technology",
+        duration: "4 years",
+        apsRequirement: 30,
+        description:
+          "Bachelor-level IT programmes - 30 APS+ depending on programme",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Professional",
+          "Systems Analyst",
+          "Software Engineer",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Health & Environmental Sciences CUT"),
+    name: "Faculty of Health & Environmental Sciences",
+    description: "Health sciences and environmental health programs",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Bachelor Health Sciences Medical Laboratory Sciences CUT",
+        ),
+        name: "Bachelor of Health Sciences: Medical Laboratory Sciences",
+        faculty: "Health & Environmental Sciences",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Medical laboratory sciences",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Medical Laboratory Scientist",
+          "Clinical Technologist",
+          "Research Technologist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Environmental Health CUT"),
+        name: "Diploma in Environmental Health",
+        faculty: "Health & Environmental Sciences",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Environmental health and safety",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Environmental Health Officer",
+          "Health Inspector",
+          "Safety Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Dental Assisting CUT"),
+        name: "Diploma in Dental Assisting",
+        faculty: "Health & Environmental Sciences",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Dental assisting and oral health",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Dental Assistant",
+          "Oral Health Therapist",
+          "Dental Technician",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Management Sciences & Humanities CUT"),
+    name: "Faculty of Management Sciences & Humanities",
+    description: "Management sciences, business, and hospitality programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Public Management CUT"),
+        name: "Diploma in Public Management",
+        faculty: "Management Sciences & Humanities",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Public sector management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Public Manager",
+          "Government Official",
+          "Policy Administrator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Marketing CUT"),
+        name: "Diploma in Marketing",
+        faculty: "Management Sciences & Humanities",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Marketing and sales management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Marketing Officer",
+          "Sales Manager",
+          "Brand Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Internal Auditing CUT"),
+        name: "Diploma in Internal Auditing",
+        faculty: "Management Sciences & Humanities",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "Internal auditing and risk management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Internal Auditor",
+          "Risk Analyst",
+          "Compliance Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Office Management Technology CUT"),
+        name: "Diploma in Office Management & Technology",
+        faculty: "Management Sciences & Humanities",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Office management and administrative technology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Office Manager",
+          "Executive Assistant",
+          "Administrative Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Hospitality Management CUT"),
+        name: "Bachelor of Hospitality Management",
+        faculty: "Management Sciences & Humanities",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Hospitality and tourism management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Hotel Manager",
+          "Restaurant Manager",
+          "Tourism Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Accountancy CUT"),
+        name: "Bachelor of Accountancy",
+        faculty: "Management Sciences & Humanities",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Professional accounting studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Accountant", "Financial Manager", "Auditor"],
+      },
+      {
+        id: createDegreeId("Bachelor Tourism Management CUT"),
+        name: "Bachelor of Tourism Management",
+        faculty: "Management Sciences & Humanities",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Tourism and hospitality management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Tourism Manager",
+          "Destination Manager",
+          "Travel Consultant",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Education CUT"),
+    name: "Faculty of Education",
+    description: "Teacher training and educational programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Education Foundation Phase CUT"),
+        name: "Bachelor of Education (Foundation Phase)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 27,
+        description:
+          "Foundation phase teaching - 27 APS with subject-level criteria",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Foundation Phase Teacher",
+          "Primary School Teacher",
+          "Educational Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Education SP FET Various Streams CUT"),
+        name: "Bachelor of Education (SP & FET – various streams like Economics, Natural Science, Languages, Maths, Computer Science)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 27,
+        description:
+          "Senior phase and FET teaching in various subjects - 27 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "High School Teacher",
+          "Subject Specialist",
+          "Educational Manager",
+        ],
+      },
+    ],
+  },
+];
+
+// Durban University of Technology (DUT) - Comprehensive Data
+export const DUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Engineering & Built Environment DUT"),
+    name: "Engineering & Built Environment",
+    description: "Engineering and construction technology programs",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Diploma Engineering Civil Electrical Mechanical DUT",
+        ),
+        name: "Diploma in Engineering (Civil/Electrical/Mechanical)",
+        faculty: "Engineering & Built Environment",
+        duration: "3 years",
+        apsRequirement: 24,
+        description:
+          "Engineering diploma - 24 APS+ with Maths & Physical Sciences L4+",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technician",
+          "Project Technician",
+          "Maintenance Engineer",
+        ],
+      },
+      {
+        id: createDegreeId("BEng Technology Engineering Technology DUT"),
+        name: "BEng Technology (Engineering Technology)",
+        faculty: "Engineering & Built Environment",
+        duration: "4 years",
+        apsRequirement: 28,
+        description:
+          "Engineering technology degree - 28 APS with L4 in Maths & Physical Sciences",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technologist",
+          "Design Engineer",
+          "Project Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Health & Wellness Sciences DUT"),
+    name: "Health & Wellness Sciences",
+    description: "Health sciences and medical technology programs",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Bachelor Health Sciences Medical Laboratory Science DUT",
+        ),
+        name: "Bachelor of Health Sciences (Medical Laboratory Science)",
+        faculty: "Health & Wellness Sciences",
+        duration: "4 years",
+        apsRequirement: 36,
+        description:
+          "Medical laboratory science - 36 APS plus Maths, Physical Science, Life Sciences prerequisites",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Medical Laboratory Scientist",
+          "Clinical Technologist",
+          "Research Scientist",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Information Technology DUT"),
+    name: "Information Technology",
+    description: "Information technology and computing programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma IT DUT"),
+        name: "Diploma in IT",
+        faculty: "Information Technology",
+        duration: "3 years",
+        apsRequirement: 26,
+        description:
+          "IT diploma - 26–28 APS depending on the stream; Maths L4+ required",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Technician",
+          "Software Developer",
+          "Network Administrator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor IT DUT"),
+        name: "Bachelor-level IT",
+        faculty: "Information Technology",
+        duration: "4 years",
+        apsRequirement: 30,
+        description:
+          "Bachelor-level IT - 30 APS+, subject to programme details",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Professional",
+          "Systems Analyst",
+          "Software Engineer",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Management Sciences & Arts DUT"),
+    name: "Management Sciences & Arts",
+    description: "Management, business, and arts programs",
+    degrees: [
+      {
+        id: createDegreeId("Diplomas Management Sciences DUT"),
+        name: "Diplomas (e.g., Public Management, Marketing, Internal Auditing, Office Management)",
+        faculty: "Management Sciences & Arts",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Various management science diplomas - typically 27 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Manager", "Administrator", "Business Professional"],
+      },
+      {
+        id: createDegreeId("Bachelor Management Sciences DUT"),
+        name: "Bachelor's (e.g., Hospitality Management, Accountancy, Tourism Management)",
+        faculty: "Management Sciences & Arts",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Various bachelor programmes - 30 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Professional Manager",
+          "Accountant",
+          "Tourism Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Humanities & Design DUT"),
+    name: "Humanities & Design",
+    description: "Humanities, languages, and design programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Arts DUT"),
+        name: "Bachelor of Arts",
+        faculty: "Humanities & Design",
+        duration: "3 years",
+        apsRequirement: 24,
+        description:
+          "Arts and humanities - 24 APS+, with strong language results",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "Various based on specialization",
+          "Writer",
+          "Communications Specialist",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Education DUT"),
+    name: "Education",
+    description: "Teacher training and educational programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Education Foundation SP FET DUT"),
+        name: "Bachelor of Education (Foundation, SP & FET: various subjects)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 27,
+        description:
+          "Teacher education - 27 APS plus subject-level requirements",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Teacher",
+          "Educational Specialist",
+          "Curriculum Developer",
+        ],
+      },
+    ],
+  },
+];
+
+// Mangosuthu University of Technology (MUT) - Comprehensive Data
+export const MUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Engineering MUT"),
+    name: "Faculty of Engineering",
+    description: "Engineering technology programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Civil Engineering MUT"),
+        name: "Diploma in Civil Engineering",
+        faculty: "Engineering",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Civil engineering - APS ~20+, with 50% Maths & Physical Science",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Civil Engineering Technician",
+          "Construction Supervisor",
+          "Project Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Diploma Mechanical Electrical Chemical Engineering MUT",
+        ),
+        name: "Diploma in Mechanical/Electrical/Chemical Engineering",
+        faculty: "Engineering",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Engineering diplomas - similar 20+ APS, with subject-level requirements",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technician",
+          "Maintenance Technician",
+          "Process Technician",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Engineering Technology BEngTech MUT"),
+        name: "Bachelor of Engineering Technology (BEngTech)",
+        faculty: "Engineering",
+        duration: "4 years",
+        apsRequirement: 25,
+        description:
+          "Engineering technology degree - typically higher APS, require strong 50%+ in Maths, Physics & English",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technologist",
+          "Design Engineer",
+          "Project Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Management Sciences MUT"),
+    name: "Faculty of Management Sciences",
+    description: "Management, business, and administrative programs",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Diploma Accounting Marketing Public Management HR Office Management MUT",
+        ),
+        name: "Diploma in Accounting, Marketing, Public Management, HR, Office Management",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 25,
+        description:
+          "Various management diplomas - min 25 APS plus subject requirements in Maths or Maths Lit",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Business Professional", "Administrator", "Manager"],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Commerce Accounting Marketing Public Administration MUT",
+        ),
+        name: "Bachelor of Commerce in Accounting/Marketing/Public Administration",
+        faculty: "Management Sciences",
+        duration: "4 years",
+        apsRequirement: 25,
+        description:
+          "Commerce degrees - similar baseline APS (25–30) plus departmental screening",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Professional Manager",
+          "Accountant",
+          "Marketing Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId(
+      "Faculty of Natural Sciences Applied Health Sciences MUT",
+    ),
+    name: "Faculty of Natural Sciences (Applied & Health Sciences)",
+    description: "Natural sciences, health sciences, and applied sciences",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Diploma Analytical Chemistry Agriculture Environmental Health Biomedical Technology MUT",
+        ),
+        name: "Diploma in Analytical Chemistry, Agriculture, Environmental Health, Biomedical Technology",
+        faculty: "Natural Sciences (Applied & Health Sciences)",
+        duration: "3 years",
+        apsRequirement: 23,
+        description:
+          "Science diplomas - min APS 23+, plus subject requirements in Maths, Life/Physical Sciences",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Technician",
+          "Laboratory Analyst",
+          "Health Professional",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Science Analytical Chemistry Environmental Health MUT",
+        ),
+        name: "Bachelor of Science (e.g., Analytical Chemistry, Environmental Health)",
+        faculty: "Natural Sciences (Applied & Health Sciences)",
+        duration: "4 years",
+        apsRequirement: 30,
+        description:
+          "Science degrees - higher APS (around 30+), plus 50%+ in relevant sciences & English",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Scientist",
+          "Research Analyst",
+          "Environmental Specialist",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Hospitality & Tourism MUT"),
+    name: "Hospitality & Tourism",
+    description: "Hospitality management and office administration",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Hospitality Management MUT"),
+        name: "Diploma in Hospitality Management",
+        faculty: "Hospitality & Tourism",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Hospitality management - APS ~22, with English Level 4",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Hotel Manager",
+          "Restaurant Manager",
+          "Event Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Office Management MUT"),
+        name: "Diploma in Office Management",
+        faculty: "Hospitality & Tourism",
+        duration: "3 years",
+        apsRequirement: 20,
+        description: "Office management - 20 APS (Maths Lit accepted)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Office Manager",
+          "Executive Assistant",
+          "Administrative Coordinator",
+        ],
+      },
+    ],
+  },
+];
+
+// Tshwane University of Technology (TUT) - Comprehensive Data
+export const TUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Engineering & the Built Environment TUT"),
+    name: "Faculty of Engineering & the Built Environment",
+    description: "Engineering and construction technology programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Engineering Various Disciplines TUT"),
+        name: "Diploma in Engineering (various disciplines)",
+        faculty: "Engineering & the Built Environment",
+        duration: "3 years",
+        apsRequirement: 22,
+        description:
+          "Engineering diplomas - 22–24 APS, requires Maths & Physical Science Level 4+",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technician",
+          "Technical Officer",
+          "Project Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Engineering Technology BEngTech TUT"),
+        name: "Bachelor of Engineering Technology (BEngTech)",
+        faculty: "Engineering & the Built Environment",
+        duration: "4 years",
+        apsRequirement: 28,
+        description:
+          "Engineering technology degree - 28–30 APS, requires stronger subject levels",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technologist",
+          "Design Engineer",
+          "Project Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId(
+      "Faculty of Information & Communication Technology TUT",
+    ),
+    name: "Faculty of Information & Communication Technology",
+    description: "Information technology and computing programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma ICT TUT"),
+        name: "Diploma in ICT",
+        faculty: "Information & Communication Technology",
+        duration: "3 years",
+        apsRequirement: 22,
+        description:
+          "ICT diploma - 22–24 APS, requires Maths Level 4; Math Lit often not accepted",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Technician",
+          "Software Developer",
+          "Network Administrator",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Management Sciences TUT"),
+    name: "Faculty of Management Sciences",
+    description: "Management, business, and administrative programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Programmes Management Sciences TUT"),
+        name: "Diploma programmes (e.g., Accounting, Marketing, Public Finance, Sport Management)",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Management science diplomas - 20–24 APS, subject dependent",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Business Professional", "Administrator", "Manager"],
+      },
+      {
+        id: createDegreeId("Higher APS Extended Specialised Diplomas TUT"),
+        name: "Higher APS for extended or specialised diplomas (e.g., Public Finance)",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description: "Specialized diplomas - 23 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Specialist Manager",
+          "Financial Officer",
+          "Public Administrator",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Arts, Design & Humanities TUT"),
+    name: "Faculty of Arts, Design & Humanities",
+    description: "Creative arts, design, and humanities programs",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Diploma Fine Applied Arts Jewellery Performing Arts Fashion Design TUT",
+        ),
+        name: "Diploma in Fine & Applied Arts, Jewellery, Performing Arts, Fashion Design, etc.",
+        faculty: "Arts, Design & Humanities",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Creative arts diplomas - 20–22 APS, plus portfolio, auditions or interviews",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 3, isRequired: false },
+        ],
+        careerProspects: ["Artist", "Designer", "Creative Professional"],
+      },
+      {
+        id: createDegreeId("Bachelor Architecture TUT"),
+        name: "Bachelor of Architecture",
+        faculty: "Arts, Design & Humanities",
+        duration: "5 years",
+        apsRequirement: 25,
+        description:
+          "Architecture degree - 25 APS, with strong entrance requirements in English & related subjects",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Architect", "Urban Planner", "Design Consultant"],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Humanities & Social Sciences TUT"),
+    name: "Faculty of Humanities & Social Sciences",
+    description: "Humanities and social sciences programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Degrees TUT"),
+        name: "Bachelor's degrees",
+        faculty: "Humanities & Social Sciences",
+        duration: "3-4 years",
+        apsRequirement: 25,
+        description:
+          "Various bachelor programmes - ≥25 APS, often 30+ APS preferred; English proficiency mandatory",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "Professional in chosen field",
+          "Researcher",
+          "Specialist",
+        ],
+      },
+    ],
+  },
+];
+
+// Vaal University of Technology (VUT) - Comprehensive Data
+export const VUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Applied & Computer Sciences VUT"),
+    name: "Faculty of Applied & Computer Sciences",
+    description:
+      "Applied sciences, agriculture, biotechnology, and information technology",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Analytical Chemistry VUT"),
+        name: "Diploma in Analytical Chemistry",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Analytical chemistry - 24 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Analytical Chemist",
+          "Quality Controller",
+          "Laboratory Technician",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Agricultural Management VUT"),
+        name: "Diploma in Agricultural Management",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description:
+          "Agricultural management - 24 APS (Maths) / 25 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Manager",
+          "Farm Supervisor",
+          "Agricultural Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Biotechnology VUT"),
+        name: "Diploma in Biotechnology",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description: "Biotechnology studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Biotechnologist",
+          "Research Technician",
+          "Quality Control Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Information Technology VUT"),
+        name: "Diploma in Information Technology",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description:
+          "Information technology - 24 APS (Maths or Tech Maths) / 26 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Technician",
+          "Software Developer",
+          "Network Administrator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Environmental Science VUT"),
+        name: "Diploma in Environmental Science",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Environmental science - 21 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Environmental Scientist",
+          "Conservation Officer",
+          "Environmental Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma NonDestructive Testing VUT"),
+        name: "Diploma in NonDestructive Testing",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 19,
+        description: "Non-destructive testing technology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Physical Sciences", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "NDT Technician",
+          "Quality Inspector",
+          "Materials Tester",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Engineering & Technology VUT"),
+    name: "Faculty of Engineering & Technology",
+    description: "Engineering technology programs across multiple disciplines",
+    degrees: [
+      {
+        id: createDegreeId("All Engineering Diplomas VUT"),
+        name: "All engineering diplomas (Chemical, Civil, Electronic, Power, Process Control, Computer Systems, Industrial, Mechanical, Metallurgical Engineering)",
+        faculty: "Engineering & Technology",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "All engineering diplomas require 24 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technician",
+          "Technical Officer",
+          "Process Controller",
+        ],
+      },
+      {
+        id: createDegreeId("Extended Engineering Courses VUT"),
+        name: "Extended courses",
+        faculty: "Engineering & Technology",
+        duration: "4 years",
+        apsRequirement: 22,
+        description: "Extended engineering programmes require 22 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technician",
+          "Technical Assistant",
+          "Project Coordinator",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Human Sciences VUT"),
+    name: "Faculty of Human Sciences",
+    description: "Creative arts, tourism, law, safety, and education programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Fashion VUT"),
+        name: "Diploma in Fashion",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Fashion design - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Fashion Designer",
+          "Fashion Stylist",
+          "Garment Technologist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Photography VUT"),
+        name: "Diploma in Photography",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Photography - 21 APS / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Photographer",
+          "Photo Editor",
+          "Visual Media Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Graphic Design VUT"),
+        name: "Diploma in Graphic Design",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Graphic design - 21 APS / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Graphic Designer",
+          "Visual Communications Designer",
+          "Creative Director",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Fine Art VUT"),
+        name: "Diploma in Fine Art",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Fine art - 21 APS / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 4, isRequired: false },
+        ],
+        careerProspects: ["Artist", "Art Teacher", "Gallery Curator"],
+      },
+      {
+        id: createDegreeId("Diploma Food Service Management VUT"),
+        name: "Diploma in Food Service Management",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Food service management - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Food Service Manager",
+          "Restaurant Manager",
+          "Catering Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Tourism Management VUT"),
+        name: "Diploma in Tourism Management",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Tourism management - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Tourism Manager",
+          "Travel Consultant",
+          "Tour Operator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Ecotourism Management VUT"),
+        name: "Diploma in Ecotourism Management",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Ecotourism management - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Ecotourism Manager",
+          "Conservation Tourism Officer",
+          "Sustainable Tourism Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Public Relations VUT"),
+        name: "Diploma in Public Relations",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Public relations - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "PR Officer",
+          "Communications Specialist",
+          "Media Relations Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Legal Assistance VUT"),
+        name: "Diploma in Legal Assistance",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description:
+          "Legal assistance - 23 APS (Maths) / 24 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Paralegal", "Legal Assistant", "Court Officer"],
+      },
+      {
+        id: createDegreeId("Diploma Labour Law VUT"),
+        name: "Diploma in Labour Law",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description:
+          "Labour law - 23 APS (Maths) / 24 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Labour Relations Officer",
+          "Legal Advisor",
+          "HR Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Policing VUT"),
+        name: "Diploma in Policing",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Policing - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Police Officer",
+          "Security Manager",
+          "Law Enforcement Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Safety Management VUT"),
+        name: "Diploma in Safety Management",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Safety management - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Safety Manager",
+          "Health and Safety Officer",
+          "Risk Manager",
+        ],
+      },
+      {
+        id: createDegreeId("BEd Senior Phase FET Teaching VUT"),
+        name: "BEd (Senior Phase & FET teaching)",
+        faculty: "Human Sciences",
+        duration: "4 years",
+        apsRequirement: 22,
+        description: "Teacher education - 22 APS (Maths) / 24 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "High School Teacher",
+          "Subject Specialist",
+          "Educational Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Management Sciences VUT"),
+    name: "Faculty of Management Sciences",
+    description: "Management, business, finance, and administrative programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Financial Info Systems VUT"),
+        name: "Diploma in Financial Info Systems",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Financial information systems - 20 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Financial Systems Analyst",
+          "Database Administrator",
+          "IT Support Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Cost Management Accounting VUT"),
+        name: "Diploma in Cost & Management Accounting",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Cost and management accounting - 20 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Cost Accountant",
+          "Management Accountant",
+          "Budget Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Internal Auditing VUT"),
+        name: "Diploma in Internal Auditing",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Internal auditing - 20 APS (Maths) / 23 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Internal Auditor",
+          "Risk Analyst",
+          "Compliance Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Human Resources Management VUT"),
+        name: "Diploma in Human Resources Management",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Human resources management - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "HR Officer",
+          "Recruitment Specialist",
+          "Training Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Logistics Supply Chain Management VUT"),
+        name: "Diploma in Logistics & Supply Chain Management",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Logistics and supply chain - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Logistics Coordinator",
+          "Supply Chain Analyst",
+          "Warehouse Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Marketing VUT"),
+        name: "Diploma in Marketing",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Marketing - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Marketing Officer",
+          "Sales Representative",
+          "Brand Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Retail Business Management VUT"),
+        name: "Diploma in Retail Business Management",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Retail business management - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Retail Manager",
+          "Store Manager",
+          "Merchandising Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Sport Management VUT"),
+        name: "Diploma in Sport Management",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Sport management - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Sports Manager",
+          "Event Manager",
+          "Sports Development Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Operations Management VUT"),
+        name: "Diploma in Operations Management",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description: "Operations management - 23 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Operations Manager",
+          "Production Manager",
+          "Process Coordinator",
+        ],
+      },
+    ],
+  },
+];
+
 export const UPDATED_UNIVERSITIES = [
   "ul", // University of Limpopo
   "nwu", // North-West University
