@@ -10365,6 +10365,598 @@ export const UNIZULU_FACULTIES: Faculty[] = [
   },
 ];
 
+// Sol Plaatje University (SPU) - Comprehensive Data
+export const SPU_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Education SPU"),
+    name: "Faculty of Education",
+    description: "Teacher training and educational programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Education Foundation Phase Grade R-3 SPU"),
+        name: "Bachelor of Education (Foundation Phase, Grade R–3)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Foundation phase teaching (Grade R-3)",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Foundation Phase Teacher",
+          "Early Childhood Teacher",
+          "Educational Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Education Intermediate Phase Grades 4-6 SPU",
+        ),
+        name: "Bachelor of Education (Intermediate Phase, Grades 4–6)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Intermediate phase teaching (Grades 4-6)",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Intermediate Phase Teacher",
+          "Subject Specialist",
+          "Curriculum Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Education Senior FET Phase Grades 7-12 SPU",
+        ),
+        name: "Bachelor of Education (Senior & FET Phase, Grades 7–12)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Senior and FET phase teaching (Grades 7-12)",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "High School Teacher",
+          "Subject Specialist",
+          "Educational Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Natural & Applied Sciences SPU"),
+    name: "Faculty of Natural & Applied Sciences",
+    description: "Natural sciences and data science programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Science BSc SPU"),
+        name: "Bachelor of Science (BSc)",
+        faculty: "Natural & Applied Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "General science degree",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Research Scientist",
+          "Laboratory Technician",
+          "Science Educator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Data Science SPU"),
+        name: "Bachelor of Science in Data Science",
+        faculty: "Natural & Applied Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Data science and analytics",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Data Scientist",
+          "Data Analyst",
+          "Business Intelligence Analyst",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Economic & Management Sciences SPU"),
+    name: "Faculty of Economic & Management Sciences (EMS)",
+    description: "Economics, commerce, and business management",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Commerce Accounting SPU"),
+        name: "Bachelor of Commerce in Accounting",
+        faculty: "Economic & Management Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Commerce with accounting specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+        ],
+        careerProspects: ["Accountant", "Financial Analyst", "Auditor"],
+      },
+      {
+        id: createDegreeId("Bachelor Commerce Economics SPU"),
+        name: "Bachelor of Commerce in Economics",
+        faculty: "Economic & Management Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Commerce with economics specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+        ],
+        careerProspects: ["Economist", "Economic Analyst", "Policy Researcher"],
+      },
+      {
+        id: createDegreeId("Diploma Retail Business Management SPU"),
+        name: "Diploma in Retail Business Management",
+        faculty: "Economic & Management Sciences",
+        duration: "3 years",
+        apsRequirement: 25,
+        description: "Retail business management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Retail Manager",
+          "Store Manager",
+          "Merchandising Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Humanities & Heritage Studies SPU"),
+    name: "Faculty of Humanities & Heritage Studies",
+    description: "Humanities, heritage studies, and language services",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Arts BA SPU"),
+        name: "Bachelor of Arts (BA)",
+        faculty: "Humanities & Heritage Studies",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "General arts and humanities",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "Various based on specialization",
+          "Writer",
+          "Communications Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Higher Certificate Heritage Studies SPU"),
+        name: "Higher Certificate in Heritage Studies",
+        faculty: "Humanities & Heritage Studies",
+        duration: "1 year",
+        apsRequirement: 25,
+        description: "Heritage studies and cultural management",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Heritage Officer",
+          "Museum Curator",
+          "Cultural Advisor",
+        ],
+      },
+      {
+        id: createDegreeId("Higher Certificate Court Interpreting SPU"),
+        name: "Higher Certificate in Court Interpreting",
+        faculty: "Humanities & Heritage Studies",
+        duration: "1 year",
+        apsRequirement: 25,
+        description: "Court interpreting and translation services",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Additional Language", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Court Interpreter",
+          "Legal Translator",
+          "Language Service Provider",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("School of ICT SPU"),
+    name: "School of ICT",
+    description: "Information and communication technology programs",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Diploma Information Communication Technology Applications Development SPU",
+        ),
+        name: "Diploma in Information & Communication Technology (Applications Development)",
+        faculty: "ICT",
+        duration: "3 years",
+        apsRequirement: 25,
+        description: "ICT with applications development focus",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Software Developer",
+          "Applications Developer",
+          "Web Developer",
+        ],
+      },
+    ],
+  },
+];
+
+// University of Mpumalanga (UMP) - Comprehensive Data
+export const UMP_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Social Sciences UMP"),
+    name: "Faculty of Social Sciences",
+    description: "Social sciences and social work programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Arts General UMP"),
+        name: "Bachelor of Arts (General)",
+        faculty: "Social Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description:
+          "General arts degree - requires English Level 4; Mathematics Level 2 or Math level 3",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Various based on specialization",
+          "Social Worker",
+          "Community Developer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Social Work UMP"),
+        name: "Bachelor of Social Work",
+        faculty: "Social Sciences",
+        duration: "4 years",
+        apsRequirement: 32,
+        description:
+          "Professional social work training - requires English Level 4; Mathematics Level 2 or Math level 3",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Social Worker",
+          "Community Developer",
+          "Child Protection Officer",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Agriculture & Natural Sciences UMP"),
+    name: "Faculty of Agriculture & Natural Sciences",
+    description: "Agricultural sciences, forestry, and environmental sciences",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Bachelor Science Agriculture Agricultural Extension Rural Resource Management UMP",
+        ),
+        name: "Bachelor of Science in Agriculture (Agricultural Extension & Rural Resource Management)",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "4 years",
+        apsRequirement: 26,
+        description:
+          "Agriculture with extension and rural resource management - 26 APS (with Math) / 28 APS (with Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Extension Officer",
+          "Rural Development Specialist",
+          "Agricultural Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Forestry UMP"),
+        name: "Bachelor of Science in Forestry",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Forestry science and management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Forester",
+          "Conservation Officer",
+          "Environmental Scientist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science General UMP"),
+        name: "Bachelor of Science (General)",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "General science degree",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Research Scientist",
+          "Laboratory Technician",
+          "Science Educator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Environmental Science UMP"),
+        name: "Bachelor of Science in Environmental Science",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Environmental science and conservation",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Environmental Scientist",
+          "Conservation Officer",
+          "Environmental Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Plant Production UMP"),
+        name: "Diploma in Plant Production",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description: "Plant production - 23 APS (Math) / 24 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Plant Production Manager",
+          "Agricultural Technician",
+          "Crop Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Animal Production UMP"),
+        name: "Diploma in Animal Production",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Animal production - 24 APS (Math) / 27 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Animal Production Manager",
+          "Livestock Specialist",
+          "Farm Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId(
+      "Faculty of Development Studies & Business Sciences UMP",
+    ),
+    name: "Faculty of Development Studies & Business Sciences",
+    description: "Development studies, business, and administration",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Commerce General UMP"),
+        name: "Bachelor of Commerce (General)",
+        faculty: "Development Studies & Business Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description:
+          "General commerce degree - 30 APS (Math required; Math Lit not accepted)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Business Professional",
+          "Financial Analyst",
+          "Commerce Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Administration UMP"),
+        name: "Bachelor of Administration",
+        faculty: "Development Studies & Business Sciences",
+        duration: "3 years",
+        apsRequirement: 32,
+        description: "Public and business administration",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Administrator",
+          "Public Manager",
+          "Operations Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Development Studies UMP"),
+        name: "Bachelor of Development Studies",
+        faculty: "Development Studies & Business Sciences",
+        duration: "3 years",
+        apsRequirement: 32,
+        description: "Development studies - 32 APS (Math) / 31 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Development Worker",
+          "Project Manager",
+          "Policy Analyst",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Education UMP"),
+    name: "Faculty of Education",
+    description: "Teacher training and educational programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Education Foundation Phase Teaching UMP"),
+        name: "Bachelor of Education (Foundation Phase Teaching)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description:
+          "Foundation phase teaching - 26 APS (Math) / 27 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Foundation Phase Teacher",
+          "Primary School Teacher",
+          "Educational Specialist",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of ICT & Computing UMP"),
+    name: "Faculty of ICT & Computing",
+    description: "Information and communication technology programs",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Bachelor Information Communication Technology ICT UMP",
+        ),
+        name: "Bachelor of Information & Communication Technology (ICT)",
+        faculty: "ICT & Computing",
+        duration: "4 years",
+        apsRequirement: 32,
+        description:
+          "ICT and computing - requires English Level 4 and Math/Math Lit at Level 4",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Professional",
+          "Software Developer",
+          "Systems Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma ICT Applications Development UMP"),
+        name: "Diploma in ICT (Applications Development)",
+        faculty: "ICT & Computing",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "ICT applications development",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Applications Developer",
+          "Software Developer",
+          "Web Developer",
+        ],
+      },
+      {
+        id: createDegreeId("Higher Certificate ICT User Support UMP"),
+        name: "Higher Certificate in ICT (User Support)",
+        faculty: "ICT & Computing",
+        duration: "1 year",
+        apsRequirement: 20,
+        description: "ICT user support - 20 APS (Math) / 22 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Support Technician",
+          "Help Desk Specialist",
+          "Computer Technician",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Hospitality & Tourism UMP"),
+    name: "Faculty of Hospitality & Tourism",
+    description: "Hospitality management and tourism programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Hospitality Management UMP"),
+        name: "Diploma in Hospitality Management",
+        faculty: "Hospitality & Tourism",
+        duration: "3 years",
+        apsRequirement: 24,
+        description:
+          "Hospitality management - 24 APS (Math) / 25 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Hotel Manager",
+          "Restaurant Manager",
+          "Event Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Higher Certificate Event Management UMP"),
+        name: "Higher Certificate in Event Management",
+        faculty: "Hospitality & Tourism",
+        duration: "1 year",
+        apsRequirement: 19,
+        description: "Event management - 19 APS (Math) / 21 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Event Coordinator",
+          "Event Planner",
+          "Conference Organizer",
+        ],
+      },
+    ],
+  },
+];
+
 export const UPDATED_UNIVERSITIES = [
   "ul", // University of Limpopo
   "nwu", // North-West University
