@@ -73,7 +73,7 @@ export function getUpdatedUniversityFaculties(
   }
 }
 
-// Export all faculty arrays
+// Export all faculty arrays (getUpdatedUniversityFaculties already exported above)
 export {
   UL_FACULTIES,
   NWU_FACULTIES,
@@ -87,7 +87,6 @@ export {
   MUT_FACULTIES,
   TUT_FACULTIES,
   VUT_FACULTIES,
-  getUpdatedUniversityFaculties,
 };
 
 // List of universities that have been updated with specific data
