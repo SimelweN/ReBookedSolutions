@@ -115,10 +115,24 @@ const EnhancedAPSCalculator: React.FC = () => {
   const [subjects, setSubjects] = useState<APSSubjectInput[]>([]);
   const [selectedSubject, setSelectedSubject] = useState<string>("");
   const [selectedMarks, setSelectedMarks] = useState<string>("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<
+    Array<{
+      id: string;
+      name: string;
+      apsRequired: number;
+      universityId: string;
+      faculty: string;
+    }>
+  >([]);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [validationWarnings, setValidationWarnings] = useState<string[]>([]);
-  const [selectedProgram, setSelectedProgram] = useState<any>(null);
+  const [selectedProgram, setSelectedProgram] = useState<{
+    id: string;
+    name: string;
+    apsRequired: number;
+    universityId: string;
+    faculty: string;
+  } | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [facultyFilter, setFacultyFilter] = useState<string>("all");
