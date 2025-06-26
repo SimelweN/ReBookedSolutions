@@ -208,7 +208,11 @@ const EnhancedAPSCalculator: React.FC = () => {
 
   // Load university-specific calculation
   const [universitySpecificScores, setUniversitySpecificScores] =
-    useState<any>(null);
+    useState<Array<{
+      universityId: string;
+      score: number;
+      subjects: Array<{ subject: string; marks: number }>;
+    }> | null>(null);
 
   useEffect(() => {
     if (apsCalculation.fullCalculation) {
@@ -1135,7 +1139,10 @@ const EnhancedAPSCalculator: React.FC = () => {
                     </h3>
                     <div className="grid grid-cols-1 gap-2">
                       {selectedProgram.subjects.map(
-                        (subject: any, index: number) => (
+                        (
+                          subject: { name: string; level?: number },
+                          index: number,
+                        ) => (
                           <div
                             key={index}
                             className="flex justify-between items-center p-2 bg-gray-50 rounded"
