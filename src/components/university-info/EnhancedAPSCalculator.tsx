@@ -1114,12 +1114,14 @@ const EnhancedAPSCalculator: React.FC = () => {
                       {selectedProgram.eligible ? "Qualified" : "Not Qualified"}
                     </Badge>
                   </div>
-                  {!selectedProgram.eligible && selectedProgram.apsGap > 0 && (
-                    <div className="text-yellow-700 text-sm mt-1">
-                      You need {selectedProgram.apsGap} more APS points to
-                      qualify
-                    </div>
-                  )}
+                  {!selectedProgram.eligible &&
+                    "apsGap" in selectedProgram &&
+                    (selectedProgram as { apsGap: number }).apsGap > 0 && (
+                      <div className="text-yellow-700 text-sm mt-1">
+                        You need {selectedProgram.apsGap} more APS points to
+                        qualify
+                      </div>
+                    )}
                 </div>
               </div>
 
