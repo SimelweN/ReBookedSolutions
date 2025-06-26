@@ -43,62 +43,17 @@ import { SOUTH_AFRICAN_SUBJECTS } from "@/constants/subjects";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities";
 import { toast } from "sonner";
 
-// Extract all programs from real university data
-const extractUniversityPrograms = () => {
-  const programs: Array<{
-    id: string;
-    name: string;
-    apsRequired: number;
-    universityId: string;
-    faculty: string;
-  }> = [];
+import {
+  extractUniversityPrograms,
+  calculateAPSTotal,
+  analyzeDegreeEligibility,
+  groupProgramsByUniversity,
+  calculateUniversityStats,
+  calculateOverallStats,
+  filterPrograms,
+} from "@/utils/apsCalculatorUtils";
 
-  try {
-    if (
-      !ALL_SOUTH_AFRICAN_UNIVERSITIES ||
-      !Array.isArray(ALL_SOUTH_AFRICAN_UNIVERSITIES)
-    ) {
-      return programs;
-    }
-
-    ALL_SOUTH_AFRICAN_UNIVERSITIES.forEach((university) => {
-      if (university.faculties && Array.isArray(university.faculties)) {
-        university.faculties.forEach((faculty) => {
-          if (faculty.degrees && Array.isArray(faculty.degrees)) {
-            faculty.degrees.forEach((degree) => {
-              programs.push({
-                university: university.fullName || university.name,
-                abbreviation: university.abbreviation || university.name,
-                location: `${university.location}, ${university.province}`,
-                program: degree.name,
-                faculty: faculty.name,
-                aps: degree.apsRequirement || 0,
-                duration: degree.duration || "Not specified",
-                description:
-                  degree.description ||
-                  `Study ${degree.name} at ${university.name}`,
-              });
-            });
-          }
-        });
-      }
-    });
-
-    if (import.meta.env.DEV && programs.length > 0) {
-      console.log(
-        `✅ Extracted ${programs.length} programs from ${ALL_SOUTH_AFRICAN_UNIVERSITIES.length} universities`,
-      );
-    }
-  } catch (error) {
-    if (import.meta.env.DEV) {
-      console.error("Error in extractUniversityPrograms:", error);
-    }
-  }
-
-  return programs;
-};
-
-// Get real university programs data
+// Get university programs data
 const UNIVERSITY_PROGRAMS = extractUniversityPrograms();
 
 // Comprehensive fallback data to ensure page renders
