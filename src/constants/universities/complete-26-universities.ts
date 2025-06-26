@@ -1,4 +1,5 @@
 import { University } from "@/types/university";
+import { getFacultiesByUniversityIdLegacy } from "./updated-specific-universities";
 
 /**
  * COMPLETE 26 SOUTH AFRICAN PUBLIC UNIVERSITIES
