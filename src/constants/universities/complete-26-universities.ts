@@ -703,13 +703,18 @@ const BASE_UNIVERSITIES: University[] = [
 ];
 
 /**
- * Return universities with empty faculties (to be populated manually later)
+ * Return universities with comprehensive faculty data from our updated modules
  */
 function populateUniversityFaculties(): University[] {
-  return BASE_UNIVERSITIES.map((university) => ({
-    ...university,
-    faculties: [],
-  }));
+  return BASE_UNIVERSITIES.map((university) => {
+    // Try to get faculties from our updated data
+    const faculties = getFacultiesByUniversityIdLegacy(university.id) || [];
+
+    return {
+      ...university,
+      faculties,
+    };
+  });
 }
 
 /**
