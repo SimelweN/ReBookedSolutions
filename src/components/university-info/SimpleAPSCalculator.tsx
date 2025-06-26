@@ -52,16 +52,6 @@ import {
   filterPrograms,
 } from "@/utils/apsCalculatorUtils";
 
-import {
-  extractUniversityPrograms,
-  calculateAPSTotal,
-  analyzeDegreeEligibility,
-  groupProgramsByUniversity,
-  calculateUniversityStats,
-  calculateOverallStats,
-  filterPrograms,
-} from "@/utils/apsCalculatorUtils";
-
 // Get university programs data
 const UNIVERSITY_PROGRAMS = extractUniversityPrograms();
 
