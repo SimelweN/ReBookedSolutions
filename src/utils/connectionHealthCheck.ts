@@ -330,9 +330,17 @@ export const retryWithConnection = async <T>(
   }
 
   const finalErrorMessage =
-    lastError instanceof Error ? lastError.message : String(lastError);
+    lastError instanceof Error
+      ? lastError.message
+      : lastError?.message ||
+        (typeof lastError === "string"
+          ? lastError
+          : JSON.stringify(lastError, null, 2));
+  const finalErrorCode =
+    (lastError as any)?.code || (lastError as any)?.error_code || "NO_CODE";
+
   console.error(
-    `[ConnectionHealthCheck] All retry attempts failed: ${finalErrorMessage}`,
+    `[ConnectionHealthCheck] All retry attempts failed: ${finalErrorMessage} (Code: ${finalErrorCode})`,
   );
 
   throw lastError;
