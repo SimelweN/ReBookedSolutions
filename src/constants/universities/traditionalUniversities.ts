@@ -14,13 +14,7 @@ export const TRADITIONAL_UNIVERSITIES: University[] = [
     website: "https://www.uct.ac.za",
     studentPortal: "https://students.uct.ac.za",
     admissionsContact: "admissions@uct.ac.za",
-    faculties: [
-      {
-        id: "science",
-        name: "Faculty of Science",
-        description:
-          "Leading scientific education and research with state-of-the-art facilities covering all major scientific disciplines.",
-        degrees: [
+    faculties: [],
           {
             id: "bsc-biological-sciences",
             name: "BSc Biological Sciences",
