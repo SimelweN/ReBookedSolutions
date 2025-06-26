@@ -5425,7 +5425,204 @@ export const DUT_FACULTIES: Faculty[] = [
     ],
   },
 ];
-export const MUT_FACULTIES: Faculty[] = [];
+export const MUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Engineering"),
+    name: "Faculty of Engineering",
+    description: "Engineering and technology disciplines",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Civil Engineering"),
+        name: "Diploma in Civil Engineering",
+        faculty: "Engineering",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Civil engineering - APS ~20+, with 50% Maths & Physical Science",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Civil Engineering Technician",
+          "Construction Supervisor",
+          "Project Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Diploma Mechanical Electrical Chemical Engineering",
+        ),
+        name: "Diploma in Mechanical/Electrical/Chemical Engineering",
+        faculty: "Engineering",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Multiple engineering disciplines - similar 20+ APS, with subject-level requirements",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technician",
+          "Maintenance Engineer",
+          "Technical Supervisor",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Engineering Technology BEngTech"),
+        name: "Bachelor of Engineering Technology (BEngTech)",
+        faculty: "Engineering",
+        duration: "4 years",
+        apsRequirement: 25,
+        description:
+          "Engineering technology - typically higher APS, require strong 50%+ in Maths, Physics & English",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technologist",
+          "Design Engineer",
+          "Project Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Management Sciences"),
+    name: "Faculty of Management Sciences",
+    description: "Business management and commerce",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Diploma Accounting Marketing Public Management HR Office Management",
+        ),
+        name: "Diploma in Accounting, Marketing, Public Management, HR, Office Management",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 25,
+        description:
+          "Management diplomas - min 25 APS plus subject requirements in Maths or Maths Lit",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Manager", "Administrator", "Business Professional"],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Commerce Accounting Marketing Public Administration",
+        ),
+        name: "Bachelor of Commerce in Accounting/Marketing/Public Administration",
+        faculty: "Management Sciences",
+        duration: "4 years",
+        apsRequirement: 25,
+        description:
+          "Commerce degrees - similar baseline APS (25��30) plus departmental screening",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Professional Manager",
+          "Accountant",
+          "Marketing Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId(
+      "Faculty of Natural Sciences (Applied & Health Sciences)",
+    ),
+    name: "Faculty of Natural Sciences (Applied & Health Sciences)",
+    description: "Applied sciences and health sciences",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Diploma Analytical Chemistry Agriculture Environmental Health Biomedical Technology",
+        ),
+        name: "Diploma in Analytical Chemistry, Agriculture, Environmental Health, Biomedical Technology",
+        faculty: "Natural Sciences (Applied & Health Sciences)",
+        duration: "3 years",
+        apsRequirement: 23,
+        description:
+          "Applied sciences diplomas - min APS 23+, plus subject requirements in Maths, Life/Physical Sciences",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Laboratory Technician",
+          "Environmental Officer",
+          "Health Technician",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Science Analytical Chemistry Environmental Health",
+        ),
+        name: "Bachelor of Science (e.g., Analytical Chemistry, Environmental Health)",
+        faculty: "Natural Sciences (Applied & Health Sciences)",
+        duration: "4 years",
+        apsRequirement: 30,
+        description:
+          "Science degrees - higher APS (around 30+), plus 50%+ in relevant sciences & English",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Scientist",
+          "Environmental Specialist",
+          "Research Analyst",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Hospitality & Tourism"),
+    name: "Faculty of Hospitality & Tourism",
+    description: "Hospitality management and tourism studies",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Hospitality Management"),
+        name: "Diploma in Hospitality Management",
+        faculty: "Hospitality & Tourism",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Hospitality management - APS ~22, with English Level 4",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Hospitality Manager",
+          "Hotel Manager",
+          "Event Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Office Management"),
+        name: "Diploma in Office Management",
+        faculty: "Hospitality & Tourism",
+        duration: "3 years",
+        apsRequirement: 20,
+        description: "Office management - 20 APS (Maths Lit accepted)",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Office Manager",
+          "Administrative Coordinator",
+          "Executive Assistant",
+        ],
+      },
+    ],
+  },
+];
 export const TUT_FACULTIES: Faculty[] = [];
 export const VUT_FACULTIES: Faculty[] = [];
 
