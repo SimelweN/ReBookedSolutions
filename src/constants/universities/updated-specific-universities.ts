@@ -4906,7 +4906,325 @@ export const CPUT_FACULTIES: Faculty[] = [
     ],
   },
 ];
-export const CUT_FACULTIES: Faculty[] = [];
+export const CUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId(
+      "Faculty of Engineering, Built Environment & Information Technology",
+    ),
+    name: "Faculty of Engineering, Built Environment & Information Technology",
+    description: "Engineering, construction, and information technology",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Civil Engineering"),
+        name: "Diploma in Civil Engineering",
+        faculty: "Engineering, Built Environment & Information Technology",
+        duration: "3 years",
+        apsRequirement: 27,
+        description:
+          "Civil engineering - 27 APS (NSC 2008+) or 32 APS for degree + subject-level requirements",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Civil Engineering Technician",
+          "Construction Supervisor",
+          "Project Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Mechanical Engineering Technology"),
+        name: "Diploma in Mechanical Engineering Technology",
+        faculty: "Engineering, Built Environment & Information Technology",
+        duration: "3 years",
+        apsRequirement: 27,
+        description:
+          "Mechanical engineering technology - 27 APS plus subject-level thresholds",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Mechanical Engineering Technician",
+          "Maintenance Engineer",
+          "Manufacturing Technician",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Engineering Technology Mechanical"),
+        name: "Bachelor of Engineering Technology in Mechanical Engineering",
+        faculty: "Engineering, Built Environment & Information Technology",
+        duration: "4 years",
+        apsRequirement: 32,
+        description:
+          "Mechanical engineering technology - 32 APS, with subject-level conditions",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Mechanical Engineering Technologist",
+          "Design Engineer",
+          "Production Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Information Technology"),
+        name: "Diploma in Information Technology",
+        faculty: "Engineering, Built Environment & Information Technology",
+        duration: "3 years",
+        apsRequirement: 27,
+        description:
+          "Information technology - 27 APS plus English & Maths levels",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Technician",
+          "Software Developer",
+          "Systems Administrator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor IT BTech"),
+        name: "Bachelor's-level IT (BTech/Bachelor)",
+        faculty: "Engineering, Built Environment & Information Technology",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Bachelor-level IT - 30 APS+ depending on programme",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Professional",
+          "Software Engineer",
+          "Systems Analyst",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Health & Environmental Sciences"),
+    name: "Faculty of Health & Environmental Sciences",
+    description: "Health sciences and environmental studies",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Bachelor Health Sciences Medical Laboratory Sciences",
+        ),
+        name: "Bachelor of Health Sciences: Medical Laboratory Sciences",
+        faculty: "Health & Environmental Sciences",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Medical laboratory sciences",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Medical Laboratory Scientist",
+          "Laboratory Manager",
+          "Health Researcher",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Environmental Health"),
+        name: "Diploma in Environmental Health",
+        faculty: "Health & Environmental Sciences",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Environmental health and safety",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Environmental Health Officer",
+          "Health Inspector",
+          "Public Health Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Dental Assisting"),
+        name: "Diploma in Dental Assisting",
+        faculty: "Health & Environmental Sciences",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Dental assisting and oral health",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Dental Assistant",
+          "Oral Health Educator",
+          "Dental Practice Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Management Sciences & Humanities"),
+    name: "Faculty of Management Sciences & Humanities",
+    description: "Business management, commerce, and humanities",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Public Management"),
+        name: "Diploma in Public Management",
+        faculty: "Management Sciences & Humanities",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Public sector management",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Public Manager",
+          "Government Administrator",
+          "Policy Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Marketing"),
+        name: "Diploma in Marketing",
+        faculty: "Management Sciences & Humanities",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Marketing and business promotion",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Marketing Officer",
+          "Sales Representative",
+          "Brand Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Internal Auditing"),
+        name: "Diploma in Internal Auditing",
+        faculty: "Management Sciences & Humanities",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "Internal auditing and compliance",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Internal Auditor",
+          "Compliance Officer",
+          "Risk Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Office Management Technology"),
+        name: "Diploma in Office Management & Technology",
+        faculty: "Management Sciences & Humanities",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Office management and administrative technology",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Office Manager",
+          "Administrative Coordinator",
+          "Executive Assistant",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Hospitality Management"),
+        name: "Bachelor of Hospitality Management",
+        faculty: "Management Sciences & Humanities",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Hospitality and tourism management",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Hospitality Manager",
+          "Hotel Manager",
+          "Event Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Accountancy"),
+        name: "Bachelor of Accountancy",
+        faculty: "Management Sciences & Humanities",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Professional accounting education",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Accountant", "Financial Manager", "Auditor"],
+      },
+      {
+        id: createDegreeId("Bachelor Tourism Management"),
+        name: "Bachelor of Tourism Management",
+        faculty: "Management Sciences & Humanities",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Tourism development and management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Tourism Manager",
+          "Destination Developer",
+          "Tourism Consultant",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Education"),
+    name: "Faculty of Education",
+    description: "Teacher education and educational development",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Education Foundation Phase"),
+        name: "Bachelor of Education (Foundation Phase)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 27,
+        description:
+          "Foundation phase teaching - 27 APS with subject-level criteria",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Foundation Phase Teacher",
+          "Primary School Teacher",
+          "Educational Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Education SP FET Various Streams"),
+        name: "Bachelor of Education (SP & FET – various streams like Economics, Natural Science, Languages, Maths, Computer Science)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 27,
+        description: "Senior phase and FET teaching in various subjects",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Teaching Subject", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "High School Teacher",
+          "Subject Specialist",
+          "Educational Manager",
+        ],
+      },
+    ],
+  },
+];
 export const DUT_FACULTIES: Faculty[] = [];
 export const MUT_FACULTIES: Faculty[] = [];
 export const TUT_FACULTIES: Faculty[] = [];
