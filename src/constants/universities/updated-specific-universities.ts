@@ -75,6 +75,9 @@ export {
 // Export the new modular function
 export { getFacultiesByUniversityId };
 
+// Legacy function name for backward compatibility
+export { getFacultiesByUniversityIdLegacy as getUpdatedUniversityFaculties };
+
 // List of universities that have been updated with specific data
 export const UPDATED_UNIVERSITIES: UniversityId[] = [
   "ul",
