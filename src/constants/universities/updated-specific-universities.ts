@@ -5225,7 +5225,206 @@ export const CUT_FACULTIES: Faculty[] = [
     ],
   },
 ];
-export const DUT_FACULTIES: Faculty[] = [];
+export const DUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Engineering & Built Environment"),
+    name: "Faculty of Engineering & Built Environment",
+    description: "Engineering and construction disciplines",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Engineering Civil Electrical Mechanical"),
+        name: "Diploma in Engineering (Civil/Electrical/Mechanical)",
+        faculty: "Engineering & Built Environment",
+        duration: "3 years",
+        apsRequirement: 24,
+        description:
+          "Engineering diploma - 24 APS+ with Maths & Physical Sciences L4+",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technician",
+          "Project Coordinator",
+          "Technical Supervisor",
+        ],
+      },
+      {
+        id: createDegreeId("BEng Technology Engineering"),
+        name: "BEng Technology (Engineering Technology)",
+        faculty: "Engineering & Built Environment",
+        duration: "4 years",
+        apsRequirement: 28,
+        description:
+          "Engineering technology - 28 APS with L4 in Maths & Physical Sciences",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technologist",
+          "Design Engineer",
+          "Project Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Health & Wellness Sciences"),
+    name: "Faculty of Health & Wellness Sciences",
+    description: "Health sciences and medical technology",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Bachelor Health Sciences Medical Laboratory Science",
+        ),
+        name: "Bachelor of Health Sciences (Medical Laboratory Science)",
+        faculty: "Health & Wellness Sciences",
+        duration: "4 years",
+        apsRequirement: 36,
+        description:
+          "Medical laboratory science - 36 APS plus Maths, Physical Science, Life Sciences prerequisites",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Medical Laboratory Scientist",
+          "Laboratory Manager",
+          "Research Technologist",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Information Technology"),
+    name: "Faculty of Information Technology",
+    description: "Information technology and computing",
+    degrees: [
+      {
+        id: createDegreeId("Diploma IT"),
+        name: "Diploma in IT",
+        faculty: "Information Technology",
+        duration: "3 years",
+        apsRequirement: 26,
+        description:
+          "Information technology - 26–28 APS depending on the stream; Maths L4+ required",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Technician",
+          "Software Developer",
+          "Systems Administrator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Level IT"),
+        name: "Bachelor-level IT",
+        faculty: "Information Technology",
+        duration: "4 years",
+        apsRequirement: 30,
+        description:
+          "Bachelor-level IT - 30 APS+, subject to programme details",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Professional",
+          "Software Engineer",
+          "Systems Analyst",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Management Sciences & Arts"),
+    name: "Faculty of Management Sciences & Arts",
+    description: "Business management, commerce, and creative arts",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Diplomas Public Management Marketing Internal Auditing Office Management",
+        ),
+        name: "Diplomas (e.g., Public Management, Marketing, Internal Auditing, Office Management)",
+        faculty: "Management Sciences & Arts",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Various management diplomas - typically 27 APS",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: ["Manager", "Administrator", "Business Professional"],
+      },
+      {
+        id: createDegreeId(
+          "Bachelors Hospitality Accountancy Tourism Management",
+        ),
+        name: "Bachelor's (e.g., Hospitality Management, Accountancy, Tourism Management)",
+        faculty: "Management Sciences & Arts",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Bachelor's degrees in management - 30 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Professional Manager",
+          "Accountant",
+          "Tourism Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Humanities & Design"),
+    name: "Faculty of Humanities & Design",
+    description: "Liberal arts, humanities, and design studies",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Arts"),
+        name: "Bachelor of Arts",
+        faculty: "Humanities & Design",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Bachelor of Arts - 24 APS+, with strong language results",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "Arts Graduate",
+          "Communications Specialist",
+          "Creative Professional",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Education"),
+    name: "Faculty of Education",
+    description: "Teacher education and educational development",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Education Foundation SP FET"),
+        name: "Bachelor of Education (Foundation, SP & FET: various subjects)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 27,
+        description:
+          "Teacher education - 27 APS plus subject-level requirements",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Teaching Subject", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Teacher", "Educational Specialist", "Subject Head"],
+      },
+    ],
+  },
+];
 export const MUT_FACULTIES: Faculty[] = [];
 export const TUT_FACULTIES: Faculty[] = [];
 export const VUT_FACULTIES: Faculty[] = [];
