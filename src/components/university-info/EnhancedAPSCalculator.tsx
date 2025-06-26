@@ -1118,8 +1118,9 @@ const EnhancedAPSCalculator: React.FC = () => {
                     "apsGap" in selectedProgram &&
                     (selectedProgram as { apsGap: number }).apsGap > 0 && (
                       <div className="text-yellow-700 text-sm mt-1">
-                        You need {selectedProgram.apsGap} more APS points to
-                        qualify
+                        You need{" "}
+                        {(selectedProgram as { apsGap: number }).apsGap} more
+                        APS points to qualify
                       </div>
                     )}
                 </div>
