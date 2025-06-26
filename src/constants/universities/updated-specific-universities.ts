@@ -1481,6 +1481,370 @@ export const UNIZULU_FACULTIES: Faculty[] = [
   },
 ];
 
+// Sol Plaatje University (SPU) - Updated Data
+export const SPU_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Education"),
+    name: "Faculty of Education",
+    description: "Teacher education programs across all phases",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor of Education Foundation Phase"),
+        name: "Bachelor of Education (Foundation Phase, Grade R–3)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Foundation phase teacher training",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Foundation Phase Teacher",
+          "Education Specialist",
+          "Curriculum Developer",
+          "School Principal",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Education Intermediate Phase"),
+        name: "Bachelor of Education (Intermediate Phase, Grades 4–6)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Intermediate phase teacher training",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Intermediate Phase Teacher",
+          "Education Specialist",
+          "Curriculum Developer",
+          "School Principal",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Education Senior FET Phase"),
+        name: "Bachelor of Education (Senior & FET Phase, Grades 7–12)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Senior and FET phase teacher training",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Teaching Subject", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "High School Teacher",
+          "Subject Specialist",
+          "Education Coordinator",
+          "School Principal",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Natural & Applied Sciences"),
+    name: "Faculty of Natural & Applied Sciences",
+    description: "Science and data science programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor of Science BSc"),
+        name: "Bachelor of Science (BSc)",
+        faculty: "Natural & Applied Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "General science degree",
+        subjects: [
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: false },
+        ],
+        careerProspects: [
+          "Research Scientist",
+          "Laboratory Technician",
+          "Environmental Scientist",
+          "Data Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Science Data Science"),
+        name: "Bachelor of Science in Data Science",
+        faculty: "Natural & Applied Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Modern data science and analytics",
+        subjects: [
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: false },
+          { name: "English", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Data Scientist",
+          "Data Analyst",
+          "Machine Learning Engineer",
+          "Business Intelligence Analyst",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Economic & Management Sciences"),
+    name: "Faculty of Economic & Management Sciences (EMS)",
+    description: "Business and economics programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor of Commerce Accounting"),
+        name: "Bachelor of Commerce in Accounting",
+        faculty: "Economic & Management Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Professional accounting education",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Accounting", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Accountant",
+          "Financial Manager",
+          "Auditor",
+          "Tax Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Commerce Economics"),
+        name: "Bachelor of Commerce in Economics",
+        faculty: "Economic & Management Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Economic theory and analysis",
+        subjects: [
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Economics", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Economist",
+          "Financial Analyst",
+          "Policy Analyst",
+          "Investment Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Retail Business Management"),
+        name: "Diploma in Retail Business Management",
+        faculty: "Economic & Management Sciences",
+        duration: "3 years",
+        apsRequirement: 25,
+        description: "Retail and business management",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Business Studies", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Retail Manager",
+          "Store Manager",
+          "Business Owner",
+          "Sales Manager",
+        ],
+      },
+    ],
+  },
+];
+
+// University of Mpumalanga (UMP) - Updated Data
+export const UMP_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Social Sciences"),
+    name: "Faculty of Social Sciences",
+    description: "Social sciences and humanities programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor of Arts General"),
+        name: "Bachelor of Arts (General)",
+        faculty: "Social Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "General arts and humanities education",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 2, isRequired: true },
+        ],
+        careerProspects: [
+          "Teacher",
+          "Writer",
+          "Journalist",
+          "Cultural Worker",
+          "Social Researcher",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Social Work"),
+        name: "Bachelor of Social Work",
+        faculty: "Social Sciences",
+        duration: "4 years",
+        apsRequirement: 32,
+        description: "Professional social work training",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 2, isRequired: true },
+        ],
+        careerProspects: [
+          "Social Worker",
+          "Community Development Worker",
+          "Family Counselor",
+          "NGO Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Agriculture & Natural Sciences"),
+    name: "Faculty of Agriculture & Natural Sciences",
+    description: "Agricultural and environmental science programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor of Science Agriculture Extension"),
+        name: "Bachelor of Science in Agriculture (Agricultural Extension & Rural Resource Management)",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Agricultural extension and rural development",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Extension Officer",
+          "Rural Development Specialist",
+          "Farm Manager",
+          "Agricultural Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Science Forestry"),
+        name: "Bachelor of Science in Forestry",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Forest science and management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Forester",
+          "Conservation Officer",
+          "Environmental Consultant",
+          "Timber Manager",
+        ],
+      },
+    ],
+  },
+];
+
+// Cape Peninsula University of Technology (CPUT) - Updated Data
+export const CPUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Agriculture & Natural Sciences"),
+    name: "Faculty of Agriculture & Natural Sciences",
+    description: "Agriculture, biotechnology, and natural sciences",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Agriculture"),
+        name: "Diploma in Agriculture",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "Agricultural science and production",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Farm Manager",
+          "Agricultural Technician",
+          "Extension Officer",
+          "Agricultural Sales",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Agricultural Management"),
+        name: "Diploma in Agricultural Management",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "Agricultural business and farm management",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Farm Manager",
+          "Agribusiness Manager",
+          "Agricultural Consultant",
+          "Farm Supervisor",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Biotechnology"),
+        name: "Diploma in Biotechnology",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "Biotechnology and biological systems",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 6, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Biotechnologist",
+          "Research Technician",
+          "Quality Control Analyst",
+          "Laboratory Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Health & Wellness Sciences"),
+    name: "Faculty of Health & Wellness Sciences",
+    description: "Health sciences and medical technology",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor of Health Sciences Medical Laboratory"),
+        name: "Bachelor of Health Sciences: Medical Laboratory Science",
+        faculty: "Health & Wellness Sciences",
+        duration: "4 years",
+        apsRequirement: 38,
+        description: "Medical laboratory science and diagnostics",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
+          { name: "Life Sciences", level: 6, isRequired: true },
+        ],
+        careerProspects: [
+          "Medical Technologist",
+          "Laboratory Manager",
+          "Research Technician",
+          "Quality Control Specialist",
+        ],
+      },
+    ],
+  },
+];
+
 // Function to get specific faculty data for updated universities
 export function getUpdatedUniversityFaculties(
   universityId: string,
@@ -1488,7 +1852,12 @@ export function getUpdatedUniversityFaculties(
   const universityFaculties: Record<string, Faculty[]> = {
     ul: UL_FACULTIES,
     nwu: NWU_FACULTIES,
-    // Will add others as we continue
+    wsu: WSU_FACULTIES,
+    unizulu: UNIZULU_FACULTIES,
+    spu: SPU_FACULTIES,
+    ump: UMP_FACULTIES,
+    cput: CPUT_FACULTIES,
+    // Will add remaining universities
   };
 
   return universityFaculties[universityId] || null;
@@ -1498,5 +1867,10 @@ export function getUpdatedUniversityFaculties(
 export const UPDATED_UNIVERSITY_DATA = {
   UL_FACULTIES,
   NWU_FACULTIES,
+  WSU_FACULTIES,
+  UNIZULU_FACULTIES,
+  SPU_FACULTIES,
+  UMP_FACULTIES,
+  CPUT_FACULTIES,
   getUpdatedUniversityFaculties,
 };
