@@ -23,7 +23,11 @@ export interface UserAPSProfile {
   lastUpdated: string;
   isValid?: boolean;
   validationErrors?: string[];
-  universitySpecificScores?: any[];
+  universitySpecificScores?: Array<{
+    universityId: string;
+    score: number;
+    subjects: APSSubject[];
+  }>;
   savedAt?: number;
 }
 
