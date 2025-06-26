@@ -112,7 +112,11 @@ export class PaystackPaymentService {
             });
         },
         onClose: () => {
-          reject(new Error("Payment cancelled by user"));
+          console.log("💡 Payment window was closed by user");
+          toast.info("Payment was cancelled", {
+            description: "You can try again when ready.",
+          });
+          reject(new Error("PAYMENT_CANCELLED_BY_USER"));
         },
       });
 
@@ -135,21 +139,41 @@ export class PaystackPaymentService {
       );
 
       if (error) {
-        console.error("Edge function error:", error);
+        // Extract error message properly
+        const errorMsg =
+          error.message || error.details || JSON.stringify(error, null, 2);
+        console.error("❌ Edge function error:", errorMsg);
+        console.error("❌ Full error details:", {
+          message: error.message,
+          details: error.details,
+          code: error.code,
+          status: error.status,
+        });
 
         // Check if it's a configuration issue
         if (
-          error.message?.includes("secret key") ||
-          error.message?.includes("not configured")
+          errorMsg.includes("secret key") ||
+          errorMsg.includes("not configured") ||
+          errorMsg.includes("MISSING_SECRET_KEY")
         ) {
-          toast.error(
-            "Payment system configuration error. Please contact support.",
+          console.warn(
+            "🔧 Payment service configuration issue, using fallback",
           );
-          throw new Error("Payment verification service not configured");
+          return await this.fallbackPaymentVerification(reference);
+        }
+
+        // Check if it's an Edge Function deployment issue
+        if (
+          errorMsg.includes("non-2xx status code") ||
+          errorMsg.includes("FunctionsHttpError") ||
+          errorMsg.includes("Failed to send a request")
+        ) {
+          console.warn("🌐 Edge Function deployment issue, using fallback");
+          return await this.fallbackPaymentVerification(reference);
         }
 
         // For other errors, try fallback verification
-        console.warn("Primary verification failed, attempting fallback...");
+        console.warn("⚠️ Primary verification failed, attempting fallback...");
         return await this.fallbackPaymentVerification(reference);
       }
 
@@ -289,7 +313,17 @@ export class PaystackPaymentService {
         .limit(1);
 
       if (testError) {
-        console.error("❌ Cannot access orders table:", testError);
+        const errorMsg =
+          testError.message ||
+          testError.details ||
+          JSON.stringify(testError, null, 2);
+        console.error("❌ Cannot access orders table:", errorMsg);
+        console.error("❌ Full error details:", {
+          message: testError.message,
+          details: testError.details,
+          hint: testError.hint,
+          code: testError.code,
+        });
         return;
       }
 
@@ -368,37 +402,52 @@ export class PaystackPaymentService {
       console.log("📥 Supabase response:", { data, error });
 
       if (error) {
-        // Comprehensive error logging
-        console.error("Database error details:", {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code,
-          errorString: String(error),
-          errorJSON: JSON.stringify(error, Object.getOwnPropertyNames(error)),
-        });
+        // Extract error details properly
+        const errorDetails = {
+          message: error.message || "No message",
+          details: error.details || "No details",
+          hint: error.hint || "No hint",
+          code: error.code || "No code",
+          type: typeof error,
+          constructor: error?.constructor?.name || "Unknown",
+        };
 
-        // Log the full error object properties
-        console.error("Full error object:", error);
-        console.error("Error constructor name:", error?.constructor?.name);
+        console.error("❌ Database error details:", errorDetails);
 
-        // Common Supabase/PostgreSQL error patterns
+        // Try to get the actual error message
         let errorMessage = "Unknown database error";
 
-        if (error.message) {
+        if (error.message && typeof error.message === "string") {
           errorMessage = error.message;
-        } else if (error.details) {
+        } else if (error.details && typeof error.details === "string") {
           errorMessage = error.details;
-        } else if (error.hint) {
+        } else if (error.hint && typeof error.hint === "string") {
           errorMessage = error.hint;
         } else if (typeof error === "string") {
           errorMessage = error;
-        } else {
-          // Try to extract any meaningful information
-          errorMessage = JSON.stringify(
-            error,
-            Object.getOwnPropertyNames(error),
-          );
+        } else if (error && typeof error === "object") {
+          // Try to get any readable property
+          for (const key of [
+            "message",
+            "details",
+            "hint",
+            "description",
+            "error",
+          ]) {
+            if (error[key] && typeof error[key] === "string") {
+              errorMessage = error[key];
+              break;
+            }
+          }
+
+          // If still no readable error, stringify safely
+          if (errorMessage === "Unknown database error") {
+            try {
+              errorMessage = JSON.stringify(error, null, 2);
+            } catch (e) {
+              errorMessage = `Error object could not be stringified: ${error.toString()}`;
+            }
+          }
         }
 
         // Add context for common issues
@@ -487,10 +536,47 @@ export class PaystackPaymentService {
         .eq("paystack_ref", reference);
 
       if (error) {
-        throw new Error(`Failed to update order: ${error.message}`);
+        // Proper error message extraction
+        let errorMessage = "Unknown error";
+
+        if (error.message && typeof error.message === "string") {
+          errorMessage = error.message;
+        } else if (error.details && typeof error.details === "string") {
+          errorMessage = error.details;
+        } else if (typeof error === "string") {
+          errorMessage = error;
+        } else if (error && typeof error === "object") {
+          try {
+            errorMessage = JSON.stringify(error, null, 2);
+          } catch (e) {
+            errorMessage = error.toString();
+          }
+        }
+
+        console.error("❌ Failed to update order status:", {
+          reference,
+          status,
+          error: errorMessage,
+        });
+
+        throw new Error(`Failed to update order: ${errorMessage}`);
       }
+
+      console.log("✅ Order status updated successfully:", {
+        reference,
+        status,
+      });
     } catch (error) {
       console.error("Update order status error:", error);
+
+      // In development, don't fail completely for order updates
+      if (import.meta.env.DEV) {
+        console.warn(
+          "⚠️ Order status update failed in development mode, continuing...",
+        );
+        return; // Don't throw in dev mode
+      }
+
       throw error;
     }
   }
