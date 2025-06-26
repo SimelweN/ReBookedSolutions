@@ -454,7 +454,7 @@ const EnhancedUniversityProfile: React.FC = React.memo(() => {
   // Error handling
   if (universityData.error) {
     return (
-      <>
+      <div>
         <CampusNavbar />
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
           <div className="text-center max-w-md mx-auto p-6">
@@ -474,7 +474,7 @@ const EnhancedUniversityProfile: React.FC = React.memo(() => {
             </Button>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
