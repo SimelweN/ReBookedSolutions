@@ -4,10 +4,10 @@ import { createDegreeId, createFacultyId } from "./base";
 // University of Limpopo (UL) - Faculty Data
 export const UL_FACULTIES: Faculty[] = [
   {
-    id: createFacultyId("Faculty of Humanities"),
+    id: createFacultyId("Faculty of Humanities UL"),
     name: "Faculty of Humanities",
     description:
-      "Humanities programs focusing on education, social sciences, and communication studies",
+      "Humanities programs focusing on education, social sciences, communication studies, and languages",
     degrees: [
       {
         id: createDegreeId("Bachelor of Education BEd UL"),
@@ -31,7 +31,7 @@ export const UL_FACULTIES: Faculty[] = [
         name: "Bachelor of Arts (Criminology & Psychology stream)",
         faculty: "Humanities",
         duration: "3 years",
-        apsRequirement: 23,
+        apsRequirement: 25,
         description: "Liberal arts with criminology and psychology focus",
         subjects: [
           { name: "English", level: 4, isRequired: true },
@@ -44,7 +44,7 @@ export const UL_FACULTIES: Faculty[] = [
         name: "Bachelor of Arts (Sociology & Anthropology stream)",
         faculty: "Humanities",
         duration: "3 years",
-        apsRequirement: 23,
+        apsRequirement: 25,
         description: "Liberal arts with sociology and anthropology focus",
         subjects: [
           { name: "English", level: 4, isRequired: true },
@@ -78,7 +78,7 @@ export const UL_FACULTIES: Faculty[] = [
         name: "Bachelor of Psychology",
         faculty: "Humanities",
         duration: "3 years",
-        apsRequirement: 23,
+        apsRequirement: 25,
         description: "Comprehensive psychology program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
@@ -90,10 +90,10 @@ export const UL_FACULTIES: Faculty[] = [
         id: createDegreeId(
           "Bachelor of Arts Criminology Psychology Extended UL",
         ),
-        name: "Bachelor of Arts (Criminology & Psychology stream) Extended",
+        name: "Bachelor of Arts (Criminology & Psychology stream) Extended Curricular Programme",
         faculty: "Humanities",
         duration: "4 years",
-        apsRequirement: 22,
+        apsRequirement: 24,
         description: "Extended program for criminology and psychology",
         subjects: [
           { name: "English", level: 4, isRequired: true },
@@ -106,7 +106,7 @@ export const UL_FACULTIES: Faculty[] = [
         name: "Bachelor of Social Work",
         faculty: "Humanities",
         duration: "4 years",
-        apsRequirement: 23,
+        apsRequirement: 25,
         description: "Professional social work program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
@@ -206,7 +206,7 @@ export const UL_FACULTIES: Faculty[] = [
       },
       {
         id: createDegreeId("Bachelor of Arts Media Studies Extended UL"),
-        name: "Bachelor of Arts in Media Studies (Extended)",
+        name: "Bachelor of Arts in Media Studies Extended Curricular Programme",
         faculty: "Humanities",
         duration: "4 years",
         apsRequirement: 23,
@@ -220,7 +220,7 @@ export const UL_FACULTIES: Faculty[] = [
     ],
   },
   {
-    id: createFacultyId("Faculty of Management and Law"),
+    id: createFacultyId("Faculty of Management and Law UL"),
     name: "Faculty of Management and Law",
     description: "Business management, economics, and law programs",
     degrees: [
@@ -256,7 +256,7 @@ export const UL_FACULTIES: Faculty[] = [
       },
       {
         id: createDegreeId("Bachelor of Commerce Accountancy Extended UL"),
-        name: "Bachelor of Commerce in Accountancy (Extended)",
+        name: "Bachelor of Commerce in Accountancy Extended Curricular Programme",
         faculty: "Management and Law",
         duration: "4 years",
         apsRequirement: 26,
@@ -285,6 +285,23 @@ export const UL_FACULTIES: Faculty[] = [
         ],
       },
       {
+        id: createDegreeId("Bachelor of Commerce Human Resources Extended UL"),
+        name: "Bachelor of Commerce in Human Resources Management Extended Curricular Programme",
+        faculty: "Management and Law",
+        duration: "4 years",
+        apsRequirement: 22,
+        description: "Extended human resources management program",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "HR Manager",
+          "Recruitment Specialist",
+          "Training Coordinator",
+        ],
+      },
+      {
         id: createDegreeId("Bachelor of Commerce Business Management UL"),
         name: "Bachelor of Commerce in Business Management",
         faculty: "Management and Law",
@@ -305,7 +322,7 @@ export const UL_FACULTIES: Faculty[] = [
         id: createDegreeId(
           "Bachelor of Commerce Business Management Extended UL",
         ),
-        name: "Bachelor of Commerce in Business Management (Extended)",
+        name: "Bachelor of Commerce in Business Management Extended Curricular Programme",
         faculty: "Management and Law",
         duration: "4 years",
         apsRequirement: 22,
@@ -339,7 +356,7 @@ export const UL_FACULTIES: Faculty[] = [
       },
       {
         id: createDegreeId("Bachelor of Commerce Economics Extended UL"),
-        name: "Bachelor of Commerce in Economics (Extended)",
+        name: "Bachelor of Commerce in Economics Extended Curricular Programme",
         faculty: "Management and Law",
         duration: "4 years",
         apsRequirement: 22,
@@ -416,7 +433,7 @@ export const UL_FACULTIES: Faculty[] = [
       },
       {
         id: createDegreeId("Bachelor of Laws LLB Extended UL"),
-        name: "Bachelor of Laws (LLB) Extended",
+        name: "Bachelor of Laws (LLB) Extended Curricular Programme",
         faculty: "Management and Law",
         duration: "5 years",
         apsRequirement: 26,
@@ -430,7 +447,7 @@ export const UL_FACULTIES: Faculty[] = [
     ],
   },
   {
-    id: createFacultyId("Faculty of Science and Agriculture"),
+    id: createFacultyId("Faculty of Science and Agriculture UL"),
     name: "Faculty of Science and Agriculture",
     description: "Natural sciences, agriculture, and environmental programs",
     degrees: [
@@ -584,7 +601,7 @@ export const UL_FACULTIES: Faculty[] = [
         id: createDegreeId(
           "Bachelor of Science Mathematical Sciences Extended UL",
         ),
-        name: "Bachelor of Science (Mathematical Sciences stream) Extended",
+        name: "Bachelor of Science (Mathematical Sciences stream) Extended Curricular Programme",
         faculty: "Science and Agriculture",
         duration: "4 years",
         apsRequirement: 22,
@@ -616,7 +633,7 @@ export const UL_FACULTIES: Faculty[] = [
       },
       {
         id: createDegreeId("Bachelor of Science Life Sciences Extended UL"),
-        name: "Bachelor of Science (Life Sciences stream) Extended",
+        name: "Bachelor of Science (Life Sciences stream) Extended Curricular Programme",
         faculty: "Science and Agriculture",
         duration: "4 years",
         apsRequirement: 22,
@@ -648,7 +665,7 @@ export const UL_FACULTIES: Faculty[] = [
       },
       {
         id: createDegreeId("Bachelor of Science Physical Sciences Extended UL"),
-        name: "Bachelor of Science (Physical Sciences stream) Extended",
+        name: "Bachelor of Science (Physical Sciences stream) Extended Curricular Programme",
         faculty: "Science and Agriculture",
         duration: "4 years",
         apsRequirement: 22,
@@ -681,7 +698,7 @@ export const UL_FACULTIES: Faculty[] = [
     ],
   },
   {
-    id: createFacultyId("Faculty of Health Sciences"),
+    id: createFacultyId("Faculty of Health Sciences UL"),
     name: "Faculty of Health Sciences",
     description: "Medical and health-related programs",
     degrees: [
