@@ -474,7 +474,7 @@ const EnhancedUniversityProfile: React.FC = React.memo(() => {
             </Button>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
