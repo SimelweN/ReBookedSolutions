@@ -4415,7 +4415,345 @@ export const SPU_FACULTIES: Faculty[] = [
     ],
   },
 ];
-export const UMP_FACULTIES: Faculty[] = [];
+export const UMP_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Social Sciences"),
+    name: "Faculty of Social Sciences",
+    description: "Social sciences and community studies",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Arts General"),
+        name: "Bachelor of Arts (General)",
+        faculty: "Social Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description:
+          "General arts degree requiring English Level 4; Mathematics Level 2 or Math level 3",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Arts Graduate",
+          "Research Assistant",
+          "Communications Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Social Work"),
+        name: "Bachelor of Social Work",
+        faculty: "Social Sciences",
+        duration: "4 years",
+        apsRequirement: 32,
+        description:
+          "Professional social work requiring English Level 4; Mathematics Level 2 or Math level 3",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Social Worker",
+          "Community Developer",
+          "Child Protection Officer",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Agriculture & Natural Sciences"),
+    name: "Faculty of Agriculture & Natural Sciences",
+    description:
+      "Agricultural sciences, natural sciences, and environmental studies",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Bachelor Science Agriculture Extension Rural Resource Management",
+        ),
+        name: "Bachelor of Science in Agriculture (Agricultural Extension & Rural Resource Management)",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "4 years",
+        apsRequirement: 26,
+        description:
+          "Agricultural extension and rural resource management - 26 APS (with Math) / 28 APS (with Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Extension Officer",
+          "Rural Development Specialist",
+          "Farm Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Forestry"),
+        name: "Bachelor of Science in Forestry",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Forestry science and management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Forester", "Forest Manager", "Conservation Officer"],
+      },
+      {
+        id: createDegreeId("Bachelor Science General"),
+        name: "Bachelor of Science (General)",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "General science degree",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Scientist",
+          "Research Analyst",
+          "Laboratory Technician",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Environmental Science"),
+        name: "Bachelor of Science in Environmental Science",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Environmental science and conservation",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Environmental Scientist",
+          "Conservation Officer",
+          "Environmental Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Plant Production"),
+        name: "Diploma in Plant Production",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description: "Plant production - 23 APS (Math) / 24 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Plant Production Specialist",
+          "Farm Supervisor",
+          "Agricultural Technician",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Animal Production"),
+        name: "Diploma in Animal Production",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Animal production - 24 APS (Math) / 27 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Animal Production Specialist",
+          "Livestock Manager",
+          "Animal Health Technician",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Development Studies & Business Sciences"),
+    name: "Faculty of Development Studies & Business Sciences",
+    description: "Development studies, business, and commerce",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Commerce General"),
+        name: "Bachelor of Commerce (General)",
+        faculty: "Development Studies & Business Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description:
+          "General commerce - 30 APS (Math required; Math Lit not accepted)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Business Professional",
+          "Commerce Graduate",
+          "Financial Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Administration"),
+        name: "Bachelor of Administration",
+        faculty: "Development Studies & Business Sciences",
+        duration: "3 years",
+        apsRequirement: 32,
+        description: "Public and business administration",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Administrator",
+          "Government Official",
+          "Public Servant",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Development Studies"),
+        name: "Bachelor of Development Studies",
+        faculty: "Development Studies & Business Sciences",
+        duration: "3 years",
+        apsRequirement: 32,
+        description: "Development studies - 32 APS (Math) / 31 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Development Worker",
+          "Project Coordinator",
+          "NGO Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Education"),
+    name: "Faculty of Education",
+    description: "Teacher education and educational development",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Education Foundation Phase Teaching"),
+        name: "Bachelor of Education (Foundation Phase Teaching)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description:
+          "Foundation phase teaching - 26 APS (Math) / 27 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Foundation Phase Teacher",
+          "Primary School Teacher",
+          "Educational Specialist",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of ICT & Computing"),
+    name: "Faculty of ICT & Computing",
+    description: "Information and communication technology",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor ICT"),
+        name: "Bachelor of Information & Communication Technology (ICT)",
+        faculty: "ICT & Computing",
+        duration: "4 years",
+        apsRequirement: 32,
+        description:
+          "ICT requires English Level 4 and Math/Math Lit at Level 4",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "ICT Specialist",
+          "Software Developer",
+          "Systems Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma ICT Applications Development"),
+        name: "Diploma in ICT (Applications Development)",
+        faculty: "ICT & Computing",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "ICT applications development",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Applications Developer",
+          "Software Developer",
+          "IT Technician",
+        ],
+      },
+      {
+        id: createDegreeId("Higher Certificate ICT User Support"),
+        name: "Higher Certificate in ICT (User Support)",
+        faculty: "ICT & Computing",
+        duration: "1 year",
+        apsRequirement: 20,
+        description: "ICT user support - 20 APS (Math) / 22 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Support Technician",
+          "Help Desk Specialist",
+          "User Support Officer",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Hospitality & Tourism"),
+    name: "Faculty of Hospitality & Tourism",
+    description: "Hospitality management and tourism studies",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Hospitality Management"),
+        name: "Diploma in Hospitality Management",
+        faculty: "Hospitality & Tourism",
+        duration: "3 years",
+        apsRequirement: 24,
+        description:
+          "Hospitality management - 24 APS (Math) / 25 APS (Math Lit)",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Hospitality Manager",
+          "Hotel Manager",
+          "Event Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Higher Certificate Event Management"),
+        name: "Higher Certificate in Event Management",
+        faculty: "Hospitality & Tourism",
+        duration: "1 year",
+        apsRequirement: 19,
+        description: "Event management - 19 APS (Math) / 21 APS (Math Lit)",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Event Coordinator",
+          "Event Planner",
+          "Functions Manager",
+        ],
+      },
+    ],
+  },
+];
 export const CPUT_FACULTIES: Faculty[] = [];
 export const CUT_FACULTIES: Faculty[] = [];
 export const DUT_FACULTIES: Faculty[] = [];
