@@ -3049,6 +3049,730 @@ export const UL_FACULTIES: Faculty[] = [
     ],
   },
 ];
+
+// Walter Sisulu University (WSU) - Comprehensive Data
+export const WSU_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Education WSU"),
+    name: "Faculty of Education",
+    description: "Teacher training and educational programs",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Bachelor of Education Foundation Phase Teaching WSU",
+        ),
+        name: "Bachelor of Education in Foundation Phase Teaching",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Foundation phase teaching (Grades R-3)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Foundation Phase Teacher",
+          "Primary School Teacher",
+          "Educational Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Education Senior Phase FET Economic Management Sciences WSU",
+        ),
+        name: "Bachelor of Education in Senior Phase and Further Education and Training Teaching (Economic & Management Sciences)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description:
+          "Senior and FET phase teaching in economic and management sciences",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "EMS Teacher",
+          "Business Studies Teacher",
+          "Economics Teacher",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Education Senior Phase FET Consumer Management Sciences WSU",
+        ),
+        name: "Bachelor of Education in Senior Phase and Further Education and Training Teaching (Consumer and Management Sciences)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description:
+          "Senior and FET phase teaching in consumer and management sciences",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Consumer Studies Teacher",
+          "Life Skills Teacher",
+          "Home Economics Teacher",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Education Senior Phase FET Creative Arts WSU",
+        ),
+        name: "Bachelor of Education in Senior Phase and Further Education and Training Teaching (Creative Arts)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Senior and FET phase teaching in creative arts",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 4, isRequired: false },
+        ],
+        careerProspects: ["Arts Teacher", "Drama Teacher", "Music Teacher"],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Education Senior Phase FET Humanities WSU",
+        ),
+        name: "Bachelor of Education in Senior Phase and Further Education and Training Teaching (Humanities)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Senior and FET phase teaching in humanities",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "History", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "History Teacher",
+          "Geography Teacher",
+          "Social Sciences Teacher",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Education Senior Phase FET Languages WSU",
+        ),
+        name: "Bachelor of Education in Senior Phase and Further Education and Training Teaching (Languages)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Senior and FET phase teaching in languages",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Additional Language", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Language Teacher",
+          "English Teacher",
+          "Literature Teacher",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Education Senior Phase FET Mathematics Science Technology WSU",
+        ),
+        name: "Bachelor of Education in Senior Phase and Further Education and Training Teaching (Mathematics, Science & Technology)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description:
+          "Senior and FET phase teaching in mathematics, science and technology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Mathematics Teacher",
+          "Science Teacher",
+          "Technology Teacher",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Education Senior Phase FET Technical Vocational Education WSU",
+        ),
+        name: "Bachelor of Education in Senior Phase and Further Education and Training Teaching (Technical and Vocational Education)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description:
+          "Senior and FET phase teaching in technical and vocational education - complex criteria based on subject combinations",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Technical Teacher",
+          "Vocational Trainer",
+          "Skills Development Facilitator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Adult Community Education Training WSU"),
+        name: "Diploma in Adult and Community Education and Training (ACET)",
+        faculty: "Education",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Adult and community education training",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Adult Educator",
+          "Community Education Coordinator",
+          "Training Facilitator",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Law, Humanities and Social Sciences WSU"),
+    name: "Faculty of Law, Humanities and Social Sciences",
+    description:
+      "Legal studies, humanities, social sciences, and creative arts",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Fine Art WSU"),
+        name: "Diploma in Fine Art",
+        faculty: "Law, Humanities and Social Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description: "Fine arts and visual arts",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 4, isRequired: false },
+        ],
+        careerProspects: ["Artist", "Art Teacher", "Gallery Curator"],
+      },
+      {
+        id: createDegreeId("Advanced Diploma Fine Art WSU"),
+        name: "Advanced Diploma in Fine Art",
+        faculty: "Law, Humanities and Social Sciences",
+        duration: "1 year",
+        apsRequirement: 20,
+        description: "Advanced fine arts specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Professional Artist",
+          "Art Director",
+          "Creative Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Fashion WSU"),
+        name: "Diploma in Fashion",
+        faculty: "Law, Humanities and Social Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Fashion design and technology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Fashion Designer",
+          "Fashion Stylist",
+          "Garment Technologist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Arts WSU"),
+        name: "Bachelor of Arts",
+        faculty: "Law, Humanities and Social Sciences",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "General arts and humanities",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Additional Language", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Various based on specialization",
+          "Writer",
+          "Communications Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Social Science WSU"),
+        name: "Bachelor of Social Science",
+        faculty: "Law, Humanities and Social Sciences",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Social sciences and community studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "History", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Social Researcher",
+          "Community Developer",
+          "Policy Analyst",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Social Science Extended Curriculum Programme WSU",
+        ),
+        name: "Bachelor of Social Science (Extended Curriculum Programme)",
+        faculty: "Law, Humanities and Social Sciences",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Extended programme for social sciences",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "History", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Social Researcher",
+          "Community Developer",
+          "Policy Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Laws LLB WSU"),
+        name: "Bachelor of Laws (LLB)",
+        faculty: "Law, Humanities and Social Sciences",
+        duration: "4 years",
+        apsRequirement: 28,
+        description: "Professional law degree",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Attorney", "Advocate", "Legal Advisor"],
+      },
+      {
+        id: createDegreeId("Bachelor Social Work WSU"),
+        name: "Bachelor of Social Work",
+        faculty: "Law, Humanities and Social Sciences",
+        duration: "4 years",
+        apsRequirement: 28,
+        description: "Professional social work training",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Social Worker",
+          "Community Developer",
+          "Child Protection Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Psychology WSU"),
+        name: "Bachelor of Psychology",
+        faculty: "Law, Humanities and Social Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "Psychological sciences and therapy",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Psychologist", "Counselor", "Research Psychologist"],
+      },
+    ],
+  },
+  {
+    id: createFacultyId(
+      "Faculty of Management and Public Administration Sciences WSU",
+    ),
+    name: "Faculty of Management and Public Administration Sciences",
+    description: "Management, administration, and business sciences",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Administration WSU"),
+        name: "Bachelor of Administration",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Public and business administration",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Administrator",
+          "Public Manager",
+          "Business Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Administrative Management WSU"),
+        name: "Diploma in Administrative Management",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Administrative management principles",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Administrative Officer",
+          "Office Manager",
+          "Operations Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Journalism WSU"),
+        name: "Diploma in Journalism",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Journalism and media studies",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: ["Journalist", "Reporter", "Media Producer"],
+      },
+      {
+        id: createDegreeId("Diploma Public Relations WSU"),
+        name: "Diploma in Public Relations",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Public relations and communications",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "PR Officer",
+          "Communications Specialist",
+          "Media Relations Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Public Management WSU"),
+        name: "Diploma in Public Management",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Public sector management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Public Manager",
+          "Government Official",
+          "Policy Administrator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Policing WSU"),
+        name: "Diploma in Policing",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Law enforcement and policing",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Police Officer",
+          "Security Manager",
+          "Law Enforcement Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Local Government Finance WSU"),
+        name: "Diploma in Local Government Finance",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Local government financial management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Financial Officer",
+          "Municipal Treasurer",
+          "Budget Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Management WSU"),
+        name: "Diploma in Management",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "General management principles",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Manager", "Supervisor", "Team Leader"],
+      },
+      {
+        id: createDegreeId("Diploma Small Business Management WSU"),
+        name: "Diploma in Small Business Management",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Small business and entrepreneurship",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Entrepreneur",
+          "Small Business Manager",
+          "Business Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Office Management Technology WSU"),
+        name: "Diploma in Office Management and Technology",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Office management and technology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Office Manager",
+          "Executive Assistant",
+          "Administrative Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Human Resources Management WSU"),
+        name: "Diploma in Human Resources Management",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Human resource management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "HR Officer",
+          "Recruitment Specialist",
+          "Training Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Tourism Management WSU"),
+        name: "Diploma in Tourism Management",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Tourism and hospitality management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Tourism Manager",
+          "Travel Consultant",
+          "Tour Operator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Hospitality Management WSU"),
+        name: "Diploma in Hospitality Management",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Hospitality and accommodation management",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Hotel Manager",
+          "Restaurant Manager",
+          "Event Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Sport Management WSU"),
+        name: "Diploma in Sport Management",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Sports management and administration",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Sports Manager",
+          "Event Manager",
+          "Sports Development Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Financial Information Systems WSU"),
+        name: "Diploma in Financial Information Systems",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Financial information systems",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Financial Systems Analyst",
+          "Database Administrator",
+          "IT Support Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Accountancy WSU"),
+        name: "Diploma in Accountancy",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Financial accounting and bookkeeping",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Bookkeeper",
+          "Accounting Clerk",
+          "Financial Assistant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Internal Auditing WSU"),
+        name: "Diploma in Internal Auditing",
+        faculty: "Management and Public Administration Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Internal auditing and risk management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Internal Auditor",
+          "Risk Analyst",
+          "Compliance Officer",
+        ],
+      },
+      // Extended Curriculum Programme versions
+      {
+        id: createDegreeId("Diploma Office Management Technology ECP WSU"),
+        name: "Diploma in Office Management and Technology (ECP)",
+        faculty: "Management and Public Administration Sciences",
+        duration: "4 years",
+        apsRequirement: 21,
+        description:
+          "Extended curriculum programme for office management and technology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Office Manager",
+          "Executive Assistant",
+          "Administrative Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Local Government Finance ECP WSU"),
+        name: "Diploma in Local Government Finance (ECP)",
+        faculty: "Management and Public Administration Sciences",
+        duration: "4 years",
+        apsRequirement: 21,
+        description:
+          "Extended curriculum programme for local government finance",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Financial Officer",
+          "Municipal Treasurer",
+          "Budget Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Management ECP WSU"),
+        name: "Diploma in Management (ECP)",
+        faculty: "Management and Public Administration Sciences",
+        duration: "4 years",
+        apsRequirement: 21,
+        description: "Extended curriculum programme for management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Manager", "Supervisor", "Team Leader"],
+      },
+      {
+        id: createDegreeId("Diploma Human Resources Management ECP WSU"),
+        name: "Diploma in Human Resources Management (ECP)",
+        faculty: "Management and Public Administration Sciences",
+        duration: "4 years",
+        apsRequirement: 21,
+        description:
+          "Extended curriculum programme for human resources management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "HR Officer",
+          "Recruitment Specialist",
+          "Training Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Public Relations ECP WSU"),
+        name: "Diploma in Public Relations (ECP)",
+        faculty: "Management and Public Administration Sciences",
+        duration: "4 years",
+        apsRequirement: 21,
+        description: "Extended curriculum programme for public relations",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "PR Officer",
+          "Communications Specialist",
+          "Media Relations Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Internal Auditing ECP WSU"),
+        name: "Diploma in Internal Auditing (ECP)",
+        faculty: "Management and Public Administration Sciences",
+        duration: "4 years",
+        apsRequirement: 21,
+        description: "Extended curriculum programme for internal auditing",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Internal Auditor",
+          "Risk Analyst",
+          "Compliance Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Higher Certificate Versatile Broadcasting WSU"),
+        name: "Higher Certificate in Versatile Broadcasting",
+        faculty: "Management and Public Administration Sciences",
+        duration: "1 year",
+        apsRequirement: 18,
+        description:
+          "Broadcasting and media production - requires English level 4 & one additional language level 3",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Additional Language", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Radio Broadcaster",
+          "TV Producer",
+          "Media Technician",
+        ],
+      },
+    ],
+  },
+];
 export const NWU_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Economic and Management Sciences"),
