@@ -14,6 +14,14 @@ import { DUT_FACULTIES } from "./dut";
 import { MUT_FACULTIES } from "./mut";
 import { TUT_FACULTIES } from "./tut";
 import { VUT_FACULTIES } from "./vut";
+import { UJ_FACULTIES } from "./uj";
+import { UP_FACULTIES } from "./up";
+import { WITS_FACULTIES } from "./wits";
+import { SU_FACULTIES } from "./su";
+import { UKZN_FACULTIES } from "./ukzn";
+import { UWC_FACULTIES } from "./uwc";
+import { UNIVEN_FACULTIES } from "./univen";
+import { UFS_FACULTIES } from "./ufs";
 
 /**
  * MODULAR UNIVERSITY DATA SYSTEM
@@ -51,6 +59,22 @@ export function getFacultiesByUniversityIdLegacy(
       return TUT_FACULTIES;
     case "vut":
       return VUT_FACULTIES;
+    case "uj":
+      return UJ_FACULTIES;
+    case "up":
+      return UP_FACULTIES;
+    case "wits":
+      return WITS_FACULTIES;
+    case "su":
+      return SU_FACULTIES;
+    case "ukzn":
+      return UKZN_FACULTIES;
+    case "uwc":
+      return UWC_FACULTIES;
+    case "univen":
+      return UNIVEN_FACULTIES;
+    case "ufs":
+      return UFS_FACULTIES;
     default:
       return null;
   }
@@ -70,6 +94,14 @@ export {
   MUT_FACULTIES,
   TUT_FACULTIES,
   VUT_FACULTIES,
+  UJ_FACULTIES,
+  UP_FACULTIES,
+  WITS_FACULTIES,
+  SU_FACULTIES,
+  UKZN_FACULTIES,
+  UWC_FACULTIES,
+  UNIVEN_FACULTIES,
+  UFS_FACULTIES,
 };
 
 // Export the new modular function
@@ -92,6 +124,14 @@ export const UPDATED_UNIVERSITIES: UniversityId[] = [
   "mut",
   "tut",
   "vut",
+  "uj",
+  "up",
+  "wits",
+  "su",
+  "ukzn",
+  "uwc",
+  "univen",
+  "ufs",
 ];
 
 // Export university metadata
@@ -155,5 +195,45 @@ export const UNIVERSITY_METADATA = {
     name: "Vaal University of Technology",
     type: "University of Technology",
     province: "Gauteng",
+  },
+  uj: {
+    name: "University of Johannesburg",
+    type: "Comprehensive University",
+    province: "Gauteng",
+  },
+  up: {
+    name: "University of Pretoria",
+    type: "Traditional University",
+    province: "Gauteng",
+  },
+  wits: {
+    name: "University of the Witwatersrand",
+    type: "Traditional University",
+    province: "Gauteng",
+  },
+  su: {
+    name: "Stellenbosch University",
+    type: "Traditional University",
+    province: "Western Cape",
+  },
+  ukzn: {
+    name: "University of KwaZulu-Natal",
+    type: "Traditional University",
+    province: "KwaZulu-Natal",
+  },
+  uwc: {
+    name: "University of Western Cape",
+    type: "Traditional University",
+    province: "Western Cape",
+  },
+  univen: {
+    name: "University of VENDA",
+    type: "Comprehensive University",
+    province: "Limpopo",
+  },
+  ufs: {
+    name: "University of Free State",
+    type: "Traditional University",
+    province: "Free State",
   },
 } as const;

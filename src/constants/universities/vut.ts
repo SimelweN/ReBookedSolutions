@@ -4,10 +4,9 @@ import { createDegreeId, createFacultyId } from "./base";
 // Vaal University of Technology (VUT) - Faculty Data
 export const VUT_FACULTIES: Faculty[] = [
   {
-    id: createFacultyId("Faculty of Applied & Computer Sciences VUT"),
+    id: createFacultyId("Faculty of Applied and Computer Sciences VUT"),
     name: "Faculty of Applied & Computer Sciences",
-    description:
-      "Applied sciences, agriculture, biotechnology, and information technology",
+    description: "Applied sciences, computing, and technology programs",
     degrees: [
       {
         id: createDegreeId("Diploma Analytical Chemistry VUT"),
@@ -15,7 +14,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Applied & Computer Sciences",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Analytical chemistry - 24 APS (Maths)",
+        description: "Analytical chemistry diploma with Maths",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -23,8 +22,8 @@ export const VUT_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Analytical Chemist",
-          "Quality Controller",
           "Laboratory Technician",
+          "Quality Control Analyst",
         ],
       },
       {
@@ -34,10 +33,28 @@ export const VUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 24,
         description:
-          "Agricultural management - 24 APS (Maths) / 25 APS (Math Lit)",
+          "Agricultural management with Maths (25 APS with Math Lit)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Manager",
+          "Farm Supervisor",
+          "Agricultural Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Agricultural Management Math Lit VUT"),
+        name: "Diploma in Agricultural Management - Math Lit",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 25,
+        description: "Agricultural management with Mathematical Literacy",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
@@ -52,16 +69,17 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Applied & Computer Sciences",
         duration: "3 years",
         apsRequirement: 23,
-        description: "Biotechnology studies",
+        description: "Biotechnology program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
           { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Biotechnologist",
           "Research Technician",
-          "Quality Control Analyst",
+          "Quality Control Specialist",
         ],
       },
       {
@@ -71,10 +89,30 @@ export const VUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 24,
         description:
-          "Information technology studies - 24 APS (Maths or Tech Maths) / 26 APS (Math Lit)",
+          "IT diploma with Maths or Tech Maths (26 APS with Math Lit)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
+          { name: "Information Technology", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "IT Technician",
+          "Software Developer",
+          "Network Administrator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Information Technology Math Lit VUT"),
+        name: "Diploma in Information Technology - Math Lit",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "IT diploma with Mathematical Literacy",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Information Technology", level: 3, isRequired: false },
         ],
         careerProspects: [
           "IT Technician",
@@ -88,11 +126,12 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Applied & Computer Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description: "Environmental science studies - 21 APS (Maths)",
+        description: "Environmental science with Maths",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Geography", level: 3, isRequired: false },
         ],
         careerProspects: [
           "Environmental Scientist",
@@ -101,29 +140,29 @@ export const VUT_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("Diploma Non-Destructive Testing VUT"),
+        id: createDegreeId("Diploma NonDestructive Testing VUT"),
         name: "Diploma in Non-Destructive Testing",
         faculty: "Applied & Computer Sciences",
         duration: "3 years",
         apsRequirement: 19,
         description: "Non-destructive testing technology",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
+          { name: "English", level: 3, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
           { name: "Physical Sciences", level: 3, isRequired: true },
         ],
         careerProspects: [
           "NDT Technician",
-          "Quality Control Inspector",
+          "Quality Inspector",
           "Materials Tester",
         ],
       },
     ],
   },
   {
-    id: createFacultyId("Faculty of Engineering & Technology VUT"),
+    id: createFacultyId("Faculty of Engineering and Technology VUT"),
     name: "Faculty of Engineering & Technology",
-    description: "Engineering and technology programs",
+    description: "Engineering technology programs across multiple disciplines",
     degrees: [
       {
         id: createDegreeId("Diploma Chemical Engineering VUT"),
@@ -131,8 +170,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Engineering & Technology",
         duration: "3 years",
         apsRequirement: 24,
-        description:
-          "Chemical engineering technology - requires 24 APS (Maths)",
+        description: "Chemical engineering diploma requiring 24 APS with Maths",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -141,7 +179,7 @@ export const VUT_FACULTIES: Faculty[] = [
         careerProspects: [
           "Chemical Engineering Technician",
           "Process Technician",
-          "Plant Operator",
+          "Quality Control Engineer",
         ],
       },
       {
@@ -150,7 +188,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Engineering & Technology",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Civil engineering technology - requires 24 APS (Maths)",
+        description: "Civil engineering diploma requiring 24 APS with Maths",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -159,7 +197,7 @@ export const VUT_FACULTIES: Faculty[] = [
         careerProspects: [
           "Civil Engineering Technician",
           "Construction Supervisor",
-          "Project Coordinator",
+          "Infrastructure Technician",
         ],
       },
       {
@@ -169,7 +207,7 @@ export const VUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 24,
         description:
-          "Electronic engineering technology - requires 24 APS (Maths)",
+          "Electronic engineering diploma requiring 24 APS with Maths",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -178,7 +216,7 @@ export const VUT_FACULTIES: Faculty[] = [
         careerProspects: [
           "Electronic Engineering Technician",
           "Electronics Technician",
-          "Control Systems Technician",
+          "Telecommunications Technician",
         ],
       },
       {
@@ -187,16 +225,16 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Engineering & Technology",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Power engineering technology - requires 24 APS (Maths)",
+        description: "Power engineering diploma requiring 24 APS with Maths",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
           { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Power Engineering Technician",
+          "Power Systems Technician",
           "Electrical Technician",
-          "Power Systems Operator",
+          "Energy Engineer",
         ],
       },
       {
@@ -205,7 +243,8 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Engineering & Technology",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Process control engineering - requires 24 APS (Maths)",
+        description:
+          "Process control engineering diploma requiring 24 APS with Maths",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -214,7 +253,7 @@ export const VUT_FACULTIES: Faculty[] = [
         careerProspects: [
           "Process Control Technician",
           "Automation Technician",
-          "Control Systems Engineer",
+          "Instrumentation Engineer",
         ],
       },
       {
@@ -223,16 +262,18 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Engineering & Technology",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Computer systems engineering - requires 24 APS (Maths)",
+        description:
+          "Computer systems engineering diploma requiring 24 APS with Maths",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
           { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Information Technology", level: 3, isRequired: false },
         ],
         careerProspects: [
           "Computer Systems Engineer",
           "Network Engineer",
-          "Systems Administrator",
+          "IT Systems Specialist",
         ],
       },
       {
@@ -241,7 +282,8 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Engineering & Technology",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Industrial engineering - requires 24 APS (Maths)",
+        description:
+          "Industrial engineering diploma requiring 24 APS with Maths",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -249,8 +291,8 @@ export const VUT_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Industrial Engineering Technician",
-          "Production Supervisor",
-          "Quality Manager",
+          "Operations Supervisor",
+          "Quality Engineer",
         ],
       },
       {
@@ -260,7 +302,7 @@ export const VUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 24,
         description:
-          "Mechanical engineering technology - requires 24 APS (Maths)",
+          "Mechanical engineering diploma requiring 24 APS with Maths",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -268,8 +310,8 @@ export const VUT_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Mechanical Engineering Technician",
-          "Maintenance Technician",
-          "Manufacturing Technician",
+          "Manufacturing Technologist",
+          "Maintenance Engineer",
         ],
       },
       {
@@ -278,7 +320,8 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Engineering & Technology",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Metallurgical engineering - requires 24 APS (Maths)",
+        description:
+          "Metallurgical engineering diploma requiring 24 APS with Maths",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -287,7 +330,25 @@ export const VUT_FACULTIES: Faculty[] = [
         careerProspects: [
           "Metallurgical Technician",
           "Materials Engineer",
-          "Mining Technician",
+          "Mining Technologist",
+        ],
+      },
+      {
+        id: createDegreeId("Extended Engineering Courses VUT"),
+        name: "Extended Engineering Courses",
+        faculty: "Engineering & Technology",
+        duration: "4 years",
+        apsRequirement: 22,
+        description: "Extended engineering programs requiring 22 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Physical Sciences", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technician",
+          "Technical Supervisor",
+          "Project Coordinator",
         ],
       },
     ],
@@ -295,7 +356,7 @@ export const VUT_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Human Sciences VUT"),
     name: "Faculty of Human Sciences",
-    description: "Creative arts, education, tourism, and social programs",
+    description: "Creative arts, design, tourism, and social science programs",
     degrees: [
       {
         id: createDegreeId("Diploma Fashion VUT"),
@@ -304,16 +365,28 @@ export const VUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 21,
         description:
-          "Fashion design and production - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+          "Fashion design with Maths (22 APS with Math Lit/Tech Maths)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
           { name: "Visual Arts", level: 3, isRequired: false },
         ],
-        careerProspects: [
-          "Fashion Designer",
-          "Fashion Merchandiser",
-          "Clothing Technologist",
+        careerProspects: ["Fashion Designer", "Pattern Maker", "Stylist"],
+      },
+      {
+        id: createDegreeId("Diploma Fashion Math Lit VUT"),
+        name: "Diploma in Fashion - Math Lit/Tech Maths",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Fashion design with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
+          { name: "Visual Arts", level: 3, isRequired: false },
         ],
+        careerProspects: ["Fashion Designer", "Pattern Maker", "Stylist"],
       },
       {
         id: createDegreeId("Diploma Photography VUT"),
@@ -321,11 +394,25 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Human Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description:
-          "Photography and visual arts - 21 APS / 22 APS (Math Lit/Tech Maths)",
+        description: "Photography (22 APS with Math Lit/Tech Maths)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Visual Arts", level: 3, isRequired: false },
+          { name: "English", level: 3, isRequired: true },
+          { name: "Visual Arts", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Photographer", "Photo Editor", "Visual Artist"],
+      },
+      {
+        id: createDegreeId("Diploma Photography Math Lit VUT"),
+        name: "Diploma in Photography - Math Lit/Tech Maths",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Photography with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
+          { name: "Visual Arts", level: 4, isRequired: true },
         ],
         careerProspects: ["Photographer", "Photo Editor", "Visual Artist"],
       },
@@ -335,16 +422,35 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Human Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description:
-          "Graphic design and multimedia - 21 APS / 22 APS (Math Lit/Tech Maths)",
+        description: "Graphic design (22 APS with Math Lit/Tech Maths)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Visual Arts", level: 3, isRequired: false },
+          { name: "English", level: 3, isRequired: true },
+          { name: "Visual Arts", level: 4, isRequired: true },
+          { name: "Information Technology", level: 3, isRequired: false },
         ],
         careerProspects: [
           "Graphic Designer",
           "Web Designer",
-          "Multimedia Artist",
+          "Creative Director",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Graphic Design Math Lit VUT"),
+        name: "Diploma in Graphic Design - Math Lit/Tech Maths",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Graphic design with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
+          { name: "Visual Arts", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Graphic Designer",
+          "Web Designer",
+          "Creative Director",
         ],
       },
       {
@@ -353,13 +459,27 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Human Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description:
-          "Fine arts and creative expression - 21 APS / 22 APS (Math Lit/Tech Maths)",
+        description: "Fine art (22 APS with Math Lit/Tech Maths)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
+          { name: "English", level: 3, isRequired: true },
           { name: "Visual Arts", level: 4, isRequired: true },
         ],
-        careerProspects: ["Fine Artist", "Art Teacher", "Gallery Curator"],
+        careerProspects: ["Artist", "Art Teacher", "Gallery Curator"],
+      },
+      {
+        id: createDegreeId("Diploma Fine Art Math Lit VUT"),
+        name: "Diploma in Fine Art - Math Lit/Tech Maths",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Fine art with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
+          { name: "Visual Arts", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Artist", "Art Teacher", "Gallery Curator"],
       },
       {
         id: createDegreeId("Diploma Food Service Management VUT"),
@@ -368,9 +488,29 @@ export const VUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 21,
         description:
-          "Food service and hospitality management - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+          "Food service management with Maths (22 APS with Math Lit/Tech Maths)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Life Sciences", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Food Service Manager",
+          "Restaurant Manager",
+          "Catering Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Food Service Management Math Lit VUT"),
+        name: "Diploma in Food Service Management - Math Lit/Tech Maths",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Food service management with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
           { name: "Life Sciences", level: 3, isRequired: false },
         ],
         careerProspects: [
@@ -386,12 +526,28 @@ export const VUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 21,
         description:
-          "Tourism and hospitality management - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+          "Tourism management with Maths (22 APS with Math Lit/Tech Maths)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
           { name: "Geography", level: 3, isRequired: false },
         ],
-        careerProspects: ["Tourism Manager", "Travel Consultant", "Tour Guide"],
+        careerProspects: ["Tourism Manager", "Tour Guide", "Travel Consultant"],
+      },
+      {
+        id: createDegreeId("Diploma Tourism Management Math Lit VUT"),
+        name: "Diploma in Tourism Management - Math Lit/Tech Maths",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Tourism management with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
+          { name: "Geography", level: 3, isRequired: false },
+        ],
+        careerProspects: ["Tourism Manager", "Tour Guide", "Travel Consultant"],
       },
       {
         id: createDegreeId("Diploma Ecotourism Management VUT"),
@@ -400,16 +556,37 @@ export const VUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 21,
         description:
-          "Ecotourism and sustainable tourism - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+          "Ecotourism management with Maths (22 APS with Math Lit/Tech Maths)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
           { name: "Geography", level: 3, isRequired: false },
           { name: "Life Sciences", level: 3, isRequired: false },
         ],
         careerProspects: [
           "Ecotourism Manager",
-          "Conservation Officer",
-          "Environmental Guide",
+          "Conservation Guide",
+          "Environmental Educator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Ecotourism Management Math Lit VUT"),
+        name: "Diploma in Ecotourism Management - Math Lit/Tech Maths",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Ecotourism management with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
+          { name: "Geography", level: 3, isRequired: false },
+          { name: "Life Sciences", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Ecotourism Manager",
+          "Conservation Guide",
+          "Environmental Educator",
         ],
       },
       {
@@ -419,14 +596,32 @@ export const VUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 21,
         description:
-          "Public relations and communications - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+          "Public relations with Maths (22 APS with Math Lit/Tech Maths)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 3, isRequired: false },
+          { name: "Mathematics", level: 3, isRequired: true },
         ],
         careerProspects: [
           "Public Relations Officer",
-          "Communications Manager",
+          "Communications Specialist",
+          "Marketing Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Public Relations Math Lit VUT"),
+        name: "Diploma in Public Relations - Math Lit/Tech Maths",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Public relations with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Public Relations Officer",
+          "Communications Specialist",
           "Marketing Coordinator",
         ],
       },
@@ -437,16 +632,26 @@ export const VUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 23,
         description:
-          "Legal assistance and paralegal work - 23 APS (Maths) / 24 APS (Math Lit/Tech Maths)",
+          "Legal assistance with Maths (24 APS with Math Lit/Tech Maths)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
         ],
-        careerProspects: [
-          "Legal Assistant",
-          "Paralegal",
-          "Court Administrator",
+        careerProspects: ["Legal Assistant", "Paralegal", "Court Officer"],
+      },
+      {
+        id: createDegreeId("Diploma Legal Assistance Math Lit VUT"),
+        name: "Diploma in Legal Assistance - Math Lit/Tech Maths",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Legal assistance with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
         ],
+        careerProspects: ["Legal Assistant", "Paralegal", "Court Officer"],
       },
       {
         id: createDegreeId("Diploma Labour Law VUT"),
@@ -454,16 +659,33 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Human Sciences",
         duration: "3 years",
         apsRequirement: 23,
-        description:
-          "Labour law and industrial relations - 23 APS (Maths) / 24 APS (Math Lit/Tech Maths)",
+        description: "Labour law with Maths (24 APS with Math Lit/Tech Maths)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
         ],
         careerProspects: [
+          "Labour Law Specialist",
+          "HR Legal Advisor",
           "Labour Relations Officer",
-          "HR Specialist",
-          "Legal Advisor",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Labour Law Math Lit VUT"),
+        name: "Diploma in Labour Law - Math Lit/Tech Maths",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Labour law with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Labour Law Specialist",
+          "HR Legal Advisor",
+          "Labour Relations Officer",
         ],
       },
       {
@@ -472,17 +694,28 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Human Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description:
-          "Policing and law enforcement - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        description: "Policing with Maths (22 APS with Math Lit/Tech Maths)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
           { name: "Life Orientation", level: 3, isRequired: false },
         ],
-        careerProspects: [
-          "Police Officer",
-          "Security Manager",
-          "Crime Analyst",
+        careerProspects: ["Police Officer", "Detective", "Security Manager"],
+      },
+      {
+        id: createDegreeId("Diploma Policing Math Lit VUT"),
+        name: "Diploma in Policing - Math Lit/Tech Maths",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Policing with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
+          { name: "Life Orientation", level: 3, isRequired: false },
         ],
+        careerProspects: ["Police Officer", "Detective", "Security Manager"],
       },
       {
         id: createDegreeId("Diploma Safety Management VUT"),
@@ -491,33 +724,69 @@ export const VUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 21,
         description:
-          "Occupational health and safety - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+          "Safety management with Maths (22 APS with Math Lit/Tech Maths)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Physical Sciences", level: 3, isRequired: false },
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
         ],
         careerProspects: [
-          "Safety Officer",
-          "Health and Safety Manager",
-          "Risk Assessor",
+          "Safety Manager",
+          "Risk Assessment Specialist",
+          "Occupational Health Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Safety Management Math Lit VUT"),
+        name: "Diploma in Safety Management - Math Lit/Tech Maths",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Safety management with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Safety Manager",
+          "Risk Assessment Specialist",
+          "Occupational Health Officer",
         ],
       },
       {
         id: createDegreeId("BEd Senior Phase FET Teaching VUT"),
-        name: "BEd (Senior Phase & FET Teaching)",
+        name: "BEd (Senior Phase & FET teaching)",
         faculty: "Human Sciences",
         duration: "4 years",
         apsRequirement: 22,
-        description:
-          "Teacher education for senior and FET phases - 22 APS (Maths) / 24 APS (Math Lit)",
+        description: "Teacher education with Maths (24 APS with Math Lit)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Life Orientation", level: 4, isRequired: false },
         ],
         careerProspects: [
           "High School Teacher",
-          "Education Specialist",
-          "Subject Coordinator",
+          "Subject Specialist",
+          "Education Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("BEd Senior Phase FET Teaching Math Lit VUT"),
+        name: "BEd (Senior Phase & FET teaching) - Math Lit",
+        faculty: "Human Sciences",
+        duration: "4 years",
+        apsRequirement: 24,
+        description: "Teacher education with Math Lit",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Life Orientation", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "High School Teacher",
+          "Subject Specialist",
+          "Education Coordinator",
         ],
       },
     ],
@@ -525,24 +794,44 @@ export const VUT_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Management Sciences VUT"),
     name: "Faculty of Management Sciences",
-    description: "Business management and administrative programs",
+    description: "Business management, finance, and commerce programs",
     degrees: [
       {
         id: createDegreeId("Diploma Financial Info Systems VUT"),
-        name: "Diploma in Financial Information Systems",
+        name: "Diploma in Financial Info Systems",
         faculty: "Management Sciences",
         duration: "3 years",
         apsRequirement: 20,
         description:
-          "Financial information systems - 20 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+          "Financial information systems with Maths (22 APS with Math Lit/Tech Maths)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Information Technology", level: 3, isRequired: false },
         ],
         careerProspects: [
           "Financial Systems Analyst",
-          "Accounting Technician",
-          "Data Analyst",
+          "Data Processor",
+          "Information Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Financial Info Systems Math Lit VUT"),
+        name: "Diploma in Financial Info Systems - Math Lit/Tech Maths",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Financial information systems with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
+          { name: "Information Technology", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Financial Systems Analyst",
+          "Data Processor",
+          "Information Manager",
         ],
       },
       {
@@ -552,15 +841,33 @@ export const VUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 20,
         description:
-          "Cost and management accounting - 20 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+          "Cost and management accounting with Maths (22 APS with Math Lit/Tech Maths)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
         ],
         careerProspects: [
+          "Cost Accountant",
           "Management Accountant",
-          "Cost Analyst",
-          "Financial Controller",
+          "Financial Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Cost Management Accounting Math Lit VUT"),
+        name: "Diploma in Cost & Management Accounting - Math Lit/Tech Maths",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Cost and management accounting with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Cost Accountant",
+          "Management Accountant",
+          "Financial Analyst",
         ],
       },
       {
@@ -570,10 +877,28 @@ export const VUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 20,
         description:
-          "Internal auditing - 20 APS (Maths) / 23 APS (Math Lit/Tech Maths)",
+          "Internal auditing with Maths (23 APS with Math Lit/Tech Maths)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Internal Auditor",
+          "Risk Analyst",
+          "Compliance Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Internal Auditing Math Lit VUT"),
+        name: "Diploma in Internal Auditing - Math Lit/Tech Maths",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description: "Internal auditing with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
         ],
         careerProspects: [
           "Internal Auditor",
@@ -588,15 +913,33 @@ export const VUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 20,
         description:
-          "Human resources management - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+          "Human resources management with Maths (21 APS with Math Lit/Tech Maths)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
+          { name: "English", level: 3, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
         ],
         careerProspects: [
-          "HR Officer",
-          "Recruitment Specialist",
-          "Training Coordinator",
+          "HR Assistant",
+          "Recruitment Coordinator",
+          "Training Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Human Resources Management Math Lit VUT"),
+        name: "Diploma in Human Resources Management - Math Lit/Tech Maths",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Human resources management with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "HR Assistant",
+          "Recruitment Coordinator",
+          "Training Officer",
         ],
       },
       {
@@ -606,10 +949,31 @@ export const VUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 20,
         description:
-          "Logistics and supply chain - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+          "Logistics and supply chain management with Maths (21 APS with Math Lit/Tech Maths)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
+          { name: "English", level: 3, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Logistics Coordinator",
+          "Supply Chain Analyst",
+          "Warehouse Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Diploma Logistics Supply Chain Management Math Lit VUT",
+        ),
+        name: "Diploma in Logistics & Supply Chain Management - Math Lit/Tech Maths",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Logistics and supply chain management with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
         ],
         careerProspects: [
           "Logistics Coordinator",
@@ -623,16 +987,33 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences",
         duration: "3 years",
         apsRequirement: 20,
-        description:
-          "Marketing and sales - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+        description: "Marketing with Maths (21 APS with Math Lit/Tech Maths)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
+          { name: "English", level: 3, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
         ],
         careerProspects: [
-          "Marketing Officer",
+          "Marketing Coordinator",
           "Sales Representative",
-          "Brand Manager",
+          "Brand Assistant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Marketing Math Lit VUT"),
+        name: "Diploma in Marketing - Math Lit/Tech Maths",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Marketing with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Marketing Coordinator",
+          "Sales Representative",
+          "Brand Assistant",
         ],
       },
       {
@@ -642,15 +1023,33 @@ export const VUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 20,
         description:
-          "Retail business management - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+          "Retail business management with Maths (21 APS with Math Lit/Tech Maths)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
+          { name: "English", level: 3, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
         ],
         careerProspects: [
           "Retail Manager",
           "Store Manager",
-          "Merchandise Planner",
+          "Merchandising Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Retail Business Management Math Lit VUT"),
+        name: "Diploma in Retail Business Management - Math Lit/Tech Maths",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Retail business management with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Retail Manager",
+          "Store Manager",
+          "Merchandising Coordinator",
         ],
       },
       {
@@ -660,15 +1059,35 @@ export const VUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 20,
         description:
-          "Sport management and administration - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+          "Sport management with Maths (21 APS with Math Lit/Tech Maths)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 3, isRequired: false },
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Life Orientation", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Sport Manager",
+          "Sports Manager",
+          "Sports Administrator",
           "Event Coordinator",
-          "Fitness Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Sport Management Math Lit VUT"),
+        name: "Diploma in Sport Management - Math Lit/Tech Maths",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Sport management with Math Lit/Tech Maths",
+        subjects: [
+          { name: "English", level: 3, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
+          { name: "Technical Mathematics", level: 4, isRequired: false },
+          { name: "Life Orientation", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Sports Manager",
+          "Sports Administrator",
+          "Event Coordinator",
         ],
       },
       {
@@ -677,15 +1096,15 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences",
         duration: "3 years",
         apsRequirement: 23,
-        description: "Operations management - 23 APS (Maths)",
+        description: "Operations management with Maths",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
         ],
         careerProspects: [
           "Operations Manager",
           "Production Supervisor",
-          "Process Improvement Specialist",
+          "Quality Manager",
         ],
       },
     ],
