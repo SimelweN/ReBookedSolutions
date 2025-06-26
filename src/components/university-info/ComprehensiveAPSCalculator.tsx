@@ -167,7 +167,14 @@ interface APSSubject {
 }
 
 interface ProgramDetailsModalProps {
-  program: any;
+  program: {
+    id: string;
+    name: string;
+    apsRequired: number;
+    universityId: string;
+    faculty: string;
+    subjects?: string[];
+  };
   isOpen: boolean;
   onClose: () => void;
 }
@@ -308,7 +315,14 @@ const ComprehensiveAPSCalculator: React.FC = () => {
   const [showAllPrograms, setShowAllPrograms] = useState(false);
   const [facultyFilter, setFacultyFilter] = useState("all");
   const [universityFilter, setUniversityFilter] = useState("all");
-  const [selectedProgram, setSelectedProgram] = useState<any>(null);
+  const [selectedProgram, setSelectedProgram] = useState<{
+    id: string;
+    name: string;
+    apsRequired: number;
+    universityId: string;
+    faculty: string;
+    subjects?: string[];
+  } | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   // Calculate total APS (excluding Life Orientation)
@@ -362,7 +376,17 @@ const ComprehensiveAPSCalculator: React.FC = () => {
         acc[program.faculty].push(program);
         return acc;
       },
-      {} as Record<string, any[]>,
+      {} as Record<
+        string,
+        Array<{
+          id: string;
+          name: string;
+          apsRequired: number;
+          universityId: string;
+          faculty: string;
+          subjects?: string[];
+        }>
+      >,
     );
 
     // Convert to array and sort
