@@ -11451,6 +11451,1144 @@ export const CUT_FACULTIES: Faculty[] = [
   },
 ];
 
+// Durban University of Technology (DUT) - Comprehensive Data
+export const DUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Engineering & Built Environment DUT"),
+    name: "Engineering & Built Environment",
+    description: "Engineering and construction technology programs",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Diploma Engineering Civil Electrical Mechanical DUT",
+        ),
+        name: "Diploma in Engineering (Civil/Electrical/Mechanical)",
+        faculty: "Engineering & Built Environment",
+        duration: "3 years",
+        apsRequirement: 24,
+        description:
+          "Engineering diploma - 24 APS+ with Maths & Physical Sciences L4+",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technician",
+          "Project Technician",
+          "Maintenance Engineer",
+        ],
+      },
+      {
+        id: createDegreeId("BEng Technology Engineering Technology DUT"),
+        name: "BEng Technology (Engineering Technology)",
+        faculty: "Engineering & Built Environment",
+        duration: "4 years",
+        apsRequirement: 28,
+        description:
+          "Engineering technology degree - 28 APS with L4 in Maths & Physical Sciences",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technologist",
+          "Design Engineer",
+          "Project Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Health & Wellness Sciences DUT"),
+    name: "Health & Wellness Sciences",
+    description: "Health sciences and medical technology programs",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Bachelor Health Sciences Medical Laboratory Science DUT",
+        ),
+        name: "Bachelor of Health Sciences (Medical Laboratory Science)",
+        faculty: "Health & Wellness Sciences",
+        duration: "4 years",
+        apsRequirement: 36,
+        description:
+          "Medical laboratory science - 36 APS plus Maths, Physical Science, Life Sciences prerequisites",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Medical Laboratory Scientist",
+          "Clinical Technologist",
+          "Research Scientist",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Information Technology DUT"),
+    name: "Information Technology",
+    description: "Information technology and computing programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma IT DUT"),
+        name: "Diploma in IT",
+        faculty: "Information Technology",
+        duration: "3 years",
+        apsRequirement: 26,
+        description:
+          "IT diploma - 26–28 APS depending on the stream; Maths L4+ required",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Technician",
+          "Software Developer",
+          "Network Administrator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor IT DUT"),
+        name: "Bachelor-level IT",
+        faculty: "Information Technology",
+        duration: "4 years",
+        apsRequirement: 30,
+        description:
+          "Bachelor-level IT - 30 APS+, subject to programme details",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Professional",
+          "Systems Analyst",
+          "Software Engineer",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Management Sciences & Arts DUT"),
+    name: "Management Sciences & Arts",
+    description: "Management, business, and arts programs",
+    degrees: [
+      {
+        id: createDegreeId("Diplomas Management Sciences DUT"),
+        name: "Diplomas (e.g., Public Management, Marketing, Internal Auditing, Office Management)",
+        faculty: "Management Sciences & Arts",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Various management science diplomas - typically 27 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Manager", "Administrator", "Business Professional"],
+      },
+      {
+        id: createDegreeId("Bachelor Management Sciences DUT"),
+        name: "Bachelor's (e.g., Hospitality Management, Accountancy, Tourism Management)",
+        faculty: "Management Sciences & Arts",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Various bachelor programmes - 30 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Professional Manager",
+          "Accountant",
+          "Tourism Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Humanities & Design DUT"),
+    name: "Humanities & Design",
+    description: "Humanities, languages, and design programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Arts DUT"),
+        name: "Bachelor of Arts",
+        faculty: "Humanities & Design",
+        duration: "3 years",
+        apsRequirement: 24,
+        description:
+          "Arts and humanities - 24 APS+, with strong language results",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "Various based on specialization",
+          "Writer",
+          "Communications Specialist",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Education DUT"),
+    name: "Education",
+    description: "Teacher training and educational programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Education Foundation SP FET DUT"),
+        name: "Bachelor of Education (Foundation, SP & FET: various subjects)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 27,
+        description:
+          "Teacher education - 27 APS plus subject-level requirements",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Teacher",
+          "Educational Specialist",
+          "Curriculum Developer",
+        ],
+      },
+    ],
+  },
+];
+
+// Mangosuthu University of Technology (MUT) - Comprehensive Data
+export const MUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Engineering MUT"),
+    name: "Faculty of Engineering",
+    description: "Engineering technology programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Civil Engineering MUT"),
+        name: "Diploma in Civil Engineering",
+        faculty: "Engineering",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Civil engineering - APS ~20+, with 50% Maths & Physical Science",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Civil Engineering Technician",
+          "Construction Supervisor",
+          "Project Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Diploma Mechanical Electrical Chemical Engineering MUT",
+        ),
+        name: "Diploma in Mechanical/Electrical/Chemical Engineering",
+        faculty: "Engineering",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Engineering diplomas - similar 20+ APS, with subject-level requirements",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technician",
+          "Maintenance Technician",
+          "Process Technician",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Engineering Technology BEngTech MUT"),
+        name: "Bachelor of Engineering Technology (BEngTech)",
+        faculty: "Engineering",
+        duration: "4 years",
+        apsRequirement: 25,
+        description:
+          "Engineering technology degree - typically higher APS, require strong 50%+ in Maths, Physics & English",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technologist",
+          "Design Engineer",
+          "Project Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Management Sciences MUT"),
+    name: "Faculty of Management Sciences",
+    description: "Management, business, and administrative programs",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Diploma Accounting Marketing Public Management HR Office Management MUT",
+        ),
+        name: "Diploma in Accounting, Marketing, Public Management, HR, Office Management",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 25,
+        description:
+          "Various management diplomas - min 25 APS plus subject requirements in Maths or Maths Lit",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Business Professional", "Administrator", "Manager"],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Commerce Accounting Marketing Public Administration MUT",
+        ),
+        name: "Bachelor of Commerce in Accounting/Marketing/Public Administration",
+        faculty: "Management Sciences",
+        duration: "4 years",
+        apsRequirement: 25,
+        description:
+          "Commerce degrees - similar baseline APS (25–30) plus departmental screening",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Professional Manager",
+          "Accountant",
+          "Marketing Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId(
+      "Faculty of Natural Sciences Applied Health Sciences MUT",
+    ),
+    name: "Faculty of Natural Sciences (Applied & Health Sciences)",
+    description: "Natural sciences, health sciences, and applied sciences",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Diploma Analytical Chemistry Agriculture Environmental Health Biomedical Technology MUT",
+        ),
+        name: "Diploma in Analytical Chemistry, Agriculture, Environmental Health, Biomedical Technology",
+        faculty: "Natural Sciences (Applied & Health Sciences)",
+        duration: "3 years",
+        apsRequirement: 23,
+        description:
+          "Science diplomas - min APS 23+, plus subject requirements in Maths, Life/Physical Sciences",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Technician",
+          "Laboratory Analyst",
+          "Health Professional",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Science Analytical Chemistry Environmental Health MUT",
+        ),
+        name: "Bachelor of Science (e.g., Analytical Chemistry, Environmental Health)",
+        faculty: "Natural Sciences (Applied & Health Sciences)",
+        duration: "4 years",
+        apsRequirement: 30,
+        description:
+          "Science degrees - higher APS (around 30+), plus 50%+ in relevant sciences & English",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Scientist",
+          "Research Analyst",
+          "Environmental Specialist",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Hospitality & Tourism MUT"),
+    name: "Hospitality & Tourism",
+    description: "Hospitality management and office administration",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Hospitality Management MUT"),
+        name: "Diploma in Hospitality Management",
+        faculty: "Hospitality & Tourism",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Hospitality management - APS ~22, with English Level 4",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Hotel Manager",
+          "Restaurant Manager",
+          "Event Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Office Management MUT"),
+        name: "Diploma in Office Management",
+        faculty: "Hospitality & Tourism",
+        duration: "3 years",
+        apsRequirement: 20,
+        description: "Office management - 20 APS (Maths Lit accepted)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Office Manager",
+          "Executive Assistant",
+          "Administrative Coordinator",
+        ],
+      },
+    ],
+  },
+];
+
+// Tshwane University of Technology (TUT) - Comprehensive Data
+export const TUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Engineering & the Built Environment TUT"),
+    name: "Faculty of Engineering & the Built Environment",
+    description: "Engineering and construction technology programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Engineering Various Disciplines TUT"),
+        name: "Diploma in Engineering (various disciplines)",
+        faculty: "Engineering & the Built Environment",
+        duration: "3 years",
+        apsRequirement: 22,
+        description:
+          "Engineering diplomas - 22–24 APS, requires Maths & Physical Science Level 4+",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technician",
+          "Technical Officer",
+          "Project Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Engineering Technology BEngTech TUT"),
+        name: "Bachelor of Engineering Technology (BEngTech)",
+        faculty: "Engineering & the Built Environment",
+        duration: "4 years",
+        apsRequirement: 28,
+        description:
+          "Engineering technology degree - 28–30 APS, requires stronger subject levels",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technologist",
+          "Design Engineer",
+          "Project Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId(
+      "Faculty of Information & Communication Technology TUT",
+    ),
+    name: "Faculty of Information & Communication Technology",
+    description: "Information technology and computing programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma ICT TUT"),
+        name: "Diploma in ICT",
+        faculty: "Information & Communication Technology",
+        duration: "3 years",
+        apsRequirement: 22,
+        description:
+          "ICT diploma - 22–24 APS, requires Maths Level 4; Math Lit often not accepted",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Technician",
+          "Software Developer",
+          "Network Administrator",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Management Sciences TUT"),
+    name: "Faculty of Management Sciences",
+    description: "Management, business, and administrative programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Programmes Management Sciences TUT"),
+        name: "Diploma programmes (e.g., Accounting, Marketing, Public Finance, Sport Management)",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Management science diplomas - 20–24 APS, subject dependent",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Business Professional", "Administrator", "Manager"],
+      },
+      {
+        id: createDegreeId("Higher APS Extended Specialised Diplomas TUT"),
+        name: "Higher APS for extended or specialised diplomas (e.g., Public Finance)",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description: "Specialized diplomas - 23 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Specialist Manager",
+          "Financial Officer",
+          "Public Administrator",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Arts, Design & Humanities TUT"),
+    name: "Faculty of Arts, Design & Humanities",
+    description: "Creative arts, design, and humanities programs",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Diploma Fine Applied Arts Jewellery Performing Arts Fashion Design TUT",
+        ),
+        name: "Diploma in Fine & Applied Arts, Jewellery, Performing Arts, Fashion Design, etc.",
+        faculty: "Arts, Design & Humanities",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Creative arts diplomas - 20–22 APS, plus portfolio, auditions or interviews",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 3, isRequired: false },
+        ],
+        careerProspects: ["Artist", "Designer", "Creative Professional"],
+      },
+      {
+        id: createDegreeId("Bachelor Architecture TUT"),
+        name: "Bachelor of Architecture",
+        faculty: "Arts, Design & Humanities",
+        duration: "5 years",
+        apsRequirement: 25,
+        description:
+          "Architecture degree - 25 APS, with strong entrance requirements in English & related subjects",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Architect", "Urban Planner", "Design Consultant"],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Humanities & Social Sciences TUT"),
+    name: "Faculty of Humanities & Social Sciences",
+    description: "Humanities and social sciences programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Degrees TUT"),
+        name: "Bachelor's degrees",
+        faculty: "Humanities & Social Sciences",
+        duration: "3-4 years",
+        apsRequirement: 25,
+        description:
+          "Various bachelor programmes - ≥25 APS, often 30+ APS preferred; English proficiency mandatory",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "Professional in chosen field",
+          "Researcher",
+          "Specialist",
+        ],
+      },
+    ],
+  },
+];
+
+// Vaal University of Technology (VUT) - Comprehensive Data
+export const VUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Applied & Computer Sciences VUT"),
+    name: "Faculty of Applied & Computer Sciences",
+    description:
+      "Applied sciences, agriculture, biotechnology, and information technology",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Analytical Chemistry VUT"),
+        name: "Diploma in Analytical Chemistry",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Analytical chemistry - 24 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Analytical Chemist",
+          "Quality Controller",
+          "Laboratory Technician",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Agricultural Management VUT"),
+        name: "Diploma in Agricultural Management",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description:
+          "Agricultural management - 24 APS (Maths) / 25 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Manager",
+          "Farm Supervisor",
+          "Agricultural Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Biotechnology VUT"),
+        name: "Diploma in Biotechnology",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description: "Biotechnology studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Biotechnologist",
+          "Research Technician",
+          "Quality Control Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Information Technology VUT"),
+        name: "Diploma in Information Technology",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description:
+          "Information technology - 24 APS (Maths or Tech Maths) / 26 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Technician",
+          "Software Developer",
+          "Network Administrator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Environmental Science VUT"),
+        name: "Diploma in Environmental Science",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Environmental science - 21 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Environmental Scientist",
+          "Conservation Officer",
+          "Environmental Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma NonDestructive Testing VUT"),
+        name: "Diploma in NonDestructive Testing",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 19,
+        description: "Non-destructive testing technology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Physical Sciences", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "NDT Technician",
+          "Quality Inspector",
+          "Materials Tester",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Engineering & Technology VUT"),
+    name: "Faculty of Engineering & Technology",
+    description: "Engineering technology programs across multiple disciplines",
+    degrees: [
+      {
+        id: createDegreeId("All Engineering Diplomas VUT"),
+        name: "All engineering diplomas (Chemical, Civil, Electronic, Power, Process Control, Computer Systems, Industrial, Mechanical, Metallurgical Engineering)",
+        faculty: "Engineering & Technology",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "All engineering diplomas require 24 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technician",
+          "Technical Officer",
+          "Process Controller",
+        ],
+      },
+      {
+        id: createDegreeId("Extended Engineering Courses VUT"),
+        name: "Extended courses",
+        faculty: "Engineering & Technology",
+        duration: "4 years",
+        apsRequirement: 22,
+        description: "Extended engineering programmes require 22 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technician",
+          "Technical Assistant",
+          "Project Coordinator",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Human Sciences VUT"),
+    name: "Faculty of Human Sciences",
+    description: "Creative arts, tourism, law, safety, and education programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Fashion VUT"),
+        name: "Diploma in Fashion",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Fashion design - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Fashion Designer",
+          "Fashion Stylist",
+          "Garment Technologist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Photography VUT"),
+        name: "Diploma in Photography",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Photography - 21 APS / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Photographer",
+          "Photo Editor",
+          "Visual Media Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Graphic Design VUT"),
+        name: "Diploma in Graphic Design",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Graphic design - 21 APS / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Graphic Designer",
+          "Visual Communications Designer",
+          "Creative Director",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Fine Art VUT"),
+        name: "Diploma in Fine Art",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Fine art - 21 APS / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 4, isRequired: false },
+        ],
+        careerProspects: ["Artist", "Art Teacher", "Gallery Curator"],
+      },
+      {
+        id: createDegreeId("Diploma Food Service Management VUT"),
+        name: "Diploma in Food Service Management",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Food service management - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Food Service Manager",
+          "Restaurant Manager",
+          "Catering Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Tourism Management VUT"),
+        name: "Diploma in Tourism Management",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Tourism management - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Tourism Manager",
+          "Travel Consultant",
+          "Tour Operator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Ecotourism Management VUT"),
+        name: "Diploma in Ecotourism Management",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Ecotourism management - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Ecotourism Manager",
+          "Conservation Tourism Officer",
+          "Sustainable Tourism Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Public Relations VUT"),
+        name: "Diploma in Public Relations",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Public relations - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "PR Officer",
+          "Communications Specialist",
+          "Media Relations Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Legal Assistance VUT"),
+        name: "Diploma in Legal Assistance",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description:
+          "Legal assistance - 23 APS (Maths) / 24 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: ["Paralegal", "Legal Assistant", "Court Officer"],
+      },
+      {
+        id: createDegreeId("Diploma Labour Law VUT"),
+        name: "Diploma in Labour Law",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description:
+          "Labour law - 23 APS (Maths) / 24 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Labour Relations Officer",
+          "Legal Advisor",
+          "HR Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Policing VUT"),
+        name: "Diploma in Policing",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Policing - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Police Officer",
+          "Security Manager",
+          "Law Enforcement Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Safety Management VUT"),
+        name: "Diploma in Safety Management",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Safety management - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Safety Manager",
+          "Health and Safety Officer",
+          "Risk Manager",
+        ],
+      },
+      {
+        id: createDegreeId("BEd Senior Phase FET Teaching VUT"),
+        name: "BEd (Senior Phase & FET teaching)",
+        faculty: "Human Sciences",
+        duration: "4 years",
+        apsRequirement: 22,
+        description: "Teacher education - 22 APS (Maths) / 24 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "High School Teacher",
+          "Subject Specialist",
+          "Educational Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Management Sciences VUT"),
+    name: "Faculty of Management Sciences",
+    description: "Management, business, finance, and administrative programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Financial Info Systems VUT"),
+        name: "Diploma in Financial Info Systems",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Financial information systems - 20 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Financial Systems Analyst",
+          "Database Administrator",
+          "IT Support Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Cost Management Accounting VUT"),
+        name: "Diploma in Cost & Management Accounting",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Cost and management accounting - 20 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Cost Accountant",
+          "Management Accountant",
+          "Budget Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Internal Auditing VUT"),
+        name: "Diploma in Internal Auditing",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Internal auditing - 20 APS (Maths) / 23 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Internal Auditor",
+          "Risk Analyst",
+          "Compliance Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Human Resources Management VUT"),
+        name: "Diploma in Human Resources Management",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Human resources management - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "HR Officer",
+          "Recruitment Specialist",
+          "Training Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Logistics Supply Chain Management VUT"),
+        name: "Diploma in Logistics & Supply Chain Management",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Logistics and supply chain - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Logistics Coordinator",
+          "Supply Chain Analyst",
+          "Warehouse Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Marketing VUT"),
+        name: "Diploma in Marketing",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Marketing - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Marketing Officer",
+          "Sales Representative",
+          "Brand Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Retail Business Management VUT"),
+        name: "Diploma in Retail Business Management",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Retail business management - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Retail Manager",
+          "Store Manager",
+          "Merchandising Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Sport Management VUT"),
+        name: "Diploma in Sport Management",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Sport management - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Sports Manager",
+          "Event Manager",
+          "Sports Development Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Operations Management VUT"),
+        name: "Diploma in Operations Management",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description: "Operations management - 23 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Operations Manager",
+          "Production Manager",
+          "Process Coordinator",
+        ],
+      },
+    ],
+  },
+];
+
 export const UPDATED_UNIVERSITIES = [
   "ul", // University of Limpopo
   "nwu", // North-West University
