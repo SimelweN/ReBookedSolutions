@@ -10957,6 +10957,500 @@ export const UMP_FACULTIES: Faculty[] = [
   },
 ];
 
+// Cape Peninsula University of Technology (CPUT) - Comprehensive Data
+export const CPUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Agriculture & Natural Sciences CPUT"),
+    name: "Faculty of Agriculture & Natural Sciences",
+    description:
+      "Agricultural sciences, chemistry, biotechnology, and environmental management",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Agriculture CPUT"),
+        name: "Diploma in Agriculture",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description:
+          "Agriculture - 28 APS (with Maths) / 29 APS (with Tech Maths); mainstream requires 30 APS w/Maths or 31 APS w/Tech Maths",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Technician",
+          "Farm Manager",
+          "Agricultural Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Agricultural Management CPUT"),
+        name: "Diploma in Agricultural Management",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description:
+          "Agricultural management - 28 APS (w/Maths) / 29 APS (Tech Maths) / 30 APS (Maths Literacy); mainstream 30/31/32 APS respectively",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Manager",
+          "Farm Supervisor",
+          "Agricultural Business Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Analytical Chemistry CPUT"),
+        name: "Diploma in Analytical Chemistry",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description:
+          "Analytical chemistry - 28 APS (Maths) or 29 APS (Tech Maths); mainstream 30/31 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Analytical Chemist",
+          "Quality Controller",
+          "Laboratory Technician",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Biotechnology CPUT"),
+        name: "Diploma in Biotechnology",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description:
+          "Biotechnology - 28 APS (Maths) or 29 APS (Tech Maths); mainstream 30/31 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Biotechnologist",
+          "Research Technician",
+          "Quality Control Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Consumer Science Food Nutrition CPUT"),
+        name: "Diploma in Consumer Science: Food & Nutrition",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description:
+          "Consumer science food and nutrition - 26 APS (Maths) / 27 APS (Tech Maths); mainstream 28/29 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Nutritionist",
+          "Food Technologist",
+          "Consumer Advisor",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Environmental Management CPUT"),
+        name: "Diploma in Environmental Management",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description:
+          "Environmental management - 26 APS (Maths) / 27 APS (Tech Maths) / 28 APS (Maths Lit); mainstream 28/29/30 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Environmental Manager",
+          "Environmental Consultant",
+          "Conservation Officer",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Health & Wellness Sciences CPUT"),
+    name: "Faculty of Health & Wellness Sciences",
+    description: "Health sciences and medical technology programs",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Bachelor Health Sciences Medical Laboratory Science CPUT",
+        ),
+        name: "Bachelor of Health Sciences: Medical Laboratory Science",
+        faculty: "Health & Wellness Sciences",
+        duration: "4 years",
+        apsRequirement: 38,
+        description:
+          "Medical laboratory science - 38+ APS (Mainstream) / 30–37 APS (Extended)",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Medical Laboratory Scientist",
+          "Clinical Laboratory Technologist",
+          "Research Technologist",
+        ],
+      },
+    ],
+  },
+];
+
+// Central University of Technology (CUT) - Comprehensive Data
+export const CUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId(
+      "Faculty of Engineering, Built Environment & Information Technology CUT",
+    ),
+    name: "Faculty of Engineering, Built Environment & Information Technology",
+    description:
+      "Engineering, construction, and information technology programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Civil Engineering CUT"),
+        name: "Diploma in Civil Engineering",
+        faculty: "Engineering, Built Environment & Information Technology",
+        duration: "3 years",
+        apsRequirement: 27,
+        description:
+          "Civil engineering - 27 APS (NSC 2008+) or 32 APS for degree + subject-level requirements",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Civil Engineering Technician",
+          "Construction Supervisor",
+          "Project Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Mechanical Engineering Technology CUT"),
+        name: "Diploma in Mechanical Engineering Technology",
+        faculty: "Engineering, Built Environment & Information Technology",
+        duration: "3 years",
+        apsRequirement: 27,
+        description:
+          "Mechanical engineering technology - 27 APS plus subject-level thresholds",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Mechanical Engineering Technician",
+          "Maintenance Technician",
+          "Production Technician",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Engineering Technology Mechanical Engineering CUT",
+        ),
+        name: "Bachelor of Engineering Technology in Mechanical Engineering",
+        faculty: "Engineering, Built Environment & Information Technology",
+        duration: "4 years",
+        apsRequirement: 32,
+        description:
+          "Mechanical engineering technology degree - 32 APS, with subject-level conditions",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Mechanical Engineer Technologist",
+          "Design Engineer",
+          "Manufacturing Engineer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Information Technology CUT"),
+        name: "Diploma in Information Technology",
+        faculty: "Engineering, Built Environment & Information Technology",
+        duration: "3 years",
+        apsRequirement: 27,
+        description:
+          "Information technology - 27 APS plus English & Maths levels",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Technician",
+          "Software Developer",
+          "Network Administrator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor IT CUT"),
+        name: "Bachelor's-level IT (BTech/Bachelor)",
+        faculty: "Engineering, Built Environment & Information Technology",
+        duration: "4 years",
+        apsRequirement: 30,
+        description:
+          "Bachelor-level IT programmes - 30 APS+ depending on programme",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Professional",
+          "Systems Analyst",
+          "Software Engineer",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Health & Environmental Sciences CUT"),
+    name: "Faculty of Health & Environmental Sciences",
+    description: "Health sciences and environmental health programs",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Bachelor Health Sciences Medical Laboratory Sciences CUT",
+        ),
+        name: "Bachelor of Health Sciences: Medical Laboratory Sciences",
+        faculty: "Health & Environmental Sciences",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Medical laboratory sciences",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Medical Laboratory Scientist",
+          "Clinical Technologist",
+          "Research Technologist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Environmental Health CUT"),
+        name: "Diploma in Environmental Health",
+        faculty: "Health & Environmental Sciences",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Environmental health and safety",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Environmental Health Officer",
+          "Health Inspector",
+          "Safety Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Dental Assisting CUT"),
+        name: "Diploma in Dental Assisting",
+        faculty: "Health & Environmental Sciences",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Dental assisting and oral health",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Dental Assistant",
+          "Oral Health Therapist",
+          "Dental Technician",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Management Sciences & Humanities CUT"),
+    name: "Faculty of Management Sciences & Humanities",
+    description: "Management sciences, business, and hospitality programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Public Management CUT"),
+        name: "Diploma in Public Management",
+        faculty: "Management Sciences & Humanities",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Public sector management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Public Manager",
+          "Government Official",
+          "Policy Administrator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Marketing CUT"),
+        name: "Diploma in Marketing",
+        faculty: "Management Sciences & Humanities",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Marketing and sales management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Marketing Officer",
+          "Sales Manager",
+          "Brand Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Internal Auditing CUT"),
+        name: "Diploma in Internal Auditing",
+        faculty: "Management Sciences & Humanities",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "Internal auditing and risk management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Internal Auditor",
+          "Risk Analyst",
+          "Compliance Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Office Management Technology CUT"),
+        name: "Diploma in Office Management & Technology",
+        faculty: "Management Sciences & Humanities",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Office management and administrative technology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Office Manager",
+          "Executive Assistant",
+          "Administrative Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Hospitality Management CUT"),
+        name: "Bachelor of Hospitality Management",
+        faculty: "Management Sciences & Humanities",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Hospitality and tourism management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Hotel Manager",
+          "Restaurant Manager",
+          "Tourism Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Accountancy CUT"),
+        name: "Bachelor of Accountancy",
+        faculty: "Management Sciences & Humanities",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Professional accounting studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Accountant", "Financial Manager", "Auditor"],
+      },
+      {
+        id: createDegreeId("Bachelor Tourism Management CUT"),
+        name: "Bachelor of Tourism Management",
+        faculty: "Management Sciences & Humanities",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Tourism and hospitality management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 3, isRequired: false },
+        ],
+        careerProspects: [
+          "Tourism Manager",
+          "Destination Manager",
+          "Travel Consultant",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Education CUT"),
+    name: "Faculty of Education",
+    description: "Teacher training and educational programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Education Foundation Phase CUT"),
+        name: "Bachelor of Education (Foundation Phase)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 27,
+        description:
+          "Foundation phase teaching - 27 APS with subject-level criteria",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Foundation Phase Teacher",
+          "Primary School Teacher",
+          "Educational Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Education SP FET Various Streams CUT"),
+        name: "Bachelor of Education (SP & FET – various streams like Economics, Natural Science, Languages, Maths, Computer Science)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 27,
+        description:
+          "Senior phase and FET teaching in various subjects - 27 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "High School Teacher",
+          "Subject Specialist",
+          "Educational Manager",
+        ],
+      },
+    ],
+  },
+];
+
 export const UPDATED_UNIVERSITIES = [
   "ul", // University of Limpopo
   "nwu", // North-West University
