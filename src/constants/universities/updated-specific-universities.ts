@@ -5790,7 +5790,665 @@ export const TUT_FACULTIES: Faculty[] = [
     ],
   },
 ];
-export const VUT_FACULTIES: Faculty[] = [];
+export const VUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Applied & Computer Sciences"),
+    name: "Faculty of Applied & Computer Sciences",
+    description: "Applied sciences, computing, and technology",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Analytical Chemistry"),
+        name: "Diploma in Analytical Chemistry",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Analytical chemistry - 24 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Analytical Chemist",
+          "Laboratory Technician",
+          "Quality Control Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Agricultural Management"),
+        name: "Diploma in Agricultural Management",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description:
+          "Agricultural management - 24 APS (Maths) / 25 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Manager",
+          "Farm Supervisor",
+          "Agricultural Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Biotechnology"),
+        name: "Diploma in Biotechnology",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description: "Biotechnology studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Biotechnologist",
+          "Research Technician",
+          "Laboratory Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Information Technology"),
+        name: "Diploma in Information Technology",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description:
+          "Information technology - 24 APS (Maths or Tech Maths) / 26 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Specialist",
+          "Software Developer",
+          "Systems Administrator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Environmental Science"),
+        name: "Diploma in Environmental Science",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Environmental science - 21 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Environmental Scientist",
+          "Conservation Officer",
+          "Environmental Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma NonDestructive Testing"),
+        name: "Diploma in Non-Destructive Testing",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 19,
+        description: "Non-destructive testing technology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Physical Sciences", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "NDT Technician",
+          "Quality Control Inspector",
+          "Testing Specialist",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Engineering & Technology"),
+    name: "Faculty of Engineering & Technology",
+    description: "Engineering and technology disciplines",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Chemical Engineering"),
+        name: "Diploma in Chemical Engineering",
+        faculty: "Engineering & Technology",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Chemical engineering - 24 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Chemical Engineering Technician",
+          "Process Technician",
+          "Plant Operator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Civil Engineering"),
+        name: "Diploma in Civil Engineering",
+        faculty: "Engineering & Technology",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Civil engineering - 24 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Civil Engineering Technician",
+          "Construction Supervisor",
+          "Project Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Electronic Engineering"),
+        name: "Diploma in Electronic Engineering",
+        faculty: "Engineering & Technology",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Electronic engineering - 24 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Electronic Engineering Technician",
+          "Electronics Technician",
+          "Systems Technician",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Power Engineering"),
+        name: "Diploma in Power Engineering",
+        faculty: "Engineering & Technology",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Power engineering - 24 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Power Engineering Technician",
+          "Electrical Technician",
+          "Power Systems Operator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Process Control Engineering"),
+        name: "Diploma in Process Control Engineering",
+        faculty: "Engineering & Technology",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Process control engineering - 24 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Process Control Technician",
+          "Automation Technician",
+          "Control Systems Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Computer Systems Engineering"),
+        name: "Diploma in Computer Systems Engineering",
+        faculty: "Engineering & Technology",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Computer systems engineering - 24 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Computer Systems Technician",
+          "Network Technician",
+          "IT Support Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Industrial Engineering"),
+        name: "Diploma in Industrial Engineering",
+        faculty: "Engineering & Technology",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Industrial engineering - 24 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Industrial Engineering Technician",
+          "Production Supervisor",
+          "Quality Controller",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Mechanical Engineering"),
+        name: "Diploma in Mechanical Engineering",
+        faculty: "Engineering & Technology",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Mechanical engineering - 24 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Mechanical Engineering Technician",
+          "Maintenance Technician",
+          "Machine Operator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Metallurgical Engineering"),
+        name: "Diploma in Metallurgical Engineering",
+        faculty: "Engineering & Technology",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Metallurgical engineering - 24 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Metallurgical Technician",
+          "Materials Technician",
+          "Mining Technician",
+        ],
+      },
+      {
+        id: createDegreeId("Extended Engineering Courses"),
+        name: "Extended engineering courses",
+        faculty: "Engineering & Technology",
+        duration: "4 years",
+        apsRequirement: 22,
+        description: "Extended engineering programmes - 22 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Physical Sciences", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technician",
+          "Technical Assistant",
+          "Maintenance Technician",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Human Sciences"),
+    name: "Faculty of Human Sciences",
+    description: "Human sciences, arts, and social studies",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Fashion"),
+        name: "Diploma in Fashion",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Fashion design - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Fashion Designer",
+          "Fashion Merchandiser",
+          "Clothing Technologist",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Photography"),
+        name: "Diploma in Photography",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Photography - 21 APS / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Photographer", "Visual Artist", "Media Producer"],
+      },
+      {
+        id: createDegreeId("Diploma Graphic Design"),
+        name: "Diploma in Graphic Design",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Graphic design - 21 APS / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Graphic Designer",
+          "Visual Designer",
+          "Creative Director",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Fine Art"),
+        name: "Diploma in Fine Art",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Fine art - 21 APS / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Fine Artist", "Art Teacher", "Gallery Curator"],
+      },
+      {
+        id: createDegreeId("Diploma Food Service Management"),
+        name: "Diploma in Food Service Management",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Food service management - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Food Service Manager",
+          "Restaurant Manager",
+          "Catering Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Tourism Management"),
+        name: "Diploma in Tourism Management",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Tourism management - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Tourism Manager", "Travel Consultant", "Tour Guide"],
+      },
+      {
+        id: createDegreeId("Diploma Ecotourism Management"),
+        name: "Diploma in Ecotourism Management",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Ecotourism management - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Ecotourism Manager",
+          "Conservation Tourism Specialist",
+          "Nature Guide",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Public Relations"),
+        name: "Diploma in Public Relations",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Public relations - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "Public Relations Officer",
+          "Communications Specialist",
+          "Media Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Legal Assistance"),
+        name: "Diploma in Legal Assistance",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description:
+          "Legal assistance - 23 APS (Maths) / 24 APS (Math Lit/Tech Maths)",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: ["Legal Assistant", "Paralegal", "Court Assistant"],
+      },
+      {
+        id: createDegreeId("Diploma Labour Law"),
+        name: "Diploma in Labour Law",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description:
+          "Labour law - 23 APS (Maths) / 24 APS (Math Lit/Tech Maths)",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "Labour Relations Officer",
+          "HR Legal Specialist",
+          "Union Representative",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Policing"),
+        name: "Diploma in Policing",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description: "Policing - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: ["Police Officer", "Detective", "Security Manager"],
+      },
+      {
+        id: createDegreeId("Diploma Safety Management"),
+        name: "Diploma in Safety Management",
+        faculty: "Human Sciences",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Safety management - 21 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Safety Officer",
+          "Health and Safety Manager",
+          "Risk Manager",
+        ],
+      },
+      {
+        id: createDegreeId("BEd Senior Phase FET Teaching"),
+        name: "BEd (Senior Phase & FET teaching)",
+        faculty: "Human Sciences",
+        duration: "4 years",
+        apsRequirement: 22,
+        description:
+          "Teaching qualification - 22 APS (Maths) / 24 APS (Math Lit)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Teaching Subject", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "High School Teacher",
+          "Subject Head",
+          "Educational Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Management Sciences"),
+    name: "Faculty of Management Sciences",
+    description: "Business management and commerce",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Financial Info Systems"),
+        name: "Diploma in Financial Info Systems",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Financial information systems - 20 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Financial Systems Analyst",
+          "IT Financial Specialist",
+          "Database Administrator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Cost Management Accounting"),
+        name: "Diploma in Cost & Management Accounting",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Cost and management accounting - 20 APS (Maths) / 22 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Management Accountant",
+          "Cost Accountant",
+          "Financial Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Internal Auditing"),
+        name: "Diploma in Internal Auditing",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Internal auditing - 20 APS (Maths) / 23 APS (Math Lit/Tech Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Internal Auditor",
+          "Compliance Officer",
+          "Risk Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Human Resources Management"),
+        name: "Diploma in Human Resources Management",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Human resources management - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "HR Officer",
+          "Recruitment Specialist",
+          "Training Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Logistics Supply Chain Management"),
+        name: "Diploma in Logistics & Supply Chain Management",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Logistics and supply chain - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Logistics Manager",
+          "Supply Chain Coordinator",
+          "Warehouse Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Marketing"),
+        name: "Diploma in Marketing",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Marketing - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Marketing Officer",
+          "Sales Representative",
+          "Brand Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Retail Business Management"),
+        name: "Diploma in Retail Business Management",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Retail business management - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Retail Manager",
+          "Store Manager",
+          "Merchandising Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Sport Management"),
+        name: "Diploma in Sport Management",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Sport management - 20 APS (Maths) / 21 APS (Math Lit/Tech Maths)",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Sports Manager",
+          "Sports Administrator",
+          "Event Manager",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Operations Management"),
+        name: "Diploma in Operations Management",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description: "Operations management - 23 APS (Maths)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Operations Manager",
+          "Production Manager",
+          "Quality Manager",
+        ],
+      },
+    ],
+  },
+];
 
 // Function to get updated university faculties
 export function getUpdatedUniversityFaculties(
