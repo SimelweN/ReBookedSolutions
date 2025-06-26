@@ -5522,7 +5522,7 @@ export const MUT_FACULTIES: Faculty[] = [
         duration: "4 years",
         apsRequirement: 25,
         description:
-          "Commerce degrees - similar baseline APS (25��30) plus departmental screening",
+          "Commerce degrees - similar baseline APS (25–30) plus departmental screening",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -5623,7 +5623,173 @@ export const MUT_FACULTIES: Faculty[] = [
     ],
   },
 ];
-export const TUT_FACULTIES: Faculty[] = [];
+export const TUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Engineering & the Built Environment"),
+    name: "Faculty of Engineering & the Built Environment",
+    description: "Engineering and construction disciplines",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Engineering Various Disciplines"),
+        name: "Diploma in Engineering (various disciplines)",
+        faculty: "Engineering & the Built Environment",
+        duration: "3 years",
+        apsRequirement: 22,
+        description:
+          "Engineering diplomas - 22–24 APS, requires Maths & Physical Science Level 4+",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technician",
+          "Technical Supervisor",
+          "Project Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Engineering Technology BEngTech"),
+        name: "Bachelor of Engineering Technology (BEngTech)",
+        faculty: "Engineering & the Built Environment",
+        duration: "4 years",
+        apsRequirement: 28,
+        description:
+          "Engineering technology - 28–30 APS, requires stronger subject levels",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technologist",
+          "Design Engineer",
+          "Project Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Information & Communication Technology"),
+    name: "Faculty of Information & Communication Technology",
+    description: "Information and communication technology",
+    degrees: [
+      {
+        id: createDegreeId("Diploma ICT"),
+        name: "Diploma in ICT",
+        faculty: "Information & Communication Technology",
+        duration: "3 years",
+        apsRequirement: 22,
+        description:
+          "ICT diploma - 22–24 APS, requires Maths Level 4; Math Lit often not accepted",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "ICT Technician",
+          "Software Developer",
+          "Systems Administrator",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Management Sciences"),
+    name: "Faculty of Management Sciences",
+    description: "Business management and commerce",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Diploma Programmes Accounting Marketing Public Finance Sport Management",
+        ),
+        name: "Diploma programmes (e.g., Accounting, Marketing, Public Finance, Sport Management)",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 20,
+        description: "Management diplomas - 20–24 APS, subject dependent",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: ["Manager", "Administrator", "Business Professional"],
+      },
+      {
+        id: createDegreeId("Higher APS Extended Specialised Diplomas"),
+        name: "Higher APS for extended or specialised diplomas (e.g., Public Finance)",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description: "Specialized management diplomas - 23 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Specialized Manager",
+          "Financial Officer",
+          "Public Administrator",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Arts, Design & Humanities"),
+    name: "Faculty of Arts, Design & Humanities",
+    description: "Creative arts, design, and humanities",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Diploma Fine Applied Arts Jewellery Performing Arts Fashion Design",
+        ),
+        name: "Diploma in Fine & Applied Arts, Jewellery, Performing Arts, Fashion Design, etc.",
+        faculty: "Arts, Design & Humanities",
+        duration: "3 years",
+        apsRequirement: 20,
+        description:
+          "Creative arts diplomas - 20–22 APS, plus portfolio, auditions or interviews",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Artist", "Designer", "Creative Professional"],
+      },
+      {
+        id: createDegreeId("Bachelor Architecture"),
+        name: "Bachelor of Architecture",
+        faculty: "Arts, Design & Humanities",
+        duration: "5 years",
+        apsRequirement: 25,
+        description:
+          "Architecture - 25 APS, with strong entrance requirements in English & related subjects",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Architect", "Urban Designer", "Building Designer"],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Humanities & Social Sciences"),
+    name: "Faculty of Humanities & Social Sciences",
+    description: "Liberal arts, humanities, and social sciences",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Degrees"),
+        name: "Bachelor's degrees",
+        faculty: "Humanities & Social Sciences",
+        duration: "3-4 years",
+        apsRequirement: 25,
+        description:
+          "Bachelor's degrees - ≥25 APS, often 30+ APS preferred; English proficiency mandatory",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "Graduate Professional",
+          "Research Analyst",
+          "Communications Specialist",
+        ],
+      },
+    ],
+  },
+];
 export const VUT_FACULTIES: Faculty[] = [];
 
 // Function to get updated university faculties
