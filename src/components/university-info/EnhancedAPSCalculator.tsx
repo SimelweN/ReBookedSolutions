@@ -201,7 +201,7 @@ const EnhancedAPSCalculator: React.FC = () => {
       totalAPS: apsResult.totalScore, // Extract the totalScore property
       validationResult,
       isCalculationValid: validationResult.isValid && apsSubjects.length >= 6,
-      fullCalculation: universitySpecificCalculation,
+      fullCalculation: universitySpecificCalculation as Promise<unknown> | null,
       eligibleDegrees: apsResult.eligibleDegrees, // Also store eligible degrees
     };
   }, [subjects]);
