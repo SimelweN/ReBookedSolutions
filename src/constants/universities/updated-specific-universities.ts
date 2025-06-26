@@ -8602,11 +8602,21 @@ export function getUpdatedUniversityFaculties(
   }
 }
 
-// Faculty arrays are already exported above as individual const declarations
-
-// List of universities that have been updated with specific data
-// North-West University (NWU) - Comprehensive Data
-export const NWU_FACULTIES: Faculty[] = [
+// Export all faculty arrays for convenient access
+export {
+  UL_FACULTIES,
+  WSU_FACULTIES,
+  NWU_FACULTIES,
+  UNIZULU_FACULTIES,
+  SPU_FACULTIES,
+  UMP_FACULTIES,
+  CPUT_FACULTIES,
+  CUT_FACULTIES,
+  DUT_FACULTIES,
+  MUT_FACULTIES,
+  TUT_FACULTIES,
+  VUT_FACULTIES
+};
   {
     id: createFacultyId("Faculty of Economic and Management Sciences"),
     name: "Faculty of Economic and Management Sciences",
