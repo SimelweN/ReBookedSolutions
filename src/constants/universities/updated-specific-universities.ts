@@ -4190,7 +4190,231 @@ export const UNIZULU_FACULTIES: Faculty[] = [
     ],
   },
 ];
-export const SPU_FACULTIES: Faculty[] = [];
+export const SPU_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Education"),
+    name: "Faculty of Education",
+    description: "Teacher education and educational development",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Education Foundation Phase R-3"),
+        name: "Bachelor of Education (Foundation Phase, Grade R–3)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Foundation phase teaching for early years",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Foundation Phase Teacher",
+          "Early Childhood Educator",
+          "Primary School Teacher",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Education Intermediate Phase 4-6"),
+        name: "Bachelor of Education (Intermediate Phase, Grades 4–6)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Intermediate phase teaching",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Intermediate Phase Teacher",
+          "Primary School Teacher",
+          "Subject Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Education Senior FET Phase 7-12"),
+        name: "Bachelor of Education (Senior & FET Phase, Grades 7–12)",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Senior and FET phase teaching",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Teaching Subject", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "High School Teacher",
+          "Subject Head",
+          "Educational Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Natural & Applied Sciences"),
+    name: "Faculty of Natural & Applied Sciences",
+    description: "Natural sciences and applied scientific disciplines",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Science BSc"),
+        name: "Bachelor of Science (BSc)",
+        faculty: "Natural & Applied Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "General science degree",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Scientist",
+          "Research Analyst",
+          "Laboratory Technician",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Data Science"),
+        name: "Bachelor of Science in Data Science",
+        faculty: "Natural & Applied Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Data science and analytics",
+        subjects: [
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Data Scientist",
+          "Data Analyst",
+          "Business Intelligence Analyst",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Economic & Management Sciences"),
+    name: "Faculty of Economic & Management Sciences (EMS)",
+    description: "Business, economics, and management studies",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Commerce Accounting"),
+        name: "Bachelor of Commerce in Accounting",
+        faculty: "Economic & Management Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Professional accounting education",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+        ],
+        careerProspects: ["Accountant", "Financial Manager", "Auditor"],
+      },
+      {
+        id: createDegreeId("Bachelor Commerce Economics"),
+        name: "Bachelor of Commerce in Economics",
+        faculty: "Economic & Management Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Economic theory and analysis",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+        ],
+        careerProspects: ["Economist", "Policy Analyst", "Financial Analyst"],
+      },
+      {
+        id: createDegreeId("Diploma Retail Business Management"),
+        name: "Diploma in Retail Business Management",
+        faculty: "Economic & Management Sciences",
+        duration: "3 years",
+        apsRequirement: 25,
+        description: "Retail business and management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Retail Manager", "Store Manager", "Business Owner"],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Humanities & Heritage Studies"),
+    name: "Faculty of Humanities & Heritage Studies",
+    description: "Liberal arts, humanities, and heritage studies",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Arts BA"),
+        name: "Bachelor of Arts (BA)",
+        faculty: "Humanities & Heritage Studies",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Liberal arts and humanities",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "Arts Graduate",
+          "Research Assistant",
+          "Communications Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Higher Certificate Heritage Studies"),
+        name: "Higher Certificate in Heritage Studies",
+        faculty: "Humanities & Heritage Studies",
+        duration: "1 year",
+        apsRequirement: 25,
+        description: "Heritage conservation and management",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: [
+          "Heritage Officer",
+          "Museum Assistant",
+          "Cultural Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("Higher Certificate Court Interpreting"),
+        name: "Higher Certificate in Court Interpreting",
+        faculty: "Humanities & Heritage Studies",
+        duration: "1 year",
+        apsRequirement: 25,
+        description: "Court interpreting and translation",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Additional Language", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Court Interpreter",
+          "Legal Translator",
+          "Language Services Provider",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("School of ICT"),
+    name: "School of ICT",
+    description: "Information and communication technology",
+    degrees: [
+      {
+        id: createDegreeId("Diploma ICT Applications Development"),
+        name: "Diploma in Information & Communication Technology (Applications Development)",
+        faculty: "ICT",
+        duration: "3 years",
+        apsRequirement: 25,
+        description: "ICT and applications development",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Software Developer",
+          "Applications Developer",
+          "IT Specialist",
+        ],
+      },
+    ],
+  },
+];
 export const UMP_FACULTIES: Faculty[] = [];
 export const CPUT_FACULTIES: Faculty[] = [];
 export const CUT_FACULTIES: Faculty[] = [];
