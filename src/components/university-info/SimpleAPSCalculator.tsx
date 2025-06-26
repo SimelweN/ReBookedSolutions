@@ -55,19 +55,8 @@ import {
 // Get university programs data
 const UNIVERSITY_PROGRAMS = extractUniversityPrograms();
 
-// Comprehensive fallback data to ensure page renders
-const FALLBACK_PROGRAMS = [
-  // UCT Programs
-  {
-    university: "University of Cape Town",
-    abbreviation: "UCT",
-    location: "Cape Town, Western Cape",
-    program: "Medicine",
-    faculty: "Health Sciences",
-    aps: 42,
-    duration: "6 years",
-    description: "Comprehensive medical training to become a qualified doctor.",
-  },
+// Import fallback data
+import { FALLBACK_PROGRAMS } from "@/constants/universityPrograms";
   {
     university: "University of Cape Town",
     abbreviation: "UCT",
