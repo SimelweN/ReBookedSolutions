@@ -814,7 +814,1229 @@ export const UL_FACULTIES: Faculty[] = [
     ],
   },
 ];
-export const NWU_FACULTIES: Faculty[] = [];
+export const NWU_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Economic and Management Sciences"),
+    name: "Faculty of Economic and Management Sciences",
+    description: "Business, commerce, economics, and management studies",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor of Commerce Accounting"),
+        name: "Bachelor of Commerce in Accounting",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "General accounting and business",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Accountant",
+          "Financial Analyst",
+          "Business Advisor",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Commerce Chartered Accountancy"),
+        name: "Bachelor of Commerce in Chartered Accountancy",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 32,
+        description: "Professional chartered accountancy pathway",
+        subjects: [
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Chartered Accountant",
+          "Financial Manager",
+          "Auditor",
+        ],
+      },
+      {
+        id: createDegreeId("Extended Bachelor Commerce Chartered Accountancy"),
+        name: "Extended Bachelor of Commerce in Chartered Accountancy",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 28,
+        description: "Extended programme for chartered accountancy",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Chartered Accountant",
+          "Financial Manager",
+          "Auditor",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Commerce Financial Accountancy"),
+        name: "Bachelor of Commerce in Financial Accountancy",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "Financial accounting specialization",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Financial Accountant",
+          "Financial Analyst",
+          "Investment Advisor",
+        ],
+      },
+      {
+        id: createDegreeId("Extended Bachelor Commerce Financial Accountancy"),
+        name: "Extended Bachelor of Commerce in Financial Accountancy",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 24,
+        description: "Extended programme for financial accountancy",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Financial Accountant",
+          "Financial Analyst",
+          "Investment Advisor",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Commerce Forensic Accountancy"),
+        name: "Bachelor of Commerce in Forensic Accountancy",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 36,
+        description: "Forensic accounting and investigation",
+        subjects: [
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Forensic Accountant",
+          "Financial Investigator",
+          "Risk Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Commerce Management Accountancy"),
+        name: "Bachelor of Commerce in Management Accountancy",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Management accounting and cost control",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Management Accountant",
+          "Cost Analyst",
+          "Financial Controller",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Commerce Operations Research"),
+        name: "Bachelor of Commerce in Operations Research",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Operations research and optimization",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Operations Research Analyst",
+          "Business Analyst",
+          "Data Scientist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Commerce Statistics"),
+        name: "Bachelor of Commerce in Statistics",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Statistical analysis and data science",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Statistician",
+          "Data Analyst",
+          "Market Research Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Extended Bachelor Commerce Statistics"),
+        name: "Extended Bachelor of Commerce in Statistics",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 20,
+        description: "Extended programme for statistics",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Statistician",
+          "Data Analyst",
+          "Market Research Analyst",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Commerce Business Operations Logistics",
+        ),
+        name: "Bachelor of Commerce in Business Operations (with Logistics Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Business operations and logistics management",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Logistics Manager",
+          "Operations Manager",
+          "Supply Chain Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Commerce Business Operations Logistics",
+        ),
+        name: "Extended Bachelor of Commerce in Business Operations (with Logistics Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 20,
+        description: "Extended programme for business operations and logistics",
+        subjects: [
+          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Logistics Manager",
+          "Operations Manager",
+          "Supply Chain Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor of Commerce Business Operations Transport",
+        ),
+        name: "Bachelor of Commerce in Business Operations (with Transport Economics)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Business operations and transport economics",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Transport Manager",
+          "Logistics Coordinator",
+          "Operations Analyst",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Commerce Business Operations Transport",
+        ),
+        name: "Extended Bachelor of Commerce in Business Operations (with Transport Economics)",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 20,
+        description:
+          "Extended programme for business operations and transport economics",
+        subjects: [
+          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Transport Manager",
+          "Logistics Coordinator",
+          "Operations Analyst",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Commerce Economic Sciences Agricultural Economics",
+        ),
+        name: "Bachelor of Commerce in Economic Sciences (with Agricultural Economics and Risk Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description:
+          "Economic sciences with agricultural economics specialization",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Economist",
+          "Risk Analyst",
+          "Policy Researcher",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Commerce Economic Sciences Econometrics"),
+        name: "Bachelor of Commerce in Economic Sciences (with Econometrics)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Economic sciences with econometric analysis",
+        subjects: [
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Econometrician",
+          "Economic Analyst",
+          "Financial Modeler",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Commerce Economic Sciences Econometrics",
+        ),
+        name: "Extended Bachelor of Commerce in Economic Sciences (with Econometrics)",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 20,
+        description:
+          "Extended programme for economic sciences with econometrics",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Econometrician",
+          "Economic Analyst",
+          "Financial Modeler",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Commerce Economic Sciences International Trade",
+        ),
+        name: "Bachelor of Commerce in Economic Sciences (with International Trade)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Economic sciences with international trade focus",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "International Trade Specialist",
+          "Export Manager",
+          "Trade Analyst",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Commerce Economic Sciences International Trade",
+        ),
+        name: "Extended Bachelor of Commerce in Economic Sciences (with International Trade)",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 20,
+        description:
+          "Extended programme for economic sciences with international trade",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "International Trade Specialist",
+          "Export Manager",
+          "Trade Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Commerce Economic Sciences Informatics"),
+        name: "Bachelor of Commerce in Economic Sciences (with Informatics)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Economic sciences with informatics",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Business Analyst",
+          "Economic Modeler",
+          "Data Scientist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Commerce Economic Sciences Information Systems",
+        ),
+        name: "Bachelor of Commerce in Economic Sciences (with Information Systems)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Economic sciences with information systems",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Information Systems Analyst",
+          "Business Intelligence Analyst",
+          "Data Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Commerce Economic Sciences Information Systems",
+        ),
+        name: "Extended Bachelor of Commerce in Economic Sciences (with Information Systems)",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 20,
+        description:
+          "Extended programme for economic sciences with information systems",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Information Systems Analyst",
+          "Business Intelligence Analyst",
+          "Data Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Commerce Economic Sciences Risk Management",
+        ),
+        name: "Bachelor of Commerce in Economic Sciences (with Risk Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Economic sciences with risk management",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Risk Manager",
+          "Risk Analyst",
+          "Insurance Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Commerce Economic Sciences Risk Management",
+        ),
+        name: "Extended Bachelor of Commerce in Economic Sciences (with Risk Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 24,
+        description:
+          "Extended programme for economic sciences with risk management",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Risk Manager",
+          "Risk Analyst",
+          "Insurance Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Administration Human Resource Management"),
+        name: "Bachelor of Administration in Human Resource Management",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description: "Human resource management and administration",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "HR Manager",
+          "Recruitment Specialist",
+          "Training Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Administration Human Resource Management",
+        ),
+        name: "Extended Bachelor of Administration in Human Resource Management",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 21,
+        description: "Extended programme for human resource management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "HR Manager",
+          "Recruitment Specialist",
+          "Training Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Administration Industrial Organisational Psychology",
+        ),
+        name: "Bachelor of Administration in Industrial and Organisational Psychology",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 23,
+        description: "Industrial and organisational psychology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Industrial Psychologist",
+          "Organisational Consultant",
+          "HR Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Administration Industrial Organisational Psychology",
+        ),
+        name: "Extended Bachelor of Administration in Industrial and Organisational Psychology",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 21,
+        description:
+          "Extended programme for industrial and organisational psychology",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Industrial Psychologist",
+          "Organisational Consultant",
+          "HR Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Arts Industrial Organisational Psychology Labour Relations",
+        ),
+        name: "Bachelor of Arts (with Industrial and Organisational Psychology and Labour Relations Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Industrial psychology and labour relations",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Labour Relations Manager",
+          "Industrial Psychologist",
+          "HR Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Commerce Human Resource Management"),
+        name: "Bachelor of Commerce (Human Resource Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Advanced human resource management",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "HR Manager",
+          "Talent Manager",
+          "Organisational Developer",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Commerce Industrial Organisational Psychology",
+        ),
+        name: "Bachelor of Commerce (in Industrial and Organisational Psychology)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Commerce with industrial psychology specialization",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Industrial Psychologist",
+          "Business Psychologist",
+          "Organisational Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Human Resource Development"),
+        name: "Bachelor of Human Resource Development",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Human resource development and training",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Training Manager",
+          "HR Developer",
+          "Learning Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Arts Tourism Management"),
+        name: "Bachelor of Arts (with Tourism Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Tourism management and hospitality",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Tourism Manager",
+          "Hotel Manager",
+          "Travel Consultant",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Commerce Management Sciences Tourism Management",
+        ),
+        name: "Bachelor of Commerce in Management Sciences (with Tourism Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Management sciences with tourism focus",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Tourism Manager",
+          "Hospitality Manager",
+          "Event Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Commerce Management Sciences Tourism Recreation",
+        ),
+        name: "Bachelor of Commerce in Management Sciences (with Tourism and Recreation Skills)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Management sciences with tourism and recreation",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Recreation Manager",
+          "Tourism Coordinator",
+          "Leisure Services Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Commerce Management Sciences Business Management",
+        ),
+        name: "Bachelor of Commerce in Management Sciences (with Business Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Management sciences with business focus",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Business Manager",
+          "Operations Manager",
+          "Project Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Commerce Management Sciences Business Management",
+        ),
+        name: "Extended Bachelor of Commerce in Management Sciences (with Business Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 24,
+        description:
+          "Extended programme for management sciences with business management",
+        subjects: [
+          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Business Manager",
+          "Operations Manager",
+          "Project Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Commerce Management Sciences Communication Management",
+        ),
+        name: "Bachelor of Commerce in Management Sciences (with Communication Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Management sciences with communication focus",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Communications Manager",
+          "Public Relations Manager",
+          "Marketing Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Commerce Management Sciences Marketing Management",
+        ),
+        name: "Bachelor of Commerce in Management Sciences (with Marketing Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Management sciences with marketing focus",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Marketing Manager",
+          "Brand Manager",
+          "Sales Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Extended Bachelor Commerce Management Sciences Marketing Management",
+        ),
+        name: "Extended Bachelor of Commerce in Management Sciences (with Marketing Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "4 years",
+        apsRequirement: 20,
+        description:
+          "Extended programme for management sciences with marketing management",
+        subjects: [
+          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Marketing Manager",
+          "Brand Manager",
+          "Sales Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Commerce Management Sciences Sport Business Management",
+        ),
+        name: "Bachelor of Commerce in Management Sciences (with Sport and Business Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Management sciences with sport business focus",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Sports Manager",
+          "Event Manager",
+          "Sports Marketing Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Commerce Management Sciences Safety Management",
+        ),
+        name: "Bachelor of Commerce in Management Sciences (with Safety Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Management sciences with safety focus",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Safety Manager",
+          "Risk Manager",
+          "Health and Safety Officer",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Commerce Management Sciences Marketing Tourism Management",
+        ),
+        name: "Bachelor of Commerce in Management Sciences (with Marketing & Tourism Management)",
+        faculty: "Economic and Management Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Management sciences with marketing and tourism focus",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Tourism Marketing Manager",
+          "Destination Manager",
+          "Travel Marketing Specialist",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Education"),
+    name: "Faculty of Education",
+    description: "Teacher education and educational development",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Education Early Childhood Care Education"),
+        name: "Bachelor of Education Early Childhood Care and Education",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Early childhood education and care",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Early Childhood Educator",
+          "Preschool Teacher",
+          "Child Development Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Education Foundation Phase"),
+        name: "Bachelor of Education Foundation Phase",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Foundation phase teaching (Grade R-3)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Foundation Phase Teacher",
+          "Primary School Teacher",
+          "Educational Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Education Intermediate Phase"),
+        name: "Bachelor of Education Intermediate Phase",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Intermediate phase teaching (Grade 4-6)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Intermediate Phase Teacher",
+          "Primary School Teacher",
+          "Subject Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Education Senior Further Education"),
+        name: "Bachelor of Education Senior and Further Education",
+        faculty: "Education",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Senior and FET phase teaching (Grade 7-12)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Teaching Subject", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "High School Teacher",
+          "Subject Head",
+          "Educational Manager",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Engineering"),
+    name: "Faculty of Engineering",
+    description: "Engineering programs across multiple disciplines",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor Engineering Multiple Disciplines"),
+        name: "Bachelor of Engineering (Chemical, Electrical, Computer & Electronic, Electromechanical, Mechanical, Industrial, Mechatronic)",
+        faculty: "Engineering",
+        duration: "4 years",
+        apsRequirement: 34,
+        description: "Multiple engineering disciplines available",
+        subjects: [
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Professional Engineer",
+          "Design Engineer",
+          "Project Manager",
+          "Engineering Consultant",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Health Sciences"),
+    name: "Faculty of Health Sciences",
+    description: "Health sciences, medical, and wellness programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Coaching Science"),
+        name: "Diploma in Coaching Science",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 18,
+        description: "Sports coaching and exercise science",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Sports Coach",
+          "Fitness Trainer",
+          "Sports Scientist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Health Sciences Physiology Biochemistry"),
+        name: "Bachelor of Health Sciences (with Physiology and Biochemistry)",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Health sciences with physiology and biochemistry focus",
+        subjects: [
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Health Scientist",
+          "Researcher",
+          "Medical Technologist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Health Sciences Physiology Psychology"),
+        name: "Bachelor of Health Sciences (with Physiology and Psychology)",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Health sciences with physiology and psychology focus",
+        subjects: [
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Health Psychologist",
+          "Research Scientist",
+          "Health Educator",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Health Sciences Sport Coaching Human Movement",
+        ),
+        name: "Bachelor of Health Sciences (with Sport Coaching and Human Movement Sciences)",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Health sciences with sport coaching and human movement",
+        subjects: [
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Sports Scientist",
+          "Movement Analyst",
+          "Sports Coach",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Health Sciences Recreation Sciences Psychology",
+        ),
+        name: "Bachelor of Health Sciences (with Recreation Sciences and Psychology)",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Health sciences with recreation and psychology focus",
+        subjects: [
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Recreation Therapist",
+          "Health Psychologist",
+          "Wellness Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Health Sciences Recreation Tourism Sport Administration",
+        ),
+        name: "Bachelor of Health Sciences (with Recreation Science and Tourism Management, with Sport and Recreation Administration)",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description:
+          "Health sciences with recreation, tourism, and sport administration",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Recreation Manager",
+          "Sports Administrator",
+          "Tourism Health Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Arts Behavioural Sciences Psychology Geography Tourism",
+        ),
+        name: "Bachelor of Arts in Behavioural Sciences (with Psychology and Geography and Environmental Management, with Psychology and Tourism Management)",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Behavioural sciences with multiple specializations",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Behavioural Scientist",
+          "Environmental Psychologist",
+          "Tourism Psychologist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Social Sciences Psychology"),
+        name: "Bachelor of Social Sciences (with Psychology)",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Social sciences with psychology specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Social Scientist",
+          "Psychologist",
+          "Research Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Consumer Studies"),
+        name: "Bachelor of Consumer Studies",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Consumer science and family studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Consumer Scientist",
+          "Family Counselor",
+          "Nutrition Educator",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Consumer Studies Food Production Management",
+        ),
+        name: "Bachelor of Consumer Studies (in Food Production Management)",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Consumer studies with food production focus",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Food Production Manager",
+          "Nutrition Specialist",
+          "Quality Control Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Bachelor Consumer Studies Fashion Retail Management",
+        ),
+        name: "Bachelor of Consumer Studies (in Fashion Retail Management)",
+        faculty: "Health Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Consumer studies with fashion retail focus",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Fashion Retail Manager",
+          "Merchandising Manager",
+          "Fashion Buyer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Social Work"),
+        name: "Bachelor of Social Work",
+        faculty: "Health Sciences",
+        duration: "4 years",
+        apsRequirement: 28,
+        description: "Professional social work training",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
+        ],
+        careerProspects: [
+          "Social Worker",
+          "Community Developer",
+          "Child Protection Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Pharmacy"),
+        name: "Bachelor of Pharmacy",
+        faculty: "Health Sciences",
+        duration: "4 years",
+        apsRequirement: 32,
+        description: "Pharmaceutical sciences",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Pharmacist",
+          "Clinical Pharmacist",
+          "Pharmaceutical Researcher",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Science Dietetics"),
+        name: "Bachelor of Science in Dietetics",
+        faculty: "Health Sciences",
+        duration: "4 years",
+        apsRequirement: 30,
+        description: "Nutrition and dietetics",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Dietitian", "Nutritionist", "Health Consultant"],
+      },
+      {
+        id: createDegreeId("Bachelor Health Science Occupational Hygiene"),
+        name: "Bachelor of Health Science in Occupational Hygiene",
+        faculty: "Health Sciences",
+        duration: "4 years",
+        apsRequirement: 27,
+        description: "Occupational health and safety",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Occupational Hygienist",
+          "Health and Safety Officer",
+          "Environmental Health Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Health Science Biokinetics"),
+        name: "Bachelor of Health Science in Biokinetics",
+        faculty: "Health Sciences",
+        duration: "4 years",
+        apsRequirement: 32,
+        description: "Exercise science and rehabilitation",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Biokineticist",
+          "Exercise Physiologist",
+          "Rehabilitation Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Nursing"),
+        name: "Bachelor of Nursing",
+        faculty: "Health Sciences",
+        duration: "4 years",
+        apsRequirement: 25,
+        description: "Professional nursing education",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Professional Nurse",
+          "Clinical Nurse",
+          "Community Health Nurse",
+        ],
+      },
+    ],
+  },
+];
 export const WSU_FACULTIES: Faculty[] = [];
 export const UNIZULU_FACULTIES: Faculty[] = [];
 export const SPU_FACULTIES: Faculty[] = [];
