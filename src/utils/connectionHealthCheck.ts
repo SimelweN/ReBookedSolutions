@@ -294,11 +294,17 @@ export const retryWithConnection = async <T>(
       lastError = error;
 
       const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      const errorCode = (error as any)?.code || "NO_CODE";
+        error instanceof Error
+          ? error.message
+          : error?.message ||
+            (typeof error === "string"
+              ? error
+              : JSON.stringify(error, null, 2));
+      const errorCode =
+        (error as any)?.code || (error as any)?.error_code || "NO_CODE";
 
       console.warn(
-        `[ConnectionHealthCheck] Operation failed on attempt ${attempt}: ${errorMessage} (${errorCode})`,
+        `[ConnectionHealthCheck] Operation failed on attempt ${attempt}: ${errorMessage} (Code: ${errorCode})`,
       );
 
       // Don't retry on certain errors
