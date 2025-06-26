@@ -49,8 +49,9 @@ import {
   groupProgramsByUniversity,
   calculateUniversityStats,
   calculateOverallStats,
-  filterPrograms,
+  filterPrograms
 } from "@/utils/apsCalculatorUtils";
+import { FALLBACK_PROGRAMS } from "@/constants/universityPrograms";
 
 // Get university programs data
 const UNIVERSITY_PROGRAMS = extractUniversityPrograms();
