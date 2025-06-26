@@ -1845,6 +1845,399 @@ export const CPUT_FACULTIES: Faculty[] = [
   },
 ];
 
+// Central University of Technology (CUT) - Updated Data
+export const CUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId(
+      "Faculty of Engineering, Built Environment & Information Technology",
+    ),
+    name: "Faculty of Engineering, Built Environment & Information Technology",
+    description: "Engineering, construction, and IT programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Civil Engineering"),
+        name: "Diploma in Civil Engineering",
+        faculty: "Engineering, Built Environment & Information Technology",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Civil engineering technology and construction",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Civil Engineering Technician",
+          "Construction Manager",
+          "Project Coordinator",
+          "Site Engineer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Mechanical Engineering Technology"),
+        name: "Diploma in Mechanical Engineering Technology",
+        faculty: "Engineering, Built Environment & Information Technology",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Mechanical engineering technology",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Mechanical Technician",
+          "Maintenance Engineer",
+          "Production Supervisor",
+          "Technical Sales",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Information Technology"),
+        name: "Diploma in Information Technology",
+        faculty: "Engineering, Built Environment & Information Technology",
+        duration: "3 years",
+        apsRequirement: 27,
+        description: "Information technology and systems",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Technician",
+          "Systems Administrator",
+          "Web Developer",
+          "Network Specialist",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Management Sciences & Humanities"),
+    name: "Faculty of Management Sciences & Humanities",
+    description: "Business, management, and tourism programs",
+    degrees: [
+      {
+        id: createDegreeId("Bachelor of Accountancy"),
+        name: "Bachelor of Accountancy",
+        faculty: "Management Sciences & Humanities",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Professional accounting education",
+        subjects: [
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Accounting", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Accountant",
+          "Financial Manager",
+          "Auditor",
+          "Tax Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor of Tourism Management"),
+        name: "Bachelor of Tourism Management",
+        faculty: "Management Sciences & Humanities",
+        duration: "3 years",
+        apsRequirement: 30,
+        description: "Tourism and hospitality management",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Geography", level: 4, isRequired: false },
+        ],
+        careerProspects: [
+          "Tourism Manager",
+          "Travel Consultant",
+          "Hotel Manager",
+          "Tourism Development Officer",
+        ],
+      },
+    ],
+  },
+];
+
+// Durban University of Technology (DUT) - Updated Data
+export const DUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Engineering & Built Environment"),
+    name: "Faculty of Engineering & Built Environment",
+    description: "Engineering and construction technology programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Engineering Civil Electrical Mechanical"),
+        name: "Diploma in Engineering (Civil/Electrical/Mechanical)",
+        faculty: "Engineering & Built Environment",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Engineering technology across multiple disciplines",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technician",
+          "Project Coordinator",
+          "Maintenance Engineer",
+          "Technical Supervisor",
+        ],
+      },
+      {
+        id: createDegreeId("BEng Technology Engineering"),
+        name: "BEng Technology (Engineering Technology)",
+        faculty: "Engineering & Built Environment",
+        duration: "4 years",
+        apsRequirement: 28,
+        description: "Bachelor level engineering technology",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Professional Technologist",
+          "Design Engineer",
+          "Project Manager",
+          "Technical Consultant",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Information Technology"),
+    name: "Faculty of Information Technology",
+    description: "Information technology and computer science",
+    degrees: [
+      {
+        id: createDegreeId("Diploma IT"),
+        name: "Diploma in IT",
+        faculty: "Information Technology",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Information technology and systems",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Technician",
+          "Systems Administrator",
+          "Web Developer",
+          "Network Specialist",
+        ],
+      },
+    ],
+  },
+];
+
+// Mangosuthu University of Technology (MUT) - Updated Data
+export const MUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Engineering"),
+    name: "Faculty of Engineering",
+    description: "Engineering and technology programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Civil Engineering"),
+        name: "Diploma in Civil Engineering",
+        faculty: "Engineering",
+        duration: "3 years",
+        apsRequirement: 20,
+        description: "Civil engineering technology",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Civil Engineering Technician",
+          "Construction Supervisor",
+          "Project Coordinator",
+          "Site Engineer",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "Diploma Mechanical Electrical Chemical Engineering",
+        ),
+        name: "Diploma in Mechanical/Electrical/Chemical Engineering",
+        faculty: "Engineering",
+        duration: "3 years",
+        apsRequirement: 20,
+        description: "Multi-discipline engineering technology",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technician",
+          "Maintenance Engineer",
+          "Production Supervisor",
+          "Technical Sales",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Management Sciences"),
+    name: "Faculty of Management Sciences",
+    description: "Business and management programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Accounting Marketing Public Management"),
+        name: "Diploma in Accounting, Marketing, Public Management, HR, Office Management",
+        faculty: "Management Sciences",
+        duration: "3 years",
+        apsRequirement: 25,
+        description: "Business and management diplomas",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Business Manager",
+          "Administrator",
+          "Marketing Specialist",
+          "HR Officer",
+        ],
+      },
+    ],
+  },
+];
+
+// Tshwane University of Technology (TUT) - Updated Data
+export const TUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Engineering & the Built Environment"),
+    name: "Faculty of Engineering & the Built Environment",
+    description: "Engineering and construction technology",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Engineering Various Disciplines"),
+        name: "Diploma in Engineering (various disciplines)",
+        faculty: "Engineering & the Built Environment",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Engineering technology across disciplines",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technician",
+          "Project Coordinator",
+          "Maintenance Engineer",
+          "Technical Supervisor",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Information & Communication Technology"),
+    name: "Faculty of Information & Communication Technology",
+    description: "Information and communication technology",
+    degrees: [
+      {
+        id: createDegreeId("Diploma ICT"),
+        name: "Diploma in ICT",
+        faculty: "Information & Communication Technology",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Information and communication technology",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Technician",
+          "Systems Administrator",
+          "Web Developer",
+          "Network Specialist",
+        ],
+      },
+    ],
+  },
+];
+
+// Vaal University of Technology (VUT) - Updated Data
+export const VUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Applied & Computer Sciences"),
+    name: "Faculty of Applied & Computer Sciences",
+    description: "Applied sciences and technology",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Analytical Chemistry"),
+        name: "Diploma in Analytical Chemistry",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Chemical analysis and laboratory techniques",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Laboratory Technician",
+          "Quality Control Analyst",
+          "Chemical Technician",
+          "Research Assistant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Information Technology"),
+        name: "Diploma in Information Technology",
+        faculty: "Applied & Computer Sciences",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Information technology and systems",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "IT Technician",
+          "Systems Administrator",
+          "Web Developer",
+          "Network Specialist",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Engineering & Technology"),
+    name: "Faculty of Engineering & Technology",
+    description: "Engineering technology programs",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Engineering All Disciplines"),
+        name: "Diploma in Engineering (All engineering disciplines require 24 APS with Maths)",
+        faculty: "Engineering & Technology",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Comprehensive engineering technology program",
+        subjects: [
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Engineering Technician",
+          "Project Coordinator",
+          "Maintenance Engineer",
+          "Technical Supervisor",
+        ],
+      },
+    ],
+  },
+];
+
 // Function to get specific faculty data for updated universities
 export function getUpdatedUniversityFaculties(
   universityId: string,
