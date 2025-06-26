@@ -34,36 +34,13 @@ export type UniversityId =
   | "vut";
 
 // Function to get faculties by university ID
+// This function will be implemented in the main file to avoid circular imports
 export function getFacultiesByUniversityId(
   universityId: UniversityId,
 ): Faculty[] | null {
-  // Import functions will be defined in individual university modules
-  switch (universityId) {
-    case "ul":
-      return require("./ul").UL_FACULTIES;
-    case "wsu":
-      return require("./wsu").WSU_FACULTIES;
-    case "nwu":
-      return require("./nwu").NWU_FACULTIES;
-    case "unizulu":
-      return require("./unizulu").UNIZULU_FACULTIES;
-    case "spu":
-      return require("./spu").SPU_FACULTIES;
-    case "ump":
-      return require("./ump").UMP_FACULTIES;
-    case "cput":
-      return require("./cput").CPUT_FACULTIES;
-    case "cut":
-      return require("./cut").CUT_FACULTIES;
-    case "dut":
-      return require("./dut").DUT_FACULTIES;
-    case "mut":
-      return require("./mut").MUT_FACULTIES;
-    case "tut":
-      return require("./tut").TUT_FACULTIES;
-    case "vut":
-      return require("./vut").VUT_FACULTIES;
-    default:
-      return null;
-  }
+  // This is a placeholder - actual implementation is in updated-specific-universities.ts
+  // to avoid circular import issues
+  throw new Error(
+    "Use getFacultiesByUniversityIdLegacy from updated-specific-universities.ts instead",
+  );
 }
