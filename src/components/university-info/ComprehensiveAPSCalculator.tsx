@@ -355,7 +355,7 @@ const ComprehensiveAPSCalculator: React.FC = () => {
 
     // Group by faculty
     const byFaculty = processedPrograms.reduce(
-      (acc, program) => {
+      (acc: Record<string, typeof processedPrograms>, program) => {
         if (!acc[program.faculty]) {
           acc[program.faculty] = [];
         }
@@ -446,10 +446,20 @@ const ComprehensiveAPSCalculator: React.FC = () => {
     toast.success("Subject removed");
   }, []);
 
-  const handleViewDetails = useCallback((program: any) => {
-    setSelectedProgram(program);
-    setIsDetailsModalOpen(true);
-  }, []);
+  const handleViewDetails = useCallback(
+    (program: {
+      id: string;
+      name: string;
+      apsRequired: number;
+      universityId: string;
+      faculty: string;
+      subjects?: string[];
+    }) => {
+      setSelectedProgram(program);
+      setIsDetailsModalOpen(true);
+    },
+    [],
+  );
 
   return (
     <div className="max-w-7xl mx-auto p-4 lg:p-6 space-y-6">
