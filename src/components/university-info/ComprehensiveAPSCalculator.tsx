@@ -63,7 +63,14 @@ import { toast } from "sonner";
 
 // Extract all programs from the massive course database
 const extractUniversityPrograms = () => {
-  const programs: any[] = [];
+  const programs: Array<{
+    id: string;
+    name: string;
+    apsRequired: number;
+    universityId: string;
+    faculty: string;
+    subjects?: string[];
+  }> = [];
 
   try {
     // Get all university IDs from the database
