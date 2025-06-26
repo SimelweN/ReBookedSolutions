@@ -4754,7 +4754,158 @@ export const UMP_FACULTIES: Faculty[] = [
     ],
   },
 ];
-export const CPUT_FACULTIES: Faculty[] = [];
+export const CPUT_FACULTIES: Faculty[] = [
+  {
+    id: createFacultyId("Faculty of Agriculture & Natural Sciences"),
+    name: "Faculty of Agriculture & Natural Sciences",
+    description:
+      "Agricultural sciences, natural sciences, and applied sciences",
+    degrees: [
+      {
+        id: createDegreeId("Diploma Agriculture"),
+        name: "Diploma in Agriculture",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description:
+          "Agriculture - 28 APS (with Maths) / 29 APS (with Tech Maths); mainstream requires 30 APS w/Maths or 31 APS w/Tech Maths",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Technician",
+          "Farm Manager",
+          "Agricultural Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Agricultural Management"),
+        name: "Diploma in Agricultural Management",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description:
+          "Agricultural management - 28 APS (w/Maths) / 29 APS (Tech Maths) / 30 APS (Maths Literacy); mainstream 30/31/32 APS respectively",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Manager",
+          "Farm Business Manager",
+          "Agricultural Advisor",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Analytical Chemistry"),
+        name: "Diploma in Analytical Chemistry",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description:
+          "Analytical chemistry - 28 APS (Maths) or 29 APS (Tech Maths); mainstream 30/31 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Analytical Chemist",
+          "Laboratory Technician",
+          "Quality Control Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Biotechnology"),
+        name: "Diploma in Biotechnology",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 28,
+        description:
+          "Biotechnology - 28 APS (Maths) or 29 APS (Tech Maths); mainstream 30/31 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Biotechnologist",
+          "Research Technician",
+          "Laboratory Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Consumer Science Food Nutrition"),
+        name: "Diploma in Consumer Science: Food & Nutrition",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description:
+          "Consumer science: food & nutrition - 26 APS (Maths) / 27 APS (Tech Maths); mainstream 28/29 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Food Technologist",
+          "Nutritionist",
+          "Food Safety Officer",
+        ],
+      },
+      {
+        id: createDegreeId("Diploma Environmental Management"),
+        name: "Diploma in Environmental Management",
+        faculty: "Agriculture & Natural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description:
+          "Environmental management - 26 APS (Maths) / 27 APS (Tech Maths) / 28 APS (Maths Lit); mainstream 28/29/30 APS",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Environmental Manager",
+          "Environmental Consultant",
+          "Sustainability Officer",
+        ],
+      },
+    ],
+  },
+  {
+    id: createFacultyId("Faculty of Health & Wellness Sciences"),
+    name: "Faculty of Health & Wellness Sciences",
+    description: "Health sciences and medical technology",
+    degrees: [
+      {
+        id: createDegreeId(
+          "Bachelor Health Sciences Medical Laboratory Science",
+        ),
+        name: "Bachelor of Health Sciences: Medical Laboratory Science",
+        faculty: "Health & Wellness Sciences",
+        duration: "4 years",
+        apsRequirement: 38,
+        description:
+          "Medical laboratory science - 38+ APS (Mainstream) / 30–37 APS (Extended)",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
+          { name: "Life Sciences", level: 6, isRequired: true },
+        ],
+        careerProspects: [
+          "Medical Laboratory Scientist",
+          "Laboratory Manager",
+          "Research Technologist",
+        ],
+      },
+    ],
+  },
+];
 export const CUT_FACULTIES: Faculty[] = [];
 export const DUT_FACULTIES: Faculty[] = [];
 export const MUT_FACULTIES: Faculty[] = [];
