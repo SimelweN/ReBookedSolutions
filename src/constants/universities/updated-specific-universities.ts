@@ -73,21 +73,7 @@ export function getUpdatedUniversityFaculties(
   }
 }
 
-// Export all faculty arrays (getUpdatedUniversityFaculties already exported above)
-export {
-  UL_FACULTIES,
-  NWU_FACULTIES,
-  WSU_FACULTIES,
-  UNIZULU_FACULTIES,
-  SPU_FACULTIES,
-  UMP_FACULTIES,
-  CPUT_FACULTIES,
-  CUT_FACULTIES,
-  DUT_FACULTIES,
-  MUT_FACULTIES,
-  TUT_FACULTIES,
-  VUT_FACULTIES,
-};
+// Faculty arrays are already exported above as individual const declarations
 
 // List of universities that have been updated with specific data
 export const UPDATED_UNIVERSITIES = [
