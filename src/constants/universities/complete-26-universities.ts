@@ -1,5 +1,4 @@
 import { University } from "@/types/university";
-import { getUniversityFaculties } from "./comprehensive-course-database";
 
 /**
  * COMPLETE 26 SOUTH AFRICAN PUBLIC UNIVERSITIES
@@ -703,12 +702,12 @@ const BASE_UNIVERSITIES: University[] = [
 ];
 
 /**
- * Populate university faculties using the massive course database
+ * Return universities with empty faculties (to be populated manually later)
  */
 function populateUniversityFaculties(): University[] {
   return BASE_UNIVERSITIES.map((university) => ({
     ...university,
-    faculties: getUniversityFaculties(university.id),
+    faculties: [],
   }));
 }
 
