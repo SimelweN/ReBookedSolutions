@@ -721,6 +721,9 @@ function App() {
             {/* Performance monitoring */}
             <PerformanceMetrics />
 
+            {/* Connectivity Test (Development Only) */}
+            {import.meta.env.DEV && <SupabaseConnectivityTest />}
+
             {/* Vercel Analytics and Speed Insights */}
             <Analytics />
             <SpeedInsights />
