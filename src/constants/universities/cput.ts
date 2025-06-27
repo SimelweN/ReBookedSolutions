@@ -1,7 +1,7 @@
 import { Faculty } from "@/types/university";
 import { createDegreeId, createFacultyId } from "./base";
 
-// Cape Peninsula University of Technology (CPUT) - Faculty Data
+// Cape Peninsula University of Technology (CPUT) - Faculty Data - Complete Update
 export const CPUT_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Agriculture and Natural Sciences CPUT"),

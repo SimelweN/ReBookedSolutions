@@ -1,7 +1,7 @@
 import { Faculty } from "@/types/university";
 import { createDegreeId, createFacultyId } from "./base";
 
-// Mangosuthu University of Technology (MUT) - Faculty Data
+// Mangosuthu University of Technology (MUT) - Faculty Data - Complete Update
 export const MUT_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Engineering MUT"),
@@ -108,7 +108,7 @@ export const MUT_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Management Sciences MUT"),
     name: "Faculty of Management Sciences",
-    description: "Business management and commerce programs",
+    description: "Business management and commercial programs",
     degrees: [
       {
         id: createDegreeId("Diploma Accounting MUT"),
@@ -117,17 +117,13 @@ export const MUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 25,
         description:
-          "Accounting diploma with subject requirements in Maths or Maths Lit",
+          "Accounting and financial management with subject requirements in Maths or Maths Lit",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
           { name: "Mathematical Literacy", level: 4, isRequired: false },
         ],
-        careerProspects: [
-          "Accounting Clerk",
-          "Bookkeeper",
-          "Financial Assistant",
-        ],
+        careerProspects: ["Accountant", "Bookkeeper", "Financial Clerk"],
       },
       {
         id: createDegreeId("Diploma Marketing MUT"),
@@ -136,7 +132,7 @@ export const MUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 25,
         description:
-          "Marketing diploma with subject requirements in Maths or Maths Lit",
+          "Marketing and sales management with subject requirements in Maths or Maths Lit",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -155,26 +151,26 @@ export const MUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 25,
         description:
-          "Public management diploma with subject requirements in Maths or Maths Lit",
+          "Public management with subject requirements in Maths or Maths Lit",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
           { name: "Mathematical Literacy", level: 4, isRequired: false },
         ],
         careerProspects: [
-          "Public Administrator",
+          "Public Manager",
           "Government Officer",
-          "Municipal Clerk",
+          "Municipal Administrator",
         ],
       },
       {
         id: createDegreeId("Diploma HR MUT"),
-        name: "Diploma in Human Resources",
+        name: "Diploma in HR",
         faculty: "Management Sciences",
         duration: "3 years",
         apsRequirement: 25,
         description:
-          "Human resources diploma with subject requirements in Maths or Maths Lit",
+          "Human resources management with subject requirements in Maths or Maths Lit",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -183,7 +179,7 @@ export const MUT_FACULTIES: Faculty[] = [
         careerProspects: [
           "HR Assistant",
           "Recruitment Coordinator",
-          "Training Assistant",
+          "Training Officer",
         ],
       },
       {
@@ -193,14 +189,14 @@ export const MUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 25,
         description:
-          "Office management diploma with subject requirements in Maths or Maths Lit",
+          "Office management with subject requirements in Maths or Maths Lit",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
           { name: "Mathematical Literacy", level: 4, isRequired: false },
         ],
         careerProspects: [
-          "Office Administrator",
+          "Office Manager",
           "Administrative Assistant",
           "Executive Secretary",
         ],
@@ -212,12 +208,13 @@ export const MUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 30,
         description:
-          "Commerce degree in accounting with similar baseline APS (25–30) plus departmental screening",
+          "Commerce with accounting specialization with baseline APS and departmental screening",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Accounting", level: 4, isRequired: true },
         ],
-        careerProspects: ["Accountant", "Financial Analyst", "Auditor"],
+        careerProspects: ["Accountant", "Financial Manager", "Auditor"],
       },
       {
         id: createDegreeId("BCom Marketing MUT"),
@@ -226,7 +223,7 @@ export const MUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 30,
         description:
-          "Commerce degree in marketing with similar baseline APS (25–30) plus departmental screening",
+          "Commerce with marketing specialization with baseline APS and departmental screening",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -234,7 +231,7 @@ export const MUT_FACULTIES: Faculty[] = [
         careerProspects: [
           "Marketing Manager",
           "Brand Manager",
-          "Digital Marketing Specialist",
+          "Sales Manager",
         ],
       },
       {
@@ -244,7 +241,7 @@ export const MUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 30,
         description:
-          "Commerce degree in public administration with similar baseline APS (25–30) plus departmental screening",
+          "Commerce with public administration specialization with baseline APS and departmental screening",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -259,10 +256,11 @@ export const MUT_FACULTIES: Faculty[] = [
   },
   {
     id: createFacultyId(
-      "Faculty of Natural Sciences Applied and Health Sciences MUT",
+      "Faculty of Natural Sciences Applied Health Sciences MUT",
     ),
     name: "Faculty of Natural Sciences (Applied & Health Sciences)",
-    description: "Applied sciences, health sciences, and technology programs",
+    description:
+      "Applied sciences, health sciences, and natural sciences programs",
     degrees: [
       {
         id: createDegreeId("Diploma Analytical Chemistry MUT"),
@@ -276,7 +274,6 @@ export const MUT_FACULTIES: Faculty[] = [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
           { name: "Physical Sciences", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 3, isRequired: false },
         ],
         careerProspects: [
           "Analytical Chemist",
@@ -299,8 +296,8 @@ export const MUT_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Agricultural Technician",
-          "Farm Supervisor",
-          "Agricultural Assistant",
+          "Farm Manager",
+          "Agricultural Consultant",
         ],
       },
       {
@@ -315,7 +312,6 @@ export const MUT_FACULTIES: Faculty[] = [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
-          { name: "Physical Sciences", level: 3, isRequired: false },
         ],
         careerProspects: [
           "Environmental Health Officer",
@@ -340,36 +336,37 @@ export const MUT_FACULTIES: Faculty[] = [
         careerProspects: [
           "Biomedical Technician",
           "Medical Equipment Technician",
-          "Hospital Technologist",
+          "Laboratory Technician",
         ],
       },
       {
         id: createDegreeId("BSc Analytical Chemistry MUT"),
-        name: "Bachelor of Science (Analytical Chemistry)",
+        name: "Bachelor of Science (e.g., Analytical Chemistry)",
         faculty: "Natural Sciences (Applied & Health Sciences)",
         duration: "3 years",
         apsRequirement: 30,
         description:
-          "Science degree with around 30+ APS, plus 50%+ in relevant sciences & English",
+          "Bachelor of Science with higher APS and 50%+ in relevant sciences & English",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
           { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Analytical Chemist",
           "Research Scientist",
+          "Analytical Chemist",
           "Quality Control Manager",
         ],
       },
       {
         id: createDegreeId("BSc Environmental Health MUT"),
-        name: "Bachelor of Science (Environmental Health)",
+        name: "Bachelor of Science in Environmental Health",
         faculty: "Natural Sciences (Applied & Health Sciences)",
         duration: "3 years",
         apsRequirement: 30,
         description:
-          "Science degree with around 30+ APS, plus 50%+ in relevant sciences & English",
+          "Environmental health bachelor's degree with higher APS and 50%+ in relevant sciences & English",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -377,9 +374,9 @@ export const MUT_FACULTIES: Faculty[] = [
           { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Environmental Health Scientist",
-          "Public Health Specialist",
+          "Environmental Health Manager",
           "Environmental Consultant",
+          "Public Health Specialist",
         ],
       },
     ],
@@ -398,7 +395,7 @@ export const MUT_FACULTIES: Faculty[] = [
         description: "Hospitality management with English Level 4",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 3, isRequired: false },
+          { name: "Mathematics", level: 3, isRequired: true },
         ],
         careerProspects: [
           "Hotel Manager",
@@ -407,19 +404,19 @@ export const MUT_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("Diploma Office Management Technology MUT"),
+        id: createDegreeId("Diploma Office Management 20 APS MUT"),
         name: "Diploma in Office Management",
         faculty: "Hospitality & Tourism",
         duration: "3 years",
         apsRequirement: 20,
-        description: "Office management (Maths Lit accepted)",
+        description: "Office management (20 APS with Maths Lit accepted)",
         subjects: [
           { name: "English", level: 3, isRequired: true },
-          { name: "Mathematical Literacy", level: 3, isRequired: true },
-          { name: "Information Technology", level: 3, isRequired: false },
+          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: false },
         ],
         careerProspects: [
-          "Office Administrator",
+          "Office Manager",
           "Administrative Assistant",
           "Executive Secretary",
         ],

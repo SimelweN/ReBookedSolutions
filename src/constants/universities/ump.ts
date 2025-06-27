@@ -1,7 +1,7 @@
 import { Faculty } from "@/types/university";
 import { createDegreeId, createFacultyId } from "./base";
 
-// University of Mpumalanga (UMP) - Faculty Data
+// University of Mpumalanga (UMP) - Faculty Data - Complete Update
 export const UMP_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Social Sciences UMP"),

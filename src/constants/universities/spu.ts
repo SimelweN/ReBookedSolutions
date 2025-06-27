@@ -1,7 +1,7 @@
 import { Faculty } from "@/types/university";
 import { createDegreeId, createFacultyId } from "./base";
 
-// Sol Plaatje University (SPU) - Faculty Data
+// Sol Plaatje University (SPU) - Faculty Data - Complete Update
 export const SPU_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Education SPU"),

@@ -1,7 +1,7 @@
 import { Faculty } from "@/types/university";
 import { createDegreeId, createFacultyId } from "./base";
 
-// Central University of Technology (CUT) - Faculty Data
+// Central University of Technology (CUT) - Faculty Data - Complete Update
 export const CUT_FACULTIES: Faculty[] = [
   {
     id: createFacultyId(

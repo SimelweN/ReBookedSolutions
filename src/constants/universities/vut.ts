@@ -1,7 +1,7 @@
 import { Faculty } from "@/types/university";
 import { createDegreeId, createFacultyId } from "./base";
 
-// Vaal University of Technology (VUT) - Faculty Data
+// Vaal University of Technology (VUT) - Faculty Data - Complete Update
 export const VUT_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Applied and Computer Sciences VUT"),
@@ -32,8 +32,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Applied & Computer Sciences",
         duration: "3 years",
         apsRequirement: 24,
-        description:
-          "Agricultural management with Maths (25 APS with Math Lit)",
+        description: "Agricultural management with Maths",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -88,8 +87,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Applied & Computer Sciences",
         duration: "3 years",
         apsRequirement: 24,
-        description:
-          "IT diploma with Maths or Tech Maths (26 APS with Math Lit)",
+        description: "IT diploma with Maths or Tech Maths",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -364,8 +362,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Human Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description:
-          "Fashion design with Maths (22 APS with Math Lit/Tech Maths)",
+        description: "Fashion design with Maths",
         subjects: [
           { name: "English", level: 3, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -394,7 +391,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Human Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description: "Photography (22 APS with Math Lit/Tech Maths)",
+        description: "Photography",
         subjects: [
           { name: "English", level: 3, isRequired: true },
           { name: "Visual Arts", level: 4, isRequired: true },
@@ -422,7 +419,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Human Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description: "Graphic design (22 APS with Math Lit/Tech Maths)",
+        description: "Graphic design",
         subjects: [
           { name: "English", level: 3, isRequired: true },
           { name: "Visual Arts", level: 4, isRequired: true },
@@ -459,7 +456,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Human Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description: "Fine art (22 APS with Math Lit/Tech Maths)",
+        description: "Fine art",
         subjects: [
           { name: "English", level: 3, isRequired: true },
           { name: "Visual Arts", level: 4, isRequired: true },
@@ -487,8 +484,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Human Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description:
-          "Food service management with Maths (22 APS with Math Lit/Tech Maths)",
+        description: "Food service management with Maths",
         subjects: [
           { name: "English", level: 3, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -525,8 +521,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Human Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description:
-          "Tourism management with Maths (22 APS with Math Lit/Tech Maths)",
+        description: "Tourism management with Maths",
         subjects: [
           { name: "English", level: 3, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -555,8 +550,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Human Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description:
-          "Ecotourism management with Maths (22 APS with Math Lit/Tech Maths)",
+        description: "Ecotourism management with Maths",
         subjects: [
           { name: "English", level: 3, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -595,8 +589,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Human Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description:
-          "Public relations with Maths (22 APS with Math Lit/Tech Maths)",
+        description: "Public relations with Maths",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -631,8 +624,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Human Sciences",
         duration: "3 years",
         apsRequirement: 23,
-        description:
-          "Legal assistance with Maths (24 APS with Math Lit/Tech Maths)",
+        description: "Legal assistance with Maths",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -659,7 +651,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Human Sciences",
         duration: "3 years",
         apsRequirement: 23,
-        description: "Labour law with Maths (24 APS with Math Lit/Tech Maths)",
+        description: "Labour law with Maths",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -694,7 +686,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Human Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description: "Policing with Maths (22 APS with Math Lit/Tech Maths)",
+        description: "Policing with Maths",
         subjects: [
           { name: "English", level: 3, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -723,8 +715,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Human Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description:
-          "Safety management with Maths (22 APS with Math Lit/Tech Maths)",
+        description: "Safety management with Maths",
         subjects: [
           { name: "English", level: 3, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -759,7 +750,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Human Sciences",
         duration: "4 years",
         apsRequirement: 22,
-        description: "Teacher education with Maths (24 APS with Math Lit)",
+        description: "Teacher education with Maths",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -802,8 +793,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences",
         duration: "3 years",
         apsRequirement: 20,
-        description:
-          "Financial information systems with Maths (22 APS with Math Lit/Tech Maths)",
+        description: "Financial information systems with Maths",
         subjects: [
           { name: "English", level: 3, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -840,8 +830,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences",
         duration: "3 years",
         apsRequirement: 20,
-        description:
-          "Cost and management accounting with Maths (22 APS with Math Lit/Tech Maths)",
+        description: "Cost and management accounting with Maths",
         subjects: [
           { name: "English", level: 3, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -876,8 +865,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences",
         duration: "3 years",
         apsRequirement: 20,
-        description:
-          "Internal auditing with Maths (23 APS with Math Lit/Tech Maths)",
+        description: "Internal auditing with Maths",
         subjects: [
           { name: "English", level: 3, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -912,8 +900,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences",
         duration: "3 years",
         apsRequirement: 20,
-        description:
-          "Human resources management with Maths (21 APS with Math Lit/Tech Maths)",
+        description: "Human resources management with Maths",
         subjects: [
           { name: "English", level: 3, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -948,8 +935,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences",
         duration: "3 years",
         apsRequirement: 20,
-        description:
-          "Logistics and supply chain management with Maths (21 APS with Math Lit/Tech Maths)",
+        description: "Logistics and supply chain management with Maths",
         subjects: [
           { name: "English", level: 3, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -987,7 +973,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences",
         duration: "3 years",
         apsRequirement: 20,
-        description: "Marketing with Maths (21 APS with Math Lit/Tech Maths)",
+        description: "Marketing with Maths",
         subjects: [
           { name: "English", level: 3, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -1022,8 +1008,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences",
         duration: "3 years",
         apsRequirement: 20,
-        description:
-          "Retail business management with Maths (21 APS with Math Lit/Tech Maths)",
+        description: "Retail business management with Maths",
         subjects: [
           { name: "English", level: 3, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -1058,8 +1043,7 @@ export const VUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences",
         duration: "3 years",
         apsRequirement: 20,
-        description:
-          "Sport management with Maths (21 APS with Math Lit/Tech Maths)",
+        description: "Sport management with Maths",
         subjects: [
           { name: "English", level: 3, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },

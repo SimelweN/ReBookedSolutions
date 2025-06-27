@@ -1,7 +1,7 @@
 import { Faculty } from "@/types/university";
 import { createDegreeId, createFacultyId } from "./base";
 
-// Walter Sisulu University (WSU) - Faculty Data
+// Walter Sisulu University (WSU) - Faculty Data - Complete Update
 export const WSU_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Education WSU"),

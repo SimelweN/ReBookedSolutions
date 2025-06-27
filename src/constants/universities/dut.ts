@@ -1,7 +1,7 @@
 import { Faculty } from "@/types/university";
 import { createDegreeId, createFacultyId } from "./base";
 
-// Durban University of Technology (DUT) - Faculty Data
+// Durban University of Technology (DUT) - Faculty Data - Complete Update
 export const DUT_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Engineering and Built Environment DUT"),
@@ -119,13 +119,12 @@ export const DUT_FACULTIES: Faculty[] = [
     description: "Computing and information technology programs",
     degrees: [
       {
-        id: createDegreeId("Diploma IT General DUT"),
+        id: createDegreeId("Diploma IT Various Streams DUT"),
         name: "Diploma in IT",
         faculty: "Information Technology",
         duration: "3 years",
         apsRequirement: 26,
-        description:
-          "Information technology diploma depending on stream; Maths L4+ required",
+        description: "IT diploma depending on the stream; Maths L4+ required",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -138,22 +137,18 @@ export const DUT_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("Diploma IT Specialized DUT"),
-        name: "Diploma in IT (Specialized Stream)",
+        id: createDegreeId("Diploma IT Advanced Stream DUT"),
+        name: "Diploma in IT (Advanced Stream)",
         faculty: "Information Technology",
         duration: "3 years",
         apsRequirement: 28,
-        description: "Specialized IT diploma with higher requirements",
+        description: "Advanced IT diploma with higher requirements",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
           { name: "Information Technology", level: 4, isRequired: false },
         ],
-        careerProspects: [
-          "Systems Analyst",
-          "Database Administrator",
-          "IT Consultant",
-        ],
+        careerProspects: ["Software Engineer", "Systems Analyst", "IT Manager"],
       },
       {
         id: createDegreeId("Bachelor IT DUT"),
@@ -161,8 +156,7 @@ export const DUT_FACULTIES: Faculty[] = [
         faculty: "Information Technology",
         duration: "3 years",
         apsRequirement: 30,
-        description:
-          "Bachelor's level IT program, subject to programme details",
+        description: "Bachelor's level IT program with programme details",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },

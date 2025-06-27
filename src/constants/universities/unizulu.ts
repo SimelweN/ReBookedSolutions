@@ -1,7 +1,7 @@
 import { Faculty } from "@/types/university";
 import { createDegreeId, createFacultyId } from "./base";
 
-// University of Zululand (UNIZULU) - Faculty Data
+// University of Zululand (UNIZULU) - Faculty Data - Complete Update
 export const UNIZULU_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Commerce Administration Law FCAL UNIZULU"),
