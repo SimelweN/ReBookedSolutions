@@ -135,23 +135,7 @@ export const supabase = createClient<Database>(
 
 // Debug connection on client creation
 if (import.meta.env.DEV) {
-  console.log("🔗 Supabase client initialized with:");
+  console.log("🔗 Supabase client initialized with FullStory-resistant fetch");
   console.log("URL:", ENV.VITE_SUPABASE_URL);
   console.log("Key starts with:", cleanApiKey.substring(0, 20) + "...");
-
-  // Test basic connectivity
-  supabase
-    .from("profiles")
-    .select("count")
-    .limit(1)
-    .then((result) => {
-      if (result.error) {
-        console.error("❌ Supabase connection test failed:", result.error);
-      } else {
-        console.log("✅ Supabase connection test successful");
-      }
-    })
-    .catch((error) => {
-      console.error("❌ Supabase connection error:", error);
-    });
 }
