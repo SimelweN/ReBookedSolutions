@@ -81,10 +81,10 @@ const SupabaseConnectivityTest: React.FC = () => {
         }));
       }
 
-      // Test 2: Direct Supabase URL test
+      // Test 2: Direct Supabase URL test using resistant fetch
       try {
         const supabaseUrl = "https://kbpjqzaqbqukutflwixf.supabase.co/rest/v1/";
-        const response = await fetch(supabaseUrl, {
+        const response = await resistantFetch(supabaseUrl, {
           headers: {
             apikey:
               "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImticGpxemFxYnF1a3V0Zmx3aXhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc1NjMzNzcsImV4cCI6MjA2MzEzOTM3N30.3EdAkGlyFv1JRaRw9OFMyA5AkkKoXp0hdX1bFWpLVMc",
