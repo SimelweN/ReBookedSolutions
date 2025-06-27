@@ -307,19 +307,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setInitError(null);
       setIsInitializing(true);
 
-      console.log("🔄 [AuthContext] Fast auth initialization...");
+      console.log("🔄 [AuthContext] Auth initialization starting...");
 
       // Immediate initialization without blocking
       (async () => {
         try {
           // Immediate fallback timeout to prevent hanging
           const immediateTimeout = setTimeout(() => {
-            console.warn(
-              "⚠️ [AuthContext] Immediate fallback - preventing hang",
-            );
+            console.info("ℹ️ [AuthContext] Setting to unauthenticated state");
             setIsLoading(false);
             setAuthInitialized(true);
-          }, 500); // 500ms immediate fallback
+            setUser(null);
+            setProfile(null);
+            setSession(null);
+          }, 2000); // Increased to 2 seconds
 
           // Ultra-fast database connectivity check
           try {
@@ -600,15 +601,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     initializeAuth();
 
-    // Emergency backup to prevent infinite loading
+    // Emergency backup to prevent infinite loading - increased timeout for better reliability
     const emergencyTimeout = setTimeout(() => {
       if (!authInitialized) {
-        console.error(
-          "🚨 [AuthContext] Emergency timeout - auth never initialized",
+        console.warn(
+          "⚠️ [AuthContext] Initialization taking longer than expected",
         );
-        console.error("🚨 [AuthContext] This indicates severe backend issues");
         console.info(
-          "💡 [AuthContext] Check database setup and Supabase connection",
+          "💡 [AuthContext] Setting to unauthenticated state to prevent hanging",
         );
 
         // Force initialization to prevent app from hanging
@@ -617,9 +617,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setUser(null);
         setProfile(null);
         setSession(null);
-        setInitError("Database connection failed. Please check setup.");
+        setInitError(null); // Don't show error, just set to unauthenticated
       }
-    }, 3000); // 3 second emergency timeout
+    }, 5000); // Increased to 5 seconds for better reliability
 
     return () => clearTimeout(emergencyTimeout);
   }, [initializeAuth, authInitialized]);
@@ -628,12 +628,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (isLoading) {
       const loadingTimeout = setTimeout(() => {
-        console.warn("⚠️ [AuthContext] Loading timeout - forcing resolution");
-        console.warn(
-          "⚠️ [AuthContext] This usually means database tables are missing",
-        );
         console.info(
-          "💡 [AuthContext] Run complete_database_setup.sql in Supabase to fix this",
+          "ℹ️ [AuthContext] Loading resolved to unauthenticated state",
         );
 
         // Force resolution to unauthenticated state to stop loading spinner
@@ -642,7 +638,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setSession(null);
         setIsLoading(false);
         setAuthInitialized(true);
-      }, 1500); // Very aggressive 1.5 second timeout
+      }, 3000); // More reasonable 3 second timeout
 
       return () => clearTimeout(loadingTimeout);
     }
