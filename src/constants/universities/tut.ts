@@ -1,21 +1,21 @@
 import { Faculty } from "@/types/university";
 import { createDegreeId, createFacultyId } from "./base";
 
-// Tshwane University of Technology (TUT) - Faculty Data - Complete Update
+// Tshwane University of Technology (TUT) - Faculty Data - Comprehensive Update
 export const TUT_FACULTIES: Faculty[] = [
   {
-    id: createFacultyId("Faculty of Engineering and the Built Environment TUT"),
+    id: createFacultyId("Faculty of Engineering Built Environment TUT"),
     name: "Faculty of Engineering & the Built Environment",
-    description: "Engineering and construction technology programs",
+    description: "Engineering and construction programs",
     degrees: [
       {
-        id: createDegreeId("Diploma Engineering Various Disciplines TUT"),
+        id: createDegreeId("Diploma Engineering Various TUT"),
         name: "Diploma in Engineering (various disciplines)",
         faculty: "Engineering & the Built Environment",
         duration: "3 years",
         apsRequirement: 22,
         description:
-          "Engineering diplomas requiring Maths & Physical Science Level 4+",
+          "Engineering in various disciplines (22–24 APS, requires Maths & Physical Science Level 4+)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -23,26 +23,7 @@ export const TUT_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Engineering Technician",
-          "Technical Supervisor",
-          "Project Coordinator",
-        ],
-      },
-      {
-        id: createDegreeId("Diploma Engineering Extended TUT"),
-        name: "Diploma in Engineering (Extended Programme)",
-        faculty: "Engineering & the Built Environment",
-        duration: "4 years",
-        apsRequirement: 24,
-        description:
-          "Extended engineering program requiring stronger subject levels",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Physical Sciences", level: 4, isRequired: true },
-        ],
-        careerProspects: [
-          "Engineering Technician",
-          "Technical Supervisor",
+          "Technical Officer",
           "Project Coordinator",
         ],
       },
@@ -53,7 +34,7 @@ export const TUT_FACULTIES: Faculty[] = [
         duration: "4 years",
         apsRequirement: 28,
         description:
-          "Engineering technology degree requiring stronger subject levels",
+          "Engineering technology degree (28–30 APS, requires stronger subject levels)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
@@ -68,11 +49,9 @@ export const TUT_FACULTIES: Faculty[] = [
     ],
   },
   {
-    id: createFacultyId(
-      "Faculty of Information and Communication Technology TUT",
-    ),
+    id: createFacultyId("Faculty of Information Communication Technology TUT"),
     name: "Faculty of Information & Communication Technology",
-    description: "Computing and information technology programs",
+    description: "Information and communication technology programs",
     degrees: [
       {
         id: createDegreeId("Diploma ICT TUT"),
@@ -81,34 +60,16 @@ export const TUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 22,
         description:
-          "ICT diploma requiring Maths Level 4; Math Lit often not accepted",
+          "Information and communication technology (22–24 APS, requires Maths Level 4; Math Lit often not accepted)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Information Technology", level: 3, isRequired: false },
+          { name: "Information Technology", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "IT Technician",
+          "ICT Technician",
           "Software Developer",
-          "Network Administrator",
-        ],
-      },
-      {
-        id: createDegreeId("Diploma ICT Extended TUT"),
-        name: "Diploma in ICT (Extended Programme)",
-        faculty: "Information & Communication Technology",
-        duration: "4 years",
-        apsRequirement: 24,
-        description: "Extended ICT program with foundational support",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Information Technology", level: 3, isRequired: false },
-        ],
-        careerProspects: [
-          "IT Technician",
-          "Software Developer",
-          "Network Administrator",
+          "Systems Administrator",
         ],
       },
     ],
@@ -116,7 +77,7 @@ export const TUT_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Management Sciences TUT"),
     name: "Faculty of Management Sciences",
-    description: "Business management and commercial programs",
+    description: "Management, business, and administrative programs",
     degrees: [
       {
         id: createDegreeId("Diploma Accounting TUT"),
@@ -124,12 +85,14 @@ export const TUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences",
         duration: "3 years",
         apsRequirement: 20,
-        description: "Accounting and financial management",
+        description:
+          "Accounting and financial management (20–24 APS, subject dependent)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Accounting", level: 4, isRequired: true },
         ],
-        careerProspects: ["Accountant", "Bookkeeper", "Financial Clerk"],
+        careerProspects: ["Accountant", "Bookkeeper", "Financial Assistant"],
       },
       {
         id: createDegreeId("Diploma Marketing TUT"),
@@ -137,15 +100,16 @@ export const TUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences",
         duration: "3 years",
         apsRequirement: 20,
-        description: "Marketing and sales management",
+        description:
+          "Marketing and business promotion (20–24 APS, subject dependent)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Marketing Coordinator",
-          "Sales Representative",
-          "Brand Assistant",
+          "Marketing Officer",
+          "Brand Manager",
+          "Digital Marketing Specialist",
         ],
       },
       {
@@ -154,15 +118,16 @@ export const TUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences",
         duration: "3 years",
         apsRequirement: 23,
-        description: "Public finance management",
+        description:
+          "Public finance management (Higher APS for extended or specialised diplomas)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Public Finance Officer",
           "Government Accountant",
-          "Municipal Finance Manager",
+          "Budget Analyst",
         ],
       },
       {
@@ -171,7 +136,8 @@ export const TUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences",
         duration: "3 years",
         apsRequirement: 20,
-        description: "Sports management and administration",
+        description:
+          "Sports management and administration (20–24 APS, subject dependent)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Orientation", level: 4, isRequired: true },
@@ -179,24 +145,7 @@ export const TUT_FACULTIES: Faculty[] = [
         careerProspects: [
           "Sports Manager",
           "Sports Administrator",
-          "Event Coordinator",
-        ],
-      },
-      {
-        id: createDegreeId("Higher Diploma Extended Specialised TUT"),
-        name: "Higher Diploma (Extended or Specialised)",
-        faculty: "Management Sciences",
-        duration: "3 years",
-        apsRequirement: 24,
-        description: "Extended or specialised diploma programs",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-        ],
-        careerProspects: [
-          "Specialist Administrator",
-          "Project Coordinator",
-          "Technical Manager",
+          "Recreation Coordinator",
         ],
       },
     ],
@@ -204,7 +153,7 @@ export const TUT_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Arts Design Humanities TUT"),
     name: "Faculty of Arts, Design & Humanities",
-    description: "Creative arts, design, and humanities programs",
+    description: "Arts, design, and creative programs",
     degrees: [
       {
         id: createDegreeId("Diploma Fine Applied Arts TUT"),
@@ -212,12 +161,13 @@ export const TUT_FACULTIES: Faculty[] = [
         faculty: "Arts, Design & Humanities",
         duration: "3 years",
         apsRequirement: 20,
-        description: "Fine and applied arts with portfolio requirements",
+        description:
+          "Fine and applied arts (20–22 APS, plus portfolio, auditions or interviews)",
         subjects: [
-          { name: "English", level: 3, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
           { name: "Visual Arts", level: 4, isRequired: true },
         ],
-        careerProspects: ["Artist", "Art Teacher", "Gallery Assistant"],
+        careerProspects: ["Artist", "Art Teacher", "Creative Designer"],
       },
       {
         id: createDegreeId("Diploma Jewellery TUT"),
@@ -226,12 +176,16 @@ export const TUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 20,
         description:
-          "Jewellery design and manufacturing with portfolio requirements",
+          "Jewellery design and manufacturing (20–22 APS, plus portfolio, auditions or interviews)",
         subjects: [
-          { name: "English", level: 3, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
           { name: "Visual Arts", level: 4, isRequired: true },
         ],
-        careerProspects: ["Jewellery Designer", "Jeweller", "Craft Artist"],
+        careerProspects: [
+          "Jewellery Designer",
+          "Goldsmith",
+          "Jewellery Manufacturer",
+        ],
       },
       {
         id: createDegreeId("Diploma Performing Arts TUT"),
@@ -239,16 +193,13 @@ export const TUT_FACULTIES: Faculty[] = [
         faculty: "Arts, Design & Humanities",
         duration: "3 years",
         apsRequirement: 20,
-        description: "Performing arts with auditions or interviews",
+        description:
+          "Performing arts (20–22 APS, plus portfolio, auditions or interviews)",
         subjects: [
-          { name: "English", level: 3, isRequired: true },
-          { name: "Dramatic Arts", level: 4, isRequired: false },
+          { name: "English", level: 4, isRequired: true },
+          { name: "Dramatic Arts", level: 4, isRequired: true },
         ],
-        careerProspects: [
-          "Performer",
-          "Theatre Director",
-          "Entertainment Coordinator",
-        ],
+        careerProspects: ["Performer", "Actor", "Theatre Director"],
       },
       {
         id: createDegreeId("Diploma Fashion Design TUT"),
@@ -256,12 +207,17 @@ export const TUT_FACULTIES: Faculty[] = [
         faculty: "Arts, Design & Humanities",
         duration: "3 years",
         apsRequirement: 20,
-        description: "Fashion design with portfolio requirements",
+        description:
+          "Fashion design and merchandising (20–22 APS, plus portfolio, auditions or interviews)",
         subjects: [
-          { name: "English", level: 3, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
           { name: "Visual Arts", level: 4, isRequired: true },
         ],
-        careerProspects: ["Fashion Designer", "Pattern Maker", "Stylist"],
+        careerProspects: [
+          "Fashion Designer",
+          "Fashion Merchandiser",
+          "Textile Designer",
+        ],
       },
       {
         id: createDegreeId("Bachelor Architecture TUT"),
@@ -270,13 +226,13 @@ export const TUT_FACULTIES: Faculty[] = [
         duration: "5 years",
         apsRequirement: 25,
         description:
-          "Architecture with strong entrance requirements in English & related subjects",
+          "Professional architecture qualification (25 APS, with strong entrance requirements in English & related subjects)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Visual Arts", level: 4, isRequired: false },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Visual Arts", level: 4, isRequired: true },
         ],
-        careerProspects: ["Architect", "Urban Planner", "Design Consultant"],
+        careerProspects: ["Architect", "Urban Planner", "Building Designer"],
       },
     ],
   },
@@ -286,18 +242,22 @@ export const TUT_FACULTIES: Faculty[] = [
     description: "Humanities and social science programs",
     degrees: [
       {
-        id: createDegreeId("Bachelor Humanities Social Sciences TUT"),
-        name: "Bachelor's degrees in Humanities & Social Sciences",
+        id: createDegreeId("Bachelor Degree TUT"),
+        name: "Bachelor's degrees",
         faculty: "Humanities & Social Sciences",
         duration: "3 years",
         apsRequirement: 25,
         description:
-          "Bachelor's degrees (≥25 APS, often 30+ APS preferred; English proficiency mandatory)",
+          "General bachelor's degrees (≥25 APS, often 30+ APS preferred; English proficiency mandatory)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: false },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Home Language", level: 4, isRequired: true },
         ],
-        careerProspects: ["Social Worker", "Researcher", "Community Developer"],
+        careerProspects: [
+          "Professional",
+          "Government Official",
+          "Social Worker",
+        ],
       },
     ],
   },
