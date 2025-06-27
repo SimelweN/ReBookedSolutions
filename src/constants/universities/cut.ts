@@ -1,12 +1,10 @@
 import { Faculty } from "@/types/university";
 import { createDegreeId, createFacultyId } from "./base";
 
-// Central University of Technology (CUT) - Faculty Data - Complete Update
+// Central University of Technology (CUT) - Faculty Data - Comprehensive Update
 export const CUT_FACULTIES: Faculty[] = [
   {
-    id: createFacultyId(
-      "Faculty of Engineering Built Environment and Information Technology CUT",
-    ),
+    id: createFacultyId("Faculty of Engineering Built Environment IT CUT"),
     name: "Faculty of Engineering, Built Environment & Information Technology",
     description:
       "Engineering, construction, and information technology programs",
@@ -18,35 +16,16 @@ export const CUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 27,
         description:
-          "Civil engineering diploma (NSC 2008+) with subject-level requirements",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Physical Sciences", level: 4, isRequired: true },
-        ],
-        careerProspects: [
-          "Civil Engineering Technician",
-          "Construction Manager",
-          "Project Coordinator",
-        ],
-      },
-      {
-        id: createDegreeId("Bachelor Civil Engineering CUT"),
-        name: "Bachelor of Engineering in Civil Engineering",
-        faculty: "Engineering, Built Environment & Information Technology",
-        duration: "4 years",
-        apsRequirement: 32,
-        description:
-          "Professional civil engineering degree with subject-level conditions",
+          "Civil engineering technology (27 APS NSC 2008+ or 32 APS for degree + subject-level requirements)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
           { name: "Physical Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
-          "Civil Engineer",
-          "Structural Engineer",
-          "Water Engineer",
+          "Civil Engineering Technician",
+          "Construction Manager",
+          "Project Coordinator",
         ],
       },
       {
@@ -56,11 +35,11 @@ export const CUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 27,
         description:
-          "Mechanical engineering technology with subject-level thresholds",
+          "Mechanical engineering technology (27 APS plus subject-level thresholds)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Mechanical Engineering Technician",
@@ -69,22 +48,22 @@ export const CUT_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("BTech Mechanical Engineering CUT"),
+        id: createDegreeId("BEng Tech Mechanical Engineering CUT"),
         name: "Bachelor of Engineering Technology in Mechanical Engineering",
         faculty: "Engineering, Built Environment & Information Technology",
         duration: "4 years",
         apsRequirement: 32,
         description:
-          "Mechanical engineering technology degree with subject-level conditions",
+          "Engineering technology in mechanical engineering (32 APS, with subject-level conditions)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
         ],
         careerProspects: [
           "Mechanical Engineer",
           "Design Engineer",
-          "Production Engineer",
+          "Manufacturing Engineer",
         ],
       },
       {
@@ -94,51 +73,56 @@ export const CUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 27,
         description:
-          "Information technology diploma with English & Maths level requirements",
+          "Information technology (27 APS plus English & Maths levels)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Information Technology", level: 3, isRequired: false },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Information Technology", level: 4, isRequired: true },
         ],
         careerProspects: [
           "IT Technician",
           "Software Developer",
-          "Network Administrator",
+          "Systems Administrator",
         ],
       },
       {
-        id: createDegreeId("Bachelor Information Technology CUT"),
-        name: "Bachelor of Information Technology",
+        id: createDegreeId("Bachelor IT CUT"),
+        name: "Bachelor's-level IT (BTech/Bachelor)",
         faculty: "Engineering, Built Environment & Information Technology",
-        duration: "3 years",
+        duration: "4 years",
         apsRequirement: 30,
-        description: "Bachelor's-level IT program depending on specialization",
+        description:
+          "Bachelor's-level IT qualification (30 APS+ depending on programme)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Information Technology", level: 4, isRequired: false },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Information Technology", level: 4, isRequired: true },
         ],
-        careerProspects: ["IT Manager", "Systems Analyst", "Software Engineer"],
+        careerProspects: [
+          "IT Specialist",
+          "Software Engineer",
+          "Systems Analyst",
+        ],
       },
     ],
   },
   {
-    id: createFacultyId("Faculty of Health and Environmental Sciences CUT"),
+    id: createFacultyId("Faculty of Health Environmental Sciences CUT"),
     name: "Faculty of Health & Environmental Sciences",
-    description: "Health sciences and environmental programs",
+    description: "Health and environmental science programs",
     degrees: [
       {
-        id: createDegreeId("BHealthSci Medical Laboratory Sciences CUT"),
+        id: createDegreeId("BHSc Medical Laboratory Sciences CUT"),
         name: "Bachelor of Health Sciences: Medical Laboratory Sciences",
         faculty: "Health & Environmental Sciences",
         duration: "4 years",
         apsRequirement: 30,
-        description: "Medical laboratory sciences program",
+        description: "Medical laboratory sciences",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Physical Sciences", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Medical Laboratory Scientist",
@@ -155,13 +139,13 @@ export const CUT_FACULTIES: Faculty[] = [
         description: "Environmental health and safety",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Environmental Health Officer",
-          "Public Health Inspector",
-          "Safety Officer",
+          "Health Inspector",
+          "Environmental Consultant",
         ],
       },
       {
@@ -170,24 +154,24 @@ export const CUT_FACULTIES: Faculty[] = [
         faculty: "Health & Environmental Sciences",
         duration: "3 years",
         apsRequirement: 27,
-        description: "Dental assistance and oral health care",
+        description: "Dental assistance and oral health",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
-          { name: "Physical Sciences", level: 3, isRequired: false },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Dental Assistant",
-          "Oral Health Therapist",
-          "Dental Practice Manager",
+          "Oral Hygienist",
+          "Dental Clinic Coordinator",
         ],
       },
     ],
   },
   {
-    id: createFacultyId("Faculty of Management Sciences and Humanities CUT"),
+    id: createFacultyId("Faculty of Management Sciences Humanities CUT"),
     name: "Faculty of Management Sciences & Humanities",
-    description: "Business management, humanities, and hospitality programs",
+    description: "Management, business, and humanities programs",
     degrees: [
       {
         id: createDegreeId("Diploma Public Management CUT"),
@@ -195,10 +179,10 @@ export const CUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences & Humanities",
         duration: "3 years",
         apsRequirement: 27,
-        description: "Public sector management and administration",
+        description: "Public sector management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Public Manager",
@@ -212,15 +196,15 @@ export const CUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences & Humanities",
         duration: "3 years",
         apsRequirement: 27,
-        description: "Marketing and sales management",
+        description: "Marketing and business promotion",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Marketing Manager",
-          "Sales Representative",
+          "Marketing Officer",
           "Brand Manager",
+          "Digital Marketing Specialist",
         ],
       },
       {
@@ -229,15 +213,16 @@ export const CUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences & Humanities",
         duration: "3 years",
         apsRequirement: 28,
-        description: "Internal auditing and risk management",
+        description: "Internal auditing and compliance",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Accounting", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Internal Auditor",
-          "Risk Analyst",
           "Compliance Officer",
+          "Risk Analyst",
         ],
       },
       {
@@ -246,11 +231,10 @@ export const CUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences & Humanities",
         duration: "3 years",
         apsRequirement: 27,
-        description: "Office management with technology integration",
+        description: "Office management and technology systems",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Information Technology", level: 3, isRequired: false },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Office Manager",
@@ -264,7 +248,7 @@ export const CUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences & Humanities",
         duration: "3 years",
         apsRequirement: 30,
-        description: "Hospitality industry management",
+        description: "Hospitality and hotel management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -276,17 +260,22 @@ export const CUT_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("Bachelor of Accountancy CUT"),
+        id: createDegreeId("Bachelor Accountancy CUT"),
         name: "Bachelor of Accountancy",
         faculty: "Management Sciences & Humanities",
         duration: "3 years",
         apsRequirement: 30,
-        description: "Professional accounting program",
+        description: "Professional accounting qualification",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Accounting", level: 5, isRequired: true },
         ],
-        careerProspects: ["Accountant", "Financial Manager", "Auditor"],
+        careerProspects: [
+          "Chartered Accountant",
+          "Financial Manager",
+          "Auditor",
+        ],
       },
       {
         id: createDegreeId("Bachelor Tourism Management CUT"),
@@ -294,12 +283,17 @@ export const CUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences & Humanities",
         duration: "3 years",
         apsRequirement: 30,
-        description: "Tourism industry management and operations",
+        description: "Tourism management and destination planning",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Geography", level: 3, isRequired: false },
+          { name: "Geography", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
-        careerProspects: ["Tourism Manager", "Tour Guide", "Travel Consultant"],
+        careerProspects: [
+          "Tourism Manager",
+          "Destination Manager",
+          "Tourism Planner",
+        ],
       },
     ],
   },
@@ -315,15 +309,15 @@ export const CUT_FACULTIES: Faculty[] = [
         duration: "4 years",
         apsRequirement: 27,
         description:
-          "Foundation phase teacher education with subject-level criteria",
+          "Foundation phase teaching (27 APS with subject-level criteria)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: false },
         ],
         careerProspects: [
           "Foundation Phase Teacher",
-          "Early Childhood Educator",
+          "Primary School Teacher",
+          "Educational Coordinator",
         ],
       },
       {
@@ -332,16 +326,15 @@ export const CUT_FACULTIES: Faculty[] = [
         faculty: "Education",
         duration: "4 years",
         apsRequirement: 27,
-        description: "Senior phase and FET economics teaching",
+        description: "Senior Phase and FET economics teaching",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Economics", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Economics Teacher",
           "Business Studies Teacher",
-          "Education Specialist",
+          "Economic Education Specialist",
         ],
       },
       {
@@ -350,17 +343,16 @@ export const CUT_FACULTIES: Faculty[] = [
         faculty: "Education",
         duration: "4 years",
         apsRequirement: 27,
-        description: "Senior phase and FET natural science teaching",
+        description: "Senior Phase and FET natural science teaching",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Physical Sciences", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Science Teacher",
-          "Natural Science Educator",
-          "Curriculum Specialist",
+          "Natural Science Teacher",
+          "STEM Education Specialist",
         ],
       },
       {
@@ -369,32 +361,32 @@ export const CUT_FACULTIES: Faculty[] = [
         faculty: "Education",
         duration: "4 years",
         apsRequirement: 27,
-        description: "Senior phase and FET language teaching",
+        description: "Senior Phase and FET language teaching",
         subjects: [
           { name: "English", level: 5, isRequired: true },
-          { name: "Additional Language", level: 4, isRequired: true },
+          { name: "Home Language", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Language Teacher",
           "English Teacher",
-          "Language Specialist",
+          "Literature Teacher",
         ],
       },
       {
-        id: createDegreeId("BEd SP FET Maths CUT"),
-        name: "Bachelor of Education (SP & FET – Maths)",
+        id: createDegreeId("BEd SP FET Mathematics CUT"),
+        name: "Bachelor of Education (SP & FET – Mathematics)",
         faculty: "Education",
         duration: "4 years",
         apsRequirement: 27,
-        description: "Senior phase and FET mathematics teaching",
+        description: "Senior Phase and FET mathematics teaching",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Mathematics", level: 6, isRequired: true },
         ],
         careerProspects: [
           "Mathematics Teacher",
-          "Mathematical Sciences Educator",
-          "Curriculum Developer",
+          "Mathematical Literacy Teacher",
+          "STEM Education Specialist",
         ],
       },
       {
@@ -403,16 +395,16 @@ export const CUT_FACULTIES: Faculty[] = [
         faculty: "Education",
         duration: "4 years",
         apsRequirement: 27,
-        description: "Senior phase and FET computer science teaching",
+        description: "Senior Phase and FET computer science teaching",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
           { name: "Information Technology", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Computer Science Teacher",
-          "IT Educator",
-          "Technology Coordinator",
+          "IT Teacher",
+          "Digital Education Specialist",
         ],
       },
     ],

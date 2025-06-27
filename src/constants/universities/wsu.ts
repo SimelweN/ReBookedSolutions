@@ -1,12 +1,12 @@
 import { Faculty } from "@/types/university";
 import { createDegreeId, createFacultyId } from "./base";
 
-// Walter Sisulu University (WSU) - Faculty Data - Complete Update
+// Walter Sisulu University (WSU) - Faculty Data - Comprehensive Update
 export const WSU_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Education WSU"),
     name: "Faculty of Education",
-    description: "Teacher education and educational development programs",
+    description: "Teacher education and educational programs",
     degrees: [
       {
         id: createDegreeId("BEd Foundation Phase Teaching WSU"),
@@ -21,8 +21,8 @@ export const WSU_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Foundation Phase Teacher",
-          "Early Childhood Educator",
-          "Educational Specialist",
+          "Primary School Teacher",
+          "Educational Coordinator",
         ],
       },
       {
@@ -34,16 +34,16 @@ export const WSU_FACULTIES: Faculty[] = [
         duration: "4 years",
         apsRequirement: 26,
         description:
-          "Senior phase and FET teaching in economic and management sciences",
+          "Senior and FET phase teaching in Economic & Management Sciences",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Accounting", level: 4, isRequired: false },
+          { name: "Accounting", level: 4, isRequired: true },
         ],
         careerProspects: [
           "High School Teacher",
-          "Commerce Teacher",
-          "Subject Specialist",
+          "Business Studies Teacher",
+          "Economics Teacher",
         ],
       },
       {
@@ -55,15 +55,16 @@ export const WSU_FACULTIES: Faculty[] = [
         duration: "4 years",
         apsRequirement: 26,
         description:
-          "Senior phase and FET teaching in consumer and management sciences",
+          "Senior and FET phase teaching in Consumer and Management Sciences",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Consumer Studies", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "High School Teacher",
           "Consumer Studies Teacher",
-          "Subject Specialist",
+          "Management Sciences Teacher",
+          "Life Skills Teacher",
         ],
       },
       {
@@ -72,16 +73,12 @@ export const WSU_FACULTIES: Faculty[] = [
         faculty: "Education",
         duration: "4 years",
         apsRequirement: 26,
-        description: "Senior phase and FET teaching in creative arts",
+        description: "Senior and FET phase teaching in Creative Arts",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Visual Arts", level: 4, isRequired: true },
         ],
-        careerProspects: [
-          "Art Teacher",
-          "Creative Arts Educator",
-          "Subject Specialist",
-        ],
+        careerProspects: ["Arts Teacher", "Drama Teacher", "Music Teacher"],
       },
       {
         id: createDegreeId("BEd Senior Phase FET Humanities WSU"),
@@ -89,15 +86,16 @@ export const WSU_FACULTIES: Faculty[] = [
         faculty: "Education",
         duration: "4 years",
         apsRequirement: 26,
-        description: "Senior phase and FET teaching in humanities",
+        description: "Senior and FET phase teaching in Humanities",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "History", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Humanities Teacher",
           "History Teacher",
-          "Subject Specialist",
+          "Geography Teacher",
+          "Social Sciences Teacher",
         ],
       },
       {
@@ -106,7 +104,7 @@ export const WSU_FACULTIES: Faculty[] = [
         faculty: "Education",
         duration: "4 years",
         apsRequirement: 26,
-        description: "Senior phase and FET teaching in languages",
+        description: "Senior and FET phase teaching in Languages",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Home Language", level: 4, isRequired: true },
@@ -114,7 +112,7 @@ export const WSU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Language Teacher",
           "English Teacher",
-          "Second Language Specialist",
+          "Literature Teacher",
         ],
       },
       {
@@ -126,11 +124,11 @@ export const WSU_FACULTIES: Faculty[] = [
         duration: "4 years",
         apsRequirement: 26,
         description:
-          "Senior phase and FET teaching in mathematics, science and technology",
+          "Senior and FET phase teaching in Mathematics, Science & Technology",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Mathematics Teacher",
@@ -147,34 +145,37 @@ export const WSU_FACULTIES: Faculty[] = [
         duration: "4 years",
         apsRequirement: 26,
         description:
-          "Senior phase and FET teaching in technical and vocational education (complex criteria based on subject combinations)",
+          "Senior and FET phase teaching in Technical and Vocational Education",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
+          {
+            name: "Engineering Graphics and Design",
+            level: 4,
+            isRequired: true,
+          },
         ],
         careerProspects: [
-          "Technical Teacher",
-          "Vocational Educator",
-          "Skills Trainer",
+          "Technical Education Teacher",
+          "Vocational Training Instructor",
+          "Skills Development Facilitator",
         ],
       },
       {
-        id: createDegreeId(
-          "Diploma Adult Community Education Training ACET WSU",
-        ),
+        id: createDegreeId("Diploma Adult Community Education Training WSU"),
         name: "Diploma in Adult and Community Education and Training (ACET)",
         faculty: "Education",
         duration: "3 years",
         apsRequirement: 21,
-        description: "Adult and community education training",
+        description: "Adult and community education and training",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 3, isRequired: true },
+          { name: "Mathematics", level: 3, isRequired: true },
         ],
         careerProspects: [
-          "Adult Educator",
-          "Community Education Coordinator",
-          "Training Facilitator",
+          "Adult Education Facilitator",
+          "Community Education Officer",
+          "Training Coordinator",
         ],
       },
     ],
@@ -190,12 +191,12 @@ export const WSU_FACULTIES: Faculty[] = [
         faculty: "Law, Humanities and Social Sciences",
         duration: "3 years",
         apsRequirement: 20,
-        description: "Fine arts and visual expression",
+        description: "Fine art and visual arts",
         subjects: [
-          { name: "English", level: 3, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
           { name: "Visual Arts", level: 4, isRequired: true },
         ],
-        careerProspects: ["Artist", "Art Teacher", "Gallery Assistant"],
+        careerProspects: ["Artist", "Art Teacher", "Art Therapist"],
       },
       {
         id: createDegreeId("Advanced Diploma Fine Art WSU"),
@@ -203,12 +204,15 @@ export const WSU_FACULTIES: Faculty[] = [
         faculty: "Law, Humanities and Social Sciences",
         duration: "1 year",
         apsRequirement: 20,
-        description: "Advanced fine arts qualification",
-        subjects: [{ name: "Fine Arts Diploma", level: 5, isRequired: true }],
+        description: "Advanced fine art specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 5, isRequired: true },
+        ],
         careerProspects: [
           "Professional Artist",
-          "Art Instructor",
-          "Creative Director",
+          "Art Director",
+          "Gallery Curator",
         ],
       },
       {
@@ -217,29 +221,32 @@ export const WSU_FACULTIES: Faculty[] = [
         faculty: "Law, Humanities and Social Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description: "Fashion design and production",
+        description: "Fashion design and merchandising",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Visual Arts", level: 4, isRequired: false },
+          { name: "Visual Arts", level: 4, isRequired: true },
         ],
-        careerProspects: ["Fashion Designer", "Fashion Producer", "Stylist"],
+        careerProspects: [
+          "Fashion Designer",
+          "Fashion Merchandiser",
+          "Textile Designer",
+        ],
       },
       {
-        id: createDegreeId("Bachelor Arts WSU"),
+        id: createDegreeId("BA WSU"),
         name: "Bachelor of Arts",
         faculty: "Law, Humanities and Social Sciences",
         duration: "3 years",
         apsRequirement: 27,
         description: "General arts and humanities",
-        subjects: [{ name: "English", level: 4, isRequired: true }],
-        careerProspects: [
-          "Administrative Officer",
-          "Communications Officer",
-          "Research Assistant",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Home Language", level: 4, isRequired: true },
         ],
+        careerProspects: ["Social Worker", "Journalist", "Government Official"],
       },
       {
-        id: createDegreeId("Bachelor Social Science WSU"),
+        id: createDegreeId("BSocSc WSU"),
         name: "Bachelor of Social Science",
         faculty: "Law, Humanities and Social Sciences",
         duration: "3 years",
@@ -247,16 +254,16 @@ export const WSU_FACULTIES: Faculty[] = [
         description: "Social sciences and community studies",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: true },
+          { name: "History", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Social Researcher",
           "Community Worker",
-          "Social Services Officer",
+          "Policy Analyst",
         ],
       },
       {
-        id: createDegreeId("Bachelor Social Science Extended WSU"),
+        id: createDegreeId("BSocSc Extended WSU"),
         name: "Bachelor of Social Science (Extended Curriculum Programme)",
         faculty: "Law, Humanities and Social Sciences",
         duration: "4 years",
@@ -264,12 +271,12 @@ export const WSU_FACULTIES: Faculty[] = [
         description: "Extended social sciences program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: true },
+          { name: "History", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Social Researcher",
           "Community Worker",
-          "Social Services Officer",
+          "Policy Analyst",
         ],
       },
       {
@@ -291,7 +298,7 @@ export const WSU_FACULTIES: Faculty[] = [
         faculty: "Law, Humanities and Social Sciences",
         duration: "4 years",
         apsRequirement: 28,
-        description: "Social work practice and community development",
+        description: "Professional social work practice",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Orientation", level: 4, isRequired: true },
@@ -308,7 +315,7 @@ export const WSU_FACULTIES: Faculty[] = [
         faculty: "Law, Humanities and Social Sciences",
         duration: "3 years",
         apsRequirement: 28,
-        description: "Psychology studies and mental health",
+        description: "Psychology theory and practice",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
@@ -332,7 +339,7 @@ export const WSU_FACULTIES: Faculty[] = [
         apsRequirement: 30,
         description: "Public and business administration",
         subjects: [
-          { name: "English", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
@@ -347,7 +354,7 @@ export const WSU_FACULTIES: Faculty[] = [
         faculty: "Management and Public Administration Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description: "Administrative management and office administration",
+        description: "Administrative management and coordination",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
@@ -355,7 +362,7 @@ export const WSU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Administrative Manager",
           "Office Manager",
-          "Executive Assistant",
+          "Administrative Coordinator",
         ],
       },
       {
@@ -364,9 +371,12 @@ export const WSU_FACULTIES: Faculty[] = [
         faculty: "Management and Public Administration Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description: "Journalism and media communication",
-        subjects: [{ name: "English", level: 4, isRequired: true }],
-        careerProspects: ["Journalist", "Reporter", "News Writer"],
+        description: "Journalism and media reporting",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Home Language", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Journalist", "Reporter", "Media Correspondent"],
       },
       {
         id: createDegreeId("Diploma Public Relations WSU"),
@@ -374,11 +384,14 @@ export const WSU_FACULTIES: Faculty[] = [
         faculty: "Management and Public Administration Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description: "Public relations and communication",
-        subjects: [{ name: "English", level: 4, isRequired: true }],
+        description: "Public relations and communications",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Life Orientation", level: 4, isRequired: true },
+        ],
         careerProspects: [
           "Public Relations Officer",
-          "Communications Coordinator",
+          "Communications Specialist",
           "Media Liaison",
         ],
       },
@@ -395,8 +408,8 @@ export const WSU_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Public Manager",
-          "Government Officer",
-          "Municipal Administrator",
+          "Government Official",
+          "Municipal Officer",
         ],
       },
       {
@@ -405,7 +418,7 @@ export const WSU_FACULTIES: Faculty[] = [
         faculty: "Management and Public Administration Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description: "Policing and law enforcement",
+        description: "Police science and law enforcement",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Orientation", level: 4, isRequired: true },
@@ -421,10 +434,10 @@ export const WSU_FACULTIES: Faculty[] = [
         description: "Local government financial management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Municipal Finance Officer",
+          "Municipal Financial Officer",
           "Local Government Accountant",
           "Budget Analyst",
         ],
@@ -440,7 +453,7 @@ export const WSU_FACULTIES: Faculty[] = [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
         ],
-        careerProspects: ["Manager", "Supervisor", "Team Leader"],
+        careerProspects: ["Manager", "Supervisor", "Operations Coordinator"],
       },
       {
         id: createDegreeId("Diploma Small Business Management WSU"),
@@ -448,15 +461,15 @@ export const WSU_FACULTIES: Faculty[] = [
         faculty: "Management and Public Administration Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description: "Small business management and entrepreneurship",
+        description: "Small business and entrepreneurship",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
         ],
         careerProspects: [
           "Small Business Owner",
-          "Business Consultant",
           "Entrepreneur",
+          "Business Consultant",
         ],
       },
       {
@@ -465,15 +478,15 @@ export const WSU_FACULTIES: Faculty[] = [
         faculty: "Management and Public Administration Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description: "Office management with technology integration",
+        description: "Office management and technology systems",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
         ],
         careerProspects: [
           "Office Manager",
-          "Administrative Coordinator",
-          "Executive Assistant",
+          "Administrative Assistant",
+          "Executive Secretary",
         ],
       },
       {
@@ -489,8 +502,8 @@ export const WSU_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "HR Officer",
-          "Recruitment Coordinator",
-          "Personnel Administrator",
+          "Recruitment Specialist",
+          "Training Coordinator",
         ],
       },
       {
@@ -499,12 +512,12 @@ export const WSU_FACULTIES: Faculty[] = [
         faculty: "Management and Public Administration Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description: "Tourism management and hospitality",
+        description: "Tourism and hospitality management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
         ],
-        careerProspects: ["Tourism Manager", "Travel Agent", "Tour Guide"],
+        careerProspects: ["Tourism Manager", "Travel Consultant", "Tour Guide"],
       },
       {
         id: createDegreeId("Diploma Hospitality Management WSU"),
@@ -515,7 +528,7 @@ export const WSU_FACULTIES: Faculty[] = [
         description: "Hospitality and hotel management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Consumer Studies", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Hotel Manager",
@@ -532,12 +545,12 @@ export const WSU_FACULTIES: Faculty[] = [
         description: "Sports management and administration",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Life Orientation", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Sports Manager",
-          "Event Coordinator",
-          "Recreation Officer",
+          "Sports Administrator",
+          "Recreation Coordinator",
         ],
       },
       {
@@ -546,15 +559,15 @@ export const WSU_FACULTIES: Faculty[] = [
         faculty: "Management and Public Administration Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description: "Financial information systems",
+        description: "Financial information systems and technology",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Financial Systems Analyst",
-          "Database Administrator",
-          "Financial Officer",
+          "Information Systems Officer",
+          "Financial Technician",
         ],
       },
       {
@@ -563,16 +576,16 @@ export const WSU_FACULTIES: Faculty[] = [
         faculty: "Management and Public Administration Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description: "Accounting and financial management",
+        description: "Basic accounting and bookkeeping",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
           { name: "Accounting", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Bookkeeper",
           "Accounting Clerk",
-          "Junior Accountant",
+          "Financial Assistant",
         ],
       },
       {
@@ -581,10 +594,10 @@ export const WSU_FACULTIES: Faculty[] = [
         faculty: "Management and Public Administration Sciences",
         duration: "3 years",
         apsRequirement: 21,
-        description: "Internal auditing and financial control",
+        description: "Internal auditing and compliance",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
           { name: "Accounting", level: 4, isRequired: true },
         ],
         careerProspects: [
@@ -593,26 +606,25 @@ export const WSU_FACULTIES: Faculty[] = [
           "Risk Analyst",
         ],
       },
-      // Extended Curriculum Programmes
       {
-        id: createDegreeId("Diploma Office Management Technology ECP WSU"),
+        id: createDegreeId("Diploma Office Management Technology Extended WSU"),
         name: "Diploma in Office Management and Technology (ECP)",
         faculty: "Management and Public Administration Sciences",
         duration: "4 years",
         apsRequirement: 21,
-        description: "Extended office management program",
+        description: "Extended office management and technology program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
         ],
         careerProspects: [
           "Office Manager",
-          "Administrative Coordinator",
-          "Executive Assistant",
+          "Administrative Assistant",
+          "Executive Secretary",
         ],
       },
       {
-        id: createDegreeId("Diploma Local Government Finance ECP WSU"),
+        id: createDegreeId("Diploma Local Government Finance Extended WSU"),
         name: "Diploma in Local Government Finance (ECP)",
         faculty: "Management and Public Administration Sciences",
         duration: "4 years",
@@ -620,16 +632,16 @@ export const WSU_FACULTIES: Faculty[] = [
         description: "Extended local government finance program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Municipal Finance Officer",
+          "Municipal Financial Officer",
           "Local Government Accountant",
           "Budget Analyst",
         ],
       },
       {
-        id: createDegreeId("Diploma Management ECP WSU"),
+        id: createDegreeId("Diploma Management Extended WSU"),
         name: "Diploma in Management (ECP)",
         faculty: "Management and Public Administration Sciences",
         duration: "4 years",
@@ -639,10 +651,10 @@ export const WSU_FACULTIES: Faculty[] = [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
         ],
-        careerProspects: ["Manager", "Supervisor", "Team Leader"],
+        careerProspects: ["Manager", "Supervisor", "Operations Coordinator"],
       },
       {
-        id: createDegreeId("Diploma Human Resources Management ECP WSU"),
+        id: createDegreeId("Diploma Human Resources Management Extended WSU"),
         name: "Diploma in Human Resources Management (ECP)",
         faculty: "Management and Public Administration Sciences",
         duration: "4 years",
@@ -654,26 +666,29 @@ export const WSU_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "HR Officer",
-          "Recruitment Coordinator",
-          "Personnel Administrator",
+          "Recruitment Specialist",
+          "Training Coordinator",
         ],
       },
       {
-        id: createDegreeId("Diploma Public Relations ECP WSU"),
+        id: createDegreeId("Diploma Public Relations Extended WSU"),
         name: "Diploma in Public Relations (ECP)",
         faculty: "Management and Public Administration Sciences",
         duration: "4 years",
         apsRequirement: 21,
         description: "Extended public relations program",
-        subjects: [{ name: "English", level: 4, isRequired: true }],
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Life Orientation", level: 4, isRequired: true },
+        ],
         careerProspects: [
           "Public Relations Officer",
-          "Communications Coordinator",
+          "Communications Specialist",
           "Media Liaison",
         ],
       },
       {
-        id: createDegreeId("Diploma Internal Auditing ECP WSU"),
+        id: createDegreeId("Diploma Internal Auditing Extended WSU"),
         name: "Diploma in Internal Auditing (ECP)",
         faculty: "Management and Public Administration Sciences",
         duration: "4 years",
@@ -681,7 +696,7 @@ export const WSU_FACULTIES: Faculty[] = [
         description: "Extended internal auditing program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
           { name: "Accounting", level: 4, isRequired: true },
         ],
         careerProspects: [
@@ -696,8 +711,7 @@ export const WSU_FACULTIES: Faculty[] = [
         faculty: "Management and Public Administration Sciences",
         duration: "1 year",
         apsRequirement: 18,
-        description:
-          "Broadcasting and media production (requires English level 4 & one additional language level 3)",
+        description: "Broadcasting and media production",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Home Language", level: 3, isRequired: true },

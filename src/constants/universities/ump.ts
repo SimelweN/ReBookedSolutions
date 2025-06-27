@@ -1,12 +1,12 @@
 import { Faculty } from "@/types/university";
 import { createDegreeId, createFacultyId } from "./base";
 
-// University of Mpumalanga (UMP) - Faculty Data - Complete Update
+// University of Mpumalanga (UMP) - Faculty Data - Comprehensive Update
 export const UMP_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Social Sciences UMP"),
     name: "Faculty of Social Sciences",
-    description: "Social sciences and human development programs",
+    description: "Social science and community programs",
     degrees: [
       {
         id: createDegreeId("BA General UMP"),
@@ -15,75 +15,56 @@ export const UMP_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 28,
         description:
-          "Liberal arts foundation program requiring English Level 4 and Mathematics Level 2 or Math Lit Level 3",
+          "General arts and humanities (requires English Level 4; Mathematics Level 2 or Math Level 3)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 2, isRequired: true },
-          { name: "Mathematical Literacy", level: 3, isRequired: false },
         ],
-        careerProspects: ["Social Worker", "Researcher", "Community Developer"],
+        careerProspects: [
+          "Social Worker",
+          "Community Developer",
+          "Government Official",
+        ],
       },
       {
-        id: createDegreeId("Bachelor of Social Work UMP"),
+        id: createDegreeId("Bachelor Social Work UMP"),
         name: "Bachelor of Social Work",
         faculty: "Social Sciences",
         duration: "4 years",
         apsRequirement: 32,
         description:
-          "Professional social work program requiring English Level 4 and Mathematics Level 2 or Math Lit Level 3",
+          "Professional social work practice (requires English Level 4; Mathematics Level 2 or Math Level 3)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 2, isRequired: true },
-          { name: "Mathematical Literacy", level: 3, isRequired: false },
+          { name: "Life Orientation", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Social Worker",
           "Community Developer",
-          "Case Manager",
+          "Family Counselor",
         ],
       },
     ],
   },
   {
-    id: createFacultyId("Faculty of Agriculture and Natural Sciences UMP"),
+    id: createFacultyId("Faculty of Agriculture Natural Sciences UMP"),
     name: "Faculty of Agriculture & Natural Sciences",
-    description:
-      "Agriculture, environmental sciences, and natural sciences programs",
+    description: "Agricultural, environmental, and natural science programs",
     degrees: [
       {
         id: createDegreeId(
-          "BSc Agriculture Extension Rural Resource Management UMP",
+          "BSc Agriculture Agricultural Extension Rural Resource Management UMP",
         ),
         name: "Bachelor of Science in Agriculture (Agricultural Extension & Rural Resource Management)",
         faculty: "Agriculture & Natural Sciences",
         duration: "4 years",
         apsRequirement: 26,
         description:
-          "Agricultural extension and rural development with Mathematics, requiring English Level 4",
+          "Agricultural extension and rural resource management (26 APS with Math / 28 APS with Math Lit)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
-        ],
-        careerProspects: [
-          "Agricultural Extension Officer",
-          "Rural Development Specialist",
-          "Agricultural Consultant",
-        ],
-      },
-      {
-        id: createDegreeId(
-          "BSc Agriculture Extension Rural Resource Management Math Lit UMP",
-        ),
-        name: "Bachelor of Science in Agriculture (Agricultural Extension & Rural Resource Management) - Math Lit",
-        faculty: "Agriculture & Natural Sciences",
-        duration: "4 years",
-        apsRequirement: 28,
-        description:
-          "Agricultural extension and rural development with Mathematical Literacy, requiring English Level 4",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematical Literacy", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
@@ -98,19 +79,13 @@ export const UMP_FACULTIES: Faculty[] = [
         faculty: "Agriculture & Natural Sciences",
         duration: "4 years",
         apsRequirement: 30,
-        description:
-          "Forestry science and management, requiring English Level 4 and relevant science subjects",
+        description: "Forestry science and management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
-          { name: "Physical Sciences", level: 4, isRequired: false },
+          { name: "Life Sciences", level: 5, isRequired: true },
         ],
-        careerProspects: [
-          "Forester",
-          "Conservation Officer",
-          "Environmental Consultant",
-        ],
+        careerProspects: ["Forester", "Forest Manager", "Conservation Officer"],
       },
       {
         id: createDegreeId("BSc General UMP"),
@@ -118,18 +93,16 @@ export const UMP_FACULTIES: Faculty[] = [
         faculty: "Agriculture & Natural Sciences",
         duration: "3 years",
         apsRequirement: 30,
-        description:
-          "General science degree, requiring English Level 4 and relevant science subjects",
+        description: "General science qualification",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
           { name: "Physical Sciences", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: false },
         ],
         careerProspects: [
-          "Research Scientist",
+          "Scientist",
+          "Research Assistant",
           "Laboratory Technician",
-          "Science Teacher",
         ],
       },
       {
@@ -138,18 +111,17 @@ export const UMP_FACULTIES: Faculty[] = [
         faculty: "Agriculture & Natural Sciences",
         duration: "3 years",
         apsRequirement: 30,
-        description:
-          "Environmental science and sustainability, requiring English Level 4 and relevant science subjects",
+        description: "Environmental science and management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Physical Sciences", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Environmental Scientist",
           "Conservation Officer",
-          "Sustainability Consultant",
+          "Environmental Consultant",
         ],
       },
       {
@@ -159,34 +131,15 @@ export const UMP_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 23,
         description:
-          "Plant production and crop science with Mathematics, requiring English Level 4",
+          "Plant production and crop science (23 APS with Math / 24 APS with Math Lit)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
+          "Plant Production Specialist",
           "Crop Specialist",
-          "Farm Manager",
-          "Agricultural Technician",
-        ],
-      },
-      {
-        id: createDegreeId("Diploma Plant Production Math Lit UMP"),
-        name: "Diploma in Plant Production - Math Lit",
-        faculty: "Agriculture & Natural Sciences",
-        duration: "3 years",
-        apsRequirement: 24,
-        description:
-          "Plant production and crop science with Mathematical Literacy, requiring English Level 4",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematical Literacy", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
-        ],
-        careerProspects: [
-          "Crop Specialist",
-          "Farm Manager",
           "Agricultural Technician",
         ],
       },
@@ -197,45 +150,24 @@ export const UMP_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 24,
         description:
-          "Animal production and livestock management with Mathematics, requiring English Level 4",
+          "Animal production and livestock management (24 APS with Math / 27 APS with Math Lit)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
+          "Animal Production Specialist",
           "Livestock Manager",
-          "Animal Technician",
-          "Farm Supervisor",
-        ],
-      },
-      {
-        id: createDegreeId("Diploma Animal Production Math Lit UMP"),
-        name: "Diploma in Animal Production - Math Lit",
-        faculty: "Agriculture & Natural Sciences",
-        duration: "3 years",
-        apsRequirement: 27,
-        description:
-          "Animal production and livestock management with Mathematical Literacy, requiring English Level 4",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematical Literacy", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
-        ],
-        careerProspects: [
-          "Livestock Manager",
-          "Animal Technician",
-          "Farm Supervisor",
+          "Agricultural Technician",
         ],
       },
     ],
   },
   {
-    id: createFacultyId(
-      "Faculty of Development Studies and Business Sciences UMP",
-    ),
+    id: createFacultyId("Faculty of Development Studies Business Sciences UMP"),
     name: "Faculty of Development Studies & Business Sciences",
-    description: "Business, development studies, and administration programs",
+    description: "Development, business, and administrative programs",
     degrees: [
       {
         id: createDegreeId("BCom General UMP"),
@@ -244,65 +176,50 @@ export const UMP_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 30,
         description:
-          "General commerce program requiring Mathematics (Math Lit not accepted) and English Level 4",
+          "General commerce qualification (Math required; Math Lit not accepted)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Business Manager",
+          "Commercial Officer",
+          "Financial Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("Bachelor Administration UMP"),
+        name: "Bachelor of Administration",
+        faculty: "Development Studies & Business Sciences",
+        duration: "3 years",
+        apsRequirement: 32,
+        description: "Public and business administration",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Business Manager",
-          "Financial Analyst",
-          "Entrepreneur",
+          "Administrator",
+          "Public Service Officer",
+          "Management Trainee",
         ],
       },
       {
-        id: createDegreeId("Bachelor of Administration UMP"),
-        name: "Bachelor of Administration",
-        faculty: "Development Studies & Business Sciences",
-        duration: "3 years",
-        apsRequirement: 32,
-        description:
-          "Public and private sector administration, requiring English Level 4 with additional subject-level requirements",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-        ],
-        careerProspects: ["Administrator", "Government Official", "Manager"],
-      },
-      {
-        id: createDegreeId("Bachelor of Development Studies UMP"),
+        id: createDegreeId("Bachelor Development Studies UMP"),
         name: "Bachelor of Development Studies",
         faculty: "Development Studies & Business Sciences",
         duration: "3 years",
         apsRequirement: 32,
         description:
-          "Development studies with Mathematics, requiring English Level 4",
+          "Development theory and practice (32 APS with Math / 31 APS with Math Lit)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Development Specialist",
+          "Development Worker",
           "Project Manager",
-          "Policy Analyst",
-        ],
-      },
-      {
-        id: createDegreeId("Bachelor of Development Studies Math Lit UMP"),
-        name: "Bachelor of Development Studies - Math Lit",
-        faculty: "Development Studies & Business Sciences",
-        duration: "3 years",
-        apsRequirement: 31,
-        description:
-          "Development studies with Mathematical Literacy, requiring English Level 4",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematical Literacy", level: 4, isRequired: true },
-        ],
-        careerProspects: [
-          "Development Specialist",
-          "Project Manager",
-          "Policy Analyst",
+          "Social Development Officer",
         ],
       },
     ],
@@ -319,60 +236,40 @@ export const UMP_FACULTIES: Faculty[] = [
         duration: "4 years",
         apsRequirement: 26,
         description:
-          "Foundation phase teacher education with Mathematics, requiring appropriate subject combinations and English Level 4",
+          "Foundation phase teaching (26 APS with Math / 27 APS with Math Lit)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: false },
         ],
         careerProspects: [
           "Foundation Phase Teacher",
-          "Early Childhood Educator",
-        ],
-      },
-      {
-        id: createDegreeId("BEd Foundation Phase Teaching Math Lit UMP"),
-        name: "Bachelor of Education (Foundation Phase Teaching) - Math Lit",
-        faculty: "Education",
-        duration: "4 years",
-        apsRequirement: 27,
-        description:
-          "Foundation phase teacher education with Mathematical Literacy, requiring appropriate subject combinations and English Level 4",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematical Literacy", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: false },
-        ],
-        careerProspects: [
-          "Foundation Phase Teacher",
-          "Early Childhood Educator",
+          "Primary School Teacher",
+          "Educational Coordinator",
         ],
       },
     ],
   },
   {
-    id: createFacultyId("Faculty of ICT and Computing UMP"),
+    id: createFacultyId("Faculty of ICT Computing UMP"),
     name: "Faculty of ICT & Computing",
-    description: "Information and communication technology programs",
+    description: "Information technology and computing programs",
     degrees: [
       {
-        id: createDegreeId("Bachelor of ICT UMP"),
+        id: createDegreeId("Bachelor ICT UMP"),
         name: "Bachelor of Information & Communication Technology (ICT)",
         faculty: "ICT & Computing",
         duration: "3 years",
         apsRequirement: 32,
-        description:
-          "ICT program requiring English Level 4 and Math/Math Lit at Level 4",
+        description: "Information and communication technology",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Mathematical Literacy", level: 4, isRequired: false },
-          { name: "Information Technology", level: 4, isRequired: false },
+          { name: "Information Technology", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Software Developer",
           "IT Specialist",
-          "Systems Analyst",
+          "Software Developer",
+          "Systems Administrator",
         ],
       },
       {
@@ -381,18 +278,16 @@ export const UMP_FACULTIES: Faculty[] = [
         faculty: "ICT & Computing",
         duration: "3 years",
         apsRequirement: 24,
-        description:
-          "ICT applications development requiring English Level 4 and Math/Math Lit at Level 4",
+        description: "ICT with applications development specialization",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Mathematical Literacy", level: 4, isRequired: false },
-          { name: "Information Technology", level: 4, isRequired: false },
+          { name: "Information Technology", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Applications Developer",
-          "Software Programmer",
-          "Web Developer",
+          "Software Developer",
+          "Systems Analyst",
         ],
       },
       {
@@ -402,43 +297,23 @@ export const UMP_FACULTIES: Faculty[] = [
         duration: "1 year",
         apsRequirement: 20,
         description:
-          "ICT user support with Mathematics, requiring English Level 4 and Math/Math Lit at Level 4",
+          "ICT user support (20 APS with Math / 22 APS with Math Lit)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Information Technology", level: 3, isRequired: false },
         ],
         careerProspects: [
-          "IT Support Specialist",
-          "Help Desk Technician",
-          "Computer Technician",
-        ],
-      },
-      {
-        id: createDegreeId("Higher Certificate ICT User Support Math Lit UMP"),
-        name: "Higher Certificate in ICT (User Support) - Math Lit",
-        faculty: "ICT & Computing",
-        duration: "1 year",
-        apsRequirement: 22,
-        description:
-          "ICT user support with Mathematical Literacy, requiring English Level 4 and Math/Math Lit at Level 4",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematical Literacy", level: 4, isRequired: true },
-          { name: "Information Technology", level: 3, isRequired: false },
-        ],
-        careerProspects: [
-          "IT Support Specialist",
-          "Help Desk Technician",
+          "IT Support Technician",
+          "Help Desk Assistant",
           "Computer Technician",
         ],
       },
     ],
   },
   {
-    id: createFacultyId("Faculty of Hospitality and Tourism UMP"),
+    id: createFacultyId("Faculty of Hospitality Tourism UMP"),
     name: "Faculty of Hospitality & Tourism",
-    description: "Hospitality management and tourism programs",
+    description: "Hospitality and tourism management programs",
     degrees: [
       {
         id: createDegreeId("Diploma Hospitality Management UMP"),
@@ -446,29 +321,11 @@ export const UMP_FACULTIES: Faculty[] = [
         faculty: "Hospitality & Tourism",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Hospitality management with Mathematics",
+        description:
+          "Hospitality and hotel management (24 APS with Math / 25 APS with Math Lit)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Life Orientation", level: 3, isRequired: false },
-        ],
-        careerProspects: [
-          "Hotel Manager",
-          "Restaurant Manager",
-          "Event Coordinator",
-        ],
-      },
-      {
-        id: createDegreeId("Diploma Hospitality Management Math Lit UMP"),
-        name: "Diploma in Hospitality Management - Math Lit",
-        faculty: "Hospitality & Tourism",
-        duration: "3 years",
-        apsRequirement: 25,
-        description: "Hospitality management with Mathematical Literacy",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematical Literacy", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 3, isRequired: false },
+          { name: "Consumer Studies", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Hotel Manager",
@@ -482,34 +339,16 @@ export const UMP_FACULTIES: Faculty[] = [
         faculty: "Hospitality & Tourism",
         duration: "1 year",
         apsRequirement: 19,
-        description: "Event management with Mathematics",
+        description:
+          "Event management and coordination (19 APS with Math / 21 APS with Math Lit)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Life Orientation", level: 3, isRequired: false },
+          { name: "Consumer Studies", level: 3, isRequired: true },
         ],
         careerProspects: [
           "Event Coordinator",
-          "Wedding Planner",
-          "Conference Manager",
-        ],
-      },
-      {
-        id: createDegreeId("Higher Certificate Event Management Math Lit UMP"),
-        name: "Higher Certificate in Event Management - Math Lit",
-        faculty: "Hospitality & Tourism",
-        duration: "1 year",
-        apsRequirement: 21,
-        description: "Event management with Mathematical Literacy",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematical Literacy", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 3, isRequired: false },
-        ],
-        careerProspects: [
-          "Event Coordinator",
-          "Wedding Planner",
-          "Conference Manager",
+          "Event Assistant",
+          "Function Organizer",
         ],
       },
     ],

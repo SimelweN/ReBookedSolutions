@@ -1,12 +1,12 @@
 import { Faculty } from "@/types/university";
 import { createDegreeId, createFacultyId } from "./base";
 
-// Mangosuthu University of Technology (MUT) - Faculty Data - Complete Update
+// Mangosuthu University of Technology (MUT) - Faculty Data - Comprehensive Update
 export const MUT_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Engineering MUT"),
     name: "Faculty of Engineering",
-    description: "Engineering technology and applied sciences programs",
+    description: "Engineering and technical programs",
     degrees: [
       {
         id: createDegreeId("Diploma Civil Engineering MUT"),
@@ -15,16 +15,16 @@ export const MUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 20,
         description:
-          "Civil engineering diploma with 50% Maths & Physical Science",
+          "Civil engineering technology (APS ~20+, with 50% Maths & Physical Science)",
         subjects: [
-          { name: "English", level: 3, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Physical Sciences", level: 3, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Civil Engineering Technician",
-          "Construction Supervisor",
-          "Infrastructure Technician",
+          "Construction Manager",
+          "Project Coordinator",
         ],
       },
       {
@@ -34,16 +34,16 @@ export const MUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 20,
         description:
-          "Mechanical engineering diploma with subject-level requirements",
+          "Mechanical engineering technology (similar 20+ APS, with subject-level requirements)",
         subjects: [
-          { name: "English", level: 3, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Physical Sciences", level: 3, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Mechanical Engineering Technician",
           "Manufacturing Technologist",
-          "Maintenance Technician",
+          "Maintenance Engineer",
         ],
       },
       {
@@ -53,16 +53,16 @@ export const MUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 20,
         description:
-          "Electrical engineering diploma with subject-level requirements",
+          "Electrical engineering technology (similar 20+ APS, with subject-level requirements)",
         subjects: [
-          { name: "English", level: 3, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Physical Sciences", level: 3, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Electrical Engineering Technician",
-          "Power Systems Technician",
-          "Electronics Technician",
+          "Power Systems Technologist",
+          "Control Systems Specialist",
         ],
       },
       {
@@ -72,16 +72,16 @@ export const MUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 20,
         description:
-          "Chemical engineering diploma with subject-level requirements",
+          "Chemical engineering technology (similar 20+ APS, with subject-level requirements)",
         subjects: [
-          { name: "English", level: 3, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Physical Sciences", level: 3, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Chemical Engineering Technician",
-          "Process Technician",
-          "Quality Control Technician",
+          "Process Technologist",
+          "Quality Control Specialist",
         ],
       },
       {
@@ -89,13 +89,13 @@ export const MUT_FACULTIES: Faculty[] = [
         name: "Bachelor of Engineering Technology (BEngTech)",
         faculty: "Engineering",
         duration: "4 years",
-        apsRequirement: 25,
+        apsRequirement: 28,
         description:
-          "Engineering technology degree requiring strong 50%+ in Maths, Physics & English",
+          "Engineering technology degree (typically higher APS, require strong 50%+ in Maths, Physics & English)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Engineering Technologist",
@@ -108,7 +108,7 @@ export const MUT_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Management Sciences MUT"),
     name: "Faculty of Management Sciences",
-    description: "Business management and commercial programs",
+    description: "Management, business, and administrative programs",
     degrees: [
       {
         id: createDegreeId("Diploma Accounting MUT"),
@@ -117,13 +117,13 @@ export const MUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 25,
         description:
-          "Accounting and financial management with subject requirements in Maths or Maths Lit",
+          "Accounting and financial management (min 25 APS plus subject requirements in Maths or Maths Lit)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Mathematical Literacy", level: 4, isRequired: false },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Accounting", level: 4, isRequired: true },
         ],
-        careerProspects: ["Accountant", "Bookkeeper", "Financial Clerk"],
+        careerProspects: ["Accountant", "Bookkeeper", "Financial Assistant"],
       },
       {
         id: createDegreeId("Diploma Marketing MUT"),
@@ -132,16 +132,15 @@ export const MUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 25,
         description:
-          "Marketing and sales management with subject requirements in Maths or Maths Lit",
+          "Marketing and business promotion (min 25 APS plus subject requirements in Maths or Maths Lit)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Mathematical Literacy", level: 4, isRequired: false },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Marketing Coordinator",
-          "Sales Representative",
-          "Brand Assistant",
+          "Marketing Officer",
+          "Brand Manager",
+          "Digital Marketing Specialist",
         ],
       },
       {
@@ -151,35 +150,33 @@ export const MUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 25,
         description:
-          "Public management with subject requirements in Maths or Maths Lit",
+          "Public sector management (min 25 APS plus subject requirements in Maths or Maths Lit)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Mathematical Literacy", level: 4, isRequired: false },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Public Manager",
-          "Government Officer",
-          "Municipal Administrator",
+          "Government Official",
+          "Municipal Officer",
         ],
       },
       {
-        id: createDegreeId("Diploma HR MUT"),
+        id: createDegreeId("Diploma Human Resources MUT"),
         name: "Diploma in HR",
         faculty: "Management Sciences",
         duration: "3 years",
         apsRequirement: 25,
         description:
-          "Human resources management with subject requirements in Maths or Maths Lit",
+          "Human resources management (min 25 APS plus subject requirements in Maths or Maths Lit)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Mathematical Literacy", level: 4, isRequired: false },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "HR Assistant",
-          "Recruitment Coordinator",
-          "Training Officer",
+          "HR Officer",
+          "Recruitment Specialist",
+          "Training Coordinator",
         ],
       },
       {
@@ -189,11 +186,10 @@ export const MUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 25,
         description:
-          "Office management with subject requirements in Maths or Maths Lit",
+          "Office management and administration (min 25 APS plus subject requirements in Maths or Maths Lit)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Mathematical Literacy", level: 4, isRequired: false },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Office Manager",
@@ -206,12 +202,12 @@ export const MUT_FACULTIES: Faculty[] = [
         name: "Bachelor of Commerce in Accounting",
         faculty: "Management Sciences",
         duration: "3 years",
-        apsRequirement: 30,
+        apsRequirement: 25,
         description:
-          "Commerce with accounting specialization with baseline APS and departmental screening",
+          "Commerce with accounting specialization (similar baseline APS 25–30 plus departmental screening)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
           { name: "Accounting", level: 4, isRequired: true },
         ],
         careerProspects: ["Accountant", "Financial Manager", "Auditor"],
@@ -221,9 +217,9 @@ export const MUT_FACULTIES: Faculty[] = [
         name: "Bachelor of Commerce in Marketing",
         faculty: "Management Sciences",
         duration: "3 years",
-        apsRequirement: 30,
+        apsRequirement: 25,
         description:
-          "Commerce with marketing specialization with baseline APS and departmental screening",
+          "Commerce with marketing specialization (similar baseline APS 25–30 plus departmental screening)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -231,7 +227,7 @@ export const MUT_FACULTIES: Faculty[] = [
         careerProspects: [
           "Marketing Manager",
           "Brand Manager",
-          "Sales Manager",
+          "Digital Marketing Specialist",
         ],
       },
       {
@@ -239,9 +235,9 @@ export const MUT_FACULTIES: Faculty[] = [
         name: "Bachelor of Commerce in Public Administration",
         faculty: "Management Sciences",
         duration: "3 years",
-        apsRequirement: 30,
+        apsRequirement: 25,
         description:
-          "Commerce with public administration specialization with baseline APS and departmental screening",
+          "Commerce with public administration specialization (similar baseline APS 25–30 plus departmental screening)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -255,25 +251,22 @@ export const MUT_FACULTIES: Faculty[] = [
     ],
   },
   {
-    id: createFacultyId(
-      "Faculty of Natural Sciences Applied Health Sciences MUT",
-    ),
+    id: createFacultyId("Faculty of Natural Sciences MUT"),
     name: "Faculty of Natural Sciences (Applied & Health Sciences)",
-    description:
-      "Applied sciences, health sciences, and natural sciences programs",
+    description: "Science, health, and applied science programs",
     degrees: [
       {
         id: createDegreeId("Diploma Analytical Chemistry MUT"),
         name: "Diploma in Analytical Chemistry",
-        faculty: "Natural Sciences (Applied & Health Sciences)",
+        faculty: "Natural Sciences",
         duration: "3 years",
         apsRequirement: 23,
         description:
-          "Analytical chemistry with subject requirements in Maths, Life/Physical Sciences",
+          "Analytical chemistry (min APS 23+, plus subject requirements in Maths, Life/Physical Sciences)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Analytical Chemist",
@@ -284,107 +277,105 @@ export const MUT_FACULTIES: Faculty[] = [
       {
         id: createDegreeId("Diploma Agriculture MUT"),
         name: "Diploma in Agriculture",
-        faculty: "Natural Sciences (Applied & Health Sciences)",
+        faculty: "Natural Sciences",
         duration: "3 years",
         apsRequirement: 23,
         description:
-          "Agriculture with subject requirements in Maths, Life/Physical Sciences",
+          "Agriculture (min APS 23+, plus subject requirements in Maths, Life/Physical Sciences)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Agricultural Technician",
           "Farm Manager",
-          "Agricultural Consultant",
+          "Agricultural Advisor",
         ],
       },
       {
         id: createDegreeId("Diploma Environmental Health MUT"),
         name: "Diploma in Environmental Health",
-        faculty: "Natural Sciences (Applied & Health Sciences)",
+        faculty: "Natural Sciences",
         duration: "3 years",
         apsRequirement: 23,
         description:
-          "Environmental health with subject requirements in Maths, Life/Physical Sciences",
+          "Environmental health (min APS 23+, plus subject requirements in Maths, Life/Physical Sciences)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Environmental Health Officer",
-          "Public Health Inspector",
-          "Safety Officer",
+          "Health Inspector",
+          "Environmental Consultant",
         ],
       },
       {
         id: createDegreeId("Diploma Biomedical Technology MUT"),
         name: "Diploma in Biomedical Technology",
-        faculty: "Natural Sciences (Applied & Health Sciences)",
+        faculty: "Natural Sciences",
         duration: "3 years",
         apsRequirement: 23,
         description:
-          "Biomedical technology with subject requirements in Maths, Life/Physical Sciences",
+          "Biomedical technology (min APS 23+, plus subject requirements in Maths, Life/Physical Sciences)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
           { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Biomedical Technician",
+          "Biomedical Technologist",
           "Medical Equipment Technician",
-          "Laboratory Technician",
+          "Laboratory Assistant",
         ],
       },
       {
         id: createDegreeId("BSc Analytical Chemistry MUT"),
-        name: "Bachelor of Science (e.g., Analytical Chemistry)",
-        faculty: "Natural Sciences (Applied & Health Sciences)",
+        name: "Bachelor of Science (Analytical Chemistry)",
+        faculty: "Natural Sciences",
         duration: "3 years",
         apsRequirement: 30,
         description:
-          "Bachelor of Science with higher APS and 50%+ in relevant sciences & English",
+          "Science in analytical chemistry (around 30+, plus 50%+ in relevant sciences & English)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Physical Sciences", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
-          "Research Scientist",
           "Analytical Chemist",
-          "Quality Control Manager",
+          "Research Scientist",
+          "Quality Assurance Manager",
         ],
       },
       {
         id: createDegreeId("BSc Environmental Health MUT"),
-        name: "Bachelor of Science in Environmental Health",
-        faculty: "Natural Sciences (Applied & Health Sciences)",
+        name: "Bachelor of Science (Environmental Health)",
+        faculty: "Natural Sciences",
         duration: "3 years",
         apsRequirement: 30,
         description:
-          "Environmental health bachelor's degree with higher APS and 50%+ in relevant sciences & English",
+          "Science in environmental health (around 30+, plus 50%+ in relevant sciences & English)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
-          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
-          "Environmental Health Manager",
+          "Environmental Health Scientist",
           "Environmental Consultant",
-          "Public Health Specialist",
+          "Public Health Officer",
         ],
       },
     ],
   },
   {
-    id: createFacultyId("Hospitality and Tourism MUT"),
-    name: "Hospitality & Tourism",
-    description: "Hospitality management and tourism programs",
+    id: createFacultyId("Faculty of Hospitality Tourism MUT"),
+    name: "Faculty of Hospitality & Tourism",
+    description: "Hospitality and tourism programs",
     degrees: [
       {
         id: createDegreeId("Diploma Hospitality Management MUT"),
@@ -392,10 +383,10 @@ export const MUT_FACULTIES: Faculty[] = [
         faculty: "Hospitality & Tourism",
         duration: "3 years",
         apsRequirement: 22,
-        description: "Hospitality management with English Level 4",
+        description: "Hospitality management (APS ~22, with English Level 4)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Consumer Studies", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Hotel Manager",
@@ -404,16 +395,15 @@ export const MUT_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("Diploma Office Management 20 APS MUT"),
+        id: createDegreeId("Diploma Office Management MUT Tourism"),
         name: "Diploma in Office Management",
         faculty: "Hospitality & Tourism",
         duration: "3 years",
         apsRequirement: 20,
-        description: "Office management (20 APS with Maths Lit accepted)",
+        description: "Office management (20 APS, Maths Lit accepted)",
         subjects: [
-          { name: "English", level: 3, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Mathematical Literacy", level: 4, isRequired: false },
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematical Literacy", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Office Manager",
