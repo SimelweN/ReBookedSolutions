@@ -4,12 +4,13 @@ import { createDegreeId, createFacultyId } from "./base";
 // University of KwaZulu-Natal (UKZN) - Faculty Data
 export const UKZN_FACULTIES: Faculty[] = [
   {
-    id: createFacultyId("College of Agriculture Engineering and Science UKZN"),
+    id: createFacultyId("College of Agriculture Engineering Science UKZN"),
     name: "College of Agriculture, Engineering and Science",
-    description: "Engineering, agricultural, and science programs",
+    description: "Engineering, agriculture, and natural science programs",
     degrees: [
+      // Engineering
       {
-        id: createDegreeId("BSc Eng Agricultural UKZN"),
+        id: createDegreeId("B Sc Eng Agricultural UKZN"),
         name: "B Sc Eng: Agricultural",
         faculty: "Agriculture, Engineering and Science",
         duration: "4 years",
@@ -18,16 +19,16 @@ export const UKZN_FACULTIES: Faculty[] = [
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
         ],
         careerProspects: [
           "Agricultural Engineer",
-          "Irrigation Engineer",
-          "Farm Systems Engineer",
+          "Irrigation Specialist",
+          "Farm Technology Manager",
         ],
       },
       {
-        id: createDegreeId("BSc Eng Chemical UKZN"),
+        id: createDegreeId("B Sc Eng Chemical UKZN"),
         name: "B Sc Eng: Chemical",
         faculty: "Agriculture, Engineering and Science",
         duration: "4 years",
@@ -45,16 +46,16 @@ export const UKZN_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("BSc Eng Civil UKZN"),
+        id: createDegreeId("B Sc Eng Civil UKZN"),
         name: "B Sc Eng: Civil",
         faculty: "Agriculture, Engineering and Science",
         duration: "4 years",
         apsRequirement: 33,
-        description: "Infrastructure and construction engineering",
+        description: "Civil and structural engineering",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
         ],
         careerProspects: [
           "Civil Engineer",
@@ -63,16 +64,16 @@ export const UKZN_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("BSc Eng Computer UKZN"),
+        id: createDegreeId("B Sc Eng Computer UKZN"),
         name: "B Sc Eng: Computer",
         faculty: "Agriculture, Engineering and Science",
         duration: "4 years",
         apsRequirement: 33,
-        description: "Computer hardware and software engineering",
+        description: "Computer engineering and systems",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
         ],
         careerProspects: [
           "Computer Engineer",
@@ -81,7 +82,7 @@ export const UKZN_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("BSc Eng Electrical UKZN"),
+        id: createDegreeId("B Sc Eng Electrical UKZN"),
         name: "B Sc Eng: Electrical",
         faculty: "Agriculture, Engineering and Science",
         duration: "4 years",
@@ -99,7 +100,7 @@ export const UKZN_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("BSc Eng Electronic UKZN"),
+        id: createDegreeId("B Sc Eng Electronic UKZN"),
         name: "B Sc Eng: Electronic",
         faculty: "Agriculture, Engineering and Science",
         duration: "4 years",
@@ -113,11 +114,11 @@ export const UKZN_FACULTIES: Faculty[] = [
         careerProspects: [
           "Electronic Engineer",
           "Communications Engineer",
-          "Design Engineer",
+          "Telecommunications Specialist",
         ],
       },
       {
-        id: createDegreeId("BSc Eng Mechanical UKZN"),
+        id: createDegreeId("B Sc Eng Mechanical UKZN"),
         name: "B Sc Eng: Mechanical",
         faculty: "Agriculture, Engineering and Science",
         duration: "4 years",
@@ -135,30 +136,31 @@ export const UKZN_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("BSc Land Surveying UKZN"),
+        id: createDegreeId("B Sc Land Surveying UKZN"),
         name: "B Sc Land Surveying",
         faculty: "Agriculture, Engineering and Science",
-        duration: "3 years",
+        duration: "4 years",
         apsRequirement: 33,
         description: "Land surveying and geomatics",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Geography", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Land Surveyor",
           "Geomatics Specialist",
-          "Cadastral Surveyor",
+          "GIS Analyst",
         ],
       },
+      // Agriculture
       {
-        id: createDegreeId("BSc Agric Agricultural Economics UKZN"),
+        id: createDegreeId("B Sc Agric Agricultural Economics UKZN"),
         name: "B Sc Agric: Agricultural Economics",
         faculty: "Agriculture, Engineering and Science",
         duration: "4 years",
         apsRequirement: 28,
-        description: "Agricultural economics and agribusiness",
+        description: "Agricultural economics and farm management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -167,7 +169,7 @@ export const UKZN_FACULTIES: Faculty[] = [
         careerProspects: [
           "Agricultural Economist",
           "Farm Manager",
-          "Agribusiness Analyst",
+          "Agricultural Consultant",
         ],
       },
       {
@@ -176,20 +178,20 @@ export const UKZN_FACULTIES: Faculty[] = [
         faculty: "Agriculture, Engineering and Science",
         duration: "3 years",
         apsRequirement: 28,
-        description: "Agricultural management and farming systems",
+        description: "Agricultural management and administration",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Farm Manager",
-          "Agricultural Consultant",
-          "Production Manager",
+          "Agricultural Manager",
+          "Farm Supervisor",
+          "Agricultural Coordinator",
         ],
       },
       {
-        id: createDegreeId("BSc Agric Agricultural Plant Sciences UKZN"),
+        id: createDegreeId("B Sc Agric Agricultural Plant Sciences UKZN"),
         name: "B Sc Agric: Agricultural Plant Sciences",
         faculty: "Agriculture, Engineering and Science",
         duration: "4 years",
@@ -198,125 +200,119 @@ export const UKZN_FACULTIES: Faculty[] = [
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
         ],
-        careerProspects: [
-          "Plant Scientist",
-          "Crop Specialist",
-          "Agricultural Researcher",
-        ],
+        careerProspects: ["Plant Scientist", "Crop Specialist", "Agronomist"],
       },
       {
-        id: createDegreeId("BSc Agric Agribusiness Pathology UKZN"),
+        id: createDegreeId("B Sc Agric Agribusiness Pathology UKZN"),
         name: "B Sc Agric: Agribusiness Pathology",
         faculty: "Agriculture, Engineering and Science",
         duration: "4 years",
         apsRequirement: 28,
-        description: "Plant pathology and disease management",
+        description: "Agricultural business and plant pathology",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Plant Pathologist",
-          "Disease Specialist",
-          "Agricultural Advisor",
+          "Agricultural Consultant",
+          "Pest Management Specialist",
         ],
       },
       {
-        id: createDegreeId("BSc Agric Plant Pathology UKZN"),
+        id: createDegreeId("B Sc Agric Plant Pathology UKZN"),
         name: "B Sc Agric: Plant Pathology",
         faculty: "Agriculture, Engineering and Science",
         duration: "4 years",
         apsRequirement: 28,
-        description: "Plant diseases and pathology",
+        description: "Plant diseases and pest management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Plant Pathologist",
-          "Crop Protection Specialist",
+          "Pest Control Specialist",
           "Agricultural Researcher",
         ],
       },
       {
-        id: createDegreeId("BSc Agric Soil Science UKZN"),
+        id: createDegreeId("B Sc Agric Soil Science UKZN"),
         name: "B Sc Agric: Soil Science",
         faculty: "Agriculture, Engineering and Science",
         duration: "4 years",
         apsRequirement: 28,
-        description: "Soil science and fertility management",
+        description: "Soil chemistry and management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Soil Scientist",
-          "Fertility Specialist",
           "Environmental Consultant",
+          "Agricultural Researcher",
         ],
       },
       {
-        id: createDegreeId("BSc Agric Animal Poultry Science UKZN"),
+        id: createDegreeId("B Sc Agric Animal Poultry Science UKZN"),
         name: "B Sc Agric: Animal & Poultry Science",
         faculty: "Agriculture, Engineering and Science",
         duration: "4 years",
         apsRequirement: 28,
-        description: "Animal production and poultry science",
+        description: "Animal husbandry and poultry production",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Animal Scientist",
-          "Poultry Specialist",
           "Livestock Manager",
+          "Poultry Specialist",
         ],
       },
+      // Science
       {
-        id: createDegreeId("BSc Stream LES Life Earth Sciences UKZN"),
+        id: createDegreeId("B Sc Stream LES Life Earth Sciences UKZN"),
         name: "B Sc Stream (LES) Life and Earth Sciences",
         faculty: "Agriculture, Engineering and Science",
         duration: "3 years",
         apsRequirement: 30,
         description: "Life and earth sciences foundation",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
           { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Life Scientist",
-          "Earth Scientist",
-          "Research Assistant",
+          "Environmental Scientist",
+          "Research Scientist",
         ],
       },
       {
-        id: createDegreeId("BSc Stream M Mathematics UKZN"),
+        id: createDegreeId("B Sc Stream M Mathematics UKZN"),
         name: "B Sc Stream M (Mathematics)",
         faculty: "Agriculture, Engineering and Science",
         duration: "3 years",
         apsRequirement: 30,
-        description: "Mathematics and quantitative sciences",
+        description: "Mathematics and mathematical sciences",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 6, isRequired: true },
         ],
-        careerProspects: [
-          "Mathematician",
-          "Data Analyst",
-          "Mathematics Teacher",
-        ],
+        careerProspects: ["Mathematician", "Statistician", "Data Analyst"],
       },
       {
         id: createDegreeId(
-          "BSc Geographic Information Systems Earth Observation UKZN",
+          "B Sc Geographic Information Systems Earth Observation UKZN",
         ),
         name: "B Sc Geographic Information Systems and Earth Observation",
         faculty: "Agriculture, Engineering and Science",
@@ -324,18 +320,18 @@ export const UKZN_FACULTIES: Faculty[] = [
         apsRequirement: 30,
         description: "GIS and remote sensing technology",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
           { name: "Geography", level: 4, isRequired: true },
         ],
         careerProspects: [
           "GIS Specialist",
           "Remote Sensing Analyst",
-          "Spatial Data Scientist",
+          "Cartographer",
         ],
       },
       {
-        id: createDegreeId("BSc Applied Chemistry UKZN"),
+        id: createDegreeId("B Sc Applied Chemistry UKZN"),
         name: "B Sc Applied Chemistry",
         faculty: "Agriculture, Engineering and Science",
         duration: "3 years",
@@ -343,17 +339,17 @@ export const UKZN_FACULTIES: Faculty[] = [
         description: "Applied chemistry and chemical analysis",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
         ],
         careerProspects: [
-          "Analytical Chemist",
-          "Laboratory Analyst",
-          "Quality Control Officer",
+          "Applied Chemist",
+          "Quality Control Analyst",
+          "Chemical Technologist",
         ],
       },
       {
-        id: createDegreeId("BSc Chemistry Chemical Technology UKZN"),
+        id: createDegreeId("B Sc Chemistry Chemical Technology UKZN"),
         name: "B Sc Chemistry and Chemical Technology",
         faculty: "Agriculture, Engineering and Science",
         duration: "3 years",
@@ -361,24 +357,24 @@ export const UKZN_FACULTIES: Faculty[] = [
         description: "Chemistry and chemical technology applications",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
         ],
         careerProspects: [
+          "Chemist",
           "Chemical Technologist",
-          "Process Chemist",
-          "Research Scientist",
+          "Process Analyst",
         ],
       },
       {
-        id: createDegreeId("BSc Computer Science Information Technology UKZN"),
+        id: createDegreeId("B Sc Computer Science Information Technology UKZN"),
         name: "B Sc Computer Science and Information Technology",
         faculty: "Agriculture, Engineering and Science",
         duration: "3 years",
         apsRequirement: 30,
         description: "Computer science and IT applications",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
         ],
         careerProspects: [
@@ -388,7 +384,7 @@ export const UKZN_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("BSc Crop Horticultural Science UKZN"),
+        id: createDegreeId("B Sc Crop Horticultural Science UKZN"),
         name: "B Sc Crop and Horticultural Science",
         faculty: "Agriculture, Engineering and Science",
         duration: "3 years",
@@ -397,16 +393,16 @@ export const UKZN_FACULTIES: Faculty[] = [
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Horticulturist",
           "Crop Specialist",
-          "Garden Manager",
+          "Agricultural Technologist",
         ],
       },
       {
-        id: createDegreeId("BSc Environmental Science UKZN"),
+        id: createDegreeId("B Sc Environmental Science UKZN"),
         name: "B Sc Environmental Science",
         faculty: "Agriculture, Engineering and Science",
         duration: "3 years",
@@ -416,6 +412,7 @@ export const UKZN_FACULTIES: Faculty[] = [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Environmental Scientist",
@@ -424,25 +421,26 @@ export const UKZN_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("BSc Environmental Earth Science UKZN"),
+        id: createDegreeId("B Sc Environmental Earth Science UKZN"),
         name: "B Sc Environmental and Earth Science",
         faculty: "Agriculture, Engineering and Science",
         duration: "3 years",
         apsRequirement: 28,
-        description: "Environmental and earth sciences",
+        description: "Environmental and earth science studies",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
           { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Environmental Scientist",
           "Earth Scientist",
-          "Geological Consultant",
+          "Environmental Geologist",
+          "Climate Researcher",
         ],
       },
       {
-        id: createDegreeId("BSc Geological Science UKZN"),
+        id: createDegreeId("B Sc Geological Science UKZN"),
         name: "B Sc Geological Science",
         faculty: "Agriculture, Engineering and Science",
         duration: "3 years",
@@ -450,63 +448,63 @@ export const UKZN_FACULTIES: Faculty[] = [
         description: "Geological sciences and earth processes",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
         ],
-        careerProspects: ["Geologist", "Mining Geologist", "Earth Scientist"],
+        careerProspects: ["Geologist", "Mining Specialist", "Earth Scientist"],
       },
       {
-        id: createDegreeId("BSc Marine Biology UKZN"),
+        id: createDegreeId("B Sc Marine Biology UKZN"),
         name: "B Sc Marine Biology",
         faculty: "Agriculture, Engineering and Science",
         duration: "3 years",
         apsRequirement: 28,
-        description: "Marine biology and ocean sciences",
+        description: "Marine and aquatic biology",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Marine Biologist",
-          "Ocean Scientist",
-          "Aquatic Researcher",
+          "Aquaculture Specialist",
+          "Marine Researcher",
         ],
       },
       {
-        id: createDegreeId("BSc Augmented Programme UKZN"),
+        id: createDegreeId("B Sc Augmented Programme UKZN"),
         name: "B Sc Augmented Programme",
         faculty: "Agriculture, Engineering and Science",
         duration: "4 years",
         apsRequirement: 26,
-        description: "Extended science programme",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Physical Sciences", level: 3, isRequired: true },
-        ],
-        careerProspects: [
-          "Science Officer",
-          "Laboratory Technician",
-          "Research Assistant",
-        ],
-      },
-      {
-        id: createDegreeId("BSc Engineering Access UKZN"),
-        name: "B Sc Engineering Access",
-        faculty: "Agriculture, Engineering and Science",
-        duration: "4 years",
-        apsRequirement: 28,
-        description: "Engineering foundation and access programme",
+        description: "Extended science foundation program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
           { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
+          "Science Graduate",
+          "Research Assistant",
+          "Laboratory Technician",
+        ],
+      },
+      {
+        id: createDegreeId("B Sc Engineering Access UKZN"),
+        name: "B Sc Engineering Access",
+        faculty: "Agriculture, Engineering and Science",
+        duration: "4 years",
+        apsRequirement: 28,
+        description: "Engineering foundation and access program",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+        ],
+        careerProspects: [
           "Engineering Technician",
-          "Technical Officer",
-          "Engineering Assistant",
+          "Technical Assistant",
+          "Engineering Support",
         ],
       },
     ],
@@ -514,7 +512,7 @@ export const UKZN_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("College of Health Sciences UKZN"),
     name: "College of Health Sciences",
-    description: "Medical and health-related programs",
+    description: "Medical, health, and therapeutic programs",
     degrees: [
       {
         id: createDegreeId("Bachelor Audiology UKZN"),
@@ -524,8 +522,8 @@ export const UKZN_FACULTIES: Faculty[] = [
         apsRequirement: 30,
         description: "Hearing and auditory rehabilitation",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
@@ -543,7 +541,7 @@ export const UKZN_FACULTIES: Faculty[] = [
         description: "Speech and language therapy",
         subjects: [
           { name: "English", level: 5, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Speech Therapist",
@@ -557,16 +555,16 @@ export const UKZN_FACULTIES: Faculty[] = [
         faculty: "Health Sciences",
         duration: "3 years",
         apsRequirement: 30,
-        description: "Dental therapy and oral health care",
+        description: "Dental therapy and oral health",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Dental Therapist",
-          "Oral Health Practitioner",
-          "Community Dental Worker",
+          "Oral Health Educator",
+          "Dental Assistant",
         ],
       },
       {
@@ -577,14 +575,15 @@ export const UKZN_FACULTIES: Faculty[] = [
         apsRequirement: 30,
         description: "Human anatomy and medical sciences",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
           { name: "Life Sciences", level: 5, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Anatomist",
           "Medical Researcher",
-          "Science Educator",
+          "Laboratory Scientist",
         ],
       },
       {
@@ -595,14 +594,15 @@ export const UKZN_FACULTIES: Faculty[] = [
         apsRequirement: 30,
         description: "Human physiology and medical sciences",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
           { name: "Life Sciences", level: 5, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Physiologist",
           "Medical Researcher",
-          "Health Specialist",
+          "Clinical Scientist",
         ],
       },
       {
@@ -611,10 +611,10 @@ export const UKZN_FACULTIES: Faculty[] = [
         faculty: "Health Sciences",
         duration: "4 years",
         apsRequirement: 30,
-        description: "Occupational therapy practice",
+        description: "Occupational therapy and rehabilitation",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
@@ -629,17 +629,17 @@ export const UKZN_FACULTIES: Faculty[] = [
         faculty: "Health Sciences",
         duration: "4 years",
         apsRequirement: 33,
-        description: "Eye care and vision therapy",
+        description: "Optometric practice and eye care",
         subjects: [
           { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
           { name: "Life Sciences", level: 5, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Optometrist",
-          "Vision Therapist",
           "Eye Care Specialist",
+          "Contact Lens Practitioner",
         ],
       },
       {
@@ -648,15 +648,16 @@ export const UKZN_FACULTIES: Faculty[] = [
         faculty: "Health Sciences",
         duration: "3 years",
         apsRequirement: 30,
-        description: "Oral health and hygiene care",
+        description: "Oral hygiene and dental health",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Oral Hygienist",
-          "Dental Therapist",
-          "Oral Health Educator",
+          "Dental Health Educator",
+          "Preventive Dental Specialist",
         ],
       },
       {
@@ -669,7 +670,7 @@ export const UKZN_FACULTIES: Faculty[] = [
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 6, isRequired: true },
           { name: "Physical Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
@@ -686,9 +687,10 @@ export const UKZN_FACULTIES: Faculty[] = [
         apsRequirement: 30,
         description: "Physical therapy and rehabilitation",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Physiotherapist",
@@ -704,8 +706,8 @@ export const UKZN_FACULTIES: Faculty[] = [
         apsRequirement: 30,
         description: "Sports science and exercise physiology",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
@@ -722,9 +724,9 @@ export const UKZN_FACULTIES: Faculty[] = [
         apsRequirement: 30,
         description: "Professional nursing practice",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Professional Nurse",
@@ -737,8 +739,8 @@ export const UKZN_FACULTIES: Faculty[] = [
         name: "B Medicine & B Surgery",
         faculty: "Health Sciences",
         duration: "6 years",
-        apsRequirement: 40, // N/A - extremely competitive
-        description: "Medical practice and surgery (highly competitive)",
+        apsRequirement: 40, // N/A - special selection
+        description: "Medical practice and surgery",
         subjects: [
           { name: "English", level: 6, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
@@ -752,7 +754,7 @@ export const UKZN_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("College of Humanities UKZN"),
     name: "College of Humanities",
-    description: "Arts, education, and social sciences programs",
+    description: "Arts, education, and social science programs",
     degrees: [
       {
         id: createDegreeId("BEd Foundation Phase UKZN"),
@@ -767,7 +769,7 @@ export const UKZN_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Foundation Phase Teacher",
-          "Primary School Teacher",
+          "Early Childhood Educator",
           "Educational Specialist",
         ],
       },
@@ -811,7 +813,7 @@ export const UKZN_FACULTIES: Faculty[] = [
         faculty: "Humanities",
         duration: "3 years",
         apsRequirement: 28,
-        description: "General arts and humanities",
+        description: "General humanities and liberal arts",
         subjects: [{ name: "English", level: 4, isRequired: true }],
         careerProspects: [
           "Administrative Officer",
@@ -825,7 +827,7 @@ export const UKZN_FACULTIES: Faculty[] = [
         faculty: "Humanities",
         duration: "3 years",
         apsRequirement: 28,
-        description: "Music foundation and theory",
+        description: "Music studies foundation",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Music", level: 4, isRequired: true },
@@ -833,7 +835,7 @@ export const UKZN_FACULTIES: Faculty[] = [
         careerProspects: [
           "Music Teacher",
           "Music Therapist",
-          "Arts Administrator",
+          "Community Music Leader",
         ],
       },
       {
@@ -850,7 +852,7 @@ export const UKZN_FACULTIES: Faculty[] = [
         careerProspects: [
           "Social Researcher",
           "Community Worker",
-          "Administrative Officer",
+          "Social Services Officer",
         ],
       },
       {
@@ -862,12 +864,12 @@ export const UKZN_FACULTIES: Faculty[] = [
         description: "Housing and urban development",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Housing Officer",
           "Urban Planner",
-          "Development Coordinator",
+          "Development Specialist",
         ],
       },
       {
@@ -878,8 +880,8 @@ export const UKZN_FACULTIES: Faculty[] = [
         apsRequirement: 30,
         description: "Architectural design and planning",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
         ],
         careerProspects: ["Architect", "Design Consultant", "Urban Planner"],
       },
@@ -906,15 +908,15 @@ export const UKZN_FACULTIES: Faculty[] = [
         faculty: "Humanities",
         duration: "3 years",
         apsRequirement: 30,
-        description: "Interdisciplinary philosophy, politics, and law",
+        description: "Interdisciplinary philosophy, politics and law",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Policy Analyst",
-          "Legal Assistant",
-          "Political Researcher",
+          "Legal Researcher",
+          "Political Consultant",
         ],
       },
       {
@@ -925,13 +927,13 @@ export const UKZN_FACULTIES: Faculty[] = [
         apsRequirement: 30,
         description: "International relations and global studies",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "History", level: 4, isRequired: false },
+          { name: "English", level: 5, isRequired: true },
+          { name: "History", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Diplomat",
           "International Relations Officer",
-          "Policy Analyst",
+          "Political Analyst",
         ],
       },
       {
@@ -942,10 +944,10 @@ export const UKZN_FACULTIES: Faculty[] = [
         apsRequirement: 30,
         description: "Visual arts and creative expression",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Visual Arts", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Visual Arts", level: 5, isRequired: true },
         ],
-        careerProspects: ["Artist", "Art Teacher", "Gallery Curator"],
+        careerProspects: ["Visual Artist", "Art Teacher", "Gallery Curator"],
       },
       {
         id: createDegreeId("B Soc Sc Government Business Ethics UKZN"),
@@ -953,15 +955,15 @@ export const UKZN_FACULTIES: Faculty[] = [
         faculty: "Humanities",
         duration: "3 years",
         apsRequirement: 30,
-        description: "Government, business, and ethical studies",
+        description: "Government, business and ethical studies",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
           { name: "Life Orientation", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Government Officer",
+          "Government Official",
+          "Business Analyst",
           "Ethics Consultant",
-          "Policy Analyst",
         ],
       },
       {
@@ -970,12 +972,12 @@ export const UKZN_FACULTIES: Faculty[] = [
         faculty: "Humanities",
         duration: "3 years",
         apsRequirement: 28,
-        description: "Theological studies and ministry",
+        description: "Theological studies and ministry preparation",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 3, isRequired: true },
+          { name: "Life Orientation", level: 4, isRequired: true },
         ],
-        careerProspects: ["Minister", "Chaplain", "Religious Counselor"],
+        careerProspects: ["Minister", "Chaplain", "Religious Educator"],
       },
       {
         id: createDegreeId("Humanities Extended Curriculum UKZN"),
@@ -983,20 +985,20 @@ export const UKZN_FACULTIES: Faculty[] = [
         faculty: "Humanities",
         duration: "4 years",
         apsRequirement: 20,
-        description: "Extended humanities foundation programme",
+        description: "Extended humanities foundation program",
         subjects: [{ name: "English", level: 3, isRequired: true }],
         careerProspects: [
+          "Foundation Graduate",
           "Administrative Assistant",
           "Community Worker",
-          "Research Assistant",
         ],
       },
     ],
   },
   {
-    id: createFacultyId("College of Law and Management Studies UKZN"),
+    id: createFacultyId("College of Law Management Studies UKZN"),
     name: "College of Law and Management Studies",
-    description: "Law, business, and management programs",
+    description: "Legal, business, and management programs",
     degrees: [
       {
         id: createDegreeId("Bachelor Laws UKZN"),
@@ -1009,7 +1011,7 @@ export const UKZN_FACULTIES: Faculty[] = [
           { name: "English", level: 5, isRequired: true },
           { name: "Life Orientation", level: 4, isRequired: true },
         ],
-        careerProspects: ["Lawyer", "Attorney", "Legal Advisor"],
+        careerProspects: ["Lawyer", "Attorney", "Legal Consultant"],
       },
       {
         id: createDegreeId("Bachelor Laws part time UKZN"),
@@ -1022,7 +1024,7 @@ export const UKZN_FACULTIES: Faculty[] = [
           { name: "English", level: 5, isRequired: true },
           { name: "Life Orientation", level: 4, isRequired: true },
         ],
-        careerProspects: ["Lawyer", "Attorney", "Legal Advisor"],
+        careerProspects: ["Lawyer", "Attorney", "Legal Consultant"],
       },
       {
         id: createDegreeId("Bachelor Administration UKZN"),
@@ -1030,15 +1032,15 @@ export const UKZN_FACULTIES: Faculty[] = [
         faculty: "Law and Management Studies",
         duration: "3 years",
         apsRequirement: 28,
-        description: "Public administration and governance",
+        description: "Public and business administration",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Public Administrator",
-          "Government Official",
-          "Policy Officer",
+          "Administrator",
+          "Public Service Officer",
+          "Management Trainee",
         ],
       },
       {
@@ -1050,12 +1052,12 @@ export const UKZN_FACULTIES: Faculty[] = [
         description: "Business administration and management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Business Administrator",
           "Operations Manager",
-          "Management Trainee",
+          "Project Coordinator",
         ],
       },
       {
@@ -1064,7 +1066,7 @@ export const UKZN_FACULTIES: Faculty[] = [
         faculty: "Law and Management Studies",
         duration: "3 years",
         apsRequirement: 33,
-        description: "Finance and behavioral economics",
+        description: "Finance with behavioral economics",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
@@ -1072,7 +1074,7 @@ export const UKZN_FACULTIES: Faculty[] = [
         careerProspects: [
           "Financial Analyst",
           "Behavioral Economist",
-          "Investment Advisor",
+          "Investment Analyst",
         ],
       },
       {
@@ -1089,7 +1091,7 @@ export const UKZN_FACULTIES: Faculty[] = [
         careerProspects: [
           "Investment Analyst",
           "Portfolio Manager",
-          "Financial Advisor",
+          "Financial Planner",
         ],
       },
       {
@@ -1098,10 +1100,10 @@ export const UKZN_FACULTIES: Faculty[] = [
         faculty: "Law and Management Studies",
         duration: "3 years",
         apsRequirement: 30,
-        description: "General commerce and business",
+        description: "General commerce and business studies",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Business Analyst",
@@ -1117,9 +1119,9 @@ export const UKZN_FACULTIES: Faculty[] = [
         apsRequirement: 32,
         description: "Accounting and financial management",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Accounting", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Accounting", level: 5, isRequired: true },
         ],
         careerProspects: ["Accountant", "Financial Manager", "Auditor"],
       },
@@ -1129,10 +1131,10 @@ export const UKZN_FACULTIES: Faculty[] = [
         faculty: "Law and Management Studies",
         duration: "4 years",
         apsRequirement: 26,
-        description: "Extended commerce programme",
+        description: "Extended general commerce program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Business Analyst",
@@ -1146,13 +1148,13 @@ export const UKZN_FACULTIES: Faculty[] = [
         faculty: "Law and Management Studies",
         duration: "4 years",
         apsRequirement: 28,
-        description: "Extended accounting programme",
+        description: "Extended accounting program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Accounting", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Accounting", level: 4, isRequired: true },
         ],
-        careerProspects: ["Accountant", "Financial Manager", "Auditor"],
+        careerProspects: ["Accountant", "Financial Analyst", "Bookkeeper"],
       },
     ],
   },

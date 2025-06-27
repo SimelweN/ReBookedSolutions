@@ -6,67 +6,65 @@ export const SPU_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Education SPU"),
     name: "Faculty of Education",
-    description: "Teacher education and educational programs",
+    description: "Teacher education and educational development programs",
     degrees: [
       {
-        id: createDegreeId("BEd Foundation Phase SPU"),
+        id: createDegreeId("BEd Foundation Phase Grade R 3 SPU"),
         name: "Bachelor of Education (Foundation Phase, Grade R–3)",
         faculty: "Education",
         duration: "4 years",
         apsRequirement: 30,
-        description: "Teacher education for foundation phase (Grades R-3)",
+        description: "Foundation phase teaching for early childhood education",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: false },
         ],
         careerProspects: [
           "Foundation Phase Teacher",
           "Early Childhood Educator",
+          "Educational Specialist",
         ],
       },
       {
-        id: createDegreeId("BEd Intermediate Phase SPU"),
+        id: createDegreeId("BEd Intermediate Phase Grades 4 6 SPU"),
         name: "Bachelor of Education (Intermediate Phase, Grades 4–6)",
         faculty: "Education",
         duration: "4 years",
         apsRequirement: 30,
-        description: "Teacher education for intermediate phase (Grades 4-6)",
+        description: "Intermediate phase teaching for primary education",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: false },
         ],
         careerProspects: [
           "Intermediate Phase Teacher",
           "Primary School Teacher",
+          "Subject Specialist",
         ],
       },
       {
-        id: createDegreeId("BEd Senior FET Phase SPU"),
+        id: createDegreeId("BEd Senior FET Phase Grades 7 12 SPU"),
         name: "Bachelor of Education (Senior & FET Phase, Grades 7–12)",
         faculty: "Education",
         duration: "4 years",
         apsRequirement: 30,
-        description:
-          "Teacher education for senior phase (Grades 7-9) and FET (Grades 10-12)",
+        description: "Senior phase and FET teaching for secondary education",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: false },
         ],
         careerProspects: [
           "High School Teacher",
           "Subject Specialist",
-          "Education Coordinator",
+          "Educational Consultant",
         ],
       },
     ],
   },
   {
-    id: createFacultyId("Faculty of Natural and Applied Sciences SPU"),
+    id: createFacultyId("Faculty of Natural Applied Sciences SPU"),
     name: "Faculty of Natural & Applied Sciences",
-    description: "Science, technology, and applied sciences programs",
+    description: "Natural sciences, mathematics, and data science programs",
     degrees: [
       {
         id: createDegreeId("BSc SPU"),
@@ -74,16 +72,16 @@ export const SPU_FACULTIES: Faculty[] = [
         faculty: "Natural & Applied Sciences",
         duration: "3 years",
         apsRequirement: 30,
-        description: "General science degree with multiple specializations",
+        description: "General science foundation with various specializations",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
           { name: "Physical Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
-          "Research Scientist",
+          "Scientist",
+          "Research Assistant",
           "Laboratory Technician",
-          "Science Teacher",
         ],
       },
       {
@@ -92,11 +90,10 @@ export const SPU_FACULTIES: Faculty[] = [
         faculty: "Natural & Applied Sciences",
         duration: "3 years",
         apsRequirement: 30,
-        description: "Data science and analytics program",
+        description: "Data science and analytics",
         subjects: [
           { name: "English", level: 5, isRequired: true },
-          { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Information Technology", level: 4, isRequired: true },
+          { name: "Mathematics", level: 6, isRequired: true },
         ],
         careerProspects: [
           "Data Scientist",
@@ -107,9 +104,9 @@ export const SPU_FACULTIES: Faculty[] = [
     ],
   },
   {
-    id: createFacultyId("Faculty of Economic and Management Sciences SPU"),
+    id: createFacultyId("Faculty of Economic Management Sciences EMS SPU"),
     name: "Faculty of Economic & Management Sciences (EMS)",
-    description: "Business, economics, and management programs",
+    description: "Economics, business, and management programs",
     degrees: [
       {
         id: createDegreeId("BCom Accounting SPU"),
@@ -121,9 +118,9 @@ export const SPU_FACULTIES: Faculty[] = [
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: false },
+          { name: "Accounting", level: 4, isRequired: true },
         ],
-        careerProspects: ["Accountant", "Financial Analyst", "Auditor"],
+        careerProspects: ["Accountant", "Financial Manager", "Auditor"],
       },
       {
         id: createDegreeId("BCom Economics SPU"),
@@ -135,9 +132,8 @@ export const SPU_FACULTIES: Faculty[] = [
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: false },
         ],
-        careerProspects: ["Economist", "Policy Analyst", "Research Officer"],
+        careerProspects: ["Economist", "Economic Analyst", "Policy Researcher"],
       },
       {
         id: createDegreeId("Diploma Retail Business Management SPU"),
@@ -145,33 +141,33 @@ export const SPU_FACULTIES: Faculty[] = [
         faculty: "Economic & Management Sciences",
         duration: "3 years",
         apsRequirement: 25,
-        description: "Retail business and management",
+        description: "Retail management and business operations",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 3, isRequired: false },
         ],
-        careerProspects: ["Retail Manager", "Business Owner", "Sales Manager"],
+        careerProspects: ["Retail Manager", "Store Manager", "Merchandiser"],
       },
     ],
   },
   {
-    id: createFacultyId("Faculty of Humanities and Heritage Studies SPU"),
+    id: createFacultyId("Faculty of Humanities Heritage Studies SPU"),
     name: "Faculty of Humanities & Heritage Studies",
-    description: "Liberal arts, heritage, and social sciences programs",
+    description: "Humanities, heritage, and cultural studies programs",
     degrees: [
       {
-        id: createDegreeId("BA SPU"),
+        id: createDegreeId("Bachelor Arts BA SPU"),
         name: "Bachelor of Arts (BA)",
         faculty: "Humanities & Heritage Studies",
         duration: "3 years",
         apsRequirement: 30,
-        description: "Liberal arts foundation program",
-        subjects: [
-          { name: "English", level: 5, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: false },
+        description: "General arts and humanities",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "Administrative Officer",
+          "Communications Officer",
+          "Research Assistant",
         ],
-        careerProspects: ["Social Worker", "Researcher", "Community Developer"],
       },
       {
         id: createDegreeId("Higher Certificate Heritage Studies SPU"),
@@ -179,15 +175,15 @@ export const SPU_FACULTIES: Faculty[] = [
         faculty: "Humanities & Heritage Studies",
         duration: "1 year",
         apsRequirement: 25,
-        description: "Cultural heritage and museum studies",
+        description: "Heritage preservation and cultural studies",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 3, isRequired: false },
+          { name: "History", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Museum Assistant",
           "Heritage Officer",
-          "Cultural Consultant",
+          "Museum Assistant",
+          "Cultural Coordinator",
         ],
       },
       {
@@ -198,8 +194,8 @@ export const SPU_FACULTIES: Faculty[] = [
         apsRequirement: 25,
         description: "Court interpreting and legal translation",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Additional Language", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Home Language", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Court Interpreter",
@@ -212,24 +208,23 @@ export const SPU_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("School of ICT SPU"),
     name: "School of ICT",
-    description: "Information and Communication Technology programs",
+    description: "Information and communication technology programs",
     degrees: [
       {
         id: createDegreeId("Diploma ICT Applications Development SPU"),
         name: "Diploma in Information & Communication Technology (Applications Development)",
-        faculty: "School of ICT",
+        faculty: "ICT",
         duration: "3 years",
         apsRequirement: 25,
-        description: "Software development and applications programming",
+        description: "ICT applications development and programming",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Information Technology", level: 4, isRequired: false },
         ],
         careerProspects: [
           "Software Developer",
           "Applications Developer",
-          "Systems Analyst",
+          "IT Specialist",
         ],
       },
     ],
