@@ -1,11 +1,11 @@
 import { Faculty } from "@/types/university";
 import { createDegreeId, createFacultyId } from "./base";
 
-// University of Zululand (UNIZULU) - Faculty Data - Complete Update
+// University of Zululand (UNIZULU) - Faculty Data - Comprehensive Update
 export const UNIZULU_FACULTIES: Faculty[] = [
   {
-    id: createFacultyId("Faculty of Commerce Administration Law FCAL UNIZULU"),
-    name: "Faculty of Commerce, Administration & Law (FCAL)",
+    id: createFacultyId("Faculty of Commerce Administration Law UNIZULU"),
+    name: "Faculty of Commerce, Administration & Law",
     description: "Business, administration, and legal programs",
     degrees: [
       {
@@ -14,22 +14,21 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Commerce, Administration & Law",
         duration: "3 years",
         apsRequirement: 28,
-        description: "Accounting and financial management",
+        description: "General accounting and financial management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
           { name: "Accounting", level: 4, isRequired: true },
         ],
-        careerProspects: ["Accountant", "Financial Manager", "Auditor"],
+        careerProspects: ["Accountant", "Financial Analyst", "Bookkeeper"],
       },
       {
-        id: createDegreeId("BCom Accounting Science CTA Stream UNIZULU"),
+        id: createDegreeId("BCom Accounting Science CTA UNIZULU"),
         name: "Bachelor of Commerce in Accounting Science (CTA stream)",
         faculty: "Commerce, Administration & Law",
         duration: "3 years",
         apsRequirement: 28,
-        description:
-          "Professional accounting science leading to CTA qualification",
+        description: "Accounting science with CTA preparation",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
@@ -38,7 +37,7 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Chartered Accountant",
           "Financial Manager",
-          "Tax Consultant",
+          "Auditor",
         ],
       },
       {
@@ -47,15 +46,15 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Commerce, Administration & Law",
         duration: "4 years",
         apsRequirement: 26,
-        description: "Extended commerce program with foundational support",
+        description: "Extended commerce program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Business Analyst",
-          "Financial Officer",
-          "Management Trainee",
+          "Business Manager",
+          "Commercial Officer",
+          "Financial Assistant",
         ],
       },
       {
@@ -64,16 +63,13 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Commerce, Administration & Law",
         duration: "3 years",
         apsRequirement: 28,
-        description: "Business information systems and technology management",
+        description: "Management information systems and technology",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Information Technology", level: 4, isRequired: true },
         ],
-        careerProspects: [
-          "Systems Analyst",
-          "IT Manager",
-          "Information Systems Specialist",
-        ],
+        careerProspects: ["Systems Analyst", "IT Manager", "Business Analyst"],
       },
       {
         id: createDegreeId("Bachelor Administration UNIZULU"),
@@ -111,16 +107,16 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Commerce, Administration & Law",
         duration: "1 year",
         apsRequirement: 22,
-        description: "Foundational accounting qualification",
+        description: "Basic accounting qualification",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
           { name: "Accounting", level: 3, isRequired: true },
         ],
         careerProspects: [
           "Bookkeeper",
-          "Accounting Clerk",
-          "Finance Assistant",
+          "Accounting Assistant",
+          "Finance Clerk",
         ],
       },
     ],
@@ -163,7 +159,7 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Electrical Engineer",
           "Power Systems Engineer",
-          "Control Engineer",
+          "Control Systems Engineer",
         ],
       },
       {
@@ -172,11 +168,11 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Science, Agriculture & Engineering",
         duration: "3 years",
         apsRequirement: 28,
-        description: "General science with various specializations",
+        description: "General science qualification",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Scientist",
@@ -185,22 +181,35 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("BSc Agriculture Agronomy Animal Science UNIZULU"),
-        name: "Bachelor of Science in Agriculture (Agronomy / Animal Science)",
+        id: createDegreeId("BSc Agriculture Agronomy UNIZULU"),
+        name: "Bachelor of Science in Agriculture (Agronomy)",
         faculty: "Science, Agriculture & Engineering",
         duration: "4 years",
         apsRequirement: 28,
-        description:
-          "Agricultural sciences with agronomy or animal science specialization",
+        description: "Agricultural science with agronomy specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Agronomist", "Crop Specialist", "Farm Manager"],
+      },
+      {
+        id: createDegreeId("BSc Agriculture Animal Science UNIZULU"),
+        name: "Bachelor of Science in Agriculture (Animal Science)",
+        faculty: "Science, Agriculture & Engineering",
+        duration: "4 years",
+        apsRequirement: 28,
+        description: "Agricultural science with animal science specialization",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
           { name: "Life Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
-          "Agricultural Scientist",
-          "Farm Manager",
-          "Agricultural Consultant",
+          "Animal Scientist",
+          "Livestock Manager",
+          "Veterinary Technician",
         ],
       },
       {
@@ -209,7 +218,7 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Science, Agriculture & Engineering",
         duration: "4 years",
         apsRequirement: 28,
-        description: "Extended science program with foundational support",
+        description: "Foundational science program with additional support",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -227,7 +236,7 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Science, Agriculture & Engineering",
         duration: "4 years",
         apsRequirement: 26,
-        description: "Science education foundation program",
+        description: "Education with science foundation",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -235,8 +244,8 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Science Teacher",
-          "Educational Specialist",
-          "Science Educator",
+          "Mathematics Teacher",
+          "Educational Coordinator",
         ],
       },
       {
@@ -245,9 +254,9 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Science, Agriculture & Engineering",
         duration: "4 years",
         apsRequirement: 30,
-        description: "Professional nursing practice and healthcare",
+        description: "Professional nursing science",
         subjects: [
-          { name: "English", level: 5, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
           { name: "Life Sciences", level: 5, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
@@ -265,8 +274,7 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Science, Agriculture & Engineering",
         duration: "3 years",
         apsRequirement: 28,
-        description:
-          "Consumer science with extension and rural development focus",
+        description: "Consumer science with extension and rural development",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -275,7 +283,7 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Extension Officer",
           "Rural Development Specialist",
-          "Community Developer",
+          "Community Development Worker",
         ],
       },
       {
@@ -286,16 +294,16 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Science, Agriculture & Engineering",
         duration: "3 years",
         apsRequirement: 28,
-        description:
-          "Consumer science with hospitality and tourism specialization",
+        description: "Consumer science with hospitality and tourism",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+          { name: "Consumer Studies", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Hospitality Manager",
-          "Tourism Specialist",
-          "Event Coordinator",
+          "Tourism Coordinator",
+          "Event Manager",
         ],
       },
       {
@@ -304,16 +312,15 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Science, Agriculture & Engineering",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Sports science and exercise physiology",
+        description: "Sport and exercise science",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Sports Coach",
-          "Exercise Physiologist",
-          "Fitness Specialist",
+          "Exercise Specialist",
+          "Fitness Trainer",
         ],
       },
       {
@@ -325,7 +332,7 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         description: "Hospitality and hotel management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Consumer Studies", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Hotel Manager",
@@ -338,7 +345,7 @@ export const UNIZULU_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Education UNIZULU"),
     name: "Faculty of Education",
-    description: "Teacher education and educational development programs",
+    description: "Teacher education and educational programs",
     degrees: [
       {
         id: createDegreeId("BEd Foundation Phase Teaching UNIZULU"),
@@ -353,8 +360,8 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Foundation Phase Teacher",
-          "Early Childhood Educator",
-          "Educational Specialist",
+          "Primary School Teacher",
+          "Educational Coordinator",
         ],
       },
       {
@@ -363,7 +370,7 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Education",
         duration: "4 years",
         apsRequirement: 26,
-        description: "Intermediate phase language teaching",
+        description: "Intermediate phase language teaching (Grades 4-6)",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Home Language", level: 4, isRequired: true },
@@ -371,12 +378,12 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Language Teacher",
           "Intermediate Phase Teacher",
-          "Primary School Teacher",
+          "Literacy Coordinator",
         ],
       },
       {
         id: createDegreeId(
-          "BEd Intermediate Phase Languages Maths Natural Science Tech UNIZULU",
+          "BEd Intermediate Phase Languages Maths Science Tech UNIZULU",
         ),
         name: "Bachelor of Education (Intermediate Phase: Languages, Maths, Natural Science & Tech)",
         faculty: "Education",
@@ -386,12 +393,12 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Multi-subject Teacher",
-          "Primary School Teacher",
-          "Subject Specialist",
+          "Intermediate Phase Teacher",
+          "Mathematics Teacher",
+          "Science Teacher",
         ],
       },
       {
@@ -422,13 +429,12 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Physical Sciences", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Science Teacher",
-          "Mathematics Teacher",
           "Technology Teacher",
+          "Mathematics Teacher",
         ],
       },
       {
@@ -441,7 +447,7 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Accounting", level: 4, isRequired: false },
+          { name: "Accounting", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Business Studies Teacher",
@@ -462,12 +468,15 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Humanities & Social Sciences",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Public relations and communication management",
-        subjects: [{ name: "English", level: 4, isRequired: true }],
+        description: "Public relations and communications management",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Life Orientation", level: 4, isRequired: true },
+        ],
         careerProspects: [
-          "Public Relations Officer",
-          "Communications Manager",
-          "Media Coordinator",
+          "Public Relations Manager",
+          "Communications Specialist",
+          "Media Liaison",
         ],
       },
       {
@@ -476,9 +485,9 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Humanities & Social Sciences",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Media studies and communication",
-        subjects: [{ name: "English", level: 4, isRequired: true }],
-        careerProspects: ["Media Specialist", "Journalist", "Content Creator"],
+        description: "Media and communication studies",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: ["Media Analyst", "Journalist", "Content Creator"],
       },
       {
         id: createDegreeId("Diploma Tourism Management UNIZULU"),
@@ -489,9 +498,9 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         description: "Tourism management and hospitality",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
         ],
-        careerProspects: ["Tourism Manager", "Travel Agent", "Tour Guide"],
+        careerProspects: ["Tourism Manager", "Travel Consultant", "Tour Guide"],
       },
       {
         id: createDegreeId("BA Anthropology History UNIZULU"),
@@ -499,7 +508,7 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Humanities & Social Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Anthropology and historical studies",
+        description: "Arts with anthropology and history specialization",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "History", level: 4, isRequired: true },
@@ -512,12 +521,12 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Humanities & Social Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Linguistics and English language studies",
+        description: "Arts with linguistics and English specialization",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Home Language", level: 4, isRequired: true },
         ],
-        careerProspects: ["Linguist", "Language Teacher", "Editor"],
+        careerProspects: ["Linguist", "English Teacher", "Language Specialist"],
       },
       {
         id: createDegreeId("BA Geography History UNIZULU"),
@@ -525,7 +534,7 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Humanities & Social Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Geography and historical studies",
+        description: "Arts with geography and history specialization",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Geography", level: 4, isRequired: true },
@@ -539,15 +548,15 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Humanities & Social Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Geography with tourism specialization",
+        description: "Arts with geography and tourism specialization",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Geography", level: 4, isRequired: true },
+          { name: "Geography", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Tourism Geographer",
-          "Tourism Planner",
-          "Destination Manager",
+          "Destination Planner",
+          "Tourism Consultant",
         ],
       },
       {
@@ -556,16 +565,16 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Humanities & Social Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "History and IsiZulu language and culture",
+        description: "Arts with history and IsiZulu specialization",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "IsiZulu", level: 5, isRequired: true },
           { name: "History", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Historian",
-          "Language Teacher",
-          "Cultural Specialist",
+          "IsiZulu Teacher",
+          "Cultural Historian",
+          "Language Specialist",
         ],
       },
       {
@@ -574,7 +583,7 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Humanities & Social Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Philosophy and psychological studies",
+        description: "Arts with philosophy and psychology specialization",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
@@ -594,8 +603,8 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Correctional Officer",
-          "Rehabilitation Specialist",
-          "Criminal Justice Officer",
+          "Probation Officer",
+          "Criminal Justice Worker",
         ],
       },
       {
@@ -604,15 +613,15 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Humanities & Social Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Development studies and community development",
+        description: "Development theory and practice",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Development Officer",
-          "NGO Worker",
-          "Community Developer",
+          "Development Worker",
+          "Project Manager",
+          "Social Development Officer",
         ],
       },
       {
@@ -621,7 +630,7 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Humanities & Social Sciences",
         duration: "4 years",
         apsRequirement: 28,
-        description: "Social work practice and community development",
+        description: "Professional social work practice",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Orientation", level: 4, isRequired: true },
@@ -641,7 +650,7 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         description: "Environmental planning and sustainable development",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Geography", level: 4, isRequired: true },
+          { name: "Geography", level: 5, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
@@ -656,15 +665,15 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Humanities & Social Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Industrial sociology and labour relations",
+        description: "Industrial sociology and workplace relations",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Industrial Sociologist",
-          "Labour Relations Officer",
-          "HR Specialist",
+          "Labour Relations Specialist",
+          "Workplace Analyst",
         ],
       },
       {
@@ -673,15 +682,15 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Humanities & Social Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Intercultural communication and language studies",
+        description: "Cross-cultural communication and diversity",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Home Language", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Intercultural Specialist",
-          "Communications Officer",
-          "Language Consultant",
+          "Intercultural Consultant",
+          "Communications Specialist",
+          "Diversity Officer",
         ],
       },
       {
@@ -690,12 +699,12 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Humanities & Social Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Library and information science",
+        description: "Library and information management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
-        careerProspects: ["Librarian", "Information Scientist", "Archivist"],
+        careerProspects: ["Librarian", "Information Manager", "Archivist"],
       },
       {
         id: createDegreeId("Bachelor Psychology UNIZULU"),
@@ -703,7 +712,7 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Humanities & Social Sciences",
         duration: "3 years",
         apsRequirement: 28,
-        description: "Psychology studies and mental health",
+        description: "Psychology theory and practice",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
@@ -722,9 +731,9 @@ export const UNIZULU_FACULTIES: Faculty[] = [
           { name: "History", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Political Scientist",
-          "Diplomat",
+          "Political Analyst",
           "International Relations Officer",
+          "Diplomat",
         ],
       },
       {
@@ -733,15 +742,15 @@ export const UNIZULU_FACULTIES: Faculty[] = [
         faculty: "Humanities & Social Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Tourism studies and management",
+        description: "Tourism studies and destination management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Geography", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Tourism Manager",
+          "Tourism Specialist",
+          "Destination Manager",
           "Tourism Planner",
-          "Destination Marketing Specialist",
         ],
       },
     ],
