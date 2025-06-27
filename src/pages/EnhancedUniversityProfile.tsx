@@ -1072,7 +1072,7 @@ const EnhancedUniversityProfile: React.FC = React.memo(() => {
 
                                         return (
                                           <div
-                                            key={degree.id}
+                                            key={`${faculty.id}-${degree.id}-${degreeIndex}`}
                                             className={`p-3 lg:p-4 rounded-xl border-2 transition-all ${
                                               category === "eligible"
                                                 ? "bg-gradient-to-br from-green-50 to-green-100 border-green-200"
