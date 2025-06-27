@@ -77,7 +77,18 @@ export const supabase = createClient<Database>(
       // Add timeout to prevent hanging
       fetch: (url: RequestInfo | URL, options?: RequestInit) => {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        const timeoutId = setTimeout(() => {
+          controller.abort(new DOMException("Request timeout", "TimeoutError"));
+        }, 10000); // 10 second timeout
+
+        // Respect existing signal if provided
+        const originalSignal = options?.signal;
+        if (originalSignal) {
+          originalSignal.addEventListener("abort", () => {
+            clearTimeout(timeoutId);
+            controller.abort(originalSignal.reason);
+          });
+        }
 
         return fetch(url, {
           ...options,
