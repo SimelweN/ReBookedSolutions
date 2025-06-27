@@ -25,7 +25,6 @@ import {
 } from "./utils/databaseConnectivityHelper";
 import { preloadCriticalRoutes } from "./utils/routePreloader";
 import EmergencyBypass from "./components/EmergencyBypass";
-import SupabaseConnectivityTest from "./components/SupabaseTest";
 import "./App.css";
 
 // Initialize debug utilities in development
@@ -720,9 +719,6 @@ function App() {
 
             {/* Performance monitoring */}
             <PerformanceMetrics />
-
-            {/* Connectivity Test (Development Only) */}
-            {import.meta.env.DEV && <SupabaseConnectivityTest />}
 
             {/* Vercel Analytics and Speed Insights */}
             <Analytics />
