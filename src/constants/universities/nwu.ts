@@ -1,7 +1,7 @@
 import { Faculty } from "@/types/university";
 import { createDegreeId, createFacultyId } from "./base";
 
-// North-West University (NWU) - Faculty Data
+// North-West University (NWU) - Faculty Data - Comprehensive Update
 export const NWU_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Economic Management Sciences NWU"),
@@ -102,14 +102,14 @@ export const NWU_FACULTIES: Faculty[] = [
         apsRequirement: 36,
         description: "Forensic accounting and fraud investigation",
         subjects: [
-          { name: "English", level: 5, isRequired: true },
+          { name: "English", level: 6, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
           { name: "Accounting", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Forensic Accountant",
           "Fraud Investigator",
-          "Internal Auditor",
+          "Compliance Officer",
         ],
       },
       {
@@ -120,7 +120,7 @@ export const NWU_FACULTIES: Faculty[] = [
         apsRequirement: 30,
         description: "Management accounting and cost analysis",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
           { name: "Accounting", level: 5, isRequired: true },
         ],
@@ -136,7 +136,7 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Operations research and business optimization",
+        description: "Operations research and mathematical optimization",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
@@ -144,7 +144,7 @@ export const NWU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Operations Research Analyst",
           "Business Analyst",
-          "Data Scientist",
+          "Optimization Specialist",
         ],
       },
       {
@@ -175,11 +175,11 @@ export const NWU_FACULTIES: Faculty[] = [
       },
       {
         id: createDegreeId("BCom Business Operations Logistics NWU"),
-        name: "Bachelor of Commerce in Business Operations (with logistics management)",
+        name: "Bachelor of Commerce in Business Operations (with Logistics Management)",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Business operations with logistics specialization",
+        description: "Business operations and logistics management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -187,33 +187,33 @@ export const NWU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Logistics Manager",
           "Operations Manager",
-          "Supply Chain Manager",
+          "Supply Chain Coordinator",
         ],
       },
       {
         id: createDegreeId("BCom Business Operations Logistics Extended NWU"),
-        name: "Extended Bachelor of Commerce in Business Operations (with logistics management)",
+        name: "Extended Bachelor of Commerce in Business Operations (with Logistics Management)",
         faculty: "Economic and Management Sciences",
         duration: "4 years",
         apsRequirement: 20,
-        description: "Extended business operations with logistics",
+        description: "Extended business operations and logistics program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Logistics Manager",
           "Operations Manager",
-          "Supply Chain Manager",
+          "Supply Chain Coordinator",
         ],
       },
       {
-        id: createDegreeId("BCom Business Operations Transport Economics NWU"),
-        name: "Bachelor of Commerce in Business Operations (with transport economics)",
+        id: createDegreeId("BCom Business Operations Transport NWU"),
+        name: "Bachelor of Commerce in Business Operations (with Transport Economics)",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Business operations with transport economics focus",
+        description: "Business operations and transport economics",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -221,33 +221,30 @@ export const NWU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Transport Economist",
           "Operations Manager",
-          "Logistics Coordinator",
+          "Transport Planner",
         ],
       },
       {
-        id: createDegreeId(
-          "BCom Business Operations Transport Economics Extended NWU",
-        ),
-        name: "Extended Bachelor of Commerce in Business Operations (with transport economics)",
+        id: createDegreeId("BCom Business Operations Transport Extended NWU"),
+        name: "Extended Bachelor of Commerce in Business Operations (with Transport Economics)",
         faculty: "Economic and Management Sciences",
         duration: "4 years",
         apsRequirement: 20,
-        description: "Extended business operations with transport economics",
+        description:
+          "Extended business operations and transport economics program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Transport Economist",
           "Operations Manager",
-          "Logistics Coordinator",
+          "Transport Planner",
         ],
       },
       {
-        id: createDegreeId(
-          "BCom Economic Sciences Agricultural Economics Risk Management NWU",
-        ),
-        name: "Bachelor of Commerce in Economic Sciences (with agricultural economics and risk management)",
+        id: createDegreeId("BCom Economic Sciences Agricultural Economics NWU"),
+        name: "Bachelor of Commerce in Economic Sciences (with Agricultural Economics and Risk Management)",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 26,
@@ -259,13 +256,13 @@ export const NWU_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Agricultural Economist",
-          "Risk Analyst",
-          "Policy Researcher",
+          "Risk Manager",
+          "Economic Analyst",
         ],
       },
       {
         id: createDegreeId("BCom Economic Sciences Econometrics NWU"),
-        name: "Bachelor of Commerce in Economic Sciences (with econometrics)",
+        name: "Bachelor of Commerce in Economic Sciences (with Econometrics)",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 26,
@@ -277,16 +274,16 @@ export const NWU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Econometrician",
           "Economic Analyst",
-          "Quantitative Researcher",
+          "Statistical Economist",
         ],
       },
       {
         id: createDegreeId("BCom Economic Sciences Econometrics Extended NWU"),
-        name: "Extended Bachelor of Commerce in Economic Sciences (with econometrics)",
+        name: "Extended Bachelor of Commerce in Economic Sciences (with Econometrics)",
         faculty: "Economic and Management Sciences",
         duration: "4 years",
         apsRequirement: 20,
-        description: "Extended economic sciences with econometrics",
+        description: "Extended economic sciences with econometrics program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -294,12 +291,12 @@ export const NWU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Econometrician",
           "Economic Analyst",
-          "Quantitative Researcher",
+          "Statistical Economist",
         ],
       },
       {
         id: createDegreeId("BCom Economic Sciences International Trade NWU"),
-        name: "Bachelor of Commerce in Economic Sciences (with international trade)",
+        name: "Bachelor of Commerce in Economic Sciences (with International Trade)",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 26,
@@ -309,33 +306,34 @@ export const NWU_FACULTIES: Faculty[] = [
           { name: "Mathematics", level: 5, isRequired: true },
         ],
         careerProspects: [
-          "International Trade Specialist",
-          "Trade Analyst",
+          "International Trade Analyst",
           "Export Manager",
+          "Trade Economist",
         ],
       },
       {
         id: createDegreeId(
           "BCom Economic Sciences International Trade Extended NWU",
         ),
-        name: "Extended Bachelor of Commerce in Economic Sciences (with international trade)",
+        name: "Extended Bachelor of Commerce in Economic Sciences (with International Trade)",
         faculty: "Economic and Management Sciences",
         duration: "4 years",
         apsRequirement: 20,
-        description: "Extended economic sciences with international trade",
+        description:
+          "Extended economic sciences with international trade program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "International Trade Specialist",
-          "Trade Analyst",
+          "International Trade Analyst",
           "Export Manager",
+          "Trade Economist",
         ],
       },
       {
         id: createDegreeId("BCom Economic Sciences Informatics NWU"),
-        name: "Bachelor of Commerce in Economic Sciences (with informatics)",
+        name: "Bachelor of Commerce in Economic Sciences (with Informatics)",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 26,
@@ -343,7 +341,6 @@ export const NWU_FACULTIES: Faculty[] = [
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Information Technology", level: 4, isRequired: false },
         ],
         careerProspects: [
           "Economic Informatician",
@@ -353,72 +350,71 @@ export const NWU_FACULTIES: Faculty[] = [
       },
       {
         id: createDegreeId("BCom Economic Sciences Information Systems NWU"),
-        name: "Bachelor of Commerce in Economic Sciences (with information systems)",
+        name: "Bachelor of Commerce in Economic Sciences (with Information Systems)",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Economic sciences with information systems management",
+        description: "Economic sciences with information systems",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Information Technology", level: 4, isRequired: false },
         ],
         careerProspects: [
           "Information Systems Analyst",
           "Business Analyst",
-          "IT Manager",
+          "Systems Economist",
         ],
       },
       {
         id: createDegreeId(
           "BCom Economic Sciences Information Systems Extended NWU",
         ),
-        name: "Extended Bachelor of Commerce in Economic Sciences (with information systems)",
+        name: "Extended Bachelor of Commerce in Economic Sciences (with Information Systems)",
         faculty: "Economic and Management Sciences",
         duration: "4 years",
         apsRequirement: 20,
-        description: "Extended economic sciences with information systems",
+        description:
+          "Extended economic sciences with information systems program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Information Technology", level: 3, isRequired: false },
         ],
         careerProspects: [
           "Information Systems Analyst",
           "Business Analyst",
-          "IT Manager",
+          "Systems Economist",
         ],
       },
       {
         id: createDegreeId("BCom Economic Sciences Risk Management NWU"),
-        name: "Bachelor of Commerce in Economic Sciences (with risk management)",
+        name: "Bachelor of Commerce in Economic Sciences (with Risk Management)",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Economic sciences with risk management specialization",
+        description: "Economic sciences with risk management focus",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
         ],
-        careerProspects: ["Risk Manager", "Risk Analyst", "Compliance Officer"],
+        careerProspects: ["Risk Manager", "Risk Analyst", "Insurance Analyst"],
       },
       {
         id: createDegreeId(
           "BCom Economic Sciences Risk Management Extended NWU",
         ),
-        name: "Extended Bachelor of Commerce in Economic Sciences (with risk management)",
+        name: "Extended Bachelor of Commerce in Economic Sciences (with Risk Management)",
         faculty: "Economic and Management Sciences",
         duration: "4 years",
         apsRequirement: 24,
-        description: "Extended economic sciences with risk management",
+        description: "Extended economic sciences with risk management program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
-        careerProspects: ["Risk Manager", "Risk Analyst", "Compliance Officer"],
+        careerProspects: ["Risk Manager", "Risk Analyst", "Insurance Analyst"],
       },
       {
-        id: createDegreeId("BA Human Resource Management NWU"),
+        id: createDegreeId("BAdmin Human Resource Management NWU"),
         name: "Bachelor of Administration in Human Resource Management",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
@@ -435,7 +431,7 @@ export const NWU_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("BA Human Resource Management Extended NWU"),
+        id: createDegreeId("BAdmin Human Resource Management Extended NWU"),
         name: "Extended Bachelor of Administration in Human Resource Management",
         faculty: "Economic and Management Sciences",
         duration: "4 years",
@@ -443,7 +439,7 @@ export const NWU_FACULTIES: Faculty[] = [
         description: "Extended human resource management program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "HR Manager",
@@ -452,7 +448,7 @@ export const NWU_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("BA Industrial Organisational Psychology NWU"),
+        id: createDegreeId("BAdmin Industrial Organisational Psychology NWU"),
         name: "Bachelor of Administration in Industrial and Organisational Psychology",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
@@ -461,17 +457,16 @@ export const NWU_FACULTIES: Faculty[] = [
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: false },
         ],
         careerProspects: [
           "Industrial Psychologist",
-          "HR Specialist",
           "Organisational Consultant",
+          "HR Specialist",
         ],
       },
       {
         id: createDegreeId(
-          "BA Industrial Organisational Psychology Extended NWU",
+          "BAdmin Industrial Organisational Psychology Extended NWU",
         ),
         name: "Extended Bachelor of Administration in Industrial and Organisational Psychology",
         faculty: "Economic and Management Sciences",
@@ -481,33 +476,31 @@ export const NWU_FACULTIES: Faculty[] = [
           "Extended industrial and organisational psychology program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Life Sciences", level: 3, isRequired: false },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Industrial Psychologist",
-          "HR Specialist",
           "Organisational Consultant",
+          "HR Specialist",
         ],
       },
       {
         id: createDegreeId(
           "BA Industrial Organisational Psychology Labour Relations NWU",
         ),
-        name: "Bachelor of Arts (with industrial and organisational psychology and labour relations management)",
+        name: "Bachelor of Arts (with Industrial and Organisational Psychology and Labour Relations Management)",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Industrial psychology with labour relations management",
+        description: "Industrial psychology and labour relations",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: false },
         ],
         careerProspects: [
-          "Labour Relations Manager",
+          "Labour Relations Specialist",
           "Industrial Psychologist",
-          "HR Consultant",
+          "HR Manager",
         ],
       },
       {
@@ -518,13 +511,13 @@ export const NWU_FACULTIES: Faculty[] = [
         apsRequirement: 30,
         description: "Commerce with human resource management specialization",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
         ],
         careerProspects: [
           "HR Manager",
-          "Talent Acquisition Manager",
-          "Compensation Analyst",
+          "Personnel Manager",
+          "Talent Acquisition Specialist",
         ],
       },
       {
@@ -535,14 +528,13 @@ export const NWU_FACULTIES: Faculty[] = [
         apsRequirement: 30,
         description: "Commerce with industrial and organisational psychology",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: false },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Industrial Psychologist",
           "Organisational Development Specialist",
-          "HR Analytics Manager",
+          "Business Psychologist",
         ],
       },
       {
@@ -550,7 +542,7 @@ export const NWU_FACULTIES: Faculty[] = [
         name: "Bachelor of Human Resource Development",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
-        apsRequirement: 22,
+        apsRequirement: 21,
         description: "Human resource development (20-22 APS range)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
@@ -559,65 +551,67 @@ export const NWU_FACULTIES: Faculty[] = [
         careerProspects: [
           "HR Development Specialist",
           "Training Manager",
-          "Skills Development Coordinator",
+          "Organisational Development Consultant",
         ],
       },
       {
         id: createDegreeId("BA Tourism Management NWU"),
-        name: "Bachelor of Arts (with tourism management)",
+        name: "Bachelor of Arts (with Tourism Management)",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 22,
         description: "Tourism management and hospitality",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Geography", level: 3, isRequired: false },
+          { name: "Geography", level: 4, isRequired: true },
         ],
-        careerProspects: ["Tourism Manager", "Travel Agent", "Tour Guide"],
+        careerProspects: [
+          "Tourism Manager",
+          "Travel Consultant",
+          "Hospitality Manager",
+        ],
       },
       {
         id: createDegreeId("BCom Management Sciences Tourism Management NWU"),
-        name: "Bachelor of Commerce in Management Sciences (with tourism management)",
+        name: "Bachelor of Commerce in Management Sciences (with Tourism Management)",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Management sciences with tourism specialization",
+        description: "Management sciences with tourism management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Tourism Manager",
-          "Destination Marketing Manager",
+          "Hospitality Manager",
           "Event Manager",
         ],
       },
       {
-        id: createDegreeId(
-          "BCom Management Sciences Tourism Recreation Skills NWU",
-        ),
-        name: "Bachelor of Commerce in Management Sciences (with tourism and recreation skills)",
+        id: createDegreeId("BCom Management Sciences Tourism Recreation NWU"),
+        name: "Bachelor of Commerce in Management Sciences (with Tourism and Recreation Skills)",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Management sciences with tourism and recreation focus",
+        description: "Management sciences with tourism and recreation",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Recreation Manager",
-          "Tourism Coordinator",
-          "Leisure Services Manager",
+          "Tourism Operator",
+          "Event Coordinator",
         ],
       },
       {
         id: createDegreeId("BCom Management Sciences Business Management NWU"),
-        name: "Bachelor of Commerce in Management Sciences (with business management)",
+        name: "Bachelor of Commerce in Management Sciences (with Business Management)",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Management sciences with business management focus",
+        description: "Management sciences with business management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -632,14 +626,14 @@ export const NWU_FACULTIES: Faculty[] = [
         id: createDegreeId(
           "BCom Management Sciences Business Management Extended NWU",
         ),
-        name: "Extended Bachelor of Commerce in Management Sciences (with business management)",
+        name: "Extended Bachelor of Commerce in Management Sciences (with Business Management)",
         faculty: "Economic and Management Sciences",
         duration: "4 years",
         apsRequirement: 24,
         description: "Extended management sciences with business management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Business Manager",
@@ -651,7 +645,7 @@ export const NWU_FACULTIES: Faculty[] = [
         id: createDegreeId(
           "BCom Management Sciences Communication Management NWU",
         ),
-        name: "Bachelor of Commerce in Management Sciences (with communication management)",
+        name: "Bachelor of Commerce in Management Sciences (with Communication Management)",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 24,
@@ -663,12 +657,12 @@ export const NWU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Communications Manager",
           "Public Relations Manager",
-          "Marketing Communications Specialist",
+          "Marketing Manager",
         ],
       },
       {
         id: createDegreeId("BCom Management Sciences Marketing Management NWU"),
-        name: "Bachelor of Commerce in Management Sciences (with marketing management)",
+        name: "Bachelor of Commerce in Management Sciences (with Marketing Management)",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 24,
@@ -687,14 +681,14 @@ export const NWU_FACULTIES: Faculty[] = [
         id: createDegreeId(
           "BCom Management Sciences Marketing Management Extended NWU",
         ),
-        name: "Extended Bachelor of Commerce in Management Sciences (with marketing management)",
+        name: "Extended Bachelor of Commerce in Management Sciences (with Marketing Management)",
         faculty: "Economic and Management Sciences",
         duration: "4 years",
         apsRequirement: 20,
         description: "Extended management sciences with marketing management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Marketing Manager",
@@ -706,48 +700,48 @@ export const NWU_FACULTIES: Faculty[] = [
         id: createDegreeId(
           "BCom Management Sciences Sport Business Management NWU",
         ),
-        name: "Bachelor of Commerce in Management Sciences (with sport and business management)",
+        name: "Bachelor of Commerce in Management Sciences (with Sport and Business Management)",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Management sciences with sport and business focus",
+        description: "Management sciences with sport and business management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: false },
         ],
         careerProspects: [
-          "Sports Manager",
+          "Sport Manager",
           "Event Manager",
-          "Sports Marketing Manager",
+          "Recreation Manager",
         ],
       },
       {
         id: createDegreeId("BCom Management Sciences Safety Management NWU"),
-        name: "Bachelor of Commerce in Management Sciences (with safety management)",
+        name: "Bachelor of Commerce in Management Sciences (with Safety Management)",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Management sciences with safety management focus",
+        description: "Management sciences with safety management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Safety Manager",
+          "Health and Safety Officer",
           "Risk Assessment Specialist",
-          "Occupational Health Manager",
         ],
       },
       {
         id: createDegreeId(
           "BCom Management Sciences Marketing Tourism Management NWU",
         ),
-        name: "Bachelor of Commerce in Management Sciences (with marketing & tourism management)",
+        name: "Bachelor of Commerce in Management Sciences (with Marketing & Tourism Management)",
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Management sciences with marketing and tourism focus",
+        description:
+          "Management sciences with marketing and tourism management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -755,7 +749,7 @@ export const NWU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Tourism Marketing Manager",
           "Destination Manager",
-          "Event Marketing Specialist",
+          "Hospitality Marketing Specialist",
         ],
       },
     ],
@@ -763,7 +757,7 @@ export const NWU_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Education NWU"),
     name: "Faculty of Education",
-    description: "Teacher education and educational development programs",
+    description: "Teacher education and educational programs",
     degrees: [
       {
         id: createDegreeId("BEd Early Childhood Care Education NWU"),
@@ -771,15 +765,15 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Education",
         duration: "4 years",
         apsRequirement: 26,
-        description: "Early childhood care and education",
+        description: "Early childhood development and education",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Early Childhood Educator",
-          "Pre-school Teacher",
-          "Childcare Manager",
+          "Early Childhood Teacher",
+          "Pre-school Manager",
+          "Child Development Specialist",
         ],
       },
       {
@@ -796,7 +790,7 @@ export const NWU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Foundation Phase Teacher",
           "Primary School Teacher",
-          "Educational Specialist",
+          "Educational Coordinator",
         ],
       },
       {
@@ -822,15 +816,15 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Education",
         duration: "4 years",
         apsRequirement: 26,
-        description: "Senior phase and further education teaching",
+        description: "Senior and further education teaching (Grades 7-12)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "High School Teacher",
-          "Further Education Lecturer",
           "Subject Specialist",
+          "Educational Manager",
         ],
       },
     ],
@@ -838,15 +832,15 @@ export const NWU_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Engineering NWU"),
     name: "Faculty of Engineering",
-    description: "Engineering and technology programs",
+    description: "Engineering and technical programs",
     degrees: [
       {
-        id: createDegreeId("BEng Chemical Engineering NWU"),
+        id: createDegreeId("BEng Chemical NWU"),
         name: "Bachelor of Engineering (Chemical)",
         faculty: "Engineering",
         duration: "4 years",
         apsRequirement: 34,
-        description: "Chemical engineering",
+        description: "Chemical engineering and process design",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
@@ -855,16 +849,16 @@ export const NWU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Chemical Engineer",
           "Process Engineer",
-          "Production Manager",
+          "Plant Manager",
         ],
       },
       {
-        id: createDegreeId("BEng Electrical Engineering NWU"),
+        id: createDegreeId("BEng Electrical NWU"),
         name: "Bachelor of Engineering (Electrical)",
         faculty: "Engineering",
         duration: "4 years",
         apsRequirement: 34,
-        description: "Electrical engineering",
+        description: "Electrical engineering and power systems",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
@@ -873,11 +867,11 @@ export const NWU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Electrical Engineer",
           "Power Systems Engineer",
-          "Control Engineer",
+          "Control Systems Engineer",
         ],
       },
       {
-        id: createDegreeId("BEng Computer Electronic Engineering NWU"),
+        id: createDegreeId("BEng Computer Electronic NWU"),
         name: "Bachelor of Engineering (Computer & Electronic)",
         faculty: "Engineering",
         duration: "4 years",
@@ -891,16 +885,16 @@ export const NWU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Computer Engineer",
           "Electronics Engineer",
-          "Software Engineer",
+          "Systems Engineer",
         ],
       },
       {
-        id: createDegreeId("BEng Electromechanical Engineering NWU"),
+        id: createDegreeId("BEng Electromechanical NWU"),
         name: "Bachelor of Engineering (Electromechanical)",
         faculty: "Engineering",
         duration: "4 years",
         apsRequirement: 34,
-        description: "Electromechanical engineering",
+        description: "Electromechanical engineering systems",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
@@ -909,16 +903,16 @@ export const NWU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Electromechanical Engineer",
           "Automation Engineer",
-          "Robotics Engineer",
+          "Manufacturing Engineer",
         ],
       },
       {
-        id: createDegreeId("BEng Mechanical Engineering NWU"),
+        id: createDegreeId("BEng Mechanical NWU"),
         name: "Bachelor of Engineering (Mechanical)",
         faculty: "Engineering",
         duration: "4 years",
         apsRequirement: 34,
-        description: "Mechanical engineering",
+        description: "Mechanical engineering and design",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
@@ -931,12 +925,12 @@ export const NWU_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("BEng Industrial Engineering NWU"),
+        id: createDegreeId("BEng Industrial NWU"),
         name: "Bachelor of Engineering (Industrial)",
         faculty: "Engineering",
         duration: "4 years",
         apsRequirement: 34,
-        description: "Industrial engineering",
+        description: "Industrial engineering and optimization",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
@@ -949,12 +943,12 @@ export const NWU_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("BEng Mechatronic Engineering NWU"),
+        id: createDegreeId("BEng Mechatronic NWU"),
         name: "Bachelor of Engineering (Mechatronic)",
         faculty: "Engineering",
         duration: "4 years",
         apsRequirement: 34,
-        description: "Mechatronic engineering",
+        description: "Mechatronic engineering and robotics",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
@@ -962,8 +956,8 @@ export const NWU_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Mechatronic Engineer",
-          "Automation Engineer",
-          "Systems Engineer",
+          "Robotics Engineer",
+          "Automation Specialist",
         ],
       },
     ],
@@ -971,7 +965,7 @@ export const NWU_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Health Sciences NWU"),
     name: "Faculty of Health Sciences",
-    description: "Health sciences and medical programs",
+    description: "Health, medical, and therapeutic programs",
     degrees: [
       {
         id: createDegreeId("Diploma Coaching Science NWU"),
@@ -979,24 +973,24 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Health Sciences",
         duration: "3 years",
         apsRequirement: 18,
-        description: "Coaching science and sports performance",
+        description: "Sports coaching and exercise science",
         subjects: [
-          { name: "English", level: 3, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 3, isRequired: true },
         ],
         careerProspects: [
           "Sports Coach",
           "Fitness Trainer",
-          "Sports Scientist",
+          "Sports Development Officer",
         ],
       },
       {
-        id: createDegreeId("BHealthSci Physiology Biochemistry NWU"),
-        name: "Bachelor of Health Sciences (with physiology and biochemistry)",
+        id: createDegreeId("BHSc Physiology Biochemistry NWU"),
+        name: "Bachelor of Health Sciences (with Physiology and Biochemistry)",
         faculty: "Health Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Health sciences with physiology and biochemistry focus",
+        description: "Health sciences with physiology and biochemistry",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -1006,16 +1000,16 @@ export const NWU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Health Scientist",
           "Research Assistant",
-          "Medical Technologist",
+          "Laboratory Technician",
         ],
       },
       {
-        id: createDegreeId("BHealthSci Physiology Psychology NWU"),
-        name: "Bachelor of Health Sciences (with physiology and psychology)",
+        id: createDegreeId("BHSc Physiology Psychology NWU"),
+        name: "Bachelor of Health Sciences (with Physiology and Psychology)",
         faculty: "Health Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Health sciences with physiology and psychology focus",
+        description: "Health sciences with physiology and psychology",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -1024,12 +1018,12 @@ export const NWU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Health Psychologist",
           "Research Assistant",
-          "Health Promotion Officer",
+          "Health Educator",
         ],
       },
       {
-        id: createDegreeId("BHealthSci Sport Coaching Human Movement NWU"),
-        name: "Bachelor of Health Sciences (with sport coaching and human movement sciences)",
+        id: createDegreeId("BHSc Sport Coaching Human Movement NWU"),
+        name: "Bachelor of Health Sciences (with Sport Coaching and Human Movement Sciences)",
         faculty: "Health Sciences",
         duration: "3 years",
         apsRequirement: 24,
@@ -1037,17 +1031,16 @@ export const NWU_FACULTIES: Faculty[] = [
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Sports Coach",
-          "Movement Scientist",
+          "Sports Scientist",
           "Exercise Physiologist",
+          "Movement Analyst",
         ],
       },
       {
-        id: createDegreeId("BHealthSci Recreation Sciences Psychology NWU"),
-        name: "Bachelor of Health Sciences (with recreation sciences and psychology)",
+        id: createDegreeId("BHSc Recreation Sciences Psychology NWU"),
+        name: "Bachelor of Health Sciences (with Recreation Sciences and Psychology)",
         faculty: "Health Sciences",
         duration: "3 years",
         apsRequirement: 26,
@@ -1055,59 +1048,52 @@ export const NWU_FACULTIES: Faculty[] = [
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Recreation Therapist",
-          "Health Psychologist",
+          "Sports Psychologist",
           "Community Health Worker",
         ],
       },
       {
-        id: createDegreeId(
-          "BHealthSci Recreation Science Tourism Management Sport Administration NWU",
-        ),
-        name: "Bachelor of Health Sciences (with recreation science and tourism management, with sport and recreation administration)",
+        id: createDegreeId("BHSc Recreation Science Tourism Management NWU"),
+        name: "Bachelor of Health Sciences (with Recreation Science and Tourism Management, with Sport and Recreation Administration)",
         faculty: "Health Sciences",
         duration: "3 years",
         apsRequirement: 24,
-        description:
-          "Health sciences with recreation, tourism and sport administration",
+        description: "Health sciences with recreation and tourism management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Recreation Manager",
+          "Tourism Health Coordinator",
           "Sports Administrator",
-          "Tourism Officer",
         ],
       },
       {
-        id: createDegreeId(
-          "BA Behavioural Sciences Psychology Geography Tourism NWU",
-        ),
-        name: "Bachelor of Arts in Behavioural Sciences (with psychology and geography and environmental management, with psychology and tourism management)",
+        id: createDegreeId("BA Behavioural Sciences Psychology Geography NWU"),
+        name: "Bachelor of Arts in Behavioural Sciences (with Psychology and Geography and Environmental Management, with Psychology and Tourism Management)",
         faculty: "Health Sciences",
         duration: "3 years",
         apsRequirement: 26,
         description:
-          "Behavioural sciences with psychology and geography or tourism",
+          "Behavioural sciences with psychology and environmental/tourism focus",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
-          { name: "Geography", level: 4, isRequired: false },
+          { name: "Geography", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Behavioural Scientist",
           "Environmental Psychologist",
           "Tourism Psychologist",
+          "Behavioural Consultant",
         ],
       },
       {
-        id: createDegreeId("BSocSci Psychology NWU"),
-        name: "Bachelor of Social Sciences (with psychology)",
+        id: createDegreeId("BSocSc Psychology NWU"),
+        name: "Bachelor of Social Sciences (with Psychology)",
         faculty: "Health Sciences",
         duration: "3 years",
         apsRequirement: 26,
@@ -1117,9 +1103,9 @@ export const NWU_FACULTIES: Faculty[] = [
           { name: "Life Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Social Psychologist",
+          "Psychologist",
+          "Social Researcher",
           "Community Psychologist",
-          "Research Assistant",
         ],
       },
       {
@@ -1128,49 +1114,45 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Health Sciences",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Consumer studies and family science",
+        description: "Consumer behaviour and market research",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Consumer Scientist",
-          "Family Life Educator",
-          "Consumer Advisor",
+          "Consumer Researcher",
+          "Market Analyst",
+          "Product Development Specialist",
         ],
       },
       {
-        id: createDegreeId(
-          "Bachelor Consumer Studies Food Production Management NWU",
-        ),
-        name: "Bachelor of Consumer Studies (in food production management)",
+        id: createDegreeId("Bachelor Consumer Studies Food Production NWU"),
+        name: "Bachelor of Consumer Studies (in Food Production Management)",
         faculty: "Health Sciences",
         duration: "3 years",
         apsRequirement: 24,
         description: "Consumer studies with food production management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Food Production Manager",
-          "Food Safety Officer",
-          "Nutrition Consultant",
+          "Quality Control Manager",
+          "Food Safety Specialist",
         ],
       },
       {
-        id: createDegreeId(
-          "Bachelor Consumer Studies Fashion Retail Management NWU",
-        ),
-        name: "Bachelor of Consumer Studies (in fashion retail management)",
+        id: createDegreeId("Bachelor Consumer Studies Fashion Retail NWU"),
+        name: "Bachelor of Consumer Studies (in Fashion Retail Management)",
         faculty: "Health Sciences",
         duration: "3 years",
         apsRequirement: 24,
         description: "Consumer studies with fashion retail management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Fashion Retail Manager",
@@ -1201,7 +1183,7 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Health Sciences",
         duration: "4 years",
         apsRequirement: 32,
-        description: "Professional pharmacy practice",
+        description: "Pharmaceutical sciences and practice",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
@@ -1223,19 +1205,19 @@ export const NWU_FACULTIES: Faculty[] = [
         description: "Nutrition and dietetic practice",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
           { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
           { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: ["Dietitian", "Nutritionist", "Food Service Manager"],
       },
       {
-        id: createDegreeId("BHealthSci Occupational Hygiene NWU"),
+        id: createDegreeId("BHSc Occupational Hygiene NWU"),
         name: "Bachelor of Health Science in Occupational Hygiene",
         faculty: "Health Sciences",
-        duration: "4 years",
+        duration: "3 years",
         apsRequirement: 27,
-        description: "Occupational health and hygiene",
+        description: "Occupational health and safety",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -1243,27 +1225,27 @@ export const NWU_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Occupational Hygienist",
-          "Safety Officer",
-          "Environmental Health Officer",
+          "Health and Safety Officer",
+          "Environmental Health Specialist",
         ],
       },
       {
-        id: createDegreeId("BHealthSci Biokinetics NWU"),
+        id: createDegreeId("BHSc Biokinetics NWU"),
         name: "Bachelor of Health Science in Biokinetics",
         faculty: "Health Sciences",
         duration: "4 years",
         apsRequirement: 32,
-        description: "Biokinetics and exercise science",
+        description: "Exercise therapy and rehabilitation",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
           { name: "Life Sciences", level: 5, isRequired: true },
           { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Biokineticist",
-          "Exercise Physiologist",
-          "Sports Scientist",
+          "Exercise Therapist",
+          "Rehabilitation Specialist",
         ],
       },
       {
@@ -1275,8 +1257,8 @@ export const NWU_FACULTIES: Faculty[] = [
         description: "Professional nursing practice",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Professional Nurse",
@@ -1289,23 +1271,103 @@ export const NWU_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Humanities NWU"),
     name: "Faculty of Humanities",
-    description: "Humanities, arts, and social science programs",
+    description: "Arts, languages, and social science programs",
     degrees: [
       {
         id: createDegreeId("BA Public Governance Public Administration NWU"),
-        name: "Bachelor of Arts (BA) in Public Governance (with Public Administration, Politics and Public Administration, Public Administration and Social Studies, Public Administration and Geography, Public Administration and Labour Relations Management)",
+        name: "Bachelor of Arts (BA) in Public Governance (with Public Administration)",
         faculty: "Humanities",
         duration: "3 years",
         apsRequirement: 25,
-        description: "Public governance with various specializations",
+        description: "Public governance and administration",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Public Administrator",
           "Government Official",
           "Policy Analyst",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "BA Public Governance Politics Public Administration NWU",
+        ),
+        name: "Bachelor of Arts (BA) in Public Governance (with Politics and Public Administration)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 25,
+        description:
+          "Public governance with politics and public administration",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "History", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Political Administrator",
+          "Policy Advisor",
+          "Government Relations Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "BA Public Governance Public Administration Social Studies NWU",
+        ),
+        name: "Bachelor of Arts (BA) in Public Governance (with Public Administration and Social Studies)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 25,
+        description:
+          "Public governance with public administration and social studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "History", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Social Policy Analyst",
+          "Community Development Officer",
+          "Public Service Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "BA Public Governance Public Administration Geography NWU",
+        ),
+        name: "Bachelor of Arts (BA) in Public Governance (with Public Administration and Geography)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 25,
+        description:
+          "Public governance with public administration and geography",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Regional Planner",
+          "Geographic Information Systems Analyst",
+          "Urban Development Officer",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "BA Public Governance Public Administration Labour Relations NWU",
+        ),
+        name: "Bachelor of Arts (BA) in Public Governance (with Public Administration and Labour Relations Management)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 25,
+        description:
+          "Public governance with public administration and labour relations",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Labour Relations Officer",
+          "Industrial Relations Specialist",
+          "HR Policy Advisor",
         ],
       },
       {
@@ -1316,15 +1378,16 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Humanities",
         duration: "3 years",
         apsRequirement: 25,
-        description: "Public governance with municipal management focus",
+        description:
+          "Public governance with municipal management and leadership",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Municipal Manager",
           "Local Government Official",
-          "Community Leader",
+          "Municipal Coordinator",
         ],
       },
       {
@@ -1338,7 +1401,11 @@ export const NWU_FACULTIES: Faculty[] = [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Orientation", level: 4, isRequired: true },
         ],
-        careerProspects: ["Police Officer", "Detective", "Security Manager"],
+        careerProspects: [
+          "Police Officer",
+          "Criminal Justice Administrator",
+          "Security Manager",
+        ],
       },
       {
         id: createDegreeId(
@@ -1355,45 +1422,49 @@ export const NWU_FACULTIES: Faculty[] = [
           { name: "History", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Political Scientist",
-          "Diplomat",
+          "Political Analyst",
           "International Relations Officer",
-        ],
-      },
-      {
-        id: createDegreeId("BA Development Management Local Government NWU"),
-        name: "Bachelor of Administration in Development and Management (with Local Government Management)",
-        faculty: "Humanities",
-        duration: "3 years",
-        apsRequirement: 21,
-        description: "Development and management with local government focus",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
-        ],
-        careerProspects: [
-          "Development Manager",
-          "Local Government Officer",
-          "Project Manager",
+          "Diplomat",
         ],
       },
       {
         id: createDegreeId(
-          "BA Development Management Local Government Extended NWU",
+          "BAdmin Development Management Local Government NWU",
+        ),
+        name: "Bachelor of Administration in Development and Management (with Local Government Management)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 21,
+        description:
+          "Administration in development and local government management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Development Administrator",
+          "Local Government Manager",
+          "Project Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "BAdmin Development Management Local Government Extended NWU",
         ),
         name: "Extended Bachelor of Administration in Development and Management (with Local Government Management)",
         faculty: "Humanities",
         duration: "4 years",
         apsRequirement: 20,
-        description: "Extended development and management program",
+        description:
+          "Extended administration in development and local government management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
         ],
         careerProspects: [
-          "Development Manager",
-          "Local Government Officer",
-          "Project Manager",
+          "Development Administrator",
+          "Local Government Manager",
+          "Project Coordinator",
         ],
       },
       {
@@ -1416,14 +1487,14 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Humanities",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Graphic design and visual communication",
+        description: "Visual communication and graphic design",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Visual Arts", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Graphic Designer",
-          "Visual Designer",
+          "Visual Communication Designer",
           "Creative Director",
         ],
       },
@@ -1433,15 +1504,15 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Humanities",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Graphic design with communication focus",
+        description: "Graphic design with communication specialization",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Visual Arts", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Graphic Designer",
-          "Communications Designer",
+          "Communication Designer",
           "Brand Designer",
+          "Digital Media Designer",
         ],
       },
       {
@@ -1450,13 +1521,51 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Humanities",
         duration: "3 years",
         apsRequirement: 24,
-        description:
-          "Language and literature studies with various specializations",
+        description: "Language and literary studies",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Home Language", level: 4, isRequired: true },
         ],
-        careerProspects: ["Language Teacher", "Editor", "Translator"],
+        careerProspects: ["Language Teacher", "Literary Editor", "Translator"],
+      },
+      {
+        id: createDegreeId(
+          "BA Language Literary Studies Languages Practice NWU",
+        ),
+        name: "Bachelor of Arts (BA) in Language and Literary Studies (with Languages with Language Practice)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Language and literary studies with language practice",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Home Language", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Language Practitioner",
+          "Editor",
+          "Communication Specialist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "BA Language Literary Studies Language Practice Communication NWU",
+        ),
+        name: "Bachelor of Arts (BA) in Language and Literary Studies (with Language Practice and Communication)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 24,
+        description:
+          "Language and literary studies with language practice and communication",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Home Language", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Communication Specialist",
+          "Language Consultant",
+          "Content Developer",
+        ],
       },
       {
         id: createDegreeId("BA Language Technology NWU"),
@@ -1472,21 +1581,21 @@ export const NWU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Language Technologist",
           "Computational Linguist",
-          "Software Developer",
+          "AI Language Specialist",
         ],
       },
       {
-        id: createDegreeId("Diploma Music DM NWU"),
+        id: createDegreeId("Diploma Music NWU"),
         name: "Diploma in Music (DM)",
         faculty: "Humanities",
         duration: "3 years",
         apsRequirement: 18,
         description: "Music performance and theory",
         subjects: [
-          { name: "English", level: 3, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
           { name: "Music", level: 4, isRequired: true },
         ],
-        careerProspects: ["Musician", "Music Teacher", "Performer"],
+        careerProspects: ["Musician", "Music Teacher", "Music Therapist"],
       },
       {
         id: createDegreeId("BA Music Society NWU"),
@@ -1494,15 +1603,15 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Humanities",
         duration: "3 years",
         apsRequirement: 21,
-        description: "Music in social context",
+        description: "Music in social and cultural contexts",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Music", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Music Educator",
-          "Community Music Leader",
-          "Cultural Officer",
+          "Cultural Coordinator",
+          "Arts Administrator",
         ],
       },
       {
@@ -1518,8 +1627,8 @@ export const NWU_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Professional Musician",
-          "Composer",
           "Music Director",
+          "Composer",
         ],
       },
       {
@@ -1528,7 +1637,7 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Humanities",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Interdisciplinary philosophy, politics and economics",
+        description: "Philosophy, politics, and economics",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -1540,35 +1649,115 @@ export const NWU_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("BA Humanities Languages NWU"),
-        name: "Bachelor of Arts (BA) Humanities (with Afrikaans and Dutch, English, Setswana, Sesotho, and various subject combinations)",
+        id: createDegreeId("BA Humanities Afrikaans Dutch NWU"),
+        name: "Bachelor of Arts (BA) Humanities (with Afrikaans and Dutch)",
         faculty: "Humanities",
         duration: "3 years",
         apsRequirement: 24,
-        description:
-          "Humanities with various language and subject combinations",
+        description: "Humanities with Afrikaans and Dutch specialization",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Home Language", level: 4, isRequired: true },
+          { name: "Afrikaans", level: 5, isRequired: true },
         ],
-        careerProspects: ["Teacher", "Translator", "Cultural Specialist"],
+        careerProspects: [
+          "Language Teacher",
+          "Translator",
+          "Cultural Specialist",
+        ],
       },
       {
-        id: createDegreeId("BSocSc Social Sciences NWU"),
-        name: "Bachelor of Social Sciences (BSocSc) with various specializations",
+        id: createDegreeId("BA Humanities English NWU"),
+        name: "Bachelor of Arts (BA) Humanities (with English)",
         faculty: "Humanities",
         duration: "3 years",
-        apsRequirement: 22,
-        description: "Social sciences with various specializations",
+        apsRequirement: 24,
+        description: "Humanities with English specialization",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Home Language", level: 4, isRequired: true },
+        ],
+        careerProspects: ["English Teacher", "Editor", "Writer"],
+      },
+      {
+        id: createDegreeId("BA Humanities Setswana NWU"),
+        name: "Bachelor of Arts (BA) Humanities (with Setswana)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Humanities with Setswana specialization",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: true },
+          { name: "Setswana", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Setswana Teacher",
+          "Language Specialist",
+          "Cultural Advisor",
+        ],
+      },
+      {
+        id: createDegreeId("BA Humanities Sesotho NWU"),
+        name: "Bachelor of Arts (BA) Humanities (with Sesotho)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Humanities with Sesotho specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Sesotho", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Sesotho Teacher",
+          "Language Specialist",
+          "Cultural Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("BA Humanities Social Sciences NWU"),
+        name: "Bachelor of Arts (BA) Humanities (with Social Sciences)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Humanities with social sciences focus",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "History", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Social Researcher",
           "Community Worker",
-          "Social Services Officer",
+          "Social Analyst",
         ],
+      },
+      {
+        id: createDegreeId("BSocSc Development Studies NWU"),
+        name: "Bachelor of Social Sciences (BSocSc) (with Development Studies)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Social sciences with development studies",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Development Worker",
+          "Project Manager",
+          "Social Development Officer",
+        ],
+      },
+      {
+        id: createDegreeId("BSocSc Geography NWU"),
+        name: "Bachelor of Social Sciences (BSocSc) (with Geography)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Social sciences with geography specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 5, isRequired: true },
+        ],
+        careerProspects: ["Geographer", "Urban Planner", "GIS Specialist"],
       },
       {
         id: createDegreeId("BSocSc Economics NWU"),
@@ -1576,32 +1765,45 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Humanities",
         duration: "3 years",
         apsRequirement: 22,
-        description: "Social sciences with economics focus",
+        description: "Social sciences with economics specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Economist", "Economic Analyst", "Policy Researcher"],
+      },
+      {
+        id: createDegreeId("BA Sociology Geography NWU"),
+        name: "Bachelor of Arts (BA) (with Sociology and Geography)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Arts with sociology and geography",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Social Geographer",
+          "Community Researcher",
+          "Urban Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("BA Sociology Labour Relations NWU"),
+        name: "Bachelor of Arts (BA) (with Sociology and Labour Relations Management)",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 22,
+        description: "Arts with sociology and labour relations management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Economic Researcher",
-          "Policy Analyst",
-          "Development Economist",
-        ],
-      },
-      {
-        id: createDegreeId("BA Sociology Geography Labour Relations NWU"),
-        name: "Bachelor of Arts (BA) (with Sociology and Geography, with Sociology and Labour Relations Management)",
-        faculty: "Humanities",
-        duration: "3 years",
-        apsRequirement: 22,
-        description: "Sociology with geography or labour relations",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: true },
-        ],
-        careerProspects: [
-          "Sociologist",
-          "Labour Relations Officer",
-          "Social Researcher",
+          "Labour Relations Specialist",
+          "Industrial Sociologist",
+          "HR Consultant",
         ],
       },
       {
@@ -1616,9 +1818,9 @@ export const NWU_FACULTIES: Faculty[] = [
           { name: "Life Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Behavioural Scientist",
           "Social Psychologist",
-          "Community Worker",
+          "Behavioural Researcher",
+          "Community Psychologist",
         ],
       },
     ],
@@ -1626,23 +1828,54 @@ export const NWU_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Law NWU"),
     name: "Faculty of Law",
-    description: "Legal studies and professional law programs",
+    description: "Legal and jurisprudence programs",
     degrees: [
       {
-        id: createDegreeId(
-          "BA Law Psychology Politics Industrial Psychology NWU",
-        ),
-        name: "Bachelor of Arts in Law (BA in Law) (with Psychology, with Politics, with Industrial Psychology)",
+        id: createDegreeId("BA Law Psychology NWU"),
+        name: "Bachelor of Arts in Law (BA in Law) (with Psychology)",
         faculty: "Law",
         duration: "3 years",
         apsRequirement: 28,
-        description:
-          "Law degree with psychology, politics or industrial psychology",
+        description: "Law foundation with psychology specialization",
         subjects: [
           { name: "English", level: 5, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
         ],
-        careerProspects: ["Legal Advisor", "Paralegal", "Legal Researcher"],
+        careerProspects: ["Legal Psychologist", "Legal Advisor", "Paralegal"],
+      },
+      {
+        id: createDegreeId("BA Law Politics NWU"),
+        name: "Bachelor of Arts in Law (BA in Law) (with Politics)",
+        faculty: "Law",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "Law foundation with politics specialization",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "History", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Political Legal Advisor",
+          "Government Legal Officer",
+          "Policy Legal Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("BA Law Industrial Psychology NWU"),
+        name: "Bachelor of Arts in Law (BA in Law) (with Industrial Psychology)",
+        faculty: "Law",
+        duration: "3 years",
+        apsRequirement: 28,
+        description: "Law foundation with industrial psychology specialization",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Labour Law Specialist",
+          "Industrial Relations Legal Advisor",
+          "Employment Law Consultant",
+        ],
       },
       {
         id: createDegreeId("BCom Law NWU"),
@@ -1650,20 +1883,20 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Law",
         duration: "3 years",
         apsRequirement: 30,
-        description: "Commerce with law specialization",
+        description: "Commerce foundation with legal specialization",
         subjects: [
           { name: "English", level: 5, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
         ],
         careerProspects: [
-          "Corporate Legal Advisor",
-          "Business Lawyer",
-          "Legal Analyst",
+          "Corporate Legal Officer",
+          "Commercial Legal Advisor",
+          "Business Law Specialist",
         ],
       },
       {
         id: createDegreeId("LLB NWU"),
-        name: "Bachelors of Laws (LLB)",
+        name: "Bachelor of Laws (LLB)",
         faculty: "Law",
         duration: "4 years",
         apsRequirement: 30,
@@ -1680,7 +1913,7 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Law",
         duration: "5 years",
         apsRequirement: 28,
-        description: "Extended legal qualification program",
+        description: "Extended professional legal qualification",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Orientation", level: 4, isRequired: true },
@@ -1692,7 +1925,7 @@ export const NWU_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Natural Agricultural Sciences NWU"),
     name: "Faculty of Natural and Agricultural Sciences",
-    description: "Natural sciences, mathematics, and agricultural programs",
+    description: "Science, agriculture, and environmental programs",
     degrees: [
       {
         id: createDegreeId("Diploma Animal Health NWU"),
@@ -1700,11 +1933,11 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Natural and Agricultural Sciences",
         duration: "3 years",
         apsRequirement: 22,
-        description: "Animal health and veterinary support",
+        description: "Animal health and veterinary assistance",
         subjects: [
-          { name: "English", level: 3, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Animal Health Technician",
@@ -1718,16 +1951,16 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Natural and Agricultural Sciences",
         duration: "3 years",
         apsRequirement: 22,
-        description: "Animal science and livestock production",
+        description: "Animal science and production",
         subjects: [
-          { name: "English", level: 3, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Animal Scientist",
           "Livestock Manager",
-          "Agricultural Technician",
+          "Animal Production Specialist",
         ],
       },
       {
@@ -1738,29 +1971,83 @@ export const NWU_FACULTIES: Faculty[] = [
         apsRequirement: 22,
         description: "Plant science and crop production",
         subjects: [
-          { name: "English", level: 3, isRequired: true },
+          { name: "English", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Crop Specialist",
+          "Crop Production Specialist",
           "Plant Scientist",
           "Agricultural Technician",
         ],
       },
       {
-        id: createDegreeId("BSc Chemistry Physics Mathematics NWU"),
-        name: "Bachelor of Science (with Chemistry and Physics, with Physics and Mathematics, with Physics and Applied Mathematics, with Physics and Computer Sciences)",
+        id: createDegreeId("BSc Chemistry Physics NWU"),
+        name: "Bachelor of Science (with Chemistry and Physics)",
         faculty: "Natural and Agricultural Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Science degree with various combinations",
+        description: "Science with chemistry and physics specialization",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
           { name: "Physical Sciences", level: 5, isRequired: true },
         ],
-        careerProspects: ["Scientist", "Researcher", "Analyst"],
+        careerProspects: [
+          "Scientist",
+          "Research Assistant",
+          "Laboratory Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("BSc Physics Mathematics NWU"),
+        name: "Bachelor of Science (with Physics and Mathematics)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Science with physics and mathematics specialization",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+        ],
+        careerProspects: ["Physicist", "Mathematician", "Research Scientist"],
+      },
+      {
+        id: createDegreeId("BSc Physics Applied Mathematics NWU"),
+        name: "Bachelor of Science (with Physics and Applied Mathematics)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Science with physics and applied mathematics",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 6, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Applied Mathematician",
+          "Physicist",
+          "Engineering Scientist",
+        ],
+      },
+      {
+        id: createDegreeId("BSc Physics Computer Sciences NWU"),
+        name: "Bachelor of Science (with Physics and Computer Sciences)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Science with physics and computer sciences",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Computational Physicist",
+          "Software Developer",
+          "Systems Analyst",
+        ],
       },
       {
         id: createDegreeId("BSc Computer Sciences Mathematics NWU"),
@@ -1768,88 +2055,17 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Natural and Agricultural Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Computer science with mathematics",
+        description: "Science with computer sciences and mathematics",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
-          { name: "Information Technology", level: 4, isRequired: false },
+          { name: "Information Technology", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Software Developer",
           "Data Scientist",
-          "Computer Scientist",
+          "Systems Analyst",
         ],
-      },
-      {
-        id: createDegreeId("BSc Biochemistry Chemistry NWU"),
-        name: "Bachelor of Science (with Biochemistry and Chemistry)",
-        faculty: "Natural and Agricultural Sciences",
-        duration: "3 years",
-        apsRequirement: 26,
-        description: "Biochemistry and chemistry combination",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
-          { name: "Life Sciences", level: 5, isRequired: true },
-        ],
-        careerProspects: [
-          "Biochemist",
-          "Research Scientist",
-          "Laboratory Analyst",
-        ],
-      },
-      {
-        id: createDegreeId("BSc Geography Applied Mathematics NWU"),
-        name: "Bachelor of Science (with Geography and Applied Mathematics)",
-        faculty: "Natural and Agricultural Sciences",
-        duration: "3 years",
-        apsRequirement: 26,
-        description: "Geography with applied mathematics",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Geography", level: 4, isRequired: true },
-        ],
-        careerProspects: [
-          "Geographer",
-          "GIS Specialist",
-          "Environmental Analyst",
-        ],
-      },
-      {
-        id: createDegreeId(
-          "BSc Applied Mathematics Chemistry Mathematics Electronics NWU",
-        ),
-        name: "Bachelor of Science (with Applied Mathematics and Chemistry, with Chemistry and Mathematics, with Applied Mathematics and Electronics, with Electronics and Mathematics, with Electronics and Physics, with Chemistry and Computer Science, with Computer Science and Electronics)",
-        faculty: "Natural and Agricultural Sciences",
-        duration: "3 years",
-        apsRequirement: 26,
-        description: "Various science and mathematics combinations",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
-        ],
-        careerProspects: [
-          "Applied Mathematician",
-          "Electronics Engineer",
-          "Computer Scientist",
-        ],
-      },
-      {
-        id: createDegreeId("BSc Computer Sciences Statistics Economics NWU"),
-        name: "Bachelor of Science (with Computer Sciences and Statistics, with Computer Sciences and Economics, with Mathematics and Economics)",
-        faculty: "Natural and Agricultural Sciences",
-        duration: "3 years",
-        apsRequirement: 26,
-        description: "Computer science with statistics or economics",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Information Technology", level: 4, isRequired: false },
-        ],
-        careerProspects: ["Data Scientist", "Economic Analyst", "Statistician"],
       },
       {
         id: createDegreeId("BSc Extended NWU"),
@@ -1857,13 +2073,17 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Natural and Agricultural Sciences",
         duration: "4 years",
         apsRequirement: 24,
-        description: "Extended science program with foundational support",
+        description: "Extended science program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
           { name: "Physical Sciences", level: 4, isRequired: true },
         ],
-        careerProspects: ["Scientist", "Researcher", "Laboratory Technician"],
+        careerProspects: [
+          "Scientist",
+          "Research Assistant",
+          "Laboratory Technician",
+        ],
       },
       {
         id: createDegreeId("BSc Information Technology NWU"),
@@ -1871,16 +2091,16 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Natural and Agricultural Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Information technology and computer science",
+        description: "Information technology and computing",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Information Technology", level: 4, isRequired: false },
+          { name: "Information Technology", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "IT Specialist",
           "Software Developer",
-          "Systems Analyst",
+          "IT Specialist",
+          "Systems Administrator",
         ],
       },
       {
@@ -1889,230 +2109,175 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Natural and Agricultural Sciences",
         duration: "4 years",
         apsRequirement: 24,
-        description: "Extended IT program",
+        description: "Extended information technology program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Information Technology", level: 3, isRequired: false },
+          { name: "Information Technology", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "IT Specialist",
           "Software Developer",
-          "Systems Analyst",
+          "IT Specialist",
+          "Systems Administrator",
         ],
       },
       {
         id: createDegreeId(
           "BSc Mathematical Sciences Statistics Mathematics NWU",
         ),
-        name: "Bachelor of Science in Mathematical Sciences (with Statistics and Mathematics, with Mathematics, with Applied Mathematics and Mathematics)",
+        name: "Bachelor of Science in Mathematical Sciences (with Statistics and Mathematics)",
         faculty: "Natural and Agricultural Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Mathematical sciences with various specializations",
+        description: "Mathematical sciences with statistics and mathematics",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
         ],
-        careerProspects: ["Mathematician", "Statistician", "Data Analyst"],
+        careerProspects: ["Statistician", "Mathematician", "Data Analyst"],
       },
       {
-        id: createDegreeId(
-          "BSc Biological Sciences Microbiology Biochemistry NWU",
-        ),
-        name: "Bachelor of Science in Biological Sciences (with Microbiology and Biochemistry, with Microbiology and Botany, with Botany and Biochemistry, with Zoology and Biochemistry, with Chemistry and Physiology, with Zoology and Botany, with Zoology and Microbiology, with Zoology and Physiology, with Microbiology and Physiology)",
+        id: createDegreeId("BSc Mathematical Sciences Mathematics NWU"),
+        name: "Bachelor of Science in Mathematical Sciences (with Mathematics)",
         faculty: "Natural and Agricultural Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Biological sciences with various combinations",
+        description: "Mathematical sciences with mathematics focus",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 6, isRequired: true },
+        ],
+        careerProspects: ["Mathematician", "Research Scientist", "Academic"],
+      },
+      {
+        id: createDegreeId("BSc Mathematical Sciences Applied Mathematics NWU"),
+        name: "Bachelor of Science in Mathematical Sciences (with Applied Mathematics and Mathematics)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "3 years",
+        apsRequirement: 26,
+        description: "Mathematical sciences with applied mathematics",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 6, isRequired: true },
+        ],
+        careerProspects: [
+          "Applied Mathematician",
+          "Engineering Mathematician",
+          "Research Scientist",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "BSc Agricultural Sciences Agricultural Economics NWU",
+        ),
+        name: "Bachelor of Science in Agricultural Sciences (with Agricultural Economics)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Agricultural sciences with agricultural economics",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Economist",
+          "Farm Manager",
+          "Agricultural Consultant",
+        ],
+      },
+      {
+        id: createDegreeId("BSc Agricultural Sciences Animal Sciences NWU"),
+        name: "Bachelor of Science in Agricultural Sciences (with Animal Sciences)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Agricultural sciences with animal sciences",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
           { name: "Life Sciences", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Animal Scientist",
+          "Livestock Manager",
+          "Veterinary Technician",
+        ],
+      },
+      {
+        id: createDegreeId("BSc Agricultural Sciences Animal Health NWU"),
+        name: "Bachelor of Science in Agricultural Sciences (with Animal Health)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Agricultural sciences with animal health",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+        ],
+        careerProspects: [
+          "Animal Health Specialist",
+          "Veterinary Assistant",
+          "Animal Care Manager",
+        ],
+      },
+      {
+        id: createDegreeId(
+          "BSc Agricultural Sciences Agronomy Horticulture NWU",
+        ),
+        name: "Bachelor of Science in Agricultural Sciences (with Agronomy and Horticulture)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Agricultural sciences with agronomy and horticulture",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Agronomist", "Horticulturist", "Crop Specialist"],
+      },
+      {
+        id: createDegreeId(
+          "BSc Agricultural Sciences Agronomy Soil Sciences NWU",
+        ),
+        name: "Bachelor of Science in Agricultural Sciences (with Agronomy and Soil Sciences)",
+        faculty: "Natural and Agricultural Sciences",
+        duration: "4 years",
+        apsRequirement: 26,
+        description: "Agricultural sciences with agronomy and soil sciences",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
           { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Biologist",
-          "Research Scientist",
-          "Laboratory Technician",
-        ],
-      },
-      {
-        id: createDegreeId(
-          "BSc Environmental Sciences Chemistry Geography NWU",
-        ),
-        name: "Bachelor of Science in Environmental Sciences (with Chemistry and Microbiology, with Botany and Chemistry, with Geography and Computer Sciences, with Geography and Botany, with Zoology and Chemistry, with Chemistry and Geology, with Geology and Geography, with Zoology and Geography, with Geology and Botany, with Zoology and Geology, with Geology and Microbiology, with Tourism and Zoology, with Tourism and Geography, with Tourism and Botany, with Chemistry and Geography)",
-        faculty: "Natural and Agricultural Sciences",
-        duration: "3 years",
-        apsRequirement: 26,
-        description: "Environmental sciences with various combinations",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
-          { name: "Geography", level: 4, isRequired: false },
-        ],
-        careerProspects: [
-          "Environmental Scientist",
-          "Conservation Officer",
+          "Soil Scientist",
+          "Agronomist",
           "Environmental Consultant",
         ],
       },
       {
         id: createDegreeId(
-          "BSc Environmental Sciences Chemistry Geography Extended NWU",
+          "BSc Agricultural Sciences Agronomy Agricultural Economics NWU",
         ),
-        name: "Bachelor of Science in Environmental Sciences with Chemistry and Geography",
-        faculty: "Natural and Agricultural Sciences",
-        duration: "4 years",
-        apsRequirement: 32,
-        description: "Extended environmental sciences program",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
-          { name: "Geography", level: 4, isRequired: true },
-        ],
-        careerProspects: [
-          "Environmental Scientist",
-          "Research Scientist",
-          "Environmental Consultant",
-        ],
-      },
-      {
-        id: createDegreeId("BSc Financial Mathematics Extended NWU"),
-        name: "Extended Bachelor of Science in Financial Mathematics",
-        faculty: "Natural and Agricultural Sciences",
-        duration: "4 years",
-        apsRequirement: 28,
-        description: "Extended financial mathematics program",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 5, isRequired: true },
-        ],
-        careerProspects: [
-          "Financial Mathematician",
-          "Quantitative Analyst",
-          "Risk Analyst",
-        ],
-      },
-      {
-        id: createDegreeId("BSc Business Analytics NWU"),
-        name: "Bachelor of Science in Business Analytics",
-        faculty: "Natural and Agricultural Sciences",
-        duration: "3 years",
-        apsRequirement: 32,
-        description: "Business analytics and data science",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 6, isRequired: true },
-        ],
-        careerProspects: [
-          "Business Analyst",
-          "Data Scientist",
-          "Analytics Manager",
-        ],
-      },
-      {
-        id: createDegreeId("BSc Business Analytics Extended NWU"),
-        name: "Extended Bachelor of Science in Business Analytics",
-        faculty: "Natural and Agricultural Sciences",
-        duration: "4 years",
-        apsRequirement: 28,
-        description: "Extended business analytics program",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 5, isRequired: true },
-        ],
-        careerProspects: [
-          "Business Analyst",
-          "Data Scientist",
-          "Analytics Manager",
-        ],
-      },
-      {
-        id: createDegreeId("BSc Quantitative Risk Management NWU"),
-        name: "Bachelor of Science in Quantitative Risk Management",
-        faculty: "Natural and Agricultural Sciences",
-        duration: "3 years",
-        apsRequirement: 32,
-        description: "Quantitative risk management and analysis",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 6, isRequired: true },
-        ],
-        careerProspects: [
-          "Risk Manager",
-          "Quantitative Analyst",
-          "Financial Risk Specialist",
-        ],
-      },
-      {
-        id: createDegreeId("BSc Quantitative Risk Management Extended NWU"),
-        name: "Extended Bachelor of Science in Quantitative Risk Management",
-        faculty: "Natural and Agricultural Sciences",
-        duration: "4 years",
-        apsRequirement: 28,
-        description: "Extended quantitative risk management program",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 5, isRequired: true },
-        ],
-        careerProspects: [
-          "Risk Manager",
-          "Quantitative Analyst",
-          "Financial Risk Specialist",
-        ],
-      },
-      {
-        id: createDegreeId("BSc Actuarial Science NWU"),
-        name: "Bachelor of Science in Actuarial Science",
-        faculty: "Natural and Agricultural Sciences",
-        duration: "3 years",
-        apsRequirement: 32,
-        description: "Actuarial science and risk assessment",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 6, isRequired: true },
-        ],
-        careerProspects: ["Actuary", "Risk Analyst", "Insurance Specialist"],
-      },
-      {
-        id: createDegreeId("BSc Urban Regional Planning NWU"),
-        name: "Bachelor of Science in Urban and Regional Planning",
-        faculty: "Natural and Agricultural Sciences",
-        duration: "4 years",
-        apsRequirement: 28,
-        description: "Urban and regional planning",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Geography", level: 4, isRequired: true },
-        ],
-        careerProspects: [
-          "Urban Planner",
-          "Regional Planner",
-          "Development Planner",
-        ],
-      },
-      {
-        id: createDegreeId(
-          "BSc Agricultural Sciences Agricultural Economics Animal Sciences NWU",
-        ),
-        name: "Bachelor of Science in Agricultural Sciences (with Agricultural Economics, with Animal Sciences, with Animal Health, with Agronomy and Horticulture, with Agronomy and Soil Sciences, with Agronomy and Agricultural Economics)",
+        name: "Bachelor of Science in Agricultural Sciences (with Agronomy and Agricultural Economics)",
         faculty: "Natural and Agricultural Sciences",
         duration: "4 years",
         apsRequirement: 26,
-        description: "Agricultural sciences with various specializations",
+        description:
+          "Agricultural sciences with agronomy and agricultural economics",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Agricultural Scientist",
+          "Agricultural Economist",
+          "Agronomist",
           "Farm Manager",
-          "Agricultural Consultant",
         ],
       },
       {
@@ -2121,7 +2286,7 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Natural and Agricultural Sciences",
         duration: "3 years",
         apsRequirement: 26,
-        description: "Indigenous knowledge systems and traditional science",
+        description: "Indigenous knowledge systems and traditional sciences",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
@@ -2129,8 +2294,8 @@ export const NWU_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Indigenous Knowledge Specialist",
-          "Traditional Healer",
-          "Cultural Researcher",
+          "Traditional Medicine Researcher",
+          "Cultural Scientist",
         ],
       },
     ],
@@ -2138,7 +2303,7 @@ export const NWU_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Theology NWU"),
     name: "Faculty of Theology",
-    description: "Theological studies and religious programs",
+    description: "Theological and religious studies programs",
     degrees: [
       {
         id: createDegreeId("BA Ancient Languages NWU"),
@@ -2146,19 +2311,19 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Theology",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Ancient languages and biblical studies",
+        description: "Ancient languages and classical studies",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
           { name: "Home Language", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Ancient Language Specialist",
-          "Biblical Scholar",
+          "Language Teacher",
           "Translator",
+          "Academic Researcher",
         ],
       },
       {
-        id: createDegreeId("Bachelor Divinity BDiv NWU"),
+        id: createDegreeId("BDiv NWU"),
         name: "Bachelor of Divinity (BDiv)",
         faculty: "Theology",
         duration: "4 years",
@@ -2166,19 +2331,19 @@ export const NWU_FACULTIES: Faculty[] = [
         description: "Professional theological qualification",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: true },
+          { name: "Home Language", level: 4, isRequired: true },
         ],
-        careerProspects: ["Minister", "Pastor", "Theological Educator"],
+        careerProspects: ["Minister", "Pastor", "Chaplain"],
       },
       {
         id: createDegreeId("BTh Bible Languages Bible Translation NWU"),
         name: "BTh with Bible Languages & Bible Translation",
         faculty: "Theology",
-        duration: "4 years",
+        duration: "3 years",
         apsRequirement: 24,
-        description: "Theology with Bible languages and translation",
+        description: "Biblical languages and translation studies",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
           { name: "Home Language", level: 4, isRequired: true },
         ],
         careerProspects: [
@@ -2193,7 +2358,7 @@ export const NWU_FACULTIES: Faculty[] = [
         faculty: "Theology",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Pastoral care and psychology",
+        description: "Pastoral care and psychological counseling",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
@@ -2208,18 +2373,14 @@ export const NWU_FACULTIES: Faculty[] = [
         id: createDegreeId("BTh Christian Ministry NWU"),
         name: "BTh in Christian Ministry",
         faculty: "Theology",
-        duration: "4 years",
+        duration: "3 years",
         apsRequirement: 24,
-        description: "Christian ministry and pastoral care",
+        description: "Christian ministry and leadership",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: true },
+          { name: "Home Language", level: 4, isRequired: true },
         ],
-        careerProspects: [
-          "Ministry Leader",
-          "Youth Pastor",
-          "Community Minister",
-        ],
+        careerProspects: ["Minister", "Youth Pastor", "Ministry Leader"],
       },
     ],
   },
