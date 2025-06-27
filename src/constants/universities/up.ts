@@ -1742,7 +1742,7 @@ export const UP_FACULTIES: Faculty[] = [
         careerProspects: ["Actuary", "Risk Analyst", "Investment Analyst"],
       },
       {
-        id: createDegreeId("Bachelor Science Mathematics UP"),
+        id: createDegreeId("Bachelor Science Mathematics 3year UP"),
         name: "Bachelor of Science in Mathematics",
         faculty: "Natural and Agricultural Sciences",
         duration: "3 years",
