@@ -25,6 +25,7 @@ import {
 } from "./utils/databaseConnectivityHelper";
 import { preloadCriticalRoutes } from "./utils/routePreloader";
 import EmergencyBypass from "./components/EmergencyBypass";
+import SupabaseConnectivityTest from "./components/SupabaseTest";
 import "./App.css";
 
 // Initialize debug utilities in development
