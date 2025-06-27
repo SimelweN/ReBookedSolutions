@@ -153,6 +153,9 @@ const SupabaseConnectivityTest: React.FC = () => {
         <strong>Basic Fetch:</strong> {testResults.basicFetch}
       </div>
       <div>
+        <strong>Resistant Fetch:</strong> {testResults.resistantFetch}
+      </div>
+      <div>
         <strong>Direct Supabase:</strong> {testResults.directTest}
       </div>
       <div>
