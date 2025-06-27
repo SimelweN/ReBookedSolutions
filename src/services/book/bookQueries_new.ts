@@ -49,6 +49,21 @@ const shouldLogBookError = (): boolean => {
 // Enhanced error logging function with spam protection
 const logDetailedError = (context: string, error: any, details?: any) => {
   if (shouldLogBookError()) {
+    // Extract proper error message
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : error?.message ||
+          (typeof error === "string" ? error : JSON.stringify(error, null, 2));
+    const errorCode = error?.code || error?.error_code || "NO_CODE";
+
+    console.error(`[${context}] ${errorMessage} (Code: ${errorCode})`);
+
+    if (details) {
+      console.error(`[${context}] Details:`, details);
+    }
+
+    // Also log the structured error info
     logError(context, error);
   }
 };

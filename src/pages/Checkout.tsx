@@ -136,7 +136,7 @@ const Checkout: React.FC = () => {
   const StepIndicator = () => (
     <div className="flex items-center justify-center mb-8">
       {steps.map((step, index) => (
-        <React.Fragment key={step.number}>
+        <div key={step.number} className="flex items-center">
           <div className="flex items-center">
             <div
               className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
@@ -162,7 +162,7 @@ const Checkout: React.FC = () => {
               }`}
             />
           )}
-        </React.Fragment>
+        </div>
       ))}
     </div>
   );

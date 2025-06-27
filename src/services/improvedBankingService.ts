@@ -99,12 +99,58 @@ export class ImprovedBankingService {
         console.log("✅ Banking details table setup completed automatically");
       }
 
-      let paystackData: {
-        subaccount_code: string;
-        subaccount_id: string;
-      } | null = null;
+      // First save banking details to database
+      console.log("Saving banking details to database...");
 
-      // Try to create Paystack subaccount for enhanced functionality
+      // Encrypt sensitive fields
+      const encryptedDetails = {
+        ...bankingDetails,
+        bank_account_number: this.encrypt(bankingDetails.bank_account_number),
+        full_name: this.encrypt(bankingDetails.full_name),
+        subaccount_status: "pending_setup",
+      };
+
+      // Check if user already has banking details
+      const { data: existingData } = await supabase
+        .from("banking_details")
+        .select("id")
+        .eq("user_id", bankingDetails.user_id)
+        .single();
+
+      let savedData: any;
+
+      if (existingData) {
+        // Update existing record
+        const { data, error } = await supabase
+          .from("banking_details")
+          .update(encryptedDetails)
+          .eq("user_id", bankingDetails.user_id)
+          .select()
+          .single();
+
+        if (error) {
+          console.error("Update error:", error);
+          throw new Error(`Failed to update banking details: ${error.message}`);
+        }
+        savedData = data;
+      } else {
+        // Insert new record
+        const { data, error } = await supabase
+          .from("banking_details")
+          .insert([encryptedDetails])
+          .select()
+          .single();
+
+        if (error) {
+          console.error("Insert error:", error);
+          throw new Error(`Failed to save banking details: ${error.message}`);
+        }
+        savedData = data;
+      }
+
+      console.log("✅ Banking details saved to database");
+
+      // Now try to create Paystack subaccount
       try {
         console.log("Attempting to create Paystack subaccount...");
         const paystackResult = await PaystackService.createSubaccount(
@@ -127,9 +173,11 @@ export class ImprovedBankingService {
         console.log("✅ Paystack subaccount created successfully");
         toast.success("Banking details saved and payment account created!");
 
-        // Return updated record
+        // Return updated record with decrypted fields
         return {
           ...savedData,
+          bank_account_number: this.decrypt(savedData.bank_account_number),
+          full_name: this.decrypt(savedData.full_name),
           paystack_subaccount_code: paystackResult.subaccount_code,
           paystack_subaccount_id: paystackResult.subaccount_id,
           account_verified: true,
@@ -144,22 +192,38 @@ export class ImprovedBankingService {
             ? paystackError.message
             : String(paystackError);
 
+        // Handle specific error codes from PaystackService
         if (
+          errorMessage === "EDGE_FUNCTION_UNAVAILABLE" ||
+          errorMessage === "PAYSTACK_CONFIG_INCOMPLETE" ||
+          errorMessage === "PAYSTACK_SETUP_FAILED"
+        ) {
+          console.log(
+            "🔄 Paystack integration will be set up automatically later",
+          );
+          toast.success("Banking details saved successfully!", {
+            description:
+              "Payment account will be set up automatically when the service becomes available.",
+          });
+        } else if (
           errorMessage.includes("Failed to send a request") ||
           errorMessage.includes("temporarily unavailable") ||
-          errorMessage.includes("Edge Function")
+          errorMessage.includes("Edge Function") ||
+          errorMessage.includes("non-2xx status code")
         ) {
+          console.log("🌐 Edge Function connectivity issue, will retry later");
           toast.success("Banking details saved successfully!", {
             description:
               "Payment account will be set up automatically when needed for transactions.",
           });
-
-          console.log(
-            "ℹ️ Banking details saved without Paystack integration (Edge Functions unavailable)",
-          );
         } else {
+          console.log("⚠️ Unexpected Paystack error, will retry later");
           toast.success(
             "Banking details saved! Payment account setup will be retried later.",
+            {
+              description:
+                "Your banking information is secure and payments will work once setup completes.",
+            },
           );
         }
 
@@ -172,46 +236,14 @@ export class ImprovedBankingService {
           })
           .eq("id", savedData.id);
 
+        // Return banking details with decrypted fields
         return {
           ...savedData,
+          bank_account_number: this.decrypt(savedData.bank_account_number),
+          full_name: this.decrypt(savedData.full_name),
           subaccount_status: "pending_setup",
         } as BankingDetails;
       }
-      if (existingData) {
-        // Update existing record
-        const { data, error } = await supabase
-          .from("banking_details")
-          .update(encryptedDetails)
-          .eq("user_id", bankingDetails.user_id)
-          .select()
-          .single();
-
-        if (error) {
-          console.error("Update error:", error);
-          throw new Error(`Failed to update banking details: ${error.message}`);
-        }
-        result = data;
-      } else {
-        // Insert new record
-        const { data, error } = await supabase
-          .from("banking_details")
-          .insert([encryptedDetails])
-          .select()
-          .single();
-
-        if (error) {
-          console.error("Insert error:", error);
-          throw new Error(`Failed to save banking details: ${error.message}`);
-        }
-        result = data;
-      }
-
-      // Decrypt for return
-      return {
-        ...result,
-        bank_account_number: this.decrypt(result.bank_account_number),
-        full_name: this.decrypt(result.full_name),
-      } as BankingDetails;
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";

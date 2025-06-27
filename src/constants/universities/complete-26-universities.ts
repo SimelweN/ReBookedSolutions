@@ -1,5 +1,5 @@
 import { University } from "@/types/university";
-import { getUniversityFaculties } from "./comprehensive-course-database";
+import { getFacultiesByUniversityIdLegacy } from "./updated-specific-universities";
 
 /**
  * COMPLETE 26 SOUTH AFRICAN PUBLIC UNIVERSITIES
@@ -703,13 +703,18 @@ const BASE_UNIVERSITIES: University[] = [
 ];
 
 /**
- * Populate university faculties using the massive course database
+ * Return universities with comprehensive faculty data from our updated modules
  */
 function populateUniversityFaculties(): University[] {
-  return BASE_UNIVERSITIES.map((university) => ({
-    ...university,
-    faculties: getUniversityFaculties(university.id),
-  }));
+  return BASE_UNIVERSITIES.map((university) => {
+    // Try to get faculties from our updated data
+    const faculties = getFacultiesByUniversityIdLegacy(university.id) || [];
+
+    return {
+      ...university,
+      faculties,
+    };
+  });
 }
 
 /**

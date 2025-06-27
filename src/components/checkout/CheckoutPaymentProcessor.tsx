@@ -71,7 +71,7 @@ const CheckoutPaymentProcessor: React.FC<CheckoutPaymentProcessorProps> = ({
             .from("banking_details")
             .select("subaccount_code")
             .eq("user_id", sellerId)
-            .eq("is_verified", true)
+            .eq("account_verified", true)
             .single();
 
           if (bankingDetails?.subaccount_code) {

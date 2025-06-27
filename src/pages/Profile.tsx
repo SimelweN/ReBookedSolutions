@@ -171,7 +171,7 @@ const Profile = () => {
           .from("banking_details")
           .select("*")
           .eq("user_id", user.id)
-          .eq("is_verified", true)
+          .eq("account_verified", true)
           .single();
 
         setHasBankingDetails(!!bankingData);

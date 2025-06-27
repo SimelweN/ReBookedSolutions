@@ -362,10 +362,10 @@ const Login = () => {
                   disabled={isLoading}
                 >
                   {isLoading ? (
-                    <>
+                    <span className="flex items-center">
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Logging in...
-                    </>
+                    </span>
                   ) : (
                     "Log in"
                   )}

@@ -74,33 +74,56 @@ export class PaystackService {
       );
 
       if (error) {
-        console.error("Edge Function error:", error);
+        // Extract error details properly
+        const errorMsg =
+          error.message || error.details || JSON.stringify(error, null, 2);
+        console.error("❌ Edge Function error:", {
+          message: error.message,
+          details: error.details,
+          code: error.code,
+          status: error.status,
+          fullError: errorMsg,
+        });
+
+        // Check for non-2xx status code specifically
+        if (
+          errorMsg.includes("non-2xx status code") ||
+          errorMsg.includes("FunctionsHttpError") ||
+          error.status >= 400
+        ) {
+          console.warn(
+            "🌐 Edge Function returned error status, marking for later setup",
+          );
+          throw new Error("EDGE_FUNCTION_UNAVAILABLE");
+        }
 
         // Check if it's a network/connectivity issue (Edge Functions not deployed/accessible)
         if (
-          error.message?.includes("Failed to send a request") ||
-          error.message?.includes("FunctionsFetchError") ||
-          error.message?.includes("NetworkError")
+          errorMsg.includes("Failed to send a request") ||
+          errorMsg.includes("FunctionsFetchError") ||
+          errorMsg.includes("NetworkError")
         ) {
-          throw new Error(
-            "Edge Functions are not available in this environment. Banking details can still be saved without immediate Paystack integration.",
+          console.warn(
+            "🌐 Edge Functions network issue, marking for later setup",
           );
+          throw new Error("EDGE_FUNCTION_UNAVAILABLE");
         }
 
         // Check if it's a configuration issue
         if (
-          error.message?.includes("MISSING_SECRET_KEY") ||
-          error.message?.includes("configuration")
+          errorMsg.includes("MISSING_SECRET_KEY") ||
+          errorMsg.includes("configuration") ||
+          errorMsg.includes("secret key")
         ) {
-          throw new Error(
-            "Payment service configuration incomplete. Banking details will be saved for later setup.",
+          console.warn(
+            "🔧 Payment service configuration issue, marking for later setup",
           );
+          throw new Error("PAYSTACK_CONFIG_INCOMPLETE");
         }
 
         // Generic error with helpful message
-        throw new Error(
-          `Paystack setup failed: ${error.message || "Unknown error"}. Banking details will still be saved.`,
-        );
+        console.warn("⚠️ Paystack setup failed, marking for later setup");
+        throw new Error("PAYSTACK_SETUP_FAILED");
       }
 
       if (!data.success) {
@@ -113,10 +136,26 @@ export class PaystackService {
       };
     } catch (error) {
       console.error("Error creating Paystack subaccount:", error);
+
       const errorMessage =
         error instanceof Error
           ? error.message
           : "Failed to create payment account";
+
+      // Handle specific error codes without showing error toast
+      if (
+        errorMessage === "EDGE_FUNCTION_UNAVAILABLE" ||
+        errorMessage === "PAYSTACK_CONFIG_INCOMPLETE" ||
+        errorMessage === "PAYSTACK_SETUP_FAILED"
+      ) {
+        console.log(
+          "🔄 Paystack setup will be retried later when service is available",
+        );
+        // Don't show error toast for expected failures
+        throw error;
+      }
+
+      // For unexpected errors, show error toast
       toast.error(`Failed to setup payment account: ${errorMessage}`);
       throw new Error(errorMessage);
     }
