@@ -42,8 +42,18 @@ const validateSupabaseConfig = () => {
   }
 };
 
-// Validate configuration
-validateSupabaseConfig();
+// Validate configuration with graceful fallback
+try {
+  validateSupabaseConfig();
+} catch (configError) {
+  console.warn("⚠️ Supabase configuration issue:", configError);
+  // In development, we can continue with limited functionality
+  if (import.meta.env.DEV) {
+    console.warn(
+      "⚠️ Continuing with limited functionality in development mode",
+    );
+  }
+}
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
@@ -62,6 +72,18 @@ export const supabase = createClient<Database>(
       flowType: "pkce",
       // Better error handling for failed auth attempts
       debug: import.meta.env.DEV,
+    },
+    global: {
+      // Add timeout to prevent hanging
+      fetch: (url: RequestInfo | URL, options?: RequestInit) => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+        return fetch(url, {
+          ...options,
+          signal: controller.signal,
+        }).finally(() => clearTimeout(timeoutId));
+      },
     },
   },
 );
