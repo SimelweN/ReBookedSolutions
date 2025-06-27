@@ -61,6 +61,60 @@ try {
 // Clean the API key (remove any leading = signs that might have been added by accident)
 const cleanApiKey = ENV.VITE_SUPABASE_ANON_KEY.replace(/^=+/, "");
 
+// Store original fetch before FullStory can override it
+const originalFetch = window.fetch;
+
+// Create a FullStory-resistant fetch function
+const resistantFetch = (url: RequestInfo | URL, options?: RequestInit) => {
+  // Try to use the original fetch first
+  if (originalFetch && originalFetch !== window.fetch) {
+    return originalFetch(url, options);
+  }
+
+  // Fallback: Use XMLHttpRequest if fetch is compromised
+  return new Promise<Response>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    const method = options?.method || "GET";
+
+    xhr.open(method, url.toString());
+
+    // Set headers
+    if (options?.headers) {
+      const headers = new Headers(options.headers);
+      headers.forEach((value, key) => {
+        xhr.setRequestHeader(key, value);
+      });
+    }
+
+    xhr.onload = () => {
+      const response = new Response(xhr.responseText, {
+        status: xhr.status,
+        statusText: xhr.statusText,
+        headers: new Headers(
+          xhr
+            .getAllResponseHeaders()
+            .split("\r\n")
+            .reduce(
+              (acc, line) => {
+                const [key, value] = line.split(": ");
+                if (key && value) acc[key] = value;
+                return acc;
+              },
+              {} as Record<string, string>,
+            ),
+        ),
+      });
+      resolve(response);
+    };
+
+    xhr.onerror = () => reject(new Error("Network request failed"));
+    xhr.ontimeout = () => reject(new Error("Request timeout"));
+
+    xhr.timeout = 10000; // 10 second timeout
+    xhr.send(options?.body);
+  });
+};
+
 export const supabase = createClient<Database>(
   ENV.VITE_SUPABASE_URL,
   cleanApiKey,
@@ -72,6 +126,9 @@ export const supabase = createClient<Database>(
       flowType: "pkce",
       // Better error handling for failed auth attempts
       debug: import.meta.env.DEV,
+    },
+    global: {
+      fetch: resistantFetch,
     },
   },
 );
