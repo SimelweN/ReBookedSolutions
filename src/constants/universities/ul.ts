@@ -1,7 +1,7 @@
 import { Faculty } from "@/types/university";
 import { createDegreeId, createFacultyId } from "./base";
 
-// University of Limpopo (UL) - Faculty Data
+// University of Limpopo (UL) - Faculty Data - Complete Update
 export const UL_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Humanities UL"),
