@@ -1,12 +1,12 @@
 import { Faculty } from "@/types/university";
 import { createDegreeId, createFacultyId } from "./base";
 
-// Durban University of Technology (DUT) - Faculty Data - Complete Update
+// Durban University of Technology (DUT) - Faculty Data - Comprehensive Update
 export const DUT_FACULTIES: Faculty[] = [
   {
-    id: createFacultyId("Engineering and Built Environment DUT"),
-    name: "Engineering & Built Environment",
-    description: "Engineering and construction technology programs",
+    id: createFacultyId("Faculty of Engineering Built Environment DUT"),
+    name: "Faculty of Engineering & Built Environment",
+    description: "Engineering and construction programs",
     degrees: [
       {
         id: createDegreeId("Diploma Engineering Civil DUT"),
@@ -15,7 +15,7 @@ export const DUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 24,
         description:
-          "Civil engineering diploma with Maths & Physical Sciences L4+",
+          "Civil engineering technology (24 APS+ with Maths & Physical Sciences L4+)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -23,7 +23,7 @@ export const DUT_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Civil Engineering Technician",
-          "Construction Supervisor",
+          "Construction Manager",
           "Project Coordinator",
         ],
       },
@@ -34,7 +34,7 @@ export const DUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 24,
         description:
-          "Electrical engineering diploma with Maths & Physical Sciences L4+",
+          "Electrical engineering technology (24 APS+ with Maths & Physical Sciences L4+)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -42,8 +42,8 @@ export const DUT_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Electrical Engineering Technician",
-          "Electrical Supervisor",
-          "Power Systems Technician",
+          "Power Systems Technologist",
+          "Control Systems Specialist",
         ],
       },
       {
@@ -53,7 +53,7 @@ export const DUT_FACULTIES: Faculty[] = [
         duration: "3 years",
         apsRequirement: 24,
         description:
-          "Mechanical engineering diploma with Maths & Physical Sciences L4+",
+          "Mechanical engineering technology (24 APS+ with Maths & Physical Sciences L4+)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -62,7 +62,7 @@ export const DUT_FACULTIES: Faculty[] = [
         careerProspects: [
           "Mechanical Engineering Technician",
           "Manufacturing Technologist",
-          "Maintenance Supervisor",
+          "Maintenance Engineer",
         ],
       },
       {
@@ -72,7 +72,7 @@ export const DUT_FACULTIES: Faculty[] = [
         duration: "4 years",
         apsRequirement: 28,
         description:
-          "Engineering technology degree with L4 in Maths & Physical Sciences",
+          "Engineering technology degree (28 APS with L4 in Maths & Physical Sciences)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -87,23 +87,23 @@ export const DUT_FACULTIES: Faculty[] = [
     ],
   },
   {
-    id: createFacultyId("Health and Wellness Sciences DUT"),
-    name: "Health & Wellness Sciences",
-    description: "Health sciences and medical technology programs",
+    id: createFacultyId("Faculty of Health Wellness Sciences DUT"),
+    name: "Faculty of Health & Wellness Sciences",
+    description: "Health and medical science programs",
     degrees: [
       {
-        id: createDegreeId("BHealthSci Medical Laboratory Science DUT"),
+        id: createDegreeId("BHSc Medical Laboratory Science DUT"),
         name: "Bachelor of Health Sciences (Medical Laboratory Science)",
         faculty: "Health & Wellness Sciences",
         duration: "4 years",
         apsRequirement: 36,
         description:
-          "Medical laboratory science with Maths, Physical Science, Life Sciences prerequisites",
+          "Medical laboratory science (36 APS plus Maths, Physical Science, Life Sciences prerequisites)",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
           { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Medical Laboratory Scientist",
@@ -114,66 +114,54 @@ export const DUT_FACULTIES: Faculty[] = [
     ],
   },
   {
-    id: createFacultyId("Information Technology DUT"),
-    name: "Information Technology",
-    description: "Computing and information technology programs",
+    id: createFacultyId("Faculty of Information Technology DUT"),
+    name: "Faculty of Information Technology",
+    description: "Information technology and computing programs",
     degrees: [
       {
-        id: createDegreeId("Diploma IT Various Streams DUT"),
+        id: createDegreeId("Diploma IT DUT"),
         name: "Diploma in IT",
         faculty: "Information Technology",
         duration: "3 years",
         apsRequirement: 26,
-        description: "IT diploma depending on the stream; Maths L4+ required",
+        description:
+          "Information technology (26–28 APS depending on the stream; Maths L4+ required)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Information Technology", level: 3, isRequired: false },
+          { name: "Information Technology", level: 4, isRequired: true },
         ],
         careerProspects: [
           "IT Technician",
           "Software Developer",
-          "Network Administrator",
+          "Systems Administrator",
         ],
-      },
-      {
-        id: createDegreeId("Diploma IT Advanced Stream DUT"),
-        name: "Diploma in IT (Advanced Stream)",
-        faculty: "Information Technology",
-        duration: "3 years",
-        apsRequirement: 28,
-        description: "Advanced IT diploma with higher requirements",
-        subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Information Technology", level: 4, isRequired: false },
-        ],
-        careerProspects: ["Software Engineer", "Systems Analyst", "IT Manager"],
       },
       {
         id: createDegreeId("Bachelor IT DUT"),
         name: "Bachelor-level IT",
         faculty: "Information Technology",
-        duration: "3 years",
+        duration: "4 years",
         apsRequirement: 30,
-        description: "Bachelor's level IT program with programme details",
+        description:
+          "Bachelor's level IT qualification (30 APS+, subject to programme details)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Information Technology", level: 4, isRequired: false },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Information Technology", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "IT Manager",
+          "IT Specialist",
           "Software Engineer",
-          "Systems Architect",
+          "Systems Analyst",
         ],
       },
     ],
   },
   {
-    id: createFacultyId("Management Sciences and Arts DUT"),
-    name: "Management Sciences & Arts",
-    description: "Business management, arts, and commerce programs",
+    id: createFacultyId("Faculty of Management Sciences Arts DUT"),
+    name: "Faculty of Management Sciences & Arts",
+    description: "Management, business, and arts programs",
     degrees: [
       {
         id: createDegreeId("Diploma Public Management DUT"),
@@ -181,10 +169,10 @@ export const DUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences & Arts",
         duration: "3 years",
         apsRequirement: 27,
-        description: "Public sector management and administration",
+        description: "Public sector management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Public Manager",
@@ -198,15 +186,15 @@ export const DUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences & Arts",
         duration: "3 years",
         apsRequirement: 27,
-        description: "Marketing and sales management",
+        description: "Marketing and business promotion",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Marketing Manager",
-          "Sales Representative",
+          "Marketing Officer",
           "Brand Manager",
+          "Digital Marketing Specialist",
         ],
       },
       {
@@ -215,15 +203,16 @@ export const DUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences & Arts",
         duration: "3 years",
         apsRequirement: 27,
-        description: "Internal auditing and risk management",
+        description: "Internal auditing and compliance",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Accounting", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Internal Auditor",
-          "Risk Analyst",
           "Compliance Officer",
+          "Risk Analyst",
         ],
       },
       {
@@ -235,7 +224,7 @@ export const DUT_FACULTIES: Faculty[] = [
         description: "Office management and administration",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Office Manager",
@@ -249,7 +238,7 @@ export const DUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences & Arts",
         duration: "3 years",
         apsRequirement: 30,
-        description: "Hospitality industry management",
+        description: "Hospitality and hotel management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -261,17 +250,22 @@ export const DUT_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("Bachelor of Accountancy DUT"),
+        id: createDegreeId("Bachelor Accountancy DUT"),
         name: "Bachelor of Accountancy",
         faculty: "Management Sciences & Arts",
         duration: "3 years",
         apsRequirement: 30,
-        description: "Professional accounting program",
+        description: "Professional accounting qualification",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Accounting", level: 5, isRequired: true },
         ],
-        careerProspects: ["Accountant", "Financial Manager", "Auditor"],
+        careerProspects: [
+          "Chartered Accountant",
+          "Financial Manager",
+          "Auditor",
+        ],
       },
       {
         id: createDegreeId("Bachelor Tourism Management DUT"),
@@ -279,38 +273,48 @@ export const DUT_FACULTIES: Faculty[] = [
         faculty: "Management Sciences & Arts",
         duration: "3 years",
         apsRequirement: 30,
-        description: "Tourism industry management and operations",
+        description: "Tourism management and destination planning",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Geography", level: 3, isRequired: false },
+          { name: "Geography", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
-        careerProspects: ["Tourism Manager", "Tour Guide", "Travel Consultant"],
+        careerProspects: [
+          "Tourism Manager",
+          "Destination Manager",
+          "Tourism Planner",
+        ],
       },
     ],
   },
   {
-    id: createFacultyId("Humanities and Design DUT"),
-    name: "Humanities & Design",
-    description: "Liberal arts and creative design programs",
+    id: createFacultyId("Faculty of Humanities Design DUT"),
+    name: "Faculty of Humanities & Design",
+    description: "Humanities, arts, and design programs",
     degrees: [
       {
-        id: createDegreeId("Bachelor of Arts DUT"),
+        id: createDegreeId("BA DUT"),
         name: "Bachelor of Arts",
         faculty: "Humanities & Design",
         duration: "3 years",
         apsRequirement: 24,
-        description: "Liberal arts program with strong language results",
+        description:
+          "General arts with strong language results (24 APS+, with strong language results)",
         subjects: [
-          { name: "English", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: false },
+          { name: "English", level: 5, isRequired: true },
+          { name: "Home Language", level: 4, isRequired: true },
         ],
-        careerProspects: ["Social Worker", "Researcher", "Community Developer"],
+        careerProspects: [
+          "Arts Professional",
+          "Cultural Worker",
+          "Language Specialist",
+        ],
       },
     ],
   },
   {
-    id: createFacultyId("Education DUT"),
-    name: "Education",
+    id: createFacultyId("Faculty of Education DUT"),
+    name: "Faculty of Education",
     description: "Teacher education and educational programs",
     degrees: [
       {
@@ -320,15 +324,15 @@ export const DUT_FACULTIES: Faculty[] = [
         duration: "4 years",
         apsRequirement: 27,
         description:
-          "Foundation phase teacher education with subject-level requirements",
+          "Foundation phase teaching (27 APS plus subject-level requirements)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: false },
         ],
         careerProspects: [
           "Foundation Phase Teacher",
-          "Early Childhood Educator",
+          "Primary School Teacher",
+          "Educational Coordinator",
         ],
       },
       {
@@ -338,16 +342,15 @@ export const DUT_FACULTIES: Faculty[] = [
         duration: "4 years",
         apsRequirement: 27,
         description:
-          "Senior phase and FET teaching in various subject areas with subject-level requirements",
+          "Senior Phase and FET teaching in various subjects (27 APS plus subject-level requirements)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: false },
         ],
         careerProspects: [
           "High School Teacher",
           "Subject Specialist",
-          "Education Coordinator",
+          "Educational Manager",
         ],
       },
     ],
