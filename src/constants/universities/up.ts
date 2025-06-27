@@ -1370,7 +1370,7 @@ export const UP_FACULTIES: Faculty[] = [
       },
       {
         id: createDegreeId(
-          "Bachelor Science Agriculture Applied Plant Soil Sciences UP",
+          "Bachelor Science Agriculture Applied Plant Soil Sciences 4year UP",
         ),
         name: "Bachelor of Science in Agriculture (Applied Plant and Soil Sciences)",
         faculty: "Natural and Agricultural Sciences",
