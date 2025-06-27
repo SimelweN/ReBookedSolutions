@@ -1,19 +1,58 @@
 import React, { useState, useEffect } from "react";
 
+// Create FullStory-resistant fetch using XMLHttpRequest
+const createResistantFetch = () => {
+  return (url: string, options?: RequestInit) => {
+    return new Promise<Response>((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      const method = options?.method || "GET";
+
+      xhr.open(method, url);
+
+      // Set headers
+      if (options?.headers) {
+        const headers = new Headers(options.headers);
+        headers.forEach((value, key) => {
+          xhr.setRequestHeader(key, value);
+        });
+      }
+
+      xhr.onload = () => {
+        const response = new Response(xhr.responseText, {
+          status: xhr.status,
+          statusText: xhr.statusText,
+          headers: new Headers(),
+        });
+        resolve(response);
+      };
+
+      xhr.onerror = () => reject(new Error("XMLHttpRequest failed"));
+      xhr.ontimeout = () => reject(new Error("Request timeout"));
+
+      xhr.timeout = 10000;
+      xhr.send(options?.body);
+    });
+  };
+};
+
 const SupabaseConnectivityTest: React.FC = () => {
   const [testResults, setTestResults] = useState<{
     basicFetch: string;
     supabaseTest: string;
     directTest: string;
+    resistantFetch: string;
   }>({
     basicFetch: "Testing...",
     supabaseTest: "Testing...",
     directTest: "Testing...",
+    resistantFetch: "Testing...",
   });
 
   useEffect(() => {
     const runTests = async () => {
-      // Test 1: Basic fetch to a known endpoint
+      const resistantFetch = createResistantFetch();
+
+      // Test 1: Basic fetch to a known endpoint (may fail due to FullStory)
       try {
         const response = await fetch("https://httpbin.org/get");
         const data = await response.json();
@@ -24,7 +63,21 @@ const SupabaseConnectivityTest: React.FC = () => {
       } catch (error) {
         setTestResults((prev) => ({
           ...prev,
-          basicFetch: `❌ Basic fetch failed: ${error}`,
+          basicFetch: `❌ Basic fetch blocked by FullStory: ${error}`,
+        }));
+      }
+
+      // Test 1b: FullStory-resistant fetch
+      try {
+        const response = await resistantFetch("https://httpbin.org/get");
+        setTestResults((prev) => ({
+          ...prev,
+          resistantFetch: `✅ Resistant fetch works: ${response.status}`,
+        }));
+      } catch (error) {
+        setTestResults((prev) => ({
+          ...prev,
+          resistantFetch: `❌ Resistant fetch failed: ${error}`,
         }));
       }
 
