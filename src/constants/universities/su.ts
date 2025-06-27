@@ -50,15 +50,16 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "AgriSciences",
         duration: "3 years",
         apsRequirement: 22, // 55% excluding Life Orientation
-        description: "Agricultural production and farm management",
+        description: "Practical agricultural production management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Farm Manager",
-          "Agricultural Advisor",
-          "Production Manager",
+          "Agricultural Supervisor",
+          "Production Coordinator",
         ],
       },
       {
@@ -67,16 +68,16 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "AgriSciences",
         duration: "4 years",
         apsRequirement: 24, // 60% excluding Life Orientation
-        description: "Animal science and livestock production",
+        description: "Animal husbandry and livestock production",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Animal Scientist",
           "Livestock Manager",
-          "Veterinary Technician",
+          "Feed Specialist",
         ],
       },
       {
@@ -85,13 +86,14 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "AgriSciences",
         duration: "4 years",
         apsRequirement: 24, // 60% excluding Life Orientation
-        description: "Plant production and soil management",
+        description: "Plant science and soil management",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
         ],
-        careerProspects: ["Plant Scientist", "Soil Specialist", "Crop Advisor"],
+        careerProspects: ["Plant Scientist", "Soil Scientist", "Agronomist"],
       },
       {
         id: createDegreeId("BScAgric Viticulture Oenology SU"),
@@ -99,20 +101,25 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "AgriSciences",
         duration: "4 years",
         apsRequirement: 24, // 60% excluding Life Orientation
-        description: "Wine production and viticulture",
+        description: "Wine production and grape growing",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
         ],
-        careerProspects: ["Winemaker", "Viticulturist", "Wine Consultant"],
+        careerProspects: [
+          "Winemaker",
+          "Viticulturist",
+          "Wine Quality Specialist",
+        ],
       },
     ],
   },
   {
-    id: createFacultyId("Faculty of Arts and Social Sciences SU"),
+    id: createFacultyId("Faculty of Arts Social Sciences SU"),
     name: "Faculty of Arts and Social Sciences",
-    description: "Humanities, arts, and social sciences programs",
+    description: "Humanities, arts, and social science programs",
     degrees: [
       {
         id: createDegreeId("BA Humanities SU"),
@@ -120,13 +127,12 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Arts and Social Sciences",
         duration: "3 years",
         apsRequirement: 25, // 63% excluding Life Orientation
-        description: "Humanities and liberal arts",
-        subjects: [{ name: "English", level: 4, isRequired: true }],
-        careerProspects: [
-          "Administrative Officer",
-          "Communications Officer",
-          "Research Assistant",
+        description: "Liberal arts and humanities",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Home Language", level: 4, isRequired: true },
         ],
+        careerProspects: ["Writer", "Researcher", "Cultural Analyst"],
       },
       {
         id: createDegreeId("BA Language Culture SU"),
@@ -137,12 +143,12 @@ export const SU_FACULTIES: Faculty[] = [
         description: "Language studies and cultural analysis",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Additional Language", level: 4, isRequired: true },
+          { name: "Home Language", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Translator",
           "Language Teacher",
-          "Cultural Consultant",
+          "Cultural Specialist",
         ],
       },
       {
@@ -154,12 +160,12 @@ export const SU_FACULTIES: Faculty[] = [
         description: "Development studies and environmental issues",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Geography", level: 4, isRequired: false },
+          { name: "Geography", level: 4, isRequired: true },
         ],
         careerProspects: [
-          "Development Worker",
+          "Development Officer",
           "Environmental Consultant",
-          "Project Coordinator",
+          "NGO Worker",
         ],
       },
       {
@@ -168,10 +174,10 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Arts and Social Sciences",
         duration: "3 years",
         apsRequirement: 26, // 65% excluding Life Orientation
-        description: "Theatre and dramatic arts",
+        description: "Theatre arts and performance studies",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Dramatic Arts", level: 4, isRequired: true },
+          { name: "Dramatic Arts", level: 5, isRequired: true },
         ],
         careerProspects: ["Actor", "Theatre Director", "Drama Teacher"],
       },
@@ -181,15 +187,15 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Arts and Social Sciences",
         duration: "3 years",
         apsRequirement: 25, // 63% excluding Life Orientation
-        description: "Human resources and people management",
+        description: "Human resource management and organizational behavior",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "HR Manager",
           "Recruitment Specialist",
-          "Training Officer",
+          "Training Coordinator",
         ],
       },
       {
@@ -201,12 +207,12 @@ export const SU_FACULTIES: Faculty[] = [
         description: "International relations and global studies",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "History", level: 4, isRequired: false },
+          { name: "History", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Diplomat",
           "International Relations Officer",
-          "Policy Analyst",
+          "Political Analyst",
         ],
       },
       {
@@ -218,7 +224,7 @@ export const SU_FACULTIES: Faculty[] = [
         description: "Liberal arts with legal foundation",
         subjects: [
           { name: "English", level: 5, isRequired: true },
-          { name: "Life Orientation", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: ["Legal Assistant", "Paralegal", "Legal Researcher"],
       },
@@ -233,7 +239,7 @@ export const SU_FACULTIES: Faculty[] = [
           { name: "English", level: 4, isRequired: true },
           { name: "Music", level: 5, isRequired: true },
         ],
-        careerProspects: ["Musician", "Music Teacher", "Composer"],
+        careerProspects: ["Musician", "Composer", "Music Teacher"],
       },
       {
         id: createDegreeId("BA Music SU"),
@@ -246,11 +252,7 @@ export const SU_FACULTIES: Faculty[] = [
           { name: "English", level: 4, isRequired: true },
           { name: "Music", level: 4, isRequired: true },
         ],
-        careerProspects: [
-          "Music Teacher",
-          "Music Therapist",
-          "Arts Administrator",
-        ],
+        careerProspects: ["Music Teacher", "Music Therapist", "Music Critic"],
       },
       {
         id: createDegreeId("Diploma Practical Music SU"),
@@ -258,29 +260,25 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Arts and Social Sciences",
         duration: "3 years",
         apsRequirement: 16, // 40% excluding Life Orientation
-        description: "Practical music training",
+        description: "Practical music performance",
         subjects: [
           { name: "English", level: 3, isRequired: true },
-          { name: "Music", level: 3, isRequired: true },
+          { name: "Music", level: 4, isRequired: true },
         ],
-        careerProspects: [
-          "Music Performer",
-          "Music Instructor",
-          "Studio Musician",
-        ],
+        careerProspects: ["Performer", "Studio Musician", "Music Instructor"],
       },
       {
         id: createDegreeId("Advanced Diploma Practical Music SU"),
         name: "Advanced Diploma in Practical Music",
         faculty: "Arts and Social Sciences",
         duration: "1 year",
-        apsRequirement: 20, // Diploma qualification required
-        description: "Advanced practical music training",
-        subjects: [{ name: "Music", level: 4, isRequired: true }],
+        apsRequirement: 0, // Diploma qualification required
+        description: "Advanced practical music performance",
+        subjects: [{ name: "Music", level: 5, isRequired: true }],
         careerProspects: [
-          "Professional Musician",
+          "Professional Performer",
           "Music Director",
-          "Performance Artist",
+          "Soloist",
         ],
       },
       {
@@ -288,25 +286,24 @@ export const SU_FACULTIES: Faculty[] = [
         name: "Higher Certificate in Music",
         faculty: "Arts and Social Sciences",
         duration: "1 year",
-        apsRequirement: 20, // NSC required
-        description: "Music foundation qualification",
-        subjects: [
-          { name: "English", level: 3, isRequired: true },
-          { name: "Music", level: 3, isRequired: true },
-        ],
+        apsRequirement: 12, // NSC required
+        description: "Basic music certificate",
+        subjects: [{ name: "Music", level: 3, isRequired: true }],
         careerProspects: [
           "Music Assistant",
-          "Junior Music Teacher",
-          "Music Coordinator",
+          "Community Music Leader",
+          "Music Facilitator",
         ],
       },
       {
-        id: createDegreeId("BA Political Philosophical Economic Studies SU"),
+        id: createDegreeId(
+          "BA Political Philosophical Economic Studies PPE SU",
+        ),
         name: "BA in Political, Philosophical and Economic Studies (PPE)",
         faculty: "Arts and Social Sciences",
         duration: "3 years",
         apsRequirement: 25, // 63% excluding Life Orientation
-        description: "Interdisciplinary PPE studies",
+        description: "Interdisciplinary politics, philosophy and economics",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
@@ -314,7 +311,7 @@ export const SU_FACULTIES: Faculty[] = [
         careerProspects: [
           "Policy Analyst",
           "Political Researcher",
-          "Economic Analyst",
+          "Economic Advisor",
         ],
       },
       {
@@ -343,16 +340,16 @@ export const SU_FACULTIES: Faculty[] = [
         description: "Visual arts and creative expression",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Visual Arts", level: 4, isRequired: true },
+          { name: "Visual Arts", level: 5, isRequired: true },
         ],
-        careerProspects: ["Artist", "Art Teacher", "Gallery Curator"],
+        careerProspects: ["Visual Artist", "Art Teacher", "Gallery Curator"],
       },
     ],
   },
   {
-    id: createFacultyId("Faculty of Economic and Management Sciences SU"),
+    id: createFacultyId("Faculty of Economic Management Sciences SU"),
     name: "Faculty of Economic and Management Sciences",
-    description: "Business, economics, and management programs",
+    description: "Economics, business, and management programs",
     degrees: [
       {
         id: createDegreeId("Diploma Sustainable Development SU"),
@@ -360,15 +357,15 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 22, // 55% excluding Life Orientation
-        description: "Sustainable development and environmental management",
+        description: "Sustainable development practices",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Geography", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Sustainability Officer",
           "Environmental Consultant",
-          "Development Worker",
+          "Development Coordinator",
         ],
       },
       {
@@ -377,12 +374,12 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 26, // 65% excluding Life Orientation
-        description: "Economics and economic analysis",
+        description: "Economic theory and analysis",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
         ],
-        careerProspects: ["Economist", "Policy Analyst", "Market Researcher"],
+        careerProspects: ["Economist", "Economic Analyst", "Policy Researcher"],
       },
       {
         id: createDegreeId("BCom Management Sciences SU"),
@@ -390,15 +387,15 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 26, // 65% excluding Life Orientation
-        description: "Business and management sciences",
+        description: "Business management and administration",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Business Manager",
           "Operations Manager",
-          "Management Consultant",
+          "Project Manager",
         ],
       },
       {
@@ -407,15 +404,15 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Economic and Management Sciences",
         duration: "4 years",
         apsRequirement: 24, // 60% excluding Life Orientation
-        description: "Extended management sciences programme",
+        description: "Extended business management program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Business Manager",
           "Operations Manager",
-          "Management Consultant",
+          "Project Manager",
         ],
       },
       {
@@ -424,15 +421,15 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 28, // 70% excluding Life Orientation
-        description: "Business mathematics and quantitative analysis",
+        description: "Mathematical applications in business",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Mathematics", level: 6, isRequired: true },
         ],
         careerProspects: [
-          "Financial Analyst",
           "Quantitative Analyst",
-          "Risk Manager",
+          "Financial Modeller",
+          "Data Scientist",
         ],
       },
       {
@@ -441,7 +438,7 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Economic and Management Sciences",
         duration: "4 years",
         apsRequirement: 32, // 80% excluding Life Orientation
-        description: "International business and trade",
+        description: "International business and global trade",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
@@ -449,7 +446,7 @@ export const SU_FACULTIES: Faculty[] = [
         careerProspects: [
           "International Business Manager",
           "Export Manager",
-          "Trade Specialist",
+          "Global Trade Specialist",
         ],
       },
       {
@@ -458,12 +455,12 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 32, // 80% excluding Life Orientation
-        description: "Actuarial science and risk management",
+        description: "Actuarial mathematics and risk assessment",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
         ],
-        careerProspects: ["Actuary", "Risk Analyst", "Financial Analyst"],
+        careerProspects: ["Actuary", "Risk Analyst", "Insurance Specialist"],
       },
       {
         id: createDegreeId("BCom Industrial Psychology SU"),
@@ -471,10 +468,10 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Economic and Management Sciences",
         duration: "3 years",
         apsRequirement: 26, // 65% excluding Life Orientation
-        description: "Industrial psychology and human behavior",
+        description: "Psychology applied to workplace settings",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Industrial Psychologist",
@@ -496,8 +493,8 @@ export const SU_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Chartered Accountant",
-          "Auditor",
           "Financial Manager",
+          "Auditor",
         ],
       },
       {
@@ -509,13 +506,13 @@ export const SU_FACULTIES: Faculty[] = [
         description: "Management accounting and cost control",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
           { name: "Accounting", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Management Accountant",
-          "Cost Accountant",
-          "Financial Analyst",
+          "Cost Analyst",
+          "Financial Controller",
         ],
       },
       {
@@ -527,13 +524,13 @@ export const SU_FACULTIES: Faculty[] = [
         description: "Financial accounting and reporting",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
           { name: "Accounting", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Financial Accountant",
+          "Financial Analyst",
           "Bookkeeper",
-          "Accounting Officer",
         ],
       },
     ],
@@ -541,7 +538,7 @@ export const SU_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Education SU"),
     name: "Faculty of Education",
-    description: "Teacher education and training programs",
+    description: "Teacher education and educational development programs",
     degrees: [
       {
         id: createDegreeId("BEd Foundation Phase Education SU"),
@@ -556,7 +553,7 @@ export const SU_FACULTIES: Faculty[] = [
         ],
         careerProspects: [
           "Foundation Phase Teacher",
-          "Primary School Teacher",
+          "Early Childhood Educator",
           "Educational Specialist",
         ],
       },
@@ -578,15 +575,13 @@ export const SU_FACULTIES: Faculty[] = [
         ],
       },
       {
-        id: createDegreeId("PGCE SU"),
+        id: createDegreeId("Postgraduate Certificate Education PGCE SU"),
         name: "Postgraduate Certificate in Education (PGCE)",
         faculty: "Education",
         duration: "1 year",
-        apsRequirement: 24, // Degree required
-        description: "Postgraduate teacher training",
-        subjects: [
-          { name: "Degree qualification", level: 1, isRequired: true },
-        ],
+        apsRequirement: 0, // Degree required
+        description: "Teacher education for degree holders",
+        subjects: [{ name: "Bachelor's Degree", level: 5, isRequired: true }],
         careerProspects: [
           "High School Teacher",
           "Subject Specialist",
@@ -610,7 +605,7 @@ export const SU_FACULTIES: Faculty[] = [
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
         ],
         careerProspects: [
           "Chemical Engineer",
@@ -624,11 +619,11 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Engineering",
         duration: "4 years",
         apsRequirement: 28, // 70% excluding Life Orientation
-        description: "Infrastructure and construction engineering",
+        description: "Civil and structural engineering",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
         ],
         careerProspects: [
           "Civil Engineer",
@@ -642,16 +637,16 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Engineering",
         duration: "4 years",
         apsRequirement: 28, // 70% excluding Life Orientation
-        description: "Electrical and electronic engineering",
+        description: "Electrical and electronic systems engineering",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
         ],
         careerProspects: [
           "Electrical Engineer",
           "Electronic Engineer",
-          "Systems Engineer",
+          "Control Systems Engineer",
         ],
       },
       {
@@ -660,11 +655,12 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Engineering",
         duration: "4 years",
         apsRequirement: 28, // 70% excluding Life Orientation
-        description: "Data engineering and electrical systems",
+        description:
+          "Electrical engineering with data engineering specialization",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
         ],
         careerProspects: [
           "Data Engineer",
@@ -682,7 +678,7 @@ export const SU_FACULTIES: Faculty[] = [
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
         ],
         careerProspects: [
           "Industrial Engineer",
@@ -700,7 +696,7 @@ export const SU_FACULTIES: Faculty[] = [
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
         ],
         careerProspects: [
           "Mechanical Engineer",
@@ -714,14 +710,14 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Engineering",
         duration: "4 years",
         apsRequirement: 28, // 70% excluding Life Orientation
-        description: "Mechatronics and automation engineering",
+        description: "Mechatronic and automation engineering",
         subjects: [
           { name: "English", level: 5, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
         ],
         careerProspects: [
-          "Mechatronics Engineer",
+          "Mechatronic Engineer",
           "Automation Engineer",
           "Robotics Engineer",
         ],
@@ -731,7 +727,7 @@ export const SU_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Law SU"),
     name: "Faculty of Law",
-    description: "Legal education and jurisprudence programs",
+    description: "Legal studies and jurisprudence programs",
     degrees: [
       {
         id: createDegreeId("LLB 4 years SU"),
@@ -744,7 +740,7 @@ export const SU_FACULTIES: Faculty[] = [
           { name: "English", level: 5, isRequired: true },
           { name: "Life Orientation", level: 4, isRequired: true },
         ],
-        careerProspects: ["Lawyer", "Attorney", "Legal Advisor"],
+        careerProspects: ["Lawyer", "Attorney", "Legal Consultant"],
       },
       {
         id: createDegreeId("LLB 3 years SU"),
@@ -752,9 +748,9 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Law",
         duration: "3 years",
         apsRequirement: 24, // Prior bachelor's degree with 60% aggregate
-        description: "Graduate law degree",
-        subjects: [{ name: "Bachelor's degree", level: 1, isRequired: true }],
-        careerProspects: ["Lawyer", "Attorney", "Legal Advisor"],
+        description: "Postgraduate legal qualification",
+        subjects: [{ name: "Bachelor's Degree", level: 5, isRequired: true }],
+        careerProspects: ["Lawyer", "Attorney", "Legal Consultant"],
       },
       {
         id: createDegreeId("BA Law Faculty SU"),
@@ -770,7 +766,7 @@ export const SU_FACULTIES: Faculty[] = [
         careerProspects: ["Legal Assistant", "Paralegal", "Legal Researcher"],
       },
       {
-        id: createDegreeId("BCom Law SU"),
+        id: createDegreeId("BCom Law Faculty SU"),
         name: "BCom (Law)",
         faculty: "Law",
         duration: "3 years",
@@ -778,12 +774,12 @@ export const SU_FACULTIES: Faculty[] = [
         description: "Commerce with legal foundation",
         subjects: [
           { name: "English", level: 5, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Corporate Legal Officer",
+          "Compliance Manager",
           "Legal Advisor",
-          "Compliance Officer",
         ],
       },
       {
@@ -795,21 +791,17 @@ export const SU_FACULTIES: Faculty[] = [
         description: "Combined accounting and law degree",
         subjects: [
           { name: "English", level: 5, isRequired: true },
-          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Mathematics", level: 6, isRequired: true },
           { name: "Accounting", level: 5, isRequired: true },
         ],
-        careerProspects: [
-          "Corporate Lawyer",
-          "Legal Accountant",
-          "Business Attorney",
-        ],
+        careerProspects: ["Corporate Lawyer", "Tax Attorney", "Legal Advisor"],
       },
     ],
   },
   {
-    id: createFacultyId("Faculty of Medicine and Health Sciences SU"),
+    id: createFacultyId("Faculty of Medicine Health Sciences SU"),
     name: "Faculty of Medicine and Health Sciences",
-    description: "Medical and health-related programs",
+    description: "Medical, health, and therapeutic programs",
     degrees: [
       {
         id: createDegreeId("MBChB SU"),
@@ -819,10 +811,10 @@ export const SU_FACULTIES: Faculty[] = [
         apsRequirement: 30, // 75% excluding Life Orientation
         description: "Medical practice and surgery",
         subjects: [
-          { name: "English", level: 5, isRequired: true },
-          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "English", level: 6, isRequired: true },
+          { name: "Mathematics", level: 6, isRequired: true },
           { name: "Life Sciences", level: 6, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
         ],
         careerProspects: ["Medical Doctor", "Surgeon", "Medical Specialist"],
       },
@@ -835,8 +827,8 @@ export const SU_FACULTIES: Faculty[] = [
         description: "Professional nursing practice",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
-          { name: "Mathematics", level: 3, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Professional Nurse",
@@ -853,8 +845,9 @@ export const SU_FACULTIES: Faculty[] = [
         description: "Nutrition and dietetic practice",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: ["Dietitian", "Nutritionist", "Food Service Manager"],
       },
@@ -864,10 +857,10 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Medicine and Health Sciences",
         duration: "4 years",
         apsRequirement: 24, // 60% excluding Life Orientation
-        description: "Occupational therapy practice",
+        description: "Occupational therapy and rehabilitation",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
@@ -885,8 +878,9 @@ export const SU_FACULTIES: Faculty[] = [
         description: "Physical therapy and rehabilitation",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Physiotherapist",
@@ -900,10 +894,10 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Medicine and Health Sciences",
         duration: "4 years",
         apsRequirement: 24, // 60% excluding Life Orientation
-        description: "Speech, language, and hearing therapy",
+        description: "Speech, language and hearing therapy",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Speech Therapist",
@@ -916,7 +910,7 @@ export const SU_FACULTIES: Faculty[] = [
   {
     id: createFacultyId("Faculty of Science SU"),
     name: "Faculty of Science",
-    description: "Natural sciences and technology programs",
+    description: "Natural sciences, mathematics, and computer science programs",
     degrees: [
       {
         id: createDegreeId("BSc Biodiversity Ecology SU"),
@@ -924,16 +918,16 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Science",
         duration: "3 years",
         apsRequirement: 26, // 65% excluding Life Orientation
-        description: "Biodiversity conservation and ecological studies",
+        description: "Biodiversity conservation and ecological systems",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Ecologist",
-          "Conservation Scientist",
-          "Environmental Consultant",
+          "Conservation Biologist",
+          "Environmental Scientist",
         ],
       },
       {
@@ -945,13 +939,13 @@ export const SU_FACULTIES: Faculty[] = [
         description: "Human biology and life sciences",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
           { name: "Life Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
           "Life Scientist",
           "Medical Researcher",
-          "Health Specialist",
+          "Biomedical Scientist",
         ],
       },
       {
@@ -963,14 +957,14 @@ export const SU_FACULTIES: Faculty[] = [
         description: "Molecular biology and biotechnology applications",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
           { name: "Life Sciences", level: 5, isRequired: true },
-          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
+          "Molecular Biologist",
           "Biotechnologist",
           "Research Scientist",
-          "Product Developer",
         ],
       },
       {
@@ -982,7 +976,7 @@ export const SU_FACULTIES: Faculty[] = [
         description: "Sports science and exercise physiology",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Sciences", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 5, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
         ],
         careerProspects: [
@@ -997,16 +991,16 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Science",
         duration: "3 years",
         apsRequirement: 26, // 65% excluding Life Orientation
-        description: "Chemical analysis and research",
+        description: "Chemical sciences and analysis",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 5, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
         ],
         careerProspects: [
           "Chemist",
-          "Laboratory Analyst",
           "Research Scientist",
+          "Quality Control Analyst",
         ],
       },
       {
@@ -1018,12 +1012,12 @@ export const SU_FACULTIES: Faculty[] = [
         description: "Earth sciences and geological processes",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Physical Sciences", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 5, isRequired: true },
         ],
         careerProspects: [
-          "Geologist",
           "Earth Scientist",
+          "Geologist",
           "Environmental Consultant",
         ],
       },
@@ -1039,7 +1033,11 @@ export const SU_FACULTIES: Faculty[] = [
           { name: "Mathematics", level: 5, isRequired: true },
           { name: "Geography", level: 4, isRequired: true },
         ],
-        careerProspects: ["GIS Specialist", "Spatial Analyst", "Cartographer"],
+        careerProspects: [
+          "GIS Specialist",
+          "Geospatial Analyst",
+          "Cartographer",
+        ],
       },
       {
         id: createDegreeId("BSc Physics SU"),
@@ -1051,9 +1049,13 @@ export const SU_FACULTIES: Faculty[] = [
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 6, isRequired: true },
         ],
-        careerProspects: ["Physicist", "Research Scientist", "Science Teacher"],
+        careerProspects: [
+          "Physicist",
+          "Research Scientist",
+          "Engineering Physicist",
+        ],
       },
       {
         id: createDegreeId("BSc Mathematical Sciences SU"),
@@ -1066,11 +1068,7 @@ export const SU_FACULTIES: Faculty[] = [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 6, isRequired: true },
         ],
-        careerProspects: [
-          "Mathematician",
-          "Data Analyst",
-          "Mathematics Teacher",
-        ],
+        careerProspects: ["Mathematician", "Statistician", "Data Analyst"],
       },
       {
         id: createDegreeId("BSc Computer Science SU"),
@@ -1095,15 +1093,16 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Science",
         duration: "3 years",
         apsRequirement: 26, // 65% excluding Life Orientation
-        description: "Interdisciplinary science programmes",
+        description: "Interdisciplinary science programs",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Mathematics", level: 5, isRequired: true },
+          { name: "Physical Sciences", level: 4, isRequired: true },
         ],
         careerProspects: [
           "Research Scientist",
           "Science Consultant",
-          "Technical Specialist",
+          "Interdisciplinary Specialist",
         ],
       },
       {
@@ -1136,12 +1135,12 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Theology",
         duration: "3 years",
         apsRequirement: 24, // 60% excluding Life Orientation
-        description: "Theological studies and ministry",
+        description: "Theological studies and ministry preparation",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 3, isRequired: true },
+          { name: "Life Orientation", level: 4, isRequired: true },
         ],
-        careerProspects: ["Minister", "Chaplain", "Religious Counselor"],
+        careerProspects: ["Minister", "Chaplain", "Religious Educator"],
       },
       {
         id: createDegreeId("BDiv Bachelor Divinity SU"),
@@ -1149,10 +1148,10 @@ export const SU_FACULTIES: Faculty[] = [
         faculty: "Theology",
         duration: "4 years",
         apsRequirement: 24, // 60% excluding Life Orientation
-        description: "Advanced theological studies and divinity",
+        description: "Advanced theological and divinity studies",
         subjects: [
           { name: "English", level: 4, isRequired: true },
-          { name: "Life Orientation", level: 3, isRequired: true },
+          { name: "Life Orientation", level: 4, isRequired: true },
         ],
         careerProspects: ["Minister", "Theologian", "Religious Scholar"],
       },
