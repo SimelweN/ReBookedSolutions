@@ -195,12 +195,20 @@ const EnhancedUniversityProfile: React.FC = React.memo(() => {
 
       // Debug logging
       if (import.meta.env.DEV) {
-        console.log(`Loading faculties for university: ${universityId}`);
+        console.log(`🏫 Loading faculties for university: ${universityId}`);
       }
 
       try {
         // Get faculties directly from the university data
         const faculties = getUniversityFaculties(universityId);
+
+        // Debug logging
+        if (import.meta.env.DEV) {
+          console.log(
+            `✅ Loaded ${faculties.length} faculties for ${universityId}:`,
+            faculties.map((f) => f.name),
+          );
+        }
 
         // Calculate statistics
         const totalDegrees = faculties.reduce(
