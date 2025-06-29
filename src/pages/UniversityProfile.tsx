@@ -1,5 +1,5 @@
 // Legacy University Profile - redirect to enhanced version
-import React from "react";
+import * as React from "react";
 import { useParams } from "react-router-dom";
 import EnhancedUniversityProfile from "./EnhancedUniversityProfile";
 
