@@ -41,7 +41,17 @@ if (import.meta.env.DEV) {
   // Validate React imports immediately to catch createContext errors
   setTimeout(() => {
     console.log("🔍 Running React import validation...");
-    reportReactImportStatus();
+    const status = reportReactImportStatus();
+
+    // Test createContext specifically
+    if (status.createContextAvailable) {
+      try {
+        const testContext = React.createContext("test");
+        console.log("✅ React.createContext test passed");
+      } catch (error) {
+        console.error("❌ React.createContext test failed:", error);
+      }
+    }
   }, 100);
 
   // Test NEW SUBJECT ENGINE - wrapped to prevent Suspense issues
