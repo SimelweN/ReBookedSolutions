@@ -53,7 +53,9 @@ const DeploymentTroubleshooting: React.FC = () => {
   const [checks, setChecks] = useState<DeploymentCheck[]>([]);
   const [isRunningChecks, setIsRunningChecks] = useState(false);
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
-  const [deploymentStatus, setDeploymentStatus] = useState<DeploymentStatus[]>([]);
+  const [deploymentStatus, setDeploymentStatus] = useState<DeploymentStatus[]>(
+    [],
+  );
   const [hasInitialCheckRun, setHasInitialCheckRun] = useState(false);
   const mockDeploymentStatus: DeploymentStatus[] = [
     {
@@ -232,7 +234,7 @@ const DeploymentTroubleshooting: React.FC = () => {
     ];
 
     // Initialize all checks with "checking" status first
-    const initialChecks = checkItems.map(item => ({
+    const initialChecks = checkItems.map((item) => ({
       id: item.id,
       name: item.name,
       status: "checking" as const,
@@ -245,23 +247,22 @@ const DeploymentTroubleshooting: React.FC = () => {
       const item = checkItems[i];
 
       // Simulate async check
-      await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
+      await new Promise((resolve) =>
+        setTimeout(resolve, 500 + Math.random() * 1000),
+      );
 
       const result = item.check();
 
       // Update with result using functional update to ensure consistency
-      setChecks(prev => prev.map(check =>
-        check.id === item.id
-          ? {
-              id: item.id,
-              name: item.name,
-              ...result
-            }
-          : check
-      ));
-    }
+      setChecks((prev) =>
         prev.map((check) =>
-          check.id === item.id ? { ...check, ...result } : check,
+          check.id === item.id
+            ? {
+                id: item.id,
+                name: item.name,
+                ...result,
+              }
+            : check,
         ),
       );
     }
@@ -390,10 +391,14 @@ const DeploymentTroubleshooting: React.FC = () => {
                         variant="outline"
                         size="sm"
                         onClick={() =>
-                          copyToClipboard(deployment.url, `url-${deployment.environment}-${index}`)
+                          copyToClipboard(
+                            deployment.url,
+                            `url-${deployment.environment}-${index}`,
+                          )
                         }
                       >
-                        {copiedItem === `url-${deployment.environment}-${index}` ? (
+                        {copiedItem ===
+                        `url-${deployment.environment}-${index}` ? (
                           <Check className="h-4 w-4" />
                         ) : (
                           <Copy className="h-4 w-4" />
