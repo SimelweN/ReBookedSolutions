@@ -1,5 +1,4 @@
-import * as React from "react";
-const {
+import React, {
   createContext,
   useContext,
   useEffect,
@@ -8,7 +7,7 @@ const {
   useMemo,
   useRef,
   startTransition,
-} = React;
+} from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import {
