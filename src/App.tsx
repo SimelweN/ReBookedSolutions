@@ -402,7 +402,7 @@ function App() {
                             path="/university/:id"
                             element={
                               <LazyWrapper>
-                                <ModernUniversityProfile />
+                                <EnhancedUniversityProfile />
                               </LazyWrapper>
                             }
                           />
