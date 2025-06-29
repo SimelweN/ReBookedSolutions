@@ -132,6 +132,16 @@ const Footer = () => {
                   Report Issue
                 </Link>
               </li>
+              <li className="flex flex-col">
+                <Link
+                  to="/deployment-help"
+                  className="text-gray-600 hover:text-book-600 text-sm flex items-center transition-colors mx-auto"
+                  onClick={handleLinkClick}
+                >
+                  <Server className="h-4 w-4 mr-2 flex-shrink-0" />
+                  Deployment Help
+                </Link>
+              </li>
               <li>
                 <Link
                   to="/privacy"
