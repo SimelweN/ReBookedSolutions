@@ -5,6 +5,7 @@ import {
   AlertTriangle,
   Instagram,
   Facebook,
+  Server,
 } from "lucide-react";
 
 const Footer = () => {
