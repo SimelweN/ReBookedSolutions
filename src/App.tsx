@@ -103,6 +103,9 @@ const ModernUniversityProfile = React.lazy(
   () => import("./pages/ModernUniversityProfile"),
 );
 const UniversityProfile = React.lazy(() => import("./pages/UniversityProfile"));
+const EnhancedUniversityProfile = React.lazy(
+  () => import("./pages/EnhancedUniversityProfile"),
+);
 const Policies = React.lazy(() => import("./pages/Policies"));
 const Privacy = React.lazy(() => import("./pages/Privacy"));
 const Terms = React.lazy(() => import("./pages/Terms"));
