@@ -84,7 +84,7 @@ if (import.meta.env.DEV) {
   console.log("  - debugBankingDetails() - Debug banking details errors");
   console.log("  - checkDatabaseStatus() - Check database connectivity");
   console.log("  - logDatabaseStatus() - Log current database status");
-  console.log("  �� Fixed subject matching tests will run automatically");
+  console.log("  ��� Fixed subject matching tests will run automatically");
 }
 
 // Import critical pages directly for instant loading (prevents Suspense errors)
@@ -149,6 +149,7 @@ const CheckoutSuccess = React.lazy(() => import("./pages/CheckoutSuccess"));
 const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
 const PaystackTest = React.lazy(() => import("./pages/PaystackTest"));
+const DeploymentHelp = React.lazy(() => import("./pages/DeploymentHelp"));
 
 // Create query client with optimized settings
 const queryClient = new QueryClient({
@@ -526,6 +527,22 @@ function App() {
                             element={
                               <LazyWrapper>
                                 <SystemStatus />
+                              </LazyWrapper>
+                            }
+                          />
+                          <Route
+                            path="/deployment-help"
+                            element={
+                              <LazyWrapper>
+                                <DeploymentHelp />
+                              </LazyWrapper>
+                            }
+                          />
+                          <Route
+                            path="/support/deployment"
+                            element={
+                              <LazyWrapper>
+                                <DeploymentHelp />
                               </LazyWrapper>
                             }
                           />
