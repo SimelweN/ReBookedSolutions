@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useEffect } from "react";
+import * as React from "react";
+const { useState, useMemo, useEffect } = React;
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
@@ -194,12 +195,20 @@ const EnhancedUniversityProfile: React.FC = React.memo(() => {
 
       // Debug logging
       if (import.meta.env.DEV) {
-        console.log(`Loading faculties for university: ${universityId}`);
+        console.log(`🏫 Loading faculties for university: ${universityId}`);
       }
 
       try {
         // Get faculties directly from the university data
         const faculties = getUniversityFaculties(universityId);
+
+        // Debug logging
+        if (import.meta.env.DEV) {
+          console.log(
+            `✅ Loaded ${faculties.length} faculties for ${universityId}:`,
+            faculties.map((f) => f.name),
+          );
+        }
 
         // Calculate statistics
         const totalDegrees = faculties.reduce(
@@ -479,7 +488,44 @@ const EnhancedUniversityProfile: React.FC = React.memo(() => {
   }
 
   const university = universityData.university;
-  if (!university) return null;
+
+  // Debug logging for troubleshooting
+  if (import.meta.env.DEV) {
+    console.log("🔍 University data debug:", {
+      universityId,
+      universityData,
+      university,
+      allUniversities: ALL_SOUTH_AFRICAN_UNIVERSITIES.length,
+    });
+  }
+
+  // If no university found, show better error handling
+  if (!university) {
+    if (import.meta.env.DEV) {
+      console.error(`❌ University not found: ${universityId}`);
+      console.log(
+        "Available universities:",
+        ALL_SOUTH_AFRICAN_UNIVERSITIES.map((u) => u.id),
+      );
+    }
+
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">University Not Found</h1>
+          <p className="text-gray-600 mb-4">
+            University "{universityId}" could not be found.
+          </p>
+          <button
+            onClick={() => navigate("/university-info")}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Back to Universities
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

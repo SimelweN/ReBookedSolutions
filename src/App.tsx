@@ -1,4 +1,5 @@
-import React, { Suspense, startTransition } from "react";
+import * as React from "react";
+const { Suspense, startTransition } = React;
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
@@ -24,6 +25,7 @@ import {
   logDatabaseStatus,
 } from "./utils/databaseConnectivityHelper";
 import { preloadCriticalRoutes } from "./utils/routePreloader";
+import { reportReactImportStatus } from "./utils/reactImportValidator";
 import EmergencyBypass from "./components/EmergencyBypass";
 import "./App.css";
 
@@ -35,6 +37,22 @@ if (import.meta.env.DEV) {
   (window as any).debugBankingDetails = debugBankingDetails;
   (window as any).checkDatabaseStatus = checkDatabaseStatus;
   (window as any).logDatabaseStatus = logDatabaseStatus;
+
+  // Validate React imports immediately to catch createContext errors
+  setTimeout(() => {
+    console.log("🔍 Running React import validation...");
+    const status = reportReactImportStatus();
+
+    // Test createContext specifically
+    if (status.createContextAvailable) {
+      try {
+        const testContext = React.createContext("test");
+        console.log("✅ React.createContext test passed");
+      } catch (error) {
+        console.error("❌ React.createContext test failed:", error);
+      }
+    }
+  }, 100);
 
   // Test NEW SUBJECT ENGINE - wrapped to prevent Suspense issues
   setTimeout(() => {
@@ -95,6 +113,9 @@ const ModernUniversityProfile = React.lazy(
   () => import("./pages/ModernUniversityProfile"),
 );
 const UniversityProfile = React.lazy(() => import("./pages/UniversityProfile"));
+const EnhancedUniversityProfile = React.lazy(
+  () => import("./pages/EnhancedUniversityProfile"),
+);
 const Policies = React.lazy(() => import("./pages/Policies"));
 const Privacy = React.lazy(() => import("./pages/Privacy"));
 const Terms = React.lazy(() => import("./pages/Terms"));
@@ -122,6 +143,7 @@ const Report = React.lazy(() => import("./pages/Report"));
 const UserProfile = React.lazy(() => import("./pages/UserProfile"));
 const FAQ = React.lazy(() => import("./pages/FAQ"));
 const APSDemo = React.lazy(() => import("./pages/APSDemo"));
+const AddProgram = React.lazy(() => import("./pages/AddProgram"));
 const SystemStatus = React.lazy(() => import("./pages/SystemStatus"));
 const CheckoutSuccess = React.lazy(() => import("./pages/CheckoutSuccess"));
 const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
@@ -394,7 +416,7 @@ function App() {
                             path="/university/:id"
                             element={
                               <LazyWrapper>
-                                <UniversityProfile />
+                                <EnhancedUniversityProfile />
                               </LazyWrapper>
                             }
                           />
@@ -419,6 +441,14 @@ function App() {
                             element={
                               <LazyWrapper>
                                 <APSDemo />
+                              </LazyWrapper>
+                            }
+                          />
+                          <Route
+                            path="/add-program"
+                            element={
+                              <LazyWrapper>
+                                <AddProgram />
                               </LazyWrapper>
                             }
                           />

@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from "react";
+import * as React from "react";
+const { useState, useMemo } = React;
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
