@@ -143,6 +143,7 @@ const Report = React.lazy(() => import("./pages/Report"));
 const UserProfile = React.lazy(() => import("./pages/UserProfile"));
 const FAQ = React.lazy(() => import("./pages/FAQ"));
 const APSDemo = React.lazy(() => import("./pages/APSDemo"));
+const AddProgram = React.lazy(() => import("./pages/AddProgram"));
 const SystemStatus = React.lazy(() => import("./pages/SystemStatus"));
 const CheckoutSuccess = React.lazy(() => import("./pages/CheckoutSuccess"));
 const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
@@ -440,6 +441,14 @@ function App() {
                             element={
                               <LazyWrapper>
                                 <APSDemo />
+                              </LazyWrapper>
+                            }
+                          />
+                          <Route
+                            path="/add-program"
+                            element={
+                              <LazyWrapper>
+                                <AddProgram />
                               </LazyWrapper>
                             }
                           />
