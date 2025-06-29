@@ -53,10 +53,8 @@ const DeploymentTroubleshooting: React.FC = () => {
   const [checks, setChecks] = useState<DeploymentCheck[]>([]);
   const [isRunningChecks, setIsRunningChecks] = useState(false);
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
-  const [deploymentStatus, setDeploymentStatus] = useState<DeploymentStatus[]>(
-    [],
-  );
-
+  const [deploymentStatus, setDeploymentStatus] = useState<DeploymentStatus[]>([]);
+  const [hasInitialCheckRun, setHasInitialCheckRun] = useState(false);
   const mockDeploymentStatus: DeploymentStatus[] = [
     {
       environment: "Production",
@@ -77,8 +75,10 @@ const DeploymentTroubleshooting: React.FC = () => {
   ];
 
   const runDeploymentChecks = async () => {
+    if (isRunningChecks) return; // Prevent concurrent executions
+
     setIsRunningChecks(true);
-    setChecks([]);
+    setChecks([]); // Clear existing checks
 
     const checkItems = [
       {
@@ -231,29 +231,35 @@ const DeploymentTroubleshooting: React.FC = () => {
       },
     ];
 
+    // Initialize all checks with "checking" status first
+    const initialChecks = checkItems.map(item => ({
+      id: item.id,
+      name: item.name,
+      status: "checking" as const,
+      message: "Checking...",
+    }));
+    setChecks(initialChecks);
+
+    // Run checks in parallel but update sequentially
     for (let i = 0; i < checkItems.length; i++) {
       const item = checkItems[i];
 
-      // Add checking status
-      setChecks((prev) => [
-        ...prev,
-        {
-          id: item.id,
-          name: item.name,
-          status: "checking",
-          message: "Checking...",
-        },
-      ]);
-
       // Simulate async check
-      await new Promise((resolve) =>
-        setTimeout(resolve, 500 + Math.random() * 1000),
-      );
+      await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
 
       const result = item.check();
 
-      // Update with result
-      setChecks((prev) =>
+      // Update with result using functional update to ensure consistency
+      setChecks(prev => prev.map(check =>
+        check.id === item.id
+          ? {
+              id: item.id,
+              name: item.name,
+              ...result
+            }
+          : check
+      ));
+    }
         prev.map((check) =>
           check.id === item.id ? { ...check, ...result } : check,
         ),
@@ -303,8 +309,11 @@ const DeploymentTroubleshooting: React.FC = () => {
   };
 
   useEffect(() => {
-    runDeploymentChecks();
-  }, []);
+    if (!hasInitialCheckRun) {
+      setHasInitialCheckRun(true);
+      runDeploymentChecks();
+    }
+  }, [hasInitialCheckRun]);
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
@@ -340,7 +349,7 @@ const DeploymentTroubleshooting: React.FC = () => {
               <div className="grid gap-4">
                 {deploymentStatus.map((deployment, index) => (
                   <div
-                    key={index}
+                    key={`deployment-${deployment.environment}-${index}`}
                     className="flex items-center justify-between p-4 border rounded-lg"
                   >
                     <div className="flex items-center gap-4">
@@ -381,10 +390,10 @@ const DeploymentTroubleshooting: React.FC = () => {
                         variant="outline"
                         size="sm"
                         onClick={() =>
-                          copyToClipboard(deployment.url, `url-${index}`)
+                          copyToClipboard(deployment.url, `url-${deployment.environment}-${index}`)
                         }
                       >
-                        {copiedItem === `url-${index}` ? (
+                        {copiedItem === `url-${deployment.environment}-${index}` ? (
                           <Check className="h-4 w-4" />
                         ) : (
                           <Copy className="h-4 w-4" />
@@ -422,9 +431,9 @@ const DeploymentTroubleshooting: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {checks.map((check) => (
+                {checks.map((check, checkIndex) => (
                   <div
-                    key={check.id}
+                    key={`check-${check.id}-${checkIndex}`}
                     className="flex items-start gap-3 p-3 border rounded-lg"
                   >
                     <div className="flex-shrink-0 mt-0.5">
