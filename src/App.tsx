@@ -25,6 +25,7 @@ import {
   logDatabaseStatus,
 } from "./utils/databaseConnectivityHelper";
 import { preloadCriticalRoutes } from "./utils/routePreloader";
+import { reportReactImportStatus } from "./utils/reactImportValidator";
 import EmergencyBypass from "./components/EmergencyBypass";
 import "./App.css";
 
@@ -36,6 +37,12 @@ if (import.meta.env.DEV) {
   (window as any).debugBankingDetails = debugBankingDetails;
   (window as any).checkDatabaseStatus = checkDatabaseStatus;
   (window as any).logDatabaseStatus = logDatabaseStatus;
+
+  // Validate React imports immediately to catch createContext errors
+  setTimeout(() => {
+    console.log("🔍 Running React import validation...");
+    reportReactImportStatus();
+  }, 100);
 
   // Test NEW SUBJECT ENGINE - wrapped to prevent Suspense issues
   setTimeout(() => {
