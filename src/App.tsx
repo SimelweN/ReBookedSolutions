@@ -81,7 +81,7 @@ if (import.meta.env.DEV) {
   console.log(
     "  - DatabaseSetup.showSetupInstructions() - Check database setup",
   );
-  console.log("  - debugBankingDetails() - Debug banking details errors");
+
   console.log("  - checkDatabaseStatus() - Check database connectivity");
   console.log("  - logDatabaseStatus() - Log current database status");
   console.log("  �� Fixed subject matching tests will run automatically");
