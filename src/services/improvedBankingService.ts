@@ -388,6 +388,85 @@ export class ImprovedBankingService {
       throw error;
     }
   }
+
+  /**
+   * Create Paystack subaccount using direct Supabase function call
+   */
+  private static async createPaystackSubaccount(
+    bankingDetails: Omit<BankingDetails, "id" | "created_at" | "updated_at">,
+    userEmail: string,
+  ): Promise<{ subaccount_code: string; subaccount_id: string }> {
+    try {
+      const { data, error } = await supabase.functions.invoke(
+        "create-paystack-subaccount",
+        {
+          body: {
+            business_name: bankingDetails.full_name,
+            bank_name: bankingDetails.bank_name,
+            account_number: bankingDetails.bank_account_number,
+            primary_contact_email: userEmail,
+            primary_contact_name: bankingDetails.full_name,
+            metadata: {
+              user_id: bankingDetails.user_id,
+              recipient_type: bankingDetails.recipient_type,
+              account_type: bankingDetails.account_type,
+              created_at: new Date().toISOString(),
+            },
+          },
+        },
+      );
+
+      if (error) {
+        console.error("Supabase function error:", error);
+
+        // Improve error message handling
+        let errorMessage = "Failed to create payment account";
+
+        if (typeof error === "object" && error !== null) {
+          if ("message" in error && typeof error.message === "string") {
+            errorMessage = error.message;
+          } else if ("details" in error && typeof error.details === "string") {
+            errorMessage = error.details;
+          } else {
+            try {
+              errorMessage = JSON.stringify(error, null, 2);
+            } catch (stringifyError) {
+              errorMessage = `Unknown error: ${String(error)}`;
+            }
+          }
+        } else {
+          errorMessage = String(error);
+        }
+
+        throw new Error(errorMessage);
+      }
+
+      if (!data?.success) {
+        throw new Error(data?.message || "Subaccount creation failed");
+      }
+
+      return {
+        subaccount_code: data.data.subaccount_code,
+        subaccount_id: data.data.id,
+      };
+    } catch (error) {
+      console.error("Error creating Paystack subaccount:", error);
+
+      // Provide a more user-friendly error message
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
+      if (
+        errorMessage.includes("Failed to send a request") ||
+        errorMessage.includes("non-2xx status code") ||
+        errorMessage.includes("FunctionsHttpError")
+      ) {
+        throw new Error("EDGE_FUNCTION_UNAVAILABLE");
+      }
+
+      throw new Error(errorMessage);
+    }
+  }
 }
 
 export default ImprovedBankingService;
