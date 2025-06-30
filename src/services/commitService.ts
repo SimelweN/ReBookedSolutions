@@ -122,11 +122,13 @@ export const commitBookSale = async (bookId: string): Promise<void> => {
       // In a real system, we'd check if commit is already processed
     }
 
-    // Update book to mark as sold (simplified for current schema)
+    // Update book to mark as sold and available = false
     const { error: updateError } = await supabase
       .from("books")
       .update({
         sold: true,
+        available: false,
+        updated_at: new Date().toISOString(),
       })
       .eq("id", bookId)
       .eq("seller_id", user.id);
