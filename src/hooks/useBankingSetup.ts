@@ -25,6 +25,17 @@ export const useBankingSetup = () => {
         .single();
 
       if (error) {
+        // Check if error is due to missing column
+        if (
+          error.message?.includes("column") &&
+          error.message?.includes("does not exist")
+        ) {
+          console.warn(
+            "subaccount_code column not found - banking setup not available yet",
+          );
+          setHasBankingSetup(false);
+          return false;
+        }
         console.error("Error checking banking setup:", error.message || error);
         setHasBankingSetup(false);
         return false;
