@@ -1,6 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
 import { safeLogError } from "@/utils/errorHandling";
-import { ImprovedBankingService } from "@/services/improvedBankingService";
 
 interface Address {
   complex?: string;
