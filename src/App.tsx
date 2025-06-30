@@ -71,16 +71,8 @@ if (import.meta.env.DEV) {
     }
   }, 3000); // Extended delay to prevent initialization conflicts
 
-  console.log("🛠️ Debug utilities available:");
-  console.log("  - debugConnection() - Full connection test");
-  console.log("  - validateApiKey() - Check API key validity");
-  console.log(
-    "  - DatabaseSetup.showSetupInstructions() - Check database setup",
-  );
-
-  console.log("  - checkDatabaseStatus() - Check database connectivity");
-  console.log("  - logDatabaseStatus() - Log current database status");
-  console.log("  �� Fixed subject matching tests will run automatically");
+  // Minimal debug logging in development
+  console.log("🛠️ Development mode active");
 }
 
 // Import critical pages directly for instant loading (prevents Suspense errors)
