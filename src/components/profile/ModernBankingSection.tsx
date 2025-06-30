@@ -317,6 +317,11 @@ const ModernBankingSection = () => {
               <br />
               This secure process takes just 2 minutes and enables instant
               payments.
+              <br />
+              <span className="text-sm font-medium mt-1 inline-block">
+                💡 After completing banking setup, click "Refresh Status" to
+                update this page.
+              </span>
             </AlertDescription>
           </Alert>
 
