@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { ImprovedBankingService } from "@/services/improvedBankingService";
 import { BankingDetails, SOUTH_AFRICAN_BANKS } from "@/types/banking";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   Shield,
@@ -130,6 +131,8 @@ const BankingDetailsSection: React.FC = () => {
 
     try {
       setIsLoading(true);
+
+      // First save the banking details
       const detailsToSave = {
         user_id: user.id,
         recipient_type: formData.recipient_type as "individual" | "business",
@@ -145,9 +148,68 @@ const BankingDetailsSection: React.FC = () => {
         user.email || "",
       );
 
+      // Create Paystack subaccount for the seller
+      try {
+        console.log("Creating Paystack subaccount...");
+        const subaccountResult = await createPaystackSubaccount(
+          formData.full_name,
+          formData.bank_name,
+          formData.bank_account_number,
+          user.email || "",
+          formData.full_name,
+        );
+
+        if (subaccountResult.success) {
+          // Update banking details with subaccount code
+          await ImprovedBankingService.updateSubaccountCode(
+            user.id,
+            subaccountResult.data.subaccount_code,
+          );
+
+          toast.success(
+            "Banking details and payment account created successfully!",
+          );
+        } else {
+          console.warn(
+            "Subaccount creation failed, but banking details saved:",
+            subaccountResult.message,
+          );
+          toast.warning(
+            "Banking details saved, but payment setup needs completion. Please contact support.",
+          );
+        }
+      } catch (subaccountError) {
+        console.error("Subaccount creation error:", subaccountError);
+
+        const errorMessage =
+          subaccountError instanceof Error
+            ? subaccountError.message
+            : String(subaccountError);
+
+        if (
+          errorMessage.includes("EDGE_FUNCTION_UNAVAILABLE") ||
+          errorMessage.includes("Failed to send a request") ||
+          errorMessage.includes("non-2xx status code")
+        ) {
+          toast.warning(
+            "Banking details saved. Payment account will be set up automatically when the service becomes available.",
+          );
+        } else if (
+          errorMessage.includes("not configured") ||
+          errorMessage.includes("MISSING_SECRET_KEY")
+        ) {
+          toast.warning(
+            "Banking details saved. Payment service needs to be configured by an administrator.",
+          );
+        } else {
+          toast.warning(
+            `Banking details saved, but payment setup failed: ${errorMessage}`,
+          );
+        }
+      }
+
       setBankingDetails(savedDetails);
       setIsEditing(false);
-      toast.success("Banking details saved successfully!");
     } catch (error) {
       console.error("Error saving banking details:", error);
       const errorMessage =
@@ -158,6 +220,58 @@ const BankingDetailsSection: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const createPaystackSubaccount = async (
+    businessName: string,
+    bankName: string,
+    accountNumber: string,
+    primaryContactEmail: string,
+    primaryContactName: string,
+  ) => {
+    const { data, error } = await supabase.functions.invoke(
+      "create-paystack-subaccount",
+      {
+        body: {
+          business_name: businessName,
+          bank_name: bankName,
+          account_number: accountNumber,
+          primary_contact_email: primaryContactEmail,
+          primary_contact_name: primaryContactName,
+          metadata: {
+            user_id: user?.id,
+            created_at: new Date().toISOString(),
+          },
+        },
+      },
+    );
+
+    if (error) {
+      console.error("Supabase function error:", error);
+
+      // Properly handle error object
+      let errorMessage = "Subaccount creation failed";
+
+      if (typeof error === "object" && error !== null) {
+        if ("message" in error && typeof error.message === "string") {
+          errorMessage = `Subaccount creation failed: ${error.message}`;
+        } else if ("details" in error && typeof error.details === "string") {
+          errorMessage = `Subaccount creation failed: ${error.details}`;
+        } else {
+          try {
+            errorMessage = `Subaccount creation failed: ${JSON.stringify(error, null, 2)}`;
+          } catch (stringifyError) {
+            errorMessage = `Subaccount creation failed: ${String(error)}`;
+          }
+        }
+      } else {
+        errorMessage = `Subaccount creation failed: ${String(error)}`;
+      }
+
+      throw new Error(errorMessage);
+    }
+
+    return data;
   };
 
   if (isLoading && !bankingDetails) {

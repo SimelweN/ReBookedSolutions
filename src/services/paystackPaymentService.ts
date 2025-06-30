@@ -12,6 +12,7 @@ export interface PaymentInitialization {
   email: string;
   amount: number; // in kobo
   reference: string;
+  subaccount?: string; // Subaccount code for split payments
   metadata?: Record<string, any>;
   callback_url?: string;
 }
@@ -87,11 +88,30 @@ export class PaystackPaymentService {
       throw new Error("Paystack public key not configured");
     }
 
-    // Ensure Paystack script is loaded
-    await this.loadPaystackScript();
+    // Try to use the new @paystack/inline-js package first
+    let PaystackPop;
+    try {
+      const { PaystackPop: ImportedPaystackPop } = await import(
+        "@paystack/inline-js"
+      );
+      PaystackPop = ImportedPaystackPop;
+    } catch (importError) {
+      console.warn(
+        "Failed to import @paystack/inline-js, falling back to CDN script",
+      );
+      // Ensure Paystack script is loaded
+      await this.loadPaystackScript();
+      PaystackPop = (window as any).PaystackPop;
+    }
+
+    if (!PaystackPop) {
+      throw new Error("Paystack payment library not available");
+    }
 
     return new Promise((resolve, reject) => {
-      const handler = (window as any).PaystackPop.setup({
+      const paystack = new PaystackPop();
+
+      const transactionParams: any = {
         key: this.PAYSTACK_PUBLIC_KEY,
         email: params.email,
         amount: params.amount,
@@ -101,7 +121,7 @@ export class PaystackPaymentService {
           ...params.metadata,
           payment_method: "paystack_inline",
         },
-        callback: (response: any) => {
+        onSuccess: (response: any) => {
           // Handle payment verification in the background
           this.verifyPayment(response.reference)
             .then(() => {
@@ -111,16 +131,22 @@ export class PaystackPaymentService {
               reject(error);
             });
         },
-        onClose: () => {
+        onCancel: () => {
           console.log("💡 Payment window was closed by user");
           toast.info("Payment was cancelled", {
             description: "You can try again when ready.",
           });
           reject(new Error("PAYMENT_CANCELLED_BY_USER"));
         },
-      });
+      };
 
-      handler.openIframe();
+      // Add subaccount for split payments if provided
+      if (params.subaccount) {
+        transactionParams.subaccount = params.subaccount;
+        console.log("Payment will be split to subaccount:", params.subaccount);
+      }
+
+      paystack.newTransaction(transactionParams);
     });
   }
 

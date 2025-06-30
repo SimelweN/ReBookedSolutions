@@ -5,7 +5,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { BankingDetails } from "@/types/banking";
-import { PaystackService } from "@/services/paystackService";
 import { DatabaseSetup } from "@/utils/databaseSetup";
 import { LocalBankingFallback } from "@/services/localBankingFallback";
 import { toast } from "sonner";
@@ -153,7 +152,7 @@ export class ImprovedBankingService {
       // Now try to create Paystack subaccount
       try {
         console.log("Attempting to create Paystack subaccount...");
-        const paystackResult = await PaystackService.createSubaccount(
+        const paystackResult = await this.createPaystackSubaccount(
           bankingDetails,
           userEmail,
         );
@@ -357,6 +356,114 @@ export class ImprovedBankingService {
         `Error checking banking details verification: ${errorMessage}`,
       );
       return false;
+    }
+  }
+
+  /**
+   * Update subaccount code for a user's banking details
+   */
+  static async updateSubaccountCode(
+    userId: string,
+    subaccountCode: string,
+  ): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from("banking_details")
+        .update({
+          paystack_subaccount_code: subaccountCode,
+          account_verified: true,
+          subaccount_status: "active",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("user_id", userId);
+
+      if (error) {
+        throw new Error(`Failed to update subaccount code: ${error.message}`);
+      }
+
+      console.log("✅ Subaccount code updated successfully");
+    } catch (error) {
+      console.error("Error updating subaccount code:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Create Paystack subaccount using direct Supabase function call
+   */
+  private static async createPaystackSubaccount(
+    bankingDetails: Omit<BankingDetails, "id" | "created_at" | "updated_at">,
+    userEmail: string,
+  ): Promise<{ subaccount_code: string; subaccount_id: string }> {
+    try {
+      const { data, error } = await supabase.functions.invoke(
+        "create-paystack-subaccount",
+        {
+          body: {
+            business_name: bankingDetails.full_name,
+            bank_name: bankingDetails.bank_name,
+            account_number: bankingDetails.bank_account_number,
+            primary_contact_email: userEmail,
+            primary_contact_name: bankingDetails.full_name,
+            metadata: {
+              user_id: bankingDetails.user_id,
+              recipient_type: bankingDetails.recipient_type,
+              account_type: bankingDetails.account_type,
+              created_at: new Date().toISOString(),
+            },
+          },
+        },
+      );
+
+      if (error) {
+        console.error("Supabase function error:", error);
+
+        // Improve error message handling
+        let errorMessage = "Failed to create payment account";
+
+        if (typeof error === "object" && error !== null) {
+          if ("message" in error && typeof error.message === "string") {
+            errorMessage = error.message;
+          } else if ("details" in error && typeof error.details === "string") {
+            errorMessage = error.details;
+          } else {
+            try {
+              errorMessage = JSON.stringify(error, null, 2);
+            } catch (stringifyError) {
+              errorMessage = `Unknown error: ${String(error)}`;
+            }
+          }
+        } else {
+          errorMessage = String(error);
+        }
+
+        throw new Error(errorMessage);
+      }
+
+      if (!data?.success) {
+        throw new Error(data?.message || "Subaccount creation failed");
+      }
+
+      return {
+        subaccount_code: data.data.subaccount_code,
+        subaccount_id: data.data.id,
+      };
+    } catch (error) {
+      console.error("Error creating Paystack subaccount:", error);
+
+      // Provide a more user-friendly error message
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
+      if (
+        errorMessage.includes("Failed to send a request") ||
+        errorMessage.includes("non-2xx status code") ||
+        errorMessage.includes("FunctionsHttpError")
+      ) {
+        throw new Error("EDGE_FUNCTION_UNAVAILABLE");
+      }
+
+      throw new Error(errorMessage);
     }
   }
 }
