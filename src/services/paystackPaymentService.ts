@@ -121,38 +121,43 @@ export class PaystackPaymentService {
       throw new Error("Paystack public key not configured");
     }
 
-    // Ensure Paystack is loaded
-    const paystackLoaded = await this.ensurePaystackLoaded();
-    if (!paystackLoaded) {
-      throw new Error("Paystack payment library could not be loaded");
+    console.log("🔍 Running comprehensive Paystack library test...");
+    const testResults = await PaystackLibraryTest.testAllMethods();
+    PaystackLibraryTest.logResults(testResults);
+
+    // Find the first successful method
+    const successfulMethod = testResults.find((result) => result.success);
+
+    if (!successfulMethod) {
+      console.error("❌ No Paystack library loading method succeeded");
+      throw new Error(
+        "Paystack payment library not available - all loading methods failed",
+      );
     }
 
-    // Try to get PaystackPop from various sources
+    console.log(`✅ Using successful method: ${successfulMethod.method}`);
+
+    // Get PaystackPop based on successful method
     let PaystackPop;
 
-    // First try the npm package
-    try {
-      const paystackModule = await import("@paystack/inline-js");
-      console.log("Paystack module imported:", paystackModule);
-
-      // Handle different export formats
-      if (paystackModule.PaystackPop) {
-        PaystackPop = paystackModule.PaystackPop;
-      } else if (paystackModule.default) {
-        PaystackPop = paystackModule.default;
-      } else if (typeof paystackModule === "function") {
-        PaystackPop = paystackModule;
+    if (successfulMethod.method === "NPM Package Import") {
+      try {
+        const paystackModule = await import("@paystack/inline-js");
+        if (paystackModule.PaystackPop) {
+          PaystackPop = paystackModule.PaystackPop;
+        } else if (paystackModule.default) {
+          PaystackPop = paystackModule.default;
+        } else if (typeof paystackModule === "function") {
+          PaystackPop = paystackModule;
+        }
+      } catch (error) {
+        console.error("NPM package import failed in production:", error);
       }
-
-      console.log("PaystackPop from import:", PaystackPop);
-    } catch (importError) {
-      console.warn("Failed to import @paystack/inline-js:", importError);
     }
 
-    // If npm package didn't work, try global objects
+    // Try global objects
     if (!PaystackPop) {
       PaystackPop = (window as any).PaystackPop;
-      console.log("PaystackPop from window.PaystackPop:", PaystackPop);
     }
 
     // Fallback to global Paystack object
@@ -169,15 +174,11 @@ export class PaystackPaymentService {
     }
 
     if (!PaystackPop) {
-      console.error("PaystackPop is not available. Available objects:", {
-        windowPaystack: (window as any).Paystack,
-        windowPaystackPop: (window as any).PaystackPop,
-        allPaystackKeys: Object.keys(window).filter((key) =>
-          key.toLowerCase().includes("paystack"),
-        ),
-      });
+      console.error("❌ PaystackPop still not available after successful test");
       throw new Error("Paystack payment library not available");
     }
+
+    console.log("✅ PaystackPop ready:", typeof PaystackPop);
 
     return new Promise((resolve, reject) => {
       const paystack = new PaystackPop();
