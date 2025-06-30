@@ -107,7 +107,7 @@ export class TransactionService {
         deliveryFee,
         bookId,
         sellerId,
-        sellerSubaccountCode: sellerBankingDetails.paystack_subaccount_code,
+        sellerSubaccountCode: sellerProfile.subaccount_code,
         metadata: {
           transaction_id: transaction.id,
           book_title: bookTitle,
