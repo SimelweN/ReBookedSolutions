@@ -1092,7 +1092,31 @@ export class PaystackPaymentService {
         .eq("seller_id", sellerId);
 
       if (error) {
-        throw new Error(`Failed to fetch earnings: ${error.message}`);
+        const errorMessage = this.extractErrorMessage(error);
+
+        // Handle missing orders table
+        if (
+          errorMessage.includes("relation") &&
+          errorMessage.includes("orders") &&
+          errorMessage.includes("does not exist")
+        ) {
+          console.warn(
+            "❌ Orders table does not exist, returning zero earnings",
+          );
+
+          if (import.meta.env.DEV) {
+            toast.warning("Orders table missing - returning zero earnings");
+          }
+
+          return {
+            total: 0,
+            paid: 0,
+            pending: 0,
+            ready: 0,
+          };
+        }
+
+        throw new Error(`Failed to fetch earnings: ${errorMessage}`);
       }
 
       const earnings = {
