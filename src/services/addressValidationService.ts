@@ -47,14 +47,24 @@ export const canUserListBooks = async (userId: string): Promise<boolean> => {
       return false;
     }
 
-    // Check if user has verified banking details
-    const hasVerifiedBanking =
-      await ImprovedBankingService.hasVerifiedBankingDetails(userId);
+    // Check if user has completed banking setup
+    try {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("subaccount_code")
+        .eq("id", userId)
+        .single();
 
-    if (!hasVerifiedBanking) {
-      console.log(
-        `User ${userId} cannot list books: banking details not verified or incomplete`,
-      );
+      const hasVerifiedBanking = !!profile?.subaccount_code?.trim();
+
+      if (!hasVerifiedBanking) {
+        console.log(
+          `User ${userId} cannot list books: banking setup not completed`,
+        );
+        return false;
+      }
+    } catch (error) {
+      console.error("Error checking banking setup:", error);
       return false;
     }
 
