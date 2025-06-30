@@ -39,7 +39,7 @@ import { getUserBooks } from "@/services/book/bookQueries";
 import { deleteBook } from "@/services/book/bookMutations";
 import { Book } from "@/types/book";
 import { BookDeletionService } from "@/services/bookDeletionService";
-import { ImprovedBankingService } from "@/services/improvedBankingService";
+
 import SellerBankingSetupPrompt from "@/components/SellerBankingSetupPrompt";
 import EnhancedBecomeSellerGuide from "@/components/EnhancedBecomeSellerGuide";
 import BankingSetupPopup from "@/components/BankingSetupPopup";
