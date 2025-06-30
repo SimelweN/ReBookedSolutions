@@ -208,7 +208,8 @@ export class PaystackPaymentService {
           toast.info("Payment was cancelled", {
             description: "You can try again when ready.",
           });
-          reject(new Error("PAYMENT_CANCELLED_BY_USER"));
+          // Don't reject as an error - resolve with cancellation status
+          resolve({ cancelled: true, reference: params.reference });
         },
       };
 
