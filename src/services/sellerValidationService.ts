@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { ImprovedBankingService } from "./improvedBankingService";
+
 import { getUserAddresses } from "./addressService";
 
 export interface SellerValidationResult {
