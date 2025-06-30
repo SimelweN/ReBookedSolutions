@@ -95,13 +95,16 @@ const UserProfileTabs = ({
         >
           <TabsTrigger
             value="listings"
-            className={`${isMobile ? "h-12 text-xs px-1 col-span-2 flex-col" : "flex-1"} flex items-center justify-center`}
+            className={`${isMobile ? "h-14 text-xs px-0.5 flex-col" : "flex-1"} flex items-center justify-center`}
           >
-            <span className={isMobile ? "text-center" : ""}>
+            <span className={isMobile ? "text-center leading-tight" : ""}>
               {isMobile
-                ? `Listings (${activeListings.length})`
+                ? `📚 ${activeListings.length}`
                 : `Active Listings (${activeListings.length})`}
             </span>
+            {isMobile && (
+              <span className="text-[10px] opacity-75">Listings</span>
+            )}
           </TabsTrigger>
           <TabsTrigger
             value="activity"
