@@ -255,10 +255,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                       console.warn(
                         "[AuthContext] Login notification failed - removing locks",
                       );
-                    sessionStorage.removeItem(sessionKey);
-                    sessionStorage.removeItem(lockKey);
-                    localStorage.removeItem(localStorageKey);
-                  },
+                      sessionStorage.removeItem(sessionKey);
+                      sessionStorage.removeItem(lockKey);
+                      localStorage.removeItem(localStorageKey);
+                    },
                 );
                 } else {
                   console.log(
