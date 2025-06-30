@@ -84,6 +84,11 @@ const PaystackTest: React.FC = () => {
           </Card>
         </div>
 
+        {/* Integration Test */}
+        <div className="mb-8">
+          <PaystackTest />
+        </div>
+
         {/* Main Dashboard */}
         <PaystackDashboard />
 
@@ -130,7 +135,7 @@ const PaystackTest: React.FC = () => {
                 </h4>
                 <ul className="text-sm text-yellow-700 space-y-1">
                   <li>• Test mode payments don't charge real money</li>
-                  <li>• Switch to live keys for production</li>
+                  <li>�� Switch to live keys for production</li>
                   <li>• Webhook URLs must be publicly accessible</li>
                   <li>• Test all payment flows before going live</li>
                 </ul>
