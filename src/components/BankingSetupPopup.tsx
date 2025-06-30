@@ -45,11 +45,14 @@ const BankingSetupPopup = ({
 
     setIsCheckingBanking(true);
     try {
+      console.log("Checking banking status for user:", user.id);
       const { data: profile, error } = await supabase
         .from("profiles")
         .select("subaccount_code")
         .eq("id", user.id)
         .single();
+
+      console.log("Banking status query result:", { profile, error });
 
       if (error) {
         // Check if error is due to missing column
