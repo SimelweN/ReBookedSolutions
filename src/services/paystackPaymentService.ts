@@ -120,8 +120,16 @@ export class PaystackPaymentService {
       throw new Error("Paystack public key not configured");
     }
 
-    // Try to use the new @paystack/inline-js package first
+    // Ensure Paystack is loaded
+    const paystackLoaded = await this.ensurePaystackLoaded();
+    if (!paystackLoaded) {
+      throw new Error("Paystack payment library could not be loaded");
+    }
+
+    // Try to get PaystackPop from various sources
     let PaystackPop;
+
+    // First try the npm package
     try {
       const paystackModule = await import("@paystack/inline-js");
       console.log("Paystack module imported:", paystackModule);
@@ -131,38 +139,23 @@ export class PaystackPaymentService {
         PaystackPop = paystackModule.PaystackPop;
       } else if (paystackModule.default) {
         PaystackPop = paystackModule.default;
-      } else {
-        // Try direct module access
+      } else if (typeof paystackModule === "function") {
         PaystackPop = paystackModule;
       }
 
       console.log("PaystackPop from import:", PaystackPop);
     } catch (importError) {
-      console.warn(
-        "Failed to import @paystack/inline-js, falling back to CDN script:",
-        importError,
-      );
-
-      try {
-        // Ensure Paystack script is loaded
-        await this.loadPaystackScript();
-        PaystackPop = (window as any).PaystackPop;
-        console.log("PaystackPop from CDN:", PaystackPop);
-      } catch (scriptError) {
-        console.error("Failed to load Paystack from CDN:", scriptError);
-      }
+      console.warn("Failed to import @paystack/inline-js:", importError);
     }
 
+    // If npm package didn't work, try global objects
     if (!PaystackPop) {
-      console.error("PaystackPop is not available. Checking window object:", {
-        windowPaystack: (window as any).Paystack,
-        windowPaystackPop: (window as any).PaystackPop,
-        allPaystackKeys: Object.keys(window).filter((key) =>
-          key.toLowerCase().includes("paystack"),
-        ),
-      });
+      PaystackPop = (window as any).PaystackPop;
+      console.log("PaystackPop from window.PaystackPop:", PaystackPop);
+    }
 
-      // Try alternative approach with global Paystack object
+    // Fallback to global Paystack object
+    if (!PaystackPop) {
       const globalPaystack = (window as any).Paystack;
       if (globalPaystack && typeof globalPaystack.setup === "function") {
         console.log("Using global Paystack object as fallback");
@@ -172,10 +165,17 @@ export class PaystackPaymentService {
           }
         };
       }
+    }
 
-      if (!PaystackPop) {
-        throw new Error("Paystack payment library not available");
-      }
+    if (!PaystackPop) {
+      console.error("PaystackPop is not available. Available objects:", {
+        windowPaystack: (window as any).Paystack,
+        windowPaystackPop: (window as any).PaystackPop,
+        allPaystackKeys: Object.keys(window).filter((key) =>
+          key.toLowerCase().includes("paystack"),
+        ),
+      });
+      throw new Error("Paystack payment library not available");
     }
 
     return new Promise((resolve, reject) => {
