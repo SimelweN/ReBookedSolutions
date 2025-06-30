@@ -513,41 +513,8 @@ export class PaystackPaymentService {
 
         console.error("❌ Database error details:", errorDetails);
 
-        // Try to get the actual error message
-        let errorMessage = "Unknown database error";
-
-        if (error.message && typeof error.message === "string") {
-          errorMessage = error.message;
-        } else if (error.details && typeof error.details === "string") {
-          errorMessage = error.details;
-        } else if (error.hint && typeof error.hint === "string") {
-          errorMessage = error.hint;
-        } else if (typeof error === "string") {
-          errorMessage = error;
-        } else if (error && typeof error === "object") {
-          // Try to get any readable property
-          for (const key of [
-            "message",
-            "details",
-            "hint",
-            "description",
-            "error",
-          ]) {
-            if (error[key] && typeof error[key] === "string") {
-              errorMessage = error[key];
-              break;
-            }
-          }
-
-          // If still no readable error, stringify safely
-          if (errorMessage === "Unknown database error") {
-            try {
-              errorMessage = JSON.stringify(error, null, 2);
-            } catch (e) {
-              errorMessage = `Error object could not be stringified: ${error.toString()}`;
-            }
-          }
-        }
+        // Extract meaningful error message
+        let errorMessage = this.extractErrorMessage(error);
 
         // Add context for common issues
         if (
