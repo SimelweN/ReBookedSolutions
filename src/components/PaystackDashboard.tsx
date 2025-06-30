@@ -418,10 +418,20 @@ const PaystackDashboard: React.FC = () => {
                   ) : (
                     <>
                       <CreditCard className="w-4 h-4 mr-2" />
-                    Test Payment - R{(testPayment.amount / 100).toFixed(2)}
-                  </>
-                )}
-              </Button>
+                      Test Payment - R{(testPayment.amount / 100).toFixed(2)}
+                    </>
+                  )}
+                </Button>
+
+                <Button
+                  onClick={debugPaystackLibrary}
+                  variant="outline"
+                  className="w-full"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Debug Library Loading
+                </Button>
+              </div>
 
               {testPayment.status !== "idle" && (
                 <Alert
