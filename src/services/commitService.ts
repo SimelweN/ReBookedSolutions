@@ -241,24 +241,14 @@ export const getCommitPendingBooks = async (): Promise<any[]> => {
       books?.length || 0,
     );
 
-    // Filter for books that might need commits (this is simplified logic)
-    // In a real system, you'd have proper order status tracking
-    const pendingCommits = (books || [])
-      .filter((book) => {
-        // For now, since we don't have a proper commit tracking system,
-        // we'll just return books that are marked as sold
-        return book.sold;
-      })
-      .map((book) => ({
-        id: book.id,
-        bookId: book.id,
-        bookTitle: book.title,
-        buyerName: "Interested Buyer", // Would come from orders table in real system
-        price: book.price,
-        expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(), // 48 hours from now
-        createdAt: book.created_at,
-        status: book.sold ? "completed" : "pending",
-      }));
+    // For demonstration purposes, return empty array since we don't have a proper order system
+    // In a real system, this would query an orders table for pending transactions
+    const pendingCommits: any[] = [];
+
+    console.log(
+      "[CommitService] Simplified commit system - returning empty commits",
+    );
+    console.log("[CommitService] Available books found:", books?.length || 0);
 
     console.log(
       "[CommitService] Found pending commits:",
