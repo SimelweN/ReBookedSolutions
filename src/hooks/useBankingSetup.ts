@@ -18,11 +18,14 @@ export const useBankingSetup = () => {
 
     try {
       setIsLoading(true);
+      console.log("Checking banking setup for user:", user.id);
       const { data: profile, error } = await supabase
         .from("profiles")
         .select("subaccount_code")
         .eq("id", user.id)
         .single();
+
+      console.log("Banking setup query result:", { profile, error });
 
       if (error) {
         // Check if error is due to missing column
