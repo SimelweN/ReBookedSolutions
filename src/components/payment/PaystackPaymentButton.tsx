@@ -12,6 +12,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import PaystackPaymentService from "@/services/paystackPaymentService";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface PaystackPaymentButtonProps {
