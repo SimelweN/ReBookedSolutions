@@ -27,6 +27,7 @@ import { useCart } from "@/contexts/CartContext";
 import PaystackPaymentService from "@/services/paystackPaymentService";
 import { toast } from "sonner";
 import PaystackConfigChecker from "./PaystackConfigChecker";
+import { PaystackLibraryTest } from "@/utils/paystackLibraryTest";
 import DevPaymentTester from "./DevPaymentTester";
 
 const PaystackDashboard: React.FC = () => {
