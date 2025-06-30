@@ -40,7 +40,6 @@ import { deleteBook } from "@/services/book/bookMutations";
 import { Book } from "@/types/book";
 import { BookDeletionService } from "@/services/bookDeletionService";
 
-import SellerBankingSetupPrompt from "@/components/SellerBankingSetupPrompt";
 import EnhancedBecomeSellerGuide from "@/components/EnhancedBecomeSellerGuide";
 import BankingSetupPopup from "@/components/BankingSetupPopup";
 import { useBankingSetup } from "@/hooks/useBankingSetup";
