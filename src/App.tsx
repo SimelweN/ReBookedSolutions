@@ -650,6 +650,14 @@ function App() {
                             }
                           />
                           <Route
+                            path="/payment-callback"
+                            element={
+                              <LazyWrapper>
+                                <PaymentCallback />
+                              </LazyWrapper>
+                            }
+                          />
+                          <Route
                             path="/notifications"
                             element={
                               <ProtectedRoute>
