@@ -519,7 +519,11 @@ const Profile = () => {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <Button
-                    onClick={() => navigate("/create-listing")}
+                    onClick={() => {
+                      if (requireBankingSetup("create a listing")) {
+                        navigate("/create-listing");
+                      }
+                    }}
                     className="w-full bg-book-600 hover:bg-book-700 text-white"
                     size="lg"
                   >
