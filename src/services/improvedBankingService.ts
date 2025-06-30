@@ -359,6 +359,35 @@ export class ImprovedBankingService {
       return false;
     }
   }
+
+  /**
+   * Update subaccount code for a user's banking details
+   */
+  static async updateSubaccountCode(
+    userId: string,
+    subaccountCode: string,
+  ): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from("banking_details")
+        .update({
+          paystack_subaccount_code: subaccountCode,
+          account_verified: true,
+          subaccount_status: "active",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("user_id", userId);
+
+      if (error) {
+        throw new Error(`Failed to update subaccount code: ${error.message}`);
+      }
+
+      console.log("✅ Subaccount code updated successfully");
+    } catch (error) {
+      console.error("Error updating subaccount code:", error);
+      throw error;
+    }
+  }
 }
 
 export default ImprovedBankingService;
