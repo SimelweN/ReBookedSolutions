@@ -146,6 +146,15 @@ const Admin = () => {
           </div>
         </div>
 
+        {/* Banking Requirements Checker */}
+        <div
+          className={`bg-white rounded-lg shadow-md ${isMobile ? "p-3 card-mobile" : "p-4 md:p-6"} overflow-hidden`}
+        >
+          <ErrorBoundary level="component">
+            <BankingRequirementChecker />
+          </ErrorBoundary>
+        </div>
+
         <div
           className={`bg-white rounded-lg shadow-md ${isMobile ? "p-3 card-mobile" : "p-4 md:p-6"} overflow-hidden`}
         >
