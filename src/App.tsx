@@ -26,6 +26,7 @@ import {
 } from "./utils/databaseConnectivityHelper";
 import { preloadCriticalRoutes } from "./utils/routePreloader";
 import { reportReactImportStatus } from "./utils/reactImportValidator";
+import { initPerformanceOptimizations } from "./utils/performanceOptimizer";
 import EmergencyBypass from "./components/EmergencyBypass";
 import "./App.css";
 
