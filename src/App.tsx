@@ -462,6 +462,14 @@ function App() {
                               </LazyWrapper>
                             }
                           />
+                          <Route
+                            path="/deep-clean"
+                            element={
+                              <LazyWrapper>
+                                <DeepClean />
+                              </LazyWrapper>
+                            }
+                          />
 
                           {/* Shopping and Cart Routes */}
                           <Route
