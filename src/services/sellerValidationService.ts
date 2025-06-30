@@ -98,20 +98,19 @@ export class SellerValidationService {
   }
 
   /**
-   * Quick check for banking details specifically
+   * Quick check for banking setup specifically
    */
   static async hasBankingDetails(userId: string): Promise<boolean> {
     try {
-      const bankingDetails =
-        await ImprovedBankingService.getBankingDetails(userId);
-      return !!(
-        bankingDetails &&
-        bankingDetails.bank_account_number &&
-        bankingDetails.bank_name &&
-        bankingDetails.full_name
-      );
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("subaccount_code")
+        .eq("id", userId)
+        .single();
+
+      return !!profile?.subaccount_code?.trim();
     } catch (error) {
-      console.error("Error checking banking details:", error);
+      console.error("Error checking banking setup:", error);
       return false;
     }
   }
