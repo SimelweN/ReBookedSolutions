@@ -34,7 +34,7 @@ if (import.meta.env.DEV) {
   (window as any).debugConnection = debugConnection;
   (window as any).validateApiKey = validateApiKey;
   (window as any).DatabaseSetup = DatabaseSetup;
-  (window as any).debugBankingDetails = debugBankingDetails;
+
   (window as any).checkDatabaseStatus = checkDatabaseStatus;
   (window as any).logDatabaseStatus = logDatabaseStatus;
 
