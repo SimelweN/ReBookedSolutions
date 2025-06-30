@@ -662,7 +662,11 @@ const Profile = () => {
             {/* Primary Action */}
             <div className="mb-6">
               <Button
-                onClick={() => navigate("/create-listing")}
+                onClick={() => {
+                  if (requireBankingSetup("create a listing")) {
+                    navigate("/create-listing");
+                  }
+                }}
                 className="bg-book-600 hover:bg-book-700 text-white w-full"
                 size="lg"
               >
