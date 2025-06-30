@@ -404,19 +404,20 @@ const PaystackDashboard: React.FC = () => {
                 </div>
               </div>
 
-              <Button
-                onClick={handleTestPayment}
-                disabled={!paystackStatus.configured || testPayment.loading}
-                className="w-full"
-              >
-                {testPayment.loading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="w-4 h-4 mr-2" />
+              <div className="space-y-2">
+                <Button
+                  onClick={handleTestPayment}
+                  disabled={!paystackStatus.configured || testPayment.loading}
+                  className="w-full"
+                >
+                  {testPayment.loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="w-4 h-4 mr-2" />
                     Test Payment - R{(testPayment.amount / 100).toFixed(2)}
                   </>
                 )}
