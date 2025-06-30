@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PAYSTACK_CONFIG, PAYSTACK_BANK_CODES } from "@/config/paystack";
 import { BankingDetails } from "@/types/banking";
 import { toast } from "sonner";
+import { PaystackLibraryTest } from "@/utils/paystackLibraryTest";
 
 export interface PaymentInitialization {
   email: string;
