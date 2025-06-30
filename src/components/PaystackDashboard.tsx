@@ -91,11 +91,6 @@ const PaystackDashboard: React.FC = () => {
       return;
     }
 
-    if (!paystackStatus.scriptLoaded) {
-      toast.error("Paystack script still loading. Please wait and try again.");
-      return;
-    }
-
     setTestPayment((prev) => ({
       ...prev,
       loading: true,
@@ -103,6 +98,15 @@ const PaystackDashboard: React.FC = () => {
     }));
 
     try {
+      // Use the service's built-in loading mechanism
+      console.log("Checking if Paystack is loaded...");
+      const paystackLoaded =
+        await PaystackPaymentService.ensurePaystackLoaded();
+
+      if (!paystackLoaded) {
+        throw new Error("Paystack library could not be loaded");
+      }
+
       const reference = PaystackPaymentService.generateReference();
       console.log("Initializing test payment with reference:", reference);
 
