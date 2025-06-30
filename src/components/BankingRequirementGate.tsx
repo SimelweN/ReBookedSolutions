@@ -33,45 +33,58 @@ const BankingRequirementGate = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const checkSubaccountCode = async () => {
-      if (!user?.id) {
+  const checkSubaccountCode = async () => {
+    if (!user?.id) {
+      setHasSubaccountCode(false);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      console.log("Checking subaccount code for user:", user.id);
+
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("subaccount_code")
+        .eq("id", user.id)
+        .single();
+
+      console.log("Profile query result:", { profile, error });
+
+      if (error) {
+        console.error("Error fetching profile:", error);
         setHasSubaccountCode(false);
-        setIsLoading(false);
         return;
       }
 
-      try {
-        console.log("Checking subaccount code for user:", user.id);
+      const hasValidCode = !!profile?.subaccount_code?.trim();
+      setHasSubaccountCode(hasValidCode);
 
-        const { data: profile, error } = await supabase
-          .from("profiles")
-          .select("subaccount_code")
-          .eq("id", user.id)
-          .single();
+      console.log("Has valid subaccount code:", hasValidCode);
+    } catch (error) {
+      console.error("Subaccount check failed:", error);
+      setHasSubaccountCode(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-        console.log("Profile query result:", { profile, error });
+  useEffect(() => {
+    checkSubaccountCode();
+  }, [user?.id]);
 
-        if (error) {
-          console.error("Error fetching profile:", error);
-          setHasSubaccountCode(false);
-          return;
-        }
-
-        const hasValidCode = !!profile?.subaccount_code?.trim();
-        setHasSubaccountCode(hasValidCode);
-
-        console.log("Has valid subaccount code:", hasValidCode);
-      } catch (error) {
-        console.error("Subaccount check failed:", error);
-        setHasSubaccountCode(false);
-      } finally {
-        setIsLoading(false);
+  // Also check when window regains focus (user returns from banking setup)
+  useEffect(() => {
+    const handleFocus = () => {
+      if (hasSubaccountCode === false) {
+        checkSubaccountCode();
       }
     };
 
-    checkSubaccountCode();
-  }, [user?.id]);
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [hasSubaccountCode]);
 
   const openBankingSetup = () => {
     const bankingUrl = "https://paystack-vault-south-africa.lovable.app";
