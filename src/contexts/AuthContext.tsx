@@ -265,12 +265,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                     "[AuthContext] Skipping duplicate login notification - recent notification exists",
                   );
                 }
-              } catch (notifError) {
-                console.warn(
-                  "[AuthContext] Login notification setup failed:",
-                  notifError,
-                );
               }
+            } catch (notifError) {
+              console.warn(
+                "[AuthContext] Login notification setup failed:",
+                notifError,
+              );
+            }
           }
 
           // Background profile maintenance (every 30 seconds)
