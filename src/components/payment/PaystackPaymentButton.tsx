@@ -107,15 +107,40 @@ const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({
         }
       }
 
+      // Get seller's subaccount code for split payments
+      let subaccountCode = undefined;
+      if (items.length > 0 && items[0].sellerId) {
+        try {
+          const { data: sellerBanking } = await supabase
+            .from("banking_details")
+            .select("paystack_subaccount_code")
+            .eq("user_id", items[0].sellerId)
+            .single();
+
+          if (sellerBanking?.paystack_subaccount_code) {
+            subaccountCode = sellerBanking.paystack_subaccount_code;
+            console.log("Using seller subaccount:", subaccountCode);
+          }
+        } catch (error) {
+          console.warn(
+            "Could not fetch seller subaccount, proceeding without split:",
+            error,
+          );
+        }
+      }
+
       // Initialize Paystack payment
       await PaystackPaymentService.initializePayment({
         email: user.email || "",
         amount: amount, // amount in kobo
         reference: reference,
+        subaccount: subaccountCode,
         metadata: {
           order_id: order.id,
           user_id: user.id,
           items_count: items.length,
+          seller_id: items[0]?.sellerId,
+          subaccount_code: subaccountCode,
           ...metadata,
         },
       });
