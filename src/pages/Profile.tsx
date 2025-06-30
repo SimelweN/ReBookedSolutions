@@ -124,21 +124,11 @@ const Profile = () => {
   }, [user?.id]);
 
   const checkBankingSetup = useCallback(async () => {
-    if (!user?.id) return;
-
-    try {
-      const bankingDetails = await ImprovedBankingService.getBankingDetails(
-        user.id,
-      );
-      const hasBankingSetup = bankingDetails?.bank_account_number;
-      const hasActiveListings = activeListings.length > 0;
-
-      setNeedsBankingSetup(!hasBankingSetup && hasActiveListings);
-      setShowBankingPrompt(!hasBankingSetup && hasActiveListings);
-    } catch (error) {
-      console.error("Error checking banking setup:", error);
-    }
-  }, [user?.id, activeListings.length]);
+    // Banking setup is now handled by the BankingSetupPopup component
+    // This function is no longer needed but kept for compatibility
+    setNeedsBankingSetup(false);
+    setShowBankingPrompt(false);
+  }, []);
 
   useEffect(() => {
     if (user?.id) {
