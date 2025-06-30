@@ -25,7 +25,7 @@ export const useBankingSetup = () => {
         .single();
 
       if (error) {
-        console.error("Error checking banking setup:", error);
+        console.error("Error checking banking setup:", error.message || error);
         setHasBankingSetup(false);
         return false;
       }
@@ -34,7 +34,10 @@ export const useBankingSetup = () => {
       setHasBankingSetup(hasSetup);
       return hasSetup;
     } catch (error) {
-      console.error("Banking setup check failed:", error);
+      console.error(
+        "Banking setup check failed:",
+        error instanceof Error ? error.message : error,
+      );
       setHasBankingSetup(false);
       return false;
     } finally {
