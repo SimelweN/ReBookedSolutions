@@ -153,7 +153,7 @@ export class ImprovedBankingService {
       // Now try to create Paystack subaccount
       try {
         console.log("Attempting to create Paystack subaccount...");
-        const paystackResult = await PaystackService.createSubaccount(
+        const paystackResult = await this.createPaystackSubaccount(
           bankingDetails,
           userEmail,
         );
