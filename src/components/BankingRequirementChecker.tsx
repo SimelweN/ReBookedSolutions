@@ -219,7 +219,23 @@ const BankingRequirementChecker = () => {
   };
 
   const openBankingSetup = () => {
-    window.open("https://paystack-vault-south-africa.lovable.app", "_blank");
+    const bankingUrl = "https://paystack-vault-south-africa.lovable.app";
+
+    // Calculate popup dimensions (responsive)
+    const width = Math.min(800, window.innerWidth * 0.9);
+    const height = Math.min(900, window.innerHeight * 0.9);
+    const left = (window.innerWidth - width) / 2;
+    const top = (window.innerHeight - height) / 2;
+
+    const popup = window.open(
+      bankingUrl,
+      "bankingSetup",
+      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,menubar=no,toolbar=no,location=no,status=no`,
+    );
+
+    if (popup) {
+      popup.focus();
+    }
   };
 
   return (
