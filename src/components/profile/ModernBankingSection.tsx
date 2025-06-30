@@ -134,19 +134,27 @@ const ModernBankingSection = () => {
     if (popup) {
       popup.focus();
       toast.info(
-        "Complete your banking setup in the popup window and return here.",
+        "Complete your banking setup in the popup window and click 'Refresh Status' when done.",
       );
 
       // Check if popup is closed and refresh banking status
       const checkClosed = setInterval(() => {
         if (popup.closed) {
           clearInterval(checkClosed);
-          toast.info("Checking banking setup status...");
-          setTimeout(() => {
-            checkBankingStatus();
-          }, 1000);
+          toast.info(
+            "Banking setup window closed. Click 'Refresh Status' to update.",
+          );
         }
       }, 1000);
+
+      // Also poll for status updates while popup is open
+      const pollStatus = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(pollStatus);
+        } else {
+          checkBankingStatus();
+        }
+      }, 3000); // Check every 3 seconds while popup is open
     } else {
       toast.error(
         "Popup blocked. Please allow popups for this site and try again.",
