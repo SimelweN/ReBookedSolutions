@@ -1,6 +1,7 @@
 import React from "react";
 import Layout from "@/components/Layout";
 import PaystackDashboard from "@/components/PaystackDashboard";
+import PaystackTest from "@/components/PaystackTest";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, CreditCard } from "lucide-react";
