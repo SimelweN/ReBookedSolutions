@@ -193,14 +193,28 @@ const BankingRequirementGate = ({
               </div>
             </div>
 
-            <Button
-              onClick={openBankingSetup}
-              className="w-full bg-orange-600 hover:bg-orange-700"
-              size="lg"
-            >
-              <ExternalLink className="w-4 h-4 mr-2" />
-              Complete Banking Setup
-            </Button>
+            <div className="space-y-3">
+              <Button
+                onClick={openBankingSetup}
+                className="w-full bg-orange-600 hover:bg-orange-700"
+                size="lg"
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Complete Banking Setup
+              </Button>
+
+              <Button
+                onClick={checkSubaccountCode}
+                variant="outline"
+                className="w-full"
+                disabled={isLoading}
+              >
+                <RefreshCw
+                  className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+                />
+                {isLoading ? "Checking..." : "Refresh Status"}
+              </Button>
+            </div>
 
             <div className="flex justify-center space-x-4 pt-2">
               <Badge variant="outline" className="text-xs">
