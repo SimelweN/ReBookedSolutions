@@ -59,26 +59,17 @@ export class TransactionService {
         console.log(`Initializing payment for seller: ${sellerId}`);
       }
 
-      // Get seller's banking details and subaccount
-      const sellerBankingDetails =
-        await ImprovedBankingService.getBankingDetails(sellerId);
+      // Get seller's subaccount code from profile
+      const { data: sellerProfile } = await supabase
+        .from("profiles")
+        .select("subaccount_code")
+        .eq("id", sellerId)
+        .single();
 
-      if (!sellerBankingDetails) {
+      if (!sellerProfile?.subaccount_code) {
         console.warn(
-          `Seller ${sellerId} has no banking details, falling back to legacy payment`,
+          `Seller ${sellerId} has no subaccount code, falling back to legacy payment`,
         );
-        throw new Error("SELLER_NO_BANKING_DETAILS");
-      }
-
-      if (!sellerBankingDetails.paystack_subaccount_code) {
-        console.warn(
-          `Seller ${sellerId} has banking details but no Paystack subaccount, falling back to legacy payment`,
-        );
-        console.warn("Banking details found:", {
-          hasDetails: true,
-          subaccountStatus: sellerBankingDetails.subaccount_status,
-          bankName: sellerBankingDetails.bank_name,
-        });
         throw new Error("SELLER_NO_SUBACCOUNT");
       }
 
