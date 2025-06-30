@@ -83,11 +83,6 @@ const PaystackTest: React.FC = () => {
           </Card>
         </div>
 
-        {/* Integration Test */}
-        <div className="mb-8">
-          <PaystackTest />
-        </div>
-
         {/* Main Dashboard */}
         <PaystackDashboard />
 
