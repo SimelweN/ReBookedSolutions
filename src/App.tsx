@@ -268,6 +268,9 @@ function App() {
     // Set initialized immediately to prevent suspense
     setIsInitialized(true);
 
+    // Initialize performance optimizations
+    initPerformanceOptimizations();
+
     // Use startTransition for non-urgent preloading
     startTransition(() => {
       preloadCriticalRoutes().catch((error) => {
