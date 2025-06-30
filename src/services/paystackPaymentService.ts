@@ -587,8 +587,41 @@ export class PaystackPaymentService {
         // Extract meaningful error message
         let errorMessage = this.extractErrorMessage(error);
 
-        // Add context for common issues
+        // Add context for common issues and handle missing table
         if (
+          errorMessage.includes("relation") &&
+          errorMessage.includes("orders") &&
+          errorMessage.includes("does not exist")
+        ) {
+          console.error("❌ Orders table does not exist in database");
+
+          // In development, return a mock order for testing
+          if (import.meta.env.DEV) {
+            console.warn(
+              "🛠️ Using mock order for development since orders table is missing",
+            );
+            const mockOrder: OrderData = {
+              id: `mock_${Date.now()}`,
+              buyer_email: orderData.buyer_email || "test@example.com",
+              seller_id: orderData.seller_id || "mock_seller",
+              amount: orderData.amount || 10000,
+              status: "pending",
+              paystack_ref: orderData.paystack_ref || `mock_${Date.now()}`,
+              items: orderData.items || [],
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            };
+
+            toast.warning(
+              "Using mock order - orders table missing from database",
+            );
+            return mockOrder;
+          }
+
+          throw new Error(
+            "Orders table does not exist. Please run database migrations to create the orders table.",
+          );
+        } else if (
           errorMessage.includes("RLS") ||
           errorMessage.includes("row-level security")
         ) {
