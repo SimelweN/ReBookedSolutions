@@ -66,7 +66,10 @@ const BankingSetupPopup = ({
         setTimeout(() => onClose(), 1500);
       }
     } catch (error) {
-      console.error("Banking status check failed:", error);
+      console.error(
+        "Banking status check failed:",
+        error instanceof Error ? error.message : error,
+      );
     } finally {
       setIsCheckingBanking(false);
     }
