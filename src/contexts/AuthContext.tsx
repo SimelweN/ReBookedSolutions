@@ -260,11 +260,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                     localStorage.removeItem(localStorageKey);
                   },
                 );
-              } else {
-                console.log(
-                  "[AuthContext] Skipping duplicate login notification - recent notification exists",
-                );
-              }
+                } else {
+                  console.log(
+                    "[AuthContext] Skipping duplicate login notification - recent notification exists",
+                  );
+                }
             } catch (notifError) {
               console.warn(
                 "[AuthContext] Login notification setup failed:",
