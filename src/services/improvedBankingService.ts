@@ -5,7 +5,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { BankingDetails } from "@/types/banking";
-import { PaystackService } from "@/services/paystackService";
 import { DatabaseSetup } from "@/utils/databaseSetup";
 import { LocalBankingFallback } from "@/services/localBankingFallback";
 import { toast } from "sonner";
