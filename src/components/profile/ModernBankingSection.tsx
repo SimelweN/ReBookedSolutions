@@ -52,6 +52,22 @@ const ModernBankingSection = () => {
         .single();
 
       if (error) {
+        // Check if error is due to missing column
+        if (
+          error.message?.includes("column") &&
+          error.message?.includes("does not exist")
+        ) {
+          console.warn(
+            "subaccount_code column not found - banking setup not available yet",
+          );
+          setBankingStatus({
+            hasSubaccount: false,
+            subaccountCode: null,
+            isLoading: false,
+            lastChecked: new Date(),
+          });
+          return;
+        }
         console.error("Error checking banking status:", error.message || error);
         return;
       }
