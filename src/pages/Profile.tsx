@@ -39,9 +39,10 @@ import { getUserBooks } from "@/services/book/bookQueries";
 import { deleteBook } from "@/services/book/bookMutations";
 import { Book } from "@/types/book";
 import { BookDeletionService } from "@/services/bookDeletionService";
-import { ImprovedBankingService } from "@/services/improvedBankingService";
-import SellerBankingSetupPrompt from "@/components/SellerBankingSetupPrompt";
+
 import EnhancedBecomeSellerGuide from "@/components/EnhancedBecomeSellerGuide";
+import BankingSetupPopup from "@/components/BankingSetupPopup";
+import { useBankingSetup } from "@/hooks/useBankingSetup";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -51,6 +52,12 @@ const Profile = () => {
   const { profile, user } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const {
+    hasBankingSetup,
+    showSetupPopup,
+    requireBankingSetup,
+    closeSetupPopup,
+  } = useBankingSetup();
   const [isDeleteProfileDialogOpen, setIsDeleteProfileDialogOpen] =
     useState(false);
   const [isCommitSystemDialogOpen, setIsCommitSystemDialogOpen] =
@@ -116,21 +123,11 @@ const Profile = () => {
   }, [user?.id]);
 
   const checkBankingSetup = useCallback(async () => {
-    if (!user?.id) return;
-
-    try {
-      const bankingDetails = await ImprovedBankingService.getBankingDetails(
-        user.id,
-      );
-      const hasBankingSetup = bankingDetails?.bank_account_number;
-      const hasActiveListings = activeListings.length > 0;
-
-      setNeedsBankingSetup(!hasBankingSetup && hasActiveListings);
-      setShowBankingPrompt(!hasBankingSetup && hasActiveListings);
-    } catch (error) {
-      console.error("Error checking banking setup:", error);
-    }
-  }, [user?.id, activeListings.length]);
+    // Banking setup is now handled by the BankingSetupPopup component
+    // This function is no longer needed but kept for compatibility
+    setNeedsBankingSetup(false);
+    setShowBankingPrompt(false);
+  }, []);
 
   useEffect(() => {
     if (user?.id) {
@@ -511,7 +508,11 @@ const Profile = () => {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <Button
-                    onClick={() => navigate("/create-listing")}
+                    onClick={() => {
+                      if (requireBankingSetup("create a listing")) {
+                        navigate("/create-listing");
+                      }
+                    }}
                     className="w-full bg-book-600 hover:bg-book-700 text-white"
                     size="lg"
                   >
@@ -613,12 +614,6 @@ const Profile = () => {
 
             {/* Right Content - Tabs (Keep as-is) */}
             <div className="col-span-8">
-              {/* Banking Setup Prompt for Sellers */}
-              <SellerBankingSetupPrompt
-                isVisible={showBankingPrompt && !isMobile}
-                onDismiss={() => setShowBankingPrompt(false)}
-              />
-
               <UserProfileTabs
                 activeListings={activeListings}
                 isLoading={isLoadingListings}
@@ -650,7 +645,11 @@ const Profile = () => {
             {/* Primary Action */}
             <div className="mb-6">
               <Button
-                onClick={() => navigate("/create-listing")}
+                onClick={() => {
+                  if (requireBankingSetup("create a listing")) {
+                    navigate("/create-listing");
+                  }
+                }}
                 className="bg-book-600 hover:bg-book-700 text-white w-full"
                 size="lg"
               >
@@ -713,12 +712,6 @@ const Profile = () => {
 
             {/* Main Content - Tabs (Keep as-is) */}
             <div className="w-full">
-              {/* Banking Setup Prompt for Sellers */}
-              <SellerBankingSetupPrompt
-                isVisible={showBankingPrompt && isMobile}
-                onDismiss={() => setShowBankingPrompt(false)}
-              />
-
               <UserProfileTabs
                 activeListings={activeListings}
                 isLoading={isLoadingListings}
@@ -775,6 +768,9 @@ const Profile = () => {
           onClose={() => setShowBecomeSellerGuide(false)}
         />
       </div>
+
+      {/* Banking Setup Popup */}
+      <BankingSetupPopup isOpen={showSetupPopup} onClose={closeSetupPopup} />
     </Layout>
   );
 };

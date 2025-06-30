@@ -19,7 +19,7 @@ import ConfigurationChecker from "./components/ConfigurationChecker";
 import { debugConnection } from "./utils/debugConnection";
 import { validateApiKey } from "./utils/validateApiKey";
 import { DatabaseSetup } from "./utils/databaseSetup";
-import { debugBankingDetails } from "./utils/debugBankingDetails";
+
 import {
   checkDatabaseStatus,
   logDatabaseStatus,
@@ -34,7 +34,7 @@ if (import.meta.env.DEV) {
   (window as any).debugConnection = debugConnection;
   (window as any).validateApiKey = validateApiKey;
   (window as any).DatabaseSetup = DatabaseSetup;
-  (window as any).debugBankingDetails = debugBankingDetails;
+
   (window as any).checkDatabaseStatus = checkDatabaseStatus;
   (window as any).logDatabaseStatus = logDatabaseStatus;
 
@@ -81,7 +81,7 @@ if (import.meta.env.DEV) {
   console.log(
     "  - DatabaseSetup.showSetupInstructions() - Check database setup",
   );
-  console.log("  - debugBankingDetails() - Debug banking details errors");
+
   console.log("  - checkDatabaseStatus() - Check database connectivity");
   console.log("  - logDatabaseStatus() - Log current database status");
   console.log("  �� Fixed subject matching tests will run automatically");

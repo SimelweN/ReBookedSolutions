@@ -24,13 +24,14 @@ import {
   Shield,
   UserX,
   Pause,
+  CreditCard,
 } from "lucide-react";
 import { Book } from "@/types/book";
 import ProfileEditDialog from "@/components/ProfileEditDialog";
 import AddressEditDialog from "@/components/AddressEditDialog";
 import GoogleMapsAddressDialog from "@/components/GoogleMapsAddressDialog";
 import UnavailableBookCard from "@/components/UnavailableBookCard";
-import PasswordProtectedBankingSection from "@/components/profile/PasswordProtectedBankingSection";
+import ModernBankingSection from "@/components/profile/ModernBankingSection";
 import { UserProfile, AddressData, Address } from "@/types/address";
 
 interface UserProfileTabsProps {
@@ -91,43 +92,66 @@ const UserProfileTabs = ({
     <div className="w-full">
       <Tabs defaultValue="listings" className="w-full">
         <TabsList
-          className={`w-full ${isMobile ? "grid grid-cols-2 gap-1 h-auto p-1" : "flex"}`}
+          className={`w-full ${isMobile ? "grid grid-cols-5 gap-0.5 h-auto p-1" : "flex"}`}
         >
           <TabsTrigger
             value="listings"
-            className={`${isMobile ? "h-12 text-xs px-1 col-span-2 flex-col" : "flex-1"} flex items-center justify-center`}
+            className={`${isMobile ? "h-14 text-xs px-0.5 flex-col" : "flex-1"} flex items-center justify-center`}
           >
-            <span className={isMobile ? "text-center" : ""}>
+            <span className={isMobile ? "text-center leading-tight" : ""}>
               {isMobile
-                ? `Listings (${activeListings.length})`
+                ? `📚 ${activeListings.length}`
                 : `Active Listings (${activeListings.length})`}
             </span>
+            {isMobile && (
+              <span className="text-[10px] opacity-75">Listings</span>
+            )}
           </TabsTrigger>
           <TabsTrigger
             value="activity"
-            className={`${isMobile ? "h-12 text-xs px-1 col-span-2 flex-col" : "flex-1"} flex items-center justify-center`}
+            className={`${isMobile ? "h-14 text-xs px-0.5 flex-col" : "flex-1"} flex items-center justify-center`}
           >
-            <span className={isMobile ? "text-center" : ""}>Activity</span>
+            <span className={isMobile ? "text-center leading-tight" : ""}>
+              {isMobile ? "📊" : "Activity"}
+            </span>
+            {isMobile && (
+              <span className="text-[10px] opacity-75">Activity</span>
+            )}
           </TabsTrigger>
           {isOwnProfile && (
             <>
               <TabsTrigger
                 value="account"
-                className={`${isMobile ? "h-12 text-xs px-1 flex-col" : "flex-1"} flex items-center justify-center`}
+                className={`${isMobile ? "h-14 text-xs px-0.5 flex-col" : "flex-1"} flex items-center justify-center`}
               >
-                <span className={isMobile ? "text-center" : ""}>Account</span>
+                <span className={isMobile ? "text-center leading-tight" : ""}>
+                  {isMobile ? "👤" : "Account"}
+                </span>
+                {isMobile && (
+                  <span className="text-[10px] opacity-75">Account</span>
+                )}
               </TabsTrigger>
               <TabsTrigger
                 value="addresses"
-                className={`${isMobile ? "h-12 text-xs px-1 flex-col" : "flex-1"} flex items-center justify-center`}
+                className={`${isMobile ? "h-14 text-xs px-0.5 flex-col" : "flex-1"} flex items-center justify-center`}
               >
-                <span className={isMobile ? "text-center" : ""}>Addresses</span>
+                <span className={isMobile ? "text-center leading-tight" : ""}>
+                  {isMobile ? "📍" : "Addresses"}
+                </span>
+                {isMobile && (
+                  <span className="text-[10px] opacity-75">Address</span>
+                )}
               </TabsTrigger>
               <TabsTrigger
                 value="banking"
-                className={`${isMobile ? "h-12 text-xs px-1 flex-col" : "flex-1"} flex items-center justify-center`}
+                className={`${isMobile ? "h-14 text-xs px-0.5 flex-col" : "flex-1"} flex items-center justify-center`}
               >
-                <span className={isMobile ? "text-center" : ""}>Banking</span>
+                <span className={isMobile ? "text-center leading-tight" : ""}>
+                  {isMobile ? "💳" : "Banking"}
+                </span>
+                {isMobile && (
+                  <span className="text-[10px] opacity-75">Banking</span>
+                )}
               </TabsTrigger>
             </>
           )}
@@ -575,7 +599,17 @@ const UserProfileTabs = ({
             </TabsContent>
 
             <TabsContent value="banking" className="space-y-4">
-              <PasswordProtectedBankingSection />
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl md:text-2xl flex items-center">
+                    <CreditCard className="h-6 w-6 mr-2" />
+                    Banking & Payments
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ModernBankingSection />
+                </CardContent>
+              </Card>
             </TabsContent>
           </>
         )}

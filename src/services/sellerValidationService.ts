@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { ImprovedBankingService } from "./improvedBankingService";
+
 import { getUserAddresses } from "./addressService";
 
 export interface SellerValidationResult {
@@ -51,27 +51,26 @@ export class SellerValidationService {
         );
       }
 
-      // Check banking details requirements
+      // Check banking setup (subaccount_code) requirements
       try {
-        bankingDetails = await ImprovedBankingService.getBankingDetails(userId);
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("subaccount_code")
+          .eq("id", userId)
+          .single();
 
-        // Banking details are required for receiving payments
-        hasBankingDetails = !!(
-          bankingDetails &&
-          bankingDetails.bank_account_number &&
-          bankingDetails.bank_name &&
-          bankingDetails.full_name
-        );
+        // Subaccount code is required for receiving payments
+        hasBankingDetails = !!profile?.subaccount_code?.trim();
 
         if (!hasBankingDetails) {
           missingRequirements.push(
-            "Banking details are required to receive payments. Please add your banking information.",
+            "Banking setup is required to receive payments. Complete your banking details via our secure banking portal.",
           );
         }
       } catch (error) {
-        console.error("Error checking banking details:", error);
+        console.error("Error checking banking setup:", error);
         missingRequirements.push(
-          "Unable to verify banking details. Please add your banking information.",
+          "Unable to verify banking setup. Please complete your banking details.",
         );
       }
 
@@ -99,20 +98,19 @@ export class SellerValidationService {
   }
 
   /**
-   * Quick check for banking details specifically
+   * Quick check for banking setup specifically
    */
   static async hasBankingDetails(userId: string): Promise<boolean> {
     try {
-      const bankingDetails =
-        await ImprovedBankingService.getBankingDetails(userId);
-      return !!(
-        bankingDetails &&
-        bankingDetails.bank_account_number &&
-        bankingDetails.bank_name &&
-        bankingDetails.full_name
-      );
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("subaccount_code")
+        .eq("id", userId)
+        .single();
+
+      return !!profile?.subaccount_code?.trim();
     } catch (error) {
-      console.error("Error checking banking details:", error);
+      console.error("Error checking banking setup:", error);
       return false;
     }
   }
