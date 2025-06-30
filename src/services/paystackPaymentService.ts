@@ -114,6 +114,77 @@ export class PaystackPaymentService {
   }
 
   /**
+   * Extract meaningful error message from error object
+   */
+  private static extractErrorMessage(error: any): string {
+    if (!error) return "Unknown error";
+
+    // Handle string errors
+    if (typeof error === "string") {
+      return error;
+    }
+
+    // Handle Error objects
+    if (error instanceof Error) {
+      return error.message;
+    }
+
+    // Handle Supabase/PostgresError objects
+    if (error && typeof error === "object") {
+      // Try to get the most meaningful error message
+      const priorities = [
+        "message",
+        "details",
+        "hint",
+        "description",
+        "error_description",
+        "error",
+      ];
+
+      for (const key of priorities) {
+        if (error[key] && typeof error[key] === "string" && error[key].trim()) {
+          return error[key];
+        }
+      }
+
+      // Special handling for PostgreSQL errors
+      if (error.code) {
+        const pgError = `PostgreSQL Error ${error.code}`;
+        if (error.details) {
+          return `${pgError}: ${error.details}`;
+        }
+        if (error.message) {
+          return `${pgError}: ${error.message}`;
+        }
+        return pgError;
+      }
+
+      // Try to get a readable representation
+      try {
+        // Filter out non-string properties for a cleaner JSON
+        const cleanError = Object.fromEntries(
+          Object.entries(error).filter(
+            ([_, value]) =>
+              typeof value === "string" ||
+              typeof value === "number" ||
+              typeof value === "boolean",
+          ),
+        );
+
+        if (Object.keys(cleanError).length > 0) {
+          return JSON.stringify(cleanError, null, 2);
+        }
+
+        return JSON.stringify(error, null, 2);
+      } catch (e) {
+        return `Error object could not be processed: ${error.toString()}`;
+      }
+    }
+
+    return `Unknown error type: ${typeof error}`;
+  }
+
+  /**
    * Initialize payment with Paystack Inline popup
    */
   static async initializePayment(params: PaymentInitialization): Promise<void> {
