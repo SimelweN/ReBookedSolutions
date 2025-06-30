@@ -315,8 +315,9 @@ const CreateListing = () => {
 
   return (
     <Layout>
-      <div
-        className={`container mx-auto ${isMobile ? "px-2" : "px-4"} py-4 md:py-8 max-w-2xl`}
+      <BankingRequirementGate action="create a book listing">
+        <div
+          className={`container mx-auto ${isMobile ? "px-2" : "px-4"} py-4 md:py-8 max-w-2xl`}
       >
         {/* Requirements Validation */}
         {!isCheckingRequirements &&
