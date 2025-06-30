@@ -19,7 +19,7 @@ import ConfigurationChecker from "./components/ConfigurationChecker";
 import { debugConnection } from "./utils/debugConnection";
 import { validateApiKey } from "./utils/validateApiKey";
 import { DatabaseSetup } from "./utils/databaseSetup";
-import { debugBankingDetails } from "./utils/debugBankingDetails";
+
 import {
   checkDatabaseStatus,
   logDatabaseStatus,
