@@ -29,14 +29,10 @@ import { reportReactImportStatus } from "./utils/reactImportValidator";
 import EmergencyBypass from "./components/EmergencyBypass";
 import "./App.css";
 
-// Initialize debug utilities in development
+// Initialize debug utilities in development only (limited)
 if (import.meta.env.DEV) {
-  (window as any).debugConnection = debugConnection;
-  (window as any).validateApiKey = validateApiKey;
-  (window as any).DatabaseSetup = DatabaseSetup;
-
+  // Only expose essential debugging tools in development
   (window as any).checkDatabaseStatus = checkDatabaseStatus;
-  (window as any).logDatabaseStatus = logDatabaseStatus;
 
   // Validate React imports immediately to catch createContext errors
   setTimeout(() => {
