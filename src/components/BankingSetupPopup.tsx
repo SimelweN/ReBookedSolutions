@@ -96,13 +96,29 @@ const BankingSetupPopup = ({
   }, [user?.id, triggerCheck]);
 
   const openBankingVault = () => {
-    // Open external banking site in new tab
+    // Open external banking site in popup
     const bankingUrl = "https://paystack-vault-south-africa.lovable.app";
-    window.open(bankingUrl, "_blank", "noopener,noreferrer");
 
-    toast.info(
-      "Banking setup opened in new tab. Complete your details there and return here.",
+    // Calculate popup dimensions (responsive)
+    const width = Math.min(800, window.innerWidth * 0.9);
+    const height = Math.min(900, window.innerHeight * 0.9);
+    const left = (window.innerWidth - width) / 2;
+    const top = (window.innerHeight - height) / 2;
+
+    const popup = window.open(
+      bankingUrl,
+      "bankingSetup",
+      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,menubar=no,toolbar=no,location=no,status=no`,
     );
+
+    if (popup) {
+      popup.focus();
+      toast.info("Complete your banking setup in the popup window.");
+    } else {
+      toast.error(
+        "Popup blocked. Please allow popups for this site and try again.",
+      );
+    }
 
     // Poll for banking details every 5 seconds while popup is open
     const pollInterval = setInterval(() => {
