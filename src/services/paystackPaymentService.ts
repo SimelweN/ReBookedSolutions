@@ -849,16 +849,57 @@ export class PaystackPaymentService {
    */
   private static async loadPaystackScript(): Promise<void> {
     return new Promise((resolve, reject) => {
+      // Check if already loaded
       if ((window as any).PaystackPop) {
+        console.log("PaystackPop already available");
         resolve();
         return;
       }
 
+      // Check if script is already being loaded
+      const existingScript = document.querySelector(
+        'script[src="https://js.paystack.co/v1/inline.js"]',
+      );
+      if (existingScript) {
+        console.log("Paystack script already loading, waiting...");
+        existingScript.addEventListener("load", () => {
+          console.log("Existing Paystack script loaded");
+          resolve();
+        });
+        existingScript.addEventListener("error", (e) => {
+          console.error("Existing Paystack script failed to load:", e);
+          reject(new Error("Paystack script failed to load"));
+        });
+        return;
+      }
+
+      console.log("Loading Paystack script from CDN...");
       const script = document.createElement("script");
       script.src = "https://js.paystack.co/v1/inline.js";
-      script.onload = () => resolve();
-      script.onerror = () =>
-        reject(new Error("Failed to load Paystack script"));
+      script.async = true;
+      script.onload = () => {
+        console.log("Paystack script loaded successfully");
+        // Give it a moment to initialize
+        setTimeout(() => {
+          if ((window as any).PaystackPop) {
+            console.log("PaystackPop is now available");
+            resolve();
+          } else {
+            console.error("PaystackPop still not available after script load");
+            console.log(
+              "Available Paystack objects:",
+              Object.keys(window).filter((key) =>
+                key.toLowerCase().includes("paystack"),
+              ),
+            );
+            reject(new Error("PaystackPop not available after script load"));
+          }
+        }, 100);
+      };
+      script.onerror = (error) => {
+        console.error("Failed to load Paystack script:", error);
+        reject(new Error("Failed to load Paystack script from CDN"));
+      };
       document.head.appendChild(script);
     });
   }
