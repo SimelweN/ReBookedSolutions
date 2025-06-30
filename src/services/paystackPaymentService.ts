@@ -72,6 +72,38 @@ export class PaystackPaymentService {
   private static readonly PAYSTACK_PUBLIC_KEY = PAYSTACK_CONFIG.PUBLIC_KEY;
 
   /**
+   * Check if Paystack library is available and wait for it if needed
+   */
+  static async ensurePaystackLoaded(): Promise<boolean> {
+    // First check if it's already available
+    if ((window as any).PaystackPop || (window as any).Paystack) {
+      return true;
+    }
+
+    // Wait up to 5 seconds for Paystack to load
+    const maxWait = 5000;
+    const checkInterval = 100;
+    let waited = 0;
+
+    while (waited < maxWait) {
+      if ((window as any).PaystackPop || (window as any).Paystack) {
+        return true;
+      }
+      await new Promise((resolve) => setTimeout(resolve, checkInterval));
+      waited += checkInterval;
+    }
+
+    // If still not available, try loading the script
+    try {
+      await this.loadPaystackScript();
+      return true;
+    } catch (error) {
+      console.error("Failed to load Paystack:", error);
+      return false;
+    }
+  }
+
+  /**
    * Generate unique payment reference
    */
   static generateReference(): string {
