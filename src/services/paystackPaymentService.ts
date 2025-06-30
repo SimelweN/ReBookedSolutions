@@ -91,20 +91,44 @@ export class PaystackPaymentService {
     // Try to use the new @paystack/inline-js package first
     let PaystackPop;
     try {
-      const { PaystackPop: ImportedPaystackPop } = await import(
-        "@paystack/inline-js"
-      );
-      PaystackPop = ImportedPaystackPop;
+      const paystackModule = await import("@paystack/inline-js");
+      console.log("Paystack module imported:", paystackModule);
+
+      // Handle different export formats
+      if (paystackModule.PaystackPop) {
+        PaystackPop = paystackModule.PaystackPop;
+      } else if (paystackModule.default) {
+        PaystackPop = paystackModule.default;
+      } else {
+        // Try direct module access
+        PaystackPop = paystackModule;
+      }
+
+      console.log("PaystackPop from import:", PaystackPop);
     } catch (importError) {
       console.warn(
-        "Failed to import @paystack/inline-js, falling back to CDN script",
+        "Failed to import @paystack/inline-js, falling back to CDN script:",
+        importError,
       );
-      // Ensure Paystack script is loaded
-      await this.loadPaystackScript();
-      PaystackPop = (window as any).PaystackPop;
+
+      try {
+        // Ensure Paystack script is loaded
+        await this.loadPaystackScript();
+        PaystackPop = (window as any).PaystackPop;
+        console.log("PaystackPop from CDN:", PaystackPop);
+      } catch (scriptError) {
+        console.error("Failed to load Paystack from CDN:", scriptError);
+      }
     }
 
     if (!PaystackPop) {
+      console.error("PaystackPop is not available. Checking window object:", {
+        windowPaystack: (window as any).Paystack,
+        windowPaystackPop: (window as any).PaystackPop,
+        allPaystackKeys: Object.keys(window).filter((key) =>
+          key.toLowerCase().includes("paystack"),
+        ),
+      });
       throw new Error("Paystack payment library not available");
     }
 
