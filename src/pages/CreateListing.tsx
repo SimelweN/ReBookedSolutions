@@ -34,6 +34,12 @@ const CreateListing = () => {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const {
+    hasBankingSetup,
+    showSetupPopup,
+    requireBankingSetup,
+    closeSetupPopup,
+  } = useBankingSetup();
 
   const [formData, setFormData] = useState<BookFormData>({
     title: "",
