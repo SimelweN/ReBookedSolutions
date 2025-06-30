@@ -227,26 +227,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                   return;
                 }
 
-                // Set lock immediately
-                sessionStorage.setItem(lockKey, now.toString());
-                sessionStorage.setItem(sessionKey, now.toString());
-                localStorage.setItem(localStorageKey, now.toString());
+                // Check if we already showed welcome notification today
+                const today = new Date().toDateString();
+                const lastWelcomeKey = `last_welcome_${session.user.id}`;
+                const lastWelcome = localStorage.getItem(lastWelcomeKey);
 
-                // Use safe notification operation to prevent Suspense issues
-                safeNotificationOperation(
-                  () =>
-                    addNotification({
-                      userId: session.user.id,
-                      title: "Welcome back!",
-                      message: `Successfully logged in at ${new Date().toLocaleString()}`,
-                      type: "success",
-                      read: false,
-                    }),
-                  () => {
-                    // Fallback if notification fails
-                    console.warn(
-                      "[AuthContext] Login notification failed - removing locks",
-                    );
+                // Only show welcome notification once per day
+                if (lastWelcome !== today) {
+                  // Set lock immediately
+                  sessionStorage.setItem(lockKey, now.toString());
+                  sessionStorage.setItem(sessionKey, now.toString());
+                  localStorage.setItem(localStorageKey, now.toString());
+                  localStorage.setItem(lastWelcomeKey, today);
+
+                  // Use safe notification operation to prevent Suspense issues
+                  safeNotificationOperation(
+                    () =>
+                      addNotification({
+                        userId: session.user.id,
+                        title: "Welcome back!",
+                        message: `Successfully logged in at ${new Date().toLocaleString()}`,
+                        type: "success",
+                        read: false,
+                      }),
+                    () => {
+                      // Fallback if notification fails
+                      console.warn(
+                        "[AuthContext] Login notification failed - removing locks",
+                      );
                     sessionStorage.removeItem(sessionKey);
                     sessionStorage.removeItem(lockKey);
                     localStorage.removeItem(localStorageKey);
@@ -376,7 +384,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                   exchangeError.message.includes("invalid request")
                 ) {
                   console.log(
-                    "🧹 [AuthContext] Clearing auth parameters from URL due to PKCE error",
+                    "��� [AuthContext] Clearing auth parameters from URL due to PKCE error",
                   );
                   // Clear the URL parameters to prevent repeated failed attempts
                   window.history.replaceState(
