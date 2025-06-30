@@ -180,9 +180,32 @@ const BankingDetailsSection: React.FC = () => {
         }
       } catch (subaccountError) {
         console.error("Subaccount creation error:", subaccountError);
-        toast.warning(
-          "Banking details saved, but payment setup failed. You can still receive manual payments.",
-        );
+
+        const errorMessage =
+          subaccountError instanceof Error
+            ? subaccountError.message
+            : String(subaccountError);
+
+        if (
+          errorMessage.includes("EDGE_FUNCTION_UNAVAILABLE") ||
+          errorMessage.includes("Failed to send a request") ||
+          errorMessage.includes("non-2xx status code")
+        ) {
+          toast.warning(
+            "Banking details saved. Payment account will be set up automatically when the service becomes available.",
+          );
+        } else if (
+          errorMessage.includes("not configured") ||
+          errorMessage.includes("MISSING_SECRET_KEY")
+        ) {
+          toast.warning(
+            "Banking details saved. Payment service needs to be configured by an administrator.",
+          );
+        } else {
+          toast.warning(
+            `Banking details saved, but payment setup failed: ${errorMessage}`,
+          );
+        }
       }
 
       setBankingDetails(savedDetails);
