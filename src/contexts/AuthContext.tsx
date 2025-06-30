@@ -227,45 +227,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                   return;
                 }
 
-                // Check if we already showed welcome notification today
-                const today = new Date().toDateString();
-                const lastWelcomeKey = `last_welcome_${session.user.id}`;
-                const lastWelcome = localStorage.getItem(lastWelcomeKey);
+                try {
+                  // Check if we already showed welcome notification today
+                  const today = new Date().toDateString();
+                  const lastWelcomeKey = `last_welcome_${session.user.id}`;
+                  const lastWelcome = localStorage.getItem(lastWelcomeKey);
 
-                // Only show welcome notification once per day
-                if (lastWelcome !== today) {
-                  // Set lock immediately
-                  sessionStorage.setItem(lockKey, now.toString());
-                  sessionStorage.setItem(sessionKey, now.toString());
-                  localStorage.setItem(localStorageKey, now.toString());
-                  localStorage.setItem(lastWelcomeKey, today);
+                  // Only show welcome notification once per day
+                  if (lastWelcome !== today) {
+                    // Set lock immediately
+                    sessionStorage.setItem(lockKey, now.toString());
+                    sessionStorage.setItem(sessionKey, now.toString());
+                    localStorage.setItem(localStorageKey, now.toString());
+                    localStorage.setItem(lastWelcomeKey, today);
 
-                  // Use safe notification operation to prevent Suspense issues
-                  safeNotificationOperation(
-                    () =>
-                      addNotification({
-                        userId: session.user.id,
-                        title: "Welcome back!",
-                        message: `Successfully logged in at ${new Date().toLocaleString()}`,
-                        type: "success",
-                        read: false,
-                      }),
-                    () => {
-                      // Fallback if notification fails
-                      console.warn(
-                        "[AuthContext] Login notification failed - removing locks",
-                      );
-                      sessionStorage.removeItem(sessionKey);
-                      sessionStorage.removeItem(lockKey);
-                      localStorage.removeItem(localStorageKey);
-                    },
-                  );
-                } else {
-                  console.log(
-                    "[AuthContext] Skipping duplicate login notification - recent notification exists",
-                  );
-                }
-              } catch (notifError) {
+                    // Use safe notification operation to prevent Suspense issues
+                    safeNotificationOperation(
+                      () =>
+                        addNotification({
+                          userId: session.user.id,
+                          title: "Welcome back!",
+                          message: `Successfully logged in at ${new Date().toLocaleString()}`,
+                          type: "success",
+                          read: false,
+                        }),
+                      () => {
+                        // Fallback if notification fails
+                        console.warn(
+                          "[AuthContext] Login notification failed - removing locks",
+                        );
+                        sessionStorage.removeItem(sessionKey);
+                        sessionStorage.removeItem(lockKey);
+                        localStorage.removeItem(localStorageKey);
+                      },
+                    );
+                  } else {
+                    console.log(
+                      "[AuthContext] Skipping duplicate login notification - recent notification exists",
+                    );
+                  }
+                } catch (notifError) {
                 console.warn(
                   "[AuthContext] Login notification setup failed:",
                   notifError,
