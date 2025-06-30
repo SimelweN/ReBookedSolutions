@@ -52,7 +52,7 @@ const ModernBankingSection = () => {
         .single();
 
       if (error) {
-        console.error("Error checking banking status:", error);
+        console.error("Error checking banking status:", error.message || error);
         return;
       }
 
