@@ -12,6 +12,7 @@ export interface PaymentInitialization {
   email: string;
   amount: number; // in kobo
   reference: string;
+  subaccount?: string; // Subaccount code for split payments
   metadata?: Record<string, any>;
   callback_url?: string;
 }
