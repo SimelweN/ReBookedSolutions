@@ -96,6 +96,26 @@ const ModernBankingSection = () => {
     checkBankingStatus();
   }, [user?.id]);
 
+  // Listen for window messages from banking setup popup
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      // Only accept messages from the banking setup domain
+      if (event.origin !== "https://paystack-vault-south-africa.lovable.app") {
+        return;
+      }
+
+      if (event.data.type === "BANKING_SETUP_COMPLETE") {
+        toast.success("Banking setup completed! Refreshing status...");
+        setTimeout(() => {
+          checkBankingStatus();
+        }, 1000);
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
   const openBankingSetup = () => {
     const bankingUrl = "https://paystack-vault-south-africa.lovable.app";
 
