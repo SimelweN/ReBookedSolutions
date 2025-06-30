@@ -553,6 +553,9 @@ const CreateListing = () => {
           type="seller"
         />
       </div>
+
+      {/* Banking Setup Popup */}
+      <BankingSetupPopup isOpen={showSetupPopup} onClose={closeSetupPopup} />
     </Layout>
   );
 };
