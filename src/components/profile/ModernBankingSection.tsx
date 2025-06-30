@@ -68,7 +68,10 @@ const ModernBankingSection = () => {
         toast.success("Banking setup verified!");
       }
     } catch (error) {
-      console.error("Banking status check failed:", error);
+      console.error(
+        "Banking status check failed:",
+        error instanceof Error ? error.message : error,
+      );
       setBankingStatus((prev) => ({ ...prev, isLoading: false }));
     }
   };
