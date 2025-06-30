@@ -130,6 +130,8 @@ const BankingDetailsSection: React.FC = () => {
 
     try {
       setIsLoading(true);
+
+      // First save the banking details
       const detailsToSave = {
         user_id: user.id,
         recipient_type: formData.recipient_type as "individual" | "business",
@@ -145,9 +147,45 @@ const BankingDetailsSection: React.FC = () => {
         user.email || "",
       );
 
+      // Create Paystack subaccount for the seller
+      try {
+        console.log("Creating Paystack subaccount...");
+        const subaccountResult = await createPaystackSubaccount(
+          formData.full_name,
+          formData.bank_name,
+          formData.bank_account_number,
+          user.email || "",
+          formData.full_name,
+        );
+
+        if (subaccountResult.success) {
+          // Update banking details with subaccount code
+          await ImprovedBankingService.updateSubaccountCode(
+            user.id,
+            subaccountResult.data.subaccount_code,
+          );
+
+          toast.success(
+            "Banking details and payment account created successfully!",
+          );
+        } else {
+          console.warn(
+            "Subaccount creation failed, but banking details saved:",
+            subaccountResult.message,
+          );
+          toast.warning(
+            "Banking details saved, but payment setup needs completion. Please contact support.",
+          );
+        }
+      } catch (subaccountError) {
+        console.error("Subaccount creation error:", subaccountError);
+        toast.warning(
+          "Banking details saved, but payment setup failed. You can still receive manual payments.",
+        );
+      }
+
       setBankingDetails(savedDetails);
       setIsEditing(false);
-      toast.success("Banking details saved successfully!");
     } catch (error) {
       console.error("Error saving banking details:", error);
       const errorMessage =
@@ -158,6 +196,37 @@ const BankingDetailsSection: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const createPaystackSubaccount = async (
+    businessName: string,
+    bankName: string,
+    accountNumber: string,
+    primaryContactEmail: string,
+    primaryContactName: string,
+  ) => {
+    const { data, error } = await supabase.functions.invoke(
+      "create-paystack-subaccount",
+      {
+        body: {
+          business_name: businessName,
+          bank_name: bankName,
+          account_number: accountNumber,
+          primary_contact_email: primaryContactEmail,
+          primary_contact_name: primaryContactName,
+          metadata: {
+            user_id: user?.id,
+            created_at: new Date().toISOString(),
+          },
+        },
+      },
+    );
+
+    if (error) {
+      throw new Error(`Subaccount creation failed: ${error.message}`);
+    }
+
+    return data;
   };
 
   if (isLoading && !bankingDetails) {
