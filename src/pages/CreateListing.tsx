@@ -197,6 +197,11 @@ const CreateListing = () => {
       return;
     }
 
+    // Check banking setup first - this will show popup if not completed
+    if (!requireBankingSetup("create a listing")) {
+      return;
+    }
+
     // Check if user can list books before validating form
     if (canListBooks === false) {
       toast.error("❌ Please add a pickup address before listing your book.");
