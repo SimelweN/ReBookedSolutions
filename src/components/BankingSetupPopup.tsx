@@ -1,0 +1,254 @@
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  CreditCard,
+  ExternalLink,
+  Shield,
+  Banknote,
+  CheckCircle,
+  AlertTriangle,
+  Loader2,
+  Building,
+} from "lucide-react";
+import { toast } from "sonner";
+
+interface BankingSetupPopupProps {
+  isOpen: boolean;
+  onClose: () => void;
+  triggerCheck?: boolean; // External trigger to recheck banking status
+}
+
+const BankingSetupPopup = ({
+  isOpen,
+  onClose,
+  triggerCheck,
+}: BankingSetupPopupProps) => {
+  const { user } = useAuth();
+  const [hasBankingDetails, setHasBankingDetails] = useState(false);
+  const [isCheckingBanking, setIsCheckingBanking] = useState(false);
+  const [lastChecked, setLastChecked] = useState<Date | null>(null);
+
+  // Check if user has banking details (subaccount_code)
+  const checkBankingStatus = async () => {
+    if (!user?.id) return;
+
+    setIsCheckingBanking(true);
+    try {
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("subaccount_code")
+        .eq("id", user.id)
+        .single();
+
+      if (error) {
+        console.error("Error checking banking status:", error);
+        return;
+      }
+
+      const hasValidSubaccount = !!profile?.subaccount_code?.trim();
+      setHasBankingDetails(hasValidSubaccount);
+      setLastChecked(new Date());
+
+      // If user now has banking details, show success and close
+      if (hasValidSubaccount && isOpen) {
+        toast.success("Banking details verified! You can now create listings.");
+        setTimeout(() => onClose(), 1500);
+      }
+    } catch (error) {
+      console.error("Banking status check failed:", error);
+    } finally {
+      setIsCheckingBanking(false);
+    }
+  };
+
+  // Check banking status on mount and when triggerCheck changes
+  useEffect(() => {
+    if (user?.id) {
+      checkBankingStatus();
+    }
+  }, [user?.id, triggerCheck]);
+
+  const openBankingVault = () => {
+    // Open external banking site in new tab
+    const bankingUrl = "https://paystack-vault-south-africa.lovable.app";
+    window.open(bankingUrl, "_blank", "noopener,noreferrer");
+
+    toast.info(
+      "Banking setup opened in new tab. Complete your details there and return here.",
+    );
+
+    // Poll for banking details every 5 seconds while popup is open
+    const pollInterval = setInterval(() => {
+      if (isOpen) {
+        checkBankingStatus();
+      } else {
+        clearInterval(pollInterval);
+      }
+    }, 5000);
+
+    // Clean up interval when component unmounts or popup closes
+    return () => clearInterval(pollInterval);
+  };
+
+  const getStatusContent = () => {
+    if (isCheckingBanking) {
+      return (
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="w-6 h-6 animate-spin mr-2" />
+          <span>Checking banking status...</span>
+        </div>
+      );
+    }
+
+    if (hasBankingDetails) {
+      return (
+        <Card className="bg-green-50 border-green-200">
+          <CardContent className="pt-6">
+            <div className="flex items-center space-x-3">
+              <CheckCircle className="w-8 h-8 text-green-600" />
+              <div>
+                <h3 className="font-semibold text-green-800">
+                  Banking Details Complete!
+                </h3>
+                <p className="text-sm text-green-600">
+                  You can now create listings and receive payments.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    return (
+      <Card className="bg-orange-50 border-orange-200">
+        <CardContent className="pt-6">
+          <div className="flex items-center space-x-3">
+            <AlertTriangle className="w-8 h-8 text-orange-600" />
+            <div>
+              <h3 className="font-semibold text-orange-800">
+                Banking Setup Required
+              </h3>
+              <p className="text-sm text-orange-600">
+                Complete your banking details to start selling books.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center space-x-2">
+            <Building className="w-5 h-5" />
+            <span>Banking Setup Required</span>
+          </DialogTitle>
+          <DialogDescription>
+            To sell books on our platform, you need to complete your banking
+            details for secure payments.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          {getStatusContent()}
+
+          {!hasBankingDetails && (
+            <>
+              <div className="space-y-3">
+                <h4 className="font-medium text-sm">What you'll need:</h4>
+                <div className="grid grid-cols-1 gap-2 text-sm">
+                  <div className="flex items-center space-x-2">
+                    <CreditCard className="w-4 h-4 text-blue-500" />
+                    <span>Bank account details</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Shield className="w-4 h-4 text-green-500" />
+                    <span>Identity verification</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Banknote className="w-4 h-4 text-purple-500" />
+                    <span>Paystack subaccount creation</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 p-3 rounded-lg">
+                <div className="flex items-start space-x-2">
+                  <Shield className="w-4 h-4 text-blue-600 mt-0.5" />
+                  <div className="text-xs text-blue-700">
+                    <p className="font-medium">Secure & Fast Setup</p>
+                    <p>
+                      Your banking details are encrypted and managed securely
+                      via Paystack's verified platform.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <Button onClick={openBankingVault} className="w-full" size="lg">
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Complete Banking Setup
+              </Button>
+            </>
+          )}
+
+          <div className="flex space-x-2">
+            <Button
+              variant="outline"
+              onClick={checkBankingStatus}
+              disabled={isCheckingBanking}
+              className="flex-1"
+            >
+              {isCheckingBanking ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <CheckCircle className="w-4 h-4 mr-2" />
+              )}
+              Refresh Status
+            </Button>
+
+            {hasBankingDetails && (
+              <Button onClick={onClose} className="flex-1">
+                Continue
+              </Button>
+            )}
+          </div>
+
+          {lastChecked && (
+            <p className="text-xs text-gray-500 text-center">
+              Last checked: {lastChecked.toLocaleTimeString()}
+            </p>
+          )}
+
+          <div className="flex justify-center space-x-4 pt-2">
+            <Badge variant="outline" className="text-xs">
+              <Shield className="w-3 h-3 mr-1" />
+              Secure
+            </Badge>
+            <Badge variant="outline" className="text-xs">
+              <Banknote className="w-3 h-3 mr-1" />
+              Fast Payouts
+            </Badge>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default BankingSetupPopup;
