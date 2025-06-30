@@ -121,13 +121,20 @@ const BankingSetupPopup = ({
     }
 
     // Poll for banking details every 5 seconds while popup is open
-    const pollInterval = setInterval(() => {
-      if (isOpen) {
-        checkBankingStatus();
-      } else {
-        clearInterval(pollInterval);
-      }
-    }, 5000);
+    let pollInterval: NodeJS.Timeout;
+    if (popup) {
+      pollInterval = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(pollInterval);
+          toast.info("Checking banking setup status...");
+          setTimeout(() => {
+            checkBankingStatus();
+          }, 1000);
+        } else if (isOpen) {
+          checkBankingStatus();
+        }
+      }, 5000);
+    }
 
     // Clean up interval when component unmounts or popup closes
     return () => clearInterval(pollInterval);
