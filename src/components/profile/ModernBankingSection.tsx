@@ -320,15 +320,29 @@ const ModernBankingSection = () => {
             </AlertDescription>
           </Alert>
 
-          <Button
-            onClick={openBankingSetup}
-            className={`bg-blue-600 hover:bg-blue-700 ${isMobile ? "w-full h-12" : "w-full"}`}
-            size={isMobile ? "lg" : "default"}
-          >
-            <ExternalLink className="w-4 h-4 mr-2" />
-            Complete Banking Setup
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
+          <div className="space-y-3">
+            <Button
+              onClick={openBankingSetup}
+              className={`bg-blue-600 hover:bg-blue-700 ${isMobile ? "w-full h-12" : "w-full"}`}
+              size={isMobile ? "lg" : "default"}
+            >
+              <ExternalLink className="w-4 h-4 mr-2" />
+              Complete Banking Setup
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+
+            <Button
+              onClick={checkBankingStatus}
+              variant="outline"
+              className="w-full"
+              disabled={bankingStatus.isLoading}
+            >
+              <RefreshCw
+                className={`w-4 h-4 mr-2 ${bankingStatus.isLoading ? "animate-spin" : ""}`}
+              />
+              {bankingStatus.isLoading ? "Checking..." : "Refresh Status"}
+            </Button>
+          </div>
         </div>
       )}
 
