@@ -224,7 +224,28 @@ const BankingDetailsSection: React.FC = () => {
     );
 
     if (error) {
-      throw new Error(`Subaccount creation failed: ${error.message}`);
+      console.error("Supabase function error:", error);
+
+      // Properly handle error object
+      let errorMessage = "Subaccount creation failed";
+
+      if (typeof error === "object" && error !== null) {
+        if ("message" in error && typeof error.message === "string") {
+          errorMessage = `Subaccount creation failed: ${error.message}`;
+        } else if ("details" in error && typeof error.details === "string") {
+          errorMessage = `Subaccount creation failed: ${error.details}`;
+        } else {
+          try {
+            errorMessage = `Subaccount creation failed: ${JSON.stringify(error, null, 2)}`;
+          } catch (stringifyError) {
+            errorMessage = `Subaccount creation failed: ${String(error)}`;
+          }
+        }
+      } else {
+        errorMessage = `Subaccount creation failed: ${String(error)}`;
+      }
+
+      throw new Error(errorMessage);
     }
 
     return data;
