@@ -237,6 +237,22 @@ const PaystackDashboard: React.FC = () => {
     }
   };
 
+  const debugPaystackLibrary = async () => {
+    toast.info("Running Paystack library diagnostics...");
+    try {
+      const results = await PaystackLibraryTest.testAllMethods();
+      PaystackLibraryTest.logResults(results);
+
+      const successCount = results.filter((r) => r.success).length;
+      toast.success(
+        `Library test completed. ${successCount}/${results.length} methods successful. Check console for details.`,
+      );
+    } catch (error) {
+      console.error("Debug test failed:", error);
+      toast.error("Library debug test failed. Check console for details.");
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Development Mode Indicator */}
