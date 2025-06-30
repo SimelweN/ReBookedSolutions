@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { ImprovedBankingService } from "@/services/improvedBankingService";
 import { BankingDetails, SOUTH_AFRICAN_BANKS } from "@/types/banking";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   Shield,
