@@ -111,7 +111,7 @@ export class PaystackPaymentService {
     return new Promise((resolve, reject) => {
       const paystack = new PaystackPop();
 
-      paystack.newTransaction({
+      const transactionParams: any = {
         key: this.PAYSTACK_PUBLIC_KEY,
         email: params.email,
         amount: params.amount,
@@ -138,7 +138,15 @@ export class PaystackPaymentService {
           });
           reject(new Error("PAYMENT_CANCELLED_BY_USER"));
         },
-      });
+      };
+
+      // Add subaccount for split payments if provided
+      if (params.subaccount) {
+        transactionParams.subaccount = params.subaccount;
+        console.log("Payment will be split to subaccount:", params.subaccount);
+      }
+
+      paystack.newTransaction(transactionParams);
     });
   }
 
