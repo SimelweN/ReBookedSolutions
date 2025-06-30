@@ -91,7 +91,7 @@ const UserProfileTabs = ({
     <div className="w-full">
       <Tabs defaultValue="listings" className="w-full">
         <TabsList
-          className={`w-full ${isMobile ? "grid grid-cols-2 gap-1 h-auto p-1" : "flex"}`}
+          className={`w-full ${isMobile ? "grid grid-cols-5 gap-0.5 h-auto p-1" : "flex"}`}
         >
           <TabsTrigger
             value="listings"
