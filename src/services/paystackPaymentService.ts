@@ -706,28 +706,31 @@ export class PaystackPaymentService {
         .eq("paystack_ref", reference);
 
       if (error) {
-        // Proper error message extraction
-        let errorMessage = "Unknown error";
-
-        if (error.message && typeof error.message === "string") {
-          errorMessage = error.message;
-        } else if (error.details && typeof error.details === "string") {
-          errorMessage = error.details;
-        } else if (typeof error === "string") {
-          errorMessage = error;
-        } else if (error && typeof error === "object") {
-          try {
-            errorMessage = JSON.stringify(error, null, 2);
-          } catch (e) {
-            errorMessage = error.toString();
-          }
-        }
+        const errorMessage = this.extractErrorMessage(error);
 
         console.error("❌ Failed to update order status:", {
           reference,
           status,
           error: errorMessage,
         });
+
+        // Handle missing orders table
+        if (
+          errorMessage.includes("relation") &&
+          errorMessage.includes("orders") &&
+          errorMessage.includes("does not exist")
+        ) {
+          console.warn(
+            "⚠️ Orders table does not exist, skipping status update",
+          );
+
+          if (import.meta.env.DEV) {
+            console.warn(
+              "⚠️ Skipping order status update due to missing orders table",
+            );
+            return;
+          }
+        }
 
         throw new Error(`Failed to update order: ${errorMessage}`);
       }
