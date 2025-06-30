@@ -1038,12 +1038,40 @@ export class PaystackPaymentService {
         .order("created_at", { ascending: false });
 
       if (error) {
-        throw new Error(`Failed to fetch orders: ${error.message}`);
+        const errorMessage = this.extractErrorMessage(error);
+
+        // Handle missing orders table
+        if (
+          errorMessage.includes("relation") &&
+          errorMessage.includes("orders") &&
+          errorMessage.includes("does not exist")
+        ) {
+          console.warn("❌ Orders table does not exist, returning empty array");
+
+          if (import.meta.env.DEV) {
+            toast.warning("Orders table missing - returning empty results");
+          }
+
+          return [];
+        }
+
+        throw new Error(`Failed to fetch orders: ${errorMessage}`);
       }
 
       return data || [];
     } catch (error) {
       console.error("Get orders by status error:", error);
+
+      // In development, return empty array to prevent app crashes
+      if (
+        import.meta.env.DEV &&
+        error instanceof Error &&
+        error.message.includes("does not exist")
+      ) {
+        console.warn("⚠️ Returning empty orders array due to missing table");
+        return [];
+      }
+
       throw error;
     }
   }
