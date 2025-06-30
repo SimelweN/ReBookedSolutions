@@ -129,7 +129,21 @@ export class PaystackPaymentService {
           key.toLowerCase().includes("paystack"),
         ),
       });
-      throw new Error("Paystack payment library not available");
+
+      // Try alternative approach with global Paystack object
+      const globalPaystack = (window as any).Paystack;
+      if (globalPaystack && typeof globalPaystack.setup === "function") {
+        console.log("Using global Paystack object as fallback");
+        PaystackPop = class {
+          newTransaction(config: any) {
+            globalPaystack.setup(config);
+          }
+        };
+      }
+
+      if (!PaystackPop) {
+        throw new Error("Paystack payment library not available");
+      }
     }
 
     return new Promise((resolve, reject) => {
