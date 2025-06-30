@@ -7,6 +7,7 @@ import { ArrowLeft, Flag, Shield } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import BankingRequirementChecker from "@/components/BankingRequirementChecker";
 
 const Admin = () => {
   const { user, profile, isLoading, isAuthenticated, isAdmin } = useAuth();
