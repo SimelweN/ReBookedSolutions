@@ -53,23 +53,37 @@ const PaymentStatus: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      if (reference) {
-        // If we have a reference, try to verify the payment first
-        await PaystackPaymentService.verifyPayment(reference);
+      if (!user?.email) {
+        setError("User not authenticated");
+        return;
       }
 
-      // Load order details
-      // This would typically query the orders table by ID or reference
-      // For now, we'll use a placeholder implementation
-      const orders = await PaystackPaymentService.getOrdersByStatus("paid");
-      const foundOrder = orders.find(
-        (o) => o.id === orderId || o.paystack_ref === reference,
+      if (reference) {
+        // If we have a reference, try to verify the payment first
+        try {
+          await PaystackPaymentService.verifyPayment(reference);
+        } catch (verifyError) {
+          console.warn("Payment verification failed:", verifyError);
+          // Continue to try fetching order anyway
+        }
+      }
+
+      // Load order details for the current user
+      const orderIdOrRef = orderId || reference;
+      if (!orderIdOrRef) {
+        setError("No order ID or payment reference provided");
+        return;
+      }
+
+      const foundOrder = await PaystackPaymentService.getUserOrder(
+        user.email,
+        orderIdOrRef,
       );
 
       if (foundOrder) {
         setOrder(foundOrder);
       } else {
-        setError("Order not found");
+        setError("Order not found or doesn't belong to your account");
       }
     } catch (error) {
       console.error("Error loading order details:", error);
