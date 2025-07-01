@@ -278,6 +278,177 @@ const PaymentStatus: React.FC = () => {
             </Card>
           )}
 
+          {/* Purchase Summary */}
+          {order && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              {/* Order Summary */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Package className="w-5 h-5" />
+                    <span>Purchase Summary</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-sm text-gray-600">Order ID</p>
+                      <p className="font-mono text-sm">{order.id}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-gray-600">Date</p>
+                      <p className="text-sm">
+                        {new Date(order.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <h4 className="font-medium mb-3">Items Purchased</h4>
+                    <div className="space-y-3">
+                      {order.items.map((item, index) => (
+                        <div
+                          key={index}
+                          className="flex justify-between items-start"
+                        >
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">{item.title}</p>
+                            {item.author && (
+                              <p className="text-xs text-gray-600">
+                                by {item.author}
+                              </p>
+                            )}
+                            {item.isbn && (
+                              <p className="text-xs text-gray-600">
+                                ISBN: {item.isbn}
+                              </p>
+                            )}
+                            {item.condition && (
+                              <Badge variant="outline" className="text-xs mt-1">
+                                {item.condition}
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="text-right ml-4">
+                            <p className="font-medium">
+                              R{(item.price / 100).toFixed(2)}
+                            </p>
+                            <p className="text-xs text-gray-600">Qty: 1</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-4 space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Subtotal</span>
+                      <span>
+                        R
+                        {(
+                          (order.amount - (order.delivery_fee || 0)) /
+                          100
+                        ).toFixed(2)}
+                      </span>
+                    </div>
+                    {order.delivery_fee && (
+                      <div className="flex justify-between text-sm">
+                        <span>Delivery Fee</span>
+                        <span>R{(order.delivery_fee / 100).toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between font-medium text-lg border-t pt-2">
+                      <span>Total Paid</span>
+                      <span>R{(order.amount / 100).toFixed(2)}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Delivery Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Package className="w-5 h-5" />
+                    <span>Delivery Information</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {order.delivery_address ? (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">
+                        Delivery Address
+                      </p>
+                      <div className="text-sm">
+                        <p>{order.delivery_address.street}</p>
+                        <p>
+                          {order.delivery_address.city},{" "}
+                          {order.delivery_address.province}
+                        </p>
+                        <p>{order.delivery_address.postal_code}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">
+                        Collection Method
+                      </p>
+                      <p className="text-sm">
+                        Buyer to collect directly from seller
+                      </p>
+                    </div>
+                  )}
+
+                  {order.delivery_method && (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">
+                        Delivery Method
+                      </p>
+                      <p className="text-sm capitalize">
+                        {order.delivery_method}
+                      </p>
+                    </div>
+                  )}
+
+                  {order.tracking_number && (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">
+                        Tracking Number
+                      </p>
+                      <p className="font-mono text-sm">
+                        {order.tracking_number}
+                      </p>
+                    </div>
+                  )}
+
+                  {order.collection_deadline && (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">
+                        Collection Deadline
+                      </p>
+                      <p className="text-sm">
+                        {new Date(
+                          order.collection_deadline,
+                        ).toLocaleDateString()}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="border-t pt-4">
+                    <p className="text-sm text-gray-600 mb-2">Instructions</p>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <p className="text-sm text-blue-800">
+                        {order.delivery_address
+                          ? "Your order will be delivered to the address above. You'll receive tracking information once the seller dispatches the item."
+                          : "Please contact the seller to arrange collection. Make sure to bring valid ID and mention your order reference."}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
           {/* Detailed Status Tracker */}
           <PaymentStatusTracker
             orderId={orderId}
