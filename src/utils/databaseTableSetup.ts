@@ -33,24 +33,39 @@ async function tableExists(tableName: string): Promise<boolean> {
  */
 async function testOrdersTable(): Promise<TableSetupResult> {
   try {
-    const { data, error } = await supabase
+    // Test with count to avoid data access issues
+    const { count, error } = await supabase
       .from("orders")
-      .select("id, buyer_email, seller_id, amount, status")
-      .limit(1);
+      .select("*", { count: "exact", head: true });
 
     if (error) {
       return {
         table: "orders",
         status: "failed",
-        message: "Orders table not accessible - needs to be created manually",
+        message: `Orders table error: ${error.message}`,
         error: error.message,
+      };
+    }
+
+    // Test actual data access
+    const { data, error: selectError } = await supabase
+      .from("orders")
+      .select("id, buyer_email, status")
+      .limit(1);
+
+    if (selectError) {
+      return {
+        table: "orders",
+        status: "failed",
+        message: `Orders table permissions error: ${selectError.message}`,
+        error: selectError.message,
       };
     }
 
     return {
       table: "orders",
       status: "exists",
-      message: "Orders table exists and is accessible ✅",
+      message: `Orders table working correctly ✅ (${count} rows)`,
     };
   } catch (error) {
     return {
