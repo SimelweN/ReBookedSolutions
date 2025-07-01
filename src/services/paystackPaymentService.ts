@@ -829,6 +829,91 @@ export class PaystackPaymentService {
   }
 
   /**
+   * Process post-payment actions to simulate real transaction behavior
+   */
+  static async processPostPaymentActions(
+    reference: string,
+    paymentData: any,
+  ): Promise<void> {
+    try {
+      console.log("🔄 Processing post-payment actions for:", reference);
+
+      // Get order details
+      const { data: order, error: orderError } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("paystack_ref", reference)
+        .single();
+
+      if (orderError || !order) {
+        console.warn(
+          "Could not find order for post-payment processing:",
+          reference,
+        );
+        return;
+      }
+
+      // Extract book information from metadata
+      const metadata = order.metadata as any;
+      const bookId = metadata?.book_id;
+
+      if (bookId) {
+        // Mark book as sold to simulate real transaction
+        console.log("📚 Marking book as sold:", bookId);
+
+        const { error: bookUpdateError } = await supabase
+          .from("books")
+          .update({
+            sold: true,
+            available: false,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", bookId);
+
+        if (bookUpdateError) {
+          console.error("Failed to mark book as sold:", bookUpdateError);
+        } else {
+          console.log("✅ Book marked as sold successfully");
+        }
+
+        // Create transaction record
+        try {
+          const transactionData = {
+            book_id: bookId,
+            book_title: metadata?.book_title || "Unknown Book",
+            buyer_id: order.buyer_id,
+            seller_id: order.seller_id,
+            price: metadata?.book_price || order.amount,
+            commission: Math.round(
+              (metadata?.book_price || order.amount) * 0.1,
+            ), // 10% commission
+          };
+
+          const { error: transactionError } = await supabase
+            .from("transactions")
+            .insert(transactionData);
+
+          if (transactionError) {
+            console.warn(
+              "Could not create transaction record:",
+              transactionError,
+            );
+          } else {
+            console.log("✅ Transaction record created");
+          }
+        } catch (transactionError) {
+          console.warn("Transaction record creation failed:", transactionError);
+        }
+      }
+
+      console.log("✅ Post-payment actions completed for:", reference);
+    } catch (error) {
+      console.error("Error in post-payment actions:", error);
+      // Don't throw error as this shouldn't fail the payment
+    }
+  }
+
+  /**
    * Create transfer recipient for seller payouts
    */
   static async createTransferRecipient(
