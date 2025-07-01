@@ -36,7 +36,7 @@ export const getSellerAddress = async (
   sellerId: string,
 ): Promise<DeliveryAddress | null> => {
   try {
-    const { data: addresses, error } = await supabase
+    let { data: addresses, error } = await supabase
       .from("addresses")
       .select("*")
       .eq("user_id", sellerId)
