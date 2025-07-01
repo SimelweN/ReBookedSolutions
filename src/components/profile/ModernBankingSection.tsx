@@ -45,37 +45,28 @@ const ModernBankingSection = () => {
     setBankingStatus((prev) => ({ ...prev, isLoading: true }));
 
     try {
-      const { data: profile, error } = await supabase
-        .from("profiles")
-        .select("subaccount_code")
-        .eq("id", user.id)
+      const { data: bankingDetails, error } = await supabase
+        .from("banking_details")
+        .select("paystack_subaccount_code")
+        .eq("user_id", user.id)
         .maybeSingle();
 
       if (error) {
-        // Check if error is due to missing column
-        if (
-          error.message?.includes("column") &&
-          error.message?.includes("does not exist")
-        ) {
-          console.warn(
-            "subaccount_code column not found - banking setup not available yet",
-          );
-          setBankingStatus({
-            hasSubaccount: false,
-            subaccountCode: null,
-            isLoading: false,
-            lastChecked: new Date(),
-          });
-          return;
-        }
         console.error("Error checking banking status:", error.message || error);
+        setBankingStatus({
+          hasSubaccount: false,
+          subaccountCode: null,
+          isLoading: false,
+          lastChecked: new Date(),
+        });
         return;
       }
 
-      const hasValidSubaccount = !!profile?.subaccount_code?.trim();
+      const hasValidSubaccount =
+        !!bankingDetails?.paystack_subaccount_code?.trim();
       setBankingStatus({
         hasSubaccount: hasValidSubaccount,
-        subaccountCode: profile?.subaccount_code || null,
+        subaccountCode: bankingDetails?.paystack_subaccount_code || null,
         isLoading: false,
         lastChecked: new Date(),
       });

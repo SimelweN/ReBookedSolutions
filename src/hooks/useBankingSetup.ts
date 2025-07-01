@@ -19,32 +19,21 @@ export const useBankingSetup = () => {
     try {
       setIsLoading(true);
       console.log("Checking banking setup for user:", user.id);
-      const { data: profile, error } = await supabase
-        .from("profiles")
-        .select("subaccount_code")
-        .eq("id", user.id)
+      const { data: bankingDetails, error } = await supabase
+        .from("banking_details")
+        .select("paystack_subaccount_code")
+        .eq("user_id", user.id)
         .maybeSingle();
 
-      console.log("Banking setup query result:", { profile, error });
+      console.log("Banking setup query result:", { bankingDetails, error });
 
       if (error) {
-        // Check if error is due to missing column
-        if (
-          error.message?.includes("column") &&
-          error.message?.includes("does not exist")
-        ) {
-          console.warn(
-            "subaccount_code column not found - banking setup not available yet",
-          );
-          setHasBankingSetup(false);
-          return false;
-        }
         console.error("Error checking banking setup:", error.message || error);
         setHasBankingSetup(false);
         return false;
       }
 
-      const hasSetup = !!profile?.subaccount_code?.trim();
+      const hasSetup = !!bankingDetails?.paystack_subaccount_code?.trim();
       setHasBankingSetup(hasSetup);
       return hasSetup;
     } catch (error) {
