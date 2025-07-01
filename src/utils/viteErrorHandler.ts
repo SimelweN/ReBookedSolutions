@@ -44,33 +44,31 @@ export const initViteErrorHandler = () => {
     isWebSocketPatched = true;
   }
 
-  // Handle fetch errors related to Vite
+  // Handle fetch errors related to Vite ONLY
   const originalFetch = window.fetch;
   window.fetch = async function (...args) {
-    try {
-      return await originalFetch.apply(this, args);
-    } catch (error) {
-      const url = args[0]?.toString() || "";
+    const url = args[0]?.toString() || "";
 
-      // Handle specific Vite-related fetch errors
-      if (url.includes("/@vite/") || url.includes("/__vite_ping")) {
+    // Only intercept Vite-related requests
+    if (
+      url.includes("/@vite/") ||
+      url.includes("/__vite_ping") ||
+      url.includes("/@fs/")
+    ) {
+      try {
+        return await originalFetch.apply(this, args);
+      } catch (error) {
         console.warn(
-          "🔥 Vite dev server ping failed (server may be restarting)",
+          "🔥 Vite dev server request failed (server may be restarting):",
+          url,
         );
         // Return a fake successful response to prevent app crash
         return new Response("", { status: 200, statusText: "OK" });
       }
-
-      // For other fetch errors, log and rethrow
-      if (
-        error instanceof TypeError &&
-        error.message.includes("Failed to fetch")
-      ) {
-        console.warn("🌐 Network fetch failed for:", url);
-      }
-
-      throw error;
     }
+
+    // For non-Vite requests, use original fetch without interception
+    return originalFetch.apply(this, args);
   };
 
   // Handle unhandled promise rejections from Vite/HMR
