@@ -58,7 +58,11 @@ const BankingRequirementGate = ({
       console.log("Subaccount query result:", { subaccountData, error });
 
       if (error) {
-        console.error("Error fetching subaccount:", error);
+        const { shouldFallback } = handleBankingQueryError(
+          "BankingRequirementGate - Error fetching subaccount",
+          error,
+        );
+
         setHasSubaccountCode(false);
         return;
       }
@@ -68,7 +72,10 @@ const BankingRequirementGate = ({
 
       console.log("Has valid subaccount code:", hasValidCode);
     } catch (error) {
-      console.error("Subaccount check failed:", error);
+      logEnhancedError(
+        "BankingRequirementGate - Subaccount check failed",
+        error,
+      );
       setHasSubaccountCode(false);
     } finally {
       setIsLoading(false);
