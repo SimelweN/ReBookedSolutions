@@ -22,7 +22,6 @@ export interface DatabaseSetupSummary {
 async function tableExists(tableName: string): Promise<boolean> {
   try {
     const { error } = await supabase.from(tableName).select("*").limit(0);
-
     return !error;
   } catch {
     return false;
@@ -30,249 +29,179 @@ async function tableExists(tableName: string): Promise<boolean> {
 }
 
 /**
- * Create the orders table with the complete schema
+ * Test the orders table (should be created manually)
  */
-async function createOrdersTable(): Promise<TableSetupResult> {
+async function testOrdersTable(): Promise<TableSetupResult> {
   try {
-    const { error } = await supabase.rpc("exec_sql", {
-      sql: `
-        -- Enable necessary extensions
-        CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
-        -- Create orders table
-        CREATE TABLE IF NOT EXISTS public.orders (
-            id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-            buyer_email text NOT NULL,
-            seller_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-            amount integer NOT NULL CHECK (amount > 0), -- Amount in kobo (ZAR cents)
-            status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'paid', 'ready_for_payout', 'paid_out', 'failed', 'cancelled')),
-            paystack_ref text UNIQUE NOT NULL,
-            payment_data jsonb DEFAULT '{}',
-            items jsonb NOT NULL DEFAULT '[]', -- Array of order items
-            shipping_address jsonb DEFAULT '{}',
-            delivery_data jsonb DEFAULT '{}',
-            metadata jsonb DEFAULT '{}',
-            paid_at timestamp with time zone,
-            created_at timestamp with time zone DEFAULT now() NOT NULL,
-            updated_at timestamp with time zone DEFAULT now() NOT NULL
-        );
-
-        -- Create indexes for performance
-        CREATE INDEX IF NOT EXISTS idx_orders_seller_id ON public.orders(seller_id);
-        CREATE INDEX IF NOT EXISTS idx_orders_status ON public.orders(status);
-        CREATE INDEX IF NOT EXISTS idx_orders_paystack_ref ON public.orders(paystack_ref);
-        CREATE INDEX IF NOT EXISTS idx_orders_created_at ON public.orders(created_at DESC);
-        CREATE INDEX IF NOT EXISTS idx_orders_buyer_email ON public.orders(buyer_email);
-
-        -- Create updated_at trigger function if it doesn't exist
-        CREATE OR REPLACE FUNCTION update_updated_at_column()
-        RETURNS TRIGGER AS $$
-        BEGIN
-            NEW.updated_at = now();
-            RETURN NEW;
-        END;
-        $$ language 'plpgsql';
-
-        -- Add updated_at trigger
-        DROP TRIGGER IF EXISTS update_orders_updated_at ON public.orders;
-        CREATE TRIGGER update_orders_updated_at
-            BEFORE UPDATE ON public.orders
-            FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-        -- Set up Row Level Security (RLS)
-        ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
-
-        -- RLS Policies for orders table
-        DROP POLICY IF EXISTS "Users can view their own orders as buyer" ON public.orders;
-        CREATE POLICY "Users can view their own orders as buyer" ON public.orders
-            FOR SELECT USING (
-                buyer_email = auth.jwt() ->> 'email' OR
-                seller_id = auth.uid()
-            );
-
-        DROP POLICY IF EXISTS "Users can insert their own orders" ON public.orders;
-        CREATE POLICY "Users can insert their own orders" ON public.orders
-            FOR INSERT WITH CHECK (
-                auth.uid() IS NOT NULL
-            );
-
-        DROP POLICY IF EXISTS "Sellers can update their orders" ON public.orders;
-        CREATE POLICY "Sellers can update their orders" ON public.orders
-            FOR UPDATE USING (seller_id = auth.uid())
-            WITH CHECK (seller_id = auth.uid());
-
-        -- Grant permissions
-        GRANT SELECT, INSERT, UPDATE ON public.orders TO authenticated;
-      `,
-    });
+    const { data, error } = await supabase
+      .from("orders")
+      .select("id, buyer_email, seller_id, amount, status")
+      .limit(1);
 
     if (error) {
-      console.error("❌ Failed to create orders table:", error);
       return {
         table: "orders",
         status: "failed",
-        message: "Failed to create orders table",
+        message: "Orders table not accessible - needs to be created manually",
         error: error.message,
       };
     }
 
     return {
       table: "orders",
-      status: "created",
-      message:
-        "Orders table created successfully with indexes and RLS policies",
+      status: "exists",
+      message: "Orders table exists and is accessible ✅",
     };
   } catch (error) {
-    console.error("❌ Exception creating orders table:", error);
     return {
       table: "orders",
       status: "failed",
-      message: "Exception while creating orders table",
+      message: "Exception while testing orders table",
       error: error instanceof Error ? error.message : String(error),
     };
   }
 }
 
 /**
- * Create the payout_logs table
+ * Test the profiles table
  */
-async function createPayoutLogsTable(): Promise<TableSetupResult> {
+async function testProfilesTable(): Promise<TableSetupResult> {
   try {
-    const { error } = await supabase.rpc("exec_sql", {
-      sql: `
-        CREATE TABLE IF NOT EXISTS public.payout_logs (
-            id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-            order_id uuid NOT NULL REFERENCES public.orders(id) ON DELETE CASCADE,
-            seller_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-            amount integer NOT NULL CHECK (amount > 0), -- Amount in kobo (ZAR cents)
-            commission integer NOT NULL DEFAULT 0 CHECK (commission >= 0), -- Commission taken in kobo
-            transfer_code text,
-            recipient_code text,
-            status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'success', 'failed', 'reversed')),
-            reference text,
-            paystack_response jsonb DEFAULT '{}',
-            error_message text,
-            retry_count integer DEFAULT 0,
-            created_at timestamp with time zone DEFAULT now() NOT NULL,
-            updated_at timestamp with time zone DEFAULT now() NOT NULL
-        );
-
-        -- Create indexes
-        CREATE INDEX IF NOT EXISTS idx_payout_logs_order_id ON public.payout_logs(order_id);
-        CREATE INDEX IF NOT EXISTS idx_payout_logs_seller_id ON public.payout_logs(seller_id);
-        CREATE INDEX IF NOT EXISTS idx_payout_logs_status ON public.payout_logs(status);
-        CREATE INDEX IF NOT EXISTS idx_payout_logs_created_at ON public.payout_logs(created_at DESC);
-
-        -- Add updated_at trigger
-        DROP TRIGGER IF EXISTS update_payout_logs_updated_at ON public.payout_logs;
-        CREATE TRIGGER update_payout_logs_updated_at
-            BEFORE UPDATE ON public.payout_logs
-            FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-        -- Set up Row Level Security (RLS)
-        ALTER TABLE public.payout_logs ENABLE ROW LEVEL SECURITY;
-
-        -- RLS Policies
-        DROP POLICY IF EXISTS "Sellers can view their own payout logs" ON public.payout_logs;
-        CREATE POLICY "Sellers can view their own payout logs" ON public.payout_logs
-            FOR SELECT USING (seller_id = auth.uid());
-
-        DROP POLICY IF EXISTS "System can insert payout logs" ON public.payout_logs;
-        CREATE POLICY "System can insert payout logs" ON public.payout_logs
-            FOR INSERT WITH CHECK (true);
-
-        DROP POLICY IF EXISTS "System can update payout logs" ON public.payout_logs;
-        CREATE POLICY "System can update payout logs" ON public.payout_logs
-            FOR UPDATE USING (true);
-
-        -- Grant permissions
-        GRANT SELECT, INSERT, UPDATE ON public.payout_logs TO authenticated;
-      `,
-    });
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("id, name, email")
+      .limit(1);
 
     if (error) {
       return {
-        table: "payout_logs",
+        table: "profiles",
         status: "failed",
-        message: "Failed to create payout_logs table",
+        message: "Profiles table not accessible",
         error: error.message,
       };
     }
 
     return {
-      table: "payout_logs",
-      status: "created",
-      message: "Payout logs table created successfully",
+      table: "profiles",
+      status: "exists",
+      message: "Profiles table exists and is accessible ✅",
     };
   } catch (error) {
     return {
-      table: "payout_logs",
+      table: "profiles",
       status: "failed",
-      message: "Exception while creating payout_logs table",
+      message: "Exception while testing profiles table",
       error: error instanceof Error ? error.message : String(error),
     };
   }
 }
 
 /**
- * Create helpful views for reporting
+ * Test the books table
  */
-async function createSellerEarningsView(): Promise<TableSetupResult> {
+async function testBooksTable(): Promise<TableSetupResult> {
   try {
-    const { error } = await supabase.rpc("exec_sql", {
-      sql: `
-        CREATE OR REPLACE VIEW public.seller_earnings_summary AS
-        SELECT
-            o.seller_id,
-            p.name as seller_name,
-            p.email as seller_email,
-            COUNT(o.id) as total_orders,
-            SUM(CASE WHEN o.status = 'paid' THEN 1 ELSE 0 END) as paid_orders,
-            SUM(CASE WHEN o.status = 'ready_for_payout' THEN 1 ELSE 0 END) as ready_orders,
-            SUM(CASE WHEN o.status = 'paid_out' THEN 1 ELSE 0 END) as completed_orders,
-            SUM(o.amount) as gross_earnings, -- in kobo
-            SUM(CASE WHEN o.status IN ('paid', 'ready_for_payout', 'paid_out')
-                     THEN ROUND(o.amount * 0.9) ELSE 0 END) as net_earnings, -- 90% after 10% commission
-            SUM(CASE WHEN o.status = 'paid_out'
-                     THEN ROUND(o.amount * 0.9) ELSE 0 END) as paid_earnings,
-            SUM(CASE WHEN o.status IN ('paid', 'ready_for_payout')
-                     THEN ROUND(o.amount * 0.9) ELSE 0 END) as pending_earnings
-        FROM public.orders o
-        JOIN public.profiles p ON p.id = o.seller_id
-        WHERE o.status != 'failed' AND o.status != 'cancelled'
-        GROUP BY o.seller_id, p.name, p.email;
-
-        -- Grant permissions
-        GRANT SELECT ON public.seller_earnings_summary TO authenticated;
-      `,
-    });
+    const { data, error } = await supabase
+      .from("books")
+      .select("id, title, author, price")
+      .limit(1);
 
     if (error) {
       return {
-        table: "seller_earnings_summary",
+        table: "books",
         status: "failed",
-        message: "Failed to create seller earnings view",
+        message: "Books table not accessible",
         error: error.message,
       };
     }
 
     return {
-      table: "seller_earnings_summary",
-      status: "created",
-      message: "Seller earnings summary view created successfully",
+      table: "books",
+      status: "exists",
+      message: "Books table exists and is accessible ✅",
     };
   } catch (error) {
     return {
-      table: "seller_earnings_summary",
+      table: "books",
       status: "failed",
-      message: "Exception while creating seller earnings view",
+      message: "Exception while testing books table",
       error: error instanceof Error ? error.message : String(error),
     };
   }
 }
 
 /**
- * Main function to setup all missing database tables
+ * Test the banking_details table
+ */
+async function testBankingDetailsTable(): Promise<TableSetupResult> {
+  try {
+    const { data, error } = await supabase
+      .from("banking_details")
+      .select("id, user_id")
+      .limit(1);
+
+    if (error) {
+      return {
+        table: "banking_details",
+        status: "failed",
+        message: "Banking details table not accessible",
+        error: error.message,
+      };
+    }
+
+    return {
+      table: "banking_details",
+      status: "exists",
+      message: "Banking details table exists and is accessible ✅",
+    };
+  } catch (error) {
+    return {
+      table: "banking_details",
+      status: "failed",
+      message: "Exception while testing banking details table",
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+/**
+ * Test payment-related service functionality
+ */
+async function testPaymentService(): Promise<TableSetupResult> {
+  try {
+    // Test if we can access the orders table for payment operations
+    const { data, error } = await supabase
+      .from("orders")
+      .select("id, paystack_ref, status, amount")
+      .eq("status", "paid")
+      .limit(1);
+
+    if (error) {
+      return {
+        table: "payment_service",
+        status: "failed",
+        message: "Cannot query orders for payment operations",
+        error: error.message,
+      };
+    }
+
+    return {
+      table: "payment_service",
+      status: "exists",
+      message: "Payment service can access orders table ✅",
+    };
+  } catch (error) {
+    return {
+      table: "payment_service",
+      status: "failed",
+      message: "Payment service test failed",
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+/**
+ * Main function to test all database tables
  */
 export async function setupDatabaseTables(
   progressCallback?: (message: string) => void,
@@ -280,42 +209,32 @@ export async function setupDatabaseTables(
   const results: TableSetupResult[] = [];
 
   const tables = [
-    { name: "orders", createFn: createOrdersTable },
-    { name: "payout_logs", createFn: createPayoutLogsTable },
-    { name: "core_tables", createFn: createSellerEarningsView },
+    { name: "orders", testFn: testOrdersTable },
+    { name: "profiles", testFn: testProfilesTable },
+    { name: "books", testFn: testBooksTable },
+    { name: "banking_details", testFn: testBankingDetailsTable },
+    { name: "payment_service", testFn: testPaymentService },
   ];
 
-  progressCallback?.("🔍 Checking database tables...");
+  progressCallback?.("🔍 Testing database tables...");
 
   for (const table of tables) {
     try {
-      progressCallback?.(`📋 Checking ${table.name} table...`);
+      progressCallback?.(`📋 Testing ${table.name}...`);
 
-      const exists = await tableExists(table.name);
-
-      if (exists) {
-        results.push({
-          table: table.name,
-          status: "exists",
-          message: `${table.name} table already exists`,
-        });
-        continue;
-      }
-
-      progressCallback?.(`🔨 Creating ${table.name} table...`);
-      const result = await table.createFn();
+      const result = await table.testFn();
       results.push(result);
 
-      if (result.status === "created") {
-        progressCallback?.(`✅ ${table.name} table created successfully`);
+      if (result.status === "exists") {
+        progressCallback?.(`✅ ${table.name} - ${result.message}`);
       } else {
-        progressCallback?.(`❌ Failed to create ${table.name} table`);
+        progressCallback?.(`❌ ${table.name} - ${result.message}`);
       }
     } catch (error) {
       const errorResult: TableSetupResult = {
         table: table.name,
         status: "failed",
-        message: `Exception checking/creating ${table.name}`,
+        message: `Exception testing ${table.name}`,
         error: error instanceof Error ? error.message : String(error),
       };
       results.push(errorResult);
@@ -326,7 +245,7 @@ export async function setupDatabaseTables(
   const summary: DatabaseSetupSummary = {
     totalChecked: results.length,
     alreadyExists: results.filter((r) => r.status === "exists").length,
-    created: results.filter((r) => r.status === "created").length,
+    created: 0, // We don't create tables, just test them
     failed: results.filter((r) => r.status === "failed").length,
     results,
   };
@@ -334,14 +253,12 @@ export async function setupDatabaseTables(
   // Show summary toast
   if (summary.failed > 0) {
     toast.error(
-      `Database setup completed with ${summary.failed} failures. Check console for details.`,
-    );
-  } else if (summary.created > 0) {
-    toast.success(
-      `Database setup completed! Created ${summary.created} tables/views.`,
+      `Database test completed with ${summary.failed} failures. Check details below.`,
     );
   } else {
-    toast.info("All database tables already exist.");
+    toast.success(
+      `All ${summary.alreadyExists} database tables are working correctly!`,
+    );
   }
 
   return summary;
