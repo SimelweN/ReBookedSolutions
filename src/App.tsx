@@ -256,8 +256,7 @@ function App() {
   }
 
   return (
-    <EmergencyBypass>
-      <NetworkErrorBoundary>
+    <NetworkErrorBoundary>
         <ErrorBoundary level="app">
           <QueryClientProvider client={queryClient}>
             <ThemeProvider attribute="class" defaultTheme="light">
