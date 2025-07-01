@@ -30,7 +30,11 @@ export const useBankingSetup = () => {
         .eq("user_id", user.id)
         .maybeSingle();
 
-      console.log("Banking setup query result:", { subaccountData, error });
+      console.log("Banking setup query result:", {
+        subaccountData,
+        hasError: !!error,
+        errorMessage: error?.message || "No error",
+      });
 
       if (error) {
         const { shouldFallback } = handleBankingQueryError(
