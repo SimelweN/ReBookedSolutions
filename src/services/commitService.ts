@@ -214,9 +214,8 @@ export const getCommitPendingBooks = async (): Promise<any[]> => {
 
     const { data: books, error } = await supabase
       .from("books")
-      .select("id, title, price, sold, available, created_at, seller_id")
+      .select("id, title, price, sold, created_at, seller_id")
       .eq("seller_id", user.id)
-      .eq("available", true)
       .eq("sold", false)
       .order("created_at", { ascending: false })
       .limit(10); // Limit to recent books
