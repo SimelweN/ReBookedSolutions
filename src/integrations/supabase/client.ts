@@ -65,11 +65,14 @@ const cleanApiKey = ENV.VITE_SUPABASE_ANON_KEY.replace(/^=+/, "");
 import { robustFetch } from "@/utils/networkErrorHandler";
 
 // Create a network-resistant fetch function
-const resistantFetch = async (url: RequestInfo | URL, options?: RequestInit) => {
+const resistantFetch = async (
+  url: RequestInfo | URL,
+  options?: RequestInit,
+) => {
   try {
     return await robustFetch(url, options);
   } catch (error) {
-    console.warn('🔗 Supabase fetch failed, using fallback:', error);
+    console.warn("🔗 Supabase fetch failed, using fallback:", error);
 
     // Fallback: Use XMLHttpRequest if fetch is compromised
     return new Promise<Response>((resolve, reject) => {
@@ -78,41 +81,42 @@ const resistantFetch = async (url: RequestInfo | URL, options?: RequestInit) => 
 
       xhr.open(method, url.toString());
 
-    // Set headers
-    if (options?.headers) {
-      const headers = new Headers(options.headers);
-      headers.forEach((value, key) => {
-        xhr.setRequestHeader(key, value);
-      });
-    }
+      // Set headers
+      if (options?.headers) {
+        const headers = new Headers(options.headers);
+        headers.forEach((value, key) => {
+          xhr.setRequestHeader(key, value);
+        });
+      }
 
-    xhr.onload = () => {
-      const response = new Response(xhr.responseText, {
-        status: xhr.status,
-        statusText: xhr.statusText,
-        headers: new Headers(
-          xhr
-            .getAllResponseHeaders()
-            .split("\r\n")
-            .reduce(
-              (acc, line) => {
-                const [key, value] = line.split(": ");
-                if (key && value) acc[key] = value;
-                return acc;
-              },
-              {} as Record<string, string>,
-            ),
-        ),
-      });
-      resolve(response);
-    };
+      xhr.onload = () => {
+        const response = new Response(xhr.responseText, {
+          status: xhr.status,
+          statusText: xhr.statusText,
+          headers: new Headers(
+            xhr
+              .getAllResponseHeaders()
+              .split("\r\n")
+              .reduce(
+                (acc, line) => {
+                  const [key, value] = line.split(": ");
+                  if (key && value) acc[key] = value;
+                  return acc;
+                },
+                {} as Record<string, string>,
+              ),
+          ),
+        });
+        resolve(response);
+      };
 
-    xhr.onerror = () => reject(new Error("Network request failed"));
-    xhr.ontimeout = () => reject(new Error("Request timeout"));
+      xhr.onerror = () => reject(new Error("Network request failed"));
+      xhr.ontimeout = () => reject(new Error("Request timeout"));
 
-    xhr.timeout = 10000; // 10 second timeout
-    xhr.send(options?.body);
-  });
+      xhr.timeout = 10000; // 10 second timeout
+      xhr.send(options?.body);
+    });
+  }
 };
 
 export const supabase = createClient<Database>(
