@@ -75,9 +75,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [savedAddress, setSavedAddress] = useState<any>(null);
   const [isEditingAddress, setIsEditingAddress] = useState(false);
-  const [deliveryOptions, setDeliveryOptions] = useState<DeliveryOption[]>([]);
-  const [selectedDeliveryOption, setSelectedDeliveryOption] =
-    useState<DeliveryOption | null>(null);
+
   const [isLoadingQuotes, setIsLoadingQuotes] = useState(false);
 
   const {
