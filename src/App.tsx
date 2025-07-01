@@ -301,8 +301,9 @@ function App() {
 
   return (
     <EmergencyBypass>
-      <ErrorBoundary level="app">
-        <QueryClientProvider client={queryClient}>
+      <NetworkErrorBoundary>
+        <ErrorBoundary level="app">
+          <QueryClientProvider client={queryClient}>
           <ThemeProvider attribute="class" defaultTheme="light">
             <GoogleMapsProvider>
               <AuthProvider>
