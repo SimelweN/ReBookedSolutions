@@ -51,10 +51,7 @@ export const useBankingSetup = () => {
       setHasBankingSetup(hasSetup);
       return hasSetup;
     } catch (error) {
-      console.error(
-        "Banking setup check failed:",
-        error instanceof Error ? error.message : error,
-      );
+      logEnhancedError("useBankingSetup - Banking setup check failed", error);
       setHasBankingSetup(false);
       return false;
     } finally {
