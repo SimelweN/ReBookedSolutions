@@ -75,8 +75,8 @@ async function createOrdersTable(): Promise<TableSetupResult> {
 
         -- Add updated_at trigger
         DROP TRIGGER IF EXISTS update_orders_updated_at ON public.orders;
-        CREATE TRIGGER update_orders_updated_at 
-            BEFORE UPDATE ON public.orders 
+        CREATE TRIGGER update_orders_updated_at
+            BEFORE UPDATE ON public.orders
             FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
         -- Set up Row Level Security (RLS)
@@ -86,7 +86,7 @@ async function createOrdersTable(): Promise<TableSetupResult> {
         DROP POLICY IF EXISTS "Users can view their own orders as buyer" ON public.orders;
         CREATE POLICY "Users can view their own orders as buyer" ON public.orders
             FOR SELECT USING (
-                buyer_email = auth.jwt() ->> 'email' OR 
+                buyer_email = auth.jwt() ->> 'email' OR
                 seller_id = auth.uid()
             );
 
@@ -165,8 +165,8 @@ async function createPayoutLogsTable(): Promise<TableSetupResult> {
 
         -- Add updated_at trigger
         DROP TRIGGER IF EXISTS update_payout_logs_updated_at ON public.payout_logs;
-        CREATE TRIGGER update_payout_logs_updated_at 
-            BEFORE UPDATE ON public.payout_logs 
+        CREATE TRIGGER update_payout_logs_updated_at
+            BEFORE UPDATE ON public.payout_logs
             FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
         -- Set up Row Level Security (RLS)
@@ -222,7 +222,7 @@ async function createSellerEarningsView(): Promise<TableSetupResult> {
     const { error } = await supabase.rpc("exec_sql", {
       sql: `
         CREATE OR REPLACE VIEW public.seller_earnings_summary AS
-        SELECT 
+        SELECT
             o.seller_id,
             p.name as seller_name,
             p.email as seller_email,
@@ -231,11 +231,11 @@ async function createSellerEarningsView(): Promise<TableSetupResult> {
             SUM(CASE WHEN o.status = 'ready_for_payout' THEN 1 ELSE 0 END) as ready_orders,
             SUM(CASE WHEN o.status = 'paid_out' THEN 1 ELSE 0 END) as completed_orders,
             SUM(o.amount) as gross_earnings, -- in kobo
-            SUM(CASE WHEN o.status IN ('paid', 'ready_for_payout', 'paid_out') 
+            SUM(CASE WHEN o.status IN ('paid', 'ready_for_payout', 'paid_out')
                      THEN ROUND(o.amount * 0.9) ELSE 0 END) as net_earnings, -- 90% after 10% commission
-            SUM(CASE WHEN o.status = 'paid_out' 
+            SUM(CASE WHEN o.status = 'paid_out'
                      THEN ROUND(o.amount * 0.9) ELSE 0 END) as paid_earnings,
-            SUM(CASE WHEN o.status IN ('paid', 'ready_for_payout') 
+            SUM(CASE WHEN o.status IN ('paid', 'ready_for_payout')
                      THEN ROUND(o.amount * 0.9) ELSE 0 END) as pending_earnings
         FROM public.orders o
         JOIN public.profiles p ON p.id = o.seller_id
@@ -282,7 +282,7 @@ export async function setupDatabaseTables(
   const tables = [
     { name: "orders", createFn: createOrdersTable },
     { name: "payout_logs", createFn: createPayoutLogsTable },
-    { name: "seller_earnings_summary", createFn: createSellerEarningsView },
+    { name: "core_tables", createFn: createSellerEarningsView },
   ];
 
   progressCallback?.("🔍 Checking database tables...");
