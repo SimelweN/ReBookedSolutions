@@ -94,11 +94,9 @@ const UserProfile = React.lazy(() => import("./pages/UserProfile"));
 const FAQ = React.lazy(() => import("./pages/FAQ"));
 const APSDemo = React.lazy(() => import("./pages/APSDemo"));
 const AddProgram = React.lazy(() => import("./pages/AddProgram"));
-const SystemStatus = React.lazy(() => import("./pages/SystemStatus"));
 const CheckoutSuccess = React.lazy(() => import("./pages/CheckoutSuccess"));
 const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
 const PaymentCallback = React.lazy(() => import("./pages/PaymentCallback"));
-const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
 
 const UserOrders = React.lazy(() => import("./pages/UserOrders"));
 
