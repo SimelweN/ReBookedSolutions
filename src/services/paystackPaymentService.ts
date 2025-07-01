@@ -1139,12 +1139,28 @@ export class PaystackPaymentService {
     orderIdOrReference: string,
   ): Promise<OrderData | null> {
     try {
-      const { data, error } = await supabase
+      // Check if the input looks like a UUID (36 chars with dashes)
+      const isUuid =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+          orderIdOrReference,
+        );
+
+      let query = supabase
         .from("orders")
         .select("*")
-        .eq("buyer_email", userEmail)
-        .or(`id.eq.${orderIdOrReference},paystack_ref.eq.${orderIdOrReference}`)
-        .single();
+        .eq("buyer_email", userEmail);
+
+      if (isUuid) {
+        // If it's a UUID, search by ID first, then fallback to paystack_ref
+        query = query.or(
+          `id.eq.${orderIdOrReference},paystack_ref.eq.${orderIdOrReference}`,
+        );
+      } else {
+        // If it's not a UUID (like Paystack reference), only search by paystack_ref
+        query = query.eq("paystack_ref", orderIdOrReference);
+      }
+
+      const { data, error } = await query.single();
 
       if (error) {
         if (error.code === "PGRST116") {
