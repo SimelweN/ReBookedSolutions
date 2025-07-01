@@ -20,6 +20,7 @@ import WebsiteHealthChecker from "./WebsiteHealthChecker";
 import ErrorCleanupUtility from "./ErrorCleanupUtility";
 import NavigationFlowValidator from "./NavigationFlowValidator";
 import DatabaseMigrationChecker from "./DatabaseMigrationChecker";
+import DatabaseTableSetup from "./DatabaseTableSetup";
 
 const DeepCleanDashboard = () => {
   const [isRunningFullClean, setIsRunningFullClean] = useState(false);
@@ -28,7 +29,7 @@ const DeepCleanDashboard = () => {
     setIsRunningFullClean(true);
 
     try {
-      toast.info("🧹 Starting comprehensive deep clean...");
+      toast.info("�� Starting comprehensive deep clean...");
 
       // Step 1: Clear console and errors
       console.clear();
