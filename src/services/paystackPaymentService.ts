@@ -1220,6 +1220,95 @@ export class PaystackPaymentService {
   }
 
   /**
+   * Release payment to seller when courier collection is confirmed
+   */
+  static async releasePaymentAfterCollection(
+    orderId: string,
+    collectionData?: {
+      collected_at?: string;
+      courier_reference?: string;
+      tracking_number?: string;
+    },
+  ): Promise<void> {
+    try {
+      console.log(
+        "📦 Releasing payment after courier collection for order:",
+        orderId,
+      );
+
+      const updateData: any = {
+        status: "ready_for_payout",
+        payment_held: false,
+        collection_confirmed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      if (collectionData) {
+        updateData.collected_at =
+          collectionData.collected_at || new Date().toISOString();
+        updateData.courier_reference = collectionData.courier_reference;
+        updateData.tracking_number = collectionData.tracking_number;
+      }
+
+      const { error } = await supabase
+        .from("orders")
+        .update(updateData)
+        .eq("id", orderId);
+
+      if (error) {
+        throw new Error(`Failed to release payment: ${error.message}`);
+      }
+
+      console.log("✅ Payment released successfully for order:", orderId);
+
+      // TODO: Trigger actual Paystack transfer to seller's subaccount
+      // This would involve calling Paystack's transfer API to move funds from holding
+    } catch (error) {
+      console.error("Error releasing payment:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Handle expired collection deadline (automatic refund)
+   */
+  static async handleExpiredCollection(orderId: string): Promise<void> {
+    try {
+      console.log(
+        "⏰ Handling expired collection deadline for order:",
+        orderId,
+      );
+
+      const { error } = await supabase
+        .from("orders")
+        .update({
+          status: "failed",
+          payment_held: false,
+          expired_at: new Date().toISOString(),
+          refund_initiated: true,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", orderId);
+
+      if (error) {
+        throw new Error(
+          `Failed to handle expired collection: ${error.message}`,
+        );
+      }
+
+      console.log(
+        "✅ Collection deadline expired, refund initiated for order:",
+        orderId,
+      );
+
+      // TODO: Trigger automatic refund via Paystack API
+    } catch (error) {
+      console.error("Error handling expired collection:", error);
+      throw error;
+    }
+  }
+
+  /**
    * Get seller earnings
    */
   static async getSellerEarnings(sellerId: string): Promise<{
