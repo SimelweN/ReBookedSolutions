@@ -15,16 +15,16 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       throw new Error("User not authenticated");
     }
 
-    // Verify user has subaccount_code before allowing book creation
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("subaccount_code")
-      .eq("id", user.id)
+    // Verify user has subaccount_code in banking_details before allowing book creation
+    const { data: bankingDetails } = await supabase
+      .from("banking_details")
+      .select("paystack_subaccount_code")
+      .eq("user_id", user.id)
       .single();
 
-    if (!profile?.subaccount_code?.trim()) {
+    if (!bankingDetails?.paystack_subaccount_code?.trim()) {
       throw new Error(
-        "Banking setup required: You must complete your banking details before creating listings",
+        "Banking setup required: You must complete your banking details and Paystack subaccount setup before creating listings",
       );
     }
 

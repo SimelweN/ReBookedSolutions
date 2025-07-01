@@ -20,7 +20,10 @@ import { MapPin, Loader2, Truck, Clock, DollarSign, Edit2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
-import RealCourierPricing from "@/services/realCourierPricing";
+import {
+  getEnhancedDeliveryQuotes,
+  validateSellersHaveAddresses,
+} from "@/services/enhancedDeliveryService";
 
 const shippingSchema = z.object({
   recipient_name: z.string().min(1, "Recipient name is required"),
@@ -76,8 +79,6 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   const [savedAddress, setSavedAddress] = useState<any>(null);
   const [isEditingAddress, setIsEditingAddress] = useState(false);
   const [deliveryOptions, setDeliveryOptions] = useState<DeliveryOption[]>([]);
-  const [selectedDeliveryOption, setSelectedDeliveryOption] =
-    useState<DeliveryOption | null>(null);
   const [isLoadingQuotes, setIsLoadingQuotes] = useState(false);
 
   const {
@@ -226,6 +227,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
   const getDeliveryQuotes = async () => {
     if (
+      !watchedValues.street_address ||
       !watchedValues.city ||
       !watchedValues.province ||
       !watchedValues.postal_code
@@ -235,49 +237,37 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
     setIsLoadingQuotes(true);
     try {
-      // Calculate total weight for quotes (estimate for books)
-      const totalWeight = cartItems.length * 0.6; // More realistic 600g per book
-      const estimatedValue = cartItems.reduce(
-        (sum, item) => sum + (item.price || 0),
-        0,
-      );
+      console.log("🚚 Getting delivery quotes with seller addresses...");
 
-      const quoteRequest = {
-        from: {
-          city: "Cape Town", // Default seller location
-          province: "Western Cape",
-          postal_code: "7500",
-        },
-        to: {
-          city: watchedValues.city,
-          province: watchedValues.province,
-          postal_code: watchedValues.postal_code,
-        },
-        parcel: {
-          weight: totalWeight,
-          length: 25, // Standard book package dimensions
-          width: 20,
-          height: cartItems.length * 2,
-          value: estimatedValue,
-        },
+      // First validate that all sellers have addresses
+      const validation = await validateSellersHaveAddresses(cartItems);
+      if (!validation.valid) {
+        toast.error(
+          "Some sellers haven't set up their addresses yet. Cannot calculate delivery.",
+        );
+        setIsLoadingQuotes(false);
+        return;
+      }
+
+      const deliveryAddress = {
+        street: watchedValues.street_address,
+        city: watchedValues.city,
+        province: watchedValues.province,
+        postal_code: watchedValues.postal_code,
       };
 
-      console.log("Getting real courier quotes for:", quoteRequest);
+      console.log("📦 Getting quotes for delivery to:", deliveryAddress);
 
-      // Get real courier quotes
-      const courierQuotes = await RealCourierPricing.getAllQuotes(quoteRequest);
+      const allQuotes = await getEnhancedDeliveryQuotes(
+        cartItems,
+        deliveryAddress,
+      );
+      console.log("📋 Enhanced quotes received:", allQuotes);
 
-      // Add Cape Town local delivery if applicable
-      const isCapeTownLocal =
-        watchedValues.province === "Western Cape" &&
-        (watchedValues.city.toLowerCase().includes("cape town") ||
-          watchedValues.city.toLowerCase().includes("stellenbosch") ||
-          watchedValues.city.toLowerCase().includes("paarl"));
-
-      let allQuotes = [...courierQuotes];
-      if (isCapeTownLocal) {
-        const localQuotes = RealCourierPricing.getCapeTownLocalRates();
-        allQuotes.unshift(...localQuotes);
+      if (allQuotes.length === 0) {
+        toast.warning("No delivery options available for this address");
+        setIsLoadingQuotes(false);
+        return;
       }
 
       // Convert to delivery options format
@@ -287,16 +277,13 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
         service_name: quote.service_name,
         price: quote.price,
         estimated_days: quote.estimated_days,
-        description: quote.description,
+        description: quote.description || "",
       }));
 
       setDeliveryOptions(options);
-      if (options.length > 0) {
-        setSelectedDeliveryOption(options[0]); // Auto-select cheapest option
-      }
-
+      console.log("✅ Formatted delivery options:", options);
       toast.success(
-        `${options.length} delivery option${options.length !== 1 ? "s" : ""} found`,
+        `Found ${options.length} delivery option${options.length !== 1 ? "s" : ""}`,
       );
       console.log("Delivery options loaded:", options);
     } catch (error) {

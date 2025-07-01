@@ -539,7 +539,7 @@ export class PaystackPaymentService {
         throw new Error("Order items are required");
       }
 
-      console.log("✅ Order data validation passed:", {
+      console.log("�� Order data validation passed:", {
         buyer_email: orderData.buyer_email,
         seller_id: orderData.seller_id,
         amount: orderData.amount,
@@ -698,6 +698,19 @@ export class PaystackPaymentService {
       if (paymentData) {
         updateData.payment_data = paymentData;
         updateData.paid_at = paymentData.paid_at;
+      }
+
+      // If status is "paid", implement payment holding mechanism
+      if (status === "paid") {
+        const collectionDeadline = new Date(Date.now() + 48 * 60 * 60 * 1000); // 48 hours from now
+        updateData.collection_deadline = collectionDeadline.toISOString();
+        updateData.payment_held = true; // Flag to indicate payment is held pending collection
+        updateData.seller_notified_at = new Date().toISOString(); // Track when seller was notified
+
+        console.log(
+          "💰 Payment held until courier collection. Deadline:",
+          collectionDeadline.toLocaleString(),
+        );
       }
 
       const { error } = await supabase
@@ -1075,6 +1088,222 @@ export class PaystackPaymentService {
         return [];
       }
 
+      throw error;
+    }
+  }
+
+  /**
+   * Get orders for a specific user (buyer)
+   */
+  static async getUserOrders(userEmail: string): Promise<OrderData[]> {
+    try {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("buyer_email", userEmail)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        const errorMessage = this.extractErrorMessage(error);
+
+        // Handle missing orders table
+        if (
+          errorMessage.includes("relation") &&
+          errorMessage.includes("orders") &&
+          errorMessage.includes("does not exist")
+        ) {
+          console.warn("❌ Orders table does not exist, returning empty array");
+
+          if (import.meta.env.DEV) {
+            toast.warning("Orders table missing - returning empty user orders");
+          }
+
+          return [];
+        }
+
+        throw new Error(`Failed to fetch user orders: ${errorMessage}`);
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error("Get user orders error:", error);
+
+      // In development, return empty array to prevent app crashes
+      if (
+        import.meta.env.DEV &&
+        error instanceof Error &&
+        error.message.includes("does not exist")
+      ) {
+        console.warn(
+          "⚠️ Returning empty user orders array due to missing table",
+        );
+        return [];
+      }
+
+      throw error;
+    }
+  }
+
+  /**
+   * Get specific order by ID or reference for current user
+   */
+  static async getUserOrder(
+    userEmail: string,
+    orderIdOrReference: string,
+  ): Promise<OrderData | null> {
+    try {
+      // Check if the input looks like a UUID (36 chars with dashes)
+      const isUuid =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+          orderIdOrReference,
+        );
+
+      let query = supabase
+        .from("orders")
+        .select("*")
+        .eq("buyer_email", userEmail);
+
+      if (isUuid) {
+        // If it's a UUID, search by ID first, then fallback to paystack_ref
+        query = query.or(
+          `id.eq.${orderIdOrReference},paystack_ref.eq.${orderIdOrReference}`,
+        );
+      } else {
+        // If it's not a UUID (like Paystack reference), only search by paystack_ref
+        query = query.eq("paystack_ref", orderIdOrReference);
+      }
+
+      const { data, error } = await query.single();
+
+      if (error) {
+        if (error.code === "PGRST116") {
+          // Order not found - this is normal
+          return null;
+        }
+
+        const errorMessage = this.extractErrorMessage(error);
+
+        // Handle missing orders table
+        if (
+          errorMessage.includes("relation") &&
+          errorMessage.includes("orders") &&
+          errorMessage.includes("does not exist")
+        ) {
+          console.warn("❌ Orders table does not exist");
+
+          if (import.meta.env.DEV) {
+            toast.warning("Orders table missing - cannot fetch order");
+          }
+
+          return null;
+        }
+
+        throw new Error(`Failed to fetch order: ${errorMessage}`);
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Get user order error:", error);
+
+      // In development, return null to prevent app crashes
+      if (
+        import.meta.env.DEV &&
+        error instanceof Error &&
+        error.message.includes("does not exist")
+      ) {
+        console.warn("⚠️ Returning null order due to missing table");
+        return null;
+      }
+
+      throw error;
+    }
+  }
+
+  /**
+   * Release payment to seller when courier collection is confirmed
+   */
+  static async releasePaymentAfterCollection(
+    orderId: string,
+    collectionData?: {
+      collected_at?: string;
+      courier_reference?: string;
+      tracking_number?: string;
+    },
+  ): Promise<void> {
+    try {
+      console.log(
+        "📦 Releasing payment after courier collection for order:",
+        orderId,
+      );
+
+      const updateData: any = {
+        status: "ready_for_payout",
+        payment_held: false,
+        collection_confirmed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      if (collectionData) {
+        updateData.collected_at =
+          collectionData.collected_at || new Date().toISOString();
+        updateData.courier_reference = collectionData.courier_reference;
+        updateData.tracking_number = collectionData.tracking_number;
+      }
+
+      const { error } = await supabase
+        .from("orders")
+        .update(updateData)
+        .eq("id", orderId);
+
+      if (error) {
+        throw new Error(`Failed to release payment: ${error.message}`);
+      }
+
+      console.log("✅ Payment released successfully for order:", orderId);
+
+      // TODO: Trigger actual Paystack transfer to seller's subaccount
+      // This would involve calling Paystack's transfer API to move funds from holding
+    } catch (error) {
+      console.error("Error releasing payment:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Handle expired collection deadline (automatic refund)
+   */
+  static async handleExpiredCollection(orderId: string): Promise<void> {
+    try {
+      console.log(
+        "⏰ Handling expired collection deadline for order:",
+        orderId,
+      );
+
+      const { error } = await supabase
+        .from("orders")
+        .update({
+          status: "failed",
+          payment_held: false,
+          expired_at: new Date().toISOString(),
+          refund_initiated: true,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", orderId);
+
+      if (error) {
+        throw new Error(
+          `Failed to handle expired collection: ${error.message}`,
+        );
+      }
+
+      console.log(
+        "✅ Collection deadline expired, refund initiated for order:",
+        orderId,
+      );
+
+      // TODO: Trigger automatic refund via Paystack API
+    } catch (error) {
+      console.error("Error handling expired collection:", error);
       throw error;
     }
   }

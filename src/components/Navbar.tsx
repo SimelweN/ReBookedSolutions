@@ -13,6 +13,7 @@ import {
   Truck,
   GraduationCap,
   CreditCard,
+  Package,
 } from "lucide-react";
 import AdminAccess from "./AdminAccess";
 import CartButton from "./CartButton";
@@ -109,6 +110,15 @@ const Navbar = () => {
             {isAuthenticated ? (
               <>
                 <CartButton />
+
+                <Link to="/my-orders" title="My Orders">
+                  <Button
+                    variant="ghost"
+                    className="text-gray-700 hover:text-book-600 p-2 h-10 w-10 rounded-full"
+                  >
+                    <Package className="w-5 h-5" />
+                  </Button>
+                </Link>
 
                 <NotificationBadge
                   allowRetry={true}
