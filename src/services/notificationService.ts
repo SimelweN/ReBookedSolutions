@@ -172,7 +172,7 @@ export const addNotification = async (
     // Enhanced duplicate prevention for "Welcome back!" notifications
     let duplicateWindow = DUPLICATE_PREVENTION_WINDOW; // Default 1 minute
     if (notification.title.includes("Welcome back")) {
-      duplicateWindow = 1800000; // 30 minutes for welcome back notifications
+      duplicateWindow = 86400000; // 24 hours for welcome back notifications (1 day)
     }
 
     // Check if we recently sent a similar notification

@@ -239,6 +239,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                   sessionStorage.setItem(sessionKey, now.toString());
                   localStorage.setItem(localStorageKey, now.toString());
                   localStorage.setItem(lastWelcomeKey, today);
+                  sessionStorage.setItem(sessionWelcomeKey, "true");
 
                   // Use safe notification operation to prevent Suspense issues
                   safeNotificationOperation(
