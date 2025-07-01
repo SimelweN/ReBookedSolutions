@@ -368,6 +368,10 @@ export class PaystackPaymentService {
       if (data?.status === "success") {
         // Update order status in database
         await this.updateOrderStatus(reference, "paid", data);
+
+        // Simulate real transaction behavior - mark books as sold
+        await this.processPostPaymentActions(reference, data);
+
         toast.success("Payment verified successfully!");
       } else if (data?.status === "failed") {
         toast.error("Payment was not successful");
