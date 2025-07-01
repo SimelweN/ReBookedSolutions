@@ -52,7 +52,30 @@ const ModernBankingSection = () => {
         .maybeSingle();
 
       if (error) {
-        console.error("Error checking banking status:", error.message || error);
+        console.error("Error checking banking status:", {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+        });
+
+        // Handle specific column missing error
+        if (
+          error.message?.includes("column") &&
+          error.message?.includes("user_id")
+        ) {
+          console.warn(
+            "Banking subaccounts table/column missing - treating as no banking setup",
+          );
+          setBankingStatus({
+            hasSubaccount: false,
+            subaccountCode: null,
+            isLoading: false,
+            error: "Banking setup not available - please contact support",
+          });
+          return;
+        }
+
         setBankingStatus({
           hasSubaccount: false,
           subaccountCode: null,
