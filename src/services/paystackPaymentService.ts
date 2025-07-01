@@ -539,7 +539,7 @@ export class PaystackPaymentService {
         throw new Error("Order items are required");
       }
 
-      console.log("✅ Order data validation passed:", {
+      console.log("�� Order data validation passed:", {
         buyer_email: orderData.buyer_email,
         seller_id: orderData.seller_id,
         amount: orderData.amount,
@@ -1073,6 +1073,117 @@ export class PaystackPaymentService {
       ) {
         console.warn("⚠️ Returning empty orders array due to missing table");
         return [];
+      }
+
+      throw error;
+    }
+  }
+
+  /**
+   * Get orders for a specific user (buyer)
+   */
+  static async getUserOrders(userEmail: string): Promise<OrderData[]> {
+    try {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("buyer_email", userEmail)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        const errorMessage = this.extractErrorMessage(error);
+
+        // Handle missing orders table
+        if (
+          errorMessage.includes("relation") &&
+          errorMessage.includes("orders") &&
+          errorMessage.includes("does not exist")
+        ) {
+          console.warn("❌ Orders table does not exist, returning empty array");
+
+          if (import.meta.env.DEV) {
+            toast.warning("Orders table missing - returning empty user orders");
+          }
+
+          return [];
+        }
+
+        throw new Error(`Failed to fetch user orders: ${errorMessage}`);
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error("Get user orders error:", error);
+
+      // In development, return empty array to prevent app crashes
+      if (
+        import.meta.env.DEV &&
+        error instanceof Error &&
+        error.message.includes("does not exist")
+      ) {
+        console.warn(
+          "⚠️ Returning empty user orders array due to missing table",
+        );
+        return [];
+      }
+
+      throw error;
+    }
+  }
+
+  /**
+   * Get specific order by ID or reference for current user
+   */
+  static async getUserOrder(
+    userEmail: string,
+    orderIdOrReference: string,
+  ): Promise<OrderData | null> {
+    try {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("buyer_email", userEmail)
+        .or(`id.eq.${orderIdOrReference},paystack_ref.eq.${orderIdOrReference}`)
+        .single();
+
+      if (error) {
+        if (error.code === "PGRST116") {
+          // Order not found - this is normal
+          return null;
+        }
+
+        const errorMessage = this.extractErrorMessage(error);
+
+        // Handle missing orders table
+        if (
+          errorMessage.includes("relation") &&
+          errorMessage.includes("orders") &&
+          errorMessage.includes("does not exist")
+        ) {
+          console.warn("❌ Orders table does not exist");
+
+          if (import.meta.env.DEV) {
+            toast.warning("Orders table missing - cannot fetch order");
+          }
+
+          return null;
+        }
+
+        throw new Error(`Failed to fetch order: ${errorMessage}`);
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Get user order error:", error);
+
+      // In development, return null to prevent app crashes
+      if (
+        import.meta.env.DEV &&
+        error instanceof Error &&
+        error.message.includes("does not exist")
+      ) {
+        console.warn("⚠️ Returning null order due to missing table");
+        return null;
       }
 
       throw error;
