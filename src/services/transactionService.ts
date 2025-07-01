@@ -92,7 +92,7 @@ export class TransactionService {
             status: "pending",
             seller_committed: false,
             expires_at: expiresAt.toISOString(),
-            paystack_subaccount_code: sellerProfile.subaccount_code,
+            paystack_subaccount_code: bankingDetails.paystack_subaccount_code,
           },
         ])
         .select()
