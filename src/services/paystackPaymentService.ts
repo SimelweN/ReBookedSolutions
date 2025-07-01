@@ -548,27 +548,27 @@ export class PaystackPaymentService {
         items_count: orderData.items.length,
       });
 
-      // Prepare the order data for insertion
+      // Prepare the order data for insertion - using only essential fields
       const insertData = {
         buyer_email: orderData.buyer_email,
         seller_id: orderData.seller_id,
-        book_id: orderData.book_id,
-        book_title: orderData.book_title,
-        book_price: orderData.book_price || orderData.amount,
         amount: orderData.amount,
-        delivery_fee: orderData.delivery_fee || 0,
-        seller_amount: orderData.seller_amount || orderData.amount,
         paystack_ref: orderData.paystack_ref,
         status: "pending" as const,
         shipping_address: orderData.shipping_address || {},
-        // Add courier information from selected delivery option
-        courier_provider: orderData.courier_provider,
-        courier_service: orderData.courier_service,
-        delivery_quote: orderData.delivery_quote,
-        seller_subaccount_code: orderData.seller_subaccount_code,
-        metadata: orderData.metadata || {},
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        metadata: {
+          ...orderData.metadata,
+          // Store additional data in metadata for now
+          book_id: orderData.book_id,
+          book_title: orderData.book_title,
+          book_price: orderData.book_price,
+          delivery_fee: orderData.delivery_fee,
+          seller_amount: orderData.seller_amount,
+          courier_provider: orderData.courier_provider,
+          courier_service: orderData.courier_service,
+          delivery_quote: orderData.delivery_quote,
+          seller_subaccount_code: orderData.seller_subaccount_code,
+        },
       };
 
       console.log("📤 Inserting order data:", insertData);
