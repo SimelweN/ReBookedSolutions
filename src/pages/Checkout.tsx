@@ -354,7 +354,7 @@ const Checkout: React.FC = () => {
 
                     {/* Payment Button */}
                     <PaystackPaymentButton
-                      amount={totalAmount * 100} // Convert to kobo
+                      amount={Math.round(totalAmount * 100)} // Convert to kobo for Paystack
                       onSuccess={(reference) => {
                         handlePaymentSuccess({
                           paystack_reference: reference,
