@@ -108,23 +108,28 @@ const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({
         }
       }
 
-      // Get seller's subaccount code for split payments from profiles table
+      // Get seller's subaccount code for split payments from banking_details table
       let subaccountCode = undefined;
       if (items.length > 0 && items[0].sellerId) {
         try {
-          const { data: seller } = await supabase
-            .from("profiles")
-            .select("subaccount_code")
-            .eq("id", items[0].sellerId)
+          const { data: bankingDetails } = await supabase
+            .from("banking_details")
+            .select("paystack_subaccount_code")
+            .eq("user_id", items[0].sellerId)
             .single();
 
-          if (seller?.subaccount_code) {
-            subaccountCode = seller.subaccount_code;
-            console.log("Using seller subaccount:", subaccountCode);
+          if (bankingDetails?.paystack_subaccount_code) {
+            subaccountCode = bankingDetails.paystack_subaccount_code;
+            console.log(
+              "Using seller subaccount from banking_details:",
+              subaccountCode,
+            );
+          } else {
+            console.warn("No subaccount found for seller:", items[0].sellerId);
           }
         } catch (error) {
           console.warn(
-            "Could not fetch seller subaccount, proceeding without split:",
+            "Could not fetch seller subaccount from banking_details:",
             error,
           );
         }
