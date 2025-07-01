@@ -24,19 +24,35 @@ export const isBankingTableMissingError = (
 };
 
 export const logBankingError = (context: string, error: unknown): void => {
-  if (error && typeof error === "object") {
-    const errorObj = error as BankingQueryError;
-    console.error(`${context}:`, {
-      message: errorObj.message,
-      code: errorObj.code,
-      details: errorObj.details,
-      hint: errorObj.hint,
-      type: typeof error,
-    });
-  } else {
-    console.error(`${context}:`, {
-      error: String(error),
-      type: typeof error,
+  try {
+    if (error && typeof error === "object") {
+      const errorObj = error as BankingQueryError;
+
+      // Create a proper error structure
+      const errorDetails = {
+        message: errorObj.message || "No message",
+        code: errorObj.code || "No code",
+        details: errorObj.details || "No details",
+        hint: errorObj.hint || "No hint",
+        type: typeof error,
+      };
+
+      // Log with structured format
+      console.error(`${context}:`, errorDetails);
+
+      // Also log the raw error for debugging if structured logging fails
+      console.error(`${context} (raw):`, error);
+    } else {
+      console.error(`${context}:`, {
+        error: String(error),
+        type: typeof error,
+      });
+    }
+  } catch (loggingError) {
+    // Fallback if logging itself fails
+    console.error(`${context} (logging failed):`, {
+      originalError: error,
+      loggingError: loggingError,
     });
   }
 };
