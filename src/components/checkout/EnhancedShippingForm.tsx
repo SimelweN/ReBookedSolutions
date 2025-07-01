@@ -71,6 +71,12 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   onComplete,
   cartItems,
 }) => {
+  // Early return if props are invalid
+  if (!onComplete || !cartItems) {
+    console.error("EnhancedShippingForm: Invalid props");
+    return <div>Loading shipping form...</div>;
+  }
+
   const { isLoaded } = useGoogleMaps();
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
@@ -373,7 +379,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
         // If still no options after getting quotes, create fallback
         if (deliveryOptions.length === 0) {
-          console.log("��� Creating emergency delivery options");
+          console.log("���� Creating emergency delivery options");
           const emergencyOptions: DeliveryOption[] = [
             {
               id: "emergency_standard",
