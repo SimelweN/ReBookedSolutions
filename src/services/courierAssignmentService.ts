@@ -41,14 +41,25 @@ export class CourierAssignmentService {
         courierService,
       });
 
-      // Update order status and courier info
+      // Update order status and store courier info in metadata
+      const { data: currentOrder } = await supabase
+        .from("orders")
+        .select("metadata")
+        .eq("id", orderId)
+        .single();
+
+      const updatedMetadata = {
+        ...(currentOrder?.metadata || {}),
+        courier_provider: courierProvider,
+        courier_service: courierService,
+        delivery_quote: deliveryQuote,
+      };
+
       const { error: updateError } = await supabase
         .from("orders")
         .update({
           status: "courier_assigned",
-          courier_provider: courierProvider,
-          courier_service: courierService,
-          delivery_quote: deliveryQuote,
+          metadata: updatedMetadata,
           updated_at: new Date().toISOString(),
         })
         .eq("id", orderId);
