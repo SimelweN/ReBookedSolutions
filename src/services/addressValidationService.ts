@@ -49,13 +49,14 @@ export const canUserListBooks = async (userId: string): Promise<boolean> => {
 
     // Check if user has completed banking setup
     try {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("subaccount_code")
-        .eq("id", userId)
+      const { data: bankingDetails } = await supabase
+        .from("banking_details")
+        .select("paystack_subaccount_code")
+        .eq("user_id", userId)
         .single();
 
-      const hasVerifiedBanking = !!profile?.subaccount_code?.trim();
+      const hasVerifiedBanking =
+        !!bankingDetails?.paystack_subaccount_code?.trim();
 
       if (!hasVerifiedBanking) {
         console.log(
