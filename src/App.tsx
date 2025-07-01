@@ -99,6 +99,7 @@ const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
 const PaymentCallback = React.lazy(() => import("./pages/PaymentCallback"));
 
 const UserOrders = React.lazy(() => import("./pages/UserOrders"));
+const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
 
 // Create query client with optimized settings
 const queryClient = new QueryClient({
