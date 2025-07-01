@@ -105,14 +105,23 @@ export class CourierAssignmentService {
         console.error("❌ Failed to book courier:", bookingResult.error);
 
         // Update order status to indicate courier booking failed
+        const { data: currentOrder } = await supabase
+          .from("orders")
+          .select("metadata")
+          .eq("id", orderId)
+          .single();
+
+        const updatedMetadata = {
+          ...(currentOrder?.metadata || {}),
+          courier_booking_error: bookingResult.error,
+          attempted_courier: courierProvider,
+        };
+
         await supabase
           .from("orders")
           .update({
             status: "paid", // Revert to paid status
-            metadata: {
-              courier_booking_error: bookingResult.error,
-              attempted_courier: courierProvider,
-            },
+            metadata: updatedMetadata,
           })
           .eq("id", orderId);
 
