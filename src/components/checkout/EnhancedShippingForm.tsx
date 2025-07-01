@@ -16,7 +16,15 @@ import {
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Loader2, Truck, Clock, DollarSign, Edit2 } from "lucide-react";
+import {
+  MapPin,
+  Loader2,
+  Truck,
+  Clock,
+  DollarSign,
+  Edit2,
+  AlertCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
