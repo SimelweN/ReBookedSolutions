@@ -102,7 +102,6 @@ const Login = () => {
       const errorMessage =
         error instanceof Error ? error.message : "Login failed";
       console.error("Login error:", error);
-      console.error("Login error in component:", errorMessage);
 
       // Handle network errors specifically
       if (

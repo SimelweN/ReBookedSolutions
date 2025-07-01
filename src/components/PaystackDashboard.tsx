@@ -27,6 +27,7 @@ import { useCart } from "@/contexts/CartContext";
 import PaystackPaymentService from "@/services/paystackPaymentService";
 import { toast } from "sonner";
 import PaystackConfigChecker from "./PaystackConfigChecker";
+import { PaystackLibraryTest } from "@/utils/paystackLibraryTest";
 import DevPaymentTester from "./DevPaymentTester";
 
 const PaystackDashboard: React.FC = () => {
@@ -91,11 +92,6 @@ const PaystackDashboard: React.FC = () => {
       return;
     }
 
-    if (!paystackStatus.scriptLoaded) {
-      toast.error("Paystack script still loading. Please wait and try again.");
-      return;
-    }
-
     setTestPayment((prev) => ({
       ...prev,
       loading: true,
@@ -103,6 +99,15 @@ const PaystackDashboard: React.FC = () => {
     }));
 
     try {
+      // Use the service's built-in loading mechanism
+      console.log("Checking if Paystack is loaded...");
+      const paystackLoaded =
+        await PaystackPaymentService.ensurePaystackLoaded();
+
+      if (!paystackLoaded) {
+        throw new Error("Paystack library could not be loaded");
+      }
+
       const reference = PaystackPaymentService.generateReference();
       console.log("Initializing test payment with reference:", reference);
 
@@ -229,6 +234,22 @@ const PaystackDashboard: React.FC = () => {
         return <AlertTriangle className="w-5 h-5 text-yellow-600" />;
       default:
         return <CheckCircle className="w-5 h-5 text-green-600" />;
+    }
+  };
+
+  const debugPaystackLibrary = async () => {
+    toast.info("Running Paystack library diagnostics...");
+    try {
+      const results = await PaystackLibraryTest.testAllMethods();
+      PaystackLibraryTest.logResults(results);
+
+      const successCount = results.filter((r) => r.success).length;
+      toast.success(
+        `Library test completed. ${successCount}/${results.length} methods successful. Check console for details.`,
+      );
+    } catch (error) {
+      console.error("Debug test failed:", error);
+      toast.error("Library debug test failed. Check console for details.");
     }
   };
 
@@ -383,23 +404,34 @@ const PaystackDashboard: React.FC = () => {
                 </div>
               </div>
 
-              <Button
-                onClick={handleTestPayment}
-                disabled={!paystackStatus.configured || testPayment.loading}
-                className="w-full"
-              >
-                {testPayment.loading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="w-4 h-4 mr-2" />
-                    Test Payment - R{(testPayment.amount / 100).toFixed(2)}
-                  </>
-                )}
-              </Button>
+              <div className="space-y-2">
+                <Button
+                  onClick={handleTestPayment}
+                  disabled={!paystackStatus.configured || testPayment.loading}
+                  className="w-full"
+                >
+                  {testPayment.loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="w-4 h-4 mr-2" />
+                      Test Payment - R{(testPayment.amount / 100).toFixed(2)}
+                    </>
+                  )}
+                </Button>
+
+                <Button
+                  onClick={debugPaystackLibrary}
+                  variant="outline"
+                  className="w-full"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Debug Library Loading
+                </Button>
+              </div>
 
               {testPayment.status !== "idle" && (
                 <Alert

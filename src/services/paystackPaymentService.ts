@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PAYSTACK_CONFIG, PAYSTACK_BANK_CODES } from "@/config/paystack";
 import { BankingDetails } from "@/types/banking";
 import { toast } from "sonner";
+import { PaystackLibraryTest } from "@/utils/paystackLibraryTest";
 
 export interface PaymentInitialization {
   email: string;
@@ -72,12 +73,115 @@ export class PaystackPaymentService {
   private static readonly PAYSTACK_PUBLIC_KEY = PAYSTACK_CONFIG.PUBLIC_KEY;
 
   /**
+   * Check if Paystack library is available and wait for it if needed
+   */
+  static async ensurePaystackLoaded(): Promise<boolean> {
+    // First check if it's already available
+    if ((window as any).PaystackPop || (window as any).Paystack) {
+      return true;
+    }
+
+    // Wait up to 5 seconds for Paystack to load
+    const maxWait = 5000;
+    const checkInterval = 100;
+    let waited = 0;
+
+    while (waited < maxWait) {
+      if ((window as any).PaystackPop || (window as any).Paystack) {
+        return true;
+      }
+      await new Promise((resolve) => setTimeout(resolve, checkInterval));
+      waited += checkInterval;
+    }
+
+    // If still not available, try loading the script
+    try {
+      await this.loadPaystackScript();
+      return true;
+    } catch (error) {
+      console.error("Failed to load Paystack:", error);
+      return false;
+    }
+  }
+
+  /**
    * Generate unique payment reference
    */
   static generateReference(): string {
     const timestamp = Date.now();
     const random = Math.random().toString(36).substring(2, 8);
     return `PSK_${timestamp}_${random}`;
+  }
+
+  /**
+   * Extract meaningful error message from error object
+   */
+  private static extractErrorMessage(error: any): string {
+    if (!error) return "Unknown error";
+
+    // Handle string errors
+    if (typeof error === "string") {
+      return error;
+    }
+
+    // Handle Error objects
+    if (error instanceof Error) {
+      return error.message;
+    }
+
+    // Handle Supabase/PostgresError objects
+    if (error && typeof error === "object") {
+      // Try to get the most meaningful error message
+      const priorities = [
+        "message",
+        "details",
+        "hint",
+        "description",
+        "error_description",
+        "error",
+      ];
+
+      for (const key of priorities) {
+        if (error[key] && typeof error[key] === "string" && error[key].trim()) {
+          return error[key];
+        }
+      }
+
+      // Special handling for PostgreSQL errors
+      if (error.code) {
+        const pgError = `PostgreSQL Error ${error.code}`;
+        if (error.details) {
+          return `${pgError}: ${error.details}`;
+        }
+        if (error.message) {
+          return `${pgError}: ${error.message}`;
+        }
+        return pgError;
+      }
+
+      // Try to get a readable representation
+      try {
+        // Filter out non-string properties for a cleaner JSON
+        const cleanError = Object.fromEntries(
+          Object.entries(error).filter(
+            ([_, value]) =>
+              typeof value === "string" ||
+              typeof value === "number" ||
+              typeof value === "boolean",
+          ),
+        );
+
+        if (Object.keys(cleanError).length > 0) {
+          return JSON.stringify(cleanError, null, 2);
+        }
+
+        return JSON.stringify(error, null, 2);
+      } catch (e) {
+        return `Error object could not be processed: ${error.toString()}`;
+      }
+    }
+
+    return `Unknown error type: ${typeof error}`;
   }
 
   /**
@@ -88,25 +192,64 @@ export class PaystackPaymentService {
       throw new Error("Paystack public key not configured");
     }
 
-    // Try to use the new @paystack/inline-js package first
+    console.log("🔍 Running comprehensive Paystack library test...");
+    const testResults = await PaystackLibraryTest.testAllMethods();
+    PaystackLibraryTest.logResults(testResults);
+
+    // Find the first successful method
+    const successfulMethod = testResults.find((result) => result.success);
+
+    if (!successfulMethod) {
+      console.error("❌ No Paystack library loading method succeeded");
+      throw new Error(
+        "Paystack payment library not available - all loading methods failed",
+      );
+    }
+
+    console.log(`✅ Using successful method: ${successfulMethod.method}`);
+
+    // Get PaystackPop based on successful method
     let PaystackPop;
-    try {
-      const { PaystackPop: ImportedPaystackPop } = await import(
-        "@paystack/inline-js"
-      );
-      PaystackPop = ImportedPaystackPop;
-    } catch (importError) {
-      console.warn(
-        "Failed to import @paystack/inline-js, falling back to CDN script",
-      );
-      // Ensure Paystack script is loaded
-      await this.loadPaystackScript();
+
+    if (successfulMethod.method === "NPM Package Import") {
+      try {
+        const paystackModule = await import("@paystack/inline-js");
+        if (paystackModule.PaystackPop) {
+          PaystackPop = paystackModule.PaystackPop;
+        } else if (paystackModule.default) {
+          PaystackPop = paystackModule.default;
+        } else if (typeof paystackModule === "function") {
+          PaystackPop = paystackModule;
+        }
+      } catch (error) {
+        console.error("NPM package import failed in production:", error);
+      }
+    }
+
+    // Try global objects
+    if (!PaystackPop) {
       PaystackPop = (window as any).PaystackPop;
     }
 
+    // Fallback to global Paystack object
     if (!PaystackPop) {
+      const globalPaystack = (window as any).Paystack;
+      if (globalPaystack && typeof globalPaystack.setup === "function") {
+        console.log("Using global Paystack object as fallback");
+        PaystackPop = class {
+          newTransaction(config: any) {
+            globalPaystack.setup(config);
+          }
+        };
+      }
+    }
+
+    if (!PaystackPop) {
+      console.error("❌ PaystackPop still not available after successful test");
       throw new Error("Paystack payment library not available");
     }
+
+    console.log("✅ PaystackPop ready:", typeof PaystackPop);
 
     return new Promise((resolve, reject) => {
       const paystack = new PaystackPop();
@@ -136,7 +279,8 @@ export class PaystackPaymentService {
           toast.info("Payment was cancelled", {
             description: "You can try again when ready.",
           });
-          reject(new Error("PAYMENT_CANCELLED_BY_USER"));
+          // Don't reject as an error - resolve with cancellation status
+          resolve({ cancelled: true, reference: params.reference });
         },
       };
 
@@ -440,44 +584,44 @@ export class PaystackPaymentService {
 
         console.error("❌ Database error details:", errorDetails);
 
-        // Try to get the actual error message
-        let errorMessage = "Unknown database error";
+        // Extract meaningful error message
+        let errorMessage = this.extractErrorMessage(error);
 
-        if (error.message && typeof error.message === "string") {
-          errorMessage = error.message;
-        } else if (error.details && typeof error.details === "string") {
-          errorMessage = error.details;
-        } else if (error.hint && typeof error.hint === "string") {
-          errorMessage = error.hint;
-        } else if (typeof error === "string") {
-          errorMessage = error;
-        } else if (error && typeof error === "object") {
-          // Try to get any readable property
-          for (const key of [
-            "message",
-            "details",
-            "hint",
-            "description",
-            "error",
-          ]) {
-            if (error[key] && typeof error[key] === "string") {
-              errorMessage = error[key];
-              break;
-            }
-          }
-
-          // If still no readable error, stringify safely
-          if (errorMessage === "Unknown database error") {
-            try {
-              errorMessage = JSON.stringify(error, null, 2);
-            } catch (e) {
-              errorMessage = `Error object could not be stringified: ${error.toString()}`;
-            }
-          }
-        }
-
-        // Add context for common issues
+        // Add context for common issues and handle missing table
         if (
+          errorMessage.includes("relation") &&
+          errorMessage.includes("orders") &&
+          errorMessage.includes("does not exist")
+        ) {
+          console.error("❌ Orders table does not exist in database");
+
+          // In development, return a mock order for testing
+          if (import.meta.env.DEV) {
+            console.warn(
+              "🛠️ Using mock order for development since orders table is missing",
+            );
+            const mockOrder: OrderData = {
+              id: `mock_${Date.now()}`,
+              buyer_email: orderData.buyer_email || "test@example.com",
+              seller_id: orderData.seller_id || "mock_seller",
+              amount: orderData.amount || 10000,
+              status: "pending",
+              paystack_ref: orderData.paystack_ref || `mock_${Date.now()}`,
+              items: orderData.items || [],
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            };
+
+            toast.warning(
+              "Using mock order - orders table missing from database",
+            );
+            return mockOrder;
+          }
+
+          throw new Error(
+            "Orders table does not exist. Please run database migrations to create the orders table.",
+          );
+        } else if (
           errorMessage.includes("RLS") ||
           errorMessage.includes("row-level security")
         ) {
@@ -562,28 +706,31 @@ export class PaystackPaymentService {
         .eq("paystack_ref", reference);
 
       if (error) {
-        // Proper error message extraction
-        let errorMessage = "Unknown error";
-
-        if (error.message && typeof error.message === "string") {
-          errorMessage = error.message;
-        } else if (error.details && typeof error.details === "string") {
-          errorMessage = error.details;
-        } else if (typeof error === "string") {
-          errorMessage = error;
-        } else if (error && typeof error === "object") {
-          try {
-            errorMessage = JSON.stringify(error, null, 2);
-          } catch (e) {
-            errorMessage = error.toString();
-          }
-        }
+        const errorMessage = this.extractErrorMessage(error);
 
         console.error("❌ Failed to update order status:", {
           reference,
           status,
           error: errorMessage,
         });
+
+        // Handle missing orders table
+        if (
+          errorMessage.includes("relation") &&
+          errorMessage.includes("orders") &&
+          errorMessage.includes("does not exist")
+        ) {
+          console.warn(
+            "⚠️ Orders table does not exist, skipping status update",
+          );
+
+          if (import.meta.env.DEV) {
+            console.warn(
+              "⚠️ Skipping order status update due to missing orders table",
+            );
+            return;
+          }
+        }
 
         throw new Error(`Failed to update order: ${errorMessage}`);
       }
@@ -825,16 +972,57 @@ export class PaystackPaymentService {
    */
   private static async loadPaystackScript(): Promise<void> {
     return new Promise((resolve, reject) => {
+      // Check if already loaded
       if ((window as any).PaystackPop) {
+        console.log("PaystackPop already available");
         resolve();
         return;
       }
 
+      // Check if script is already being loaded
+      const existingScript = document.querySelector(
+        'script[src="https://js.paystack.co/v1/inline.js"]',
+      );
+      if (existingScript) {
+        console.log("Paystack script already loading, waiting...");
+        existingScript.addEventListener("load", () => {
+          console.log("Existing Paystack script loaded");
+          resolve();
+        });
+        existingScript.addEventListener("error", (e) => {
+          console.error("Existing Paystack script failed to load:", e);
+          reject(new Error("Paystack script failed to load"));
+        });
+        return;
+      }
+
+      console.log("Loading Paystack script from CDN...");
       const script = document.createElement("script");
       script.src = "https://js.paystack.co/v1/inline.js";
-      script.onload = () => resolve();
-      script.onerror = () =>
-        reject(new Error("Failed to load Paystack script"));
+      script.async = true;
+      script.onload = () => {
+        console.log("Paystack script loaded successfully");
+        // Give it a moment to initialize
+        setTimeout(() => {
+          if ((window as any).PaystackPop) {
+            console.log("PaystackPop is now available");
+            resolve();
+          } else {
+            console.error("PaystackPop still not available after script load");
+            console.log(
+              "Available Paystack objects:",
+              Object.keys(window).filter((key) =>
+                key.toLowerCase().includes("paystack"),
+              ),
+            );
+            reject(new Error("PaystackPop not available after script load"));
+          }
+        }, 100);
+      };
+      script.onerror = (error) => {
+        console.error("Failed to load Paystack script:", error);
+        reject(new Error("Failed to load Paystack script from CDN"));
+      };
       document.head.appendChild(script);
     });
   }
@@ -853,12 +1041,40 @@ export class PaystackPaymentService {
         .order("created_at", { ascending: false });
 
       if (error) {
-        throw new Error(`Failed to fetch orders: ${error.message}`);
+        const errorMessage = this.extractErrorMessage(error);
+
+        // Handle missing orders table
+        if (
+          errorMessage.includes("relation") &&
+          errorMessage.includes("orders") &&
+          errorMessage.includes("does not exist")
+        ) {
+          console.warn("❌ Orders table does not exist, returning empty array");
+
+          if (import.meta.env.DEV) {
+            toast.warning("Orders table missing - returning empty results");
+          }
+
+          return [];
+        }
+
+        throw new Error(`Failed to fetch orders: ${errorMessage}`);
       }
 
       return data || [];
     } catch (error) {
       console.error("Get orders by status error:", error);
+
+      // In development, return empty array to prevent app crashes
+      if (
+        import.meta.env.DEV &&
+        error instanceof Error &&
+        error.message.includes("does not exist")
+      ) {
+        console.warn("⚠️ Returning empty orders array due to missing table");
+        return [];
+      }
+
       throw error;
     }
   }
@@ -879,7 +1095,31 @@ export class PaystackPaymentService {
         .eq("seller_id", sellerId);
 
       if (error) {
-        throw new Error(`Failed to fetch earnings: ${error.message}`);
+        const errorMessage = this.extractErrorMessage(error);
+
+        // Handle missing orders table
+        if (
+          errorMessage.includes("relation") &&
+          errorMessage.includes("orders") &&
+          errorMessage.includes("does not exist")
+        ) {
+          console.warn(
+            "❌ Orders table does not exist, returning zero earnings",
+          );
+
+          if (import.meta.env.DEV) {
+            toast.warning("Orders table missing - returning zero earnings");
+          }
+
+          return {
+            total: 0,
+            paid: 0,
+            pending: 0,
+            ready: 0,
+          };
+        }
+
+        throw new Error(`Failed to fetch earnings: ${errorMessage}`);
       }
 
       const earnings = {

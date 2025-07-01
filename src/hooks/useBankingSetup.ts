@@ -23,7 +23,7 @@ export const useBankingSetup = () => {
         .from("profiles")
         .select("subaccount_code")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
       console.log("Banking setup query result:", { profile, error });
 
@@ -63,6 +63,18 @@ export const useBankingSetup = () => {
   useEffect(() => {
     checkBankingSetup();
   }, [checkBankingSetup]);
+
+  // Also check when window regains focus (user returns from banking setup)
+  useEffect(() => {
+    const handleFocus = () => {
+      if (hasBankingSetup === false) {
+        checkBankingSetup();
+      }
+    };
+
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [hasBankingSetup, checkBankingSetup]);
 
   // Function to require banking setup (shows popup if not completed)
   const requireBankingSetup = useCallback(

@@ -49,7 +49,7 @@ const ModernBankingSection = () => {
         .from("profiles")
         .select("subaccount_code")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         // Check if error is due to missing column
@@ -96,6 +96,26 @@ const ModernBankingSection = () => {
     checkBankingStatus();
   }, [user?.id]);
 
+  // Listen for window messages from banking setup popup
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      // Only accept messages from the banking setup domain
+      if (event.origin !== "https://paystack-vault-south-africa.lovable.app") {
+        return;
+      }
+
+      if (event.data.type === "BANKING_SETUP_COMPLETE") {
+        toast.success("Banking setup completed! Refreshing status...");
+        setTimeout(() => {
+          checkBankingStatus();
+        }, 1000);
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
   const openBankingSetup = () => {
     const bankingUrl = "https://paystack-vault-south-africa.lovable.app";
 
@@ -114,19 +134,27 @@ const ModernBankingSection = () => {
     if (popup) {
       popup.focus();
       toast.info(
-        "Complete your banking setup in the popup window and return here.",
+        "Complete your banking setup in the popup window and click 'Refresh Status' when done.",
       );
 
       // Check if popup is closed and refresh banking status
       const checkClosed = setInterval(() => {
         if (popup.closed) {
           clearInterval(checkClosed);
-          toast.info("Checking banking setup status...");
-          setTimeout(() => {
-            checkBankingStatus();
-          }, 1000);
+          toast.info(
+            "Banking setup window closed. Click 'Refresh Status' to update.",
+          );
         }
       }, 1000);
+
+      // Also poll for status updates while popup is open
+      const pollStatus = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(pollStatus);
+        } else {
+          checkBankingStatus();
+        }
+      }, 3000); // Check every 3 seconds while popup is open
     } else {
       toast.error(
         "Popup blocked. Please allow popups for this site and try again.",
@@ -289,18 +317,37 @@ const ModernBankingSection = () => {
               <br />
               This secure process takes just 2 minutes and enables instant
               payments.
+              <br />
+              <span className="text-sm font-medium mt-1 inline-block">
+                💡 After completing banking setup, click "Refresh Status" to
+                update this page.
+              </span>
             </AlertDescription>
           </Alert>
 
-          <Button
-            onClick={openBankingSetup}
-            className={`bg-blue-600 hover:bg-blue-700 ${isMobile ? "w-full h-12" : "w-full"}`}
-            size={isMobile ? "lg" : "default"}
-          >
-            <ExternalLink className="w-4 h-4 mr-2" />
-            Complete Banking Setup
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
+          <div className="space-y-3">
+            <Button
+              onClick={openBankingSetup}
+              className={`bg-blue-600 hover:bg-blue-700 ${isMobile ? "w-full h-12" : "w-full"}`}
+              size={isMobile ? "lg" : "default"}
+            >
+              <ExternalLink className="w-4 h-4 mr-2" />
+              Complete Banking Setup
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+
+            <Button
+              onClick={checkBankingStatus}
+              variant="outline"
+              className="w-full"
+              disabled={bankingStatus.isLoading}
+            >
+              <RefreshCw
+                className={`w-4 h-4 mr-2 ${bankingStatus.isLoading ? "animate-spin" : ""}`}
+              />
+              {bankingStatus.isLoading ? "Checking..." : "Refresh Status"}
+            </Button>
+          </div>
         </div>
       )}
 

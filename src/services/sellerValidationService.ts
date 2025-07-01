@@ -57,7 +57,7 @@ export class SellerValidationService {
           .from("profiles")
           .select("subaccount_code")
           .eq("id", userId)
-          .single();
+          .maybeSingle();
 
         // Subaccount code is required for receiving payments
         hasBankingDetails = !!profile?.subaccount_code?.trim();
@@ -106,7 +106,7 @@ export class SellerValidationService {
         .from("profiles")
         .select("subaccount_code")
         .eq("id", userId)
-        .single();
+        .maybeSingle();
 
       return !!profile?.subaccount_code?.trim();
     } catch (error) {

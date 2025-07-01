@@ -50,7 +50,7 @@ const BankingSetupPopup = ({
         .from("profiles")
         .select("subaccount_code")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
       console.log("Banking status query result:", { profile, error });
 
@@ -120,24 +120,26 @@ const BankingSetupPopup = ({
       );
     }
 
-    // Poll for banking details every 5 seconds while popup is open
+    // Poll for banking details every 3 seconds while popup is open
     let pollInterval: NodeJS.Timeout;
     if (popup) {
       pollInterval = setInterval(() => {
         if (popup.closed) {
           clearInterval(pollInterval);
-          toast.info("Checking banking setup status...");
+          toast.info("Banking setup window closed. Checking status...");
           setTimeout(() => {
             checkBankingStatus();
           }, 1000);
         } else if (isOpen) {
           checkBankingStatus();
         }
-      }, 5000);
+      }, 3000); // Reduced from 5 seconds to 3 seconds
     }
 
     // Clean up interval when component unmounts or popup closes
-    return () => clearInterval(pollInterval);
+    return () => {
+      if (pollInterval) clearInterval(pollInterval);
+    };
   };
 
   const getStatusContent = () => {

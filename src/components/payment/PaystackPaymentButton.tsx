@@ -131,7 +131,7 @@ const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({
       }
 
       // Initialize Paystack payment
-      await PaystackPaymentService.initializePayment({
+      const paymentResult = await PaystackPaymentService.initializePayment({
         email: user.email || "",
         amount: amount, // amount in kobo
         reference: reference,
@@ -145,6 +145,16 @@ const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({
           ...metadata,
         },
       });
+
+      // Check if payment was cancelled
+      if (paymentResult && (paymentResult as any).cancelled) {
+        setPaymentStatus("idle"); // Reset to allow retry
+        console.log(
+          "💡 Payment was cancelled by user, resetting to idle state",
+        );
+        onError?.("Payment cancelled by user");
+        return; // Don't show error, user cancelled intentionally
+      }
 
       // Payment successful
       setPaymentStatus("success");
