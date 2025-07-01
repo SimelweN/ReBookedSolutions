@@ -484,14 +484,6 @@ function App() {
                                 </LazyWrapper>
                               }
                             />
-                            <Route
-                              path="/system-status"
-                              element={
-                                <LazyWrapper>
-                                  <SystemStatus />
-                                </LazyWrapper>
-                              }
-                            />
 
                             {/* Maps demo routes */}
                             <Route
