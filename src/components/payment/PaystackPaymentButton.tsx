@@ -308,10 +308,7 @@ const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({
 
       {/* Commission Info */}
       <div className="text-center text-xs text-gray-500">
-        <p>
-          Platform fee: 10% • Seller receives:{" "}
-          {formatAmount(Math.round(amount * 0.9))}
-        </p>
+        <p>Secure payment powered by Paystack</p>
       </div>
     </div>
   );
