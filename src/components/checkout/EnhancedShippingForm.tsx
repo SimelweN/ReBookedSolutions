@@ -289,9 +289,6 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
       }));
 
       setDeliveryOptions(options);
-      if (options.length > 0) {
-        setSelectedDeliveryOption(options[0]); // Auto-select cheapest option
-      }
 
       toast.success(
         `${options.length} delivery option${options.length !== 1 ? "s" : ""} found`,
