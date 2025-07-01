@@ -586,23 +586,36 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
                       required: "Street address is required",
                     })}
                     type="text"
-                    placeholder="Start typing your address..."
-                    className={`w-full p-3 border rounded-lg bg-white ${
+                    placeholder={
+                      isLoaded
+                        ? "Start typing your address..."
+                        : "Enter your complete street address manually"
+                    }
+                    className={`w-full p-3 border rounded-lg ${
+                      !isLoaded ? "bg-yellow-50 border-yellow-300" : "bg-white"
+                    } ${
                       errors.street_address
                         ? "border-red-500"
-                        : "border-gray-300"
+                        : isLoaded
+                          ? "border-gray-300"
+                          : "border-yellow-300"
                     } focus:ring-2 focus:ring-book-500 focus:border-book-500`}
                     style={{ fontSize: "16px" }} // Prevents zoom on iOS and ensures consistent behavior
                     autoComplete="street-address"
                     required
                   />
 
-                  {!isLoaded ? (
-                    <p className="text-xs text-yellow-600 mt-1">
-                      ⚠️ Address autocomplete unavailable - Google Maps API key
-                      not configured
-                    </p>
-                  ) : null}
+                  {!isLoaded && (
+                    <Alert className="mt-2 border-yellow-300 bg-yellow-50">
+                      <AlertCircle className="h-4 w-4 text-yellow-600" />
+                      <AlertDescription className="text-yellow-800">
+                        <strong>Manual Address Entry:</strong> Google Maps
+                        autocomplete is unavailable. Please enter your complete
+                        address manually including street number, street name,
+                        suburb, and city.
+                      </AlertDescription>
+                    </Alert>
+                  )}
                 </div>
 
                 <div>
