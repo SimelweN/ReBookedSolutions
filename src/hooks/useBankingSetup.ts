@@ -30,21 +30,12 @@ export const useBankingSetup = () => {
       console.log("Banking setup query result:", { subaccountData, error });
 
       if (error) {
-        console.error("Error checking banking setup:", {
-          message: error.message,
-          code: error.code,
-          details: error.details,
-          hint: error.hint,
-        });
+        const { shouldFallback } = handleBankingQueryError(
+          "useBankingSetup",
+          error,
+        );
 
-        // If the error is about column not existing, fall back to false
-        if (
-          error.message?.includes("column") &&
-          error.message?.includes("user_id")
-        ) {
-          console.warn(
-            "banking_subaccounts table or user_id column missing - falling back to no banking setup",
-          );
+        if (shouldFallback) {
           setHasBankingSetup(false);
           return false;
         }
