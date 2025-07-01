@@ -753,6 +753,52 @@ export class PaystackPaymentService {
         reference,
         status,
       });
+
+      // If payment is successful, automatically assign courier
+      if (status === "paid") {
+        try {
+          // Get the order details to extract courier information
+          const { data: order, error: orderError } = await supabase
+            .from("orders")
+            .select("id, courier_provider, courier_service, delivery_quote")
+            .eq("paystack_ref", reference)
+            .single();
+
+          if (!orderError && order) {
+            // Only assign courier if one was selected during checkout
+            if (order.courier_provider && order.courier_service) {
+              console.log("🚚 Auto-assigning courier after payment...");
+
+              const courierAssigned =
+                await CourierAssignmentService.assignCourierToOrder(
+                  order.id,
+                  order.courier_provider,
+                  order.courier_service,
+                  order.delivery_quote,
+                );
+
+              if (courierAssigned) {
+                console.log("✅ Courier automatically assigned after payment");
+                toast.success(
+                  "Payment successful! Courier has been notified for pickup.",
+                );
+              } else {
+                console.warn("⚠️ Failed to assign courier automatically");
+                toast.warning(
+                  "Payment successful! Please contact support for delivery arrangement.",
+                );
+              }
+            } else {
+              console.log(
+                "ℹ️ No courier selected - manual arrangement required",
+              );
+            }
+          }
+        } catch (courierError) {
+          console.error("Error assigning courier after payment:", courierError);
+          // Don't fail the entire payment process if courier assignment fails
+        }
+      }
     } catch (error) {
       console.error("Update order status error:", error);
 
