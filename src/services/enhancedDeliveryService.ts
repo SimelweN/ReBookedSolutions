@@ -195,9 +195,9 @@ export const getEnhancedDeliveryQuotes = async (
           );
         } else if (data?.quotes) {
           // Add the quotes with seller-specific info
-          const sellerQuotes = data.quotes.map((quote: any) => ({
+          const sellerQuotes = data.quotes.map((quote: any, index: number) => ({
             ...quote,
-            id: `${quote.id}_${sellerId}`,
+            id: `${quote.id || `quote_${index}`}_${sellerId}`,
             collection_address: sellerAddress,
             delivery_address: deliveryAddress,
             seller_id: sellerId,
