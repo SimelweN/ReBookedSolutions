@@ -103,6 +103,7 @@ const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
 const EnhancedQADashboard = React.lazy(
   () => import("./pages/EnhancedQADashboard"),
 );
+const TestQADashboard = React.lazy(() => import("./pages/TestQADashboard"));
 
 // Create query client with optimized settings
 const queryClient = new QueryClient({
