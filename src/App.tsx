@@ -272,6 +272,9 @@ function App() {
     // Initialize performance optimizations
     initPerformanceOptimizations();
 
+    // Initialize network error handling
+    initNetworkErrorHandler();
+
     // Use startTransition for non-urgent preloading
     startTransition(() => {
       preloadCriticalRoutes().catch((error) => {
