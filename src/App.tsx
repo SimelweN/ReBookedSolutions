@@ -414,22 +414,7 @@ function App() {
                                 </LazyWrapper>
                               }
                             />
-                            <Route
-                              path="/paystack-test"
-                              element={
-                                <LazyWrapper>
-                                  <PaystackTest />
-                                </LazyWrapper>
-                              }
-                            />
-                            <Route
-                              path="/deep-clean"
-                              element={
-                                <LazyWrapper>
-                                  <DeepClean />
-                                </LazyWrapper>
-                              }
-                            />
+
                             <Route
                               path="/my-orders"
                               element={
