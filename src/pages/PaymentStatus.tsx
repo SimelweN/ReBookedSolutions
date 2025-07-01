@@ -80,9 +80,17 @@ const PaymentStatus: React.FC = () => {
         orderIdOrRef,
       );
 
+      console.log("🔍 Order lookup:", {
+        userEmail: user.email,
+        orderIdOrRef,
+        foundOrder: foundOrder ? "✅ Found" : "❌ Not found",
+      });
+
       if (foundOrder) {
         setOrder(foundOrder);
+        console.log("✅ Order loaded successfully:", foundOrder.id);
       } else {
+        console.log("❌ Order not found for user:", user.email);
         setError("Order not found or doesn't belong to your account");
       }
     } catch (error) {
