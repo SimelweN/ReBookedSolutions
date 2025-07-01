@@ -101,7 +101,21 @@ const Login = () => {
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "Login failed";
-      console.error("Login error:", error);
+
+      // Enhanced error logging
+      if (error instanceof Error) {
+        console.error("Login error:", {
+          message: error.message,
+          stack: error.stack,
+          cause: error.cause,
+        });
+      } else {
+        console.error("Login error (non-Error object):", {
+          type: typeof error,
+          value: error,
+          stringified: String(error),
+        });
+      }
 
       // Handle network errors specifically
       if (
