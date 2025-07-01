@@ -741,77 +741,17 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
               </div>
             )}
 
-          {/* Delivery Options */}
+          {/* Delivery Options Info (options will be shown in next step) */}
           {deliveryOptions.length > 0 && (
-            <div className="space-y-4">
-              <h3 className="font-medium text-lg flex items-center gap-2">
-                <Truck className="w-5 h-5" />
-                Choose Delivery Option
-              </h3>
-
-              {isLoadingQuotes && (
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Getting delivery quotes...</span>
-                </div>
-              )}
-
-              <div className="space-y-3">
-                {deliveryOptions.map((option) => (
-                  <div
-                    key={option.id}
-                    className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                      selectedDeliveryOption?.id === option.id
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
-                    onClick={() => setSelectedDeliveryOption(option)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`w-4 h-4 rounded-full border-2 ${
-                            selectedDeliveryOption?.id === option.id
-                              ? "border-blue-500 bg-blue-500"
-                              : "border-gray-300"
-                          }`}
-                        >
-                          {selectedDeliveryOption?.id === option.id && (
-                            <div className="w-2 h-2 bg-white rounded-full m-0.5" />
-                          )}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-medium">
-                              {option.service_name}
-                            </h4>
-                            <Badge variant="outline" className="text-xs">
-                              {option.provider === "courier-guy"
-                                ? "🚚 Courier Guy"
-                                : "🏃‍♂️ Fastway"}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-gray-600">
-                            {option.description}
-                          </p>
-                          <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-3 h-3" />
-                              {option.estimated_days}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-xl font-bold text-green-600">
-                          R{(option.price || 0).toFixed(2)}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <Alert className="border-blue-200 bg-blue-50">
+              <Truck className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-blue-800">
+                <strong>Great!</strong> We found {deliveryOptions.length}{" "}
+                delivery option{deliveryOptions.length !== 1 ? "s" : ""} for
+                your address. You'll choose your preferred delivery method in
+                the next step.
+              </AlertDescription>
+            </Alert>
           )}
 
           <Alert>
