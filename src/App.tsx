@@ -30,6 +30,7 @@ import { initPerformanceOptimizations } from "./utils/performanceOptimizer";
 import { initNetworkErrorHandler } from "./utils/networkErrorHandler";
 import { initViteErrorHandler } from "./utils/viteErrorHandler";
 import EmergencyBypass from "./components/EmergencyBypass";
+import NetworkErrorBoundary from "./components/NetworkErrorBoundary";
 import "./App.css";
 
 // Initialize debug utilities in development only (limited)
