@@ -700,6 +700,19 @@ export class PaystackPaymentService {
         updateData.paid_at = paymentData.paid_at;
       }
 
+      // If status is "paid", implement payment holding mechanism
+      if (status === "paid") {
+        const collectionDeadline = new Date(Date.now() + 48 * 60 * 60 * 1000); // 48 hours from now
+        updateData.collection_deadline = collectionDeadline.toISOString();
+        updateData.payment_held = true; // Flag to indicate payment is held pending collection
+        updateData.seller_notified_at = new Date().toISOString(); // Track when seller was notified
+
+        console.log(
+          "💰 Payment held until courier collection. Deadline:",
+          collectionDeadline.toLocaleString(),
+        );
+      }
+
       const { error } = await supabase
         .from("orders")
         .update(updateData)
