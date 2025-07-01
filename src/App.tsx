@@ -16,23 +16,11 @@ import ScrollToTop from "./components/ScrollToTop";
 import LoadingSpinner from "./components/LoadingSpinner";
 import PerformanceMetrics from "./components/PerformanceMetrics";
 import ConfigurationChecker from "./components/ConfigurationChecker";
-import { debugConnection } from "./utils/debugConnection";
-import { validateApiKey } from "./utils/validateApiKey";
-import { DatabaseSetup } from "./utils/databaseSetup";
-
-import {
-  checkDatabaseStatus,
-  logDatabaseStatus,
-} from "./utils/databaseConnectivityHelper";
 import { preloadCriticalRoutes } from "./utils/routePreloader";
-import { reportReactImportStatus } from "./utils/reactImportValidator";
 import { initPerformanceOptimizations } from "./utils/performanceOptimizer";
 import { initNetworkErrorHandler } from "./utils/networkErrorHandler";
 import { initViteErrorHandler } from "./utils/viteErrorHandler";
-import EmergencyBypass from "./components/EmergencyBypass";
 import NetworkErrorBoundary from "./components/NetworkErrorBoundary";
-import "./utils/basicOrdersTest"; // Test orders table on load
-import "./utils/notificationFix"; // Notification debugging utilities
 import "./App.css";
 
 // Initialize debug utilities in development only (limited)
