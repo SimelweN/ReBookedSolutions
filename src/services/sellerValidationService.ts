@@ -53,18 +53,18 @@ export class SellerValidationService {
 
       // Check banking setup (subaccount_code) requirements
       try {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("subaccount_code")
-          .eq("id", userId)
+        const { data: bankingDetails } = await supabase
+          .from("banking_details")
+          .select("paystack_subaccount_code")
+          .eq("user_id", userId)
           .maybeSingle();
 
         // Subaccount code is required for receiving payments
-        hasBankingDetails = !!profile?.subaccount_code?.trim();
+        hasBankingDetails = !!bankingDetails?.paystack_subaccount_code?.trim();
 
         if (!hasBankingDetails) {
           missingRequirements.push(
-            "Banking setup is required to receive payments. Complete your banking details via our secure banking portal.",
+            "Banking setup is required to receive payments. Complete your banking details and Paystack subaccount setup via our secure banking portal.",
           );
         }
       } catch (error) {
