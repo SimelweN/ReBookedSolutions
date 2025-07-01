@@ -102,13 +102,13 @@ export class SellerValidationService {
    */
   static async hasBankingDetails(userId: string): Promise<boolean> {
     try {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("subaccount_code")
-        .eq("id", userId)
+      const { data: bankingDetails } = await supabase
+        .from("banking_details")
+        .select("paystack_subaccount_code")
+        .eq("user_id", userId)
         .maybeSingle();
 
-      return !!profile?.subaccount_code?.trim();
+      return !!bankingDetails?.paystack_subaccount_code?.trim();
     } catch (error) {
       console.error("Error checking banking setup:", error);
       return false;
