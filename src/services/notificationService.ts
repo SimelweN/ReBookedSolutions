@@ -344,9 +344,11 @@ export const markMultipleAsRead = async (
   if (notificationIds.length === 0) return;
 
   try {
-    const { error } = await supabase
+    console.log("📖 Marking notifications as read:", notificationIds);
+
+    const { error, count } = await supabase
       .from("notifications")
-      .update({ read: true })
+      .update({ read: true }, { count: "exact" })
       .in("id", notificationIds);
 
     if (error) {
@@ -365,6 +367,7 @@ export const markMultipleAsRead = async (
       throw new Error(`Failed to mark notifications as read: ${error.message}`);
     }
 
+    console.log(`✅ Successfully marked ${count} notifications as read`);
     notificationCache.clear();
   } catch (error) {
     console.error("Error in markMultipleAsRead:", error);
