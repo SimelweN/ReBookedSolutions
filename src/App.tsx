@@ -287,7 +287,7 @@ function App() {
                             path="/qa"
                             element={
                               <LazyWrapper>
-                                <EnhancedQADashboard />
+                                <TestQADashboard />
                               </LazyWrapper>
                             }
                           />
