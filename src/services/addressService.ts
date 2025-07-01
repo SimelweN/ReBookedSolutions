@@ -56,7 +56,7 @@ export const getUserAddresses = async (userId: string) => {
       .from("profiles")
       .select("pickup_address, shipping_address, addresses_same")
       .eq("id", userId)
-      .single();
+      .maybeSingle(); // Use maybeSingle() instead of single() to handle no rows gracefully
 
     if (error) {
       safeLogError("Error fetching addresses", error);
@@ -65,7 +65,14 @@ export const getUserAddresses = async (userId: string) => {
       );
     }
 
-    return data;
+    // Return default structure if no profile data exists
+    return (
+      data || {
+        pickup_address: null,
+        shipping_address: null,
+        addresses_same: false,
+      }
+    );
   } catch (error) {
     safeLogError("Error loading addresses", error, { userId });
     const errorMessage = error instanceof Error ? error.message : String(error);
