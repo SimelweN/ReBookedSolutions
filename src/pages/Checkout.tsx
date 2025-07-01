@@ -316,16 +316,16 @@ const Checkout: React.FC = () => {
                     <div className="bg-gray-50 p-4 rounded-lg space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>Books ({items.length} items):</span>
-                        <span>R{(bookTotal / 100).toFixed(2)}</span>
+                        <span>R{bookTotal.toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span>Delivery:</span>
-                        <span>R{(deliveryFee / 100).toFixed(2)}</span>
+                        <span>R{deliveryFee.toFixed(2)}</span>
                       </div>
                       <Separator />
                       <div className="flex justify-between font-bold">
                         <span>Total:</span>
-                        <span>R{(totalAmount / 100).toFixed(2)}</span>
+                        <span>R{totalAmount.toFixed(2)}</span>
                       </div>
                     </div>
 
