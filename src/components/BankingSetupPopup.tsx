@@ -56,21 +56,12 @@ const BankingSetupPopup = ({
       console.log("Banking status query result:", { subaccountData, error });
 
       if (error) {
-        console.error("Error checking banking status:", {
-          message: error.message,
-          code: error.code,
-          details: error.details,
-          hint: error.hint,
-        });
+        const { shouldFallback } = handleBankingQueryError(
+          "BankingSetupPopup - checking banking status",
+          error,
+        );
 
-        // Handle column missing error gracefully
-        if (
-          error.message?.includes("column") &&
-          error.message?.includes("user_id")
-        ) {
-          console.warn(
-            "Banking subaccounts table/column missing - skipping banking check",
-          );
+        if (shouldFallback) {
           return;
         }
 
