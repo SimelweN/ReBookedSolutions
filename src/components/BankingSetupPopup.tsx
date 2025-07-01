@@ -53,7 +53,11 @@ const BankingSetupPopup = ({
         .eq("user_id", user.id)
         .maybeSingle();
 
-      console.log("Banking status query result:", { subaccountData, error });
+      console.log("Banking status query result:", {
+        subaccountData,
+        hasError: !!error,
+        errorMessage: error?.message || "No error",
+      });
 
       if (error) {
         const { shouldFallback } = handleBankingQueryError(
