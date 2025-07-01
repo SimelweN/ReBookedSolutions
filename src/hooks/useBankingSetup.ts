@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { handleBankingQueryError } from "@/utils/bankingErrorHandler";
 
 export const useBankingSetup = () => {
   const { user } = useAuth();
