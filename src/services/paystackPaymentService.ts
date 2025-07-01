@@ -766,24 +766,25 @@ export class PaystackPaymentService {
       // If payment is successful, automatically assign courier
       if (status === "paid") {
         try {
-          // Get the order details to extract courier information
+          // Get the order details to extract courier information from metadata
           const { data: order, error: orderError } = await supabase
             .from("orders")
-            .select("id, courier_provider, courier_service, delivery_quote")
+            .select("id, metadata")
             .eq("paystack_ref", reference)
             .single();
 
-          if (!orderError && order) {
+          if (!orderError && order && order.metadata) {
+            const metadata = order.metadata as any;
             // Only assign courier if one was selected during checkout
-            if (order.courier_provider && order.courier_service) {
+            if (metadata.courier_provider && metadata.courier_service) {
               console.log("🚚 Auto-assigning courier after payment...");
 
               const courierAssigned =
                 await CourierAssignmentService.assignCourierToOrder(
                   order.id,
-                  order.courier_provider,
-                  order.courier_service,
-                  order.delivery_quote,
+                  metadata.courier_provider,
+                  metadata.courier_service,
+                  metadata.delivery_quote,
                 );
 
               if (courierAssigned) {
