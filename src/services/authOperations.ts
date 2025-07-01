@@ -56,10 +56,15 @@ const testNetworkConnectivity = async (): Promise<void> => {
         method: "GET",
         signal: controller.signal,
         mode: "no-cors",
+        cache: "no-cache",
       });
 
       clearTimeout(timeoutId);
     } catch (fallbackError) {
+      console.warn("🌐 Both connectivity tests failed:", {
+        error,
+        fallbackError,
+      });
       throw new Error(
         "Cannot reach internet servers. Please check your network connection and try again.",
       );
