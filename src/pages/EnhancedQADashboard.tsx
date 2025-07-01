@@ -50,6 +50,11 @@ const EnhancedQADashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
 
+  console.log("🎯 EnhancedQADashboard rendering:", {
+    user: !!user,
+    profile: !!profile,
+  });
+
   const [currentRole, setCurrentRole] = useState<"buyer" | "seller" | "admin">(
     "buyer",
   );
