@@ -701,7 +701,7 @@ export class PaystackPaymentService {
         updateData.paid_at = paymentData.paid_at;
       }
 
-      // If status is "paid", implement payment holding mechanism
+      // If status is "paid", implement payment holding and courier assignment
       if (status === "paid") {
         const collectionDeadline = new Date(Date.now() + 48 * 60 * 60 * 1000); // 48 hours from now
         updateData.collection_deadline = collectionDeadline.toISOString();
