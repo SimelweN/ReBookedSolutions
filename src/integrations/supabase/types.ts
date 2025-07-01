@@ -81,6 +81,59 @@ export type Database = {
         };
         Relationships: [];
       };
+      banking_subaccounts: {
+        Row: {
+          id: string;
+          business_name: string;
+          email: string;
+          bank_name: string;
+          bank_code: string;
+          account_number: string;
+          subaccount_code: string | null;
+          paystack_response: Json | null;
+          status: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+          user_id: string;
+        };
+        Insert: {
+          id?: string;
+          business_name: string;
+          email: string;
+          bank_name: string;
+          bank_code: string;
+          account_number: string;
+          subaccount_code?: string | null;
+          paystack_response?: Json | null;
+          status?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+          user_id: string;
+        };
+        Update: {
+          id?: string;
+          business_name?: string;
+          email?: string;
+          bank_name?: string;
+          bank_code?: string;
+          account_number?: string;
+          subaccount_code?: string | null;
+          paystack_response?: Json | null;
+          status?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "banking_subaccounts_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       books: {
         Row: {
           author: string;
