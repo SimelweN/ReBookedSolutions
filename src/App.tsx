@@ -282,7 +282,14 @@ function App() {
                             path="/user-profile"
                             element={<UserProfile />}
                           />
-                          <Route path="/qa" element={<SimpleQADashboard />} />
+                          <Route
+                            path="/qa"
+                            element={
+                              <LazyWrapper>
+                                <EnhancedQADashboard />
+                              </LazyWrapper>
+                            }
+                          />
                           <Route
                             path="/books"
                             element={
