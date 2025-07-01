@@ -229,9 +229,19 @@ export const getCommitPendingBooks = async (): Promise<any[]> => {
     );
 
     if (error) {
+      // Enhanced error logging for debugging
+      console.error("[CommitService] Raw error object:", error);
+      console.error("[CommitService] Error message:", error.message);
+      console.error("[CommitService] Error code:", error.code);
+      console.error("[CommitService] Error details:", error.details);
+      console.error("[CommitService] Error hint:", error.hint);
+
       logCommitError("Error fetching pending books", error, {
         userId: user.id,
         query: "books table, seller_id + available + sold filters",
+        errorMessage: error.message,
+        errorCode: error.code,
+        errorDetails: error.details,
       });
       // Return empty array instead of throwing to prevent UI crashes
       return [];
