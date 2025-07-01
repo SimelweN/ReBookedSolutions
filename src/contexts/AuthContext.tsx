@@ -232,8 +232,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                 const lastWelcomeKey = `last_welcome_${session.user.id}`;
                 const lastWelcome = localStorage.getItem(lastWelcomeKey);
 
-                // Only show welcome notification once per day
-                if (lastWelcome !== today) {
+                // Also check session storage to prevent multiple notifications in the same session
+                const sessionWelcomeKey = `session_welcome_${session.user.id}`;
+                const hasSessionWelcome =
+                  sessionStorage.getItem(sessionWelcomeKey);
+
+                // Only show welcome notification once per day AND once per session
+                if (lastWelcome !== today && !hasSessionWelcome) {
                   // Set lock immediately
                   sessionStorage.setItem(lockKey, now.toString());
                   sessionStorage.setItem(sessionKey, now.toString());
