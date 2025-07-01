@@ -232,7 +232,7 @@ const DeepCleanDashboard = () => {
 
         {/* Main Tools */}
         <Tabs defaultValue="health" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="health" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
               <span className="hidden sm:inline">Health Check</span>
@@ -248,6 +248,13 @@ const DeepCleanDashboard = () => {
             <TabsTrigger value="database" className="flex items-center gap-2">
               <Database className="w-4 h-4" />
               <span className="hidden sm:inline">Database</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="table-setup"
+              className="flex items-center gap-2"
+            >
+              <Settings className="w-4 h-4" />
+              <span className="hidden sm:inline">Table Setup</span>
             </TabsTrigger>
           </TabsList>
 
@@ -304,6 +311,21 @@ const DeepCleanDashboard = () => {
                 like orders.
               </p>
               <DatabaseMigrationChecker />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="table-setup" className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold mb-4 flex items-center space-x-2">
+                <Settings className="w-5 h-5" />
+                <span>Database Table Setup</span>
+              </h2>
+              <p className="text-gray-600 mb-4">
+                Create missing database tables including the orders table needed
+                for payments. This will fix "public.orders does not exist"
+                errors.
+              </p>
+              <DatabaseTableSetup />
             </div>
           </TabsContent>
         </Tabs>
