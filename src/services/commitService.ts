@@ -237,7 +237,8 @@ export const getCommitPendingBooks = async (): Promise<any[]> => {
 
       logCommitError("Error fetching pending books", error, {
         userId: user.id,
-        query: "books table, seller_id + available + sold filters",
+        query:
+          "books table, seller_id + sold filters (removed non-existent available column)",
         errorMessage: error.message,
         errorCode: error.code,
         errorDetails: error.details,
