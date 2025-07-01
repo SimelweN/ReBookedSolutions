@@ -630,16 +630,7 @@ function App() {
                               </ProtectedRoute>
                             }
                           />
-                          <Route
-                            path="/activity"
-                            element={
-                              <ProtectedRoute>
-                                <LazyWrapper>
-                                  <ActivityLog />
-                                </LazyWrapper>
-                              </ProtectedRoute>
-                            }
-                          />
+
                           <Route
                             path="/report"
                             element={
