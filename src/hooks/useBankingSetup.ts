@@ -20,22 +20,6 @@ export const useBankingSetup = () => {
       setIsLoading(true);
       console.log("Checking banking setup for user:", user.id);
 
-      // First check if the table exists by querying the schema
-      const { data: tableCheck } = await supabase
-        .from("information_schema.tables")
-        .select("table_name")
-        .eq("table_schema", "public")
-        .eq("table_name", "banking_subaccounts")
-        .maybeSingle();
-
-      console.log("Table existence check:", tableCheck);
-
-      if (!tableCheck) {
-        console.warn("banking_subaccounts table does not exist");
-        setHasBankingSetup(false);
-        return false;
-      }
-
       const { data: subaccountData, error } = await supabase
         .from("banking_subaccounts")
         .select("subaccount_code")
@@ -51,6 +35,19 @@ export const useBankingSetup = () => {
           details: error.details,
           hint: error.hint,
         });
+
+        // If the error is about column not existing, fall back to false
+        if (
+          error.message?.includes("column") &&
+          error.message?.includes("user_id")
+        ) {
+          console.warn(
+            "banking_subaccounts table or user_id column missing - falling back to no banking setup",
+          );
+          setHasBankingSetup(false);
+          return false;
+        }
+
         setHasBankingSetup(false);
         return false;
       }
