@@ -50,7 +50,7 @@ const BankingSetupPopup = ({
         .from("profiles")
         .select("subaccount_code")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
       console.log("Banking status query result:", { profile, error });
 

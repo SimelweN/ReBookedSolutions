@@ -23,7 +23,7 @@ export const useBankingSetup = () => {
         .from("profiles")
         .select("subaccount_code")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
       console.log("Banking setup query result:", { profile, error });
 

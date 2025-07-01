@@ -49,7 +49,7 @@ const ModernBankingSection = () => {
         .from("profiles")
         .select("subaccount_code")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         // Check if error is due to missing column
