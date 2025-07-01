@@ -423,6 +423,16 @@ function App() {
                               </LazyWrapper>
                             }
                           />
+                          <Route
+                            path="/activity"
+                            element={
+                              <ProtectedRoute>
+                                <LazyWrapper>
+                                  <ActivityLog />
+                                </LazyWrapper>
+                              </ProtectedRoute>
+                            }
+                          />
 
                           {/* Shopping and Cart Routes */}
                           <Route
