@@ -7,49 +7,17 @@ import SEO from "@/components/SEO";
 const CheckoutSuccess: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [orderDetails, setOrderDetails] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   const { orderId, paymentReference, totalAmount, items } =
     location.state || {};
 
   useEffect(() => {
-    // Redirect if no order data
-    if (!orderId || !paymentReference) {
+    // Redirect if no payment reference
+    if (!paymentReference) {
       navigate("/", { replace: true });
       return;
     }
-
-    // Fetch order details
-    const fetchOrderDetails = async () => {
-      try {
-        const { data: order, error } = await supabase
-          .from("orders")
-          .select(
-            `
-            *,
-            buyer:buyer_id(name, email),
-            seller:seller_id(name, email),
-            book:book_id(title, author, image_url)
-          `,
-          )
-          .eq("id", orderId)
-          .single();
-
-        if (error) {
-          console.error("Error fetching order:", error);
-        } else {
-          setOrderDetails(order);
-        }
-      } catch (error) {
-        console.error("Error fetching order details:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchOrderDetails();
-  }, [orderId, paymentReference, navigate]);
+  }, [paymentReference, navigate]);
 
   if (!orderId) {
     return null;
