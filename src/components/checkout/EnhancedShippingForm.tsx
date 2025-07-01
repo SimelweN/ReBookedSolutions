@@ -20,7 +20,10 @@ import { MapPin, Loader2, Truck, Clock, DollarSign, Edit2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
-import RealCourierPricing from "@/services/realCourierPricing";
+import {
+  getEnhancedDeliveryQuotes,
+  validateSellersHaveAddresses,
+} from "@/services/enhancedDeliveryService";
 
 const shippingSchema = z.object({
   recipient_name: z.string().min(1, "Recipient name is required"),
