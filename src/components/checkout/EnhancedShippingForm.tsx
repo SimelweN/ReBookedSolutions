@@ -278,9 +278,9 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
         return;
       }
 
-      // Convert to delivery options format
-      const options: DeliveryOption[] = allQuotes.map((quote) => ({
-        id: quote.id,
+      // Convert to delivery options format with safety checks
+      const options: DeliveryOption[] = allQuotes.map((quote, index) => ({
+        id: quote.id || `option_${Date.now()}_${index}`,
         provider: quote.provider,
         service_name: quote.service_name,
         price: quote.price,
