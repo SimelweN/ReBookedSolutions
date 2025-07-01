@@ -1,20 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-  CheckCircle,
-  Clock,
-  Truck,
-  Package,
-  ArrowRight,
-  Download,
-  MessageCircle,
-} from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import PostPaymentOrderSummary from "@/components/order/PostPaymentOrderSummary";
+import SEO from "@/components/SEO";
 
 const CheckoutSuccess: React.FC = () => {
   const location = useLocation();
