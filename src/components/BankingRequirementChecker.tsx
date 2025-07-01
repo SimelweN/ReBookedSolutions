@@ -65,21 +65,21 @@ const BankingRequirementChecker = () => {
           message: "User profile found",
         });
 
-        // Check 2: Subaccount code exists (from banking_details table)
+        // Check 2: Subaccount code exists (from banking_subaccounts table)
         try {
-          const { data: bankingDetails, error: bankingError } = await supabase
-            .from("banking_details")
-            .select("paystack_subaccount_code")
-            .eq("user_id", user.id)
-            .single();
+          const { data: subaccountData, error: subaccountError } =
+            await supabase
+              .from("banking_subaccounts")
+              .select("subaccount_code")
+              .eq("user_id", user.id)
+              .single();
 
-          const hasSubaccount =
-            !!bankingDetails?.paystack_subaccount_code?.trim();
+          const hasSubaccount = !!subaccountData?.subaccount_code?.trim();
           results.push({
             name: "Subaccount Code",
             status: hasSubaccount ? "pass" : "fail",
             message: hasSubaccount
-              ? `Subaccount code: ${bankingDetails.paystack_subaccount_code}`
+              ? `Subaccount code: ${subaccountData.subaccount_code}`
               : "No subaccount code found",
             details: hasSubaccount
               ? "User can create listings and receive payments"
@@ -94,23 +94,23 @@ const BankingRequirementChecker = () => {
           });
         }
 
-        // Check 3: Database column exists
+        // Check 3: Database table exists
         try {
           const { data: schemaCheck } = await supabase
-            .from("banking_details")
-            .select("paystack_subaccount_code")
+            .from("banking_subaccounts")
+            .select("subaccount_code")
             .limit(1);
 
           results.push({
             name: "Database Schema",
             status: "pass",
-            message: "paystack_subaccount_code column exists",
+            message: "banking_subaccounts table exists",
           });
         } catch (schemaError: any) {
           results.push({
             name: "Database Schema",
             status: "fail",
-            message: "paystack_subaccount_code column missing",
+            message: "banking_subaccounts table missing",
             details: schemaError.message,
           });
         }

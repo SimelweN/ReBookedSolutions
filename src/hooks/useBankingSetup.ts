@@ -19,13 +19,13 @@ export const useBankingSetup = () => {
     try {
       setIsLoading(true);
       console.log("Checking banking setup for user:", user.id);
-      const { data: bankingDetails, error } = await supabase
-        .from("banking_details")
-        .select("paystack_subaccount_code")
+      const { data: subaccountData, error } = await supabase
+        .from("banking_subaccounts")
+        .select("subaccount_code")
         .eq("user_id", user.id)
         .maybeSingle();
 
-      console.log("Banking setup query result:", { bankingDetails, error });
+      console.log("Banking setup query result:", { subaccountData, error });
 
       if (error) {
         console.error("Error checking banking setup:", error.message || error);
@@ -33,7 +33,7 @@ export const useBankingSetup = () => {
         return false;
       }
 
-      const hasSetup = !!bankingDetails?.paystack_subaccount_code?.trim();
+      const hasSetup = !!subaccountData?.subaccount_code?.trim();
       setHasBankingSetup(hasSetup);
       return hasSetup;
     } catch (error) {

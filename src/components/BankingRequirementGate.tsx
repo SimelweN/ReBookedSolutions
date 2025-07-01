@@ -45,21 +45,21 @@ const BankingRequirementGate = ({
       setIsLoading(true);
       console.log("Checking subaccount code for user:", user.id);
 
-      const { data: bankingDetails, error } = await supabase
-        .from("banking_details")
-        .select("paystack_subaccount_code")
+      const { data: subaccountData, error } = await supabase
+        .from("banking_subaccounts")
+        .select("subaccount_code")
         .eq("user_id", user.id)
         .single();
 
-      console.log("Banking details query result:", { bankingDetails, error });
+      console.log("Subaccount query result:", { subaccountData, error });
 
       if (error) {
-        console.error("Error fetching banking details:", error);
+        console.error("Error fetching subaccount:", error);
         setHasSubaccountCode(false);
         return;
       }
 
-      const hasValidCode = !!bankingDetails?.paystack_subaccount_code?.trim();
+      const hasValidCode = !!subaccountData?.subaccount_code?.trim();
       setHasSubaccountCode(hasValidCode);
 
       console.log("Has valid subaccount code:", hasValidCode);

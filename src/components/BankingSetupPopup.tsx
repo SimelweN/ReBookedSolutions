@@ -46,21 +46,20 @@ const BankingSetupPopup = ({
     setIsCheckingBanking(true);
     try {
       console.log("Checking banking status for user:", user.id);
-      const { data: bankingDetails, error } = await supabase
-        .from("banking_details")
-        .select("paystack_subaccount_code")
+      const { data: subaccountData, error } = await supabase
+        .from("banking_subaccounts")
+        .select("subaccount_code")
         .eq("user_id", user.id)
         .maybeSingle();
 
-      console.log("Banking status query result:", { bankingDetails, error });
+      console.log("Banking status query result:", { subaccountData, error });
 
       if (error) {
         console.error("Error checking banking status:", error.message || error);
         return;
       }
 
-      const hasValidSubaccount =
-        !!bankingDetails?.paystack_subaccount_code?.trim();
+      const hasValidSubaccount = !!subaccountData?.subaccount_code?.trim();
       setHasBankingDetails(hasValidSubaccount);
       setLastChecked(new Date());
 

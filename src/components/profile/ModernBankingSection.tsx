@@ -45,9 +45,9 @@ const ModernBankingSection = () => {
     setBankingStatus((prev) => ({ ...prev, isLoading: true }));
 
     try {
-      const { data: bankingDetails, error } = await supabase
-        .from("banking_details")
-        .select("paystack_subaccount_code")
+      const { data: subaccountData, error } = await supabase
+        .from("banking_subaccounts")
+        .select("subaccount_code")
         .eq("user_id", user.id)
         .maybeSingle();
 
@@ -62,11 +62,10 @@ const ModernBankingSection = () => {
         return;
       }
 
-      const hasValidSubaccount =
-        !!bankingDetails?.paystack_subaccount_code?.trim();
+      const hasValidSubaccount = !!subaccountData?.subaccount_code?.trim();
       setBankingStatus({
         hasSubaccount: hasValidSubaccount,
-        subaccountCode: bankingDetails?.paystack_subaccount_code || null,
+        subaccountCode: subaccountData?.subaccount_code || null,
         isLoading: false,
         lastChecked: new Date(),
       });
