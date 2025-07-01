@@ -58,12 +58,21 @@ export const getSellerAddress = async (
         .single();
 
       if (fallbackError) {
-        console.error(
+        console.warn(
           "No addresses found for seller:",
           sellerId,
-          fallbackError,
+          "- seller needs to add pickup/shipping address",
         );
-        return null;
+
+        // Return a default fallback address or indicate seller needs to set up address
+        return {
+          street: "Address not set",
+          city: "Unknown",
+          province: "Unknown",
+          postal_code: "0000",
+          contact_name: "Seller",
+          contact_phone: "",
+        };
       }
 
       addresses = fallbackAddress;
