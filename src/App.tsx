@@ -99,6 +99,11 @@ const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
 const PaymentCallback = React.lazy(() => import("./pages/PaymentCallback"));
 
 const UserOrders = React.lazy(() => import("./pages/UserOrders"));
+const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
+const EnhancedQADashboard = React.lazy(
+  () => import("./pages/EnhancedQADashboard"),
+);
+const TestQADashboard = React.lazy(() => import("./pages/TestQADashboard"));
 
 // Create query client with optimized settings
 const queryClient = new QueryClient({
@@ -278,7 +283,14 @@ function App() {
                             path="/user-profile"
                             element={<UserProfile />}
                           />
-                          <Route path="/qa" element={<SimpleQADashboard />} />
+                          <Route
+                            path="/qa"
+                            element={
+                              <LazyWrapper>
+                                <TestQADashboard />
+                              </LazyWrapper>
+                            }
+                          />
                           <Route
                             path="/books"
                             element={
@@ -422,6 +434,16 @@ function App() {
                               </LazyWrapper>
                             }
                           />
+                          <Route
+                            path="/activity"
+                            element={
+                              <ProtectedRoute>
+                                <LazyWrapper>
+                                  <ActivityLog />
+                                </LazyWrapper>
+                              </ProtectedRoute>
+                            }
+                          />
 
                           {/* Shopping and Cart Routes */}
                           <Route
@@ -523,7 +545,14 @@ function App() {
                             path="/user-profile"
                             element={<UserProfile />}
                           />
-                          <Route path="/qa" element={<SimpleQADashboard />} />
+                          <Route
+                            path="/qa"
+                            element={
+                              <LazyWrapper>
+                                <TestQADashboard />
+                              </LazyWrapper>
+                            }
+                          />
                           <Route
                             path="/books"
                             element={
@@ -538,6 +567,16 @@ function App() {
                               <ProtectedRoute>
                                 <LazyWrapper>
                                   <QADashboard />
+                                </LazyWrapper>
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/qa-advanced"
+                            element={
+                              <ProtectedRoute>
+                                <LazyWrapper>
+                                  <EnhancedQADashboard />
                                 </LazyWrapper>
                               </ProtectedRoute>
                             }

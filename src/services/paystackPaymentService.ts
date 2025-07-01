@@ -8,6 +8,7 @@ import { PAYSTACK_CONFIG, PAYSTACK_BANK_CODES } from "@/config/paystack";
 import { BankingDetails } from "@/types/banking";
 import { toast } from "sonner";
 import { PaystackLibraryTest } from "@/utils/paystackLibraryTest";
+import { CourierAssignmentService } from "./courierAssignmentService";
 
 export interface PaymentInitialization {
   email: string;
@@ -367,6 +368,10 @@ export class PaystackPaymentService {
       if (data?.status === "success") {
         // Update order status in database
         await this.updateOrderStatus(reference, "paid", data);
+
+        // Simulate real transaction behavior - mark books as sold
+        await this.processPostPaymentActions(reference, data);
+
         toast.success("Payment verified successfully!");
       } else if (data?.status === "failed") {
         toast.error("Payment was not successful");
@@ -547,18 +552,27 @@ export class PaystackPaymentService {
         items_count: orderData.items.length,
       });
 
-      // Prepare the order data for insertion
+      // Prepare the order data for insertion - using only essential fields
       const insertData = {
         buyer_email: orderData.buyer_email,
         seller_id: orderData.seller_id,
         amount: orderData.amount,
         paystack_ref: orderData.paystack_ref,
-        items: orderData.items,
         status: "pending" as const,
         shipping_address: orderData.shipping_address || {},
-        metadata: orderData.metadata || {},
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        metadata: {
+          ...orderData.metadata,
+          // Store additional data in metadata for now
+          book_id: orderData.book_id,
+          book_title: orderData.book_title,
+          book_price: orderData.book_price,
+          delivery_fee: orderData.delivery_fee,
+          seller_amount: orderData.seller_amount,
+          courier_provider: orderData.courier_provider,
+          courier_service: orderData.courier_service,
+          delivery_quote: orderData.delivery_quote,
+          seller_subaccount_code: orderData.seller_subaccount_code,
+        },
       };
 
       console.log("📤 Inserting order data:", insertData);
@@ -700,7 +714,7 @@ export class PaystackPaymentService {
         updateData.paid_at = paymentData.paid_at;
       }
 
-      // If status is "paid", implement payment holding mechanism
+      // If status is "paid", implement payment holding and courier assignment
       if (status === "paid") {
         const collectionDeadline = new Date(Date.now() + 48 * 60 * 60 * 1000); // 48 hours from now
         updateData.collection_deadline = collectionDeadline.toISOString();
@@ -752,6 +766,53 @@ export class PaystackPaymentService {
         reference,
         status,
       });
+
+      // If payment is successful, automatically assign courier
+      if (status === "paid") {
+        try {
+          // Get the order details to extract courier information from metadata
+          const { data: order, error: orderError } = await supabase
+            .from("orders")
+            .select("id, metadata")
+            .eq("paystack_ref", reference)
+            .single();
+
+          if (!orderError && order && order.metadata) {
+            const metadata = order.metadata as any;
+            // Only assign courier if one was selected during checkout
+            if (metadata.courier_provider && metadata.courier_service) {
+              console.log("🚚 Auto-assigning courier after payment...");
+
+              const courierAssigned =
+                await CourierAssignmentService.assignCourierToOrder(
+                  order.id,
+                  metadata.courier_provider,
+                  metadata.courier_service,
+                  metadata.delivery_quote,
+                );
+
+              if (courierAssigned) {
+                console.log("✅ Courier automatically assigned after payment");
+                toast.success(
+                  "Payment successful! Courier has been notified for pickup.",
+                );
+              } else {
+                console.warn("⚠️ Failed to assign courier automatically");
+                toast.warning(
+                  "Payment successful! Please contact support for delivery arrangement.",
+                );
+              }
+            } else {
+              console.log(
+                "ℹ️ No courier selected - manual arrangement required",
+              );
+            }
+          }
+        } catch (courierError) {
+          console.error("Error assigning courier after payment:", courierError);
+          // Don't fail the entire payment process if courier assignment fails
+        }
+      }
     } catch (error) {
       console.error("Update order status error:", error);
 
@@ -764,6 +825,91 @@ export class PaystackPaymentService {
       }
 
       throw error;
+    }
+  }
+
+  /**
+   * Process post-payment actions to simulate real transaction behavior
+   */
+  static async processPostPaymentActions(
+    reference: string,
+    paymentData: any,
+  ): Promise<void> {
+    try {
+      console.log("🔄 Processing post-payment actions for:", reference);
+
+      // Get order details
+      const { data: order, error: orderError } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("paystack_ref", reference)
+        .single();
+
+      if (orderError || !order) {
+        console.warn(
+          "Could not find order for post-payment processing:",
+          reference,
+        );
+        return;
+      }
+
+      // Extract book information from metadata
+      const metadata = order.metadata as any;
+      const bookId = metadata?.book_id;
+
+      if (bookId) {
+        // Mark book as sold to simulate real transaction
+        console.log("📚 Marking book as sold:", bookId);
+
+        const { error: bookUpdateError } = await supabase
+          .from("books")
+          .update({
+            sold: true,
+            available: false,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", bookId);
+
+        if (bookUpdateError) {
+          console.error("Failed to mark book as sold:", bookUpdateError);
+        } else {
+          console.log("✅ Book marked as sold successfully");
+        }
+
+        // Create transaction record
+        try {
+          const transactionData = {
+            book_id: bookId,
+            book_title: metadata?.book_title || "Unknown Book",
+            buyer_id: order.buyer_id,
+            seller_id: order.seller_id,
+            price: metadata?.book_price || order.amount,
+            commission: Math.round(
+              (metadata?.book_price || order.amount) * 0.1,
+            ), // 10% commission
+          };
+
+          const { error: transactionError } = await supabase
+            .from("transactions")
+            .insert(transactionData);
+
+          if (transactionError) {
+            console.warn(
+              "Could not create transaction record:",
+              transactionError,
+            );
+          } else {
+            console.log("✅ Transaction record created");
+          }
+        } catch (transactionError) {
+          console.warn("Transaction record creation failed:", transactionError);
+        }
+      }
+
+      console.log("✅ Post-payment actions completed for:", reference);
+    } catch (error) {
+      console.error("Error in post-payment actions:", error);
+      // Don't throw error as this shouldn't fail the payment
     }
   }
 

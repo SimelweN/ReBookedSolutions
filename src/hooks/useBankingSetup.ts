@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  handleBankingQueryError,
+  logEnhancedError,
+} from "@/utils/bankingErrorHandler";
 
 export const useBankingSetup = () => {
   const { user } = useAuth();
@@ -19,39 +23,39 @@ export const useBankingSetup = () => {
     try {
       setIsLoading(true);
       console.log("Checking banking setup for user:", user.id);
-      const { data: profile, error } = await supabase
-        .from("profiles")
+
+      const { data: subaccountData, error } = await supabase
+        .from("banking_subaccounts")
         .select("subaccount_code")
-        .eq("id", user.id)
+        .eq("user_id", user.id)
         .maybeSingle();
 
-      console.log("Banking setup query result:", { profile, error });
+      console.log("Banking setup query result:", {
+        subaccountData,
+        hasError: !!error,
+        errorMessage: error?.message || "No error",
+      });
 
       if (error) {
-        // Check if error is due to missing column
-        if (
-          error.message?.includes("column") &&
-          error.message?.includes("does not exist")
-        ) {
-          console.warn(
-            "subaccount_code column not found - banking setup not available yet",
-          );
+        const { shouldFallback } = handleBankingQueryError(
+          "useBankingSetup",
+          error,
+        );
+
+        if (shouldFallback) {
           setHasBankingSetup(false);
           return false;
         }
-        console.error("Error checking banking setup:", error.message || error);
+
         setHasBankingSetup(false);
         return false;
       }
 
-      const hasSetup = !!profile?.subaccount_code?.trim();
+      const hasSetup = !!subaccountData?.subaccount_code?.trim();
       setHasBankingSetup(hasSetup);
       return hasSetup;
     } catch (error) {
-      console.error(
-        "Banking setup check failed:",
-        error instanceof Error ? error.message : error,
-      );
+      logEnhancedError("useBankingSetup - Banking setup check failed", error);
       setHasBankingSetup(false);
       return false;
     } finally {

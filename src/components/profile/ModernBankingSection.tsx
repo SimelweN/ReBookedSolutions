@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { handleBankingQueryError } from "@/utils/bankingErrorHandler";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -45,37 +46,41 @@ const ModernBankingSection = () => {
     setBankingStatus((prev) => ({ ...prev, isLoading: true }));
 
     try {
-      const { data: profile, error } = await supabase
-        .from("profiles")
+      const { data: subaccountData, error } = await supabase
+        .from("banking_subaccounts")
         .select("subaccount_code")
-        .eq("id", user.id)
+        .eq("user_id", user.id)
         .maybeSingle();
 
       if (error) {
-        // Check if error is due to missing column
-        if (
-          error.message?.includes("column") &&
-          error.message?.includes("does not exist")
-        ) {
-          console.warn(
-            "subaccount_code column not found - banking setup not available yet",
-          );
+        const { shouldFallback, errorMessage } = handleBankingQueryError(
+          "ModernBankingSection - checking banking status",
+          error,
+        );
+
+        if (shouldFallback) {
           setBankingStatus({
             hasSubaccount: false,
             subaccountCode: null,
             isLoading: false,
-            lastChecked: new Date(),
+            error: errorMessage || "Banking setup not available",
           });
           return;
         }
-        console.error("Error checking banking status:", error.message || error);
+
+        setBankingStatus({
+          hasSubaccount: false,
+          subaccountCode: null,
+          isLoading: false,
+          lastChecked: new Date(),
+        });
         return;
       }
 
-      const hasValidSubaccount = !!profile?.subaccount_code?.trim();
+      const hasValidSubaccount = !!subaccountData?.subaccount_code?.trim();
       setBankingStatus({
         hasSubaccount: hasValidSubaccount,
-        subaccountCode: profile?.subaccount_code || null,
+        subaccountCode: subaccountData?.subaccount_code || null,
         isLoading: false,
         lastChecked: new Date(),
       });

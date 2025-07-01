@@ -108,20 +108,20 @@ const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({
         }
       }
 
-      // Get seller's subaccount code for split payments from banking_details table
+      // Get seller's subaccount code for split payments from banking_subaccounts table
       let subaccountCode = undefined;
       if (items.length > 0 && items[0].sellerId) {
         try {
-          const { data: bankingDetails } = await supabase
-            .from("banking_details")
-            .select("paystack_subaccount_code")
+          const { data: subaccountData } = await supabase
+            .from("banking_subaccounts")
+            .select("subaccount_code")
             .eq("user_id", items[0].sellerId)
             .single();
 
-          if (bankingDetails?.paystack_subaccount_code) {
-            subaccountCode = bankingDetails.paystack_subaccount_code;
+          if (subaccountData?.subaccount_code) {
+            subaccountCode = subaccountData.subaccount_code;
             console.log(
-              "Using seller subaccount from banking_details:",
+              "Using seller subaccount from banking_subaccounts:",
               subaccountCode,
             );
           } else {
@@ -308,10 +308,7 @@ const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({
 
       {/* Commission Info */}
       <div className="text-center text-xs text-gray-500">
-        <p>
-          Platform fee: 10% • Seller receives:{" "}
-          {formatAmount(Math.round(amount * 0.9))}
-        </p>
+        <p>Secure payment powered by Paystack</p>
       </div>
     </div>
   );

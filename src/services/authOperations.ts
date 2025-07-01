@@ -27,30 +27,44 @@ const testNetworkConnectivity = async (): Promise<void> => {
     );
   }
 
+  // Skip network test in development to avoid interference
+  if (import.meta.env.DEV) {
+    console.log("🌐 Skipping network connectivity test in development");
+    return;
+  }
+
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // Reduced timeout
 
     await fetch("https://httpbin.org/get", {
       method: "GET",
       signal: controller.signal,
+      cache: "no-cache",
     });
 
     clearTimeout(timeoutId);
   } catch (error) {
+    console.warn("🌐 Primary connectivity test failed, trying fallback");
+
     // Fallback test with Google
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
 
       await fetch("https://www.google.com/favicon.ico", {
         method: "GET",
         signal: controller.signal,
         mode: "no-cors",
+        cache: "no-cache",
       });
 
       clearTimeout(timeoutId);
     } catch (fallbackError) {
+      console.warn("🌐 Both connectivity tests failed:", {
+        error,
+        fallbackError,
+      });
       throw new Error(
         "Cannot reach internet servers. Please check your network connection and try again.",
       );
@@ -297,7 +311,7 @@ export const fetchUserProfileQuick = async (
       if (profileError) {
         // Profile not found is normal for new users
         if (profileError.code === "PGRST116") {
-          console.log("ℹ️ Profile not found - will use fallback");
+          console.log("ℹ�� Profile not found - will use fallback");
           return null;
         }
 

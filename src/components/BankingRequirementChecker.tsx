@@ -65,36 +65,52 @@ const BankingRequirementChecker = () => {
           message: "User profile found",
         });
 
-        // Check 2: Subaccount code exists
-        const hasSubaccount = !!profile.subaccount_code?.trim();
-        results.push({
-          name: "Subaccount Code",
-          status: hasSubaccount ? "pass" : "fail",
-          message: hasSubaccount
-            ? `Subaccount code: ${profile.subaccount_code}`
-            : "No subaccount code found",
-          details: hasSubaccount
-            ? "User can create listings and receive payments"
-            : "User must complete banking setup before creating listings",
-        });
+        // Check 2: Subaccount code exists (from banking_subaccounts table)
+        try {
+          const { data: subaccountData, error: subaccountError } =
+            await supabase
+              .from("banking_subaccounts")
+              .select("subaccount_code")
+              .eq("user_id", user.id)
+              .single();
 
-        // Check 3: Database column exists
+          const hasSubaccount = !!subaccountData?.subaccount_code?.trim();
+          results.push({
+            name: "Subaccount Code",
+            status: hasSubaccount ? "pass" : "fail",
+            message: hasSubaccount
+              ? `Subaccount code: ${subaccountData.subaccount_code}`
+              : "No subaccount code found",
+            details: hasSubaccount
+              ? "User can create listings and receive payments"
+              : "User must complete banking setup before creating listings",
+          });
+        } catch (subaccountError: any) {
+          results.push({
+            name: "Subaccount Code",
+            status: "fail",
+            message: "Error checking subaccount code",
+            details: subaccountError.message,
+          });
+        }
+
+        // Check 3: Database table exists
         try {
           const { data: schemaCheck } = await supabase
-            .from("profiles")
+            .from("banking_subaccounts")
             .select("subaccount_code")
             .limit(1);
 
           results.push({
             name: "Database Schema",
             status: "pass",
-            message: "subaccount_code column exists",
+            message: "banking_subaccounts table exists",
           });
         } catch (schemaError: any) {
           results.push({
             name: "Database Schema",
             status: "fail",
-            message: "subaccount_code column missing",
+            message: "banking_subaccounts table missing",
             details: schemaError.message,
           });
         }

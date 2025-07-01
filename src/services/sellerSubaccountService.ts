@@ -6,22 +6,22 @@ import { supabase } from "@/integrations/supabase/client";
  */
 export class SellerSubaccountService {
   /**
-   * Get seller's subaccount code from banking_details table
+   * Get seller's subaccount code from banking_subaccounts table
    */
   static async getSellerSubaccount(sellerId: string): Promise<string | null> {
     try {
-      const { data: bankingDetails, error } = await supabase
-        .from("banking_details")
-        .select("paystack_subaccount_code")
+      const { data: subaccountData, error } = await supabase
+        .from("banking_subaccounts")
+        .select("subaccount_code")
         .eq("user_id", sellerId)
         .single();
 
       if (error) {
-        console.warn(`No banking details found for seller ${sellerId}:`, error);
+        console.warn(`No subaccount found for seller ${sellerId}:`, error);
         return null;
       }
 
-      return bankingDetails?.paystack_subaccount_code || null;
+      return subaccountData?.subaccount_code || null;
     } catch (error) {
       console.error("Error fetching seller subaccount:", error);
       return null;
@@ -35,9 +35,9 @@ export class SellerSubaccountService {
     sellerIds: string[],
   ): Promise<Record<string, string>> {
     try {
-      const { data: bankingDetails, error } = await supabase
-        .from("banking_details")
-        .select("user_id, paystack_subaccount_code")
+      const { data: subaccountData, error } = await supabase
+        .from("banking_subaccounts")
+        .select("user_id, subaccount_code")
         .in("user_id", sellerIds);
 
       if (error) {
@@ -46,9 +46,9 @@ export class SellerSubaccountService {
       }
 
       const subaccounts: Record<string, string> = {};
-      bankingDetails?.forEach((details) => {
-        if (details.paystack_subaccount_code) {
-          subaccounts[details.user_id] = details.paystack_subaccount_code;
+      subaccountData?.forEach((data) => {
+        if (data.subaccount_code) {
+          subaccounts[data.user_id] = data.subaccount_code;
         }
       });
 

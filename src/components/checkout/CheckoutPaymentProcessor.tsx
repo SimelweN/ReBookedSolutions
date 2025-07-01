@@ -67,14 +67,14 @@ const CheckoutPaymentProcessor: React.FC<CheckoutPaymentProcessorProps> = ({
         const subaccounts: Record<string, string> = {};
 
         for (const sellerId of sellerIds) {
-          const { data: bankingDetails } = await supabase
-            .from("banking_details")
-            .select("paystack_subaccount_code")
+          const { data: subaccountData } = await supabase
+            .from("banking_subaccounts")
+            .select("subaccount_code")
             .eq("user_id", sellerId)
             .single();
 
-          if (bankingDetails?.paystack_subaccount_code) {
-            subaccounts[sellerId] = bankingDetails.paystack_subaccount_code;
+          if (subaccountData?.subaccount_code) {
+            subaccounts[sellerId] = subaccountData.subaccount_code;
           }
         }
 

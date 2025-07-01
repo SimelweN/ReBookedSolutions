@@ -201,9 +201,7 @@ export class SubaccountIntegrationTest {
     console.log("\n" + "=".repeat(50));
     console.log("🎉 Subaccount Integration Tests Complete!");
     console.log("\n📋 Summary:");
-    console.log(
-      "• All services now use banking_details.paystack_subaccount_code",
-    );
+    console.log("• All services now use banking_subaccounts.subaccount_code");
     console.log("• Books are linked to sellers via books.seller_id");
     console.log("• Subaccounts are retrieved dynamically during payment");
     console.log("• Payment holds and releases work with seller subaccounts");

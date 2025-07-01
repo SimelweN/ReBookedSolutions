@@ -214,9 +214,8 @@ export const getCommitPendingBooks = async (): Promise<any[]> => {
 
     const { data: books, error } = await supabase
       .from("books")
-      .select("id, title, price, sold, available, created_at, seller_id")
+      .select("id, title, price, sold, created_at, seller_id")
       .eq("seller_id", user.id)
-      .eq("available", true)
       .eq("sold", false)
       .order("created_at", { ascending: false })
       .limit(10); // Limit to recent books
@@ -229,8 +228,20 @@ export const getCommitPendingBooks = async (): Promise<any[]> => {
     );
 
     if (error) {
+      // Enhanced error logging for debugging
+      console.error("[CommitService] Raw error object:", error);
+      console.error("[CommitService] Error message:", error.message);
+      console.error("[CommitService] Error code:", error.code);
+      console.error("[CommitService] Error details:", error.details);
+      console.error("[CommitService] Error hint:", error.hint);
+
       logCommitError("Error fetching pending books", error, {
         userId: user.id,
+        query:
+          "books table, seller_id + sold filters (removed non-existent available column)",
+        errorMessage: error.message,
+        errorCode: error.code,
+        errorDetails: error.details,
       });
       // Return empty array instead of throwing to prevent UI crashes
       return [];

@@ -97,12 +97,12 @@ const CheckoutOrderSummary: React.FC<CheckoutOrderSummaryProps> = ({
             </div>
           </div>
 
-          {/* Platform Fee Notice */}
+          {/* Payment Info */}
           <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-md">
-            <p className="font-medium mb-1">💡 How it works:</p>
-            <p>• Sellers receive 90% of the book price</p>
-            <p>• ReBooked keeps 10% platform fee</p>
-            <p>• You pay delivery fees separately</p>
+            <p className="font-medium mb-1">💡 Payment info:</p>
+            <p>• Secure payment processing by Paystack</p>
+            <p>• Books are shipped after payment confirmation</p>
+            <p>• Delivery fees are charged separately</p>
           </div>
         </CardContent>
       </Card>

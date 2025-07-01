@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  handleBankingQueryError,
+  logEnhancedError,
+} from "@/utils/bankingErrorHandler";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,26 +49,33 @@ const BankingRequirementGate = ({
       setIsLoading(true);
       console.log("Checking subaccount code for user:", user.id);
 
-      const { data: profile, error } = await supabase
-        .from("profiles")
+      const { data: subaccountData, error } = await supabase
+        .from("banking_subaccounts")
         .select("subaccount_code")
-        .eq("id", user.id)
+        .eq("user_id", user.id)
         .single();
 
-      console.log("Profile query result:", { profile, error });
+      console.log("Subaccount query result:", { subaccountData, error });
 
       if (error) {
-        console.error("Error fetching profile:", error);
+        const { shouldFallback } = handleBankingQueryError(
+          "BankingRequirementGate - Error fetching subaccount",
+          error,
+        );
+
         setHasSubaccountCode(false);
         return;
       }
 
-      const hasValidCode = !!profile?.subaccount_code?.trim();
+      const hasValidCode = !!subaccountData?.subaccount_code?.trim();
       setHasSubaccountCode(hasValidCode);
 
       console.log("Has valid subaccount code:", hasValidCode);
     } catch (error) {
-      console.error("Subaccount check failed:", error);
+      logEnhancedError(
+        "BankingRequirementGate - Subaccount check failed",
+        error,
+      );
       setHasSubaccountCode(false);
     } finally {
       setIsLoading(false);

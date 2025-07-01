@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { handleBankingQueryError } from "@/utils/bankingErrorHandler";
 import {
   Dialog,
   DialogContent,
@@ -46,30 +47,32 @@ const BankingSetupPopup = ({
     setIsCheckingBanking(true);
     try {
       console.log("Checking banking status for user:", user.id);
-      const { data: profile, error } = await supabase
-        .from("profiles")
+      const { data: subaccountData, error } = await supabase
+        .from("banking_subaccounts")
         .select("subaccount_code")
-        .eq("id", user.id)
+        .eq("user_id", user.id)
         .maybeSingle();
 
-      console.log("Banking status query result:", { profile, error });
+      console.log("Banking status query result:", {
+        subaccountData,
+        hasError: !!error,
+        errorMessage: error?.message || "No error",
+      });
 
       if (error) {
-        // Check if error is due to missing column
-        if (
-          error.message?.includes("column") &&
-          error.message?.includes("does not exist")
-        ) {
-          console.warn(
-            "subaccount_code column not found - banking setup not available yet",
-          );
+        const { shouldFallback } = handleBankingQueryError(
+          "BankingSetupPopup - checking banking status",
+          error,
+        );
+
+        if (shouldFallback) {
           return;
         }
-        console.error("Error checking banking status:", error.message || error);
+
         return;
       }
 
-      const hasValidSubaccount = !!profile?.subaccount_code?.trim();
+      const hasValidSubaccount = !!subaccountData?.subaccount_code?.trim();
       setHasBankingDetails(hasValidSubaccount);
       setLastChecked(new Date());
 

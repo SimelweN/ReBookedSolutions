@@ -36,7 +36,7 @@ export const getSellerAddress = async (
   sellerId: string,
 ): Promise<DeliveryAddress | null> => {
   try {
-    const { data: addresses, error } = await supabase
+    let { data: addresses, error } = await supabase
       .from("addresses")
       .select("*")
       .eq("user_id", sellerId)
@@ -58,12 +58,21 @@ export const getSellerAddress = async (
         .single();
 
       if (fallbackError) {
-        console.error(
+        console.warn(
           "No addresses found for seller:",
           sellerId,
-          fallbackError,
+          "- seller needs to add pickup/shipping address",
         );
-        return null;
+
+        // Return a default fallback address or indicate seller needs to set up address
+        return {
+          street: "Address not set",
+          city: "Unknown",
+          province: "Unknown",
+          postal_code: "0000",
+          contact_name: "Seller",
+          contact_phone: "",
+        };
       }
 
       addresses = fallbackAddress;
@@ -186,9 +195,9 @@ export const getEnhancedDeliveryQuotes = async (
           );
         } else if (data?.quotes) {
           // Add the quotes with seller-specific info
-          const sellerQuotes = data.quotes.map((quote: any) => ({
+          const sellerQuotes = data.quotes.map((quote: any, index: number) => ({
             ...quote,
-            id: `${quote.id}_${sellerId}`,
+            id: `${quote.id || `quote_${index}`}_${sellerId}`,
             collection_address: sellerAddress,
             delivery_address: deliveryAddress,
             seller_id: sellerId,
