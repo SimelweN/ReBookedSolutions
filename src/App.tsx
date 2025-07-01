@@ -476,6 +476,14 @@ function App() {
                                 </LazyWrapper>
                               }
                             />
+                            <Route
+                              path="/my-orders"
+                              element={
+                                <LazyWrapper>
+                                  <UserOrders />
+                                </LazyWrapper>
+                              }
+                            />
 
                             {/* Shopping and Cart Routes */}
                             <Route
