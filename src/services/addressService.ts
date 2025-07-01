@@ -31,11 +31,21 @@ export const saveUserAddresses = async (
       .from("profiles")
       .select("pickup_address, shipping_address, addresses_same")
       .eq("id", userId)
-      .single();
+      .maybeSingle(); // Use maybeSingle() to handle cases where profile might not exist
 
     if (error) {
       safeLogError("Error fetching updated addresses", error);
       throw error;
+    }
+
+    // Handle case where profile doesn't exist yet
+    if (!data) {
+      return {
+        pickup_address: null,
+        shipping_address: null,
+        addresses_same: false,
+        canListBooks: result.canListBooks,
+      };
     }
 
     return {
