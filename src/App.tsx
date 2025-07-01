@@ -276,6 +276,11 @@ function App() {
     // Initialize network error handling
     initNetworkErrorHandler();
 
+    // Initialize Vite HMR error handling in development
+    if (import.meta.env.DEV) {
+      initViteErrorHandler();
+    }
+
     // Use startTransition for non-urgent preloading
     startTransition(() => {
       preloadCriticalRoutes().catch((error) => {
