@@ -79,10 +79,21 @@ export class CourierAssignmentService {
       if (bookingResult.success) {
         // Update order with tracking number if provided
         if (bookingResult.trackingNumber) {
+          const { data: currentOrder } = await supabase
+            .from("orders")
+            .select("metadata")
+            .eq("id", orderId)
+            .single();
+
+          const updatedMetadata = {
+            ...(currentOrder?.metadata || {}),
+            courier_tracking_number: bookingResult.trackingNumber,
+          };
+
           await supabase
             .from("orders")
             .update({
-              courier_tracking_number: bookingResult.trackingNumber,
+              metadata: updatedMetadata,
               updated_at: new Date().toISOString(),
             })
             .eq("id", orderId);
