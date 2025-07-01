@@ -31,7 +31,7 @@ import { initNetworkErrorHandler } from "./utils/networkErrorHandler";
 import { initViteErrorHandler } from "./utils/viteErrorHandler";
 import EmergencyBypass from "./components/EmergencyBypass";
 import NetworkErrorBoundary from "./components/NetworkErrorBoundary";
-import "./utils/manualOrdersTest"; // Test orders table on load
+import "./utils/basicOrdersTest"; // Test orders table on load
 import "./App.css";
 
 // Initialize debug utilities in development only (limited)
