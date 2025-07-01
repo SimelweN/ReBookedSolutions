@@ -23,50 +23,18 @@ import { initViteErrorHandler } from "./utils/viteErrorHandler";
 import NetworkErrorBoundary from "./components/NetworkErrorBoundary";
 import "./App.css";
 
-// Initialize debug utilities in development only (limited)
+// Initialize essential optimizations only
 if (import.meta.env.DEV) {
-  // Only expose essential debugging tools in development
-  (window as any).checkDatabaseStatus = checkDatabaseStatus;
-
-  // Validate React imports immediately to catch createContext errors
-  setTimeout(() => {
-    console.log("🔍 Running React import validation...");
-    const status = reportReactImportStatus();
-
-    // Test createContext specifically
-    if (status.createContextAvailable) {
-      try {
-        const testContext = React.createContext("test");
-        console.log("✅ React.createContext test passed");
-      } catch (error) {
-        console.error("❌ React.createContext test failed:", error);
-      }
-    }
-  }, 100);
-
-  // Test NEW SUBJECT ENGINE - wrapped to prevent Suspense issues
   setTimeout(() => {
     try {
-      import("./services/newSubjectEngine")
-        .then(({ testNewEngine }) => {
-          try {
-            console.log("🔥 Testing NEW SUBJECT ENGINE...");
-            testNewEngine();
-            console.log("✅ Subject engine test completed successfully");
-          } catch (testError) {
-            console.warn("Subject engine test execution failed:", testError);
-          }
-        })
-        .catch((importError) => {
-          console.warn("Subject engine import failed:", importError);
-        });
+      initPerformanceOptimizations();
+      initNetworkErrorHandler();
+      initViteErrorHandler();
+      preloadCriticalRoutes();
     } catch (error) {
-      console.warn("Subject engine test setup failed:", error);
+      console.warn("Optimization setup issue:", error);
     }
-  }, 3000); // Extended delay to prevent initialization conflicts
-
-  // Minimal debug logging in development
-  console.log("🛠️ Development mode active");
+  }, 1000);
 }
 
 // Import critical pages directly for instant loading (prevents Suspense errors)
