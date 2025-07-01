@@ -278,6 +278,133 @@ export type Database = {
         };
         Relationships: [];
       };
+      orders: {
+        Row: {
+          id: string;
+          buyer_id: string | null;
+          buyer_email: string;
+          seller_id: string;
+          book_id: string;
+          book_title: string;
+          book_price: number;
+          paystack_ref: string;
+          amount: number;
+          delivery_fee: number;
+          platform_fee: number;
+          seller_amount: number;
+          status: string;
+          courier_provider: string | null;
+          courier_service: string | null;
+          courier_tracking_number: string | null;
+          courier_quote_id: string | null;
+          shipping_address: Json;
+          pickup_address: Json | null;
+          delivery_quote: Json | null;
+          collection_deadline: string | null;
+          delivery_deadline: string | null;
+          payment_held: boolean;
+          seller_notified_at: string | null;
+          seller_subaccount_code: string | null;
+          metadata: Json | null;
+          created_at: string;
+          updated_at: string;
+          paid_at: string | null;
+          collected_at: string | null;
+          delivered_at: string | null;
+          completed_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          buyer_id?: string | null;
+          buyer_email: string;
+          seller_id: string;
+          book_id: string;
+          book_title: string;
+          book_price: number;
+          paystack_ref: string;
+          amount: number;
+          delivery_fee?: number;
+          platform_fee?: number;
+          seller_amount: number;
+          status?: string;
+          courier_provider?: string | null;
+          courier_service?: string | null;
+          courier_tracking_number?: string | null;
+          courier_quote_id?: string | null;
+          shipping_address: Json;
+          pickup_address?: Json | null;
+          delivery_quote?: Json | null;
+          collection_deadline?: string | null;
+          delivery_deadline?: string | null;
+          payment_held?: boolean;
+          seller_notified_at?: string | null;
+          seller_subaccount_code?: string | null;
+          metadata?: Json | null;
+          created_at?: string;
+          updated_at?: string;
+          paid_at?: string | null;
+          collected_at?: string | null;
+          delivered_at?: string | null;
+          completed_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          buyer_id?: string | null;
+          buyer_email?: string;
+          seller_id?: string;
+          book_id?: string;
+          book_title?: string;
+          book_price?: number;
+          paystack_ref?: string;
+          amount?: number;
+          delivery_fee?: number;
+          platform_fee?: number;
+          seller_amount?: number;
+          status?: string;
+          courier_provider?: string | null;
+          courier_service?: string | null;
+          courier_tracking_number?: string | null;
+          courier_quote_id?: string | null;
+          shipping_address?: Json;
+          pickup_address?: Json | null;
+          delivery_quote?: Json | null;
+          collection_deadline?: string | null;
+          delivery_deadline?: string | null;
+          payment_held?: boolean;
+          seller_notified_at?: string | null;
+          seller_subaccount_code?: string | null;
+          metadata?: Json | null;
+          created_at?: string;
+          updated_at?: string;
+          paid_at?: string | null;
+          collected_at?: string | null;
+          delivered_at?: string | null;
+          completed_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "orders_buyer_id_fkey";
+            columns: ["buyer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_seller_id_fkey";
+            columns: ["seller_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_book_id_fkey";
+            columns: ["book_id"];
+            isOneToOne: false;
+            referencedRelation: "books";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profiles: {
         Row: {
           addresses_same: boolean | null;
