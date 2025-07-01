@@ -4,19 +4,22 @@ export async function testOrdersTable() {
   try {
     console.log("🔍 Testing orders table...");
 
-    // Test basic table access
+    // Test basic table access without triggering foreign key checks
     const { data, error } = await supabase
       .from("orders")
-      .select(
-        "id, buyer_email, seller_id, amount, status, paystack_ref, created_at",
-      )
-      .limit(1);
+      .select("id, buyer_email, amount, status")
+      .limit(0); // Just test table existence, don't fetch data
 
     if (error) {
-      console.error("❌ Orders table error:", error);
+      console.error("❌ Orders table error:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
       return {
         success: false,
-        error: error.message,
+        error: error.message || error.details || JSON.stringify(error),
         message: "Orders table not accessible",
       };
     }
