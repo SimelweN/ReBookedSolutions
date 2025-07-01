@@ -378,16 +378,30 @@ export const deleteMultipleNotifications = async (
   if (notificationIds.length === 0) return;
 
   try {
-    const { error } = await supabase
+    console.log("🗑️ Deleting notifications:", notificationIds);
+
+    const { error, count } = await supabase
       .from("notifications")
-      .delete()
+      .delete({ count: "exact" })
       .in("id", notificationIds);
 
     if (error) {
-      console.error("Error deleting multiple notifications:", error);
-      throw error;
+      console.error("Error deleting multiple notifications:", {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+      });
+
+      if (error.code === "42P01") {
+        throw new Error(
+          "Notifications table does not exist. Please run database migrations.",
+        );
+      }
+
+      throw new Error(`Failed to delete notifications: ${error.message}`);
     }
 
+    console.log(`✅ Successfully deleted ${count} notifications`);
     notificationCache.clear();
   } catch (error) {
     console.error("Error in deleteMultipleNotifications:", error);
