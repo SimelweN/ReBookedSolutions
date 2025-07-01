@@ -1,14 +1,17 @@
 -- Create banking_subaccounts table for Paystack subaccount information
 CREATE TABLE IF NOT EXISTS public.banking_subaccounts (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    subaccount_code TEXT NOT NULL,
-    subaccount_id TEXT NOT NULL,
-    subaccount_status TEXT DEFAULT 'active' CHECK (subaccount_status IN ('active', 'inactive', 'pending')),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-    UNIQUE(user_id),
-    UNIQUE(subaccount_code)
+    id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+    business_name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    bank_name TEXT NOT NULL,
+    bank_code TEXT NOT NULL,
+    account_number TEXT NOT NULL,
+    subaccount_code TEXT NULL,
+    paystack_response JSONB NULL,
+    status TEXT NULL DEFAULT 'pending'::text CHECK (status = ANY(ARRAY['pending'::text, 'active'::text, 'failed'::text])),
+    created_at TIMESTAMP WITH TIME ZONE NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NULL DEFAULT NOW(),
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE
 );
 
 -- Enable Row Level Security (RLS)
@@ -33,11 +36,11 @@ CREATE POLICY "Users can delete their own subaccount" ON public.banking_subaccou
     FOR DELETE
     USING (auth.uid() = user_id);
 
--- Create updated_at trigger
-CREATE TRIGGER handle_banking_subaccounts_updated_at
+-- Create updated_at trigger (using existing trigger function)
+CREATE TRIGGER set_timestamp
     BEFORE UPDATE ON public.banking_subaccounts
     FOR EACH ROW
-    EXECUTE FUNCTION public.handle_updated_at();
+    EXECUTE FUNCTION trigger_set_timestamp();
 
 -- Grant necessary permissions
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.banking_subaccounts TO authenticated;
@@ -49,6 +52,7 @@ COMMENT ON COLUMN public.banking_subaccounts.subaccount_code IS 'Paystack subacc
 COMMENT ON COLUMN public.banking_subaccounts.subaccount_id IS 'Paystack subaccount ID';
 COMMENT ON COLUMN public.banking_subaccounts.user_id IS 'Reference to the user who owns this subaccount';
 
--- Create index for faster lookups
+-- Create indexes for faster lookups
 CREATE INDEX IF NOT EXISTS idx_banking_subaccounts_user_id ON public.banking_subaccounts(user_id);
 CREATE INDEX IF NOT EXISTS idx_banking_subaccounts_subaccount_code ON public.banking_subaccounts(subaccount_code);
+CREATE INDEX IF NOT EXISTS idx_banking_subaccounts_email ON public.banking_subaccounts(email);
