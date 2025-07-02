@@ -50,10 +50,9 @@ export const initViteErrorHandler = () => {
   }
 
   // Handle fetch errors related to Vite ONLY - with safer implementation
-  const originalFetch = window.fetch;
-  let isFetchPatched = false;
-
   if (!isFetchPatched) {
+    const originalFetch = window.fetch;
+
     window.fetch = async function (...args) {
       const url = args[0]?.toString() || "";
 
