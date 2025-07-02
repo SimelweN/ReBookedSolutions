@@ -94,12 +94,29 @@ export const loginUser = async (email: string, password: string) => {
   const supabaseKey = ENV.VITE_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
+    console.error("❌ Supabase Configuration Missing:");
+    console.error("- VITE_SUPABASE_URL:", supabaseUrl ? "✓ Set" : "❌ Missing");
+    console.error(
+      "- VITE_SUPABASE_ANON_KEY:",
+      supabaseKey ? "✓ Set" : "❌ Missing",
+    );
+
     throw new Error(
-      "Authentication service configuration missing. Please contact support.",
+      import.meta.env.DEV
+        ? "Supabase configuration missing. Using fallback development configuration."
+        : "Authentication service unavailable. Please try again later or contact support.",
     );
   }
 
   if (!supabaseKey.startsWith("eyJ")) {
+    console.error(
+      "❌ Invalid Supabase API key format. Key should start with 'eyJ'",
+    );
+    console.error(
+      "Current key starts with:",
+      supabaseKey.substring(0, 10) + "...",
+    );
+
     throw new Error(
       "Authentication service configuration invalid. Please contact support.",
     );
