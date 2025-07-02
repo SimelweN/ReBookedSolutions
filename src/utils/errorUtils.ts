@@ -106,7 +106,40 @@ export const getErrorMessage = (
     return error;
   }
 
-  // Last resort
+  // Handle objects that might have error properties
+  if (error && typeof error === "object") {
+    const errorObj = error as any;
+
+    // Try various common error properties
+    const possibleMessage =
+      errorObj.message ||
+      errorObj.error ||
+      errorObj.error_description ||
+      errorObj.details ||
+      errorObj.hint ||
+      errorObj.statusText;
+
+    if (possibleMessage && typeof possibleMessage === "string") {
+      return possibleMessage;
+    }
+
+    // If object has meaningful properties, try to serialize them
+    try {
+      const serialized = JSON.stringify(error);
+      if (serialized && serialized !== "{}" && serialized !== "null") {
+        return `Error details: ${serialized}`;
+      }
+    } catch (jsonError) {
+      // JSON.stringify failed, continue to fallback
+    }
+  }
+
+  // Last resort - avoid [object Object]
+  const stringified = String(error);
+  if (stringified && stringified !== "[object Object]") {
+    return stringified;
+  }
+
   return fallback;
 };
 
