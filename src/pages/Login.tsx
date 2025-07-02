@@ -99,23 +99,35 @@ const Login = () => {
       console.log("Login successful, navigating to home");
       navigate("/", { replace: true });
     } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Login failed";
+      // Comprehensive error message extraction
+      let errorMessage = "Login failed";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === "string") {
+        errorMessage = error;
+      } else if (error && typeof error === "object") {
+        // Handle object errors (like Supabase errors)
+        const errorObj = error as any;
+        errorMessage =
+          errorObj.message ||
+          errorObj.error_description ||
+          errorObj.error ||
+          errorObj.details ||
+          JSON.stringify(error, null, 2) ||
+          "Login failed - please try again";
+      } else {
+        errorMessage = String(error) || "Login failed";
+      }
 
       // Enhanced error logging
-      if (error instanceof Error) {
-        console.error("Login error:", {
-          message: error.message,
-          stack: error.stack,
-          cause: error.cause,
-        });
-      } else {
-        console.error("Login error (non-Error object):", {
-          type: typeof error,
-          value: error,
-          stringified: String(error),
-        });
-      }
+      console.error("Login error details:", {
+        originalError: error,
+        extractedMessage: errorMessage,
+        errorType: typeof error,
+        isError: error instanceof Error,
+        errorConstructor: error?.constructor?.name,
+      });
 
       // Handle network errors specifically
       if (
