@@ -81,21 +81,39 @@ export const initViteErrorHandler = () => {
     isFetchPatched = true;
   }
 
-  // Handle unhandled promise rejections from Vite/HMR
+  // Handle unhandled promise rejections from Vite/HMR and third-party scripts
   window.addEventListener("unhandledrejection", (event) => {
     const error = event.reason;
 
     if (error && typeof error === "object") {
       const message = error.message || "";
+      const stack = error.stack || "";
 
       // Handle Vite HMR related errors
       if (
         message.includes("Failed to fetch") ||
         message.includes("/__vite_ping") ||
-        message.includes("/@vite/client")
+        message.includes("/@vite/client") ||
+        stack.includes("viteErrorHandler.ts") ||
+        stack.includes("/@vite/client")
       ) {
         console.warn("🔥 Vite HMR error handled:", message);
         event.preventDefault(); // Prevent error from breaking the app
+        return;
+      }
+
+      // Handle third-party script errors (like FullStory)
+      if (
+        stack.includes("fullstory.com") ||
+        stack.includes("fs.js") ||
+        (message.includes("Failed to fetch") &&
+          stack.includes("edge.fullstory.com"))
+      ) {
+        console.warn(
+          "🔥 Third-party script error handled (FullStory):",
+          message,
+        );
+        event.preventDefault();
         return;
       }
     }
