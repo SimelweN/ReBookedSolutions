@@ -4,29 +4,50 @@ import { PostgrestError } from "@supabase/supabase-js";
  * Enhanced error logging with proper serialization
  */
 export const logError = (context: string, error: unknown) => {
-  // Comprehensive error object for better debugging
-  const errorInfo = {
-    context,
-    timestamp: new Date().toISOString(),
-    message: error instanceof Error ? error.message : String(error),
-    name: error instanceof Error ? error.name : undefined,
-    code: (error as any)?.code || (error as any)?.error_code,
-    details: (error as any)?.details,
-    hint: (error as any)?.hint,
-    stack: error instanceof Error ? error.stack : undefined,
-    type: typeof error,
-    constructor: error?.constructor?.name,
+  const timestamp = new Date().toISOString();
+
+  console.group(`🚨 [${context}] ${timestamp}`);
+
+  if (error instanceof Error) {
+    console.error("Error Message:", error.message);
+    console.error("Error Name:", error.name);
+    if (error.stack) console.error("Stack Trace:", error.stack);
+  } else if (error && typeof error === "object") {
+    console.error("Error Type: Object");
+
+    // Safely extract common properties
+    const errorObj = error as any;
+    if (errorObj.message) console.error("Message:", errorObj.message);
+    if (errorObj.code) console.error("Code:", errorObj.code);
+    if (errorObj.error_code) console.error("Error Code:", errorObj.error_code);
+    if (errorObj.details) console.error("Details:", errorObj.details);
+    if (errorObj.hint) console.error("Hint:", errorObj.hint);
+
+    // Try to serialize the full object
+    try {
+      const serialized = JSON.stringify(error, null, 2);
+      console.error("Full Object:", serialized);
+    } catch (jsonError) {
+      console.error("Object (non-serializable):", String(error));
+      try {
+        console.error("Object Keys:", Object.keys(error));
+      } catch (keysError) {
+        console.error("Cannot extract object keys");
+      }
+    }
+  } else {
+    console.error("Error (primitive):", error);
+    console.error("Error Type:", typeof error);
+  }
+
+  // Classification
+  console.error("Error Classification:", {
     isNetworkError: isNetworkError(error),
     isAuthError: isAuthError(error),
     isDatabaseError: isDatabaseError(error),
-  };
+  });
 
-  // Use structured logging
-  console.error(`[${context}]`, errorInfo);
-
-  // Also log a simple version for quick scanning
-  const simpleMessage = `${context}: ${errorInfo.message}${errorInfo.code ? ` (${errorInfo.code})` : ""}`;
-  console.error(simpleMessage);
+  console.groupEnd();
 
   return errorInfo;
 };
