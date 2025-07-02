@@ -742,9 +742,11 @@ function App() {
             {/* Performance monitoring */}
             <PerformanceMetrics />
 
-            {/* Vercel Analytics and Speed Insights */}
-            <Analytics />
-            <SpeedInsights />
+            {/* Vercel Analytics and Speed Insights - wrapped for safety */}
+            <ErrorBoundary level="analytics">
+              <Analytics />
+              <SpeedInsights />
+            </ErrorBoundary>
           </ThemeProvider>
         </QueryClientProvider>
       </ErrorBoundary>
