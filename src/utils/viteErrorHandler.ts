@@ -119,7 +119,30 @@ export const initViteErrorHandler = () => {
     }
   });
 
-  console.log("🔥 Vite error handler initialized");
+  console.log("🔥 Vite error handler initialized - fetch loops prevented");
+};
+
+/**
+ * Debug function to test if fetch is working correctly
+ */
+export const testViteErrorHandler = () => {
+  if (typeof window === "undefined") return;
+
+  console.log("🔥 Testing Vite error handler...");
+
+  // Test a Vite ping request (should be handled gracefully)
+  fetch("/__vite_ping")
+    .then(() => console.log("🔥 Vite ping successful"))
+    .catch((error) =>
+      console.log("🔥 Vite ping failed (handled):", error.message),
+    );
+
+  // Test a regular request (should work normally)
+  fetch("/test-regular-request")
+    .then(() => console.log("🔥 Regular request test completed"))
+    .catch((error) =>
+      console.log("🔥 Regular request failed (expected):", error.message),
+    );
 };
 
 /**
