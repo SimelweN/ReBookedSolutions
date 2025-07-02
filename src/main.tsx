@@ -216,13 +216,18 @@ const initializeApp = async () => {
     if (import.meta.env.DEV) {
       console.log("✅ ReBooked Solutions loaded successfully");
 
-      // Load login error test utility for debugging
+      // Load login error test utilities for debugging
       setTimeout(() => {
         import("./utils/loginErrorTest")
-          .then(({ testLoginErrorHandling }) => {
+          .then(({ testLoginErrorHandling, simulateLoginError }) => {
             (window as any).testLoginErrorHandling = testLoginErrorHandling;
+            (window as any).simulateLoginError = simulateLoginError;
+            console.log("🧪 Login error test utilities loaded:");
             console.log(
-              "🧪 Login error test utility loaded. Use testLoginErrorHandling() in console.",
+              "  - testLoginErrorHandling() - Test error message extraction",
+            );
+            console.log(
+              "  - simulateLoginError() - Simulate login error scenarios",
             );
           })
           .catch(() => {
