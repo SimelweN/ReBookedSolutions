@@ -105,15 +105,19 @@ export const initViteErrorHandler = () => {
         return;
       }
 
-      // Handle third-party script errors (like FullStory)
+      // Handle third-party script errors (like FullStory, Vercel Analytics)
       if (
         stack.includes("fullstory.com") ||
         stack.includes("fs.js") ||
+        stack.includes("vercel-analytics") ||
+        stack.includes("vercel-insights") ||
+        stack.includes("vercel.com") ||
         (message.includes("Failed to fetch") &&
-          stack.includes("edge.fullstory.com"))
+          (stack.includes("edge.fullstory.com") ||
+            stack.includes("vitals.vercel")))
       ) {
         console.warn(
-          "🔥 Third-party script error handled (FullStory):",
+          "🔥 Third-party script error handled (FullStory/Vercel Analytics):",
           message,
         );
         event.preventDefault();
