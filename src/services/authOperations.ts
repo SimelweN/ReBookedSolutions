@@ -88,9 +88,10 @@ export const loginUser = async (email: string, password: string) => {
   // Quick network connectivity check
   await testNetworkConnectivity();
 
-  // Verify Supabase configuration
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  // Verify Supabase configuration using centralized ENV
+  const { ENV } = await import("@/config/environment");
+  const supabaseUrl = ENV.VITE_SUPABASE_URL;
+  const supabaseKey = ENV.VITE_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
     throw new Error(
