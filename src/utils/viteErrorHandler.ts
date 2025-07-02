@@ -44,32 +44,38 @@ export const initViteErrorHandler = () => {
     isWebSocketPatched = true;
   }
 
-  // Handle fetch errors related to Vite ONLY
+  // Handle fetch errors related to Vite ONLY - with safer implementation
   const originalFetch = window.fetch;
-  window.fetch = async function (...args) {
-    const url = args[0]?.toString() || "";
+  let isFetchPatched = false;
 
-    // Only intercept Vite-related requests
-    if (
-      url.includes("/@vite/") ||
-      url.includes("/__vite_ping") ||
-      url.includes("/@fs/")
-    ) {
-      try {
-        return await originalFetch.apply(this, args);
-      } catch (error) {
-        console.warn(
-          "🔥 Vite dev server request failed (server may be restarting):",
-          url,
-        );
-        // Return a fake successful response to prevent app crash
-        return new Response("", { status: 200, statusText: "OK" });
+  if (!isFetchPatched) {
+    window.fetch = async function (...args) {
+      const url = args[0]?.toString() || "";
+
+      // Only intercept Vite-related requests
+      if (
+        url.includes("/@vite/") ||
+        url.includes("/__vite_ping") ||
+        url.includes("/@fs/")
+      ) {
+        try {
+          return await originalFetch.call(window, ...args);
+        } catch (error) {
+          console.warn(
+            "🔥 Vite dev server request failed (server may be restarting):",
+            url,
+          );
+          // Return a fake successful response to prevent app crash
+          return new Response("", { status: 200, statusText: "OK" });
+        }
       }
-    }
 
-    // For non-Vite requests, use original fetch without interception
-    return originalFetch.apply(this, args);
-  };
+      // For non-Vite requests, use original fetch without interception
+      return originalFetch.call(window, ...args);
+    };
+
+    isFetchPatched = true;
+  }
 
   // Handle unhandled promise rejections from Vite/HMR
   window.addEventListener("unhandledrejection", (event) => {
