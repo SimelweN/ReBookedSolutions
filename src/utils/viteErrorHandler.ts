@@ -3,14 +3,19 @@
  * Handles WebSocket connection issues and fetch errors in development
  */
 
-// Track if we've already patched the WebSocket
+// Track if we've already patched components
 let isWebSocketPatched = false;
+let isFetchPatched = false;
+let isInitialized = false;
 
 /**
  * Initialize Vite error handling for development
  */
 export const initViteErrorHandler = () => {
-  if (typeof window === "undefined" || !import.meta.env.DEV) return;
+  if (typeof window === "undefined" || !import.meta.env.DEV || isInitialized)
+    return;
+
+  isInitialized = true;
 
   // Handle Vite HMR WebSocket errors
   if (!isWebSocketPatched) {
