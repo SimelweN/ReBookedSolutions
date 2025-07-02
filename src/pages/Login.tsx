@@ -120,14 +120,30 @@ const Login = () => {
         errorMessage = String(error) || "Login failed";
       }
 
-      // Enhanced error logging
-      console.error("Login error details:", {
-        originalError: error,
-        extractedMessage: errorMessage,
-        errorType: typeof error,
-        isError: error instanceof Error,
-        errorConstructor: error?.constructor?.name,
-      });
+      // Enhanced error logging with proper serialization
+      console.error("Login error details:");
+      console.error("- Extracted message:", errorMessage);
+      console.error("- Error type:", typeof error);
+      console.error("- Is Error instance:", error instanceof Error);
+      console.error("- Constructor:", error?.constructor?.name);
+
+      // Safely log the original error
+      if (error instanceof Error) {
+        console.error("- Original Error:", {
+          message: error.message,
+          name: error.name,
+          stack: error.stack,
+        });
+      } else if (error && typeof error === "object") {
+        try {
+          console.error("- Original Object:", JSON.stringify(error, null, 2));
+        } catch (jsonError) {
+          console.error("- Original Object (non-serializable):", String(error));
+          console.error("- Object keys:", Object.keys(error));
+        }
+      } else {
+        console.error("- Original Error (primitive):", error);
+      }
 
       // Handle network errors specifically
       if (
