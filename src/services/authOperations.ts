@@ -89,9 +89,30 @@ export const loginUser = async (email: string, password: string) => {
   await testNetworkConnectivity();
 
   // Verify Supabase configuration using centralized ENV
-  const { ENV } = await import("@/config/environment");
-  const supabaseUrl = ENV.VITE_SUPABASE_URL;
-  const supabaseKey = ENV.VITE_SUPABASE_ANON_KEY;
+  let supabaseUrl: string;
+  let supabaseKey: string;
+
+  try {
+    const { ENV } = await import("@/config/environment");
+    supabaseUrl = ENV.VITE_SUPABASE_URL;
+    supabaseKey = ENV.VITE_SUPABASE_ANON_KEY;
+
+    console.log("🔧 Supabase Config Check:", {
+      hasUrl: !!supabaseUrl,
+      hasKey: !!supabaseKey,
+      urlLength: supabaseUrl?.length || 0,
+      keyPrefix: supabaseKey?.substring(0, 10) || "none",
+      isDev: import.meta.env.DEV,
+    });
+  } catch (envError) {
+    console.warn(
+      "⚠️ Failed to load environment config, using fallback:",
+      envError,
+    );
+    // Fallback to direct environment variables
+    supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
+    supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
+  }
 
   if (!supabaseUrl || !supabaseKey) {
     console.error("❌ Supabase Configuration Missing:");
