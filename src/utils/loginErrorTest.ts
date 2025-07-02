@@ -4,7 +4,7 @@
  */
 
 export const testLoginErrorHandling = () => {
-  console.log("�� Testing login error handling...");
+  console.log("🧪 Testing login error handling...");
 
   // Test different error types
   const testErrors = [
@@ -96,4 +96,5 @@ export const simulateLoginError = () => {
 // Make available globally for console testing
 if (typeof window !== "undefined") {
   (window as any).testLoginErrorHandling = testLoginErrorHandling;
+  (window as any).simulateLoginError = simulateLoginError;
 }
