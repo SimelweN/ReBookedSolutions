@@ -80,23 +80,10 @@ const EnhancedQADashboard: React.FC = () => {
     },
   ]);
 
-  // Check if user has QA/Admin access
+  // QA Dashboard is now accessible to all users
   const hasQAAccess = () => {
-    // Debug access check
-    console.log("QA Access Check:", {
-      userEmail: user?.email,
-      profileRole: profile?.role,
-      userId: user?.id,
-    });
-
-    // More permissive access for testing - allow any authenticated user
-    return (
-      !!user?.id ||
-      profile?.role === "admin" ||
-      profile?.role === "qa" ||
-      user?.email?.includes("qa") ||
-      user?.email?.includes("admin")
-    );
+    // Allow access to all users - no admin restriction
+    return true;
   };
 
   const addTestLog = (
