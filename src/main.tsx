@@ -11,6 +11,30 @@ import "./index.css";
 import "./styles/performance-optimizations.css";
 import "./utils/resizeObserverFix";
 
+// Production safety check - ensure React is properly available
+if (typeof React === "undefined" || !React.createContext) {
+  console.error("🚨 CRITICAL: React is not properly loaded!");
+  console.error("This will cause createContext errors in production builds.");
+
+  // Try to recover by reloading the page once
+  if (!sessionStorage.getItem("react-reload-attempted")) {
+    sessionStorage.setItem("react-reload-attempted", "true");
+    window.location.reload();
+  } else {
+    // If reload didn't help, show emergency fallback
+    document.body.innerHTML = `
+      <div style="padding: 20px; font-family: Arial, sans-serif; text-align: center;">
+        <h1>Loading Error</h1>
+        <p>The application failed to load properly. Please try refreshing the page.</p>
+        <button onclick="window.location.reload()" style="padding: 10px 20px; font-size: 16px;">
+          Refresh Page
+        </button>
+      </div>
+    `;
+    throw new Error("React createContext not available");
+  }
+}
+
 // Log bundle info in development
 logBundleInfo();
 
