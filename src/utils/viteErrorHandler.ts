@@ -56,11 +56,14 @@ export const initViteErrorHandler = () => {
     window.fetch = async function (...args) {
       const url = args[0]?.toString() || "";
 
-      // Only intercept Vite-related requests
+      // Only intercept Vite-related and analytics requests that might cause issues
       if (
         url.includes("/@vite/") ||
         url.includes("/__vite_ping") ||
-        url.includes("/@fs/")
+        url.includes("/@fs/") ||
+        url.includes("vercel.com") ||
+        url.includes("vitals.vercel-insights.com") ||
+        url.includes("vitals.vercel-analytics.com")
       ) {
         try {
           return await originalFetch.call(window, ...args);
