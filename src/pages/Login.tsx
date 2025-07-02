@@ -129,11 +129,9 @@ const Login = () => {
 
       // Safely log the original error
       if (error instanceof Error) {
-        console.error("- Original Error:", {
-          message: error.message,
-          name: error.name,
-          stack: error.stack,
-        });
+        console.error("- Original Error Message:", error.message);
+        console.error("- Original Error Name:", error.name);
+        if (error.stack) console.error("- Original Error Stack:", error.stack);
       } else if (error && typeof error === "object") {
         try {
           console.error("- Original Object:", JSON.stringify(error, null, 2));
