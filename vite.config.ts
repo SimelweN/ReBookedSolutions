@@ -152,6 +152,12 @@ export default defineConfig(({ mode }) => ({
       "@react-google-maps/api",
     ],
   },
+
+  // Ensure React is properly available in production builds
+  define: {
+    // Ensure React is available globally if needed
+    __REACT_DEVTOOLS_GLOBAL_HOOK__: "undefined",
+  },
   // Performance optimizations
   esbuild: {
     // Drop console logs and debugger statements in production

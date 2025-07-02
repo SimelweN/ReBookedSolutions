@@ -11,6 +11,35 @@ import "./index.css";
 import "./styles/performance-optimizations.css";
 import "./utils/resizeObserverFix";
 
+// Production safety check - ensure React is properly available
+if (typeof React === "undefined" || !React.createContext) {
+  console.error("🚨 CRITICAL: React is not properly loaded!");
+  console.error("This will cause createContext errors in production builds.");
+
+  // Try to recover by reloading the page once
+  if (!sessionStorage.getItem("react-reload-attempted")) {
+    sessionStorage.setItem("react-reload-attempted", "true");
+    window.location.reload();
+  } else {
+    // If reload didn't help, show emergency fallback
+    document.body.innerHTML = `
+      <div style="padding: 20px; font-family: Arial, sans-serif; text-align: center;">
+        <h1>Loading Error</h1>
+        <p>The application failed to load properly. Please try refreshing the page.</p>
+        <button onclick="window.location.reload()" style="padding: 10px 20px; font-size: 16px;">
+          Refresh Page
+        </button>
+      </div>
+    `;
+    throw new Error("React createContext not available");
+  }
+}
+
+// Make React globally available for production builds (fallback safety)
+if (typeof window !== "undefined" && !window.React) {
+  window.React = React;
+}
+
 // Log bundle info in development
 logBundleInfo();
 
@@ -215,6 +244,25 @@ const initializeApp = async () => {
 
     if (import.meta.env.DEV) {
       console.log("✅ ReBooked Solutions loaded successfully");
+
+      // Load login error test utilities for debugging
+      setTimeout(() => {
+        import("./utils/loginErrorTest")
+          .then(({ testLoginErrorHandling, simulateLoginError }) => {
+            (window as any).testLoginErrorHandling = testLoginErrorHandling;
+            (window as any).simulateLoginError = simulateLoginError;
+            console.log("🧪 Login error test utilities loaded:");
+            console.log(
+              "  - testLoginErrorHandling() - Test error message extraction",
+            );
+            console.log(
+              "  - simulateLoginError() - Simulate login error scenarios",
+            );
+          })
+          .catch(() => {
+            // Ignore import errors
+          });
+      }, 1000);
     }
   });
 };

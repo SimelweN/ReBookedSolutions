@@ -99,22 +99,48 @@ const Login = () => {
       console.log("Login successful, navigating to home");
       navigate("/", { replace: true });
     } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Login failed";
+      // Comprehensive error message extraction
+      let errorMessage = "Login failed";
 
-      // Enhanced error logging
       if (error instanceof Error) {
-        console.error("Login error:", {
-          message: error.message,
-          stack: error.stack,
-          cause: error.cause,
-        });
+        errorMessage = error.message;
+      } else if (typeof error === "string") {
+        errorMessage = error;
+      } else if (error && typeof error === "object") {
+        // Handle object errors (like Supabase errors)
+        const errorObj = error as any;
+        errorMessage =
+          errorObj.message ||
+          errorObj.error_description ||
+          errorObj.error ||
+          errorObj.details ||
+          JSON.stringify(error, null, 2) ||
+          "Login failed - please try again";
       } else {
-        console.error("Login error (non-Error object):", {
-          type: typeof error,
-          value: error,
-          stringified: String(error),
-        });
+        errorMessage = String(error) || "Login failed";
+      }
+
+      // Enhanced error logging with proper serialization
+      console.error("Login error details:");
+      console.error("- Extracted message:", errorMessage);
+      console.error("- Error type:", typeof error);
+      console.error("- Is Error instance:", error instanceof Error);
+      console.error("- Constructor:", error?.constructor?.name);
+
+      // Safely log the original error
+      if (error instanceof Error) {
+        console.error("- Original Error Message:", error.message);
+        console.error("- Original Error Name:", error.name);
+        if (error.stack) console.error("- Original Error Stack:", error.stack);
+      } else if (error && typeof error === "object") {
+        try {
+          console.error("- Original Object:", JSON.stringify(error, null, 2));
+        } catch (jsonError) {
+          console.error("- Original Object (non-serializable):", String(error));
+          console.error("- Object keys:", Object.keys(error));
+        }
+      } else {
+        console.error("- Original Error (primitive):", error);
       }
 
       // Handle network errors specifically

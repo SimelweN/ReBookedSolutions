@@ -79,20 +79,17 @@
 ### **For Users:**
 
 1. **Setup Banking Details**:
-
    - Go to Profile → Banking tab
    - Enter banking information securely
    - System validates and encrypts data
    - Paystack subaccount created automatically
 
 2. **List Books for Sale**:
-
    - System checks banking details are complete
    - Won't allow listing without proper payment setup
    - Books automatically eligible for payments
 
 3. **Buy Books**:
-
    - Click "Buy Now" on any book
    - Secure Paystack checkout process
    - Automatic payment splitting (90% seller, 10% platform)
