@@ -60,11 +60,23 @@ class EmailService {
           Authorization: `Bearer ${this.API_KEY}`,
         },
         body: JSON.stringify({
-          name: options.subject,
+          from: {
+            email: (options.from || this.FROM_EMAIL).email,
+            name: (options.from || this.FROM_EMAIL).name,
+          },
+          to: [
+            {
+              email: options.to,
+              name: options.to.split("@")[0], // Use email prefix as name fallback
+            },
+          ],
           subject: options.subject,
-          from: options.from || this.FROM_EMAIL,
-          content: { html: options.html },
-          sendTo: { emails: [options.to] },
+          content: [
+            {
+              type: "text/html",
+              value: options.html,
+            },
+          ],
         }),
       });
 
