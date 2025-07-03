@@ -103,8 +103,18 @@ class EmailService {
       );
       return true;
     } catch (error) {
-      // Handle CORS/network errors gracefully
-      console.warn("⚠️ Network/CORS error - falling back to demo mode");
+      // Handle all types of fetch errors gracefully (CORS, timeout, network, etc.)
+      let errorType = "Network";
+      if (error instanceof DOMException && error.name === "AbortError") {
+        errorType = "Timeout";
+      } else if (error instanceof TypeError) {
+        errorType = "CORS/Network";
+      }
+
+      console.warn(
+        `⚠️ ${errorType} error - falling back to demo mode:`,
+        error.message,
+      );
       console.log(
         `📧 [FALLBACK] Simulated email send to ${options.to}: ${options.subject}`,
       );
