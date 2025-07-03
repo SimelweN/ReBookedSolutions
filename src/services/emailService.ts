@@ -211,7 +211,7 @@ class EmailService {
       <p>Thanks for signing up with ReBooked Solutions! Please verify your email address to complete your registration.</p>
 
       <p style="text-align: center;">
-        <a href="${verificationLink}" class="button">Verify Email Address</a>
+        <a href="${verificationLink}" class="btn">Verify Email Address</a>
       </p>
 
       <p>If the button doesn't work, copy and paste this link into your browser:</p>
@@ -307,7 +307,7 @@ class EmailService {
 
     return this.sendEmail({
       to: buyer.email,
-      subject: "���� Payment confirmed - Your book is on the way!",
+      subject: "💳 Payment confirmed - Your book is on the way!",
       html: this.getEmailTemplate(content),
     });
   }
