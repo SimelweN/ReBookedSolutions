@@ -303,11 +303,13 @@ export const sendDeliveryCompleteEmails = async (
     if (emailSent) {
       console.log("✅ Delivery complete emails sent successfully");
 
-      // Update order status to completed
-      await updateOrderStatus(orderId, "completed", {
-        delivered_at: new Date().toISOString(),
-        completed_at: new Date().toISOString(),
-      });
+      // Update order status to completed (skip for demo mode)
+      if (!orderId.startsWith("demo-")) {
+        await updateOrderStatus(orderId, "completed", {
+          delivered_at: new Date().toISOString(),
+          completed_at: new Date().toISOString(),
+        });
+      }
     }
 
     return emailSent;
