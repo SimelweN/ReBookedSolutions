@@ -103,43 +103,6 @@ class EmailService {
       );
       return true;
     }
-
-    // Server-side email sending (for actual production use)
-    if (!this.API_KEY) {
-      console.error("⚠️ VITE_SENDER_API not configured");
-      return false;
-    }
-
-    try {
-      const response = await fetch(this.API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.API_KEY}`,
-        },
-        body: JSON.stringify({
-          name: options.subject,
-          subject: options.subject,
-          from: options.from || this.FROM_EMAIL,
-          content: { html: options.html },
-          sendTo: { emails: [options.to] },
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.text();
-        console.error("Email sending failed:", error);
-        return false;
-      }
-
-      console.log(
-        `✅ Email sent successfully to ${options.to}: ${options.subject}`,
-      );
-      return true;
-    } catch (error) {
-      console.error("Email service error:", error);
-      return false;
-    }
   }
 
   /**
