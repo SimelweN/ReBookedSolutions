@@ -37,44 +37,48 @@ class EmailService {
    * Send email using Sender.net API
    */
   private static async sendEmail(options: EmailOptions): Promise<boolean> {
-    if (!this.API_KEY) {
+    // Always simulate in browser environment (demo mode)
+    // Email APIs should be called from server-side in production
+    if (typeof window !== "undefined") {
       console.warn(
-        "⚠️ VITE_SENDER_API not configured - simulating email send for demo",
+        "⚠️ Browser environment detected - simulating email send for demo purposes",
       );
-      // Simulate email sending for demo purposes
       console.log(
-        `📧 [DEMO] Would send email to ${options.to}: ${options.subject}`,
+        `📧 [DEMO] Simulated email send to ${options.to}: ${options.subject}`,
       );
+
+      // Log email content for demo purposes
+      console.log("📧 Email details:", {
+        to: options.to,
+        subject: options.subject,
+        from: options.from || this.FROM_EMAIL,
+        hasHTML: !!options.html,
+      });
+
       return true;
     }
 
+    // Server-side email sending (for actual production use)
+    if (!this.API_KEY) {
+      console.error("⚠️ VITE_SENDER_API not configured");
+      return false;
+    }
+
     try {
-      let response;
-      try {
-        response = await fetch(this.API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${this.API_KEY}`,
-          },
-          body: JSON.stringify({
-            name: options.subject,
-            subject: options.subject,
-            from: options.from || this.FROM_EMAIL,
-            content: { html: options.html },
-            sendTo: { emails: [options.to] },
-          }),
-        });
-      } catch (fetchError) {
-        // Immediately handle fetch errors (CORS, network issues)
-        console.warn(
-          "⚠️ Fetch error (CORS/Network) - this is expected for browser-based email API calls",
-        );
-        console.log(
-          `📧 [DEMO] Simulated email send to ${options.to}: ${options.subject}`,
-        );
-        return true; // Return success for demo purposes
-      }
+      const response = await fetch(this.API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.API_KEY}`,
+        },
+        body: JSON.stringify({
+          name: options.subject,
+          subject: options.subject,
+          from: options.from || this.FROM_EMAIL,
+          content: { html: options.html },
+          sendTo: { emails: [options.to] },
+        }),
+      });
 
       if (!response.ok) {
         const error = await response.text();
@@ -87,30 +91,6 @@ class EmailService {
       );
       return true;
     } catch (error) {
-      // Handle network/CORS errors gracefully in demo mode
-      if (
-        error instanceof TypeError &&
-        (error.message.includes("fetch") ||
-          error.message.includes("Failed to fetch"))
-      ) {
-        console.warn(
-          "⚠️ CORS/Network error - this is expected when calling email APIs from browser. In production, emails would be sent from the server.",
-        );
-        console.log(
-          `📧 [DEMO] Simulated email send to ${options.to}: ${options.subject}`,
-        );
-        return true; // Return success for demo purposes
-      }
-
-      // For any other fetch-related errors, also treat as demo mode
-      if (error instanceof Error && error.message.includes("fetch")) {
-        console.warn("⚠️ Fetch error - treating as demo mode");
-        console.log(
-          `📧 [DEMO] Simulated email send to ${options.to}: ${options.subject}`,
-        );
-        return true;
-      }
-
       console.error("Email service error:", error);
       return false;
     }
