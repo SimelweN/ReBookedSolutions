@@ -19,11 +19,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import AdminStats from "@/components/admin/AdminStats";
 import AdminEarningsTab from "@/components/admin/AdminEarningsTab";
 import AdminUsersTab from "@/components/admin/AdminUsersTab";
+import EnhancedAdminUsersTab from "@/components/admin/EnhancedAdminUsersTab";
 import AdminListingsTab from "@/components/admin/AdminListingsTab";
 import AdminSettingsTab from "@/components/admin/AdminSettingsTab";
 import AdminContactTab from "@/components/admin/AdminContactTab";
 import AdminResourcesTab from "@/components/admin/AdminResourcesTab";
 import AdminProgramsTab from "@/components/admin/AdminProgramsTab";
+import SystemHealthCheck from "@/components/SystemHealthCheck";
 
 import ErrorFallback from "@/components/ErrorFallback";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -37,6 +39,7 @@ import {
   Settings,
   GraduationCap,
   Lightbulb,
+  Activity,
 } from "lucide-react";
 
 const AdminDashboard = () => {
