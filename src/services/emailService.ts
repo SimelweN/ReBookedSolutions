@@ -506,7 +506,7 @@ class EmailService {
       <p>💰 <strong>Sell your old books</strong> - Turn your books into cash</p>
 
       <p style="text-align: center;">
-        <a href="https://rebookedsolutions.co.za/books" class="button">Browse More Books</a>
+        <a href="https://rebookedsolutions.co.za/books" class="btn">Browse More Books</a>
       </p>
 
       <p>Thank you for choosing ReBooked Solutions!</p>
