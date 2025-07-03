@@ -1,5 +1,5 @@
 import * as React from "react";
-const { createContext, useContext } = React;
+import { createContext, useContext } from "react";
 type ReactNode = React.ReactNode;
 import { useJsApiLoader } from "@react-google-maps/api";
 

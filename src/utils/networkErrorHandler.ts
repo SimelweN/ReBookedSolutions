@@ -17,10 +17,10 @@ if (typeof window !== "undefined" && window.fetch) {
 export const initNetworkErrorHandler = () => {
   if (isInitialized || typeof window === "undefined") return;
 
-  // Restore original fetch if it has been overridden
-  if (originalFetch && window.fetch !== originalFetch) {
+  // Only restore fetch in development - in production, let third-party scripts work
+  if (import.meta.env.DEV && originalFetch && window.fetch !== originalFetch) {
     console.warn(
-      "⚠️ Fetch API has been overridden by third-party script, restoring original",
+      "⚠️ Fetch API has been overridden by third-party script, restoring original (DEV only)",
     );
     window.fetch = originalFetch;
   }

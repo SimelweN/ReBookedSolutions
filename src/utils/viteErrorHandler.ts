@@ -9,11 +9,20 @@ let isFetchPatched = false;
 let isInitialized = false;
 
 /**
- * Initialize Vite error handling for development
+ * Initialize Vite error handling for development ONLY
  */
 export const initViteErrorHandler = () => {
-  if (typeof window === "undefined" || !import.meta.env.DEV || isInitialized)
+  // CRITICAL: Only run in development mode
+  if (
+    typeof window === "undefined" ||
+    !import.meta.env.DEV ||
+    import.meta.env.PROD ||
+    isInitialized ||
+    !import.meta.hot
+  ) {
+    console.log("🔥 Vite error handler skipped (not in development mode)");
     return;
+  }
 
   isInitialized = true;
 

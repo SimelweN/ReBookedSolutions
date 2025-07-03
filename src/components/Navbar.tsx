@@ -82,6 +82,18 @@ const Navbar = () => {
               <span className="lg:hidden">Books</span>
             </Link>
 
+            {/* Prominent Sell Books Button */}
+            <Link to="/create-listing">
+              <Button
+                variant="outline"
+                className="border-book-600 text-book-600 hover:bg-book-600 hover:text-white transition-colors"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                <span className="hidden lg:inline">Sell Books</span>
+                <span className="lg:hidden">Sell</span>
+              </Button>
+            </Link>
+
             <Link
               to="/university-info"
               className={`flex items-center space-x-1 text-sm font-medium transition-colors hover:text-book-600 ${
@@ -127,14 +139,23 @@ const Navbar = () => {
                 />
 
                 <div className="flex items-center space-x-1 lg:space-x-2">
+                  <Link to="/dashboard" title="My Dashboard">
+                    <Button
+                      variant="ghost"
+                      className="text-gray-700 hover:text-book-600 p-2 h-10 w-10 rounded-full"
+                    >
+                      <User className="w-5 h-5" />
+                    </Button>
+                  </Link>
+
                   <Link
                     to="/profile"
                     onMouseEnter={() => preloadOnHover("/profile")}
+                    title="Edit Profile"
                   >
                     <Button
                       variant="ghost"
                       className="text-gray-700 hover:text-book-600 p-2 h-10 w-10 rounded-full"
-                      title={profile?.name || user?.email || "Profile"}
                     >
                       {profile?.profile_picture_url ? (
                         <img
@@ -242,6 +263,14 @@ const Navbar = () => {
               {isAuthenticated ? (
                 <>
                   <div className="border-t border-gray-100 pt-3 mt-3">
+                    <Link
+                      to="/dashboard"
+                      className="flex items-center px-4 py-3 text-base font-medium text-book-600 bg-book-50 rounded-md min-h-[44px] mb-2"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <User className="w-5 h-5 mr-2" />
+                      My Dashboard
+                    </Link>
                     <Link
                       to="/create-listing"
                       className="flex items-center px-4 py-3 text-base font-medium text-white bg-book-600 rounded-md min-h-[44px]"

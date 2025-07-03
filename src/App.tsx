@@ -1,5 +1,5 @@
 import * as React from "react";
-const { Suspense, startTransition } = React;
+import { Suspense, startTransition } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
@@ -20,11 +20,12 @@ import { preloadCriticalRoutes } from "./utils/routePreloader";
 import { initPerformanceOptimizations } from "./utils/performanceOptimizer";
 import { initNetworkErrorHandler } from "./utils/networkErrorHandler";
 import { initViteErrorHandler } from "./utils/viteErrorHandler";
+import { initProductionErrorHandler } from "./utils/productionErrorHandler";
 import NetworkErrorBoundary from "./components/NetworkErrorBoundary";
 import "./App.css";
 
-// Initialize essential optimizations only
-if (import.meta.env.DEV) {
+// Initialize development-only optimizations
+if (import.meta.env.DEV && !import.meta.env.PROD) {
   setTimeout(() => {
     try {
       initPerformanceOptimizations();
@@ -32,7 +33,7 @@ if (import.meta.env.DEV) {
       initViteErrorHandler();
       preloadCriticalRoutes();
     } catch (error) {
-      console.warn("Optimization setup issue:", error);
+      console.warn("Development optimization setup issue:", error);
     }
   }, 1000);
 }
@@ -98,12 +99,15 @@ const CheckoutSuccess = React.lazy(() => import("./pages/CheckoutSuccess"));
 const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
 const PaymentCallback = React.lazy(() => import("./pages/PaymentCallback"));
 
-const UserOrders = React.lazy(() => import("./pages/UserOrders"));
+const UserOrders = React.lazy(() => import("./pages/EnhancedUserOrders"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
 const EnhancedQADashboard = React.lazy(
   () => import("./pages/EnhancedQADashboard"),
 );
 const TestQADashboard = React.lazy(() => import("./pages/TestQADashboard"));
+const SystemHealth = React.lazy(() => import("./pages/SystemHealth"));
+const UserDashboard = React.lazy(() => import("./pages/UserDashboard"));
+const EmailDemo = React.lazy(() => import("./pages/EmailDemo"));
 
 // Create query client with optimized settings
 const queryClient = new QueryClient({
@@ -235,12 +239,12 @@ function App() {
     // Initialize performance optimizations
     initPerformanceOptimizations();
 
-    // Initialize network error handling
-    initNetworkErrorHandler();
-
-    // Initialize Vite HMR error handling in development
-    if (import.meta.env.DEV) {
+    // Initialize error handling based on environment
+    if (import.meta.env.DEV && !import.meta.env.PROD) {
+      initNetworkErrorHandler();
       initViteErrorHandler();
+    } else if (import.meta.env.PROD) {
+      initProductionErrorHandler();
     }
 
     // Use startTransition for non-urgent preloading
@@ -546,6 +550,16 @@ function App() {
                             element={<UserProfile />}
                           />
                           <Route
+                            path="/dashboard"
+                            element={
+                              <ProtectedRoute>
+                                <LazyWrapper>
+                                  <UserDashboard />
+                                </LazyWrapper>
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
                             path="/qa"
                             element={
                               <LazyWrapper>
@@ -716,6 +730,22 @@ function App() {
                                   <AdminReports />
                                 </LazyWrapper>
                               </AdminProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/system-health"
+                            element={
+                              <LazyWrapper>
+                                <SystemHealth />
+                              </LazyWrapper>
+                            }
+                          />
+                          <Route
+                            path="/email-demo"
+                            element={
+                              <LazyWrapper>
+                                <EmailDemo />
+                              </LazyWrapper>
                             }
                           />
 
