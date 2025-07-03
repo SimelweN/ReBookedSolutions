@@ -82,49 +82,37 @@ class EmailService {
   private static getEmailTemplate(content: string): string {
     return `
       <!DOCTYPE html>
-      <html lang="en">
+      <html>
       <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ReBooked Solutions</title>
         <style>
-          body { 
-            font-family: Arial, sans-serif; 
-            line-height: 1.6; 
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
+          body {
+            font-family: Arial, sans-serif;
+            background-color: #f3fef7;
             padding: 20px;
+            color: #1f4e3d;
+            margin: 0;
           }
-          .header { 
-            background: linear-gradient(135deg, #65c69f 0%, #44ab83 100%);
-            color: white; 
-            padding: 20px; 
-            text-align: center; 
-            border-radius: 8px 8px 0 0;
+          .container {
+            max-width: 500px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
           }
-          .content { 
-            background: #fff; 
-            padding: 30px; 
-            border: 1px solid #e0e0e0;
-            border-radius: 0 0 8px 8px;
+          .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: #3ab26f;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-weight: bold;
           }
-          .button { 
-            display: inline-block; 
-            background: #65c69f; 
-            color: white; 
-            padding: 12px 24px; 
-            text-decoration: none; 
-            border-radius: 6px; 
-            margin: 20px 0;
-          }
-          .footer { 
-            text-align: center; 
-            margin-top: 30px; 
-            padding-top: 20px; 
-            border-top: 1px solid #e0e0e0; 
-            color: #666; 
-            font-size: 14px;
+          .link {
+            color: #3ab26f;
+            text-decoration: none;
           }
           .book-card {
             border: 1px solid #e0e0e0;
@@ -136,24 +124,42 @@ class EmailService {
           .price {
             font-size: 24px;
             font-weight: bold;
-            color: #65c69f;
+            color: #3ab26f;
+          }
+          .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            color: #666;
+            font-size: 14px;
+          }
+          h2 {
+            color: #1f4e3d;
+            margin-bottom: 20px;
+          }
+          h3 {
+            color: #1f4e3d;
+            margin-top: 25px;
+          }
+          ul, ol {
+            padding-left: 20px;
+          }
+          li {
+            margin: 8px 0;
           }
         </style>
       </head>
       <body>
-        <div class="header">
-          <h1>📚 ReBooked Solutions</h1>
-          <p>Your trusted textbook marketplace</p>
-        </div>
-        <div class="content">
+        <div class="container">
           ${content}
-        </div>
-        <div class="footer">
-          <p>© 2024 ReBooked Solutions. All rights reserved.</p>
-          <p>
-            <a href="https://rebookedsolutions.co.za">Visit our website</a> | 
-            <a href="mailto:support@rebookedsolutions.co.za">Contact Support</a>
-          </p>
+          <div class="footer">
+            <p>© 2024 ReBooked Solutions. All rights reserved.</p>
+            <p>
+              <a href="https://rebookedsolutions.co.za" class="link">Visit our website</a> |
+              <a href="mailto:support@rebookedsolutions.co.za" class="link">Contact Support</a>
+            </p>
+          </div>
         </div>
       </body>
       </html>
@@ -168,7 +174,7 @@ class EmailService {
       <h2>Welcome to ReBooked Solutions! 🎉</h2>
       <p>Hi <strong>${user.name}</strong>,</p>
       <p>Thank you for joining ReBooked Solutions, South Africa's trusted platform for buying and selling textbooks!</p>
-      
+
       <h3>What you can do now:</h3>
       <ul>
         <li>📖 <strong>Browse books</strong> - Find affordable textbooks from students across the country</li>
@@ -203,7 +209,7 @@ class EmailService {
       <h2>Verify Your Email Address 📧</h2>
       <p>Hi <strong>${user.name}</strong>,</p>
       <p>Thanks for signing up with ReBooked Solutions! Please verify your email address to complete your registration.</p>
-      
+
       <p style="text-align: center;">
         <a href="${verificationLink}" class="button">Verify Email Address</a>
       </p>
@@ -235,7 +241,7 @@ class EmailService {
       <h2>Reset Your Password 🔐</h2>
       <p>Hi <strong>${user.name}</strong>,</p>
       <p>We received a request to reset your password for your ReBooked Solutions account.</p>
-      
+
       <p style="text-align: center;">
         <a href="${resetLink}" class="button">Reset Password</a>
       </p>
@@ -273,7 +279,7 @@ class EmailService {
       <h2>Payment Successful! 💳✅</h2>
       <p>Hi <strong>${buyer.name}</strong>,</p>
       <p>Your payment has been successfully processed. Thank you for your purchase!</p>
-      
+
       <div class="book-card">
         <h3>${book.title}</h3>
         <p><strong>Author:</strong> ${book.author}</p>
@@ -323,7 +329,7 @@ class EmailService {
       <h2>Great News! Your Book Was Purchased! 🎉</h2>
       <p>Hi <strong>${seller.name}</strong>,</p>
       <p><strong>${buyer.name}</strong> just purchased your book. Congratulations on the sale!</p>
-      
+
       <div class="book-card">
         <h3>${book.title}</h3>
         <p><strong>Author:</strong> ${book.author}</p>
@@ -367,7 +373,7 @@ class EmailService {
       <h2>Bank Details Successfully Added! 🏦✅</h2>
       <p>Hi <strong>${user.name}</strong>,</p>
       <p>Great news! Your bank details have been successfully added to your ReBooked Solutions account.</p>
-      
+
       <h3>What this means:</h3>
       <ul>
         <li>💰 <strong>Automatic payouts</strong> - You'll receive 90% of each sale directly to your bank account</li>
@@ -411,7 +417,7 @@ class EmailService {
       <h2>Courier Pickup Confirmed! 🚚✅</h2>
       <p>Hi <strong>${seller.name}</strong>,</p>
       <p>Great news! The courier has successfully picked up your book and it's now on its way to the buyer.</p>
-      
+
       <div class="book-card">
         <h3>${book.title}</h3>
         <p><strong>Buyer:</strong> ${buyer.name}</p>
@@ -435,7 +441,7 @@ class EmailService {
       <h2>Your Book is On The Way! 🚚📦</h2>
       <p>Hi <strong>${buyer.name}</strong>,</p>
       <p>Excellent news! Your book has been picked up by our courier and is now on its way to you!</p>
-      
+
       <div class="book-card">
         <h3>${book.title}</h3>
         <p><strong>Author:</strong> ${book.author}</p>
@@ -487,7 +493,7 @@ class EmailService {
       <h2>Book Delivered Successfully! 📦✅</h2>
       <p>Hi <strong>${buyer.name}</strong>,</p>
       <p>Your book has been successfully delivered! We hope you enjoy your new textbook.</p>
-      
+
       <div class="book-card">
         <h3>${book.title}</h3>
         <p><strong>Author:</strong> ${book.author}</p>
@@ -511,7 +517,7 @@ class EmailService {
       <h2>Payment Processed! 💰✅</h2>
       <p>Hi <strong>${seller.name}</strong>,</p>
       <p>Congratulations! Your book has been successfully delivered and your payment has been processed.</p>
-      
+
       <div class="book-card">
         <h3>${book.title}</h3>
         <p><strong>Buyer:</strong> ${buyer.name}</p>
@@ -520,7 +526,7 @@ class EmailService {
       </div>
 
       <p>💳 Your payment will appear in your linked bank account within 1-3 business days.</p>
-      
+
       <p style="text-align: center;">
         <a href="https://rebookedsolutions.co.za/create-listing" class="button">List Another Book</a>
       </p>
@@ -558,7 +564,7 @@ class EmailService {
       <h2>Order Cancelled ⚠️</h2>
       <p>Hi <strong>${user.name}</strong>,</p>
       <p>We're sorry to inform you that your order has been cancelled.</p>
-      
+
       <div class="book-card">
         <h3>${book.title}</h3>
         <p><strong>Author:</strong> ${book.author}</p>
