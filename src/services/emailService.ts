@@ -452,7 +452,7 @@ class EmailService {
       </div>
 
       <p style="text-align: center;">
-        <a href="https://rebookedsolutions.co.za/my-orders" class="button">Track Your Delivery</a>
+        <a href="https://rebookedsolutions.co.za/my-orders" class="btn">Track Your Delivery</a>
       </p>
 
       <p>📱 You'll receive another email once your book has been delivered.</p>
