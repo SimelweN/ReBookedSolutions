@@ -104,6 +104,7 @@ const EnhancedQADashboard = React.lazy(
   () => import("./pages/EnhancedQADashboard"),
 );
 const TestQADashboard = React.lazy(() => import("./pages/TestQADashboard"));
+const SystemHealth = React.lazy(() => import("./pages/SystemHealth"));
 
 // Create query client with optimized settings
 const queryClient = new QueryClient({
@@ -716,6 +717,14 @@ function App() {
                                   <AdminReports />
                                 </LazyWrapper>
                               </AdminProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/system-health"
+                            element={
+                              <LazyWrapper>
+                                <SystemHealth />
+                              </LazyWrapper>
                             }
                           />
 
