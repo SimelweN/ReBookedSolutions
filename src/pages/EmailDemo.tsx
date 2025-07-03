@@ -134,12 +134,13 @@ const EmailDemo: React.FC = () => {
           </p>
 
           {!import.meta.env.VITE_SENDER_API && (
-            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-center">
-                <AlertCircle className="h-5 w-5 text-yellow-600 mr-2" />
-                <span className="text-yellow-800">
-                  <strong>VITE_SENDER_API</strong> not configured. Add your
-                  Sender.net API key to test emails.
+                <AlertCircle className="h-5 w-5 text-blue-600 mr-2" />
+                <span className="text-blue-800">
+                  <strong>Demo Mode:</strong> VITE_SENDER_API not configured.
+                  Email sending will be simulated. Add your Sender.net API key
+                  to send real emails.
                 </span>
               </div>
             </div>
