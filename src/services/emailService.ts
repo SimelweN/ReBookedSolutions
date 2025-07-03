@@ -585,7 +585,7 @@ class EmailService {
       <p>We apologize for any inconvenience. Please browse our other available books or contact support if you need assistance.</p>
 
       <p style="text-align: center;">
-        <a href="https://rebookedsolutions.co.za/books" class="button">Browse Other Books</a>
+        <a href="https://rebookedsolutions.co.za/books" class="btn">Browse Other Books</a>
       </p>
     `;
 
