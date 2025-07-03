@@ -140,6 +140,35 @@ export const sendCourierPickupEmails = async (
   try {
     console.log("📧 Sending courier pickup emails for order:", orderId);
 
+    // Handle demo mode
+    if (orderId.startsWith("demo-")) {
+      console.log("📧 Demo mode: Sending mock courier pickup emails");
+
+      const emailSent = await EmailService.sendCourierPickupConfirmation(
+        {
+          name: "Demo Seller",
+          email: "demo@example.com",
+        },
+        {
+          name: "Demo Buyer",
+          email: "demo@example.com",
+        },
+        {
+          title: "Introduction to Psychology",
+          author: "Demo Author",
+          price: 25000,
+          imageUrl: "/placeholder.svg",
+        },
+        {
+          trackingNumber,
+          courierService,
+          estimatedDelivery,
+        },
+      );
+
+      return emailSent;
+    }
+
     // Get order with all related data
     const { data: order, error } = await supabase
       .from("orders")
