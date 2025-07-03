@@ -236,6 +236,30 @@ export const sendDeliveryCompleteEmails = async (
   try {
     console.log("📧 Sending delivery complete emails for order:", orderId);
 
+    // Handle demo mode
+    if (orderId.startsWith("demo-")) {
+      console.log("📧 Demo mode: Sending mock delivery complete emails");
+
+      const emailSent = await EmailService.sendDeliveryConfirmation(
+        {
+          name: "Demo Seller",
+          email: "demo@example.com",
+        },
+        {
+          name: "Demo Buyer",
+          email: "demo@example.com",
+        },
+        {
+          title: "Introduction to Psychology",
+          author: "Demo Author",
+          price: 25000,
+          imageUrl: "/placeholder.svg",
+        },
+      );
+
+      return emailSent;
+    }
+
     // Get order with all related data
     const { data: order, error } = await supabase
       .from("orders")
