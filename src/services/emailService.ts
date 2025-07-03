@@ -243,7 +243,7 @@ class EmailService {
       <p>We received a request to reset your password for your ReBooked Solutions account.</p>
 
       <p style="text-align: center;">
-        <a href="${resetLink}" class="button">Reset Password</a>
+        <a href="${resetLink}" class="btn">Reset Password</a>
       </p>
 
       <p>If the button doesn't work, copy and paste this link into your browser:</p>
