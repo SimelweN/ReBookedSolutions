@@ -54,6 +54,8 @@ class EmailService {
     console.log(
       `📧 Attempting to send email to ${options.to}: ${options.subject}`,
     );
+    console.log("🔑 API Key configured:", !!this.API_KEY);
+    console.log("🔑 API Key length:", this.API_KEY?.length || 0);
 
     // First try using Supabase Edge Function (recommended for production)
     try {
