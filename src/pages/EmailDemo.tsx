@@ -27,6 +27,19 @@ const EmailDemo: React.FC = () => {
   const [testEmail, setTestEmail] = useState(user?.email || "demo@example.com");
   const [testName, setTestName] = useState("Demo User");
 
+  // Debug environment variables
+  React.useEffect(() => {
+    console.log("🔍 Environment check:");
+    console.log(
+      "VITE_SENDER_API:",
+      import.meta.env.VITE_SENDER_API ? "***CONFIGURED***" : "NOT SET",
+    );
+    console.log(
+      "All env vars:",
+      Object.keys(import.meta.env).filter((key) => key.startsWith("VITE_")),
+    );
+  }, []);
+
   // Demo mode - no authentication required
 
   const handleEmailTest = async (
