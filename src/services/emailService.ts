@@ -57,28 +57,39 @@ class EmailService {
 
     // First try using Supabase Edge Function (recommended for production)
     try {
+      console.log("📡 Calling Supabase Edge Function...");
       const { supabase } = await import("@/integrations/supabase/client");
+
+      const payload = {
+        to: options.to,
+        subject: options.subject,
+        html: options.html,
+        from: options.from || this.FROM_EMAIL,
+      };
+
+      console.log("📦 Edge Function payload:", payload);
 
       const { data, error } = await supabase.functions.invoke(
         "send-email-notification",
         {
-          body: {
-            to: options.to,
-            subject: options.subject,
-            html: options.html,
-            from: options.from || this.FROM_EMAIL,
-          },
+          body: payload,
         },
       );
+
+      console.log("📡 Edge Function response:", { data, error });
 
       if (!error && data?.success) {
         console.log(
           `✅ Email sent via Edge Function to ${options.to}: ${options.subject}`,
         );
+        console.log("📧 Edge Function response details:", data);
         return true;
       }
 
-      console.warn("⚠️ Edge Function failed, trying direct API call:", error);
+      console.warn("⚠️ Edge Function failed, trying direct API call:", {
+        error,
+        data,
+      });
     } catch (edgeFunctionError) {
       console.warn("⚠️ Edge Function not available, trying direct API call");
     }
@@ -256,7 +267,7 @@ class EmailService {
       <h3>What you can do now:</h3>
       <ul>
         <li>📖 <strong>Browse books</strong> - Find affordable textbooks from students across the country</li>
-        <li>💰 <strong>Sell your books</strong> - Turn your old textbooks into cash</li>
+        <li>��� <strong>Sell your books</strong> - Turn your old textbooks into cash</li>
         <li>🏫 <strong>Connect with your campus</strong> - Find books specific to your university</li>
         <li>🚚 <strong>Safe delivery</strong> - Secure payment and delivery system</li>
       </ul>
@@ -448,7 +459,7 @@ class EmailService {
     user: UserDetails,
   ): Promise<boolean> {
     const content = `
-      <h2>Bank Details Successfully Added! 🏦✅</h2>
+      <h2>Bank Details Successfully Added! ���✅</h2>
       <p>Hi <strong>${user.name}</strong>,</p>
       <p>Great news! Your bank details have been successfully added to your ReBooked Solutions account.</p>
 
@@ -546,7 +557,7 @@ class EmailService {
       }),
       this.sendEmail({
         to: buyer.email,
-        subject: "🚚 Your book is on the way!",
+        subject: "�� Your book is on the way!",
         html: this.getEmailTemplate(buyerContent),
       }),
     ]);
