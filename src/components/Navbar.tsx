@@ -82,6 +82,18 @@ const Navbar = () => {
               <span className="lg:hidden">Books</span>
             </Link>
 
+            {/* Prominent Sell Books Button */}
+            <Link to="/create-listing">
+              <Button
+                variant="outline"
+                className="border-book-600 text-book-600 hover:bg-book-600 hover:text-white transition-colors"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                <span className="hidden lg:inline">Sell Books</span>
+                <span className="lg:hidden">Sell</span>
+              </Button>
+            </Link>
+
             <Link
               to="/university-info"
               className={`flex items-center space-x-1 text-sm font-medium transition-colors hover:text-book-600 ${

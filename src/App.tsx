@@ -106,6 +106,7 @@ const EnhancedQADashboard = React.lazy(
 );
 const TestQADashboard = React.lazy(() => import("./pages/TestQADashboard"));
 const SystemHealth = React.lazy(() => import("./pages/SystemHealth"));
+const UserDashboard = React.lazy(() => import("./pages/UserDashboard"));
 
 // Create query client with optimized settings
 const queryClient = new QueryClient({
