@@ -184,7 +184,23 @@ export const sendEmailVerificationWithCustomEmail = async (email: string) => {
  */
 export const sendBankDetailsConfirmationEmail = async (userId: string) => {
   try {
-    // Get user profile
+    // Handle demo mode
+    if (userId.startsWith("demo-") || userId === "demo-user") {
+      console.log("📧 Demo mode: Sending mock bank details confirmation email");
+
+      const emailSent = await EmailService.sendBankDetailsConfirmation({
+        name: "Demo User",
+        email: "demo@example.com",
+      });
+
+      if (emailSent) {
+        console.log("✅ Demo bank details confirmation email sent");
+      }
+
+      return emailSent;
+    }
+
+    // Get user profile for real users
     const { data: profile, error } = await supabase
       .from("profiles")
       .select("name, email")

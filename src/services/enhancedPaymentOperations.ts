@@ -34,7 +34,50 @@ export const processPaymentSuccessWithEmails = async (
       paymentData.orderId,
     );
 
-    // Get all required data
+    // Handle demo mode
+    if (paymentData.orderId.startsWith("demo-")) {
+      console.log("📧 Demo mode: Sending mock payment success emails");
+
+      const demoCollectionDeadline = new Date();
+      demoCollectionDeadline.setHours(demoCollectionDeadline.getHours() + 48);
+
+      const [buyerEmailSent, sellerEmailSent] = await Promise.all([
+        EmailService.sendPaymentConfirmation(
+          { name: "Demo Buyer", email: "demo@example.com" },
+          { name: "Demo Seller", email: "demo@example.com" },
+          {
+            title: "Introduction to Psychology",
+            author: "Demo Author",
+            price: 25000,
+            imageUrl: "/placeholder.svg",
+          },
+          {
+            orderId: paymentData.orderId,
+            totalAmount: paymentData.totalAmount,
+            paymentReference: paymentData.paymentReference,
+          },
+        ),
+        EmailService.sendBookPurchaseAlert(
+          { name: "Demo Seller", email: "demo@example.com" },
+          { name: "Demo Buyer", email: "demo@example.com" },
+          {
+            title: "Introduction to Psychology",
+            author: "Demo Author",
+            price: 25000,
+            imageUrl: "/placeholder.svg",
+          },
+          {
+            orderId: paymentData.orderId,
+            totalAmount: paymentData.totalAmount,
+            collectionDeadline: demoCollectionDeadline.toISOString(),
+          },
+        ),
+      ]);
+
+      return buyerEmailSent && sellerEmailSent;
+    }
+
+    // Get all required data for real orders
     const [buyerData, sellerData, bookData] = await Promise.all([
       // Get buyer info
       supabase
@@ -140,6 +183,35 @@ export const sendCourierPickupEmails = async (
   try {
     console.log("📧 Sending courier pickup emails for order:", orderId);
 
+    // Handle demo mode
+    if (orderId.startsWith("demo-")) {
+      console.log("📧 Demo mode: Sending mock courier pickup emails");
+
+      const emailSent = await EmailService.sendCourierPickupConfirmation(
+        {
+          name: "Demo Seller",
+          email: "demo@example.com",
+        },
+        {
+          name: "Demo Buyer",
+          email: "demo@example.com",
+        },
+        {
+          title: "Introduction to Psychology",
+          author: "Demo Author",
+          price: 25000,
+          imageUrl: "/placeholder.svg",
+        },
+        {
+          trackingNumber,
+          courierService,
+          estimatedDelivery,
+        },
+      );
+
+      return emailSent;
+    }
+
     // Get order with all related data
     const { data: order, error } = await supabase
       .from("orders")
@@ -182,13 +254,15 @@ export const sendCourierPickupEmails = async (
     if (emailSent) {
       console.log("✅ Courier pickup emails sent successfully");
 
-      // Update order with tracking info
-      await updateOrderStatus(orderId, "in_transit", {
-        tracking_number: trackingNumber,
-        courier_service: courierService,
-        estimated_delivery: estimatedDelivery,
-        pickup_confirmed_at: new Date().toISOString(),
-      });
+      // Update order with tracking info (skip for demo mode)
+      if (!orderId.startsWith("demo-")) {
+        await updateOrderStatus(orderId, "in_transit", {
+          tracking_number: trackingNumber,
+          courier_service: courierService,
+          estimated_delivery: estimatedDelivery,
+          pickup_confirmed_at: new Date().toISOString(),
+        });
+      }
     }
 
     return emailSent;
@@ -206,6 +280,30 @@ export const sendDeliveryCompleteEmails = async (
 ): Promise<boolean> => {
   try {
     console.log("📧 Sending delivery complete emails for order:", orderId);
+
+    // Handle demo mode
+    if (orderId.startsWith("demo-")) {
+      console.log("📧 Demo mode: Sending mock delivery complete emails");
+
+      const emailSent = await EmailService.sendDeliveryConfirmation(
+        {
+          name: "Demo Seller",
+          email: "demo@example.com",
+        },
+        {
+          name: "Demo Buyer",
+          email: "demo@example.com",
+        },
+        {
+          title: "Introduction to Psychology",
+          author: "Demo Author",
+          price: 25000,
+          imageUrl: "/placeholder.svg",
+        },
+      );
+
+      return emailSent;
+    }
 
     // Get order with all related data
     const { data: order, error } = await supabase
@@ -248,11 +346,13 @@ export const sendDeliveryCompleteEmails = async (
     if (emailSent) {
       console.log("✅ Delivery complete emails sent successfully");
 
-      // Update order status to completed
-      await updateOrderStatus(orderId, "completed", {
-        delivered_at: new Date().toISOString(),
-        completed_at: new Date().toISOString(),
-      });
+      // Update order status to completed (skip for demo mode)
+      if (!orderId.startsWith("demo-")) {
+        await updateOrderStatus(orderId, "completed", {
+          delivered_at: new Date().toISOString(),
+          completed_at: new Date().toISOString(),
+        });
+      }
     }
 
     return emailSent;

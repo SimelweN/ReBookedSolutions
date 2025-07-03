@@ -24,25 +24,23 @@ const EmailDemo: React.FC = () => {
   const { user, isAuthenticated, isAdmin } = useAuth();
   const emailTriggers = useEmailAutomation();
   const [loading, setLoading] = useState<string | null>(null);
-  const [testEmail, setTestEmail] = useState(user?.email || "");
-  const [testName, setTestName] = useState("Test User");
+  const [testEmail, setTestEmail] = useState(user?.email || "demo@example.com");
+  const [testName, setTestName] = useState("Demo User");
 
-  // Only require authentication
-  if (!isAuthenticated) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <AlertCircle className="h-12 w-12 text-orange-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-semibold mb-2">Login Required</h2>
-            <p className="text-gray-600">
-              Please log in to access the email testing demo.
-            </p>
-          </div>
-        </div>
-      </Layout>
+  // Debug environment variables
+  React.useEffect(() => {
+    console.log("🔍 Environment check:");
+    console.log(
+      "VITE_SENDER_API:",
+      import.meta.env.VITE_SENDER_API ? "***CONFIGURED***" : "NOT SET",
     );
-  }
+    console.log(
+      "All env vars:",
+      Object.keys(import.meta.env).filter((key) => key.startsWith("VITE_")),
+    );
+  }, []);
+
+  // Demo mode - no authentication required
 
   const handleEmailTest = async (
     emailType: string,
@@ -149,12 +147,13 @@ const EmailDemo: React.FC = () => {
           </p>
 
           {!import.meta.env.VITE_SENDER_API && (
-            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-center">
-                <AlertCircle className="h-5 w-5 text-yellow-600 mr-2" />
-                <span className="text-yellow-800">
-                  <strong>VITE_SENDER_API</strong> not configured. Add your
-                  Sender.net API key to test emails.
+                <AlertCircle className="h-5 w-5 text-blue-600 mr-2" />
+                <span className="text-blue-800">
+                  <strong>Demo Mode:</strong> VITE_SENDER_API not configured.
+                  Email sending will be simulated. Add your Sender.net API key
+                  to send real emails.
                 </span>
               </div>
             </div>
@@ -250,8 +249,16 @@ const EmailDemo: React.FC = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span>User Role</span>
-                <Badge variant={isAdmin ? "default" : "secondary"}>
-                  {isAdmin ? "Admin" : "User"}
+                <Badge
+                  variant={
+                    isAuthenticated
+                      ? isAdmin
+                        ? "default"
+                        : "secondary"
+                      : "outline"
+                  }
+                >
+                  {isAuthenticated ? (isAdmin ? "Admin" : "User") : "Demo Mode"}
                 </Badge>
               </div>
             </div>
