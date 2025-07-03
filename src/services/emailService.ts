@@ -350,7 +350,7 @@ class EmailService {
       </ol>
 
       <p style="text-align: center;">
-        <a href="https://rebookedsolutions.co.za/my-orders" class="button">Manage Your Orders</a>
+        <a href="https://rebookedsolutions.co.za/my-orders" class="btn">Manage Your Orders</a>
       </p>
 
       <p><strong>Earnings:</strong> You'll receive R${(book.price * 0.9).toFixed(2)} (90% of sale price) once delivery is confirmed.</p>
