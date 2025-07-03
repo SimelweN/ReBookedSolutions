@@ -24,25 +24,10 @@ const EmailDemo: React.FC = () => {
   const { user, isAuthenticated, isAdmin } = useAuth();
   const emailTriggers = useEmailAutomation();
   const [loading, setLoading] = useState<string | null>(null);
-  const [testEmail, setTestEmail] = useState(user?.email || "");
-  const [testName, setTestName] = useState("Test User");
+  const [testEmail, setTestEmail] = useState(user?.email || "demo@example.com");
+  const [testName, setTestName] = useState("Demo User");
 
-  // Only require authentication
-  if (!isAuthenticated) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <AlertCircle className="h-12 w-12 text-orange-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-semibold mb-2">Login Required</h2>
-            <p className="text-gray-600">
-              Please log in to access the email testing demo.
-            </p>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
+  // Demo mode - no authentication required
 
   const handleEmailTest = async (
     emailType: string,
