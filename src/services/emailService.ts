@@ -528,7 +528,7 @@ class EmailService {
       <p>💳 Your payment will appear in your linked bank account within 1-3 business days.</p>
 
       <p style="text-align: center;">
-        <a href="https://rebookedsolutions.co.za/create-listing" class="button">List Another Book</a>
+        <a href="https://rebookedsolutions.co.za/create-listing" class="btn">List Another Book</a>
       </p>
 
       <p>Keep selling your textbooks and earning money with ReBooked Solutions!</p>
