@@ -27,17 +27,16 @@ const EmailDemo: React.FC = () => {
   const [testEmail, setTestEmail] = useState(user?.email || "");
   const [testName, setTestName] = useState("Test User");
 
-  // Only allow admins or development environment
-  if (!isAuthenticated || (!isAdmin && import.meta.env.PROD)) {
+  // Only require authentication
+  if (!isAuthenticated) {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <AlertCircle className="h-12 w-12 text-orange-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-semibold mb-2">Access Restricted</h2>
+            <h2 className="text-2xl font-semibold mb-2">Login Required</h2>
             <p className="text-gray-600">
-              Email testing is only available for administrators in development
-              mode.
+              Please log in to access the email testing demo.
             </p>
           </div>
         </div>
