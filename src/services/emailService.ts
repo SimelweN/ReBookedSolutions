@@ -386,7 +386,7 @@ class EmailService {
       <p>Now that your account is set up for payouts, you can start listing your textbooks and earning money!</p>
 
       <p style="text-align: center;">
-        <a href="https://rebookedsolutions.co.za/create-listing" class="button">List Your First Book</a>
+        <a href="https://rebookedsolutions.co.za/create-listing" class="btn">List Your First Book</a>
       </p>
 
       <p><strong>Payout Schedule:</strong> Payments are processed after successful delivery confirmation.</p>
