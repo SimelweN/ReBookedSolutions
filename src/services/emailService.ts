@@ -27,7 +27,7 @@ interface UserDetails {
 
 class EmailService {
   private static readonly API_KEY = import.meta.env.VITE_SENDER_API;
-  private static readonly API_URL = "https://api.sender.net/v2/email-campaigns";
+  private static readonly API_URL = "https://api.sender.net/api/v1/email/send";
   private static readonly FROM_EMAIL = {
     name: "ReBooked Solutions",
     email: "noreply@rebookedsolutions.co.za",
@@ -279,7 +279,7 @@ class EmailService {
 
     return this.sendEmail({
       to: user.email,
-      subject: "��� Verify your ReBooked Solutions account",
+      subject: "📧 Verify your ReBooked Solutions account",
       html: this.getEmailTemplate(content),
     });
   }
