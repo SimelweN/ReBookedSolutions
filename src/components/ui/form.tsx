@@ -1,5 +1,5 @@
 import * as React from "react";
-const { createContext, useContext, useId, forwardRef } = React;
+import { createContext, useContext, useId, forwardRef } from "react";
 import * as LabelPrimitive from "@radix-ui/react-label";
 import { Slot } from "@radix-ui/react-slot";
 import {
