@@ -211,13 +211,15 @@ export const sendCourierPickupEmails = async (
     if (emailSent) {
       console.log("✅ Courier pickup emails sent successfully");
 
-      // Update order with tracking info
-      await updateOrderStatus(orderId, "in_transit", {
-        tracking_number: trackingNumber,
-        courier_service: courierService,
-        estimated_delivery: estimatedDelivery,
-        pickup_confirmed_at: new Date().toISOString(),
-      });
+      // Update order with tracking info (skip for demo mode)
+      if (!orderId.startsWith("demo-")) {
+        await updateOrderStatus(orderId, "in_transit", {
+          tracking_number: trackingNumber,
+          courier_service: courierService,
+          estimated_delivery: estimatedDelivery,
+          pickup_confirmed_at: new Date().toISOString(),
+        });
+      }
     }
 
     return emailSent;
