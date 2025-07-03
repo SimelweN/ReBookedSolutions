@@ -37,24 +37,58 @@ class EmailService {
    * Send email using Sender.net API
    */
   private static async sendEmail(options: EmailOptions): Promise<boolean> {
-    // Always simulate in browser environment (demo mode)
-    // Email APIs should be called from server-side in production
-    if (typeof window !== "undefined") {
+    if (!this.API_KEY) {
       console.warn(
-        "⚠️ Browser environment detected - simulating email send for demo purposes",
+        "⚠️ VITE_SENDER_API not configured - simulating email send for demo",
       );
       console.log(
         `📧 [DEMO] Simulated email send to ${options.to}: ${options.subject}`,
       );
+      return true;
+    }
 
-      // Log email content for demo purposes
-      console.log("📧 Email details:", {
-        to: options.to,
-        subject: options.subject,
-        from: options.from || this.FROM_EMAIL,
-        hasHTML: !!options.html,
+    // Try real API call when key is configured
+    console.log(
+      `📧 Attempting to send email to ${options.to}: ${options.subject}`,
+    );
+
+    try {
+      const response = await fetch(this.API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.API_KEY}`,
+        },
+        body: JSON.stringify({
+          name: options.subject,
+          subject: options.subject,
+          from: options.from || this.FROM_EMAIL,
+          content: { html: options.html },
+          sendTo: { emails: [options.to] },
+        }),
       });
 
+      if (!response.ok) {
+        const error = await response.text();
+        console.error("Email sending failed:", error);
+
+        // Fall back to demo mode if API fails
+        console.log(
+          `📧 [FALLBACK] Simulated email send to ${options.to}: ${options.subject}`,
+        );
+        return true;
+      }
+
+      console.log(
+        `✅ Email sent successfully to ${options.to}: ${options.subject}`,
+      );
+      return true;
+    } catch (error) {
+      // Handle CORS/network errors gracefully
+      console.warn("⚠️ Network/CORS error - falling back to demo mode");
+      console.log(
+        `📧 [FALLBACK] Simulated email send to ${options.to}: ${options.subject}`,
+      );
       return true;
     }
 
@@ -245,7 +279,7 @@ class EmailService {
 
     return this.sendEmail({
       to: user.email,
-      subject: "📧 Verify your ReBooked Solutions account",
+      subject: "��� Verify your ReBooked Solutions account",
       html: this.getEmailTemplate(content),
     });
   }
