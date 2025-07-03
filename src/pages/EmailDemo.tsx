@@ -235,8 +235,16 @@ const EmailDemo: React.FC = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span>User Role</span>
-                <Badge variant={isAdmin ? "default" : "secondary"}>
-                  {isAdmin ? "Admin" : "User"}
+                <Badge
+                  variant={
+                    isAuthenticated
+                      ? isAdmin
+                        ? "default"
+                        : "secondary"
+                      : "outline"
+                  }
+                >
+                  {isAuthenticated ? (isAdmin ? "Admin" : "User") : "Demo Mode"}
                 </Badge>
               </div>
             </div>
