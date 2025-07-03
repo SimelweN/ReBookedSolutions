@@ -432,7 +432,7 @@ class EmailService {
       <p>⭐ The buyer can leave you a review after receiving the book</p>
 
       <p style="text-align: center;">
-        <a href="https://rebookedsolutions.co.za/my-orders" class="button">Track Order Status</a>
+        <a href="https://rebookedsolutions.co.za/my-orders" class="btn">Track Order Status</a>
       </p>
     `;
 
