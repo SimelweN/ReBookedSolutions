@@ -99,7 +99,7 @@ const CheckoutSuccess = React.lazy(() => import("./pages/CheckoutSuccess"));
 const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
 const PaymentCallback = React.lazy(() => import("./pages/PaymentCallback"));
 
-const UserOrders = React.lazy(() => import("./pages/UserOrders"));
+const UserOrders = React.lazy(() => import("./pages/EnhancedUserOrders"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
 const EnhancedQADashboard = React.lazy(
   () => import("./pages/EnhancedQADashboard"),
