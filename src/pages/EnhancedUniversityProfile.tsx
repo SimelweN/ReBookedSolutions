@@ -1,5 +1,5 @@
 import * as React from "react";
-const { useState, useMemo, useEffect } = React;
+import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
