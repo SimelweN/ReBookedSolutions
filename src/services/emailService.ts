@@ -91,7 +91,10 @@ class EmailService {
         data,
       });
     } catch (edgeFunctionError) {
-      console.warn("⚠️ Edge Function not available, trying direct API call");
+      console.warn(
+        "⚠️ Edge Function not available, trying direct API call:",
+        edgeFunctionError,
+      );
     }
 
     // Fallback to direct API call (may hit CORS in browser)
