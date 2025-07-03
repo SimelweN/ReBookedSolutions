@@ -20,11 +20,12 @@ import { preloadCriticalRoutes } from "./utils/routePreloader";
 import { initPerformanceOptimizations } from "./utils/performanceOptimizer";
 import { initNetworkErrorHandler } from "./utils/networkErrorHandler";
 import { initViteErrorHandler } from "./utils/viteErrorHandler";
+import { initProductionErrorHandler } from "./utils/productionErrorHandler";
 import NetworkErrorBoundary from "./components/NetworkErrorBoundary";
 import "./App.css";
 
-// Initialize essential optimizations only
-if (import.meta.env.DEV) {
+// Initialize development-only optimizations
+if (import.meta.env.DEV && !import.meta.env.PROD) {
   setTimeout(() => {
     try {
       initPerformanceOptimizations();
@@ -32,7 +33,7 @@ if (import.meta.env.DEV) {
       initViteErrorHandler();
       preloadCriticalRoutes();
     } catch (error) {
-      console.warn("Optimization setup issue:", error);
+      console.warn("Development optimization setup issue:", error);
     }
   }, 1000);
 }
@@ -236,12 +237,12 @@ function App() {
     // Initialize performance optimizations
     initPerformanceOptimizations();
 
-    // Initialize network error handling
-    initNetworkErrorHandler();
-
-    // Initialize Vite HMR error handling in development
-    if (import.meta.env.DEV) {
+    // Initialize error handling based on environment
+    if (import.meta.env.DEV && !import.meta.env.PROD) {
+      initNetworkErrorHandler();
       initViteErrorHandler();
+    } else if (import.meta.env.PROD) {
+      initProductionErrorHandler();
     }
 
     // Use startTransition for non-urgent preloading
