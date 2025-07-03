@@ -251,7 +251,7 @@ const EmailDemo: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span>User Role</span>
                 <Badge variant={isAdmin ? "default" : "secondary"}>
-                  {isAdmin ? "Admin" : "Regular User"}
+                  {isAdmin ? "Admin" : "User"}
                 </Badge>
               </div>
             </div>
