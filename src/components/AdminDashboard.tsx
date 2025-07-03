@@ -326,6 +326,13 @@ const AdminDashboard = () => {
       description: "Contact form messages",
     },
     {
+      value: "health",
+      label: "System Health",
+      icon: Activity,
+      color: "text-green-600",
+      description: "System monitoring and health checks",
+    },
+    {
       value: "settings",
       label: "Settings",
       icon: Settings,
@@ -373,7 +380,7 @@ const AdminDashboard = () => {
           </div>
         ) : (
           // Desktop: Proper TabsList with grid styling
-          <TabsList className="grid grid-cols-8 gap-2 p-2 bg-white border border-gray-200 rounded-lg shadow-sm h-auto">
+          <TabsList className="grid grid-cols-9 gap-2 p-2 bg-white border border-gray-200 rounded-lg shadow-sm h-auto">
             {tabConfig.map((tab) => {
               const Icon = tab.icon;
               return (
@@ -414,7 +421,7 @@ const AdminDashboard = () => {
 
           <TabsContent value="users" className="space-y-4 mt-0">
             <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-x-auto">
-              <AdminUsersTab users={users} onUserAction={handleUserAction} />
+              <EnhancedAdminUsersTab />
             </div>
           </TabsContent>
 
@@ -442,6 +449,24 @@ const AdminDashboard = () => {
           <TabsContent value="contact" className="space-y-4 mt-0">
             <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
               <AdminContactTab />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="health" className="space-y-4 mt-0">
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 md:p-6">
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">
+                    System Health Monitor
+                  </h2>
+                  <p className="text-gray-600">
+                    Monitor the health and status of all system components
+                    including database connectivity, payment systems,
+                    authentication, and more.
+                  </p>
+                </div>
+                <SystemHealthCheck />
+              </div>
             </div>
           </TabsContent>
 
