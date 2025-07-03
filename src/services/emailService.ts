@@ -49,16 +49,21 @@ class EmailService {
 
     // Try real API call when key is configured
     console.log(
-      `📧 Attempting to send email to ${options.to}: ${options.subject}`,
+      `��� Attempting to send email to ${options.to}: ${options.subject}`,
     );
 
     try {
+      // Add timeout and better error handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
       const response = await fetch(this.API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${this.API_KEY}`,
         },
+        signal: controller.signal,
         body: JSON.stringify({
           from: {
             email: (options.from || this.FROM_EMAIL).email,
@@ -80,13 +85,15 @@ class EmailService {
         }),
       });
 
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
         const error = await response.text();
         console.error("Email sending failed:", error);
 
         // Fall back to demo mode if API fails
         console.log(
-          `📧 [FALLBACK] Simulated email send to ${options.to}: ${options.subject}`,
+          `��� [FALLBACK] Simulated email send to ${options.to}: ${options.subject}`,
         );
         return true;
       }
@@ -406,7 +413,7 @@ class EmailService {
       <h3>What this means:</h3>
       <ul>
         <li>💰 <strong>Automatic payouts</strong> - You'll receive 90% of each sale directly to your bank account</li>
-        <li>🚀 <strong>Faster transactions</strong> - No need to wait for manual processing</li>
+        <li>�� <strong>Faster transactions</strong> - No need to wait for manual processing</li>
         <li>🔒 <strong>Secure payments</strong> - Your banking details are encrypted and protected</li>
         <li>📊 <strong>Payment tracking</strong> - View all your earnings in your dashboard</li>
       </ul>
