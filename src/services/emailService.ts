@@ -301,7 +301,7 @@ class EmailService {
       <p>📱 You can track your order status in your account dashboard.</p>
 
       <p style="text-align: center;">
-        <a href="https://rebookedsolutions.co.za/my-orders" class="button">Track Your Order</a>
+        <a href="https://rebookedsolutions.co.za/my-orders" class="btn">Track Your Order</a>
       </p>
     `;
 
