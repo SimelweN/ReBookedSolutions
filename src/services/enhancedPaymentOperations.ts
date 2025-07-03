@@ -34,7 +34,50 @@ export const processPaymentSuccessWithEmails = async (
       paymentData.orderId,
     );
 
-    // Get all required data
+    // Handle demo mode
+    if (paymentData.orderId.startsWith("demo-")) {
+      console.log("📧 Demo mode: Sending mock payment success emails");
+
+      const demoCollectionDeadline = new Date();
+      demoCollectionDeadline.setHours(demoCollectionDeadline.getHours() + 48);
+
+      const [buyerEmailSent, sellerEmailSent] = await Promise.all([
+        EmailService.sendPaymentConfirmation(
+          { name: "Demo Buyer", email: "demo@example.com" },
+          { name: "Demo Seller", email: "demo@example.com" },
+          {
+            title: "Introduction to Psychology",
+            author: "Demo Author",
+            price: 25000,
+            imageUrl: "/placeholder.svg",
+          },
+          {
+            orderId: paymentData.orderId,
+            totalAmount: paymentData.totalAmount,
+            paymentReference: paymentData.paymentReference,
+          },
+        ),
+        EmailService.sendBookPurchaseAlert(
+          { name: "Demo Seller", email: "demo@example.com" },
+          { name: "Demo Buyer", email: "demo@example.com" },
+          {
+            title: "Introduction to Psychology",
+            author: "Demo Author",
+            price: 25000,
+            imageUrl: "/placeholder.svg",
+          },
+          {
+            orderId: paymentData.orderId,
+            totalAmount: paymentData.totalAmount,
+            collectionDeadline: demoCollectionDeadline.toISOString(),
+          },
+        ),
+      ]);
+
+      return buyerEmailSent && sellerEmailSent;
+    }
+
+    // Get all required data for real orders
     const [buyerData, sellerData, bookData] = await Promise.all([
       // Get buyer info
       supabase
