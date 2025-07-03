@@ -107,6 +107,7 @@ const EnhancedQADashboard = React.lazy(
 const TestQADashboard = React.lazy(() => import("./pages/TestQADashboard"));
 const SystemHealth = React.lazy(() => import("./pages/SystemHealth"));
 const UserDashboard = React.lazy(() => import("./pages/UserDashboard"));
+const EmailDemo = React.lazy(() => import("./pages/EmailDemo"));
 
 // Create query client with optimized settings
 const queryClient = new QueryClient({
@@ -736,6 +737,14 @@ function App() {
                             element={
                               <LazyWrapper>
                                 <SystemHealth />
+                              </LazyWrapper>
+                            }
+                          />
+                          <Route
+                            path="/email-demo"
+                            element={
+                              <LazyWrapper>
+                                <EmailDemo />
                               </LazyWrapper>
                             }
                           />
