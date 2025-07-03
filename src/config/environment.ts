@@ -11,6 +11,7 @@ export const ENV = {
   VITE_COURIER_GUY_API_KEY: import.meta.env.VITE_COURIER_GUY_API_KEY || "",
   VITE_FASTWAY_API_KEY: import.meta.env.VITE_FASTWAY_API_KEY || "",
   VITE_GOOGLE_MAPS_API_KEY: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
+  VITE_SENDER_API: import.meta.env.VITE_SENDER_API || "",
 } as const;
 
 export const IS_PRODUCTION = ENV.NODE_ENV === "production";
@@ -24,6 +25,7 @@ export const validateEnvironment = () => {
     "VITE_COURIER_GUY_API_KEY",
     "VITE_FASTWAY_API_KEY",
     "VITE_GOOGLE_MAPS_API_KEY",
+    "VITE_SENDER_API",
   ];
 
   const missing = required.filter((key) => {
@@ -73,6 +75,7 @@ To fix this issue:
    VITE_SUPABASE_URL=your_supabase_project_url
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
    VITE_PAYSTACK_PUBLIC_KEY=your_paystack_public_key
+   VITE_SENDER_API=your_sender_api_key
 
 2. For production deployment, set these environment variables in your hosting platform:
 
