@@ -184,7 +184,7 @@ class EmailService {
       </ul>
 
       <p style="text-align: center;">
-        <a href="https://rebookedsolutions.co.za/books" class="button">Start Browsing Books</a>
+        <a href="https://rebookedsolutions.co.za/books" class="btn">Start Browsing Books</a>
       </p>
 
       <p>If you have any questions, feel free to reach out to our support team.</p>
@@ -307,7 +307,7 @@ class EmailService {
 
     return this.sendEmail({
       to: buyer.email,
-      subject: "💳 Payment confirmed - Your book is on the way!",
+      subject: "���� Payment confirmed - Your book is on the way!",
       html: this.getEmailTemplate(content),
     });
   }
