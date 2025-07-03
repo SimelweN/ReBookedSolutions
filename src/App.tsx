@@ -549,6 +549,16 @@ function App() {
                             element={<UserProfile />}
                           />
                           <Route
+                            path="/dashboard"
+                            element={
+                              <ProtectedRoute>
+                                <LazyWrapper>
+                                  <UserDashboard />
+                                </LazyWrapper>
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
                             path="/qa"
                             element={
                               <LazyWrapper>
