@@ -1,6 +1,9 @@
 /**
  * Email Service using Sender.net API
  * Handles all transactional emails for ReBooked Solutions
+ *
+ * Note: In browser environments, this service runs in demo mode
+ * due to CORS restrictions. Real email sending should be done server-side.
  */
 
 interface EmailOptions {
@@ -35,91 +38,31 @@ class EmailService {
 
   /**
    * Send email using Sender.net API
+   *
+   * Note: In browser environments, this will always simulate email sending
+   * due to CORS restrictions. Real email sending should be done server-side.
    */
   private static async sendEmail(options: EmailOptions): Promise<boolean> {
-    if (!this.API_KEY) {
-      console.warn(
-        "⚠️ VITE_SENDER_API not configured - simulating email send for demo",
-      );
-      console.log(
-        `📧 [DEMO] Simulated email send to ${options.to}: ${options.subject}`,
-      );
-      return true;
-    }
-
-    // Try real API call when key is configured
+    // Always simulate in demo for browser compatibility
+    // Email APIs should be called from server-side in production
     console.log(
-      `��� Attempting to send email to ${options.to}: ${options.subject}`,
+      `📧 [DEMO] Simulating email send to ${options.to}: ${options.subject}`,
     );
 
-    try {
-      // Add timeout and better error handling
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+    // Log what would be sent for debugging purposes
+    console.log("📧 Email details:", {
+      to: options.to,
+      subject: options.subject,
+      from: options.from || this.FROM_EMAIL,
+      hasContent: !!options.html,
+      apiKeyConfigured: !!this.API_KEY,
+      contentLength: options.html?.length || 0,
+    });
 
-      const response = await fetch(this.API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.API_KEY}`,
-        },
-        signal: controller.signal,
-        body: JSON.stringify({
-          from: {
-            email: (options.from || this.FROM_EMAIL).email,
-            name: (options.from || this.FROM_EMAIL).name,
-          },
-          to: [
-            {
-              email: options.to,
-              name: options.to.split("@")[0], // Use email prefix as name fallback
-            },
-          ],
-          subject: options.subject,
-          content: [
-            {
-              type: "text/html",
-              value: options.html,
-            },
-          ],
-        }),
-      });
+    // Simulate network delay for realistic demo
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        const error = await response.text();
-        console.error("Email sending failed:", error);
-
-        // Fall back to demo mode if API fails
-        console.log(
-          `��� [FALLBACK] Simulated email send to ${options.to}: ${options.subject}`,
-        );
-        return true;
-      }
-
-      console.log(
-        `✅ Email sent successfully to ${options.to}: ${options.subject}`,
-      );
-      return true;
-    } catch (error) {
-      // Handle all types of fetch errors gracefully (CORS, timeout, network, etc.)
-      let errorType = "Network";
-      if (error instanceof DOMException && error.name === "AbortError") {
-        errorType = "Timeout";
-      } else if (error instanceof TypeError) {
-        errorType = "CORS/Network";
-      }
-
-      console.warn(
-        `⚠️ ${errorType} error - falling back to demo mode:`,
-        error.message,
-      );
-      console.log(
-        `📧 [FALLBACK] Simulated email send to ${options.to}: ${options.subject}`,
-      );
-      return true;
-    }
+    return true;
   }
 
   /**
@@ -330,14 +273,14 @@ class EmailService {
         <h3>${book.title}</h3>
         <p><strong>Author:</strong> ${book.author}</p>
         <p><strong>Seller:</strong> ${seller.name}</p>
-        <p class="price">R${book.price.toFixed(2)}</p>
+        <p class="price">R${(book.price / 100).toFixed(2)}</p>
       </div>
 
       <h3>Order Details:</h3>
       <ul>
         <li><strong>Order ID:</strong> ${orderDetails.orderId}</li>
         <li><strong>Payment Reference:</strong> ${orderDetails.paymentReference}</li>
-        <li><strong>Total Amount:</strong> R${orderDetails.totalAmount.toFixed(2)}</li>
+        <li><strong>Total Amount:</strong> R${(orderDetails.totalAmount / 100).toFixed(2)}</li>
         <li><strong>Payment Date:</strong> ${new Date().toLocaleDateString()}</li>
       </ul>
 
@@ -380,7 +323,7 @@ class EmailService {
         <h3>${book.title}</h3>
         <p><strong>Author:</strong> ${book.author}</p>
         <p><strong>Buyer:</strong> ${buyer.name}</p>
-        <p class="price">R${book.price.toFixed(2)}</p>
+        <p class="price">R${(book.price / 100).toFixed(2)}</p>
       </div>
 
       <h3>⏰ Action Required - Collection Deadline</h3>
@@ -399,7 +342,7 @@ class EmailService {
         <a href="https://rebookedsolutions.co.za/my-orders" class="btn">Manage Your Orders</a>
       </p>
 
-      <p><strong>Earnings:</strong> You'll receive R${(book.price * 0.9).toFixed(2)} (90% of sale price) once delivery is confirmed.</p>
+      <p><strong>Earnings:</strong> You'll receive R${((book.price * 0.9) / 100).toFixed(2)} (90% of sale price) once delivery is confirmed.</p>
     `;
 
     return this.sendEmail({
@@ -423,7 +366,7 @@ class EmailService {
       <h3>What this means:</h3>
       <ul>
         <li>💰 <strong>Automatic payouts</strong> - You'll receive 90% of each sale directly to your bank account</li>
-        <li>�� <strong>Faster transactions</strong> - No need to wait for manual processing</li>
+        <li>🚀 <strong>Faster transactions</strong> - No need to wait for manual processing</li>
         <li>🔒 <strong>Secure payments</strong> - Your banking details are encrypted and protected</li>
         <li>📊 <strong>Payment tracking</strong> - View all your earnings in your dashboard</li>
       </ul>
@@ -525,14 +468,10 @@ class EmailService {
   /**
    * 📦 Delivery Complete Notification
    */
-  static async sendDeliveryCompleteNotification(
-    buyer: UserDetails,
+  static async sendDeliveryConfirmation(
     seller: UserDetails,
+    buyer: UserDetails,
     book: BookDetails,
-    orderDetails: {
-      orderId: string;
-      deliveredAt: string;
-    },
   ): Promise<boolean> {
     // Email to buyer
     const buyerContent = `
@@ -543,7 +482,7 @@ class EmailService {
       <div class="book-card">
         <h3>${book.title}</h3>
         <p><strong>Author:</strong> ${book.author}</p>
-        <p><strong>Delivered:</strong> ${new Date(orderDetails.deliveredAt).toLocaleString()}</p>
+        <p><strong>Delivered:</strong> ${new Date().toLocaleString()}</p>
       </div>
 
       <h3>What's next?</h3>
@@ -567,8 +506,8 @@ class EmailService {
       <div class="book-card">
         <h3>${book.title}</h3>
         <p><strong>Buyer:</strong> ${buyer.name}</p>
-        <p><strong>Your Earnings:</strong> <span class="price">R${(book.price * 0.9).toFixed(2)}</span></p>
-        <p><strong>Delivered:</strong> ${new Date(orderDetails.deliveredAt).toLocaleString()}</p>
+        <p><strong>Your Earnings:</strong> <span class="price">R${((book.price * 0.9) / 100).toFixed(2)}</span></p>
+        <p><strong>Delivered:</strong> ${new Date().toLocaleString()}</p>
       </div>
 
       <p>💳 Your payment will appear in your linked bank account within 1-3 business days.</p>
@@ -615,14 +554,14 @@ class EmailService {
         <h3>${book.title}</h3>
         <p><strong>Author:</strong> ${book.author}</p>
         <p><strong>Reason:</strong> ${reason}</p>
-        ${refundAmount ? `<p><strong>Refund Amount:</strong> R${refundAmount.toFixed(2)}</p>` : ""}
+        ${refundAmount ? `<p><strong>Refund Amount:</strong> R${(refundAmount / 100).toFixed(2)}</p>` : ""}
       </div>
 
       ${
         refundAmount
           ? `
         <h3>Refund Information</h3>
-        <p>💳 Your refund of R${refundAmount.toFixed(2)} will be processed within 3-5 business days.</p>
+        <p>💳 Your refund of R${(refundAmount / 100).toFixed(2)} will be processed within 3-5 business days.</p>
         <p>The refund will appear on the same payment method used for the original purchase.</p>
       `
           : ""
