@@ -84,7 +84,7 @@ const BankingRequirementGate = ({
 
   useEffect(() => {
     checkSubaccountCode();
-  }, [user?.id]);
+  }, [checkSubaccountCode]);
 
   // Also check when window regains focus (user returns from banking setup)
   useEffect(() => {
