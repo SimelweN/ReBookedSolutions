@@ -60,7 +60,12 @@ interface EnhancedShippingFormProps {
     shippingData: ShippingFormData,
     deliveryOptions: DeliveryOption[],
   ) => void;
-  cartItems: any[];
+  cartItems: {
+    id: string;
+    title: string;
+    price: number;
+    seller: string;
+  }[];
 }
 
 const SOUTH_AFRICAN_PROVINCES = [
