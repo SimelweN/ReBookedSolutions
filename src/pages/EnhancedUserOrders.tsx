@@ -73,7 +73,7 @@ const EnhancedUserOrders: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]);
 
   const handleConfirmDelivery = async (orderId: string) => {
     try {
