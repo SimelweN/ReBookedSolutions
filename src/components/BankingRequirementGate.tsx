@@ -80,7 +80,7 @@ const BankingRequirementGate = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user?.id]);
 
   useEffect(() => {
     checkSubaccountCode();
