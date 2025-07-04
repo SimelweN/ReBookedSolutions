@@ -46,9 +46,10 @@ const Checkout: React.FC = () => {
   const { loadError } = useGoogleMaps();
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [shippingData, setShippingData] = useState<any>(null);
-  const [deliveryQuotes, setDeliveryQuotes] = useState<any[]>([]);
-  const [selectedDelivery, setSelectedDelivery] = useState<any>(null);
+  const [shippingData, setShippingData] = useState<ShippingData | null>(null);
+  const [deliveryQuotes, setDeliveryQuotes] = useState<DeliveryQuote[]>([]);
+  const [selectedDelivery, setSelectedDelivery] =
+    useState<DeliveryQuote | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [useSimpleForm, setUseSimpleForm] = useState(false);
 
