@@ -171,7 +171,11 @@ const EnhancedUniversityProfile: React.FC = React.memo(() => {
   // Enhanced faculties with APS filtering
   const [facultiesData, setFacultiesData] = useState<{
     faculties: Faculty[];
-    statistics: any;
+    statistics: {
+      totalPrograms: number;
+      averageAPS: number;
+      facultyCount: number;
+    };
     errors: string[];
     warnings: string[];
     isLoading: boolean;
