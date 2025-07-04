@@ -16,6 +16,28 @@ import GoogleMapsErrorHandler from "@/components/GoogleMapsErrorHandler";
 import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
 import { toast } from "sonner";
 
+interface ShippingData {
+  fullName: string;
+  email: string;
+  phone: string;
+  streetAddress: string;
+  suburb: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  country: string;
+  specialInstructions?: string;
+}
+
+interface DeliveryQuote {
+  id: string;
+  service: string;
+  price: number;
+  estimatedDays: string;
+  provider: string;
+  details?: unknown;
+}
+
 const Checkout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
