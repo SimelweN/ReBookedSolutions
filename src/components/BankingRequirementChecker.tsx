@@ -216,7 +216,7 @@ const BankingRequirementChecker = () => {
 
   useEffect(() => {
     runChecks();
-  }, [user?.id]);
+  }, [user?.id, runChecks]);
 
   const getIcon = (status: CheckResult["status"]) => {
     switch (status) {
@@ -323,7 +323,7 @@ const BankingRequirementChecker = () => {
           <ul className="text-sm text-blue-700 space-y-1">
             <li>• ✅ Auth & User Validation</li>
             <li>• ✅ Block Book Upload Without subaccount_code</li>
-            <li>• ✅ Book Listing Flow with Banking Check</li>
+            <li>��� ✅ Book Listing Flow with Banking Check</li>
             <li>• ✅ Payment Flow with Seller Subaccount</li>
             <li>• ✅ RLS Policy for Database Security</li>
           </ul>
