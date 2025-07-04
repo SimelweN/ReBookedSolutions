@@ -23,12 +23,11 @@ const BroadcastManager = () => {
   // Always call useAuth - if it fails, the component will fail gracefully
   const { user, isAuthenticated } = useAuth();
 
-  useEffect(() => {
+  const checkForBroadcasts = useCallback(async () => {
     // Early return if broadcasts are disabled
     if (BROADCASTS_DISABLED) {
       return;
     }
-    const checkForBroadcasts = async () => {
       // Check if broadcasts are disabled for this session
       if (localStorage.getItem("broadcasts_disabled") === "true") {
         return;
