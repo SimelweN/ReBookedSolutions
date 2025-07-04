@@ -38,7 +38,7 @@ const BankingRequirementGate = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  const checkSubaccountCode = async () => {
+  const checkSubaccountCode = useCallback(async () => {
     if (!user?.id) {
       setHasSubaccountCode(false);
       setIsLoading(false);
