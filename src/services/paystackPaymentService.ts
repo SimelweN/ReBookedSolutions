@@ -1520,7 +1520,8 @@ export class PaystackPaymentService {
         orderId,
       );
 
-      // TODO: Trigger automatic refund via Paystack API
+      // Trigger automatic refund via Paystack API
+      await this.processRefund(orderId, order.paystack_ref, order.amount);
     } catch (error) {
       console.error("Error handling expired collection:", error);
       throw error;
