@@ -84,7 +84,7 @@ const PaystackDashboard: React.FC = () => {
     });
 
     // Load Paystack script if not already loaded
-    if (!(window as any).PaystackPop) {
+    if (!(window as Window & { PaystackPop?: unknown }).PaystackPop) {
       const script = document.createElement("script");
       script.src = "https://js.paystack.co/v1/inline.js";
       script.onload = () => {
