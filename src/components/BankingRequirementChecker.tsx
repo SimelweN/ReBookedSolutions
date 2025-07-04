@@ -206,7 +206,7 @@ const BankingRequirementChecker = () => {
         name: "General Error",
         status: "fail",
         message: "Unexpected error during checks",
-        details: error.message,
+        details: error instanceof Error ? error.message : String(error),
       });
     }
 
