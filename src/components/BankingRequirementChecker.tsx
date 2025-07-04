@@ -109,7 +109,7 @@ const BankingRequirementChecker = () => {
             status: "pass",
             message: "banking_subaccounts table exists",
           });
-        } catch (schemaError: any) {
+        } catch (schemaError: unknown) {
           results.push({
             name: "Database Schema",
             status: "fail",
