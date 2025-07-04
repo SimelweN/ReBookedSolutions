@@ -212,7 +212,7 @@ const BankingRequirementChecker = () => {
 
     setChecks(results);
     setIsRunning(false);
-  };
+  }, [user?.id]);
 
   useEffect(() => {
     runChecks();
