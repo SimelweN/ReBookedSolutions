@@ -1400,10 +1400,10 @@ export class PaystackPaymentService {
         throw new Error(`Failed to release payment: ${error.message}`);
       }
 
-      console.log("�� Payment released successfully for order:", orderId);
+      console.log("✅ Payment released successfully for order:", orderId);
 
-      // TODO: Trigger actual Paystack transfer to seller's subaccount
-      // This would involve calling Paystack's transfer API to move funds from holding
+      // Trigger actual Paystack transfer to seller's subaccount
+      await this.initiateSellerPayout(orderId);
     } catch (error) {
       console.error("Error releasing payment:", error);
       throw error;
