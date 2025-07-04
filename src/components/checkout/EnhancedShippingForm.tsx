@@ -196,7 +196,18 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
     }
   };
 
-  const populateFormWithAddress = (address: any) => {
+  const populateFormWithAddress = (address: {
+    name?: string;
+    phone?: string;
+    streetAddress?: string;
+    street_address?: string;
+    suburb?: string;
+    city?: string;
+    province?: string;
+    postalCode?: string;
+    postal_code?: string;
+    country?: string;
+  }) => {
     setValue("recipient_name", address.name || "");
     setValue("phone", address.phone || "");
     setValue(
