@@ -60,7 +60,12 @@ interface EnhancedShippingFormProps {
     shippingData: ShippingFormData,
     deliveryOptions: DeliveryOption[],
   ) => void;
-  cartItems: any[];
+  cartItems: {
+    id: string;
+    title: string;
+    price: number;
+    seller: string;
+  }[];
 }
 
 const SOUTH_AFRICAN_PROVINCES = [
@@ -79,18 +84,20 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   onComplete,
   cartItems,
 }) => {
-  // Early return if props are invalid
-  if (!onComplete || !cartItems) {
-    console.error("EnhancedShippingForm: Invalid props");
-    return <div>Loading shipping form...</div>;
-  }
-
+  // All hooks must be called before any early returns
   const { isLoaded } = useGoogleMaps();
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [savedAddress, setSavedAddress] = useState<any>(null);
+  const [savedAddress, setSavedAddress] = useState<{
+    streetAddress: string;
+    suburb: string;
+    city: string;
+    province: string;
+    postalCode: string;
+    country: string;
+  } | null>(null);
   const [isEditingAddress, setIsEditingAddress] = useState(false);
   const [deliveryOptions, setDeliveryOptions] = useState<DeliveryOption[]>([]);
   const [selectedDeliveryOption, setSelectedDeliveryOption] =
@@ -161,6 +168,12 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
     }
   }, [watchedValues.city, watchedValues.province, watchedValues.postal_code]);
 
+  // Early return check moved here after all hooks
+  if (!onComplete || !cartItems) {
+    console.error("EnhancedShippingForm: Invalid props");
+    return <div>Loading shipping form...</div>;
+  }
+
   const loadSavedAddress = async () => {
     try {
       const {
@@ -188,7 +201,18 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
     }
   };
 
-  const populateFormWithAddress = (address: any) => {
+  const populateFormWithAddress = (address: {
+    name?: string;
+    phone?: string;
+    streetAddress?: string;
+    street_address?: string;
+    suburb?: string;
+    city?: string;
+    province?: string;
+    postalCode?: string;
+    postal_code?: string;
+    country?: string;
+  }) => {
     setValue("recipient_name", address.name || "");
     setValue("phone", address.phone || "");
     setValue(

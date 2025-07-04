@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,9 +52,9 @@ const EnhancedUserOrders: React.FC = () => {
     if (user?.id) {
       loadOrders();
     }
-  }, [user, isAuthenticated]);
+  }, [user, isAuthenticated, loadOrders, navigate]);
 
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     if (!user?.id) return;
 
     try {
@@ -73,7 +73,7 @@ const EnhancedUserOrders: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]);
 
   const handleConfirmDelivery = async (orderId: string) => {
     try {

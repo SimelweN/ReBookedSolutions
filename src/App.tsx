@@ -56,7 +56,6 @@ const BookDetails = React.lazy(() => import("./pages/BookDetails"));
 const Profile = React.lazy(() => import("./pages/Profile"));
 const CreateListing = React.lazy(() => import("./pages/CreateListing"));
 const GoogleMapsDemo = React.lazy(() => import("./pages/GoogleMapsDemo"));
-const MapsTest = React.lazy(() => import("./pages/MapsTest"));
 const BasicMapsExample = React.lazy(() => import("./pages/BasicMapsExample"));
 const WorkingMapsDemo = React.lazy(() => import("./pages/WorkingMapsDemo"));
 const AdminReports = React.lazy(() => import("./pages/AdminReports"));
@@ -104,7 +103,6 @@ const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
 const EnhancedQADashboard = React.lazy(
   () => import("./pages/EnhancedQADashboard"),
 );
-const TestQADashboard = React.lazy(() => import("./pages/TestQADashboard"));
 const SystemHealth = React.lazy(() => import("./pages/SystemHealth"));
 const UserDashboard = React.lazy(() => import("./pages/UserDashboard"));
 const EmailDemo = React.lazy(() => import("./pages/EmailDemo"));
@@ -286,14 +284,6 @@ function App() {
                           <Route
                             path="/user-profile"
                             element={<UserProfile />}
-                          />
-                          <Route
-                            path="/qa"
-                            element={
-                              <LazyWrapper>
-                                <TestQADashboard />
-                              </LazyWrapper>
-                            }
                           />
                           <Route
                             path="/books"
@@ -520,14 +510,6 @@ function App() {
                             }
                           />
                           <Route
-                            path="/maps-test"
-                            element={
-                              <LazyWrapper>
-                                <MapsTest />
-                              </LazyWrapper>
-                            }
-                          />
-                          <Route
                             path="/basic-maps"
                             element={
                               <LazyWrapper>
@@ -557,14 +539,6 @@ function App() {
                                   <UserDashboard />
                                 </LazyWrapper>
                               </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/qa"
-                            element={
-                              <LazyWrapper>
-                                <TestQADashboard />
-                              </LazyWrapper>
                             }
                           />
                           <Route
@@ -766,8 +740,7 @@ function App() {
               </AuthProvider>
             </GoogleMapsProvider>
 
-            {/* Configuration checker for development only */}
-            {import.meta.env.DEV && false && <ConfigurationChecker />}
+            {/* Configuration checker disabled */}
 
             {/* Performance monitoring */}
             <PerformanceMetrics />

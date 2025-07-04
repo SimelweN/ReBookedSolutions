@@ -27,8 +27,6 @@ import { useCart } from "@/contexts/CartContext";
 import PaystackPaymentService from "@/services/paystackPaymentService";
 import { toast } from "sonner";
 import PaystackConfigChecker from "./PaystackConfigChecker";
-import { PaystackLibraryTest } from "@/utils/paystackLibraryTest";
-import DevPaymentTester from "./DevPaymentTester";
 
 const PaystackDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -52,7 +50,15 @@ const PaystackDashboard: React.FC = () => {
     message: "",
   });
 
-  const [orderHistory, setOrderHistory] = useState<any[]>([]);
+  const [orderHistory, setOrderHistory] = useState<
+    {
+      id: string;
+      amount: number;
+      status: string;
+      created_at: string;
+      reference?: string;
+    }[]
+  >([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [databaseTest, setDatabaseTest] = useState<{
     status: "idle" | "testing" | "success" | "error";
@@ -72,11 +78,13 @@ const PaystackDashboard: React.FC = () => {
         : paystackKey?.startsWith("pk_test_")
           ? "test"
           : "none",
-      scriptLoaded: Boolean((window as any).PaystackPop),
+      scriptLoaded: Boolean(
+        (window as Window & { PaystackPop?: unknown }).PaystackPop,
+      ),
     });
 
     // Load Paystack script if not already loaded
-    if (!(window as any).PaystackPop) {
+    if (!(window as Window & { PaystackPop?: unknown }).PaystackPop) {
       const script = document.createElement("script");
       script.src = "https://js.paystack.co/v1/inline.js";
       script.onload = () => {
@@ -240,13 +248,7 @@ const PaystackDashboard: React.FC = () => {
   const debugPaystackLibrary = async () => {
     toast.info("Running Paystack library diagnostics...");
     try {
-      const results = await PaystackLibraryTest.testAllMethods();
-      PaystackLibraryTest.logResults(results);
-
-      const successCount = results.filter((r) => r.success).length;
-      toast.success(
-        `Library test completed. ${successCount}/${results.length} methods successful. Check console for details.`,
-      );
+      toast.success("Development test mode - library testing removed");
     } catch (error) {
       console.error("Debug test failed:", error);
       toast.error("Library debug test failed. Check console for details.");
@@ -255,9 +257,6 @@ const PaystackDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Development Mode Indicator */}
-      <DevPaymentTester />
-
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

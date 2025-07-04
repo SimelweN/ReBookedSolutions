@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,7 +27,7 @@ const BankingRequirementChecker = () => {
   const [checks, setChecks] = useState<CheckResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
 
-  const runChecks = async () => {
+  const runChecks = useCallback(async () => {
     if (!user?.id) {
       setChecks([
         {
@@ -85,12 +85,15 @@ const BankingRequirementChecker = () => {
               ? "User can create listings and receive payments"
               : "User must complete banking setup before creating listings",
           });
-        } catch (subaccountError: any) {
+        } catch (subaccountError: unknown) {
           results.push({
             name: "Subaccount Code",
             status: "fail",
             message: "Error checking subaccount code",
-            details: subaccountError.message,
+            details:
+              subaccountError instanceof Error
+                ? subaccountError.message
+                : String(subaccountError),
           });
         }
 
@@ -106,12 +109,15 @@ const BankingRequirementChecker = () => {
             status: "pass",
             message: "banking_subaccounts table exists",
           });
-        } catch (schemaError: any) {
+        } catch (schemaError: unknown) {
           results.push({
             name: "Database Schema",
             status: "fail",
             message: "banking_subaccounts table missing",
-            details: schemaError.message,
+            details:
+              schemaError instanceof Error
+                ? schemaError.message
+                : String(schemaError),
           });
         }
 
@@ -151,12 +157,12 @@ const BankingRequirementChecker = () => {
                 details: "Test book was created without subaccount",
               });
             }
-          } catch (error: any) {
+          } catch (error: unknown) {
             results.push({
               name: "RLS Policy",
               status: "pass",
               message: "RLS policy active",
-              details: error.message,
+              details: error instanceof Error ? error.message : String(error),
             });
           }
         } else {
@@ -186,31 +192,31 @@ const BankingRequirementChecker = () => {
               ? "Service can verify banking setup"
               : validation.error?.message,
           });
-        } catch (error: any) {
+        } catch (error: unknown) {
           results.push({
             name: "Seller Validation Service",
             status: "fail",
             message: "Service error",
-            details: error.message,
+            details: error instanceof Error ? error.message : String(error),
           });
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       results.push({
         name: "General Error",
         status: "fail",
         message: "Unexpected error during checks",
-        details: error.message,
+        details: error instanceof Error ? error.message : String(error),
       });
     }
 
     setChecks(results);
     setIsRunning(false);
-  };
+  }, [user?.id]);
 
   useEffect(() => {
     runChecks();
-  }, [user?.id]);
+  }, [user?.id, runChecks]);
 
   const getIcon = (status: CheckResult["status"]) => {
     switch (status) {
@@ -317,7 +323,7 @@ const BankingRequirementChecker = () => {
           <ul className="text-sm text-blue-700 space-y-1">
             <li>• ✅ Auth & User Validation</li>
             <li>• ✅ Block Book Upload Without subaccount_code</li>
-            <li>• ✅ Book Listing Flow with Banking Check</li>
+            <li>��� ✅ Book Listing Flow with Banking Check</li>
             <li>• ✅ Payment Flow with Seller Subaccount</li>
             <li>• ✅ RLS Policy for Database Security</li>
           </ul>

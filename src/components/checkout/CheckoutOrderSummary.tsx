@@ -11,7 +11,14 @@ interface CheckoutOrderSummaryProps {
   deliveryFee: number;
   totalAmount: number;
   deliveryService?: string;
-  shippingAddress?: any;
+  shippingAddress?: {
+    streetAddress: string;
+    suburb: string;
+    city: string;
+    province: string;
+    postalCode: string;
+    country: string;
+  };
 }
 
 const CheckoutOrderSummary: React.FC<CheckoutOrderSummaryProps> = ({

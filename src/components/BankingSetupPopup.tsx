@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { handleBankingQueryError } from "@/utils/bankingErrorHandler";
@@ -41,7 +41,7 @@ const BankingSetupPopup = ({
   const [lastChecked, setLastChecked] = useState<Date | null>(null);
 
   // Check if user has banking details (subaccount_code)
-  const checkBankingStatus = async () => {
+  const checkBankingStatus = useCallback(async () => {
     if (!user?.id) return;
 
     setIsCheckingBanking(true);
@@ -89,14 +89,14 @@ const BankingSetupPopup = ({
     } finally {
       setIsCheckingBanking(false);
     }
-  };
+  }, [user?.id]);
 
   // Check banking status on mount and when triggerCheck changes
   useEffect(() => {
     if (user?.id) {
       checkBankingStatus();
     }
-  }, [user?.id, triggerCheck]);
+  }, [user?.id, triggerCheck, checkBankingStatus]);
 
   const openBankingVault = () => {
     // Open external banking site in popup

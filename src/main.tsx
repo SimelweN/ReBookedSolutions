@@ -66,7 +66,7 @@ const validateEnvironment = () => {
         "⚠️ Missing Supabase configuration (DEV MODE):",
         missing.join(", "),
       );
-      console.warn("⚠️ App will run with limited functionality");
+      console.warn("⚠�� App will run with limited functionality");
       return { isValid: true, missing, isDev: true };
     }
 
@@ -212,24 +212,7 @@ const initializeApp = async () => {
     // Register service worker
     await registerServiceWorker();
 
-    // Only show environment error in very specific production cases (disabled for now)
-    if (
-      false &&
-      import.meta.env.PROD &&
-      !environmentValidation.isValid &&
-      !environmentValidation.isDev
-    ) {
-      // Dynamically import and render environment error component
-      const { default: EnvironmentError } = await import(
-        "./components/EnvironmentError"
-      );
-      root.render(
-        <React.StrictMode>
-          <EnvironmentError missingVariables={environmentValidation.missing} />
-        </React.StrictMode>,
-      );
-      return;
-    }
+    // Environment error component disabled for production
 
     // Render the app with comprehensive error boundaries
     root.render(
@@ -244,25 +227,6 @@ const initializeApp = async () => {
 
     if (import.meta.env.DEV) {
       console.log("✅ ReBooked Solutions loaded successfully");
-
-      // Load login error test utilities for debugging
-      setTimeout(() => {
-        import("./utils/loginErrorTest")
-          .then(({ testLoginErrorHandling, simulateLoginError }) => {
-            (window as any).testLoginErrorHandling = testLoginErrorHandling;
-            (window as any).simulateLoginError = simulateLoginError;
-            console.log("🧪 Login error test utilities loaded:");
-            console.log(
-              "  - testLoginErrorHandling() - Test error message extraction",
-            );
-            console.log(
-              "  - simulateLoginError() - Simulate login error scenarios",
-            );
-          })
-          .catch(() => {
-            // Ignore import errors
-          });
-      }, 1000);
     }
   });
 };
@@ -274,7 +238,7 @@ try {
     throw error;
   });
 } catch (error) {
-  console.error("❌ Critical error during app initialization:", error);
+  console.error("�� Critical error during app initialization:", error);
 
   // Emergency fallback UI
   const rootElement = document.getElementById("root");

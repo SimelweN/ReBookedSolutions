@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -38,7 +38,7 @@ const BankingRequirementGate = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  const checkSubaccountCode = async () => {
+  const checkSubaccountCode = useCallback(async () => {
     if (!user?.id) {
       setHasSubaccountCode(false);
       setIsLoading(false);
@@ -80,11 +80,11 @@ const BankingRequirementGate = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user?.id]);
 
   useEffect(() => {
     checkSubaccountCode();
-  }, [user?.id]);
+  }, [checkSubaccountCode]);
 
   // Also check when window regains focus (user returns from banking setup)
   useEffect(() => {
@@ -96,7 +96,7 @@ const BankingRequirementGate = ({
 
     window.addEventListener("focus", handleFocus);
     return () => window.removeEventListener("focus", handleFocus);
-  }, [hasSubaccountCode]);
+  }, [hasSubaccountCode, checkSubaccountCode]);
 
   const openBankingSetup = () => {
     const bankingUrl = "https://paystack-vault-south-africa.lovable.app";

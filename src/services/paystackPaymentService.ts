@@ -7,8 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { PAYSTACK_CONFIG, PAYSTACK_BANK_CODES } from "@/config/paystack";
 import { BankingDetails } from "@/types/banking";
 import { toast } from "sonner";
-import { PaystackLibraryTest } from "@/utils/paystackLibraryTest";
 import { CourierAssignmentService } from "./courierAssignmentService";
+import { PaystackTransferService } from "./paystackTransferService";
 
 export interface PaymentInitialization {
   email: string;
@@ -193,15 +193,11 @@ export class PaystackPaymentService {
       throw new Error("Paystack public key not configured");
     }
 
-    console.log("🔍 Running comprehensive Paystack library test...");
-    const testResults = await PaystackLibraryTest.testAllMethods();
-    PaystackLibraryTest.logResults(testResults);
+    console.log("🔍 Initializing Paystack payment...");
 
-    // Find the first successful method
-    const successfulMethod = testResults.find((result) => result.success);
-
-    if (!successfulMethod) {
-      console.error("❌ No Paystack library loading method succeeded");
+    // Check if PaystackPop is available
+    if (!window.PaystackPop) {
+      console.error("❌ Paystack library not loaded");
       throw new Error(
         "Paystack payment library not available - all loading methods failed",
       );
@@ -899,7 +895,7 @@ export class PaystackPaymentService {
               transactionError,
             );
           } else {
-            console.log("✅ Transaction record created");
+            console.log("���� Transaction record created");
           }
         } catch (transactionError) {
           console.warn("Transaction record creation failed:", transactionError);
@@ -1407,10 +1403,87 @@ export class PaystackPaymentService {
 
       console.log("✅ Payment released successfully for order:", orderId);
 
-      // TODO: Trigger actual Paystack transfer to seller's subaccount
-      // This would involve calling Paystack's transfer API to move funds from holding
+      // Trigger actual Paystack transfer to seller's subaccount
+      await this.initiateSellerPayout(orderId);
     } catch (error) {
       console.error("Error releasing payment:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Initiate seller payout via Paystack transfer
+   */
+  private static async initiateSellerPayout(orderId: string): Promise<void> {
+    try {
+      console.log("🔄 Initiating seller payout for order:", orderId);
+
+      // Get order details with seller information
+      const { data: order, error: orderError } = await supabase
+        .from("orders")
+        .select(
+          `
+          id,
+          seller_id,
+          seller_amount,
+          seller_subaccount_code,
+          book_title,
+          paystack_ref,
+          profiles!orders_seller_id_fkey(full_name)
+        `,
+        )
+        .eq("id", orderId)
+        .single();
+
+      if (orderError || !order) {
+        throw new Error(`Order not found: ${orderError?.message}`);
+      }
+
+      if (!order.seller_subaccount_code) {
+        throw new Error(
+          `No subaccount code found for seller ${order.seller_id}`,
+        );
+      }
+
+      // Create payout request
+      const payoutRequest = {
+        orderId: order.id,
+        sellerId: order.seller_id,
+        subaccountCode: order.seller_subaccount_code,
+        amount: order.seller_amount,
+        reference: `payout_${order.id}_${Date.now()}`,
+        reason: `Payment for "${order.book_title}" sale`,
+      };
+
+      // Execute transfer via PaystackTransferService
+      await PaystackTransferService.transferToSeller(payoutRequest);
+
+      // Update order to mark payout completed
+      await supabase
+        .from("orders")
+        .update({
+          payment_held: false,
+          payout_completed_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", orderId);
+
+      console.log("✅ Seller payout completed for order:", orderId);
+    } catch (error) {
+      console.error("❌ Seller payout failed:", error);
+
+      // Mark payout as failed
+      await supabase
+        .from("orders")
+        .update({
+          payout_failed_at: new Date().toISOString(),
+          payout_retry_count: supabase.rpc("increment_retry_count", {
+            order_id: orderId,
+          }),
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", orderId);
+
       throw error;
     }
   }
@@ -1447,9 +1520,76 @@ export class PaystackPaymentService {
         orderId,
       );
 
-      // TODO: Trigger automatic refund via Paystack API
+      // Trigger automatic refund via Paystack API
+      await this.processRefund(orderId, order.paystack_ref, order.amount);
     } catch (error) {
       console.error("Error handling expired collection:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Process refund via Paystack API
+   */
+  private static async processRefund(
+    orderId: string,
+    paystackRef: string,
+    amount: number,
+  ): Promise<void> {
+    try {
+      console.log("🔄 Processing refund for order:", orderId);
+
+      // Get Paystack secret key from environment
+      const secretKey = ENV.VITE_PAYSTACK_SECRET_KEY;
+      if (!secretKey) {
+        throw new Error("Paystack secret key not configured");
+      }
+
+      // Call Paystack refund API
+      const response = await fetch("https://api.paystack.co/refund", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${secretKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          transaction: paystackRef,
+          amount: Math.round(amount * 100), // Convert to kobo
+          currency: "ZAR",
+          customer_note: "Refund for expired collection deadline",
+          merchant_note: `Refund for order ${orderId} - collection deadline expired`,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!result.status) {
+        throw new Error(`Refund failed: ${result.message}`);
+      }
+
+      // Update order with refund details
+      await supabase
+        .from("orders")
+        .update({
+          refund_completed_at: new Date().toISOString(),
+          refund_reference: result.data?.reference || "",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", orderId);
+
+      console.log("✅ Refund processed successfully:", result.data);
+    } catch (error) {
+      console.error("❌ Refund processing failed:", error);
+
+      // Mark refund as failed
+      await supabase
+        .from("orders")
+        .update({
+          refund_failed_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", orderId);
+
       throw error;
     }
   }

@@ -21,7 +21,7 @@ interface PaystackPaymentButtonProps {
   className?: string;
   onSuccess?: (reference: string) => void;
   onError?: (error: string) => void;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, string | number | boolean>;
 }
 
 const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({

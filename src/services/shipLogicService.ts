@@ -12,15 +12,9 @@ import {
   ShipLogicParcel,
   ShipLogicContact,
 } from "@/types/shiplogic";
-import { debugEnvironmentVariables } from "@/utils/debugEnvVars";
 
 const SHIPLOGIC_BASE_URL = "https://api.shiplogic.com/v2";
 const SHIPLOGIC_API_KEY = import.meta.env.VITE_SHIPLOGIC_API_KEY || "";
-
-// Debug environment variables (only in development)
-if (import.meta.env.MODE === "development") {
-  debugEnvironmentVariables();
-}
 
 // Validate API key is configured
 if (!SHIPLOGIC_API_KEY) {
