@@ -108,7 +108,11 @@ const Login = () => {
         errorMessage = error;
       } else if (error && typeof error === "object") {
         // Handle object errors (like Supabase errors)
-        const errorObj = error as any;
+        const errorObj = error as {
+          message?: string;
+          error_description?: string;
+          error?: string;
+        };
         errorMessage =
           errorObj.message ||
           errorObj.error_description ||
