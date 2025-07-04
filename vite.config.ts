@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+    dedupe: ["react", "react-dom"], // Prevent multiple React instances
   },
   build: {
     // Optimize build output
@@ -169,13 +170,6 @@ export default defineConfig(({ mode }) => ({
     __REACT_DEVTOOLS_GLOBAL_HOOK__: "undefined",
   },
 
-  // Ensure proper module resolution
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-    dedupe: ["react", "react-dom"], // Prevent multiple React instances
-  },
   // Performance optimizations
   esbuild: {
     // Drop console logs and debugger statements in production
