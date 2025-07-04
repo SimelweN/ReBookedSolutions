@@ -50,7 +50,15 @@ const PaystackDashboard: React.FC = () => {
     message: "",
   });
 
-  const [orderHistory, setOrderHistory] = useState<any[]>([]);
+  const [orderHistory, setOrderHistory] = useState<
+    {
+      id: string;
+      amount: number;
+      status: string;
+      created_at: string;
+      reference?: string;
+    }[]
+  >([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [databaseTest, setDatabaseTest] = useState<{
     status: "idle" | "testing" | "success" | "error";
