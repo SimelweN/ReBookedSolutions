@@ -56,7 +56,6 @@ const BookDetails = React.lazy(() => import("./pages/BookDetails"));
 const Profile = React.lazy(() => import("./pages/Profile"));
 const CreateListing = React.lazy(() => import("./pages/CreateListing"));
 const GoogleMapsDemo = React.lazy(() => import("./pages/GoogleMapsDemo"));
-const MapsTest = React.lazy(() => import("./pages/MapsTest"));
 const BasicMapsExample = React.lazy(() => import("./pages/BasicMapsExample"));
 const WorkingMapsDemo = React.lazy(() => import("./pages/WorkingMapsDemo"));
 const AdminReports = React.lazy(() => import("./pages/AdminReports"));
