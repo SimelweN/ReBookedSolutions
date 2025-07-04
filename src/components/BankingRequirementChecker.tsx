@@ -157,12 +157,12 @@ const BankingRequirementChecker = () => {
                 details: "Test book was created without subaccount",
               });
             }
-          } catch (error: any) {
+          } catch (error: unknown) {
             results.push({
               name: "RLS Policy",
               status: "pass",
               message: "RLS policy active",
-              details: error.message,
+              details: error instanceof Error ? error.message : String(error),
             });
           }
         } else {
