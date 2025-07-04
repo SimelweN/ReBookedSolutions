@@ -96,7 +96,7 @@ const BankingRequirementGate = ({
 
     window.addEventListener("focus", handleFocus);
     return () => window.removeEventListener("focus", handleFocus);
-  }, [hasSubaccountCode]);
+  }, [hasSubaccountCode, checkSubaccountCode]);
 
   const openBankingSetup = () => {
     const bankingUrl = "https://paystack-vault-south-africa.lovable.app";
