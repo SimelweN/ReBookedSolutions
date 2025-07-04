@@ -542,14 +542,6 @@ function App() {
                             }
                           />
                           <Route
-                            path="/qa"
-                            element={
-                              <LazyWrapper>
-                                <TestQADashboard />
-                              </LazyWrapper>
-                            }
-                          />
-                          <Route
                             path="/books"
                             element={
                               <LazyWrapper>
