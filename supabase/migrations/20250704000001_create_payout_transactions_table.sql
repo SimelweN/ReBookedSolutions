@@ -12,7 +12,7 @@ CREATE TABLE payout_transactions (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   processed_at TIMESTAMPTZ,
-  
+
   -- Indexes for performance
   CONSTRAINT unique_order_payout UNIQUE(order_id)
 );
@@ -33,8 +33,8 @@ CREATE POLICY "Sellers can view own payouts" ON payout_transactions
 CREATE POLICY "Admin can manage payouts" ON payout_transactions
   FOR ALL USING (
     EXISTS (
-      SELECT 1 FROM profiles 
-      WHERE id = auth.uid() 
+      SELECT 1 FROM profiles
+      WHERE id = auth.uid()
       AND role = 'admin'
     )
   );
@@ -53,11 +53,14 @@ CREATE TRIGGER update_payout_transactions_updated_at
   FOR EACH ROW
   EXECUTE FUNCTION update_payout_transactions_updated_at();
 
--- Add payout_completed_at column to orders table
-ALTER TABLE orders 
+-- Add payout and refund tracking columns to orders table
+ALTER TABLE orders
 ADD COLUMN IF NOT EXISTS payout_completed_at TIMESTAMPTZ,
 ADD COLUMN IF NOT EXISTS payout_failed_at TIMESTAMPTZ,
-ADD COLUMN IF NOT EXISTS payout_retry_count INTEGER DEFAULT 0;
+ADD COLUMN IF NOT EXISTS payout_retry_count INTEGER DEFAULT 0,
+ADD COLUMN IF NOT EXISTS refund_completed_at TIMESTAMPTZ,
+ADD COLUMN IF NOT EXISTS refund_failed_at TIMESTAMPTZ,
+ADD COLUMN IF NOT EXISTS refund_reference TEXT;
 
 -- Create function to automatically process payouts when order is collected
 CREATE OR REPLACE FUNCTION trigger_payout_on_collection()
@@ -78,7 +81,7 @@ BEGIN
       'pending'
     );
   END IF;
-  
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
