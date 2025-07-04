@@ -510,14 +510,6 @@ function App() {
                             }
                           />
                           <Route
-                            path="/maps-test"
-                            element={
-                              <LazyWrapper>
-                                <MapsTest />
-                              </LazyWrapper>
-                            }
-                          />
-                          <Route
                             path="/basic-maps"
                             element={
                               <LazyWrapper>
