@@ -28,69 +28,70 @@ const BroadcastManager = () => {
     if (BROADCASTS_DISABLED) {
       return;
     }
-      // Check if broadcasts are disabled for this session
-      if (localStorage.getItem("broadcasts_disabled") === "true") {
+    // Check if broadcasts are disabled for this session
+    if (localStorage.getItem("broadcasts_disabled") === "true") {
+      return;
+    }
+
+    // Prevent rapid successive calls (debounce with 5 second minimum interval)
+    const now = Date.now();
+    if (now - lastCheckTime < 5000) {
+      return;
+    }
+
+    // Prevent concurrent requests
+    if (isLoading) {
+      return;
+    }
+
+    setIsLoading(true);
+    setLastCheckTime(now);
+
+    try {
+      const latestBroadcast = await getLatestBroadcast();
+
+      if (!latestBroadcast) {
         return;
       }
 
-      // Prevent rapid successive calls (debounce with 5 second minimum interval)
-      const now = Date.now();
-      if (now - lastCheckTime < 5000) {
-        return;
-      }
-
-      // Prevent concurrent requests
-      if (isLoading) {
-        return;
-      }
-
-      setIsLoading(true);
-      setLastCheckTime(now);
-
-      try {
-        const latestBroadcast = await getLatestBroadcast();
-
-        if (!latestBroadcast) {
-          return;
-        }
-
-        // Check if user has seen this broadcast (using localStorage for guests)
-        if (isAuthenticated && user) {
-          const hasViewed = await hasBroadcastBeenViewed(
-            user.id,
-            latestBroadcast.id,
-          );
-          if (!hasViewed) {
-            setCurrentBroadcast(latestBroadcast);
-            setShowBroadcast(true);
-            // Save to notifications for logged-in users - fix parameter order
-            try {
-              await saveBroadcastToNotifications(latestBroadcast, user.id);
-            } catch (notifError) {
-              // Silently handle notification errors
-            }
-          }
-        } else {
-          // For guests, use localStorage
-          const viewedBroadcasts = JSON.parse(
-            localStorage.getItem("viewedBroadcasts") || "[]",
-          );
-
-          if (!viewedBroadcasts.includes(latestBroadcast.id)) {
-            setCurrentBroadcast(latestBroadcast);
-            setShowBroadcast(true);
+      // Check if user has seen this broadcast (using localStorage for guests)
+      if (isAuthenticated && user) {
+        const hasViewed = await hasBroadcastBeenViewed(
+          user.id,
+          latestBroadcast.id,
+        );
+        if (!hasViewed) {
+          setCurrentBroadcast(latestBroadcast);
+          setShowBroadcast(true);
+          // Save to notifications for logged-in users - fix parameter order
+          try {
+            await saveBroadcastToNotifications(latestBroadcast, user.id);
+          } catch (notifError) {
+            // Silently handle notification errors
           }
         }
-      } catch (error) {
-        // Broadcasts are optional - fail silently
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      } else {
+        // For guests, use localStorage
+        const viewedBroadcasts = JSON.parse(
+          localStorage.getItem("viewedBroadcasts") || "[]",
+        );
 
+        if (!viewedBroadcasts.includes(latestBroadcast.id)) {
+          setCurrentBroadcast(latestBroadcast);
+          setShowBroadcast(true);
+        }
+      }
+    } catch (error) {
+      // Broadcasts are optional - fail silently
+    } finally {
+      setIsLoading(false);
+    }
+  }, [BROADCASTS_DISABLED, isLoading, lastCheckTime, user, isAuthenticated]);
+
+  useEffect(() => {
     // Only check for broadcasts if not already loading and if enough time has passed
     checkForBroadcasts();
-  }, [isAuthenticated, user?.id]); // Only depend on user ID, not the full user object
+  }, [isAuthenticated, user?.id, checkForBroadcasts]); // Only depend on user ID, not the full user object
 
   const handleDismiss = async () => {
     if (!currentBroadcast) return;
