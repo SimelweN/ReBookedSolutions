@@ -116,19 +116,25 @@ const Checkout: React.FC = () => {
     { number: 3, title: "Payment", icon: CreditCard },
   ];
 
-  const handleShippingComplete = (data: any, deliveryOptions: any[]) => {
+  const handleShippingComplete = (
+    data: ShippingData,
+    deliveryOptions: DeliveryQuote[],
+  ) => {
     setShippingData(data);
     setDeliveryQuotes(deliveryOptions);
     setCurrentStep(2);
     toast.success("Address saved! Please select your delivery option.");
   };
 
-  const handleDeliverySelected = (delivery: any) => {
+  const handleDeliverySelected = (delivery: DeliveryQuote) => {
     setSelectedDelivery(delivery);
     setCurrentStep(3);
   };
 
-  const handlePaymentSuccess = async (paymentData: any) => {
+  const handlePaymentSuccess = async (paymentData: {
+    reference: string;
+    status: string;
+  }) => {
     try {
       setIsProcessing(true);
 
