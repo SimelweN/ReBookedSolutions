@@ -192,16 +192,16 @@ const BankingRequirementChecker = () => {
               ? "Service can verify banking setup"
               : validation.error?.message,
           });
-        } catch (error: any) {
+        } catch (error: unknown) {
           results.push({
             name: "Seller Validation Service",
             status: "fail",
             message: "Service error",
-            details: error.message,
+            details: error instanceof Error ? error.message : String(error),
           });
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       results.push({
         name: "General Error",
         status: "fail",
