@@ -163,6 +163,12 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
     }
   }, [watchedValues.city, watchedValues.province, watchedValues.postal_code]);
 
+  // Early return check moved here after all hooks
+  if (!onComplete || !cartItems) {
+    console.error("EnhancedShippingForm: Invalid props");
+    return <div>Loading shipping form...</div>;
+  }
+
   const loadSavedAddress = async () => {
     try {
       const {
