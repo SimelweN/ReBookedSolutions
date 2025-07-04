@@ -89,7 +89,7 @@ const BankingSetupPopup = ({
     } finally {
       setIsCheckingBanking(false);
     }
-  };
+  }, [user?.id]);
 
   // Check banking status on mount and when triggerCheck changes
   useEffect(() => {
