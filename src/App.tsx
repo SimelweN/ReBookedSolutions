@@ -740,8 +740,7 @@ function App() {
               </AuthProvider>
             </GoogleMapsProvider>
 
-            {/* Configuration checker for development only */}
-            {false && <ConfigurationChecker />}
+            {/* Configuration checker disabled */}
 
             {/* Performance monitoring */}
             <PerformanceMetrics />
