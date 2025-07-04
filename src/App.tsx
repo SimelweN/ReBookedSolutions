@@ -741,7 +741,7 @@ function App() {
             </GoogleMapsProvider>
 
             {/* Configuration checker for development only */}
-            {import.meta.env.DEV && false && <ConfigurationChecker />}
+            {false && <ConfigurationChecker />}
 
             {/* Performance monitoring */}
             <PerformanceMetrics />
