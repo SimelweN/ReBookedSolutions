@@ -27,8 +27,6 @@ import { useCart } from "@/contexts/CartContext";
 import PaystackPaymentService from "@/services/paystackPaymentService";
 import { toast } from "sonner";
 import PaystackConfigChecker from "./PaystackConfigChecker";
-import { PaystackLibraryTest } from "@/utils/paystackLibraryTest";
-import DevPaymentTester from "./DevPaymentTester";
 
 const PaystackDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -255,9 +253,6 @@ const PaystackDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Development Mode Indicator */}
-      <DevPaymentTester />
-
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
