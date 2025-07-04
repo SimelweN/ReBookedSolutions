@@ -114,7 +114,10 @@ const BankingRequirementChecker = () => {
             name: "Database Schema",
             status: "fail",
             message: "banking_subaccounts table missing",
-            details: schemaError.message,
+            details:
+              schemaError instanceof Error
+                ? schemaError.message
+                : String(schemaError),
           });
         }
 
