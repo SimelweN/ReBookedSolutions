@@ -103,7 +103,6 @@ const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
 const EnhancedQADashboard = React.lazy(
   () => import("./pages/EnhancedQADashboard"),
 );
-const TestQADashboard = React.lazy(() => import("./pages/TestQADashboard"));
 const SystemHealth = React.lazy(() => import("./pages/SystemHealth"));
 const UserDashboard = React.lazy(() => import("./pages/UserDashboard"));
 const EmailDemo = React.lazy(() => import("./pages/EmailDemo"));
