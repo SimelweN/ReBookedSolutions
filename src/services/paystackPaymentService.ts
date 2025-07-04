@@ -192,15 +192,11 @@ export class PaystackPaymentService {
       throw new Error("Paystack public key not configured");
     }
 
-    console.log("🔍 Running comprehensive Paystack library test...");
-    const testResults = await PaystackLibraryTest.testAllMethods();
-    PaystackLibraryTest.logResults(testResults);
+    console.log("🔍 Initializing Paystack payment...");
 
-    // Find the first successful method
-    const successfulMethod = testResults.find((result) => result.success);
-
-    if (!successfulMethod) {
-      console.error("❌ No Paystack library loading method succeeded");
+    // Check if PaystackPop is available
+    if (!window.PaystackPop) {
+      console.error("❌ Paystack library not loaded");
       throw new Error(
         "Paystack payment library not available - all loading methods failed",
       );
@@ -898,7 +894,7 @@ export class PaystackPaymentService {
               transactionError,
             );
           } else {
-            console.log("✅ Transaction record created");
+            console.log("��� Transaction record created");
           }
         } catch (transactionError) {
           console.warn("Transaction record creation failed:", transactionError);
@@ -1404,7 +1400,7 @@ export class PaystackPaymentService {
         throw new Error(`Failed to release payment: ${error.message}`);
       }
 
-      console.log("✅ Payment released successfully for order:", orderId);
+      console.log("�� Payment released successfully for order:", orderId);
 
       // TODO: Trigger actual Paystack transfer to seller's subaccount
       // This would involve calling Paystack's transfer API to move funds from holding
