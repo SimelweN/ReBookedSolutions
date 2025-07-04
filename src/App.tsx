@@ -741,6 +741,16 @@ function App() {
                             }
                           />
 
+                          {/* Development/Debug Routes */}
+                          <Route
+                            path="/react-context-test"
+                            element={
+                              <LazyWrapper>
+                                <ReactContextTest />
+                              </LazyWrapper>
+                            }
+                          />
+
                           {/* 404 Route */}
                           <Route
                             path="*"
