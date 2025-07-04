@@ -895,7 +895,7 @@ export class PaystackPaymentService {
               transactionError,
             );
           } else {
-            console.log("��� Transaction record created");
+            console.log("���� Transaction record created");
           }
         } catch (transactionError) {
           console.warn("Transaction record creation failed:", transactionError);
@@ -1524,6 +1524,72 @@ export class PaystackPaymentService {
       await this.processRefund(orderId, order.paystack_ref, order.amount);
     } catch (error) {
       console.error("Error handling expired collection:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Process refund via Paystack API
+   */
+  private static async processRefund(
+    orderId: string,
+    paystackRef: string,
+    amount: number,
+  ): Promise<void> {
+    try {
+      console.log("🔄 Processing refund for order:", orderId);
+
+      // Get Paystack secret key from environment
+      const secretKey = ENV.VITE_PAYSTACK_SECRET_KEY;
+      if (!secretKey) {
+        throw new Error("Paystack secret key not configured");
+      }
+
+      // Call Paystack refund API
+      const response = await fetch("https://api.paystack.co/refund", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${secretKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          transaction: paystackRef,
+          amount: Math.round(amount * 100), // Convert to kobo
+          currency: "ZAR",
+          customer_note: "Refund for expired collection deadline",
+          merchant_note: `Refund for order ${orderId} - collection deadline expired`,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!result.status) {
+        throw new Error(`Refund failed: ${result.message}`);
+      }
+
+      // Update order with refund details
+      await supabase
+        .from("orders")
+        .update({
+          refund_completed_at: new Date().toISOString(),
+          refund_reference: result.data?.reference || "",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", orderId);
+
+      console.log("✅ Refund processed successfully:", result.data);
+    } catch (error) {
+      console.error("❌ Refund processing failed:", error);
+
+      // Mark refund as failed
+      await supabase
+        .from("orders")
+        .update({
+          refund_failed_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", orderId);
+
       throw error;
     }
   }
