@@ -96,7 +96,7 @@ const BankingSetupPopup = ({
     if (user?.id) {
       checkBankingStatus();
     }
-  }, [user?.id, triggerCheck]);
+  }, [user?.id, triggerCheck, checkBankingStatus]);
 
   const openBankingVault = () => {
     // Open external banking site in popup
