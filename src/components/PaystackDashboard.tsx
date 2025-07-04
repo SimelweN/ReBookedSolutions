@@ -78,7 +78,9 @@ const PaystackDashboard: React.FC = () => {
         : paystackKey?.startsWith("pk_test_")
           ? "test"
           : "none",
-      scriptLoaded: Boolean((window as any).PaystackPop),
+      scriptLoaded: Boolean(
+        (window as Window & { PaystackPop?: unknown }).PaystackPop,
+      ),
     });
 
     // Load Paystack script if not already loaded
