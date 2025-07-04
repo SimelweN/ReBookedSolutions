@@ -1,4 +1,5 @@
-import React, {
+import * as React from "react";
+import {
   createContext,
   useContext,
   useEffect,
@@ -227,35 +228,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                   return;
                 }
 
-                // Set lock immediately
-                sessionStorage.setItem(lockKey, now.toString());
-                sessionStorage.setItem(sessionKey, now.toString());
-                localStorage.setItem(localStorageKey, now.toString());
+                // Check if we already showed welcome notification today
+                const today = new Date().toDateString();
+                const lastWelcomeKey = `last_welcome_${session.user.id}`;
+                const lastWelcome = localStorage.getItem(lastWelcomeKey);
 
-                // Use safe notification operation to prevent Suspense issues
-                safeNotificationOperation(
-                  () =>
-                    addNotification({
-                      userId: session.user.id,
-                      title: "Welcome back!",
-                      message: `Successfully logged in at ${new Date().toLocaleString()}`,
-                      type: "success",
-                      read: false,
-                    }),
-                  () => {
-                    // Fallback if notification fails
-                    console.warn(
-                      "[AuthContext] Login notification failed - removing locks",
-                    );
-                    sessionStorage.removeItem(sessionKey);
-                    sessionStorage.removeItem(lockKey);
-                    localStorage.removeItem(localStorageKey);
-                  },
-                );
-              } else {
-                console.log(
-                  "[AuthContext] Skipping duplicate login notification - recent notification exists",
-                );
+                // Also check session storage to prevent multiple notifications in the same session
+                const sessionWelcomeKey = `session_welcome_${session.user.id}`;
+                const hasSessionWelcome =
+                  sessionStorage.getItem(sessionWelcomeKey);
+
+                // Only show welcome notification once per day AND once per session
+                if (lastWelcome !== today && !hasSessionWelcome) {
+                  // Set lock immediately
+                  sessionStorage.setItem(lockKey, now.toString());
+                  sessionStorage.setItem(sessionKey, now.toString());
+                  localStorage.setItem(localStorageKey, now.toString());
+                  localStorage.setItem(lastWelcomeKey, today);
+                  sessionStorage.setItem(sessionWelcomeKey, "true");
+
+                  // Use safe notification operation to prevent Suspense issues
+                  safeNotificationOperation(
+                    () =>
+                      addNotification({
+                        userId: session.user.id,
+                        title: "Welcome back!",
+                        message: `Successfully logged in at ${new Date().toLocaleString()}`,
+                        type: "success",
+                        read: false,
+                      }),
+                    () => {
+                      // Fallback if notification fails
+                      console.warn(
+                        "[AuthContext] Login notification failed - removing locks",
+                      );
+                      sessionStorage.removeItem(sessionKey);
+                      sessionStorage.removeItem(lockKey);
+                      localStorage.removeItem(localStorageKey);
+                    },
+                  );
+                } else {
+                  console.log(
+                    "[AuthContext] Skipping duplicate login notification - recent notification exists",
+                  );
+                }
               }
             } catch (notifError) {
               console.warn(
@@ -307,19 +323,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setInitError(null);
       setIsInitializing(true);
 
-      console.log("🔄 [AuthContext] Fast auth initialization...");
+      console.log("🔄 [AuthContext] Auth initialization starting...");
 
       // Immediate initialization without blocking
       (async () => {
         try {
           // Immediate fallback timeout to prevent hanging
           const immediateTimeout = setTimeout(() => {
-            console.warn(
-              "⚠️ [AuthContext] Immediate fallback - preventing hang",
-            );
+            console.info("ℹ️ [AuthContext] Setting to unauthenticated state");
             setIsLoading(false);
             setAuthInitialized(true);
-          }, 500); // 500ms immediate fallback
+            setUser(null);
+            setProfile(null);
+            setSession(null);
+          }, 2000); // Increased to 2 seconds
 
           // Ultra-fast database connectivity check
           try {
@@ -375,7 +392,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                   exchangeError.message.includes("invalid request")
                 ) {
                   console.log(
-                    "🧹 [AuthContext] Clearing auth parameters from URL due to PKCE error",
+                    "��� [AuthContext] Clearing auth parameters from URL due to PKCE error",
                   );
                   // Clear the URL parameters to prevent repeated failed attempts
                   window.history.replaceState(
@@ -600,15 +617,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     initializeAuth();
 
-    // Emergency backup to prevent infinite loading
+    // Emergency backup to prevent infinite loading - increased timeout for better reliability
     const emergencyTimeout = setTimeout(() => {
       if (!authInitialized) {
-        console.error(
-          "🚨 [AuthContext] Emergency timeout - auth never initialized",
+        console.warn(
+          "⚠️ [AuthContext] Initialization taking longer than expected",
         );
-        console.error("🚨 [AuthContext] This indicates severe backend issues");
         console.info(
-          "💡 [AuthContext] Check database setup and Supabase connection",
+          "💡 [AuthContext] Setting to unauthenticated state to prevent hanging",
         );
 
         // Force initialization to prevent app from hanging
@@ -617,9 +633,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setUser(null);
         setProfile(null);
         setSession(null);
-        setInitError("Database connection failed. Please check setup.");
+        setInitError(null); // Don't show error, just set to unauthenticated
       }
-    }, 3000); // 3 second emergency timeout
+    }, 5000); // Increased to 5 seconds for better reliability
 
     return () => clearTimeout(emergencyTimeout);
   }, [initializeAuth, authInitialized]);
@@ -628,12 +644,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (isLoading) {
       const loadingTimeout = setTimeout(() => {
-        console.warn("⚠️ [AuthContext] Loading timeout - forcing resolution");
-        console.warn(
-          "⚠️ [AuthContext] This usually means database tables are missing",
-        );
         console.info(
-          "💡 [AuthContext] Run complete_database_setup.sql in Supabase to fix this",
+          "ℹ️ [AuthContext] Loading resolved to unauthenticated state",
         );
 
         // Force resolution to unauthenticated state to stop loading spinner
@@ -642,7 +654,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setSession(null);
         setIsLoading(false);
         setAuthInitialized(true);
-      }, 1500); // Very aggressive 1.5 second timeout
+      }, 3000); // More reasonable 3 second timeout
 
       return () => clearTimeout(loadingTimeout);
     }

@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useEffect } from "react";
+import * as React from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
@@ -170,7 +171,11 @@ const EnhancedUniversityProfile: React.FC = React.memo(() => {
   // Enhanced faculties with APS filtering
   const [facultiesData, setFacultiesData] = useState<{
     faculties: Faculty[];
-    statistics: any;
+    statistics: {
+      totalPrograms: number;
+      averageAPS: number;
+      facultyCount: number;
+    };
     errors: string[];
     warnings: string[];
     isLoading: boolean;
@@ -194,12 +199,20 @@ const EnhancedUniversityProfile: React.FC = React.memo(() => {
 
       // Debug logging
       if (import.meta.env.DEV) {
-        console.log(`Loading faculties for university: ${universityId}`);
+        console.log(`🏫 Loading faculties for university: ${universityId}`);
       }
 
       try {
         // Get faculties directly from the university data
         const faculties = getUniversityFaculties(universityId);
+
+        // Debug logging
+        if (import.meta.env.DEV) {
+          console.log(
+            `✅ Loaded ${faculties.length} faculties for ${universityId}:`,
+            faculties.map((f) => f.name),
+          );
+        }
 
         // Calculate statistics
         const totalDegrees = faculties.reduce(
@@ -454,7 +467,7 @@ const EnhancedUniversityProfile: React.FC = React.memo(() => {
   // Error handling
   if (universityData.error) {
     return (
-      <>
+      <div>
         <CampusNavbar />
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
           <div className="text-center max-w-md mx-auto p-6">
@@ -474,12 +487,49 @@ const EnhancedUniversityProfile: React.FC = React.memo(() => {
             </Button>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
   const university = universityData.university;
-  if (!university) return null;
+
+  // Debug logging for troubleshooting
+  if (import.meta.env.DEV) {
+    console.log("🔍 University data debug:", {
+      universityId,
+      universityData,
+      university,
+      allUniversities: ALL_SOUTH_AFRICAN_UNIVERSITIES.length,
+    });
+  }
+
+  // If no university found, show better error handling
+  if (!university) {
+    if (import.meta.env.DEV) {
+      console.error(`❌ University not found: ${universityId}`);
+      console.log(
+        "Available universities:",
+        ALL_SOUTH_AFRICAN_UNIVERSITIES.map((u) => u.id),
+      );
+    }
+
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">University Not Found</h1>
+          <p className="text-gray-600 mb-4">
+            University "{universityId}" could not be found.
+          </p>
+          <button
+            onClick={() => navigate("/university-info")}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Back to Universities
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -1031,255 +1081,262 @@ const EnhancedUniversityProfile: React.FC = React.memo(() => {
                               {expandedFaculties.has(faculty.id) && (
                                 <CardContent className="pt-4">
                                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
-                                    {faculty.degrees?.map((degree) => {
-                                      // Use centralized eligibility service
-                                      const eligibilityResult =
-                                        (hasValidProfile && userProfile) ||
-                                        (fromAPS && apsScore)
-                                          ? assessEligibility(
-                                              {
-                                                name: degree.name,
-                                                faculty: degree.faculty,
-                                                description: degree.description,
-                                                duration: degree.duration,
-                                                defaultAps:
-                                                  degree.apsRequirement,
-                                                subjects: degree.subjects,
-                                                careerProspects:
-                                                  degree.careerProspects,
-                                                assignmentRule: { type: "all" },
-                                              },
-                                              universityId!,
-                                              fromAPS && apsScore
-                                                ? parseInt(apsScore)
-                                                : userProfile?.totalAPS || 0,
-                                              fromAPS && apsScore
-                                                ? []
-                                                : userProfile?.subjects || [], // For URL params, we only check APS, not subjects
-                                            )
-                                          : null;
-
-                                      const isEligible =
-                                        eligibilityResult?.isEligible || false;
-                                      const category =
-                                        eligibilityResult?.category ||
-                                        "not-eligible";
-
-                                      return (
-                                        <div
-                                          key={degree.id}
-                                          className={`p-3 lg:p-4 rounded-xl border-2 transition-all ${
-                                            category === "eligible"
-                                              ? "bg-gradient-to-br from-green-50 to-green-100 border-green-200"
-                                              : category === "almost-eligible"
-                                                ? "bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200"
-                                                : "bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200"
-                                          }`}
-                                        >
-                                          <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-3 gap-2">
-                                            <h4 className="font-semibold text-slate-900 leading-tight text-sm lg:text-base flex-1">
-                                              {degree.name}
-                                            </h4>
-                                            <div className="flex gap-2 flex-wrap">
-                                              <Badge
-                                                className={`text-xs whitespace-nowrap ${
-                                                  category === "eligible"
-                                                    ? "bg-green-600 hover:bg-green-700"
-                                                    : category ===
-                                                        "almost-eligible"
-                                                      ? "bg-yellow-600 hover:bg-yellow-700"
-                                                      : "bg-slate-600 hover:bg-slate-700"
-                                                }`}
-                                                title={getUniversityAPSMethodology(
-                                                  universityId!,
-                                                )}
-                                              >
+                                    {faculty.degrees?.map(
+                                      (degree, degreeIndex) => {
+                                        // Use centralized eligibility service
+                                        const eligibilityResult =
+                                          (hasValidProfile && userProfile) ||
+                                          (fromAPS && apsScore)
+                                            ? assessEligibility(
                                                 {
-                                                  getUniversitySpecificAPSDisplay(
-                                                    universityId!,
+                                                  name: degree.name,
+                                                  faculty: degree.faculty,
+                                                  description:
+                                                    degree.description,
+                                                  duration: degree.duration,
+                                                  defaultAps:
                                                     degree.apsRequirement,
-                                                  ).displayText
-                                                }
-                                              </Badge>
+                                                  subjects: degree.subjects,
+                                                  careerProspects:
+                                                    degree.careerProspects,
+                                                  assignmentRule: {
+                                                    type: "all",
+                                                  },
+                                                },
+                                                universityId!,
+                                                fromAPS && apsScore
+                                                  ? parseInt(apsScore)
+                                                  : userProfile?.totalAPS || 0,
+                                                fromAPS && apsScore
+                                                  ? []
+                                                  : userProfile?.subjects || [], // For URL params, we only check APS, not subjects
+                                              )
+                                            : null;
 
-                                              {category === "eligible" && (
-                                                <Badge className="bg-emerald-100 text-emerald-700 text-xs">
-                                                  <CheckCircle className="w-3 h-3 mr-1" />
-                                                  Eligible
-                                                </Badge>
-                                              )}
+                                        const isEligible =
+                                          eligibilityResult?.isEligible ||
+                                          false;
+                                        const category =
+                                          eligibilityResult?.category ||
+                                          "not-eligible";
 
-                                              {category ===
-                                                "almost-eligible" && (
-                                                <Badge className="bg-yellow-100 text-yellow-700 text-xs">
-                                                  <AlertTriangle className="w-3 h-3 mr-1" />
-                                                  Almost Eligible
-                                                </Badge>
-                                              )}
-
-                                              {eligibilityResult &&
-                                                eligibilityResult.confidence <
-                                                  100 && (
-                                                  <Badge
-                                                    variant="outline"
-                                                    className="text-xs"
-                                                  >
-                                                    {
-                                                      eligibilityResult.confidence
-                                                    }
-                                                    % confidence
-                                                  </Badge>
-                                                )}
-                                            </div>
-                                          </div>
-
-                                          <p className="text-xs lg:text-sm text-slate-600 mb-3 line-clamp-2">
-                                            {degree.description}
-                                          </p>
-
-                                          {/* Detailed eligibility information */}
-                                          {(hasValidProfile ||
-                                            (fromAPS && apsScore)) &&
-                                            eligibilityResult && (
-                                              <div
-                                                className={`mb-3 p-3 rounded border ${
-                                                  category === "eligible"
-                                                    ? "bg-green-50 border-green-200"
-                                                    : category ===
-                                                        "almost-eligible"
-                                                      ? "bg-yellow-50 border-yellow-200"
-                                                      : "bg-red-50 border-red-200"
-                                                }`}
-                                              >
-                                                <div
-                                                  className={`text-xs font-medium mb-2 ${
+                                        return (
+                                          <div
+                                            key={`${faculty.id}-${degree.id}-${degreeIndex}`}
+                                            className={`p-3 lg:p-4 rounded-xl border-2 transition-all ${
+                                              category === "eligible"
+                                                ? "bg-gradient-to-br from-green-50 to-green-100 border-green-200"
+                                                : category === "almost-eligible"
+                                                  ? "bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200"
+                                                  : "bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200"
+                                            }`}
+                                          >
+                                            <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-3 gap-2">
+                                              <h4 className="font-semibold text-slate-900 leading-tight text-sm lg:text-base flex-1">
+                                                {degree.name}
+                                              </h4>
+                                              <div className="flex gap-2 flex-wrap">
+                                                <Badge
+                                                  className={`text-xs whitespace-nowrap ${
                                                     category === "eligible"
-                                                      ? "text-green-800"
+                                                      ? "bg-green-600 hover:bg-green-700"
                                                       : category ===
                                                           "almost-eligible"
-                                                        ? "text-yellow-800"
-                                                        : "text-red-800"
+                                                        ? "bg-yellow-600 hover:bg-yellow-700"
+                                                        : "bg-slate-600 hover:bg-slate-700"
                                                   }`}
-                                                >
-                                                  Eligibility Assessment:
-                                                </div>
-
-                                                <p
-                                                  className={`text-xs mb-2 ${
-                                                    category === "eligible"
-                                                      ? "text-green-700"
-                                                      : category ===
-                                                          "almost-eligible"
-                                                        ? "text-yellow-700"
-                                                        : "text-red-700"
-                                                  }`}
+                                                  title={getUniversityAPSMethodology(
+                                                    universityId!,
+                                                  )}
                                                 >
                                                   {
-                                                    eligibilityResult.overallReason
+                                                    getUniversitySpecificAPSDisplay(
+                                                      universityId!,
+                                                      degree.apsRequirement,
+                                                    ).displayText
                                                   }
-                                                </p>
+                                                </Badge>
 
-                                                {/* APS Status */}
-                                                <div className="text-xs space-y-1">
+                                                {category === "eligible" && (
+                                                  <Badge className="bg-emerald-100 text-emerald-700 text-xs">
+                                                    <CheckCircle className="w-3 h-3 mr-1" />
+                                                    Eligible
+                                                  </Badge>
+                                                )}
+
+                                                {category ===
+                                                  "almost-eligible" && (
+                                                  <Badge className="bg-yellow-100 text-yellow-700 text-xs">
+                                                    <AlertTriangle className="w-3 h-3 mr-1" />
+                                                    Almost Eligible
+                                                  </Badge>
+                                                )}
+
+                                                {eligibilityResult &&
+                                                  eligibilityResult.confidence <
+                                                    100 && (
+                                                    <Badge
+                                                      variant="outline"
+                                                      className="text-xs"
+                                                    >
+                                                      {
+                                                        eligibilityResult.confidence
+                                                      }
+                                                      % confidence
+                                                    </Badge>
+                                                  )}
+                                              </div>
+                                            </div>
+
+                                            <p className="text-xs lg:text-sm text-slate-600 mb-3 line-clamp-2">
+                                              {degree.description}
+                                            </p>
+
+                                            {/* Detailed eligibility information */}
+                                            {(hasValidProfile ||
+                                              (fromAPS && apsScore)) &&
+                                              eligibilityResult && (
+                                                <div
+                                                  className={`mb-3 p-3 rounded border ${
+                                                    category === "eligible"
+                                                      ? "bg-green-50 border-green-200"
+                                                      : category ===
+                                                          "almost-eligible"
+                                                        ? "bg-yellow-50 border-yellow-200"
+                                                        : "bg-red-50 border-red-200"
+                                                  }`}
+                                                >
                                                   <div
-                                                    className={`flex justify-between ${
-                                                      eligibilityResult
-                                                        .apsStatus.meetsAPS
-                                                        ? "text-green-700"
-                                                        : "text-red-700"
+                                                    className={`text-xs font-medium mb-2 ${
+                                                      category === "eligible"
+                                                        ? "text-green-800"
+                                                        : category ===
+                                                            "almost-eligible"
+                                                          ? "text-yellow-800"
+                                                          : "text-red-800"
                                                     }`}
                                                   >
-                                                    <span>APS:</span>
-                                                    <span>
-                                                      {
-                                                        eligibilityResult
-                                                          .apsStatus.userAPS
-                                                      }
-                                                      /
-                                                      {
-                                                        eligibilityResult
-                                                          .apsStatus.requiredAPS
-                                                      }
-                                                    </span>
+                                                    Eligibility Assessment:
                                                   </div>
 
-                                                  {eligibilityResult
-                                                    .subjectStatus
-                                                    .requiredCount > 0 && (
+                                                  <p
+                                                    className={`text-xs mb-2 ${
+                                                      category === "eligible"
+                                                        ? "text-green-700"
+                                                        : category ===
+                                                            "almost-eligible"
+                                                          ? "text-yellow-700"
+                                                          : "text-red-700"
+                                                    }`}
+                                                  >
+                                                    {
+                                                      eligibilityResult.overallReason
+                                                    }
+                                                  </p>
+
+                                                  {/* APS Status */}
+                                                  <div className="text-xs space-y-1">
                                                     <div
                                                       className={`flex justify-between ${
                                                         eligibilityResult
-                                                          .subjectStatus
-                                                          .meetsSubjects
+                                                          .apsStatus.meetsAPS
                                                           ? "text-green-700"
                                                           : "text-red-700"
                                                       }`}
                                                     >
-                                                      <span>Subjects:</span>
+                                                      <span>APS:</span>
                                                       <span>
                                                         {
                                                           eligibilityResult
-                                                            .subjectStatus
-                                                            .matchedCount
+                                                            .apsStatus.userAPS
                                                         }
                                                         /
                                                         {
                                                           eligibilityResult
-                                                            .subjectStatus
-                                                            .requiredCount
+                                                            .apsStatus
+                                                            .requiredAPS
                                                         }
                                                       </span>
                                                     </div>
+
+                                                    {eligibilityResult
+                                                      .subjectStatus
+                                                      .requiredCount > 0 && (
+                                                      <div
+                                                        className={`flex justify-between ${
+                                                          eligibilityResult
+                                                            .subjectStatus
+                                                            .meetsSubjects
+                                                            ? "text-green-700"
+                                                            : "text-red-700"
+                                                        }`}
+                                                      >
+                                                        <span>Subjects:</span>
+                                                        <span>
+                                                          {
+                                                            eligibilityResult
+                                                              .subjectStatus
+                                                              .matchedCount
+                                                          }
+                                                          /
+                                                          {
+                                                            eligibilityResult
+                                                              .subjectStatus
+                                                              .requiredCount
+                                                          }
+                                                        </span>
+                                                      </div>
+                                                    )}
+                                                  </div>
+
+                                                  {/* Recommendations */}
+                                                  {eligibilityResult
+                                                    .recommendations.length >
+                                                    0 && (
+                                                    <div className="mt-2 pt-2 border-t border-current border-opacity-20">
+                                                      <div className="text-xs font-medium mb-1">
+                                                        {category === "eligible"
+                                                          ? "Next Steps:"
+                                                          : "To Qualify:"}
+                                                      </div>
+                                                      <ul className="text-xs space-y-1">
+                                                        {eligibilityResult.recommendations
+                                                          .slice(0, 2)
+                                                          .map((rec, i) => (
+                                                            <li
+                                                              key={i}
+                                                              className="flex items-start gap-1"
+                                                            >
+                                                              <span className="text-xs">
+                                                                •
+                                                              </span>
+                                                              <span>{rec}</span>
+                                                            </li>
+                                                          ))}
+                                                      </ul>
+                                                    </div>
                                                   )}
                                                 </div>
+                                              )}
 
-                                                {/* Recommendations */}
-                                                {eligibilityResult
-                                                  .recommendations.length >
-                                                  0 && (
-                                                  <div className="mt-2 pt-2 border-t border-current border-opacity-20">
-                                                    <div className="text-xs font-medium mb-1">
-                                                      {category === "eligible"
-                                                        ? "Next Steps:"
-                                                        : "To Qualify:"}
-                                                    </div>
-                                                    <ul className="text-xs space-y-1">
-                                                      {eligibilityResult.recommendations
-                                                        .slice(0, 2)
-                                                        .map((rec, i) => (
-                                                          <li
-                                                            key={i}
-                                                            className="flex items-start gap-1"
-                                                          >
-                                                            <span className="text-xs">
-                                                              •
-                                                            </span>
-                                                            <span>{rec}</span>
-                                                          </li>
-                                                        ))}
-                                                    </ul>
-                                                  </div>
-                                                )}
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 text-xs text-slate-500">
+                                              <div className="flex items-center gap-1">
+                                                <Clock className="w-3 h-3 flex-shrink-0" />
+                                                <span>{degree.duration}</span>
                                               </div>
-                                            )}
-
-                                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 text-xs text-slate-500">
-                                            <div className="flex items-center gap-1">
-                                              <Clock className="w-3 h-3 flex-shrink-0" />
-                                              <span>{degree.duration}</span>
-                                            </div>
-                                            <div className="flex items-center gap-1">
-                                              <Briefcase className="w-3 h-3 flex-shrink-0" />
-                                              <span>
-                                                {degree.careerProspects
-                                                  ?.length || 0}{" "}
-                                                careers
-                                              </span>
+                                              <div className="flex items-center gap-1">
+                                                <Briefcase className="w-3 h-3 flex-shrink-0" />
+                                                <span>
+                                                  {degree.careerProspects
+                                                    ?.length || 0}{" "}
+                                                  careers
+                                                </span>
+                                              </div>
                                             </div>
                                           </div>
-                                        </div>
-                                      );
-                                    })}
+                                        );
+                                      },
+                                    )}
                                   </div>
                                 </CardContent>
                               )}

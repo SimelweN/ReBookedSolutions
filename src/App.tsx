@@ -1,4 +1,5 @@
-import React, { Suspense, startTransition } from "react";
+import * as React from "react";
+import { Suspense, startTransition } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
@@ -15,58 +16,26 @@ import ScrollToTop from "./components/ScrollToTop";
 import LoadingSpinner from "./components/LoadingSpinner";
 import PerformanceMetrics from "./components/PerformanceMetrics";
 import ConfigurationChecker from "./components/ConfigurationChecker";
-import { debugConnection } from "./utils/debugConnection";
-import { validateApiKey } from "./utils/validateApiKey";
-import { DatabaseSetup } from "./utils/databaseSetup";
-import { debugBankingDetails } from "./utils/debugBankingDetails";
-import {
-  checkDatabaseStatus,
-  logDatabaseStatus,
-} from "./utils/databaseConnectivityHelper";
 import { preloadCriticalRoutes } from "./utils/routePreloader";
-import EmergencyBypass from "./components/EmergencyBypass";
+import { initPerformanceOptimizations } from "./utils/performanceOptimizer";
+import { initNetworkErrorHandler } from "./utils/networkErrorHandler";
+import { initViteErrorHandler } from "./utils/viteErrorHandler";
+import { initProductionErrorHandler } from "./utils/productionErrorHandler";
+import NetworkErrorBoundary from "./components/NetworkErrorBoundary";
 import "./App.css";
 
-// Initialize debug utilities in development
-if (import.meta.env.DEV) {
-  (window as any).debugConnection = debugConnection;
-  (window as any).validateApiKey = validateApiKey;
-  (window as any).DatabaseSetup = DatabaseSetup;
-  (window as any).debugBankingDetails = debugBankingDetails;
-  (window as any).checkDatabaseStatus = checkDatabaseStatus;
-  (window as any).logDatabaseStatus = logDatabaseStatus;
-
-  // Test NEW SUBJECT ENGINE - wrapped to prevent Suspense issues
+// Initialize development-only optimizations
+if (import.meta.env.DEV && !import.meta.env.PROD) {
   setTimeout(() => {
     try {
-      import("./services/newSubjectEngine")
-        .then(({ testNewEngine }) => {
-          try {
-            console.log("🔥 Testing NEW SUBJECT ENGINE...");
-            testNewEngine();
-            console.log("✅ Subject engine test completed successfully");
-          } catch (testError) {
-            console.warn("Subject engine test execution failed:", testError);
-          }
-        })
-        .catch((importError) => {
-          console.warn("Subject engine import failed:", importError);
-        });
+      initPerformanceOptimizations();
+      initNetworkErrorHandler();
+      initViteErrorHandler();
+      preloadCriticalRoutes();
     } catch (error) {
-      console.warn("Subject engine test setup failed:", error);
+      console.warn("Development optimization setup issue:", error);
     }
-  }, 3000); // Extended delay to prevent initialization conflicts
-
-  console.log("🛠️ Debug utilities available:");
-  console.log("  - debugConnection() - Full connection test");
-  console.log("  - validateApiKey() - Check API key validity");
-  console.log(
-    "  - DatabaseSetup.showSetupInstructions() - Check database setup",
-  );
-  console.log("  - debugBankingDetails() - Debug banking details errors");
-  console.log("  - checkDatabaseStatus() - Check database connectivity");
-  console.log("  - logDatabaseStatus() - Log current database status");
-  console.log("  �� Fixed subject matching tests will run automatically");
+  }, 1000);
 }
 
 // Import critical pages directly for instant loading (prevents Suspense errors)
@@ -87,7 +56,6 @@ const BookDetails = React.lazy(() => import("./pages/BookDetails"));
 const Profile = React.lazy(() => import("./pages/Profile"));
 const CreateListing = React.lazy(() => import("./pages/CreateListing"));
 const GoogleMapsDemo = React.lazy(() => import("./pages/GoogleMapsDemo"));
-const MapsTest = React.lazy(() => import("./pages/MapsTest"));
 const BasicMapsExample = React.lazy(() => import("./pages/BasicMapsExample"));
 const WorkingMapsDemo = React.lazy(() => import("./pages/WorkingMapsDemo"));
 const AdminReports = React.lazy(() => import("./pages/AdminReports"));
@@ -95,6 +63,9 @@ const ModernUniversityProfile = React.lazy(
   () => import("./pages/ModernUniversityProfile"),
 );
 const UniversityProfile = React.lazy(() => import("./pages/UniversityProfile"));
+const EnhancedUniversityProfile = React.lazy(
+  () => import("./pages/EnhancedUniversityProfile"),
+);
 const Policies = React.lazy(() => import("./pages/Policies"));
 const Privacy = React.lazy(() => import("./pages/Privacy"));
 const Terms = React.lazy(() => import("./pages/Terms"));
@@ -122,11 +93,19 @@ const Report = React.lazy(() => import("./pages/Report"));
 const UserProfile = React.lazy(() => import("./pages/UserProfile"));
 const FAQ = React.lazy(() => import("./pages/FAQ"));
 const APSDemo = React.lazy(() => import("./pages/APSDemo"));
-const SystemStatus = React.lazy(() => import("./pages/SystemStatus"));
+const AddProgram = React.lazy(() => import("./pages/AddProgram"));
 const CheckoutSuccess = React.lazy(() => import("./pages/CheckoutSuccess"));
 const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
+const PaymentCallback = React.lazy(() => import("./pages/PaymentCallback"));
+
+const UserOrders = React.lazy(() => import("./pages/EnhancedUserOrders"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
-const PaystackTest = React.lazy(() => import("./pages/PaystackTest"));
+const EnhancedQADashboard = React.lazy(
+  () => import("./pages/EnhancedQADashboard"),
+);
+const SystemHealth = React.lazy(() => import("./pages/SystemHealth"));
+const UserDashboard = React.lazy(() => import("./pages/UserDashboard"));
+const EmailDemo = React.lazy(() => import("./pages/EmailDemo"));
 
 // Create query client with optimized settings
 const queryClient = new QueryClient({
@@ -255,6 +234,17 @@ function App() {
     // Set initialized immediately to prevent suspense
     setIsInitialized(true);
 
+    // Initialize performance optimizations
+    initPerformanceOptimizations();
+
+    // Initialize error handling based on environment
+    if (import.meta.env.DEV && !import.meta.env.PROD) {
+      initNetworkErrorHandler();
+      initViteErrorHandler();
+    } else if (import.meta.env.PROD) {
+      initProductionErrorHandler();
+    }
+
     // Use startTransition for non-urgent preloading
     startTransition(() => {
       preloadCriticalRoutes().catch((error) => {
@@ -273,7 +263,7 @@ function App() {
   }
 
   return (
-    <EmergencyBypass>
+    <NetworkErrorBoundary>
       <ErrorBoundary level="app">
         <QueryClientProvider client={queryClient}>
           <ThemeProvider attribute="class" defaultTheme="light">
@@ -295,7 +285,6 @@ function App() {
                             path="/user-profile"
                             element={<UserProfile />}
                           />
-                          <Route path="/qa" element={<SimpleQADashboard />} />
                           <Route
                             path="/books"
                             element={
@@ -394,7 +383,7 @@ function App() {
                             path="/university/:id"
                             element={
                               <LazyWrapper>
-                                <UniversityProfile />
+                                <EnhancedUniversityProfile />
                               </LazyWrapper>
                             }
                           />
@@ -423,11 +412,30 @@ function App() {
                             }
                           />
                           <Route
-                            path="/paystack-test"
+                            path="/add-program"
                             element={
                               <LazyWrapper>
-                                <PaystackTest />
+                                <AddProgram />
                               </LazyWrapper>
+                            }
+                          />
+
+                          <Route
+                            path="/my-orders"
+                            element={
+                              <LazyWrapper>
+                                <UserOrders />
+                              </LazyWrapper>
+                            }
+                          />
+                          <Route
+                            path="/activity"
+                            element={
+                              <ProtectedRoute>
+                                <LazyWrapper>
+                                  <ActivityLog />
+                                </LazyWrapper>
+                              </ProtectedRoute>
                             }
                           />
 
@@ -491,14 +499,6 @@ function App() {
                               </LazyWrapper>
                             }
                           />
-                          <Route
-                            path="/system-status"
-                            element={
-                              <LazyWrapper>
-                                <SystemStatus />
-                              </LazyWrapper>
-                            }
-                          />
 
                           {/* Maps demo routes */}
                           <Route
@@ -506,14 +506,6 @@ function App() {
                             element={
                               <LazyWrapper>
                                 <GoogleMapsDemo />
-                              </LazyWrapper>
-                            }
-                          />
-                          <Route
-                            path="/maps-test"
-                            element={
-                              <LazyWrapper>
-                                <MapsTest />
                               </LazyWrapper>
                             }
                           />
@@ -539,7 +531,16 @@ function App() {
                             path="/user-profile"
                             element={<UserProfile />}
                           />
-                          <Route path="/qa" element={<SimpleQADashboard />} />
+                          <Route
+                            path="/dashboard"
+                            element={
+                              <ProtectedRoute>
+                                <LazyWrapper>
+                                  <UserDashboard />
+                                </LazyWrapper>
+                              </ProtectedRoute>
+                            }
+                          />
                           <Route
                             path="/books"
                             element={
@@ -554,6 +555,16 @@ function App() {
                               <ProtectedRoute>
                                 <LazyWrapper>
                                   <QADashboard />
+                                </LazyWrapper>
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/qa-advanced"
+                            element={
+                              <ProtectedRoute>
+                                <LazyWrapper>
+                                  <EnhancedQADashboard />
                                 </LazyWrapper>
                               </ProtectedRoute>
                             }
@@ -619,6 +630,14 @@ function App() {
                             }
                           />
                           <Route
+                            path="/payment-callback"
+                            element={
+                              <LazyWrapper>
+                                <PaymentCallback />
+                              </LazyWrapper>
+                            }
+                          />
+                          <Route
                             path="/notifications"
                             element={
                               <ProtectedRoute>
@@ -638,16 +657,7 @@ function App() {
                               </ProtectedRoute>
                             }
                           />
-                          <Route
-                            path="/activity"
-                            element={
-                              <ProtectedRoute>
-                                <LazyWrapper>
-                                  <ActivityLog />
-                                </LazyWrapper>
-                              </ProtectedRoute>
-                            }
-                          />
+
                           <Route
                             path="/report"
                             element={
@@ -696,6 +706,22 @@ function App() {
                               </AdminProtectedRoute>
                             }
                           />
+                          <Route
+                            path="/system-health"
+                            element={
+                              <LazyWrapper>
+                                <SystemHealth />
+                              </LazyWrapper>
+                            }
+                          />
+                          <Route
+                            path="/email-demo"
+                            element={
+                              <LazyWrapper>
+                                <EmailDemo />
+                              </LazyWrapper>
+                            }
+                          />
 
                           {/* 404 Route */}
                           <Route
@@ -714,19 +740,22 @@ function App() {
               </AuthProvider>
             </GoogleMapsProvider>
 
-            {/* Configuration checker for development */}
-            {import.meta.env.DEV && <ConfigurationChecker />}
+            {/* Configuration checker disabled */}
 
             {/* Performance monitoring */}
             <PerformanceMetrics />
 
-            {/* Vercel Analytics and Speed Insights */}
-            <Analytics />
-            <SpeedInsights />
+            {/* Vercel Analytics and Speed Insights - only in production */}
+            {import.meta.env.PROD && (
+              <ErrorBoundary level="analytics">
+                <Analytics />
+                <SpeedInsights />
+              </ErrorBoundary>
+            )}
           </ThemeProvider>
         </QueryClientProvider>
       </ErrorBoundary>
-    </EmergencyBypass>
+    </NetworkErrorBoundary>
   );
 }
 

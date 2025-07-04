@@ -27,30 +27,44 @@ const testNetworkConnectivity = async (): Promise<void> => {
     );
   }
 
+  // Skip network test in development to avoid interference
+  if (import.meta.env.DEV) {
+    console.log("🌐 Skipping network connectivity test in development");
+    return;
+  }
+
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // Reduced timeout
 
     await fetch("https://httpbin.org/get", {
       method: "GET",
       signal: controller.signal,
+      cache: "no-cache",
     });
 
     clearTimeout(timeoutId);
   } catch (error) {
+    console.warn("🌐 Primary connectivity test failed, trying fallback");
+
     // Fallback test with Google
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
 
       await fetch("https://www.google.com/favicon.ico", {
         method: "GET",
         signal: controller.signal,
         mode: "no-cors",
+        cache: "no-cache",
       });
 
       clearTimeout(timeoutId);
     } catch (fallbackError) {
+      console.warn("🌐 Both connectivity tests failed:", {
+        error,
+        fallbackError,
+      });
       throw new Error(
         "Cannot reach internet servers. Please check your network connection and try again.",
       );
@@ -74,17 +88,56 @@ export const loginUser = async (email: string, password: string) => {
   // Quick network connectivity check
   await testNetworkConnectivity();
 
-  // Verify Supabase configuration
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  // Verify Supabase configuration using centralized ENV
+  let supabaseUrl: string;
+  let supabaseKey: string;
+
+  try {
+    const { ENV } = await import("@/config/environment");
+    supabaseUrl = ENV.VITE_SUPABASE_URL;
+    supabaseKey = ENV.VITE_SUPABASE_ANON_KEY;
+
+    console.log("🔧 Supabase Config Check:", {
+      hasUrl: !!supabaseUrl,
+      hasKey: !!supabaseKey,
+      urlLength: supabaseUrl?.length || 0,
+      keyPrefix: supabaseKey?.substring(0, 10) || "none",
+      isDev: import.meta.env.DEV,
+    });
+  } catch (envError) {
+    console.warn(
+      "⚠️ Failed to load environment config, using fallback:",
+      envError,
+    );
+    // Fallback to direct environment variables
+    supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
+    supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
+  }
 
   if (!supabaseUrl || !supabaseKey) {
+    console.error("❌ Supabase Configuration Missing:");
+    console.error("- VITE_SUPABASE_URL:", supabaseUrl ? "✓ Set" : "❌ Missing");
+    console.error(
+      "- VITE_SUPABASE_ANON_KEY:",
+      supabaseKey ? "✓ Set" : "❌ Missing",
+    );
+
     throw new Error(
-      "Authentication service configuration missing. Please contact support.",
+      import.meta.env.DEV
+        ? "Supabase configuration missing. Using fallback development configuration."
+        : "Authentication service unavailable. Please try again later or contact support.",
     );
   }
 
   if (!supabaseKey.startsWith("eyJ")) {
+    console.error(
+      "❌ Invalid Supabase API key format. Key should start with 'eyJ'",
+    );
+    console.error(
+      "Current key starts with:",
+      supabaseKey.substring(0, 10) + "...",
+    );
+
     throw new Error(
       "Authentication service configuration invalid. Please contact support.",
     );
@@ -297,7 +350,7 @@ export const fetchUserProfileQuick = async (
       if (profileError) {
         // Profile not found is normal for new users
         if (profileError.code === "PGRST116") {
-          console.log("ℹ️ Profile not found - will use fallback");
+          console.log("ℹ�� Profile not found - will use fallback");
           return null;
         }
 

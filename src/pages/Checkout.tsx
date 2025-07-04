@@ -16,6 +16,28 @@ import GoogleMapsErrorHandler from "@/components/GoogleMapsErrorHandler";
 import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
 import { toast } from "sonner";
 
+interface ShippingData {
+  fullName: string;
+  email: string;
+  phone: string;
+  streetAddress: string;
+  suburb: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  country: string;
+  specialInstructions?: string;
+}
+
+interface DeliveryQuote {
+  id: string;
+  service: string;
+  price: number;
+  estimatedDays: string;
+  provider: string;
+  details?: unknown;
+}
+
 const Checkout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,9 +46,10 @@ const Checkout: React.FC = () => {
   const { loadError } = useGoogleMaps();
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [shippingData, setShippingData] = useState<any>(null);
-  const [deliveryQuotes, setDeliveryQuotes] = useState<any[]>([]);
-  const [selectedDelivery, setSelectedDelivery] = useState<any>(null);
+  const [shippingData, setShippingData] = useState<ShippingData | null>(null);
+  const [deliveryQuotes, setDeliveryQuotes] = useState<DeliveryQuote[]>([]);
+  const [selectedDelivery, setSelectedDelivery] =
+    useState<DeliveryQuote | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [useSimpleForm, setUseSimpleForm] = useState(false);
 
@@ -93,19 +116,25 @@ const Checkout: React.FC = () => {
     { number: 3, title: "Payment", icon: CreditCard },
   ];
 
-  const handleShippingComplete = (data: any, deliveryOptions: any[]) => {
+  const handleShippingComplete = (
+    data: ShippingData,
+    deliveryOptions: DeliveryQuote[],
+  ) => {
     setShippingData(data);
     setDeliveryQuotes(deliveryOptions);
     setCurrentStep(2);
     toast.success("Address saved! Please select your delivery option.");
   };
 
-  const handleDeliverySelected = (delivery: any) => {
+  const handleDeliverySelected = (delivery: DeliveryQuote) => {
     setSelectedDelivery(delivery);
     setCurrentStep(3);
   };
 
-  const handlePaymentSuccess = async (paymentData: any) => {
+  const handlePaymentSuccess = async (paymentData: {
+    reference: string;
+    status: string;
+  }) => {
     try {
       setIsProcessing(true);
 
@@ -136,7 +165,7 @@ const Checkout: React.FC = () => {
   const StepIndicator = () => (
     <div className="flex items-center justify-center mb-8">
       {steps.map((step, index) => (
-        <React.Fragment key={step.number}>
+        <div key={step.number} className="flex items-center">
           <div className="flex items-center">
             <div
               className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
@@ -162,7 +191,7 @@ const Checkout: React.FC = () => {
               }`}
             />
           )}
-        </React.Fragment>
+        </div>
       ))}
     </div>
   );
@@ -316,16 +345,16 @@ const Checkout: React.FC = () => {
                     <div className="bg-gray-50 p-4 rounded-lg space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>Books ({items.length} items):</span>
-                        <span>R{(bookTotal / 100).toFixed(2)}</span>
+                        <span>R{bookTotal.toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span>Delivery:</span>
-                        <span>R{(deliveryFee / 100).toFixed(2)}</span>
+                        <span>R{deliveryFee.toFixed(2)}</span>
                       </div>
                       <Separator />
                       <div className="flex justify-between font-bold">
                         <span>Total:</span>
-                        <span>R{(totalAmount / 100).toFixed(2)}</span>
+                        <span>R{totalAmount.toFixed(2)}</span>
                       </div>
                     </div>
 
@@ -354,7 +383,7 @@ const Checkout: React.FC = () => {
 
                     {/* Payment Button */}
                     <PaystackPaymentButton
-                      amount={totalAmount * 100} // Convert to kobo
+                      amount={Math.round(totalAmount * 100)} // Convert to kobo for Paystack
                       onSuccess={(reference) => {
                         handlePaymentSuccess({
                           paystack_reference: reference,

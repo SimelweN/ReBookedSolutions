@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { PaystackService } from "@/services/paystackService";
 import { SecureBankingService } from "@/services/secureBankingService";
-import { ImprovedBankingService } from "@/services/improvedBankingService";
+
 import { toast } from "sonner";
 
 export interface Transaction {
@@ -59,26 +59,17 @@ export class TransactionService {
         console.log(`Initializing payment for seller: ${sellerId}`);
       }
 
-      // Get seller's banking details and subaccount
-      const sellerBankingDetails =
-        await ImprovedBankingService.getBankingDetails(sellerId);
+      // Get seller's subaccount code from banking_details
+      const { data: bankingDetails } = await supabase
+        .from("banking_details")
+        .select("paystack_subaccount_code")
+        .eq("user_id", sellerId)
+        .single();
 
-      if (!sellerBankingDetails) {
+      if (!bankingDetails?.paystack_subaccount_code) {
         console.warn(
-          `Seller ${sellerId} has no banking details, falling back to legacy payment`,
+          `Seller ${sellerId} has no subaccount code in banking_details, falling back to legacy payment`,
         );
-        throw new Error("SELLER_NO_BANKING_DETAILS");
-      }
-
-      if (!sellerBankingDetails.paystack_subaccount_code) {
-        console.warn(
-          `Seller ${sellerId} has banking details but no Paystack subaccount, falling back to legacy payment`,
-        );
-        console.warn("Banking details found:", {
-          hasDetails: true,
-          subaccountStatus: sellerBankingDetails.subaccount_status,
-          bankName: sellerBankingDetails.bank_name,
-        });
         throw new Error("SELLER_NO_SUBACCOUNT");
       }
 
@@ -101,8 +92,7 @@ export class TransactionService {
             status: "pending",
             seller_committed: false,
             expires_at: expiresAt.toISOString(),
-            paystack_subaccount_code:
-              sellerBankingDetails.paystack_subaccount_code,
+            paystack_subaccount_code: bankingDetails.paystack_subaccount_code,
           },
         ])
         .select()
@@ -117,7 +107,7 @@ export class TransactionService {
         deliveryFee,
         bookId,
         sellerId,
-        sellerSubaccountCode: sellerBankingDetails.paystack_subaccount_code,
+        sellerSubaccountCode: bankingDetails.paystack_subaccount_code,
         metadata: {
           transaction_id: transaction.id,
           book_title: bookTitle,

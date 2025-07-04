@@ -24,7 +24,7 @@ import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
 import { SellerValidationService } from "@/services/sellerValidationService";
 import { getUserAddresses } from "@/services/addressService";
-import { ImprovedBankingService } from "@/services/improvedBankingService";
+
 import { toast } from "sonner";
 
 interface TestResult {

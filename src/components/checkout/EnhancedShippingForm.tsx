@@ -16,11 +16,22 @@ import {
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Loader2, Truck, Clock, DollarSign, Edit2 } from "lucide-react";
+import {
+  MapPin,
+  Loader2,
+  Truck,
+  Clock,
+  DollarSign,
+  Edit2,
+  AlertCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
-import RealCourierPricing from "@/services/realCourierPricing";
+import {
+  getEnhancedDeliveryQuotes,
+  validateSellersHaveAddresses,
+} from "@/services/enhancedDeliveryService";
 
 const shippingSchema = z.object({
   recipient_name: z.string().min(1, "Recipient name is required"),
@@ -49,7 +60,12 @@ interface EnhancedShippingFormProps {
     shippingData: ShippingFormData,
     deliveryOptions: DeliveryOption[],
   ) => void;
-  cartItems: any[];
+  cartItems: {
+    id: string;
+    title: string;
+    price: number;
+    seller: string;
+  }[];
 }
 
 const SOUTH_AFRICAN_PROVINCES = [
@@ -68,12 +84,20 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   onComplete,
   cartItems,
 }) => {
+  // All hooks must be called before any early returns
   const { isLoaded } = useGoogleMaps();
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [savedAddress, setSavedAddress] = useState<any>(null);
+  const [savedAddress, setSavedAddress] = useState<{
+    streetAddress: string;
+    suburb: string;
+    city: string;
+    province: string;
+    postalCode: string;
+    country: string;
+  } | null>(null);
   const [isEditingAddress, setIsEditingAddress] = useState(false);
   const [deliveryOptions, setDeliveryOptions] = useState<DeliveryOption[]>([]);
   const [selectedDeliveryOption, setSelectedDeliveryOption] =
@@ -144,6 +168,12 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
     }
   }, [watchedValues.city, watchedValues.province, watchedValues.postal_code]);
 
+  // Early return check moved here after all hooks
+  if (!onComplete || !cartItems) {
+    console.error("EnhancedShippingForm: Invalid props");
+    return <div>Loading shipping form...</div>;
+  }
+
   const loadSavedAddress = async () => {
     try {
       const {
@@ -171,7 +201,18 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
     }
   };
 
-  const populateFormWithAddress = (address: any) => {
+  const populateFormWithAddress = (address: {
+    name?: string;
+    phone?: string;
+    streetAddress?: string;
+    street_address?: string;
+    suburb?: string;
+    city?: string;
+    province?: string;
+    postalCode?: string;
+    postal_code?: string;
+    country?: string;
+  }) => {
     setValue("recipient_name", address.name || "");
     setValue("phone", address.phone || "");
     setValue(
@@ -226,6 +267,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
   const getDeliveryQuotes = async () => {
     if (
+      !watchedValues.street_address ||
       !watchedValues.city ||
       !watchedValues.province ||
       !watchedValues.postal_code
@@ -235,68 +277,53 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
     setIsLoadingQuotes(true);
     try {
-      // Calculate total weight for quotes (estimate for books)
-      const totalWeight = cartItems.length * 0.6; // More realistic 600g per book
-      const estimatedValue = cartItems.reduce(
-        (sum, item) => sum + (item.price || 0),
-        0,
-      );
+      console.log("🚚 Getting delivery quotes with seller addresses...");
 
-      const quoteRequest = {
-        from: {
-          city: "Cape Town", // Default seller location
-          province: "Western Cape",
-          postal_code: "7500",
-        },
-        to: {
-          city: watchedValues.city,
-          province: watchedValues.province,
-          postal_code: watchedValues.postal_code,
-        },
-        parcel: {
-          weight: totalWeight,
-          length: 25, // Standard book package dimensions
-          width: 20,
-          height: cartItems.length * 2,
-          value: estimatedValue,
-        },
-      };
-
-      console.log("Getting real courier quotes for:", quoteRequest);
-
-      // Get real courier quotes
-      const courierQuotes = await RealCourierPricing.getAllQuotes(quoteRequest);
-
-      // Add Cape Town local delivery if applicable
-      const isCapeTownLocal =
-        watchedValues.province === "Western Cape" &&
-        (watchedValues.city.toLowerCase().includes("cape town") ||
-          watchedValues.city.toLowerCase().includes("stellenbosch") ||
-          watchedValues.city.toLowerCase().includes("paarl"));
-
-      let allQuotes = [...courierQuotes];
-      if (isCapeTownLocal) {
-        const localQuotes = RealCourierPricing.getCapeTownLocalRates();
-        allQuotes.unshift(...localQuotes);
+      // First validate that all sellers have addresses
+      const validation = await validateSellersHaveAddresses(cartItems);
+      if (!validation.valid) {
+        toast.error(
+          "Some sellers haven't set up their addresses yet. Cannot calculate delivery.",
+        );
+        setIsLoadingQuotes(false);
+        return;
       }
 
-      // Convert to delivery options format
-      const options: DeliveryOption[] = allQuotes.map((quote) => ({
-        id: quote.id,
+      const deliveryAddress = {
+        street: watchedValues.street_address,
+        city: watchedValues.city,
+        province: watchedValues.province,
+        postal_code: watchedValues.postal_code,
+      };
+
+      console.log("📦 Getting quotes for delivery to:", deliveryAddress);
+
+      const allQuotes = await getEnhancedDeliveryQuotes(
+        cartItems,
+        deliveryAddress,
+      );
+      console.log("📋 Enhanced quotes received:", allQuotes);
+
+      if (allQuotes.length === 0) {
+        toast.warning("No delivery options available for this address");
+        setIsLoadingQuotes(false);
+        return;
+      }
+
+      // Convert to delivery options format with safety checks
+      const options: DeliveryOption[] = allQuotes.map((quote, index) => ({
+        id: quote.id || `option_${Date.now()}_${index}`,
         provider: quote.provider,
         service_name: quote.service_name,
         price: quote.price,
         estimated_days: quote.estimated_days,
-        description: quote.description,
+        description: quote.description || "",
       }));
 
       setDeliveryOptions(options);
-      if (options.length > 0) {
-        setSelectedDeliveryOption(options[0]); // Auto-select cheapest option
-      }
-
+      console.log("✅ Formatted delivery options:", options);
       toast.success(
-        `${options.length} delivery option${options.length !== 1 ? "s" : ""} found`,
+        `Found ${options.length} delivery option${options.length !== 1 ? "s" : ""}`,
       );
       console.log("Delivery options loaded:", options);
     } catch (error) {
@@ -386,7 +413,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
         // If still no options after getting quotes, create fallback
         if (deliveryOptions.length === 0) {
-          console.log("��� Creating emergency delivery options");
+          console.log("���� Creating emergency delivery options");
           const emergencyOptions: DeliveryOption[] = [
             {
               id: "emergency_standard",
@@ -591,23 +618,36 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
                       required: "Street address is required",
                     })}
                     type="text"
-                    placeholder="Start typing your address..."
-                    className={`w-full p-3 border rounded-lg bg-white ${
+                    placeholder={
+                      isLoaded
+                        ? "Start typing your address..."
+                        : "Enter your complete street address manually"
+                    }
+                    className={`w-full p-3 border rounded-lg ${
+                      !isLoaded ? "bg-yellow-50 border-yellow-300" : "bg-white"
+                    } ${
                       errors.street_address
                         ? "border-red-500"
-                        : "border-gray-300"
+                        : isLoaded
+                          ? "border-gray-300"
+                          : "border-yellow-300"
                     } focus:ring-2 focus:ring-book-500 focus:border-book-500`}
                     style={{ fontSize: "16px" }} // Prevents zoom on iOS and ensures consistent behavior
                     autoComplete="street-address"
                     required
                   />
 
-                  {!isLoaded ? (
-                    <p className="text-xs text-yellow-600 mt-1">
-                      ⚠️ Address autocomplete unavailable - Google Maps API key
-                      not configured
-                    </p>
-                  ) : null}
+                  {!isLoaded && (
+                    <Alert className="mt-2 border-yellow-300 bg-yellow-50">
+                      <AlertCircle className="h-4 w-4 text-yellow-600" />
+                      <AlertDescription className="text-yellow-800">
+                        <strong>Manual Address Entry:</strong> Google Maps
+                        autocomplete is unavailable. Please enter your complete
+                        address manually including street number, street name,
+                        suburb, and city.
+                      </AlertDescription>
+                    </Alert>
+                  )}
                 </div>
 
                 <div>
@@ -733,77 +773,17 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
               </div>
             )}
 
-          {/* Delivery Options */}
+          {/* Delivery Options Info (options will be shown in next step) */}
           {deliveryOptions.length > 0 && (
-            <div className="space-y-4">
-              <h3 className="font-medium text-lg flex items-center gap-2">
-                <Truck className="w-5 h-5" />
-                Choose Delivery Option
-              </h3>
-
-              {isLoadingQuotes && (
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Getting delivery quotes...</span>
-                </div>
-              )}
-
-              <div className="space-y-3">
-                {deliveryOptions.map((option) => (
-                  <div
-                    key={option.id}
-                    className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                      selectedDeliveryOption?.id === option.id
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
-                    onClick={() => setSelectedDeliveryOption(option)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`w-4 h-4 rounded-full border-2 ${
-                            selectedDeliveryOption?.id === option.id
-                              ? "border-blue-500 bg-blue-500"
-                              : "border-gray-300"
-                          }`}
-                        >
-                          {selectedDeliveryOption?.id === option.id && (
-                            <div className="w-2 h-2 bg-white rounded-full m-0.5" />
-                          )}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-medium">
-                              {option.service_name}
-                            </h4>
-                            <Badge variant="outline" className="text-xs">
-                              {option.provider === "courier-guy"
-                                ? "🚚 Courier Guy"
-                                : "🏃‍♂️ Fastway"}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-gray-600">
-                            {option.description}
-                          </p>
-                          <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-3 h-3" />
-                              {option.estimated_days}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-xl font-bold text-green-600">
-                          R{(option.price || 0).toFixed(2)}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <Alert className="border-blue-200 bg-blue-50">
+              <Truck className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-blue-800">
+                <strong>Great!</strong> We found {deliveryOptions.length}{" "}
+                delivery option{deliveryOptions.length !== 1 ? "s" : ""} for
+                your address. You'll choose your preferred delivery method in
+                the next step.
+              </AlertDescription>
+            </Alert>
           )}
 
           <Alert>

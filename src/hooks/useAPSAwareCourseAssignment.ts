@@ -23,7 +23,11 @@ export interface UserAPSProfile {
   lastUpdated: string;
   isValid?: boolean;
   validationErrors?: string[];
-  universitySpecificScores?: any[];
+  universitySpecificScores?: Array<{
+    universityId: string;
+    score: number;
+    subjects: APSSubject[];
+  }>;
   savedAt?: number;
 }
 
@@ -289,7 +293,17 @@ export function useAPSAwareCourseAssignment(universityId?: string) {
    * Enhanced eligibility check with subject requirements and APS validation
    */
   const checkProgramEligibility = useCallback(
-    (program: any, directAPS?: number) => {
+    (
+      program: {
+        id: string;
+        name: string;
+        apsRequired: number;
+        subjects?: string[];
+        faculty?: string;
+        universityId?: string;
+      },
+      directAPS?: number,
+    ) => {
       const apsToUse = directAPS || userProfile?.totalAPS;
       const userSubjects = userProfile?.subjects || [];
 

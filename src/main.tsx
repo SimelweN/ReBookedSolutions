@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App.tsx";
@@ -10,6 +10,35 @@ import {
 import "./index.css";
 import "./styles/performance-optimizations.css";
 import "./utils/resizeObserverFix";
+
+// Production safety check - ensure React is properly available
+if (typeof React === "undefined" || !React.createContext) {
+  console.error("🚨 CRITICAL: React is not properly loaded!");
+  console.error("This will cause createContext errors in production builds.");
+
+  // Try to recover by reloading the page once
+  if (!sessionStorage.getItem("react-reload-attempted")) {
+    sessionStorage.setItem("react-reload-attempted", "true");
+    window.location.reload();
+  } else {
+    // If reload didn't help, show emergency fallback
+    document.body.innerHTML = `
+      <div style="padding: 20px; font-family: Arial, sans-serif; text-align: center;">
+        <h1>Loading Error</h1>
+        <p>The application failed to load properly. Please try refreshing the page.</p>
+        <button onclick="window.location.reload()" style="padding: 10px 20px; font-size: 16px;">
+          Refresh Page
+        </button>
+      </div>
+    `;
+    throw new Error("React createContext not available");
+  }
+}
+
+// Make React globally available for production builds (fallback safety)
+if (typeof window !== "undefined" && !window.React) {
+  window.React = React;
+}
 
 // Log bundle info in development
 logBundleInfo();
@@ -37,7 +66,7 @@ const validateEnvironment = () => {
         "⚠️ Missing Supabase configuration (DEV MODE):",
         missing.join(", "),
       );
-      console.warn("⚠️ App will run with limited functionality");
+      console.warn("⚠�� App will run with limited functionality");
       return { isValid: true, missing, isDev: true };
     }
 
@@ -148,10 +177,13 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes
       gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
-      retry: (failureCount, error: any) => {
+      retry: (failureCount, error: unknown) => {
         // Don't retry on 4xx errors
-        if (error?.status >= 400 && error?.status < 500) {
-          return false;
+        if (error && typeof error === "object" && "status" in error) {
+          const status = (error as { status: number }).status;
+          if (status >= 400 && status < 500) {
+            return false;
+          }
         }
         return failureCount < 2;
       },
@@ -180,24 +212,7 @@ const initializeApp = async () => {
     // Register service worker
     await registerServiceWorker();
 
-    // Only show environment error in very specific production cases (disabled for now)
-    if (
-      false &&
-      import.meta.env.PROD &&
-      !environmentValidation.isValid &&
-      !environmentValidation.isDev
-    ) {
-      // Dynamically import and render environment error component
-      const { default: EnvironmentError } = await import(
-        "./components/EnvironmentError"
-      );
-      root.render(
-        <React.StrictMode>
-          <EnvironmentError missingVariables={environmentValidation.missing} />
-        </React.StrictMode>,
-      );
-      return;
-    }
+    // Environment error component disabled for production
 
     // Render the app with comprehensive error boundaries
     root.render(
@@ -223,7 +238,7 @@ try {
     throw error;
   });
 } catch (error) {
-  console.error("❌ Critical error during app initialization:", error);
+  console.error("�� Critical error during app initialization:", error);
 
   // Emergency fallback UI
   const rootElement = document.getElementById("root");

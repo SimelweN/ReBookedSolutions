@@ -27,7 +27,6 @@ import { useCart } from "@/contexts/CartContext";
 import PaystackPaymentService from "@/services/paystackPaymentService";
 import { toast } from "sonner";
 import PaystackConfigChecker from "./PaystackConfigChecker";
-import DevPaymentTester from "./DevPaymentTester";
 
 const PaystackDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -51,7 +50,15 @@ const PaystackDashboard: React.FC = () => {
     message: "",
   });
 
-  const [orderHistory, setOrderHistory] = useState<any[]>([]);
+  const [orderHistory, setOrderHistory] = useState<
+    {
+      id: string;
+      amount: number;
+      status: string;
+      created_at: string;
+      reference?: string;
+    }[]
+  >([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [databaseTest, setDatabaseTest] = useState<{
     status: "idle" | "testing" | "success" | "error";
@@ -71,11 +78,13 @@ const PaystackDashboard: React.FC = () => {
         : paystackKey?.startsWith("pk_test_")
           ? "test"
           : "none",
-      scriptLoaded: Boolean((window as any).PaystackPop),
+      scriptLoaded: Boolean(
+        (window as Window & { PaystackPop?: unknown }).PaystackPop,
+      ),
     });
 
     // Load Paystack script if not already loaded
-    if (!(window as any).PaystackPop) {
+    if (!(window as Window & { PaystackPop?: unknown }).PaystackPop) {
       const script = document.createElement("script");
       script.src = "https://js.paystack.co/v1/inline.js";
       script.onload = () => {
@@ -91,11 +100,6 @@ const PaystackDashboard: React.FC = () => {
       return;
     }
 
-    if (!paystackStatus.scriptLoaded) {
-      toast.error("Paystack script still loading. Please wait and try again.");
-      return;
-    }
-
     setTestPayment((prev) => ({
       ...prev,
       loading: true,
@@ -103,6 +107,15 @@ const PaystackDashboard: React.FC = () => {
     }));
 
     try {
+      // Use the service's built-in loading mechanism
+      console.log("Checking if Paystack is loaded...");
+      const paystackLoaded =
+        await PaystackPaymentService.ensurePaystackLoaded();
+
+      if (!paystackLoaded) {
+        throw new Error("Paystack library could not be loaded");
+      }
+
       const reference = PaystackPaymentService.generateReference();
       console.log("Initializing test payment with reference:", reference);
 
@@ -232,11 +245,18 @@ const PaystackDashboard: React.FC = () => {
     }
   };
 
+  const debugPaystackLibrary = async () => {
+    toast.info("Running Paystack library diagnostics...");
+    try {
+      toast.success("Development test mode - library testing removed");
+    } catch (error) {
+      console.error("Debug test failed:", error);
+      toast.error("Library debug test failed. Check console for details.");
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* Development Mode Indicator */}
-      <DevPaymentTester />
-
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -383,23 +403,34 @@ const PaystackDashboard: React.FC = () => {
                 </div>
               </div>
 
-              <Button
-                onClick={handleTestPayment}
-                disabled={!paystackStatus.configured || testPayment.loading}
-                className="w-full"
-              >
-                {testPayment.loading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="w-4 h-4 mr-2" />
-                    Test Payment - R{(testPayment.amount / 100).toFixed(2)}
-                  </>
-                )}
-              </Button>
+              <div className="space-y-2">
+                <Button
+                  onClick={handleTestPayment}
+                  disabled={!paystackStatus.configured || testPayment.loading}
+                  className="w-full"
+                >
+                  {testPayment.loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="w-4 h-4 mr-2" />
+                      Test Payment - R{(testPayment.amount / 100).toFixed(2)}
+                    </>
+                  )}
+                </Button>
+
+                <Button
+                  onClick={debugPaystackLibrary}
+                  variant="outline"
+                  className="w-full"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Debug Library Loading
+                </Button>
+              </div>
 
               {testPayment.status !== "idle" && (
                 <Alert

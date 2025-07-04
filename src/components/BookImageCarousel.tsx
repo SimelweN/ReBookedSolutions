@@ -1,7 +1,7 @@
-
-import { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import * as React from "react";
+import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface BookImageCarouselProps {
   images: string[];
@@ -35,7 +35,7 @@ const BookImageCarousel = ({ images }: BookImageCarouselProps) => {
           alt={`Book image ${currentImageIndex + 1}`}
           className="w-full h-full object-cover"
         />
-        
+
         {images.length > 1 && (
           <>
             <Button
@@ -66,8 +66,8 @@ const BookImageCarousel = ({ images }: BookImageCarouselProps) => {
               key={index}
               className={`flex-shrink-0 w-16 h-20 rounded-md overflow-hidden border-2 transition-colors ${
                 currentImageIndex === index
-                  ? 'border-book-600'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? "border-book-600"
+                  : "border-gray-200 hover:border-gray-300"
               }`}
               onClick={() => setCurrentImageIndex(index)}
             >

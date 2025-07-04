@@ -127,7 +127,7 @@ serve(async (req) => {
           .from("banking_details")
           .select("recipient_code")
           .eq("user_id", order.seller_id)
-          .eq("is_verified", true)
+          .eq("account_verified", true)
           .single();
 
         if (bankingDetails?.recipient_code) {

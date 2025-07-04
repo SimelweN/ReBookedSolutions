@@ -5340,8 +5340,23 @@ export function getCoursesForUniversity(
   });
 }
 
+// Import updated specific university data
+import {
+  getUpdatedUniversityFaculties,
+  UPDATED_UNIVERSITIES,
+} from "./updated-specific-universities";
+
 // Organize courses by faculty for a university
 export function getUniversityFaculties(universityId: string): Faculty[] {
+  // Check if this university has updated specific data
+  if (UPDATED_UNIVERSITIES.includes(universityId)) {
+    const specificFaculties = getUpdatedUniversityFaculties(universityId);
+    if (specificFaculties) {
+      return specificFaculties;
+    }
+  }
+
+  // Fall back to the original system for universities without specific updates
   const courses = getCoursesForUniversity(universityId);
   const facultyMap = new Map<string, Faculty>();
 

@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
 import path from "path";
 
 // https://vitejs.dev/config/
@@ -151,6 +151,12 @@ export default defineConfig(({ mode }) => ({
       // Exclude heavy optional dependencies
       "@react-google-maps/api",
     ],
+  },
+
+  // Ensure React is properly available in production builds
+  define: {
+    // Ensure React is available globally if needed
+    __REACT_DEVTOOLS_GLOBAL_HOOK__: "undefined",
   },
   // Performance optimizations
   esbuild: {

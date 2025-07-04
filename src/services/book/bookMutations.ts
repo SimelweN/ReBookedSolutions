@@ -15,6 +15,19 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       throw new Error("User not authenticated");
     }
 
+    // Verify user has subaccount_code in banking_subaccounts before allowing book creation
+    const { data: subaccountData } = await supabase
+      .from("banking_subaccounts")
+      .select("subaccount_code")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!subaccountData?.subaccount_code?.trim()) {
+      throw new Error(
+        "Banking setup required: You must complete your banking subaccount setup before creating listings",
+      );
+    }
+
     // Fetch province from user's pickup address
     let province = null;
     try {

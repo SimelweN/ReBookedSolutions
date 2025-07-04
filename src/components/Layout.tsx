@@ -4,7 +4,6 @@ import Footer from "./Footer";
 import { Toaster } from "@/components/ui/sonner";
 import ConnectionStatus from "./ConnectionStatus";
 import QAQuickAccess from "./QAQuickAccess";
-import DevToolsQuickAccess from "./DevToolsQuickAccess";
 
 interface LayoutProps {
   children: ReactNode;
@@ -26,8 +25,8 @@ const Layout = ({ children }: LayoutProps) => {
           duration: 4000,
         }}
       />
-      <QAQuickAccess />
-      <DevToolsQuickAccess />
+      {/* Only show QA dashboard in development or for admins */}
+      {import.meta.env.DEV && <QAQuickAccess />}
     </div>
   );
 };

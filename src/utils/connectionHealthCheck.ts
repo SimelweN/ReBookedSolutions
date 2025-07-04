@@ -294,11 +294,17 @@ export const retryWithConnection = async <T>(
       lastError = error;
 
       const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      const errorCode = (error as any)?.code || "NO_CODE";
+        error instanceof Error
+          ? error.message
+          : error?.message ||
+            (typeof error === "string"
+              ? error
+              : JSON.stringify(error, null, 2));
+      const errorCode =
+        (error as any)?.code || (error as any)?.error_code || "NO_CODE";
 
       console.warn(
-        `[ConnectionHealthCheck] Operation failed on attempt ${attempt}: ${errorMessage} (${errorCode})`,
+        `[ConnectionHealthCheck] Operation failed on attempt ${attempt}: ${errorMessage} (Code: ${errorCode})`,
       );
 
       // Don't retry on certain errors
@@ -324,9 +330,17 @@ export const retryWithConnection = async <T>(
   }
 
   const finalErrorMessage =
-    lastError instanceof Error ? lastError.message : String(lastError);
+    lastError instanceof Error
+      ? lastError.message
+      : lastError?.message ||
+        (typeof lastError === "string"
+          ? lastError
+          : JSON.stringify(lastError, null, 2));
+  const finalErrorCode =
+    (lastError as any)?.code || (lastError as any)?.error_code || "NO_CODE";
+
   console.error(
-    `[ConnectionHealthCheck] All retry attempts failed: ${finalErrorMessage}`,
+    `[ConnectionHealthCheck] All retry attempts failed: ${finalErrorMessage} (Code: ${finalErrorCode})`,
   );
 
   throw lastError;
