@@ -1412,6 +1412,83 @@ export class PaystackPaymentService {
   }
 
   /**
+   * Initiate seller payout via Paystack transfer
+   */
+  private static async initiateSellerPayout(orderId: string): Promise<void> {
+    try {
+      console.log("🔄 Initiating seller payout for order:", orderId);
+
+      // Get order details with seller information
+      const { data: order, error: orderError } = await supabase
+        .from("orders")
+        .select(
+          `
+          id,
+          seller_id,
+          seller_amount,
+          seller_subaccount_code,
+          book_title,
+          paystack_ref,
+          profiles!orders_seller_id_fkey(full_name)
+        `,
+        )
+        .eq("id", orderId)
+        .single();
+
+      if (orderError || !order) {
+        throw new Error(`Order not found: ${orderError?.message}`);
+      }
+
+      if (!order.seller_subaccount_code) {
+        throw new Error(
+          `No subaccount code found for seller ${order.seller_id}`,
+        );
+      }
+
+      // Create payout request
+      const payoutRequest = {
+        orderId: order.id,
+        sellerId: order.seller_id,
+        subaccountCode: order.seller_subaccount_code,
+        amount: order.seller_amount,
+        reference: `payout_${order.id}_${Date.now()}`,
+        reason: `Payment for "${order.book_title}" sale`,
+      };
+
+      // Execute transfer via PaystackTransferService
+      await PaystackTransferService.transferToSeller(payoutRequest);
+
+      // Update order to mark payout completed
+      await supabase
+        .from("orders")
+        .update({
+          payment_held: false,
+          payout_completed_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", orderId);
+
+      console.log("✅ Seller payout completed for order:", orderId);
+    } catch (error) {
+      console.error("❌ Seller payout failed:", error);
+
+      // Mark payout as failed
+      await supabase
+        .from("orders")
+        .update({
+          payout_failed_at: new Date().toISOString(),
+          payout_retry_count: supabase.rpc("increment_retry_count", {
+            order_id: orderId,
+          }),
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", orderId);
+
+      throw error;
+    }
+  }
+
+  /**
    * Handle expired collection deadline (automatic refund)
    */
   static async handleExpiredCollection(orderId: string): Promise<void> {
