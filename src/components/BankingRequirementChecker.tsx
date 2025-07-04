@@ -85,12 +85,15 @@ const BankingRequirementChecker = () => {
               ? "User can create listings and receive payments"
               : "User must complete banking setup before creating listings",
           });
-        } catch (subaccountError: any) {
+        } catch (subaccountError: unknown) {
           results.push({
             name: "Subaccount Code",
             status: "fail",
             message: "Error checking subaccount code",
-            details: subaccountError.message,
+            details:
+              subaccountError instanceof Error
+                ? subaccountError.message
+                : String(subaccountError),
           });
         }
 
