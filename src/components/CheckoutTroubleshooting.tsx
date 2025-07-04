@@ -20,7 +20,13 @@ const CheckoutTroubleshooting: React.FC = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
   const { items } = useCart();
-  const [testResults, setTestResults] = useState<any[]>([]);
+  const [testResults, setTestResults] = useState<
+    {
+      name: string;
+      status: "pass" | "fail" | "warning";
+      message: string;
+    }[]
+  >([]);
 
   const runCheckoutDiagnostics = () => {
     const results = [];
