@@ -27,7 +27,7 @@ const BankingRequirementChecker = () => {
   const [checks, setChecks] = useState<CheckResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
 
-  const runChecks = async () => {
+  const runChecks = useCallback(async () => {
     if (!user?.id) {
       setChecks([
         {
