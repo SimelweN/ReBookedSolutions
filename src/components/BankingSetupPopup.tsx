@@ -41,7 +41,7 @@ const BankingSetupPopup = ({
   const [lastChecked, setLastChecked] = useState<Date | null>(null);
 
   // Check if user has banking details (subaccount_code)
-  const checkBankingStatus = async () => {
+  const checkBankingStatus = useCallback(async () => {
     if (!user?.id) return;
 
     setIsCheckingBanking(true);
