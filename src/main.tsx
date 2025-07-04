@@ -212,13 +212,8 @@ const initializeApp = async () => {
     // Register service worker
     await registerServiceWorker();
 
-    // Only show environment error in very specific production cases (disabled for now)
-    if (
-      false &&
-      import.meta.env.PROD &&
-      !environmentValidation.isValid &&
-      !environmentValidation.isDev
-    ) {
+    // Environment error component disabled
+    if (false) {
       // Dynamically import and render environment error component
       const { default: EnvironmentError } = await import(
         "./components/EnvironmentError"
