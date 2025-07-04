@@ -79,18 +79,20 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   onComplete,
   cartItems,
 }) => {
-  // Early return if props are invalid
-  if (!onComplete || !cartItems) {
-    console.error("EnhancedShippingForm: Invalid props");
-    return <div>Loading shipping form...</div>;
-  }
-
+  // All hooks must be called before any early returns
   const { isLoaded } = useGoogleMaps();
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [savedAddress, setSavedAddress] = useState<any>(null);
+  const [savedAddress, setSavedAddress] = useState<{
+    streetAddress: string;
+    suburb: string;
+    city: string;
+    province: string;
+    postalCode: string;
+    country: string;
+  } | null>(null);
   const [isEditingAddress, setIsEditingAddress] = useState(false);
   const [deliveryOptions, setDeliveryOptions] = useState<DeliveryOption[]>([]);
   const [selectedDeliveryOption, setSelectedDeliveryOption] =
