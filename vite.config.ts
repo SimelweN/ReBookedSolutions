@@ -19,12 +19,19 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // React and React-DOM
-          if (id.includes("react") || id.includes("react-dom")) {
+          // Keep React and React-DOM together and prioritize them
+          if (id.includes("react-dom")) {
+            return "react-vendor";
+          }
+          if (
+            id.includes("react") &&
+            !id.includes("react-router") &&
+            !id.includes("@react-google-maps")
+          ) {
             return "react-vendor";
           }
 
-          // Router
+          // Router (separate from core React)
           if (id.includes("react-router")) {
             return "router";
           }
@@ -142,6 +149,8 @@ export default defineConfig(({ mode }) => ({
     include: [
       "react",
       "react-dom",
+      "react-dom/client",
+      "react/jsx-runtime",
       "react-router-dom",
       "@supabase/supabase-js",
       "@tanstack/react-query",
@@ -151,12 +160,21 @@ export default defineConfig(({ mode }) => ({
       // Exclude heavy optional dependencies
       "@react-google-maps/api",
     ],
+    force: true, // Force re-bundling to ensure consistency
   },
 
   // Ensure React is properly available in production builds
   define: {
     // Ensure React is available globally if needed
     __REACT_DEVTOOLS_GLOBAL_HOOK__: "undefined",
+  },
+
+  // Ensure proper module resolution
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+    dedupe: ["react", "react-dom"], // Prevent multiple React instances
   },
   // Performance optimizations
   esbuild: {
