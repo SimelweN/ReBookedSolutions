@@ -278,7 +278,24 @@ function App() {
                         <ScrollToTop />
                         <Routes>
                           {/* Home route - loads instantly */}
-                          <Route path="/" element={<IndexPage />} />
+                          <Route
+                            path="/"
+                            element={
+                              <>
+                                <div
+                                  style={{
+                                    position: "fixed",
+                                    top: "10px",
+                                    right: "10px",
+                                    zIndex: 1000,
+                                  }}
+                                >
+                                  <ReactContextDiagnostic />
+                                </div>
+                                <IndexPage />
+                              </>
+                            }
+                          />
 
                           {/* Public routes */}
                           <Route path="/register" element={<Register />} />
