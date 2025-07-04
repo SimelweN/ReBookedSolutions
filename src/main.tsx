@@ -244,25 +244,6 @@ const initializeApp = async () => {
 
     if (import.meta.env.DEV) {
       console.log("✅ ReBooked Solutions loaded successfully");
-
-      // Load login error test utilities for debugging
-      setTimeout(() => {
-        import("./utils/loginErrorTest")
-          .then(({ testLoginErrorHandling, simulateLoginError }) => {
-            (window as any).testLoginErrorHandling = testLoginErrorHandling;
-            (window as any).simulateLoginError = simulateLoginError;
-            console.log("🧪 Login error test utilities loaded:");
-            console.log(
-              "  - testLoginErrorHandling() - Test error message extraction",
-            );
-            console.log(
-              "  - simulateLoginError() - Simulate login error scenarios",
-            );
-          })
-          .catch(() => {
-            // Ignore import errors
-          });
-      }, 1000);
     }
   });
 };
