@@ -66,7 +66,7 @@ const validateEnvironment = () => {
         "⚠️ Missing Supabase configuration (DEV MODE):",
         missing.join(", "),
       );
-      console.warn("⚠️ App will run with limited functionality");
+      console.warn("⚠�� App will run with limited functionality");
       return { isValid: true, missing, isDev: true };
     }
 
@@ -212,19 +212,7 @@ const initializeApp = async () => {
     // Register service worker
     await registerServiceWorker();
 
-    // Environment error component disabled
-    if (false) {
-      // Dynamically import and render environment error component
-      const { default: EnvironmentError } = await import(
-        "./components/EnvironmentError"
-      );
-      root.render(
-        <React.StrictMode>
-          <EnvironmentError missingVariables={environmentValidation.missing} />
-        </React.StrictMode>,
-      );
-      return;
-    }
+    // Environment error component disabled for production
 
     // Render the app with comprehensive error boundaries
     root.render(
@@ -250,7 +238,7 @@ try {
     throw error;
   });
 } catch (error) {
-  console.error("❌ Critical error during app initialization:", error);
+  console.error("�� Critical error during app initialization:", error);
 
   // Emergency fallback UI
   const rootElement = document.getElementById("root");
