@@ -15,8 +15,26 @@ import { MapPin } from "lucide-react";
 import { toast } from "sonner";
 
 interface SimpleShippingFormProps {
-  onComplete: (shippingData: any, deliveryOptions: any[]) => void;
-  cartItems: any[];
+  onComplete: (
+    shippingData: ShippingData,
+    deliveryOptions: DeliveryOption[],
+  ) => void;
+  cartItems: CartItem[];
+}
+
+interface CartItem {
+  id: string;
+  title: string;
+  price: number;
+  seller: string;
+}
+
+interface DeliveryOption {
+  id: string;
+  service: string;
+  price: number;
+  estimatedDays: string;
+  provider: string;
 }
 
 interface ShippingData {
