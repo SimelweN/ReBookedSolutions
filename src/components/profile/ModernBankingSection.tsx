@@ -50,16 +50,20 @@ const ModernBankingSection = () => {
     }
   }, [user?.id]);
 
-  const handleBankingFormSuccess = () => {
+  const handleBankingFormSuccess = async () => {
     toast.success(
       `Banking details ${editMode ? "updated" : "added"} successfully!`,
     );
     setShowBankingForm(false);
     setEditMode(false);
+
     // Refresh banking status after successful form submission
-    setTimeout(() => {
-      checkBankingStatus();
-    }, 1000);
+    await refreshSubaccountData();
+
+    // Link existing books to the subaccount if not in edit mode
+    if (!editMode && subaccountData?.subaccount_code) {
+      await linkBooksToSubaccount(subaccountData.subaccount_code);
+    }
   };
 
   const handleBankingFormCancel = () => {
