@@ -84,6 +84,54 @@ const RegisterPage = () => (
   </div>
 );
 
+const ActivityPage = () => (
+  <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+    <h1 style={{ color: "#2563eb" }}>📊 Activity Log</h1>
+    <p>Your activity and transactions will be displayed here</p>
+    <div
+      style={{
+        marginTop: "20px",
+        padding: "15px",
+        background: "#f0f9ff",
+        borderRadius: "8px",
+      }}
+    >
+      <h3>Recent Activity:</h3>
+      <ul>
+        <li>✅ Account created</li>
+        <li>✅ Profile updated</li>
+        <li>✅ Browsed books</li>
+      </ul>
+    </div>
+    <a
+      href="/"
+      style={{ color: "#2563eb", marginTop: "20px", display: "inline-block" }}
+    >
+      ← Back to Home
+    </a>
+  </div>
+);
+
+const ProfilePage = () => (
+  <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+    <h1 style={{ color: "#2563eb" }}>👤 Profile</h1>
+    <p>Your profile information</p>
+    <a href="/" style={{ color: "#2563eb" }}>
+      ← Back to Home
+    </a>
+  </div>
+);
+
+const UniversityInfoPage = () => (
+  <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+    <h1 style={{ color: "#2563eb" }}>🎓 University Information</h1>
+    <p>APS Calculator, University Programs, and Campus Information</p>
+    <a href="/" style={{ color: "#2563eb" }}>
+      ← Back to Home
+    </a>
+  </div>
+);
+
 const SimpleApp = () => {
   console.log("SimpleApp rendering...");
 
