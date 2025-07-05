@@ -38,6 +38,8 @@ serve(async (req) => {
 
   try {
     console.log("Starting subaccount creation process...");
+    console.log("Request method:", req.method);
+    console.log("Request URL:", req.url);
 
     if (!PAYSTACK_SECRET_KEY) {
       console.error("PAYSTACK_SECRET_KEY environment variable is not set");
@@ -58,13 +60,21 @@ serve(async (req) => {
 
     let requestBody;
     try {
-      requestBody = await req.json();
+      const bodyText = await req.text();
+      console.log("Raw request body:", bodyText);
+
+      if (!bodyText || bodyText.trim() === "") {
+        throw new Error("Empty request body");
+      }
+
+      requestBody = JSON.parse(bodyText);
+      console.log("Parsed request body:", JSON.stringify(requestBody, null, 2));
     } catch (parseError) {
       console.error("Failed to parse request body:", parseError);
       return new Response(
         JSON.stringify({
           success: false,
-          message: "Invalid request format",
+          message: "Invalid request format: " + parseError.message,
           error_code: "INVALID_JSON",
         }),
         {
