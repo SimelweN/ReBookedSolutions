@@ -147,6 +147,9 @@ export class PaystackSubaccountService {
         `${isUpdate ? "Updating" : "Creating"} subaccount for user:`,
         userId,
       );
+      console.log("Function name:", functionName);
+      console.log("Request body:", JSON.stringify(requestBody, null, 2));
+      console.log("Session user ID:", session.user.id);
 
       const { data, error } = await supabase.functions.invoke(functionName, {
         body: requestBody,
@@ -154,6 +157,9 @@ export class PaystackSubaccountService {
           Authorization: `Bearer ${session.access_token}`,
         },
       });
+
+      console.log("Function response data:", data);
+      console.log("Function response error:", error);
 
       if (error) {
         console.error("Supabase function error:", error);
