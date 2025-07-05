@@ -815,16 +815,6 @@ const UserProfileTabs = ({
           currentProfile={profile}
         />
       )}
-
-      {addressData && onSaveAddresses && (
-        <GoogleMapsAddressDialog
-          isOpen={isAddressEditDialogOpen}
-          onClose={() => setIsAddressEditDialogOpen(false)}
-          addressData={addressData}
-          onSave={onSaveAddresses}
-          isLoading={isLoadingAddress}
-        />
-      )}
     </div>
   );
 };
