@@ -774,6 +774,18 @@ const Profile = () => {
           onClose={closeRequirementsDialog}
           requirements={requirements}
         />
+
+        <QuickAddressSetup
+          isOpen={showQuickAddressSetup}
+          onClose={() => setShowQuickAddressSetup(false)}
+          onSuccess={() => {
+            // Refresh address data after successful save
+            fetchAddressData();
+            toast.success("Address saved! You can now create listings.");
+          }}
+          title="Add Pickup Address"
+          description="Buyers need to know where to collect books from you."
+        />
       </div>
     </Layout>
   );
