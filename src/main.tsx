@@ -16,34 +16,9 @@ const queryClient = new QueryClient({
   },
 });
 
-// Simple working app component
-const MinimalApp = () => {
-  return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h1 style={{ color: "#2563eb" }}>🚀 ReBooked Solutions</h1>
-      <p>Welcome to your textbook marketplace!</p>
-      <div
-        style={{
-          marginTop: "20px",
-          padding: "10px",
-          background: "#f0f9ff",
-          borderRadius: "8px",
-        }}
-      >
-        <p>
-          <strong>✅ React is working</strong>
-        </p>
-        <p>
-          <strong>✅ Vite is working</strong>
-        </p>
-        <p>
-          <strong>✅ Environment configured</strong>
-        </p>
-      </div>
-      <p>Now loading the full application...</p>
-    </div>
-  );
-};
+// Import the full App component
+import App from "./App";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 // Get root element
 const rootElement = document.getElementById("root");
