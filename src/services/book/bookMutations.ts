@@ -4,6 +4,7 @@ import { mapBookFromDatabase } from "./bookMapper";
 import { handleBookServiceError } from "./bookErrorHandler";
 import { BookQueryResult } from "./bookTypes";
 import { ActivityService } from "@/services/activityService";
+import { PaystackSubaccountService } from "@/services/paystackSubaccountService";
 
 export const createBook = async (bookData: BookFormData): Promise<Book> => {
   try {
