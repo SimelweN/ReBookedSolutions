@@ -37,22 +37,29 @@ export const logBankingError = (context: string, error: unknown): void => {
         type: typeof error,
       };
 
-      // Log with structured format
-      console.error(`${context}:`, errorDetails);
+      // Log with structured format - use JSON.stringify to avoid [object Object]
+      console.error(`${context}:`, JSON.stringify(errorDetails, null, 2));
 
       // Also log the raw error for debugging if structured logging fails
-      console.error(`${context} (raw):`, error);
+      console.error(`${context} (raw):`, JSON.stringify(error, null, 2));
     } else {
-      console.error(`${context}:`, {
-        error: String(error),
-        type: typeof error,
-      });
+      console.error(
+        `${context}:`,
+        JSON.stringify(
+          {
+            error: String(error),
+            type: typeof error,
+          },
+          null,
+          2,
+        ),
+      );
     }
   } catch (loggingError) {
     // Fallback if logging itself fails
     console.error(`${context} (logging failed):`, {
-      originalError: error,
-      loggingError: loggingError,
+      originalError: String(error),
+      loggingError: String(loggingError),
     });
   }
 };
