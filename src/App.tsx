@@ -106,7 +106,6 @@ const EnhancedQADashboard = React.lazy(
 const SystemHealth = React.lazy(() => import("./pages/SystemHealth"));
 const UserDashboard = React.lazy(() => import("./pages/UserDashboard"));
 const EmailDemo = React.lazy(() => import("./pages/EmailDemo"));
-const ReactContextTest = React.lazy(() => import("./pages/ReactContextTest"));
 
 // Create query client with optimized settings
 const queryClient = new QueryClient({
@@ -720,16 +719,6 @@ function App() {
                             element={
                               <LazyWrapper>
                                 <EmailDemo />
-                              </LazyWrapper>
-                            }
-                          />
-
-                          {/* Development/Debug Routes */}
-                          <Route
-                            path="/react-context-test"
-                            element={
-                              <LazyWrapper>
-                                <ReactContextTest />
                               </LazyWrapper>
                             }
                           />
