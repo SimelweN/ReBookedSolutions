@@ -120,6 +120,8 @@ const GoogleMapsAddressInput = ({
 
       // Call parent callback with address data
       onAddressSelect(addressData);
+
+      console.log("Address selected and data passed to parent:", addressData);
     } catch (error) {
       console.error("Error processing place selection:", error);
     } finally {
