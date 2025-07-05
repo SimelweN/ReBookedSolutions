@@ -88,22 +88,36 @@ const GoogleMapsAddressInput = ({
   };
 
   const handlePlaceChanged = useCallback(() => {
-    if (!autocompleteRef.current) return;
+    console.log("🎯 handlePlaceChanged called");
+
+    if (!autocompleteRef.current) {
+      console.warn("❌ No autocomplete ref available");
+      return;
+    }
 
     setIsLoading(true);
 
     try {
       const place = autocompleteRef.current.getPlace();
+      console.log("📍 Place data received:", place);
 
-      if (!place || !place.geometry || !place.geometry.location) {
-        console.warn("No valid place data received");
+      if (!place) {
+        console.warn("❌ No place object received");
+        setIsLoading(false);
+        return;
+      }
+
+      if (!place.geometry || !place.geometry.location) {
+        console.warn("❌ No geometry/location in place data");
         setIsLoading(false);
         return;
       }
 
       const lat = place.geometry.location.lat();
       const lng = place.geometry.location.lng();
-      const formattedAddress = place.formatted_address || "";
+      const formattedAddress = place.formatted_address || place.name || "";
+
+      console.log("✅ Valid place data:", { lat, lng, formattedAddress });
 
       // Extract address components
       const addressComponents = extractAddressComponents(place);
@@ -118,12 +132,14 @@ const GoogleMapsAddressInput = ({
       setAddress(formattedAddress);
       setCoords({ lat, lng });
 
+      console.log("🚀 Calling onAddressSelect with:", addressData);
+
       // Call parent callback with address data
       onAddressSelect(addressData);
 
-      console.log("Address selected and data passed to parent:", addressData);
+      console.log("✅ Address selection completed successfully!");
     } catch (error) {
-      console.error("Error processing place selection:", error);
+      console.error("❌ Error processing place selection:", error);
     } finally {
       setIsLoading(false);
     }
