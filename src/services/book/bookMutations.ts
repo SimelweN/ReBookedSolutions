@@ -90,7 +90,7 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
 
     const { data: book, error } = await supabase
       .from("books")
-      .insert([bookDataWithoutProvince])
+      .insert([bookDataWithSubaccount])
       .select()
       .single();
 
