@@ -781,7 +781,7 @@ const Profile = () => {
           onClose={() => setShowQuickAddressSetup(false)}
           onSuccess={() => {
             // Refresh address data after successful save
-            fetchAddressData();
+            loadUserAddresses();
             toast.success("Address saved! You can now create listings.");
           }}
           title="Add Pickup Address"
@@ -790,10 +790,10 @@ const Profile = () => {
 
         {/* Quick Fix Button for easy access */}
         <QuickFixButton
-          onAddressAdded={fetchAddressData}
+          onAddressAdded={loadUserAddresses}
           onBankingAdded={() => {
             // Refresh banking status
-            fetchAddressData();
+            loadUserAddresses();
           }}
         />
       </div>
