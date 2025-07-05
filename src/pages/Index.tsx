@@ -76,15 +76,15 @@ const Index = React.memo(() => {
               </Button>
             </div>
           </div>
-          <div className="md:w-1/2 flex justify-center">
+          <div className="md:w-1/2 flex justify-center mt-6 md:mt-0">
             <OptimizedImage
               src="https://cdn.builder.io/api/v1/assets/4b236342bc954bc3a0760c75cd3f3881/pexels-yankrukov-8199706-ad0e6d"
               alt="Three diverse students smiling with stacks of textbooks in library"
               width={600}
               height={400}
               priority={true}
-              className="rounded-lg shadow-xl w-full h-auto object-cover aspect-[3/2] max-w-lg mx-auto"
-              containerClassName="w-full flex justify-center"
+              className="rounded-lg shadow-xl w-full h-auto object-cover aspect-[4/3] sm:aspect-[3/2] max-w-xs sm:max-w-sm md:max-w-lg mx-auto"
+              containerClassName="w-full px-4 sm:px-0"
             />
           </div>
         </div>
