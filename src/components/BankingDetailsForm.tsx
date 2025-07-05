@@ -243,13 +243,13 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
 
       <CardContent>
         {/* Security Notice */}
-        <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4 flex items-start gap-3">
-          <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+        <div className="bg-book-100 border border-book-200 rounded-lg p-3 mb-4 flex items-start gap-3">
+          <CheckCircle className="w-4 h-4 text-book-600 mt-0.5 flex-shrink-0" />
           <div>
-            <p className="text-xs font-medium text-green-600">
+            <p className="text-xs font-medium text-book-600">
               Secure & Encrypted
             </p>
-            <p className="text-xs text-green-700">
+            <p className="text-xs text-book-700">
               Your banking information is protected with bank-level security.
             </p>
           </div>
