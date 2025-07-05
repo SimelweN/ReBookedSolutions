@@ -422,6 +422,7 @@ const ModernBankingSection = () => {
             onSuccess={handleBankingFormSuccess}
             onCancel={handleBankingFormCancel}
             showAsModal={false}
+            editMode={editMode}
           />
         </div>
       )}
