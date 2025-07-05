@@ -103,22 +103,6 @@ const UserDashboard = React.lazy(() => import("./pages/UserDashboard"));
 const EmailDemo = React.lazy(() => import("./pages/EmailDemo"));
 const PaymentDashboard = React.lazy(() => import("./pages/PaymentDashboard"));
 
-// Create query client with optimized settings
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
-      retry: 1,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: true,
-    },
-    mutations: {
-      retry: false,
-    },
-  },
-});
-
 // Minimal loading component
 const MinimalLoader = () => (
   <div className="flex items-center justify-center h-24">
