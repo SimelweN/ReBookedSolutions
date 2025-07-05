@@ -100,8 +100,11 @@ const ModernBankingSection = () => {
   }, [user?.id]);
 
   const handleBankingFormSuccess = () => {
-    toast.success("Banking details added successfully!");
+    toast.success(
+      `Banking details ${editMode ? "updated" : "added"} successfully!`,
+    );
     setShowBankingForm(false);
+    setEditMode(false);
     // Refresh banking status after successful form submission
     setTimeout(() => {
       checkBankingStatus();
@@ -110,6 +113,17 @@ const ModernBankingSection = () => {
 
   const handleBankingFormCancel = () => {
     setShowBankingForm(false);
+    setEditMode(false);
+  };
+
+  const handleEditClick = () => {
+    setEditMode(true);
+    setShowBankingForm(true);
+  };
+
+  const handleAddClick = () => {
+    setEditMode(false);
+    setShowBankingForm(true);
   };
 
   if (bankingStatus.isLoading) {
