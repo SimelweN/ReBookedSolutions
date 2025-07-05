@@ -47,7 +47,7 @@ const HomePage = () => (
       <ul>
         <li>✅ React rendering</li>
         <li>✅ React Router working</li>
-        <li>✅ Theme provider working</li>
+        <li>��� Theme provider working</li>
         <li>⏳ Adding more functionality...</li>
       </ul>
     </div>
@@ -144,6 +144,9 @@ const SimpleApp = () => {
             <Route path="/books" element={<BooksPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/activity" element={<ActivityPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/university-info" element={<UniversityInfoPage />} />
             <Route
               path="*"
               element={
