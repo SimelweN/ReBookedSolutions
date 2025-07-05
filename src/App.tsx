@@ -625,14 +625,6 @@ function App() {
 
                           {/* Admin Routes */}
                           <Route
-                            path="/qa-dashboard"
-                            element={
-                              <LazyWrapper>
-                                <QADashboard />
-                              </LazyWrapper>
-                            }
-                          />
-                          <Route
                             path="/qa-functionality"
                             element={
                               <ProtectedRoute>
