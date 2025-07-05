@@ -94,30 +94,50 @@ export const handleBankingQueryError = (
 export const logEnhancedError = (context: string, error: unknown): void => {
   try {
     if (error instanceof Error) {
-      console.error(`${context}:`, {
-        message: error.message,
-        stack: error.stack,
-        cause: error.cause,
-        name: error.name,
-      });
+      console.error(
+        `${context}:`,
+        JSON.stringify(
+          {
+            message: error.message,
+            stack: error.stack,
+            cause: error.cause,
+            name: error.name,
+          },
+          null,
+          2,
+        ),
+      );
     } else if (error && typeof error === "object") {
-      console.error(`${context}:`, {
-        type: "Object",
-        value: error,
-        stringified: JSON.stringify(error, null, 2),
-        keys: Object.keys(error),
-      });
+      console.error(
+        `${context}:`,
+        JSON.stringify(
+          {
+            type: "Object",
+            stringified: JSON.stringify(error, null, 2),
+            keys: Object.keys(error),
+          },
+          null,
+          2,
+        ),
+      );
     } else {
-      console.error(`${context}:`, {
-        type: typeof error,
-        value: error,
-        stringified: String(error),
-      });
+      console.error(
+        `${context}:`,
+        JSON.stringify(
+          {
+            type: typeof error,
+            value: error,
+            stringified: String(error),
+          },
+          null,
+          2,
+        ),
+      );
     }
   } catch (loggingError) {
     console.error(`${context} (logging failed):`, {
-      originalError: error,
-      loggingError,
+      originalError: String(error),
+      loggingError: String(loggingError),
     });
   }
 };
