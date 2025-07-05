@@ -17,8 +17,8 @@ const queryClient = new QueryClient({
   },
 });
 
-// Import the working SimpleApp
-import SimpleApp from "./SimpleApp";
+// Import the comprehensive App
+import App from "./App";
 
 // Get root element
 const rootElement = document.getElementById("root");
@@ -34,7 +34,7 @@ try {
   root.render(
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
-        <SimpleApp />
+        <App />
       </QueryClientProvider>
     </React.StrictMode>,
   );
