@@ -211,13 +211,12 @@ function App() {
   return (
     <NetworkErrorBoundary>
       <ErrorBoundary level="app">
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider attribute="class" defaultTheme="light">
-            <GoogleMapsProvider>
-              <AuthProvider>
-                <CartProvider>
-                  <ErrorBoundary level="router">
-                    <Suspense fallback={<MinimalLoader />}>
+        <ThemeProvider attribute="class" defaultTheme="light">
+          <GoogleMapsProvider>
+            <AuthProvider>
+              <CartProvider>
+                <ErrorBoundary level="router">
+                  <Suspense fallback={<MinimalLoader />}>
                       <Router>
                         <AuthErrorHandler />
                         <ScrollToTop />
