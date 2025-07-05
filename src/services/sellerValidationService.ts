@@ -53,14 +53,36 @@ export class SellerValidationService {
 
       // Check banking setup (subaccount_code) requirements
       try {
-        const { data: bankingDetails } = await supabase
-          .from("banking_details")
-          .select("paystack_subaccount_code")
+        // First check banking_subaccounts table (preferred)
+        const { data: bankingSubaccounts } = await supabase
+          .from("banking_subaccounts")
+          .select("subaccount_code")
           .eq("user_id", userId)
           .maybeSingle();
 
-        // Subaccount code is required for receiving payments
-        hasBankingDetails = !!bankingDetails?.paystack_subaccount_code?.trim();
+        if (bankingSubaccounts?.subaccount_code?.trim()) {
+          hasBankingDetails = true;
+        } else {
+          // Fallback to paystack_subaccounts table
+          const { data: paystackSubaccounts } = await supabase
+            .from("paystack_subaccounts")
+            .select("subaccount_code")
+            .eq("user_id", userId)
+            .maybeSingle();
+
+          if (paystackSubaccounts?.subaccount_code?.trim()) {
+            hasBankingDetails = true;
+          } else {
+            // Final fallback to profile table
+            const { data: profileData } = await supabase
+              .from("profiles")
+              .select("subaccount_code")
+              .eq("id", userId)
+              .maybeSingle();
+
+            hasBankingDetails = !!profileData?.subaccount_code?.trim();
+          }
+        }
 
         if (!hasBankingDetails) {
           missingRequirements.push(
@@ -102,13 +124,36 @@ export class SellerValidationService {
    */
   static async hasBankingDetails(userId: string): Promise<boolean> {
     try {
-      const { data: bankingDetails } = await supabase
-        .from("banking_details")
-        .select("paystack_subaccount_code")
+      // First check banking_subaccounts table (preferred)
+      const { data: bankingSubaccounts } = await supabase
+        .from("banking_subaccounts")
+        .select("subaccount_code")
         .eq("user_id", userId)
         .maybeSingle();
 
-      return !!bankingDetails?.paystack_subaccount_code?.trim();
+      if (bankingSubaccounts?.subaccount_code?.trim()) {
+        return true;
+      }
+
+      // Fallback to paystack_subaccounts table
+      const { data: paystackSubaccounts } = await supabase
+        .from("paystack_subaccounts")
+        .select("subaccount_code")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (paystackSubaccounts?.subaccount_code?.trim()) {
+        return true;
+      }
+
+      // Final fallback to profile table
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("subaccount_code")
+        .eq("id", userId)
+        .maybeSingle();
+
+      return !!profileData?.subaccount_code?.trim();
     } catch (error) {
       console.error("Error checking banking setup:", error);
       return false;
