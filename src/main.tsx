@@ -77,11 +77,9 @@ try {
   // Render with error boundary
   root.render(
     <React.StrictMode>
-      <ErrorBoundary level="app">
-        <QueryClientProvider client={queryClient}>
-          <App />
-        </QueryClientProvider>
-      </ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <MinimalApp />
+      </QueryClientProvider>
     </React.StrictMode>,
   );
 
