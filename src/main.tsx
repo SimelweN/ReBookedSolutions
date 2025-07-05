@@ -17,55 +17,9 @@ const queryClient = new QueryClient({
   },
 });
 
-// Step 1: Test with simple routing
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
-const SimpleHome = () => (
-  <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-    <h1 style={{ color: "#2563eb" }}>🏠 ReBooked Solutions - Home</h1>
-    <p>✅ Basic routing is working!</p>
-    <nav style={{ marginTop: "20px" }}>
-      <a href="/books" style={{ marginRight: "20px", color: "#2563eb" }}>
-        Books
-      </a>
-      <a href="/login" style={{ color: "#2563eb" }}>
-        Login
-      </a>
-    </nav>
-  </div>
-);
-
-const SimpleBooks = () => (
-  <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-    <h1 style={{ color: "#2563eb" }}>📚 Books Page</h1>
-    <p>✅ Books route is working!</p>
-    <a href="/" style={{ color: "#2563eb" }}>
-      ← Back to Home
-    </a>
-  </div>
-);
-
-const SimpleLogin = () => (
-  <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-    <h1 style={{ color: "#2563eb" }}>🔐 Login Page</h1>
-    <p>✅ Login route is working!</p>
-    <a href="/" style={{ color: "#2563eb" }}>
-      ← Back to Home
-    </a>
-  </div>
-);
-
-const SimpleApp = () => {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<SimpleHome />} />
-        <Route path="/books" element={<SimpleBooks />} />
-        <Route path="/login" element={<SimpleLogin />} />
-      </Routes>
-    </Router>
-  );
-};
+// Import the real App component
+import App from "./App";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 // Get root element
 const rootElement = document.getElementById("root");
