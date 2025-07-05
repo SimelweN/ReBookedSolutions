@@ -356,7 +356,7 @@ export class PaystackSubaccountService {
   }
 
   /**
-   * Link all user's books to their subaccount (called after subaccount creation)
+   * Link all user's books to their subaccount (updates subaccount_code column)
    */
   static async linkBooksToSubaccount(userId: string): Promise<boolean> {
     try {
@@ -367,11 +367,24 @@ export class PaystackSubaccountService {
         return false;
       }
 
-      // Books are automatically linked through the seller_id relationship
-      // We just need to ensure the user has a valid subaccount
+      // Update all user's books to have the direct subaccount_code
+      const { data, error } = await supabase
+        .from("books")
+        .update({ subaccount_code: subaccountCode })
+        .eq("seller_id", userId)
+        .is("subaccount_code", null) // Only update books that don't already have a subaccount_code
+        .select("id");
+
+      if (error) {
+        console.error("Error updating books with subaccount_code:", error);
+        return false;
+      }
+
+      const updatedCount = data?.length || 0;
       console.log(
-        `All books for user ${userId} are now linked to subaccount ${subaccountCode}`,
+        `✅ ${updatedCount} books linked to subaccount ${subaccountCode} for user ${userId}`,
       );
+
       return true;
     } catch (error) {
       console.error("Error linking books to subaccount:", error);
