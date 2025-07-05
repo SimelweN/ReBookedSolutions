@@ -232,11 +232,12 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
             <CheckCircle className="w-8 h-8 text-white" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            Banking Details Submitted!
+            Banking Details {editMode ? "Updated" : "Submitted"}!
           </h3>
           <p className="text-sm text-gray-600 mb-4">
-            Your payment account has been created successfully. You can now
-            start listing and selling books.
+            Your payment account has been {editMode ? "updated" : "created"}{" "}
+            successfully.
+            {!editMode && " You can now start listing and selling books."}
           </p>
           <Button
             onClick={onSuccess}
