@@ -102,11 +102,15 @@ const AddressSection = ({
 
   // Initialize addresses from addressData
   useEffect(() => {
-    if (addressData?.pickup_address) {
-      setPickupAddress(addressData.pickup_address);
-    }
-    if (addressData?.shipping_address) {
-      setShippingAddress(addressData.shipping_address);
+    try {
+      if (addressData?.pickup_address) {
+        setPickupAddress(addressData.pickup_address);
+      }
+      if (addressData?.shipping_address) {
+        setShippingAddress(addressData.shipping_address);
+      }
+    } catch (error) {
+      console.error("Error initializing addresses:", error);
     }
   }, [addressData]);
 
