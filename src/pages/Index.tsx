@@ -25,7 +25,7 @@ const Index = React.memo(() => {
     () => [
       { name: "Computer Science", icon: "💻" },
       { name: "Mathematics", icon: "📊" },
-      { name: "Biology", icon: "🧬" },
+      { name: "Biology", icon: "���" },
       { name: "Chemistry", icon: "⚗️" },
       { name: "Physics", icon: "🔭" },
       { name: "Economics", icon: "📈" },
@@ -43,9 +43,9 @@ const Index = React.memo(() => {
       />
 
       {/* Mobile-Optimized Hero Section */}
-      <section className="bg-gradient-to-r from-book-100 to-book-200 py-12 sm:py-16 lg:py-20">
-        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2 mb-8 md:mb-0 text-center md:text-left">
+      <section className="bg-gradient-to-r from-book-100 to-book-200 py-8 sm:py-12 md:py-16 lg:py-20">
+        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center gap-6 md:gap-8">
+          <div className="md:w-1/2 text-center md:text-left">
             <div className="mb-4">
               <span className="inline-block bg-book-600/10 text-book-700 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium italic">
                 "Pre-Loved Pages, New Adventures"
