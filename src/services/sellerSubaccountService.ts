@@ -172,7 +172,7 @@ export class SellerSubaccountService {
   }
 
   /**
-   * Link a new book to the seller's current subaccount (called when creating new books)
+   * Link a new book to the seller's current subaccount (updates subaccount_code column)
    */
   static async linkBookToSellerSubaccount(
     bookId: string,
@@ -190,10 +190,20 @@ export class SellerSubaccountService {
         return false;
       }
 
-      // Book is already linked to seller via seller_id column
-      // No additional linking needed since we query subaccount dynamically
+      // Update book's subaccount_code column directly
+      const { error } = await supabase
+        .from("books")
+        .update({ subaccount_code: validation.subaccountCode })
+        .eq("id", bookId)
+        .eq("seller_id", sellerId); // Security check
+
+      if (error) {
+        console.error("Error updating book subaccount_code:", error);
+        return false;
+      }
+
       console.log(
-        `Book ${bookId} is now linked to seller ${sellerId} with subaccount ${validation.subaccountCode}`,
+        `✅ Book ${bookId} directly linked to subaccount ${validation.subaccountCode}`,
       );
 
       return true;
