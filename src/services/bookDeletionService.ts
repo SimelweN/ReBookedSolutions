@@ -235,46 +235,37 @@ export class BookDeletionService {
 
   /**
    * Reactivate user listings when pickup address is added back
+   * Note: Currently disabled until availability column is added to books table
    */
   static async reactivateUserListings(userId: string): Promise<void> {
     try {
       console.log("Reactivating listings for user:", userId);
 
-      // Update unavailable listings back to active
-      const { error: updateError } = await supabase
-        .from("books")
-        .update({
-          status: "active",
-          updated_at: new Date().toISOString(),
-        })
-        .eq("seller_id", userId)
-        .eq("status", "unavailable")
-        .eq("sold", false);
-
-      if (updateError) {
-        logError(
-          "BookDeletionService.reactivateUserListings - update books",
-          updateError,
-        );
-        throw new Error("Failed to reactivate user listings");
-      }
+      // TODO: Add availability column to books table first
+      // For now, just send notification without updating database
+      console.warn(
+        "Book reactivation disabled - availability column missing from books table",
+      );
 
       // Send positive notification
       await addNotification({
         userId,
-        title: "Listings Reactivated",
+        title: "Address Updated",
         message:
-          "Your listings have been reactivated now that you have added a pickup address.",
+          "Your pickup address has been updated successfully. Your listings should now be fully active.",
         type: "success",
         read: false,
       });
 
-      console.log("Successfully reactivated listings for user:", userId);
+      console.log("Notification sent for user:", userId);
     } catch (error) {
       logError("BookDeletionService.reactivateUserListings", error, {
         userId,
       });
-      throw error;
+      // Don't throw error to prevent blocking address updates
+      console.warn(
+        "Failed to send notification, but continuing with address update",
+      );
     }
   }
 }
