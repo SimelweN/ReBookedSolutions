@@ -28,7 +28,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { SellerValidationService } from "@/services/sellerValidationService";
 import SellerRestrictionBanner from "@/components/SellerRestrictionBanner";
 import BankingRequirementGate from "@/components/BankingRequirementGate";
-import { useBankingSetup } from "@/hooks/useBankingSetup";
 
 const CreateListing = () => {
   const { user, profile } = useAuth();
