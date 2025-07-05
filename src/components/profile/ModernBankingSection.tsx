@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-type BankingSubaccount = Tables<"banking_subaccounts">;
+type PaystackSubaccount = Tables<"paystack_subaccounts">;
 
 const ModernBankingSection = () => {
   const { user } = useAuth();
@@ -54,9 +54,9 @@ const ModernBankingSection = () => {
 
     try {
       const { data: subaccountData, error } = await supabase
-        .from("banking_subaccounts")
-        .select("subaccount_code, business_name, bank_name, status")
-        .eq("id", user.id)
+        .from("paystack_subaccounts")
+        .select("subaccount_code, business_name, settlement_bank, status")
+        .eq("user_id", user.id)
         .maybeSingle();
 
       if (error) {
@@ -93,7 +93,7 @@ const ModernBankingSection = () => {
         hasSubaccount: hasValidSubaccount,
         subaccountCode: subaccountData?.subaccount_code || null,
         businessName: subaccountData?.business_name || null,
-        bankName: subaccountData?.bank_name || null,
+        bankName: subaccountData?.settlement_bank || null,
         isLoading: false,
         lastChecked: new Date(),
       });
