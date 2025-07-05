@@ -277,9 +277,26 @@ const CampusBooksSection = () => {
           Campus Books Marketplace
         </h2>
         <p className="text-gray-600 text-sm sm:text-base max-w-2xl mx-auto">
-          Find affordable textbooks from students at your university. Buy, sell,
-          and save on academic materials.
+          Find affordable textbooks from students across South Africa. Connect
+          directly with sellers from your university and beyond.
         </p>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mt-4">
+          <Button
+            onClick={() => navigate("/books")}
+            variant="outline"
+            className="border-book-300 text-book-700 hover:bg-book-50"
+          >
+            <ExternalLink className="w-4 h-4 mr-2" />
+            View Full Marketplace
+          </Button>
+          <Button
+            onClick={() => navigate("/create-listing")}
+            className="bg-book-600 hover:bg-book-700 text-white"
+          >
+            <Book className="w-4 h-4 mr-2" />
+            Sell Your Books
+          </Button>
+        </div>
       </div>
 
       {/* Filters - Mobile Optimized */}
@@ -313,7 +330,7 @@ const CampusBooksSection = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Universities</SelectItem>
-                {universities.slice(0, 10).map((university) => (
+                {universities.slice(0, 15).map((university) => (
                   <SelectItem key={university.id} value={university.id}>
                     {university.abbreviation || university.name}
                   </SelectItem>
@@ -331,13 +348,11 @@ const CampusBooksSection = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="Computer Science">
-                  Computer Science
-                </SelectItem>
-                <SelectItem value="Mathematics">Mathematics</SelectItem>
-                <SelectItem value="Chemistry">Chemistry</SelectItem>
-                <SelectItem value="Physics">Physics</SelectItem>
-                <SelectItem value="Biology">Biology</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
@@ -357,53 +372,111 @@ const CampusBooksSection = () => {
         </CardContent>
       </Card>
 
-      {/* Results */}
-      <div>
-        <div className="flex items-center justify-between mb-4 sm:mb-6">
-          <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
-            {filteredBooks.length} Books Found
-          </h3>
-          <Button
-            onClick={() => navigate("/create-listing")}
-            className="bg-green-600 hover:bg-green-700 text-white text-sm"
-          >
-            <Book className="w-4 h-4 mr-2" />
-            Sell Books
-          </Button>
-        </div>
+      {/* Error State */}
+      {error && (
+        <Alert className="border-red-200 bg-red-50">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="text-red-800">
+            {error}{" "}
+            <Button
+              variant="link"
+              className="p-0 h-auto text-red-600 underline"
+              onClick={loadBooks}
+            >
+              Try again
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
 
-        {filteredBooks.length === 0 ? (
-          <Card>
-            <CardContent className="text-center py-12">
-              <BookOpen className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                No books found
-              </h3>
-              <p className="text-gray-500 mb-4">
-                Try adjusting your search criteria or browse all available
-                books.
-              </p>
-              <Button
-                onClick={() => {
-                  setSearchTerm("");
-                  setSelectedUniversity("all");
-                  setSelectedCategory("all");
-                  setPriceRange("all");
-                }}
-                variant="outline"
-              >
-                Clear Filters
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {filteredBooks.map((book) => (
-              <BookCard key={book.id} book={book} />
-            ))}
+      {/* Loading State */}
+      {isLoading ? (
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-book-600"></div>
+          <span className="ml-3 text-gray-600">Loading books...</span>
+        </div>
+      ) : (
+        /* Results */
+        <div>
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
+              {filteredBooks.length} Books Found
+            </h3>
+            <Button
+              onClick={() => navigate("/create-listing")}
+              className="bg-book-600 hover:bg-book-700 text-white text-sm"
+            >
+              <Book className="w-4 h-4 mr-2" />
+              Sell Books
+            </Button>
           </div>
-        )}
-      </div>
+
+          {filteredBooks.length === 0 ? (
+            <Card>
+              <CardContent className="text-center py-12">
+                <BookOpen className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No books found
+                </h3>
+                <p className="text-gray-500 mb-4">
+                  {searchTerm ||
+                  selectedUniversity !== "all" ||
+                  selectedCategory !== "all" ||
+                  priceRange !== "all"
+                    ? "Try adjusting your search criteria or browse all available books."
+                    : "No books are currently available. Be the first to list your textbooks!"}
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                  <Button
+                    onClick={() => {
+                      setSearchTerm("");
+                      setSelectedUniversity("all");
+                      setSelectedCategory("all");
+                      setPriceRange("all");
+                    }}
+                    variant="outline"
+                  >
+                    Clear Filters
+                  </Button>
+                  <Button
+                    onClick={() => navigate("/books")}
+                    className="bg-book-600 hover:bg-book-700"
+                  >
+                    Browse All Books
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {filteredBooks.slice(0, 9).map((book) => (
+                <BookCard key={book.id} book={book} />
+              ))}
+            </div>
+          )}
+
+          {/* Show more books link if there are more than 9 */}
+          {filteredBooks.length > 9 && (
+            <div className="text-center mt-6">
+              <Button
+                onClick={() =>
+                  navigate(
+                    "/books" +
+                      (searchTerm
+                        ? `?search=${encodeURIComponent(searchTerm)}`
+                        : ""),
+                  )
+                }
+                variant="outline"
+                className="border-book-300 text-book-700 hover:bg-book-50"
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                View All {filteredBooks.length} Books in Marketplace
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
