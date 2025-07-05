@@ -70,8 +70,6 @@ const AdminDashboard = () => {
     setError(null);
 
     try {
-      console.log("Loading admin dashboard data...");
-
       // Load data with individual error handling to prevent cascading failures
       const results = await Promise.allSettled([
         getAdminStats().catch((e) => ({ error: e })),
@@ -82,7 +80,6 @@ const AdminDashboard = () => {
       // Handle stats
       if (results[0].status === "fulfilled") {
         setStats(results[0].value);
-        console.log("Stats loaded successfully");
       } else {
         console.error("Failed to load stats:", results[0].reason);
         handleError(results[0].reason, "Load Admin Stats", {
@@ -93,7 +90,6 @@ const AdminDashboard = () => {
       // Handle users
       if (results[1].status === "fulfilled") {
         setUsers(results[1].value);
-        console.log("Users loaded successfully:", results[1].value.length);
       } else {
         console.error("Failed to load users:", results[1].reason);
         handleError(results[1].reason, "Load Users", { showToast: false });
@@ -103,7 +99,6 @@ const AdminDashboard = () => {
       // Handle listings
       if (results[2].status === "fulfilled") {
         setListings(results[2].value);
-        console.log("Listings loaded successfully:", results[2].value.length);
       } else {
         console.error("Failed to load listings:", results[2].reason);
         handleError(results[2].reason, "Load Listings", { showToast: false });
