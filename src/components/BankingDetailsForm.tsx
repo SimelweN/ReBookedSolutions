@@ -206,7 +206,7 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
     return (
       <Card className={showAsModal ? "w-full max-w-md mx-auto" : ""}>
         <CardContent className="p-6 text-center">
-          <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-book-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-8 h-8 text-white" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -218,7 +218,7 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
           </p>
           <Button
             onClick={onSuccess}
-            className="w-full bg-green-600 hover:bg-green-700 text-white"
+            className="w-full bg-book-600 hover:bg-book-700 text-white"
           >
             Done
           </Button>
@@ -230,7 +230,7 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
   return (
     <Card className={showAsModal ? "w-full max-w-md mx-auto" : ""}>
       <CardHeader className="text-center pb-4">
-        <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+        <div className="w-12 h-12 bg-book-600 rounded-xl flex items-center justify-center mx-auto mb-3">
           <Building2 className="w-6 h-6 text-white" />
         </div>
         <CardTitle className="text-xl font-bold text-gray-900">
@@ -313,7 +313,7 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
               Select Your Bank *
             </Label>
             <Select onValueChange={handleBankChange} value={formData.bankName}>
-              <SelectTrigger className="h-11 rounded-lg border-2 focus:border-green-600">
+              <SelectTrigger className="h-11 rounded-lg border-2 focus:border-book-600">
                 <SelectValue placeholder="Choose your bank" />
               </SelectTrigger>
               <SelectContent className="bg-white z-50">
@@ -368,7 +368,7 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-11 bg-green-600 hover:bg-green-700 transition-all duration-200 rounded-lg font-medium text-white"
+              className="w-full h-11 bg-book-600 hover:bg-book-700 transition-all duration-200 rounded-lg font-medium text-white"
             >
               {isSubmitting ? (
                 <>
