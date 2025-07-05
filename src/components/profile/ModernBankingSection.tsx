@@ -115,7 +115,9 @@ const ModernBankingSection = () => {
   };
 
   useEffect(() => {
-    checkBankingStatus();
+    if (user?.id) {
+      checkBankingStatus();
+    }
   }, [user?.id]);
 
   const handleBankingFormSuccess = () => {
