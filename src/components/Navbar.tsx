@@ -6,7 +6,6 @@ import {
   BookOpen,
   Menu,
   X,
-  Plus,
   User,
   LogOut,
   UserPlus,
