@@ -199,45 +199,37 @@ export class BookDeletionService {
 
   /**
    * Deactivate all user listings when pickup address is removed
+   * Note: Currently disabled until availability column is added to books table
    */
   static async deactivateUserListings(userId: string): Promise<void> {
     try {
       console.log("Deactivating all listings for user:", userId);
 
-      // Update all active listings to be unavailable
-      const { error: updateError } = await supabase
-        .from("books")
-        .update({
-          status: "unavailable",
-          updated_at: new Date().toISOString(),
-        })
-        .eq("seller_id", userId)
-        .eq("sold", false);
-
-      if (updateError) {
-        logError(
-          "BookDeletionService.deactivateUserListings - update books",
-          updateError,
-        );
-        throw new Error("Failed to deactivate user listings");
-      }
+      // TODO: Add availability column to books table first
+      // For now, just send notification without updating database
+      console.warn(
+        "Book deactivation disabled - availability column missing from books table",
+      );
 
       // Send notification to user about deactivated listings
       await addNotification({
         userId,
-        title: "Listings Deactivated",
+        title: "Listings Status Notice",
         message:
-          "Your listing is currently unavailable because you removed your pickup address. Please add a pickup address to reactivate your listing(s).",
+          "Your listings may become unavailable because you removed your pickup address. Please add a pickup address to ensure your listings remain active.",
         type: "warning",
         read: false,
       });
 
-      console.log("Successfully deactivated all listings for user:", userId);
+      console.log("Notification sent for user:", userId);
     } catch (error) {
       logError("BookDeletionService.deactivateUserListings", error, {
         userId,
       });
-      throw error;
+      // Don't throw error to prevent blocking address updates
+      console.warn(
+        "Failed to send notification, but continuing with address update",
+      );
     }
   }
 
