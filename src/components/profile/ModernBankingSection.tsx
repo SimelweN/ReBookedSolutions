@@ -32,11 +32,15 @@ const ModernBankingSection = () => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const [showBankingForm, setShowBankingForm] = useState(false);
+  const [editMode, setEditMode] = useState(false);
   const [bankingStatus, setBankingStatus] = useState<{
     hasSubaccount: boolean;
     subaccountCode: string | null;
     businessName: string | null;
     bankName: string | null;
+    email: string | null;
+    accountNumber: string | null;
+    canEdit: boolean;
     isLoading: boolean;
     lastChecked: Date | null;
   }>({
@@ -44,6 +48,9 @@ const ModernBankingSection = () => {
     subaccountCode: null,
     businessName: null,
     bankName: null,
+    email: null,
+    accountNumber: null,
+    canEdit: false,
     isLoading: true,
     lastChecked: null,
   });
@@ -54,52 +61,23 @@ const ModernBankingSection = () => {
     setBankingStatus((prev) => ({ ...prev, isLoading: true }));
 
     try {
-      const { data: subaccountData, error } = await supabase
-        .from("paystack_subaccounts")
-        .select("subaccount_code, business_name, settlement_bank, status")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      const status = await PaystackSubaccountService.getUserSubaccountStatus(
+        user.id,
+      );
 
-      if (error) {
-        const { shouldFallback, errorMessage } = handleBankingQueryError(
-          "ModernBankingSection - checking banking status",
-          error,
-        );
-
-        if (shouldFallback) {
-          setBankingStatus({
-            hasSubaccount: false,
-            subaccountCode: null,
-            businessName: null,
-            bankName: null,
-            isLoading: false,
-            lastChecked: new Date(),
-          });
-          return;
-        }
-
-        setBankingStatus({
-          hasSubaccount: false,
-          subaccountCode: null,
-          businessName: null,
-          bankName: null,
-          isLoading: false,
-          lastChecked: new Date(),
-        });
-        return;
-      }
-
-      const hasValidSubaccount = !!subaccountData?.subaccount_code?.trim();
       setBankingStatus({
-        hasSubaccount: hasValidSubaccount,
-        subaccountCode: subaccountData?.subaccount_code || null,
-        businessName: subaccountData?.business_name || null,
-        bankName: subaccountData?.settlement_bank || null,
+        hasSubaccount: status.hasSubaccount,
+        subaccountCode: status.subaccountCode || null,
+        businessName: status.businessName || null,
+        bankName: status.bankName || null,
+        email: status.email || null,
+        accountNumber: status.accountNumber || null,
+        canEdit: status.canEdit,
         isLoading: false,
         lastChecked: new Date(),
       });
 
-      if (hasValidSubaccount) {
+      if (status.hasSubaccount) {
         toast.success("Banking setup verified!");
       }
     } catch (error) {
