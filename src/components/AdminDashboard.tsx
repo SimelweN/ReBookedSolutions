@@ -34,7 +34,6 @@ import {
   Users,
   BookOpen,
   MessageSquare,
-  FileText,
   Settings,
   GraduationCap,
   Lightbulb,
