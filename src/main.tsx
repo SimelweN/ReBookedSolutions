@@ -1,22 +1,24 @@
-// Simple JS test without React
-console.log("🚀 JavaScript is executing...");
+import React from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
 
-// Get root element
+console.log("🚀 Starting ReBooked Solutions...");
+
+// Simple test component first
+const SimpleApp = () => (
+  <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+    <h1 style={{ color: "green" }}>✅ ReBooked Solutions</h1>
+    <p>Application is loading...</p>
+    <p>Time: {new Date().toLocaleString()}</p>
+  </div>
+);
+
 const rootElement = document.getElementById("root");
 if (!rootElement) {
   throw new Error("Root element not found");
 }
 
-console.log("Root element found:", rootElement);
+const root = createRoot(rootElement);
+root.render(<SimpleApp />);
 
-// Test basic DOM manipulation
-rootElement.innerHTML = `
-  <div style="padding: 20px; font-family: Arial, sans-serif; background: #f0f0f0; border: 2px solid #333;">
-    <h1 style="color: green;">✅ JavaScript is Working!</h1>
-    <p>This is a test to verify basic JavaScript execution.</p>
-    <p>Current time: ${new Date().toLocaleString()}</p>
-    <button onclick="alert('Button clicked!')">Test Button</button>
-  </div>
-`;
-
-console.log("✅ DOM manipulation successful");
+console.log("✅ Simple app rendered");
