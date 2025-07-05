@@ -284,7 +284,16 @@ const CampusBooksSection = () => {
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mt-4">
           <Button
-            onClick={() => navigate("/books")}
+            onClick={() => {
+              const params = new URLSearchParams();
+              if (searchTerm) params.set("search", searchTerm);
+              if (selectedUniversity !== "all")
+                params.set("university", selectedUniversity);
+              if (selectedCategory !== "all")
+                params.set("category", selectedCategory);
+              const queryString = params.toString();
+              navigate("/books" + (queryString ? `?${queryString}` : ""));
+            }}
             variant="outline"
             className="border-book-300 text-book-700 hover:bg-book-50"
           >
