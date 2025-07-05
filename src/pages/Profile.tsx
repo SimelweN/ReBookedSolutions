@@ -48,6 +48,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useSellerRequirements } from "@/hooks/useSellerRequirements";
 import SellerRequirementsDialog from "@/components/SellerRequirementsDialog";
 import QuickAddressSetup from "@/components/QuickAddressSetup";
+import QuickFixButton from "@/components/QuickFixButton";
 
 const Profile = () => {
   const { profile, user } = useAuth();
@@ -785,6 +786,15 @@ const Profile = () => {
           }}
           title="Add Pickup Address"
           description="Buyers need to know where to collect books from you."
+        />
+
+        {/* Quick Fix Button for easy access */}
+        <QuickFixButton
+          onAddressAdded={fetchAddressData}
+          onBankingAdded={() => {
+            // Refresh banking status
+            fetchAddressData();
+          }}
         />
       </div>
     </Layout>
