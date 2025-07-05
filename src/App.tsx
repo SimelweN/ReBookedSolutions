@@ -694,6 +694,9 @@ function App() {
             {/* Performance monitoring */}
             <PerformanceMetrics />
 
+            {/* Cookie Consent Popup */}
+            <CookieConsent />
+
             {/* Vercel Analytics and Speed Insights - only in production */}
             {import.meta.env.PROD && (
               <ErrorBoundary level="analytics">
