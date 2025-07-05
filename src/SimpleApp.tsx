@@ -19,6 +19,36 @@ const HomePage = () => (
         Browse Books
       </a>
       <a
+        href="/university-info"
+        style={{
+          marginRight: "20px",
+          color: "#2563eb",
+          textDecoration: "underline",
+        }}
+      >
+        University Info
+      </a>
+      <a
+        href="/activity"
+        style={{
+          marginRight: "20px",
+          color: "#2563eb",
+          textDecoration: "underline",
+        }}
+      >
+        Activity
+      </a>
+      <a
+        href="/profile"
+        style={{
+          marginRight: "20px",
+          color: "#2563eb",
+          textDecoration: "underline",
+        }}
+      >
+        Profile
+      </a>
+      <a
         href="/login"
         style={{
           marginRight: "20px",
@@ -47,7 +77,7 @@ const HomePage = () => (
       <ul>
         <li>✅ React rendering</li>
         <li>✅ React Router working</li>
-        <li>��� Theme provider working</li>
+        <li>✅ Theme provider working</li>
         <li>⏳ Adding more functionality...</li>
       </ul>
     </div>
@@ -114,7 +144,7 @@ const ActivityPage = () => (
 
 const ProfilePage = () => (
   <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-    <h1 style={{ color: "#2563eb" }}>👤 Profile</h1>
+    <h1 style={{ color: "#2563eb" }}>�� Profile</h1>
     <p>Your profile information</p>
     <a href="/" style={{ color: "#2563eb" }}>
       ← Back to Home
