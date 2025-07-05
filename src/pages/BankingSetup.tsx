@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Layout from "@/components/Layout";
 import SEO from "@/components/SEO";
-import BankingDetailsForm from "@/components/BankingDetailsForm";
 import {
   Card,
   CardContent,
@@ -12,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   CreditCard,
   CheckCircle2,
@@ -20,9 +20,14 @@ import {
   DollarSign,
   Clock,
   Users,
+  ExternalLink,
+  RefreshCw,
+  AlertTriangle,
+  Info,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import BankingService from "@/services/bankingService";
+import { supabase } from "@/integrations/supabase/client";
+import { handleBankingQueryError } from "@/utils/bankingErrorHandler";
 import { toast } from "sonner";
 
 const BankingSetup = () => {
@@ -31,6 +36,7 @@ const BankingSetup = () => {
   const { user } = useAuth();
   const [bankingStatus, setBankingStatus] = useState<{
     hasSubaccount: boolean;
+    subaccountCode?: string;
     businessName?: string;
     bankName?: string;
     accountNumberMasked?: string;
@@ -45,24 +51,118 @@ const BankingSetup = () => {
     }
   }, [user]);
 
+  // Listen for window messages from banking setup popup
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      // Only accept messages from the banking setup domain
+      if (event.origin !== "https://paystack-vault-south-africa.lovable.app") {
+        return;
+      }
+
+      if (event.data.type === "BANKING_SETUP_COMPLETE") {
+        toast.success("Banking setup completed! Refreshing status...");
+        setTimeout(() => {
+          checkBankingStatus();
+        }, 1000);
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
   const checkBankingStatus = async () => {
+    if (!user?.id) return;
+
     try {
-      const status = await BankingService.checkBankingStatus();
-      setBankingStatus(status);
+      const { data: subaccountData, error } = await supabase
+        .from("banking_subaccounts")
+        .select("subaccount_code")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (error) {
+        const { shouldFallback, errorMessage } = handleBankingQueryError(
+          "BankingSetup - checking banking status",
+          error,
+        );
+
+        if (shouldFallback) {
+          setBankingStatus({
+            hasSubaccount: false,
+            businessName: "Banking setup not available",
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        setBankingStatus({ hasSubaccount: false });
+        setIsLoading(false);
+        return;
+      }
+
+      const hasValidSubaccount = !!subaccountData?.subaccount_code?.trim();
+      setBankingStatus({
+        hasSubaccount: hasValidSubaccount,
+        subaccountCode: subaccountData?.subaccount_code || undefined,
+        businessName: hasValidSubaccount ? "Banking Active" : undefined,
+      });
+
+      if (hasValidSubaccount) {
+        toast.success("Banking setup verified!");
+      }
     } catch (error) {
       console.error("Error checking banking status:", error);
+      setBankingStatus({ hasSubaccount: false });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSuccess = () => {
-    toast.success("Banking details successfully added!");
+  const openBankingSetup = () => {
+    const bankingUrl = "https://paystack-vault-south-africa.lovable.app";
 
-    // Redirect based on return parameter or default to profile
-    setTimeout(() => {
-      navigate(returnTo);
-    }, 1500);
+    // Calculate popup dimensions (responsive)
+    const width = Math.min(800, window.innerWidth * 0.9);
+    const height = Math.min(900, window.innerHeight * 0.9);
+    const left = (window.innerWidth - width) / 2;
+    const top = (window.innerHeight - height) / 2;
+
+    const popup = window.open(
+      bankingUrl,
+      "bankingSetup",
+      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,menubar=no,toolbar=no,location=no,status=no`,
+    );
+
+    if (popup) {
+      popup.focus();
+      toast.info(
+        "Complete your banking setup in the popup window and click 'Refresh Status' when done.",
+      );
+
+      // Check if popup is closed and refresh banking status
+      const checkClosed = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(checkClosed);
+          toast.info(
+            "Banking setup window closed. Click 'Refresh Status' to update.",
+          );
+        }
+      }, 1000);
+
+      // Also poll for status updates while popup is open
+      const pollStatus = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(pollStatus);
+        } else {
+          checkBankingStatus();
+        }
+      }, 3000); // Check every 3 seconds while popup is open
+    } else {
+      toast.error(
+        "Popup blocked. Please allow popups for this site and try again.",
+      );
+    }
   };
 
   const handleCancel = () => {
@@ -150,9 +250,17 @@ const BankingSetup = () => {
                 <div className="space-y-2 text-sm">
                   {bankingStatus.businessName && (
                     <div className="flex justify-between">
-                      <span className="text-green-700">Business Name:</span>
+                      <span className="text-green-700">Status:</span>
                       <span className="font-medium">
                         {bankingStatus.businessName}
+                      </span>
+                    </div>
+                  )}
+                  {bankingStatus.subaccountCode && (
+                    <div className="flex justify-between">
+                      <span className="text-green-700">Account ID:</span>
+                      <span className="font-medium font-mono text-xs">
+                        {bankingStatus.subaccountCode.substring(0, 12)}...
                       </span>
                     </div>
                   )}
@@ -283,7 +391,85 @@ const BankingSetup = () => {
           </div>
         </div>
 
-        <BankingDetailsForm onSuccess={handleSuccess} onCancel={handleCancel} />
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CreditCard className="w-5 h-5 text-book-600" />
+              Complete Banking Setup
+            </CardTitle>
+            <CardDescription>
+              Set up your banking details securely using our external banking
+              platform.
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="space-y-4">
+            <Alert className="border-blue-200 bg-blue-50">
+              <Info className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-blue-800">
+                <strong>
+                  Complete your banking setup to start selling books.
+                </strong>
+                <br />
+                This secure process takes just 2 minutes and enables instant
+                payments.
+                <br />
+                <span className="text-sm font-medium mt-1 inline-block">
+                  💡 After completing banking setup, click "Refresh Status" to
+                  update this page.
+                </span>
+              </AlertDescription>
+            </Alert>
+
+            <div className="space-y-3">
+              <Button
+                onClick={openBankingSetup}
+                className="w-full h-12 bg-blue-600 hover:bg-blue-700"
+                size="lg"
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Complete Banking Setup
+              </Button>
+
+              <Button
+                onClick={checkBankingStatus}
+                variant="outline"
+                className="w-full"
+                disabled={isLoading}
+              >
+                <RefreshCw
+                  className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+                />
+                {isLoading ? "Checking..." : "Refresh Status"}
+              </Button>
+
+              <Button onClick={handleCancel} variant="ghost" className="w-full">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to {returnTo === "/profile" ? "Profile" : "Previous Page"}
+              </Button>
+            </div>
+
+            {/* Security Info */}
+            <div className="bg-gray-50 p-4 rounded-lg space-y-3 mt-6">
+              <h4 className="font-medium text-gray-900">Security & Trust</h4>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-start space-x-2">
+                  <Shield className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-600">
+                    Bank-grade encryption protects your banking details
+                  </span>
+                </div>
+                <div className="flex items-start space-x-2">
+                  <CreditCard className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-600">
+                    Powered by Paystack, South Africa's leading payment
+                    processor
+                  </span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </Layout>
   );
