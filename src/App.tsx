@@ -466,6 +466,16 @@ function App() {
                               </LazyWrapper>
                             }
                           />
+                          <Route
+                            path="/banking-setup"
+                            element={
+                              <ProtectedRoute>
+                                <LazyWrapper>
+                                  <BankingSetup />
+                                </LazyWrapper>
+                              </ProtectedRoute>
+                            }
+                          />
 
                           {/* Maps demo routes */}
                           <Route
