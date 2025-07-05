@@ -66,6 +66,7 @@ const Policies = React.lazy(() => import("./pages/Policies"));
 const Privacy = React.lazy(() => import("./pages/Privacy"));
 const Terms = React.lazy(() => import("./pages/Terms"));
 const CookieSettingsPage = React.lazy(() => import("./pages/CookieSettings"));
+const BankingSetup = React.lazy(() => import("./pages/BankingSetup"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 const Cart = React.lazy(() => import("./pages/Cart"));
 const Checkout = React.lazy(() => import("./pages/Checkout"));
