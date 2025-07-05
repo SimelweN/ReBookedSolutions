@@ -1,7 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import "./index.css";
 
 console.log("🚀 ReBooked Solutions - Starting...");
 
@@ -21,7 +20,7 @@ const queryClient = new QueryClient({
 const MinimalApp = () => {
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h1 style={{ color: "#2563eb" }}>��� ReBooked Solutions</h1>
+      <h1 style={{ color: "#2563eb" }}>🚀 ReBooked Solutions</h1>
       <p>Welcome to your textbook marketplace!</p>
       <div
         style={{
