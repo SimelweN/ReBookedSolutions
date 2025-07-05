@@ -108,30 +108,45 @@ const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({
         }
       }
 
-      // Get seller's subaccount code for split payments from banking_subaccounts table
+      // Get seller's subaccount code directly from the book
       let subaccountCode = undefined;
-      if (items.length > 0 && items[0].sellerId) {
+      if (items.length > 0 && items[0].bookId) {
         try {
-          const { data: subaccountData } = await supabase
-            .from("banking_subaccounts")
-            .select("subaccount_code")
-            .eq("user_id", items[0].sellerId)
+          // First try to get subaccount_code directly from the book
+          const { data: bookData } = await supabase
+            .from("books")
+            .select("subaccount_code, seller_id")
+            .eq("id", items[0].bookId)
             .single();
 
-          if (subaccountData?.subaccount_code) {
-            subaccountCode = subaccountData.subaccount_code;
-            console.log(
-              "Using seller subaccount from banking_subaccounts:",
-              subaccountCode,
+          if (bookData?.subaccount_code) {
+            subaccountCode = bookData.subaccount_code;
+            console.log("Using direct book subaccount_code:", subaccountCode);
+          } else if (bookData?.seller_id) {
+            // Fallback to seller lookup if book doesn't have direct subaccount_code
+            console.warn(
+              "Book missing subaccount_code, falling back to seller lookup",
             );
-          } else {
-            console.warn("No subaccount found for seller:", items[0].sellerId);
+            const { data: subaccountData } = await supabase
+              .from("banking_subaccounts")
+              .select("subaccount_code")
+              .eq("user_id", bookData.seller_id)
+              .single();
+
+            if (subaccountData?.subaccount_code) {
+              subaccountCode = subaccountData.subaccount_code;
+              console.log(
+                "Using seller subaccount from banking_subaccounts:",
+                subaccountCode,
+              );
+            }
+          }
+
+          if (!subaccountCode) {
+            console.warn("No subaccount found for book:", items[0].bookId);
           }
         } catch (error) {
-          console.warn(
-            "Could not fetch seller subaccount from banking_details:",
-            error,
-          );
+          console.warn("Could not fetch book subaccount:", error);
         }
       }
 
