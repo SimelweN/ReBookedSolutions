@@ -243,37 +243,46 @@ export class BookDeletionService {
 
   /**
    * Reactivate user listings when pickup address is added back
-   * Note: Currently disabled until availability column is added to books table
    */
   static async reactivateUserListings(userId: string): Promise<void> {
     try {
       console.log("Reactivating listings for user:", userId);
 
-      // TODO: Add availability column to books table first
-      // For now, just send notification without updating database
-      console.warn(
-        "Book reactivation disabled - availability column missing from books table",
-      );
+      // Update unavailable listings back to active
+      const { error: updateError } = await supabase
+        .from("books")
+        .update({
+          availability: "available",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("seller_id", userId)
+        .eq("availability", "unavailable")
+        .eq("sold", false);
+
+      if (updateError) {
+        logError(
+          "BookDeletionService.reactivateUserListings - update books",
+          updateError,
+        );
+        throw new Error("Failed to reactivate user listings");
+      }
 
       // Send positive notification
       await addNotification({
         userId,
-        title: "Address Updated",
+        title: "Listings Reactivated",
         message:
-          "Your pickup address has been updated successfully. Your listings should now be fully active.",
+          "Your listings have been reactivated now that you have added a pickup address.",
         type: "success",
         read: false,
       });
 
-      console.log("Notification sent for user:", userId);
+      console.log("Successfully reactivated listings for user:", userId);
     } catch (error) {
       logError("BookDeletionService.reactivateUserListings", error, {
         userId,
       });
-      // Don't throw error to prevent blocking address updates
-      console.warn(
-        "Failed to send notification, but continuing with address update",
-      );
+      throw error;
     }
   }
 }
