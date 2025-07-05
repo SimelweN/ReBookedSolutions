@@ -211,11 +211,19 @@ export class PaystackSubaccountService {
         throw new Error(errorMessage);
       }
 
-      if (!data || !data.success) {
-        throw new Error(
-          data?.error ||
-            `Failed to ${isUpdate ? "update" : "create"} subaccount`,
-        );
+      if (!data) {
+        throw new Error("No response data from function");
+      }
+
+      console.log("Checking function response success:", data.success);
+
+      if (!data.success) {
+        const errorMsg =
+          data.error ||
+          data.message ||
+          `Failed to ${isUpdate ? "update" : "create"} subaccount`;
+        console.error("Function returned error:", errorMsg);
+        throw new Error(errorMsg);
       }
 
       // Update user profile with subaccount code if this is a new creation
