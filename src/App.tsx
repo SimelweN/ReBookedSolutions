@@ -277,7 +277,11 @@ function App() {
                           <Route path="/register" element={<Register />} />
                           <Route
                             path="/user-profile"
-                            element={<UserProfile />}
+                            element={
+                              <LazyWrapper>
+                                <UserProfile />
+                              </LazyWrapper>
+                            }
                           />
                           <Route
                             path="/books"
