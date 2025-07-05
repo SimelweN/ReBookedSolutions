@@ -41,6 +41,15 @@ serve(async (req) => {
     console.log("Request method:", req.method);
     console.log("Request URL:", req.url);
 
+    // Debug environment variables
+    console.log("Environment check:");
+    console.log("- PAYSTACK_SECRET_KEY present:", !!PAYSTACK_SECRET_KEY);
+    console.log("- SUPABASE_URL present:", !!Deno.env.get("SUPABASE_URL"));
+    console.log(
+      "- SUPABASE_SERVICE_ROLE_KEY present:",
+      !!Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),
+    );
+
     if (!PAYSTACK_SECRET_KEY) {
       console.error("PAYSTACK_SECRET_KEY environment variable is not set");
       return new Response(
@@ -56,7 +65,7 @@ serve(async (req) => {
       );
     }
 
-    console.log("Paystack secret key is present, proceeding with request...");
+    console.log("Environment variables validated, proceeding with request...");
 
     let requestBody;
     try {
