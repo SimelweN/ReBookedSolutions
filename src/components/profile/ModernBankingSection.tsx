@@ -25,8 +25,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-type PaystackSubaccount = Tables<"paystack_subaccounts">;
-
 const ModernBankingSection = () => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
@@ -43,12 +41,6 @@ const ModernBankingSection = () => {
     refreshSubaccountData,
     linkBooksToSubaccount,
   } = useSubaccount();
-
-  useEffect(() => {
-    if (user?.id) {
-      checkBankingStatus();
-    }
-  }, [user?.id]);
 
   const handleBankingFormSuccess = async () => {
     toast.success(
@@ -111,6 +103,32 @@ const ModernBankingSection = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-gray-900">Payment Setup</h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={refreshSubaccountData}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <RefreshCw className="w-4 h-4" />
+          </Button>
+        </div>
+
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            {error}. Please try refreshing or contact support if the issue
+            persists.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
   if (hasValidSubaccount()) {
     return (
       <div className="space-y-6">
@@ -119,12 +137,12 @@ const ModernBankingSection = () => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={checkBankingStatus}
-            disabled={bankingStatus.isLoading}
+            onClick={refreshSubaccountData}
+            disabled={isLoading}
             className="text-gray-500 hover:text-gray-700"
           >
             <RefreshCw
-              className={`w-4 h-4 ${bankingStatus.isLoading ? "animate-spin" : ""}`}
+              className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
             />
           </Button>
         </div>
@@ -139,58 +157,57 @@ const ModernBankingSection = () => {
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-1">
                   <h3 className="text-xl font-bold">All Set! 🎉</h3>
-                  {bankingStatus.canEdit && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleEditClick}
-                      className="text-white hover:bg-white/10 h-8"
-                    >
-                      <Edit3 className="w-4 h-4 mr-1" />
-                      Edit
-                    </Button>
-                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleEditClick}
+                    className="text-white hover:bg-white/10 h-8"
+                  >
+                    <Edit3 className="w-4 h-4 mr-1" />
+                    Edit
+                  </Button>
                 </div>
                 <p className="text-white/80 mb-3">
                   Your payment account is active and ready to receive funds
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
-                  {bankingStatus.businessName && (
+                  {subaccountData?.business_name && (
                     <div className="bg-white/10 rounded-lg p-3 backdrop-blur">
                       <p className="text-white/70 text-xs font-medium">
                         Business Name
                       </p>
                       <p className="text-white font-semibold">
-                        {bankingStatus.businessName}
+                        {subaccountData.business_name}
                       </p>
                     </div>
                   )}
-                  {bankingStatus.bankName && (
+                  {subaccountData?.bank_details?.bank_name && (
                     <div className="bg-white/10 rounded-lg p-3 backdrop-blur">
                       <p className="text-white/70 text-xs font-medium">Bank</p>
                       <p className="text-white font-semibold">
-                        {bankingStatus.bankName}
+                        {subaccountData.bank_details.bank_name}
                       </p>
                     </div>
                   )}
-                  {bankingStatus.accountNumber && (
+                  {subaccountData?.bank_details?.account_number && (
                     <div className="bg-white/10 rounded-lg p-3 backdrop-blur">
                       <p className="text-white/70 text-xs font-medium">
                         Account
                       </p>
                       <p className="text-white font-semibold">
-                        ****{bankingStatus.accountNumber.slice(-4)}
+                        ****
+                        {subaccountData.bank_details.account_number.slice(-4)}
                       </p>
                     </div>
                   )}
-                  {bankingStatus.email && (
+                  {subaccountData?.subaccount_code && (
                     <div className="bg-white/10 rounded-lg p-3 backdrop-blur">
                       <p className="text-white/70 text-xs font-medium">
-                        Contact
+                        Subaccount
                       </p>
-                      <p className="text-white font-semibold">
-                        {bankingStatus.email}
+                      <p className="text-white font-semibold font-mono text-xs">
+                        {subaccountData.subaccount_code.substring(0, 12)}...
                       </p>
                     </div>
                   )}
@@ -256,13 +273,11 @@ const ModernBankingSection = () => {
         <Button
           variant="ghost"
           size="sm"
-          onClick={checkBankingStatus}
-          disabled={bankingStatus.isLoading}
+          onClick={refreshSubaccountData}
+          disabled={isLoading}
           className="text-gray-500 hover:text-gray-700"
         >
-          <RefreshCw
-            className={`w-4 h-4 ${bankingStatus.isLoading ? "animate-spin" : ""}`}
-          />
+          <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
         </Button>
       </div>
 
@@ -380,12 +395,6 @@ const ModernBankingSection = () => {
             editMode={editMode}
           />
         </div>
-      )}
-
-      {bankingStatus.lastChecked && (
-        <p className="text-xs text-gray-400 text-center">
-          Last updated: {bankingStatus.lastChecked.toLocaleTimeString()}
-        </p>
       )}
     </div>
   );
