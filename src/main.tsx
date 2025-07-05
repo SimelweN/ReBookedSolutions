@@ -17,50 +17,53 @@ const queryClient = new QueryClient({
   },
 });
 
-// Simple working app component for testing
-const MinimalApp = () => {
+// Step 1: Test with simple routing
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+const SimpleHome = () => (
+  <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+    <h1 style={{ color: "#2563eb" }}>🏠 ReBooked Solutions - Home</h1>
+    <p>✅ Basic routing is working!</p>
+    <nav style={{ marginTop: "20px" }}>
+      <a href="/books" style={{ marginRight: "20px", color: "#2563eb" }}>
+        Books
+      </a>
+      <a href="/login" style={{ color: "#2563eb" }}>
+        Login
+      </a>
+    </nav>
+  </div>
+);
+
+const SimpleBooks = () => (
+  <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+    <h1 style={{ color: "#2563eb" }}>📚 Books Page</h1>
+    <p>✅ Books route is working!</p>
+    <a href="/" style={{ color: "#2563eb" }}>
+      ← Back to Home
+    </a>
+  </div>
+);
+
+const SimpleLogin = () => (
+  <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+    <h1 style={{ color: "#2563eb" }}>🔐 Login Page</h1>
+    <p>✅ Login route is working!</p>
+    <a href="/" style={{ color: "#2563eb" }}>
+      ← Back to Home
+    </a>
+  </div>
+);
+
+const SimpleApp = () => {
   return (
-    <div
-      style={{
-        padding: "20px",
-        fontFamily: "Arial, sans-serif",
-        background: "white",
-        minHeight: "100vh",
-      }}
-    >
-      <h1 style={{ color: "#2563eb", fontSize: "2rem" }}>
-        🚀 ReBooked Solutions
-      </h1>
-      <p style={{ fontSize: "1.2rem" }}>
-        Welcome to your textbook marketplace!
-      </p>
-      <div
-        style={{
-          marginTop: "20px",
-          padding: "15px",
-          background: "#f0f9ff",
-          borderRadius: "8px",
-          border: "2px solid #2563eb",
-        }}
-      >
-        <p>
-          <strong>✅ React is working</strong>
-        </p>
-        <p>
-          <strong>✅ Vite is working</strong>
-        </p>
-        <p>
-          <strong>✅ Environment configured</strong>
-        </p>
-        <p>
-          <strong>✅ Minimal app rendering successfully</strong>
-        </p>
-      </div>
-      <p style={{ marginTop: "20px" }}>
-        If you can see this, the basic React setup is working. The issue is with
-        the full App component.
-      </p>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<SimpleHome />} />
+        <Route path="/books" element={<SimpleBooks />} />
+        <Route path="/login" element={<SimpleLogin />} />
+      </Routes>
+    </Router>
   );
 };
 
