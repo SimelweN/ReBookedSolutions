@@ -20,6 +20,7 @@ import { initNetworkErrorHandler } from "./utils/networkErrorHandler";
 import { initViteErrorHandler } from "./utils/viteErrorHandler";
 import { initProductionErrorHandler } from "./utils/productionErrorHandler";
 import NetworkErrorBoundary from "./components/NetworkErrorBoundary";
+import CookieConsent from "./components/CookieConsent";
 import "./App.css";
 
 // Initialize development-only optimizations
@@ -64,6 +65,8 @@ const EnhancedUniversityProfile = React.lazy(
 const Policies = React.lazy(() => import("./pages/Policies"));
 const Privacy = React.lazy(() => import("./pages/Privacy"));
 const Terms = React.lazy(() => import("./pages/Terms"));
+const CookieSettingsPage = React.lazy(() => import("./pages/CookieSettings"));
+const BankingSetup = React.lazy(() => import("./pages/BankingSetup"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 const Cart = React.lazy(() => import("./pages/Cart"));
 const Checkout = React.lazy(() => import("./pages/Checkout"));
@@ -455,6 +458,24 @@ function App() {
                               </LazyWrapper>
                             }
                           />
+                          <Route
+                            path="/cookie-settings"
+                            element={
+                              <LazyWrapper>
+                                <CookieSettingsPage />
+                              </LazyWrapper>
+                            }
+                          />
+                          <Route
+                            path="/banking-setup"
+                            element={
+                              <ProtectedRoute>
+                                <LazyWrapper>
+                                  <BankingSetup />
+                                </LazyWrapper>
+                              </ProtectedRoute>
+                            }
+                          />
 
                           {/* Maps demo routes */}
                           <Route
@@ -692,6 +713,9 @@ function App() {
 
             {/* Performance monitoring */}
             <PerformanceMetrics />
+
+            {/* Cookie Consent Popup */}
+            <CookieConsent />
 
             {/* Vercel Analytics and Speed Insights - only in production */}
             {import.meta.env.PROD && (

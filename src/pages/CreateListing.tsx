@@ -27,20 +27,12 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { SellerValidationService } from "@/services/sellerValidationService";
 import SellerRestrictionBanner from "@/components/SellerRestrictionBanner";
-import BankingSetupPopup from "@/components/BankingSetupPopup";
 import BankingRequirementGate from "@/components/BankingRequirementGate";
-import { useBankingSetup } from "@/hooks/useBankingSetup";
 
 const CreateListing = () => {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const {
-    hasBankingSetup,
-    showSetupPopup,
-    requireBankingSetup,
-    closeSetupPopup,
-  } = useBankingSetup();
 
   const [formData, setFormData] = useState<BookFormData>({
     title: "",
@@ -195,11 +187,6 @@ const CreateListing = () => {
 
     if (!user) {
       toast.error("You must be logged in to create a listing");
-      return;
-    }
-
-    // Check banking setup first - this will show popup if not completed
-    if (!requireBankingSetup("create a listing")) {
       return;
     }
 
@@ -560,9 +547,6 @@ const CreateListing = () => {
           />
         </div>
       </BankingRequirementGate>
-
-      {/* Banking Setup Popup */}
-      <BankingSetupPopup isOpen={showSetupPopup} onClose={closeSetupPopup} />
     </Layout>
   );
 };

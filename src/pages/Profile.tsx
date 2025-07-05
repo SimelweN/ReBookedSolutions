@@ -41,8 +41,6 @@ import { Book } from "@/types/book";
 import { BookDeletionService } from "@/services/bookDeletionService";
 
 import EnhancedBecomeSellerGuide from "@/components/EnhancedBecomeSellerGuide";
-import BankingSetupPopup from "@/components/BankingSetupPopup";
-import { useBankingSetup } from "@/hooks/useBankingSetup";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -52,12 +50,7 @@ const Profile = () => {
   const { profile, user } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const {
-    hasBankingSetup,
-    showSetupPopup,
-    requireBankingSetup,
-    closeSetupPopup,
-  } = useBankingSetup();
+
   const [isDeleteProfileDialogOpen, setIsDeleteProfileDialogOpen] =
     useState(false);
   const [isCommitSystemDialogOpen, setIsCommitSystemDialogOpen] =
@@ -768,9 +761,6 @@ const Profile = () => {
           onClose={() => setShowBecomeSellerGuide(false)}
         />
       </div>
-
-      {/* Banking Setup Popup */}
-      <BankingSetupPopup isOpen={showSetupPopup} onClose={closeSetupPopup} />
     </Layout>
   );
 };
