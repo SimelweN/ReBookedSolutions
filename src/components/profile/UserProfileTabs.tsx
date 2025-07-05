@@ -402,8 +402,7 @@ const UserProfileTabs = ({
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {activeListings.map((book) => {
-                    // TODO: Add availability logic when status/availability column is added to books table
-                    const isUnavailable = false; // Temporarily disabled
+                    const isUnavailable = book.availability === "unavailable";
 
                     if (isUnavailable) {
                       return (
