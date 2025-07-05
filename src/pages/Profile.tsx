@@ -52,6 +52,12 @@ const Profile = () => {
   const { profile, user } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const {
+    requirements,
+    showRequirementsDialog,
+    requireSellerSetup,
+    closeRequirementsDialog,
+  } = useSellerRequirements();
 
   const [isDeleteProfileDialogOpen, setIsDeleteProfileDialogOpen] =
     useState(false);
@@ -767,6 +773,12 @@ const Profile = () => {
         <EnhancedBecomeSellerGuide
           isOpen={showBecomeSellerGuide}
           onClose={() => setShowBecomeSellerGuide(false)}
+        />
+
+        <SellerRequirementsDialog
+          isOpen={showRequirementsDialog}
+          onClose={closeRequirementsDialog}
+          requirements={requirements}
         />
       </div>
     </Layout>
