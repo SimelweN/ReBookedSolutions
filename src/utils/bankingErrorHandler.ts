@@ -37,22 +37,29 @@ export const logBankingError = (context: string, error: unknown): void => {
         type: typeof error,
       };
 
-      // Log with structured format
-      console.error(`${context}:`, errorDetails);
+      // Log with structured format - use JSON.stringify to avoid [object Object]
+      console.error(`${context}:`, JSON.stringify(errorDetails, null, 2));
 
       // Also log the raw error for debugging if structured logging fails
-      console.error(`${context} (raw):`, error);
+      console.error(`${context} (raw):`, JSON.stringify(error, null, 2));
     } else {
-      console.error(`${context}:`, {
-        error: String(error),
-        type: typeof error,
-      });
+      console.error(
+        `${context}:`,
+        JSON.stringify(
+          {
+            error: String(error),
+            type: typeof error,
+          },
+          null,
+          2,
+        ),
+      );
     }
   } catch (loggingError) {
     // Fallback if logging itself fails
     console.error(`${context} (logging failed):`, {
-      originalError: error,
-      loggingError: loggingError,
+      originalError: String(error),
+      loggingError: String(loggingError),
     });
   }
 };
@@ -87,30 +94,50 @@ export const handleBankingQueryError = (
 export const logEnhancedError = (context: string, error: unknown): void => {
   try {
     if (error instanceof Error) {
-      console.error(`${context}:`, {
-        message: error.message,
-        stack: error.stack,
-        cause: error.cause,
-        name: error.name,
-      });
+      console.error(
+        `${context}:`,
+        JSON.stringify(
+          {
+            message: error.message,
+            stack: error.stack,
+            cause: error.cause,
+            name: error.name,
+          },
+          null,
+          2,
+        ),
+      );
     } else if (error && typeof error === "object") {
-      console.error(`${context}:`, {
-        type: "Object",
-        value: error,
-        stringified: JSON.stringify(error, null, 2),
-        keys: Object.keys(error),
-      });
+      console.error(
+        `${context}:`,
+        JSON.stringify(
+          {
+            type: "Object",
+            stringified: JSON.stringify(error, null, 2),
+            keys: Object.keys(error),
+          },
+          null,
+          2,
+        ),
+      );
     } else {
-      console.error(`${context}:`, {
-        type: typeof error,
-        value: error,
-        stringified: String(error),
-      });
+      console.error(
+        `${context}:`,
+        JSON.stringify(
+          {
+            type: typeof error,
+            value: error,
+            stringified: String(error),
+          },
+          null,
+          2,
+        ),
+      );
     }
   } catch (loggingError) {
     console.error(`${context} (logging failed):`, {
-      originalError: error,
-      loggingError,
+      originalError: String(error),
+      loggingError: String(loggingError),
     });
   }
 };

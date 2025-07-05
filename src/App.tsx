@@ -13,9 +13,7 @@ import GoogleMapsProvider from "./contexts/GoogleMapsContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
-import LoadingSpinner from "./components/LoadingSpinner";
 import PerformanceMetrics from "./components/PerformanceMetrics";
-import ConfigurationChecker from "./components/ConfigurationChecker";
 import { preloadCriticalRoutes } from "./utils/routePreloader";
 import { initPerformanceOptimizations } from "./utils/performanceOptimizer";
 import { initNetworkErrorHandler } from "./utils/networkErrorHandler";
@@ -44,8 +42,6 @@ import UniversityInfoPage from "./pages/UniversityInfo";
 import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
 import AdminPage from "./pages/Admin";
-const Index = () => <IndexPage />;
-const UniversityInfo = () => <UniversityInfoPage />;
 const Login = () => <LoginPage />;
 const Register = () => <RegisterPage />;
 const Admin = () => <AdminPage />;
@@ -62,7 +58,6 @@ const AdminReports = React.lazy(() => import("./pages/AdminReports"));
 const ModernUniversityProfile = React.lazy(
   () => import("./pages/ModernUniversityProfile"),
 );
-const UniversityProfile = React.lazy(() => import("./pages/UniversityProfile"));
 const EnhancedUniversityProfile = React.lazy(
   () => import("./pages/EnhancedUniversityProfile"),
 );
@@ -74,7 +69,6 @@ const Cart = React.lazy(() => import("./pages/Cart"));
 const Checkout = React.lazy(() => import("./pages/Checkout"));
 const Shipping = React.lazy(() => import("./pages/Shipping"));
 const Notifications = React.lazy(() => import("./pages/Notifications"));
-const SimpleQADashboard = React.lazy(() => import("./pages/SimpleQADashboard"));
 const QADashboard = React.lazy(() => import("./pages/QADashboard"));
 const QAFunctionalityDashboard = React.lazy(
   () => import("./components/QADashboard"),
@@ -106,6 +100,7 @@ const EnhancedQADashboard = React.lazy(
 const SystemHealth = React.lazy(() => import("./pages/SystemHealth"));
 const UserDashboard = React.lazy(() => import("./pages/UserDashboard"));
 const EmailDemo = React.lazy(() => import("./pages/EmailDemo"));
+const PaymentDashboard = React.lazy(() => import("./pages/PaymentDashboard"));
 
 // Create query client with optimized settings
 const queryClient = new QueryClient({
@@ -127,40 +122,6 @@ const queryClient = new QueryClient({
 const MinimalLoader = () => (
   <div className="flex items-center justify-center h-24">
     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-  </div>
-);
-
-// Fallback component for dynamic import failures
-const ImportFailureFallback: React.FC<{ error?: Error }> = ({ error }) => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-50">
-    <div className="max-w-md mx-auto text-center p-6">
-      <div className="mb-4">
-        <svg
-          className="mx-auto h-12 w-12 text-gray-400"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-          />
-        </svg>
-      </div>
-      <h3 className="text-lg font-medium text-gray-900 mb-2">Loading Error</h3>
-      <p className="text-gray-600 mb-4">
-        There was a problem loading the page. This might be due to a network
-        issue.
-      </p>
-      <button
-        onClick={() => window.location.reload()}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
-      >
-        Refresh Page
-      </button>
-    </div>
   </div>
 );
 
@@ -280,11 +241,6 @@ function App() {
                           <Route path="/" element={<IndexPage />} />
 
                           {/* Public routes */}
-                          <Route path="/register" element={<Register />} />
-                          <Route
-                            path="/user-profile"
-                            element={<UserProfile />}
-                          />
                           <Route
                             path="/books"
                             element={
@@ -369,7 +325,7 @@ function App() {
                           {/* University and Campus Routes */}
                           <Route
                             path="/university-info"
-                            element={<UniversityInfo />}
+                            element={<UniversityInfoPage />}
                           />
                           <Route
                             path="/university-profile"
@@ -529,7 +485,13 @@ function App() {
                           {/* Protected Routes */}
                           <Route
                             path="/user-profile"
-                            element={<UserProfile />}
+                            element={
+                              <ProtectedRoute>
+                                <LazyWrapper>
+                                  <UserProfile />
+                                </LazyWrapper>
+                              </ProtectedRoute>
+                            }
                           />
                           <Route
                             path="/dashboard"
@@ -542,11 +504,13 @@ function App() {
                             }
                           />
                           <Route
-                            path="/books"
+                            path="/payments"
                             element={
-                              <LazyWrapper>
-                                <BookListing />
-                              </LazyWrapper>
+                              <ProtectedRoute>
+                                <LazyWrapper>
+                                  <PaymentDashboard />
+                                </LazyWrapper>
+                              </ProtectedRoute>
                             }
                           />
                           <Route
@@ -565,16 +529,6 @@ function App() {
                               <ProtectedRoute>
                                 <LazyWrapper>
                                   <EnhancedQADashboard />
-                                </LazyWrapper>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/user-profile"
-                            element={
-                              <ProtectedRoute>
-                                <LazyWrapper>
-                                  <UserProfile />
                                 </LazyWrapper>
                               </ProtectedRoute>
                             }
@@ -671,19 +625,13 @@ function App() {
 
                           {/* Admin Routes */}
                           <Route
-                            path="/qa-dashboard"
-                            element={
-                              <LazyWrapper>
-                                <QADashboard />
-                              </LazyWrapper>
-                            }
-                          />
-                          <Route
                             path="/qa-functionality"
                             element={
-                              <LazyWrapper>
-                                <QAFunctionalityDashboard />
-                              </LazyWrapper>
+                              <ProtectedRoute>
+                                <LazyWrapper>
+                                  <QAFunctionalityDashboard />
+                                </LazyWrapper>
+                              </ProtectedRoute>
                             }
                           />
                           <Route

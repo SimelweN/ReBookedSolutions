@@ -36,8 +36,12 @@ if (typeof React === "undefined" || !React.createContext) {
 }
 
 // Make React globally available for production builds (fallback safety)
-if (typeof window !== "undefined" && !window.React) {
+if (typeof window !== "undefined") {
   window.React = React;
+  // Ensure createContext is also available globally as a fallback
+  if (!window.createContext && React.createContext) {
+    window.createContext = React.createContext;
+  }
 }
 
 // Log bundle info in development

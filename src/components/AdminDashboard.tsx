@@ -18,7 +18,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/contexts/AuthContext";
 import AdminStats from "@/components/admin/AdminStats";
 import AdminEarningsTab from "@/components/admin/AdminEarningsTab";
-import AdminUsersTab from "@/components/admin/AdminUsersTab";
 import EnhancedAdminUsersTab from "@/components/admin/EnhancedAdminUsersTab";
 import AdminListingsTab from "@/components/admin/AdminListingsTab";
 import AdminSettingsTab from "@/components/admin/AdminSettingsTab";
@@ -35,7 +34,6 @@ import {
   Users,
   BookOpen,
   MessageSquare,
-  FileText,
   Settings,
   GraduationCap,
   Lightbulb,
@@ -72,8 +70,6 @@ const AdminDashboard = () => {
     setError(null);
 
     try {
-      console.log("Loading admin dashboard data...");
-
       // Load data with individual error handling to prevent cascading failures
       const results = await Promise.allSettled([
         getAdminStats().catch((e) => ({ error: e })),
@@ -84,7 +80,6 @@ const AdminDashboard = () => {
       // Handle stats
       if (results[0].status === "fulfilled") {
         setStats(results[0].value);
-        console.log("Stats loaded successfully");
       } else {
         console.error("Failed to load stats:", results[0].reason);
         handleError(results[0].reason, "Load Admin Stats", {
@@ -95,7 +90,6 @@ const AdminDashboard = () => {
       // Handle users
       if (results[1].status === "fulfilled") {
         setUsers(results[1].value);
-        console.log("Users loaded successfully:", results[1].value.length);
       } else {
         console.error("Failed to load users:", results[1].reason);
         handleError(results[1].reason, "Load Users", { showToast: false });
@@ -105,7 +99,6 @@ const AdminDashboard = () => {
       // Handle listings
       if (results[2].status === "fulfilled") {
         setListings(results[2].value);
-        console.log("Listings loaded successfully:", results[2].value.length);
       } else {
         console.error("Failed to load listings:", results[2].reason);
         handleError(results[2].reason, "Load Listings", { showToast: false });
@@ -147,33 +140,6 @@ const AdminDashboard = () => {
   const handleRetry = () => {
     setRetryCount((prev) => prev + 1);
     loadDashboardData();
-  };
-
-  const handleUserAction = async (
-    userId: string,
-    action: "suspend" | "activate",
-  ) => {
-    try {
-      const status = action === "suspend" ? "suspended" : "active";
-      await updateUserStatus(userId, status);
-
-      setUsers(
-        users.map((user) => (user.id === userId ? { ...user, status } : user)),
-      );
-
-      toast.success(`User ${action}d successfully`);
-
-      // Reload stats to reflect the change
-      try {
-        const newStats = await getAdminStats();
-        setStats(newStats);
-      } catch (error) {
-        console.error("Failed to reload stats after user action:", error);
-      }
-    } catch (error) {
-      console.error(`Error ${action}ing user:`, error);
-      handleError(error, `${action} User`);
-    }
   };
 
   const handleListingAction = async (listingId: string, action: "delete") => {

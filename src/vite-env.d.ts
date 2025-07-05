@@ -4,5 +4,6 @@
 declare global {
   interface Window {
     React?: typeof import("react");
+    createContext?: typeof import("react").createContext;
   }
 }

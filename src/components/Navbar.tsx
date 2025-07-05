@@ -6,7 +6,6 @@ import {
   BookOpen,
   Menu,
   X,
-  Plus,
   User,
   LogOut,
   UserPlus,
@@ -80,18 +79,6 @@ const Navbar = () => {
             >
               <span className="hidden lg:inline">Browse Books</span>
               <span className="lg:hidden">Books</span>
-            </Link>
-
-            {/* Prominent Sell Books Button */}
-            <Link to="/create-listing">
-              <Button
-                variant="outline"
-                className="border-book-600 text-book-600 hover:bg-book-600 hover:text-white transition-colors"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                <span className="hidden lg:inline">Sell Books</span>
-                <span className="lg:hidden">Sell</span>
-              </Button>
             </Link>
 
             <Link
@@ -270,14 +257,6 @@ const Navbar = () => {
                     >
                       <User className="w-5 h-5 mr-2" />
                       My Dashboard
-                    </Link>
-                    <Link
-                      to="/create-listing"
-                      className="flex items-center px-4 py-3 text-base font-medium text-white bg-book-600 rounded-md min-h-[44px]"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <Plus className="w-5 h-5 mr-2" />
-                      Sell Book
                     </Link>
                   </div>
 
