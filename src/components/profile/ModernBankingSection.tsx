@@ -406,7 +406,7 @@ const ModernBankingSection = () => {
                 Join thousands of students already earning from their textbooks
               </p>
               <Button
-                onClick={() => setShowBankingForm(true)}
+                onClick={handleAddClick}
                 className="bg-book-600 hover:bg-book-700"
                 size="lg"
               >
