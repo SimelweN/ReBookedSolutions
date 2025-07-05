@@ -125,34 +125,16 @@ const CampusBooksSection = () => {
     }
   };
 
-  const BookCard = ({
-    book,
-  }: {
-    book: {
-      id: string;
-      title: string;
-      author: string;
-      condition: string;
-      price: number;
-      university: string;
-      category: string;
-      cover_image?: string;
-      description: string;
-      faculty: string;
-      location: string;
-      tags: string[];
-      seller: string;
-    };
-  }) => {
+  const BookCard = ({ book }: { book: BookType }) => {
     const universityInfo = universities.find(
       (uni) => uni.id === book.university,
     );
 
     return (
-      <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-blue-500">
+      <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-book-500">
         <CardHeader className="pb-3 sm:pb-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 mb-2">
-            <CardTitle className="text-base sm:text-lg font-bold text-blue-900 line-clamp-2">
+            <CardTitle className="text-base sm:text-lg font-bold text-book-900 line-clamp-2">
               {book.title}
             </CardTitle>
             <Badge
@@ -164,49 +146,79 @@ const CampusBooksSection = () => {
           <CardDescription className="text-sm text-gray-600 mb-2">
             by {book.author}
           </CardDescription>
-          <div className="text-xl sm:text-2xl font-bold text-green-600 mb-2">
-            R{book.price.toFixed(2)}
+          <div className="text-xl sm:text-2xl font-bold text-book-600 mb-2">
+            R{book.price.toLocaleString()}
           </div>
         </CardHeader>
 
         <CardContent className="pt-0">
+          {/* Book Image */}
+          {book.imageUrl && (
+            <div className="mb-3 relative h-32 sm:h-40 overflow-hidden rounded-lg">
+              <img
+                src={book.imageUrl}
+                alt={book.title}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src =
+                    "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&h=300&fit=crop&auto=format&q=80";
+                }}
+              />
+            </div>
+          )}
+
           {/* University and Location Info */}
           <div className="mb-3 space-y-1">
-            <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
-              <Building className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-              <span className="truncate">
-                {universityInfo?.name || book.university}
-              </span>
-            </div>
-            <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
-              <GraduationCap className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-              <span className="truncate">{book.faculty}</span>
-            </div>
-            <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
-              <MapPin className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-              <span className="truncate">{book.location}</span>
-            </div>
+            {book.university && (
+              <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
+                <Building className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                <span className="truncate">
+                  {universityInfo?.name || book.university}
+                </span>
+              </div>
+            )}
+            {book.grade && (
+              <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
+                <School className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                <span className="truncate">Grade {book.grade}</span>
+              </div>
+            )}
+            {book.universityYear && (
+              <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
+                <GraduationCap className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                <span className="truncate">Year {book.universityYear}</span>
+              </div>
+            )}
+            {book.province && (
+              <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
+                <MapPin className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                <span className="truncate">{book.province}</span>
+              </div>
+            )}
           </div>
 
-          <p className="text-xs sm:text-sm text-gray-600 mb-3 line-clamp-2">
-            {book.description}
-          </p>
+          {book.description && (
+            <p className="text-xs sm:text-sm text-gray-600 mb-3 line-clamp-2">
+              {book.description}
+            </p>
+          )}
 
-          {/* Tags */}
-          <div className="flex flex-wrap gap-1 mb-3 sm:mb-4">
-            {book.tags.slice(0, 3).map((tag: string, index: number) => (
+          {/* Category Badge */}
+          {book.category && (
+            <div className="mb-3">
               <Badge
-                key={index}
                 variant="secondary"
-                className="text-xs bg-gray-100"
+                className="text-xs bg-book-100 text-book-800"
               >
-                {tag}
+                {book.category}
               </Badge>
-            ))}
-          </div>
+            </div>
+          )}
 
           <div className="flex items-center justify-between text-xs text-gray-500 mb-3 sm:mb-4">
-            <span className="truncate">Sold by: {book.seller}</span>
+            <span className="truncate">
+              Sold by: {book.seller?.name || "Unknown Seller"}
+            </span>
             <div className="flex items-center gap-1 flex-shrink-0">
               <Star className="w-3 h-3 fill-current text-yellow-400" />
               <span>4.5</span>
@@ -216,8 +228,8 @@ const CampusBooksSection = () => {
           <div className="flex flex-col sm:flex-row gap-2">
             <Button
               size="sm"
-              className="w-full sm:flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm"
-              onClick={() => navigate(`/book/${book.id}`)}
+              className="w-full sm:flex-1 bg-book-600 hover:bg-book-700 text-white text-xs sm:text-sm"
+              onClick={() => navigate(`/books/${book.id}`)}
             >
               <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
               View Details
@@ -226,7 +238,7 @@ const CampusBooksSection = () => {
             <Button
               variant="outline"
               size="sm"
-              className="w-full sm:w-auto border-green-200 text-green-600 hover:bg-green-50 text-xs sm:text-sm"
+              className="w-full sm:w-auto border-book-200 text-book-600 hover:bg-book-50 text-xs sm:text-sm"
               onClick={() => navigate(`/cart?add=${book.id}`)}
             >
               <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4 mr-2 sm:mr-0" />
