@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { PaystackSubaccountService } from "@/services/paystackSubaccountService";
+import { UserAutofillService } from "@/services/userAutofillService";
 
 interface BankInfo {
   name: string;
@@ -75,6 +76,11 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(editMode);
   const [existingData, setExistingData] = useState<any>(null);
+  const [hasAutofilled, setHasAutofilled] = useState(false);
+  const [manualEntries, setManualEntries] = useState({
+    name: false,
+    email: false,
+  });
 
   // Load existing data if in edit mode
   useEffect(() => {
@@ -110,7 +116,28 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
     };
 
     loadExistingData();
+    if (!editMode) {
+      autofillUserInfo();
+    }
   }, [editMode]);
+
+  const autofillUserInfo = async () => {
+    if (hasAutofilled || editMode) return;
+
+    try {
+      const userInfo = await UserAutofillService.getUserInfo();
+      if (userInfo) {
+        setFormData((prev) => ({
+          ...prev,
+          businessName: prev.businessName || userInfo.name,
+          email: prev.email || userInfo.email,
+        }));
+        setHasAutofilled(true);
+      }
+    } catch (error) {
+      console.error("Error autofilling banking form:", error);
+    }
+  };
 
   const handleBankChange = (bankName: string) => {
     const selectedBank = SOUTH_AFRICAN_BANKS.find(
@@ -309,7 +336,10 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
               htmlFor="businessName"
               className="text-sm font-medium text-gray-700"
             >
-              Business Name *
+              Business Name *{" "}
+              {!manualEntries.name && hasAutofilled && !editMode && (
+                <span className="text-xs text-blue-600">(from account)</span>
+              )}
             </Label>
             <div className="relative">
               <Building2 className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
@@ -318,12 +348,15 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
                 type="text"
                 placeholder="Enter your registered business name"
                 value={formData.businessName}
-                onChange={(e) =>
+                onChange={(e) => {
                   setFormData((prev) => ({
                     ...prev,
                     businessName: e.target.value,
-                  }))
-                }
+                  }));
+                  if (!manualEntries.name) {
+                    setManualEntries((prev) => ({ ...prev, name: true }));
+                  }
+                }}
                 className="pl-10 h-11 rounded-lg border-2 focus:border-book-600 focus:ring-book-600"
                 required
               />
@@ -336,7 +369,10 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
               htmlFor="email"
               className="text-sm font-medium text-gray-700"
             >
-              Email Address *
+              Email Address *{" "}
+              {!manualEntries.email && hasAutofilled && !editMode && (
+                <span className="text-xs text-blue-600">(from account)</span>
+              )}
             </Label>
             <div className="relative">
               <Mail className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
@@ -345,9 +381,12 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
                 type="email"
                 placeholder="business@example.com"
                 value={formData.email}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, email: e.target.value }))
-                }
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, email: e.target.value }));
+                  if (!manualEntries.email) {
+                    setManualEntries((prev) => ({ ...prev, email: true }));
+                  }
+                }}
                 className="pl-10 h-11 rounded-lg border-2 focus:border-book-600 focus:ring-book-600"
                 required
               />
