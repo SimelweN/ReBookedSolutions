@@ -27,7 +27,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { SellerValidationService } from "@/services/sellerValidationService";
 import SellerRestrictionBanner from "@/components/SellerRestrictionBanner";
-import BankingSetupPopup from "@/components/BankingSetupPopup";
 import BankingRequirementGate from "@/components/BankingRequirementGate";
 import { useBankingSetup } from "@/hooks/useBankingSetup";
 
