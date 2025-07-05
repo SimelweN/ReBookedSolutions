@@ -254,13 +254,19 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
     <Card className={showAsModal ? "w-full max-w-md mx-auto" : ""}>
       <CardHeader className="text-center pb-4">
         <div className="w-12 h-12 bg-book-600 rounded-xl flex items-center justify-center mx-auto mb-3">
-          <Building2 className="w-6 h-6 text-white" />
+          {editMode ? (
+            <Edit3 className="w-6 h-6 text-white" />
+          ) : (
+            <Building2 className="w-6 h-6 text-white" />
+          )}
         </div>
         <CardTitle className="text-xl font-bold text-gray-900">
-          Add Banking Details
+          {editMode ? "Edit Banking Details" : "Add Banking Details"}
         </CardTitle>
         <CardDescription className="text-sm text-gray-600">
-          Create your secure Paystack subaccount for faster payments
+          {editMode
+            ? "Update your secure Paystack subaccount information"
+            : "Create your secure Paystack subaccount for faster payments"}
         </CardDescription>
       </CardHeader>
 
