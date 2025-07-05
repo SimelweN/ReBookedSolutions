@@ -242,14 +242,6 @@ function App() {
 
                           {/* Public routes */}
                           <Route
-                            path="/user-profile"
-                            element={
-                              <LazyWrapper>
-                                <UserProfile />
-                              </LazyWrapper>
-                            }
-                          />
-                          <Route
                             path="/books"
                             element={
                               <LazyWrapper>
