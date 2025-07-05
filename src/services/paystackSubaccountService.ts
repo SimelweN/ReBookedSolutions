@@ -157,10 +157,43 @@ export class PaystackSubaccountService {
 
       if (error) {
         console.error("Supabase function error:", error);
-        throw new Error(
+        console.error("Error details:", {
+          message: error.message,
+          status: error.status,
+          statusText: error.statusText,
+          context: error.context,
+        });
+
+        // Try to get more details from the error
+        let errorMessage =
           error.message ||
-            `Failed to ${isUpdate ? "update" : "create"} subaccount`,
-        );
+          `Failed to ${isUpdate ? "update" : "create"} subaccount`;
+
+        if (error.context?.response) {
+          try {
+            const responseText = await error.context.response.text();
+            console.error("Function response body:", responseText);
+
+            // Try to parse JSON error response
+            try {
+              const errorData = JSON.parse(responseText);
+              if (errorData.message) {
+                errorMessage = errorData.message;
+              } else if (errorData.error) {
+                errorMessage = errorData.error;
+              }
+            } catch (parseError) {
+              // Response is not JSON, use as is
+              if (responseText) {
+                errorMessage = responseText;
+              }
+            }
+          } catch (responseError) {
+            console.error("Could not read response body:", responseError);
+          }
+        }
+
+        throw new Error(errorMessage);
       }
 
       if (!data || !data.success) {
