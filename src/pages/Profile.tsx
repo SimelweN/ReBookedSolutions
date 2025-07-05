@@ -767,9 +767,6 @@ const Profile = () => {
           onClose={() => setShowBecomeSellerGuide(false)}
         />
       </div>
-
-      {/* Banking Setup Popup */}
-      <BankingSetupPopup isOpen={showSetupPopup} onClose={closeSetupPopup} />
     </Layout>
   );
 };
