@@ -17,9 +17,52 @@ const queryClient = new QueryClient({
   },
 });
 
-// Import the full App component
-import App from "./App";
-import ErrorBoundary from "./components/ErrorBoundary";
+// Simple working app component for testing
+const MinimalApp = () => {
+  return (
+    <div
+      style={{
+        padding: "20px",
+        fontFamily: "Arial, sans-serif",
+        background: "white",
+        minHeight: "100vh",
+      }}
+    >
+      <h1 style={{ color: "#2563eb", fontSize: "2rem" }}>
+        🚀 ReBooked Solutions
+      </h1>
+      <p style={{ fontSize: "1.2rem" }}>
+        Welcome to your textbook marketplace!
+      </p>
+      <div
+        style={{
+          marginTop: "20px",
+          padding: "15px",
+          background: "#f0f9ff",
+          borderRadius: "8px",
+          border: "2px solid #2563eb",
+        }}
+      >
+        <p>
+          <strong>✅ React is working</strong>
+        </p>
+        <p>
+          <strong>✅ Vite is working</strong>
+        </p>
+        <p>
+          <strong>✅ Environment configured</strong>
+        </p>
+        <p>
+          <strong>✅ Minimal app rendering successfully</strong>
+        </p>
+      </div>
+      <p style={{ marginTop: "20px" }}>
+        If you can see this, the basic React setup is working. The issue is with
+        the full App component.
+      </p>
+    </div>
+  );
+};
 
 // Get root element
 const rootElement = document.getElementById("root");
