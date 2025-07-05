@@ -6,8 +6,27 @@ import { CartProvider } from "./contexts/CartContext";
 import GoogleMapsProvider from "./contexts/GoogleMapsContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 
-// Import real pages
+// Import all real pages
 import IndexPage from "./pages/Index";
+import UniversityInfoPage from "./pages/UniversityInfo";
+import BookListing from "./pages/BookListing";
+import BookDetails from "./pages/BookDetails";
+import Profile from "./pages/Profile";
+import CreateListing from "./pages/CreateListing";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Shipping from "./pages/Shipping";
+import ContactUs from "./pages/ContactUs";
+import FAQ from "./pages/FAQ";
+import StudyResources from "./pages/StudyResources";
+import ActivityLog from "./pages/ActivityLog";
+import UserProfile from "./pages/UserProfile";
+import UserOrders from "./pages/EnhancedUserOrders";
+import BankingSetup from "./pages/BankingSetup";
+import Admin from "./pages/Admin";
+import AdminReports from "./pages/AdminReports";
 
 // Use real IndexPage component
 const HomePage = () => <IndexPage />;
