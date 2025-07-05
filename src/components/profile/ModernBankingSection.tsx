@@ -182,7 +182,7 @@ const ModernBankingSection = () => {
         </div>
 
         {/* Success State */}
-        <div className="bg-gradient-to-r from-emerald-500 to-green-600 rounded-2xl p-6 text-white">
+        <div className="bg-gradient-to-r from-book-500 to-book-600 rounded-2xl p-6 text-white">
           <div className="flex items-start justify-between">
             <div className="flex items-start space-x-4">
               <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur">
@@ -190,14 +190,14 @@ const ModernBankingSection = () => {
               </div>
               <div>
                 <h3 className="text-xl font-bold mb-1">All Set! 🎉</h3>
-                <p className="text-emerald-100 mb-3">
+                <p className="text-white/80 mb-3">
                   Your payment account is active and ready to receive funds
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
                   {bankingStatus.businessName && (
                     <div className="bg-white/10 rounded-lg p-3 backdrop-blur">
-                      <p className="text-emerald-100 text-xs font-medium">
+                      <p className="text-white/70 text-xs font-medium">
                         Business Name
                       </p>
                       <p className="text-white font-semibold">
@@ -207,9 +207,7 @@ const ModernBankingSection = () => {
                   )}
                   {bankingStatus.bankName && (
                     <div className="bg-white/10 rounded-lg p-3 backdrop-blur">
-                      <p className="text-emerald-100 text-xs font-medium">
-                        Bank
-                      </p>
+                      <p className="text-white/70 text-xs font-medium">Bank</p>
                       <p className="text-white font-semibold">
                         {bankingStatus.bankName}
                       </p>
@@ -254,8 +252,8 @@ const ModernBankingSection = () => {
 
           <div className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <Banknote className="w-5 h-5 text-green-600" />
+              <div className="w-10 h-10 bg-book-100 rounded-lg flex items-center justify-center">
+                <Banknote className="w-5 h-5 text-book-600" />
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900">
@@ -320,8 +318,8 @@ const ModernBankingSection = () => {
           {/* Benefits Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
-                <DollarSign className="w-6 h-6 text-green-600" />
+              <div className="w-12 h-12 bg-book-100 rounded-xl flex items-center justify-center mb-4">
+                <DollarSign className="w-6 h-6 text-book-600" />
               </div>
               <h4 className="text-lg font-semibold text-gray-900 mb-2">
                 Fast Payouts
@@ -383,7 +381,7 @@ const ModernBankingSection = () => {
               </p>
               <Button
                 onClick={() => setShowBankingForm(true)}
-                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                className="bg-book-600 hover:bg-book-700"
                 size="lg"
               >
                 <CreditCard className="w-5 h-5 mr-2" />
