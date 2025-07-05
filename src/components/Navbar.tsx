@@ -205,70 +205,17 @@ const Navbar = () => {
               {isAuthenticated ? (
                 <>
                   <div className="border-t border-gray-100 pt-3 mt-3">
-                    <Link
-                      to="/dashboard"
-                      className="flex items-center px-4 py-3 text-base font-medium text-book-600 bg-book-50 rounded-md min-h-[44px] mb-2"
-                      onClick={() => setIsMenuOpen(false)}
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center w-full text-left px-4 py-3 text-base font-medium text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-md min-h-[44px]"
                     >
-                      <User className="w-5 h-5 mr-2" />
-                      My Dashboard
-                    </Link>
+                      <LogOut className="w-5 h-5 mr-3" />
+                      Logout
+                    </button>
                   </div>
-
-                  <Link
-                    to="/payments"
-                    className={`flex items-center px-4 py-3 text-base font-medium rounded-md min-h-[44px] transition-colors ${
-                      isActive("/payments")
-                        ? "bg-book-50 text-book-600"
-                        : "text-gray-700 hover:bg-gray-50 hover:text-book-600"
-                    }`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <CreditCard className="w-5 h-5 mr-3" />
-                    Payments
-                  </Link>
-
-                  <Link
-                    to="/notifications"
-                    className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-book-600 rounded-md min-h-[44px]"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <NotificationBadge
-                      className="mr-3"
-                      iconSize="w-5 h-5"
-                      allowRetry={true}
-                      showErrorIndicator={true}
-                    />
-                    <span>Notifications</span>
-                  </Link>
-
-                  <Link
-                    to="/profile"
-                    className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-book-600 rounded-md min-h-[44px]"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {profile?.profile_picture_url ? (
-                      <img
-                        src={profile.profile_picture_url}
-                        alt="Profile"
-                        className="w-6 h-6 rounded-full object-cover mr-3"
-                      />
-                    ) : (
-                      <User className="w-5 h-5 mr-3" />
-                    )}
-                    Profile
-                  </Link>
-
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setIsMenuOpen(false);
-                    }}
-                    className="flex items-center w-full text-left px-4 py-3 text-base font-medium text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-md min-h-[44px]"
-                  >
-                    <LogOut className="w-5 h-5 mr-3" />
-                    Logout
-                  </button>
                 </>
               ) : (
                 <div className="border-t border-gray-100 pt-3 mt-3 space-y-2">
