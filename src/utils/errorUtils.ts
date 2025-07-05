@@ -41,15 +41,17 @@ export const logError = (context: string, error: unknown) => {
   }
 
   // Classification
-  console.error("Error Classification:", {
+  const errorClassification = {
     isNetworkError: isNetworkError(error),
     isAuthError: isAuthError(error),
     isDatabaseError: isDatabaseError(error),
-  });
+  };
+
+  console.error("Error Classification:", errorClassification);
 
   console.groupEnd();
 
-  return errorInfo;
+  return errorClassification;
 };
 
 /**
