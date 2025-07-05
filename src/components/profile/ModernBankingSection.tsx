@@ -131,202 +131,267 @@ const ModernBankingSection = () => {
     setShowBankingForm(false);
   };
 
-  const StatusCard = () => {
-    if (bankingStatus.isLoading) {
-      return (
-        <Card className="border-blue-200 bg-blue-50">
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-3">
-              <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
-              <div>
-                <h3 className="font-medium text-blue-800">
-                  Checking Status...
-                </h3>
-                <p className="text-sm text-blue-600">
-                  Verifying your banking setup
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      );
-    }
-
-    if (bankingStatus.hasSubaccount) {
-      return (
-        <Card className="border-green-200 bg-green-50">
-          <CardContent className="p-4">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center space-x-3">
-                <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
-                <div>
-                  <h3 className="font-medium text-green-800">Banking Active</h3>
-                  <p className="text-sm text-green-600">
-                    Ready to receive payments
-                  </p>
-                  {bankingStatus.businessName && (
-                    <p className="text-xs text-green-700 mt-1">
-                      Business: {bankingStatus.businessName}
-                    </p>
-                  )}
-                  {bankingStatus.bankName && (
-                    <p className="text-xs text-green-700">
-                      Bank: {bankingStatus.bankName}
-                    </p>
-                  )}
-                  {bankingStatus.subaccountCode && (
-                    <p className="text-xs text-green-500 mt-1 font-mono">
-                      ID: {bankingStatus.subaccountCode.substring(0, 12)}...
-                    </p>
-                  )}
-                </div>
-              </div>
-              <Badge
-                variant="outline"
-                className="border-green-300 text-green-700"
-              >
-                ACTIVE
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-      );
-    }
-
+  if (bankingStatus.isLoading) {
     return (
-      <Card className="border-orange-200 bg-orange-50">
-        <CardContent className="p-4">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center space-x-3">
-              <AlertTriangle className="w-6 h-6 text-orange-600 flex-shrink-0" />
-              <div>
-                <h3 className="font-medium text-orange-800">Setup Required</h3>
-                <p className="text-sm text-orange-600">
-                  Complete banking to sell books
-                </p>
-              </div>
-            </div>
-            <Badge
-              variant="outline"
-              className="border-orange-300 text-orange-700"
-            >
-              PENDING
-            </Badge>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-gray-900">Payment Setup</h2>
+          <div className="flex items-center space-x-2 text-blue-600">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span className="text-sm">Checking...</span>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-8">
+          <div className="flex items-center justify-center space-x-4">
+            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+              <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-blue-900">
+                Verifying Status
+              </h3>
+              <p className="text-blue-700">
+                Please wait while we check your banking setup...
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     );
-  };
+  }
 
-  const FeatureGrid = () => (
-    <div
-      className={`grid ${isMobile ? "grid-cols-1 gap-3" : "grid-cols-2 gap-4"}`}
-    >
-      <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
-        <DollarSign className="w-5 h-5 text-blue-600" />
-        <div>
-          <p className="font-medium text-blue-800 text-sm">Instant Payouts</p>
-          <p className="text-xs text-blue-600">90% of sale price</p>
-        </div>
-      </div>
-
-      <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
-        <Shield className="w-5 h-5 text-green-600" />
-        <div>
-          <p className="font-medium text-green-800 text-sm">Bank Security</p>
-          <p className="text-xs text-green-600">Encrypted & protected</p>
-        </div>
-      </div>
-
-      <div className="flex items-center space-x-3 p-3 bg-purple-50 rounded-lg">
-        <Banknote className="w-5 h-5 text-purple-600" />
-        <div>
-          <p className="font-medium text-purple-800 text-sm">Auto Split</p>
-          <p className="text-xs text-purple-600">No manual processing</p>
-        </div>
-      </div>
-
-      <div className="flex items-center space-x-3 p-3 bg-indigo-50 rounded-lg">
-        <CreditCard className="w-5 h-5 text-indigo-600" />
-        <div>
-          <p className="font-medium text-indigo-800 text-sm">All Methods</p>
-          <p className="text-xs text-indigo-600">Cards, EFT, transfers</p>
-        </div>
-      </div>
-    </div>
-  );
-
-  return (
-    <div className="space-y-4">
-      {/* Status Section */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h2
-            className={`font-semibold text-gray-900 ${isMobile ? "text-lg" : "text-xl"}`}
-          >
-            Payment Setup
-          </h2>
+  if (bankingStatus.hasSubaccount) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-gray-900">Payment Setup</h2>
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={checkBankingStatus}
             disabled={bankingStatus.isLoading}
+            className="text-gray-500 hover:text-gray-700"
           >
             <RefreshCw
-              className={`w-4 h-4 mr-2 ${bankingStatus.isLoading ? "animate-spin" : ""}`}
+              className={`w-4 h-4 ${bankingStatus.isLoading ? "animate-spin" : ""}`}
             />
-            {isMobile ? "Refresh" : "Check Status"}
           </Button>
         </div>
 
-        <StatusCard />
-      </div>
+        {/* Success State */}
+        <div className="bg-gradient-to-r from-emerald-500 to-green-600 rounded-2xl p-6 text-white">
+          <div className="flex items-start justify-between">
+            <div className="flex items-start space-x-4">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur">
+                <CheckCircle className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-1">All Set! 🎉</h3>
+                <p className="text-emerald-100 mb-3">
+                  Your payment account is active and ready to receive funds
+                </p>
 
-      <Separator />
-
-      {/* Action Section */}
-      {!bankingStatus.hasSubaccount && !showBankingForm && (
-        <div className="space-y-4">
-          <Alert className="border-green-200 bg-green-50">
-            <Info className="h-4 w-4 text-green-600" />
-            <AlertDescription className="text-green-800">
-              <strong>
-                Complete your banking setup to start selling books.
-              </strong>
-              <br />
-              This secure process takes just 2 minutes and enables instant
-              payments.
-            </AlertDescription>
-          </Alert>
-
-          <div className="space-y-3">
-            <Button
-              onClick={() => setShowBankingForm(true)}
-              className={`bg-green-600 hover:bg-green-700 ${isMobile ? "w-full h-12" : "w-full"}`}
-              size={isMobile ? "lg" : "default"}
-            >
-              <CreditCard className="w-4 h-4 mr-2" />
-              Add Banking Details
-            </Button>
-
-            <Button
-              onClick={checkBankingStatus}
-              variant="outline"
-              className="w-full"
-              disabled={bankingStatus.isLoading}
-            >
-              <RefreshCw
-                className={`w-4 h-4 mr-2 ${bankingStatus.isLoading ? "animate-spin" : ""}`}
-              />
-              {bankingStatus.isLoading ? "Checking..." : "Refresh Status"}
-            </Button>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+                  {bankingStatus.businessName && (
+                    <div className="bg-white/10 rounded-lg p-3 backdrop-blur">
+                      <p className="text-emerald-100 text-xs font-medium">
+                        Business Name
+                      </p>
+                      <p className="text-white font-semibold">
+                        {bankingStatus.businessName}
+                      </p>
+                    </div>
+                  )}
+                  {bankingStatus.bankName && (
+                    <div className="bg-white/10 rounded-lg p-3 backdrop-blur">
+                      <p className="text-emerald-100 text-xs font-medium">
+                        Bank
+                      </p>
+                      <p className="text-white font-semibold">
+                        {bankingStatus.bankName}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            <Badge className="bg-white/20 text-white border-white/30 backdrop-blur">
+              ACTIVE
+            </Badge>
           </div>
         </div>
-      )}
 
-      {/* Banking Details Form */}
-      {showBankingForm && (
-        <div className="mt-4">
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <DollarSign className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900">
+                  Instant Payouts
+                </p>
+                <p className="text-xs text-gray-500">90% of sale price</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Shield className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900">Secure</p>
+                <p className="text-xs text-gray-500">Bank-grade encryption</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                <Banknote className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900">
+                  Auto Transfer
+                </p>
+                <p className="text-xs text-gray-500">No manual work</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-900">Payment Setup</h2>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={checkBankingStatus}
+          disabled={bankingStatus.isLoading}
+          className="text-gray-500 hover:text-gray-700"
+        >
+          <RefreshCw
+            className={`w-4 h-4 ${bankingStatus.isLoading ? "animate-spin" : ""}`}
+          />
+        </Button>
+      </div>
+
+      {!showBankingForm ? (
+        <>
+          {/* Hero Section */}
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-2xl font-bold mb-2">
+                  Ready to Start Selling?
+                </h3>
+                <p className="text-blue-100 mb-6 max-w-md">
+                  Set up your payment account in under 2 minutes and start
+                  receiving instant payments from your book sales.
+                </p>
+                <Button
+                  onClick={() => setShowBankingForm(true)}
+                  className="bg-white text-blue-600 hover:bg-gray-100 font-semibold"
+                  size="lg"
+                >
+                  <CreditCard className="w-5 h-5 mr-2" />
+                  Set Up Payments
+                </Button>
+              </div>
+              <div className="hidden md:block">
+                <div className="w-24 h-24 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur">
+                  <Building className="w-12 h-12 text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Benefits Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+                <DollarSign className="w-6 h-6 text-green-600" />
+              </div>
+              <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                Fast Payouts
+              </h4>
+              <p className="text-gray-600 text-sm">
+                Receive 90% of your sale price directly to your bank account
+                within 24-48 hours.
+              </p>
+            </div>
+
+            <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                <Shield className="w-6 h-6 text-blue-600" />
+              </div>
+              <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                Bank-Level Security
+              </h4>
+              <p className="text-gray-600 text-sm">
+                Your banking information is protected with the same encryption
+                banks use.
+              </p>
+            </div>
+
+            <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
+                <Banknote className="w-6 h-6 text-purple-600" />
+              </div>
+              <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                Automatic Splits
+              </h4>
+              <p className="text-gray-600 text-sm">
+                Payments are automatically split between you and delivery costs
+                - no manual work.
+              </p>
+            </div>
+
+            <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
+                <Lock className="w-6 h-6 text-orange-600" />
+              </div>
+              <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                Trusted Platform
+              </h4>
+              <p className="text-gray-600 text-sm">
+                Powered by Paystack, South Africa's most trusted payment
+                processor.
+              </p>
+            </div>
+          </div>
+
+          {/* CTA Section */}
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center">
+            <div className="max-w-md mx-auto">
+              <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                Get Started Today
+              </h4>
+              <p className="text-gray-600 text-sm mb-4">
+                Join thousands of students already earning from their textbooks
+              </p>
+              <Button
+                onClick={() => setShowBankingForm(true)}
+                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                size="lg"
+              >
+                <CreditCard className="w-5 h-5 mr-2" />
+                Add Banking Details
+              </Button>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
           <BankingDetailsForm
             onSuccess={handleBankingFormSuccess}
             onCancel={handleBankingFormCancel}
@@ -335,50 +400,9 @@ const ModernBankingSection = () => {
         </div>
       )}
 
-      {/* Features Section */}
-      <div className="space-y-3">
-        <h3 className="font-medium text-gray-900">Payment Features</h3>
-        <FeatureGrid />
-      </div>
-
-      <Separator />
-
-      {/* Security Info */}
-      <div className="space-y-3">
-        <h3 className="font-medium text-gray-900">Security & Trust</h3>
-
-        <div className="bg-gray-50 p-4 rounded-lg space-y-3">
-          <div className="flex items-start space-x-3">
-            <Lock className="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="font-medium text-gray-800 text-sm">
-                Bank-Grade Encryption
-              </p>
-              <p className="text-xs text-gray-600">
-                Your banking details are encrypted using the same standards as
-                major banks.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start space-x-3">
-            <Building className="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="font-medium text-gray-800 text-sm">
-                Paystack Verified
-              </p>
-              <p className="text-xs text-gray-600">
-                Powered by Paystack, South Africa's leading payment processor.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Last Updated */}
       {bankingStatus.lastChecked && (
-        <p className="text-xs text-gray-500 text-center">
-          Last checked: {bankingStatus.lastChecked.toLocaleString()}
+        <p className="text-xs text-gray-400 text-center">
+          Last updated: {bankingStatus.lastChecked.toLocaleTimeString()}
         </p>
       )}
     </div>
