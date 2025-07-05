@@ -211,17 +211,17 @@ serve(async (req) => {
       console.log("Saving subaccount to database for user:", user.id);
 
       const { error: dbError } = await supabase
-        .from("paystack_subaccounts")
+        .from("banking_subaccounts")
         .insert({
           user_id: user.id,
-          subaccount_code: data.data.subaccount_code,
           business_name: business_name,
+          email: primary_contact_email,
+          bank_name: bank_name,
+          bank_code: bankCode,
           account_number: account_number,
-          settlement_bank: bank_name,
-          status: "active",
-          user_type: "seller",
-          percentage_charge: 0,
+          subaccount_code: data.data.subaccount_code,
           paystack_response: data.data,
+          status: "active",
         });
 
       if (dbError) {
