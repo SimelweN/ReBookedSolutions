@@ -39,6 +39,7 @@ export const mapBookFromDatabase = (bookData: BookQueryResult): Book => {
     universityYear: bookData.university_year,
     university: bookData.university,
     province: bookData.province || null,
+    subaccountCode: bookData.subaccount_code,
     seller: {
       id: bookData.seller_id,
       name: profile?.name || `User ${bookData.seller_id.slice(0, 8)}`,

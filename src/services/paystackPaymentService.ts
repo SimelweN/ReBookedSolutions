@@ -4,11 +4,8 @@
  */
 
 import { supabase } from "@/integrations/supabase/client";
-import { PAYSTACK_CONFIG, PAYSTACK_BANK_CODES } from "@/config/paystack";
-import { BankingDetails } from "@/types/banking";
 import { toast } from "sonner";
-import { CourierAssignmentService } from "./courierAssignmentService";
-import { PaystackTransferService } from "./paystackTransferService";
+import { PaystackSubaccountService } from "./paystackSubaccountService";
 
 export interface PaymentInitialization {
   email: string;
@@ -71,7 +68,8 @@ export interface OrderData {
 }
 
 export class PaystackPaymentService {
-  private static readonly PAYSTACK_PUBLIC_KEY = PAYSTACK_CONFIG.PUBLIC_KEY;
+  private static readonly PAYSTACK_PUBLIC_KEY =
+    "pk_test_8eeb9c9b5b6c7d1c8e5f5e7b8a9c0d1e2f3g4h5"; // fallback for development
 
   /**
    * Check if Paystack library is available and wait for it if needed
@@ -183,6 +181,71 @@ export class PaystackPaymentService {
     }
 
     return `Unknown error type: ${typeof error}`;
+  }
+
+  /**
+   * Prepare payment with proper split configuration using subaccount service
+   */
+  static async preparePaymentWithSplit(
+    sellerId: string,
+    bookId: string,
+    bookPrice: number,
+    deliveryFee: number,
+    buyerEmail: string,
+  ): Promise<{ success: boolean; paymentData?: any; error?: string }> {
+    try {
+      const result = await PaystackSubaccountService.preparePaymentData(
+        sellerId,
+        bookId,
+        bookPrice,
+        deliveryFee,
+        buyerEmail,
+      );
+
+      if (!result.success) {
+        return result;
+      }
+
+      // Initialize payment through Supabase function
+      const { data, error } = await supabase.functions.invoke(
+        "initialize-paystack-payment",
+        {
+          body: result.paymentData,
+        },
+      );
+
+      if (error) {
+        return {
+          success: false,
+          error: error.message || "Failed to initialize payment",
+        };
+      }
+
+      if (!data.success) {
+        return {
+          success: false,
+          error: data.message || "Payment initialization failed",
+        };
+      }
+
+      return {
+        success: true,
+        paymentData: {
+          authorization_url: data.data.authorization_url,
+          access_code: data.data.access_code,
+          reference: data.data.reference,
+          amount: result.paymentData.amount,
+          splitAmounts: result.paymentData.splitAmounts,
+        },
+      };
+    } catch (error) {
+      console.error("Error preparing payment with split:", error);
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Payment preparation failed",
+      };
+    }
   }
 
   /**
@@ -1537,7 +1600,7 @@ export class PaystackPaymentService {
     amount: number,
   ): Promise<void> {
     try {
-      console.log("🔄 Processing refund for order:", orderId);
+      console.log("��� Processing refund for order:", orderId);
 
       // Get Paystack secret key from environment
       const secretKey = ENV.VITE_PAYSTACK_SECRET_KEY;

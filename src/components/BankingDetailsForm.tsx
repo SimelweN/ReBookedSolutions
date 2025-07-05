@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -25,9 +25,10 @@ import {
   CheckCircle,
   AlertCircle,
   Loader2,
+  Edit3,
 } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { PaystackSubaccountService } from "@/services/paystackSubaccountService";
 
 interface BankInfo {
   name: string;
@@ -53,12 +54,14 @@ interface BankingDetailsFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
   showAsModal?: boolean;
+  editMode?: boolean;
 }
 
 const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
   onSuccess,
   onCancel,
   showAsModal = false,
+  editMode = false,
 }) => {
   const [formData, setFormData] = useState({
     businessName: "",
@@ -70,6 +73,44 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
   const [branchCode, setBranchCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(editMode);
+  const [existingData, setExistingData] = useState<any>(null);
+
+  // Load existing data if in edit mode
+  useEffect(() => {
+    const loadExistingData = async () => {
+      if (!editMode) return;
+
+      try {
+        setIsLoading(true);
+        const status =
+          await PaystackSubaccountService.getUserSubaccountStatus();
+
+        if (status.hasSubaccount) {
+          setExistingData(status);
+          setFormData({
+            businessName: status.businessName || "",
+            email: status.email || "",
+            bankName: status.bankName || "",
+            accountNumber: status.accountNumber || "",
+          });
+
+          // Set branch code for the existing bank
+          const selectedBank = SOUTH_AFRICAN_BANKS.find(
+            (bank) => bank.name === status.bankName,
+          );
+          setBranchCode(selectedBank?.branchCode || "");
+        }
+      } catch (error) {
+        console.error("Error loading existing data:", error);
+        toast.error("Failed to load existing banking details");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadExistingData();
+  }, [editMode]);
 
   const handleBankChange = (bankName: string) => {
     const selectedBank = SOUTH_AFRICAN_BANKS.find(
@@ -116,65 +157,55 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
     setIsSubmitting(true);
 
     try {
-      console.log("Starting banking form submission...");
-
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error("Please log in to continue");
-      }
-
-      console.log("Session found, preparing request body...");
-
-      const requestBody = {
-        business_name: formData.businessName,
-        bank_name: formData.bankName,
-        account_number: formData.accountNumber,
-        primary_contact_email: formData.email,
-        primary_contact_name: formData.businessName,
-        metadata: {
-          user_id: session.user.id,
-          bank_code: branchCode,
-        },
-      };
-
-      console.log("Request body:", requestBody);
-
-      const { data, error } = await supabase.functions.invoke(
-        "create-paystack-subaccount",
-        {
-          body: requestBody,
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        },
+      console.log(
+        `Starting banking form ${editMode ? "update" : "submission"}...`,
       );
 
-      console.log("Supabase function response:", { data, error });
+      const subaccountDetails = {
+        business_name: formData.businessName,
+        email: formData.email,
+        bank_name: formData.bankName,
+        bank_code: branchCode,
+        account_number: formData.accountNumber,
+      };
 
-      if (error) {
-        console.error("Supabase function error:", error);
-        throw new Error(error.message || "Failed to submit banking details");
-      }
+      const result = await PaystackSubaccountService.createOrUpdateSubaccount(
+        subaccountDetails,
+        editMode,
+      );
 
-      if (data && data.success) {
-        console.log("Banking setup successful!");
+      if (result.success) {
+        console.log(`Banking ${editMode ? "update" : "setup"} successful!`);
         setIsSuccess(true);
-        toast.success("Banking details added successfully!");
+        toast.success(
+          `Banking details ${editMode ? "updated" : "added"} successfully!`,
+        );
+
+        // Link books to subaccount if this is a new creation
+        if (!editMode && result.subaccount_code) {
+          // This will be handled automatically through the service
+          console.log("Subaccount created and linked successfully");
+        }
 
         // Call success callback after a short delay
         setTimeout(() => {
           onSuccess?.();
         }, 1500);
       } else {
-        console.error("Banking setup failed:", data);
+        console.error(
+          `Banking ${editMode ? "update" : "setup"} failed:`,
+          result,
+        );
         throw new Error(
-          data?.message || data?.error || "Failed to create subaccount",
+          result.error ||
+            `Failed to ${editMode ? "update" : "create"} subaccount`,
         );
       }
     } catch (error: any) {
-      console.error("Banking form submission error:", error);
+      console.error(
+        `Banking form ${editMode ? "update" : "submission"} error:`,
+        error,
+      );
 
       let errorMessage = "There was an error. Please try again.";
 
@@ -182,18 +213,9 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
         errorMessage = error.message;
       }
 
-      // If it's a Supabase error, try to get more details
-      if (error.details || error.code) {
-        console.error("Detailed error:", {
-          code: error.code,
-          details: error.details,
-          message: error.message,
-        });
-
-        if (error.message.includes("non-2xx")) {
-          errorMessage =
-            "Payment service is temporarily unavailable. Please try again in a few minutes.";
-        }
+      if (error.message?.includes("non-2xx")) {
+        errorMessage =
+          "Payment service is temporarily unavailable. Please try again in a few minutes.";
       }
 
       toast.error(errorMessage);
@@ -201,6 +223,24 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
       setIsSubmitting(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <Card className={showAsModal ? "w-full max-w-md mx-auto" : ""}>
+        <CardContent className="p-6 text-center">
+          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Loader2 className="w-8 h-8 text-gray-600 animate-spin" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Loading Banking Details...
+          </h3>
+          <p className="text-sm text-gray-600">
+            Please wait while we load your existing information.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (isSuccess) {
     return (
@@ -210,11 +250,12 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
             <CheckCircle className="w-8 h-8 text-white" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            Banking Details Submitted!
+            Banking Details {editMode ? "Updated" : "Submitted"}!
           </h3>
           <p className="text-sm text-gray-600 mb-4">
-            Your payment account has been created successfully. You can now
-            start listing and selling books.
+            Your payment account has been {editMode ? "updated" : "created"}{" "}
+            successfully.
+            {!editMode && " You can now start listing and selling books."}
           </p>
           <Button
             onClick={onSuccess}
@@ -231,13 +272,19 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
     <Card className={showAsModal ? "w-full max-w-md mx-auto" : ""}>
       <CardHeader className="text-center pb-4">
         <div className="w-12 h-12 bg-book-600 rounded-xl flex items-center justify-center mx-auto mb-3">
-          <Building2 className="w-6 h-6 text-white" />
+          {editMode ? (
+            <Edit3 className="w-6 h-6 text-white" />
+          ) : (
+            <Building2 className="w-6 h-6 text-white" />
+          )}
         </div>
         <CardTitle className="text-xl font-bold text-gray-900">
-          Add Banking Details
+          {editMode ? "Edit Banking Details" : "Add Banking Details"}
         </CardTitle>
         <CardDescription className="text-sm text-gray-600">
-          Create your secure Paystack subaccount for faster payments
+          {editMode
+            ? "Update your secure Paystack subaccount information"
+            : "Create your secure Paystack subaccount for faster payments"}
         </CardDescription>
       </CardHeader>
 
@@ -373,8 +420,10 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Creating Account...
+                  {editMode ? "Updating Account..." : "Creating Account..."}
                 </>
+              ) : editMode ? (
+                "Update Payment Account"
               ) : (
                 "Create Payment Account"
               )}

@@ -1,253 +1,284 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { corsHeaders } from "../_shared/cors.ts";
 
-const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
-const WEBHOOK_SECRET = Deno.env.get("PAYSTACK_WEBHOOK_SECRET");
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-
-// Simple webhook signature verification
-function verifyWebhookSignature(payload: string, signature: string): boolean {
-  if (!WEBHOOK_SECRET) {
-    console.warn("Webhook secret not configured, skipping verification");
-    return true; // Allow in development
-  }
-
-  // In production, implement proper HMAC verification
-  // For now, we'll do a simple check
-  return signature === WEBHOOK_SECRET;
-}
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
 serve(async (req) => {
-  // Handle CORS
+  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Verify webhook signature
-    const signature = req.headers.get("x-paystack-signature");
-    const body = await req.text();
+    console.log("=== Paystack Webhook Received ===");
 
-    if (!verifyWebhookSignature(body, signature || "")) {
-      throw new Error("Invalid webhook signature");
+    const body = await req.text();
+    const signature = req.headers.get("x-paystack-signature");
+
+    console.log("Webhook signature:", signature);
+    console.log("Webhook body length:", body.length);
+
+    // Verify webhook signature
+    const paystackSecretKey = Deno.env.get("PAYSTACK_SECRET_KEY");
+    if (!paystackSecretKey) {
+      console.error("PAYSTACK_SECRET_KEY not configured");
+      return new Response("Configuration error", { status: 500 });
+    }
+
+    // Create hash to verify signature
+    const crypto = await import("node:crypto");
+    const hash = crypto
+      .createHmac("sha512", paystackSecretKey)
+      .update(body)
+      .digest("hex");
+
+    if (hash !== signature) {
+      console.error("Invalid webhook signature");
+      return new Response("Invalid signature", { status: 400 });
     }
 
     const event = JSON.parse(body);
-    const { event: eventType, data } = event;
+    console.log("Webhook event:", event.event, event.data?.reference);
 
     // Initialize Supabase client
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    );
 
-    console.log(`📧 Received webhook: ${eventType}`);
-
-    switch (eventType) {
+    // Handle different event types
+    switch (event.event) {
       case "charge.success":
-        // Payment successful - update order status
-        await handlePaymentSuccess(supabase, data);
+        await handleSuccessfulPayment(supabase, event.data);
+        break;
+
+      case "charge.failed":
+        await handleFailedPayment(supabase, event.data);
         break;
 
       case "transfer.success":
-        // Payout successful - update payout logs
-        await handleTransferSuccess(supabase, data);
+        console.log("Transfer successful:", event.data.reference);
+        await handleSuccessfulTransfer(supabase, event.data);
         break;
 
       case "transfer.failed":
-        // Payout failed - log and retry
-        await handleTransferFailed(supabase, data);
-        break;
-
-      case "transfer.reversed":
-        // Payout reversed - handle reversal
-        await handleTransferReversed(supabase, data);
+        console.log(
+          "Transfer failed:",
+          event.data.reference,
+          event.data.failure_reason,
+        );
+        await handleFailedTransfer(supabase, event.data);
         break;
 
       default:
-        console.log(`Unhandled webhook event: ${eventType}`);
+        console.log("Unhandled webhook event:", event.event);
     }
 
-    return new Response(JSON.stringify({ success: true, event: eventType }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    return new Response("OK", {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "text/plain" },
     });
   } catch (error) {
-    console.error("Webhook error:", error);
-    return new Response(
-      JSON.stringify({
-        error: error.message,
-        success: false,
-      }),
-      {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    console.error("Webhook processing error:", error);
+    return new Response("Internal server error", {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "text/plain" },
+    });
   }
 });
 
-async function handlePaymentSuccess(supabase: any, data: any) {
+async function handleSuccessfulPayment(supabase: any, paymentData: any) {
   try {
-    const { reference } = data;
+    console.log("Processing successful payment:", paymentData.reference);
 
-    // Update order status
-    const { error } = await supabase
+    // Find order by Paystack reference (updated to use orders table)
+    const { data: order, error: orderError } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("paystack_ref", paymentData.reference)
+      .single();
+
+    if (orderError || !order) {
+      console.error("Order not found:", paymentData.reference);
+
+      // Try to find in transactions table as fallback
+      const { data: transaction, error: transactionError } = await supabase
+        .from("transactions")
+        .select("*")
+        .eq("paystack_reference", paymentData.reference)
+        .single();
+
+      if (transactionError || !transaction) {
+        console.error("Transaction also not found:", paymentData.reference);
+        return;
+      }
+
+      // Handle legacy transaction
+      await handleLegacyTransaction(supabase, transaction, paymentData);
+      return;
+    }
+
+    // Update order status to paid
+    const { error: updateError } = await supabase
       .from("orders")
       .update({
         status: "paid",
-        payment_data: data,
-        paid_at: new Date(data.paid_at).toISOString(),
+        paid_at: new Date().toISOString(),
+        payment_held: true, // Hold payment until courier collection
         updated_at: new Date().toISOString(),
       })
-      .eq("paystack_ref", reference);
+      .eq("id", order.id);
 
-    if (error) {
-      console.error("Error updating order from webhook:", error);
-    } else {
-      console.log(`✅ Order ${reference} marked as paid via webhook`);
+    if (updateError) {
+      console.error("Error updating order:", updateError);
+      return;
     }
 
-    // Send confirmation email
-    await supabase.functions.invoke("send-email-notification", {
-      body: {
-        to: data.customer.email,
-        type: "payment_success",
-        data: {
-          reference: reference,
-          amount: (data.amount / 100).toFixed(2),
-        },
-      },
+    // Create payment split record for tracking
+    const { error: splitError } = await supabase.from("payment_splits").insert({
+      order_id: order.id,
+      seller_subaccount: order.seller_subaccount_code,
+      book_amount: order.book_price,
+      delivery_amount: order.delivery_fee || 0,
+      platform_commission: order.platform_fee,
+      seller_amount: order.seller_amount,
+      courier_amount: order.delivery_fee || 0,
+      split_executed: true,
+      paystack_reference: paymentData.reference,
     });
+
+    if (splitError) {
+      console.error("Error creating payment split record:", splitError);
+    }
+
+    // Ensure book remains sold
+    if (order.book_id) {
+      await supabase
+        .from("books")
+        .update({ sold: true })
+        .eq("id", order.book_id);
+    }
+
+    console.log("Payment processed successfully for order:", order.id);
   } catch (error) {
-    console.error("Error handling payment success webhook:", error);
+    console.error("Error handling successful payment:", error);
   }
 }
 
-async function handleTransferSuccess(supabase: any, data: any) {
+async function handleFailedPayment(supabase: any, paymentData: any) {
   try {
-    const { reference, transfer_code } = data;
+    console.log("Processing failed payment:", paymentData.reference);
 
-    // Update payout log
-    const { error } = await supabase
-      .from("payout_logs")
-      .update({
-        status: "success",
-        paystack_response: data,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("transfer_code", transfer_code);
-
-    if (error) {
-      console.error("Error updating payout log from webhook:", error);
-    } else {
-      console.log(
-        `✅ Payout ${transfer_code} marked as successful via webhook`,
-      );
-    }
-
-    // Get the payout details for notification
-    const { data: payoutLog } = await supabase
-      .from("payout_logs")
-      .select("seller_id, amount, order_id")
-      .eq("transfer_code", transfer_code)
+    // Find order by Paystack reference
+    const { data: order, error: orderError } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("paystack_ref", paymentData.reference)
       .single();
 
-    if (payoutLog) {
-      // Send success notification to seller
-      await supabase.functions.invoke("send-email-notification", {
-        body: {
-          seller_id: payoutLog.seller_id,
-          type: "payout_success",
-          data: {
-            amount: (payoutLog.amount / 100).toFixed(2),
-            orderId: payoutLog.order_id,
-          },
-        },
-      });
+    if (orderError || !order) {
+      console.error(
+        "Order not found for failed payment:",
+        paymentData.reference,
+      );
+      return;
     }
-  } catch (error) {
-    console.error("Error handling transfer success webhook:", error);
-  }
-}
 
-async function handleTransferFailed(supabase: any, data: any) {
-  try {
-    const { transfer_code, failure_reason } = data;
-
-    // Update payout log with failure
-    const { error } = await supabase
-      .from("payout_logs")
+    // Update order status to failed
+    await supabase
+      .from("orders")
       .update({
         status: "failed",
-        error_message: failure_reason,
-        paystack_response: data,
+        payment_held: false,
         updated_at: new Date().toISOString(),
       })
-      .eq("transfer_code", transfer_code);
+      .eq("id", order.id);
 
-    if (error) {
-      console.error("Error updating failed payout log:", error);
-    } else {
-      console.log(`❌ Payout ${transfer_code} marked as failed via webhook`);
-    }
-
-    // Get payout details for retry logic
-    const { data: payoutLog } = await supabase
-      .from("payout_logs")
-      .select("*")
-      .eq("transfer_code", transfer_code)
-      .single();
-
-    if (payoutLog && payoutLog.retry_count < 3) {
-      // Schedule retry (you might implement this with a queue system)
-      console.log(`🔄 Scheduling retry for failed payout ${transfer_code}`);
-
-      // For now, just increment retry count
+    // Make book available again
+    if (order.book_id) {
       await supabase
-        .from("payout_logs")
-        .update({
-          retry_count: payoutLog.retry_count + 1,
-        })
-        .eq("transfer_code", transfer_code);
+        .from("books")
+        .update({ sold: false })
+        .eq("id", order.book_id);
     }
+
+    console.log("Failed payment processed for order:", order.id);
   } catch (error) {
-    console.error("Error handling transfer failure webhook:", error);
+    console.error("Error handling failed payment:", error);
   }
 }
 
-async function handleTransferReversed(supabase: any, data: any) {
+async function handleSuccessfulTransfer(supabase: any, transferData: any) {
   try {
-    const { transfer_code } = data;
+    console.log("Processing successful transfer:", transferData.reference);
 
-    // Update payout log
+    // Update any pending payouts
     const { error } = await supabase
-      .from("payout_logs")
+      .from("orders")
       .update({
-        status: "reversed",
-        paystack_response: data,
+        payout_completed_at: new Date().toISOString(),
+        status: "completed",
         updated_at: new Date().toISOString(),
       })
-      .eq("transfer_code", transfer_code);
+      .eq("paystack_ref", transferData.reference);
 
     if (error) {
-      console.error("Error updating reversed payout log:", error);
-    } else {
-      console.log(`🔄 Payout ${transfer_code} marked as reversed via webhook`);
-    }
-
-    // Notify seller about reversal
-    const { data: payoutLog } = await supabase
-      .from("payout_logs")
-      .select("seller_id, amount, order_id")
-      .eq("transfer_code", transfer_code)
-      .single();
-
-    if (payoutLog) {
-      // You might want to create a specific email template for reversals
-      console.log(
-        `📧 Should notify seller ${payoutLog.seller_id} about payout reversal`,
-      );
+      console.error("Error updating transfer status:", error);
     }
   } catch (error) {
-    console.error("Error handling transfer reversal webhook:", error);
+    console.error("Error handling successful transfer:", error);
+  }
+}
+
+async function handleFailedTransfer(supabase: any, transferData: any) {
+  try {
+    console.log("Processing failed transfer:", transferData.reference);
+
+    // Mark transfer as failed for retry
+    const { error } = await supabase
+      .from("orders")
+      .update({
+        payout_failed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("paystack_ref", transferData.reference);
+
+    if (error) {
+      console.error("Error updating failed transfer:", error);
+    }
+  } catch (error) {
+    console.error("Error handling failed transfer:", error);
+  }
+}
+
+async function handleLegacyTransaction(
+  supabase: any,
+  transaction: any,
+  paymentData: any,
+) {
+  try {
+    console.log("Processing legacy transaction:", transaction.id);
+
+    // Update transaction status
+    await supabase
+      .from("transactions")
+      .update({
+        status: "completed",
+        committed_at: new Date().toISOString(),
+        seller_committed: true,
+      })
+      .eq("id", transaction.id);
+
+    // Ensure book remains sold
+    await supabase
+      .from("books")
+      .update({ sold: true })
+      .eq("id", transaction.book_id);
+  } catch (error) {
+    console.error("Error handling legacy transaction:", error);
   }
 }

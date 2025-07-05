@@ -16,6 +16,7 @@ export interface Book {
   universityYear?: string;
   university?: string;
   province?: string;
+  subaccountCode?: string; // Direct link to seller's Paystack subaccount
   seller: {
     id: string;
     name: string;

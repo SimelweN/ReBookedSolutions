@@ -1,7 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { handleBankingQueryError } from "@/utils/bankingErrorHandler";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import BankingDetailsForm from "@/components/BankingDetailsForm";
-import type { Tables } from "@/integrations/supabase/types";
+import { useSubaccount } from "@/hooks/useSubaccount";
 import {
   Building,
   Shield,
@@ -22,118 +20,60 @@ import {
   Banknote,
   Lock,
   Info,
+  Edit3,
+  Settings,
 } from "lucide-react";
 import { toast } from "sonner";
-
-type PaystackSubaccount = Tables<"paystack_subaccounts">;
 
 const ModernBankingSection = () => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const [showBankingForm, setShowBankingForm] = useState(false);
-  const [bankingStatus, setBankingStatus] = useState<{
-    hasSubaccount: boolean;
-    subaccountCode: string | null;
-    businessName: string | null;
-    bankName: string | null;
-    isLoading: boolean;
-    lastChecked: Date | null;
-  }>({
-    hasSubaccount: false,
-    subaccountCode: null,
-    businessName: null,
-    bankName: null,
-    isLoading: true,
-    lastChecked: null,
-  });
+  const [editMode, setEditMode] = useState(false);
 
-  const checkBankingStatus = async () => {
-    if (!user?.id) return;
+  // Use the new useSubaccount hook
+  const {
+    subaccountData,
+    isLoading,
+    error,
+    hasValidSubaccount,
+    getSubaccountCode,
+    refreshSubaccountData,
+    linkBooksToSubaccount,
+  } = useSubaccount();
 
-    setBankingStatus((prev) => ({ ...prev, isLoading: true }));
-
-    try {
-      const { data: subaccountData, error } = await supabase
-        .from("paystack_subaccounts")
-        .select("subaccount_code, business_name, settlement_bank, status")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (error) {
-        const { shouldFallback, errorMessage } = handleBankingQueryError(
-          "ModernBankingSection - checking banking status",
-          error,
-        );
-
-        if (shouldFallback) {
-          setBankingStatus({
-            hasSubaccount: false,
-            subaccountCode: null,
-            businessName: null,
-            bankName: null,
-            isLoading: false,
-            lastChecked: new Date(),
-          });
-          return;
-        }
-
-        setBankingStatus({
-          hasSubaccount: false,
-          subaccountCode: null,
-          businessName: null,
-          bankName: null,
-          isLoading: false,
-          lastChecked: new Date(),
-        });
-        return;
-      }
-
-      const hasValidSubaccount = !!subaccountData?.subaccount_code?.trim();
-      setBankingStatus({
-        hasSubaccount: hasValidSubaccount,
-        subaccountCode: subaccountData?.subaccount_code || null,
-        businessName: subaccountData?.business_name || null,
-        bankName: subaccountData?.settlement_bank || null,
-        isLoading: false,
-        lastChecked: new Date(),
-      });
-
-      if (hasValidSubaccount) {
-        toast.success("Banking setup verified!");
-      }
-    } catch (error) {
-      console.error(
-        "Banking status check failed:",
-        error instanceof Error ? error.message : JSON.stringify(error, null, 2),
-      );
-      setBankingStatus((prev) => ({
-        ...prev,
-        isLoading: false,
-        lastChecked: new Date(),
-      }));
-    }
-  };
-
-  useEffect(() => {
-    if (user?.id) {
-      checkBankingStatus();
-    }
-  }, [user?.id]);
-
-  const handleBankingFormSuccess = () => {
-    toast.success("Banking details added successfully!");
+  const handleBankingFormSuccess = async () => {
+    toast.success(
+      `Banking details ${editMode ? "updated" : "added"} successfully!`,
+    );
     setShowBankingForm(false);
+    setEditMode(false);
+
     // Refresh banking status after successful form submission
-    setTimeout(() => {
-      checkBankingStatus();
-    }, 1000);
+    await refreshSubaccountData();
+
+    // Link existing books to the subaccount if not in edit mode
+    if (!editMode && subaccountData?.subaccount_code) {
+      await linkBooksToSubaccount(subaccountData.subaccount_code);
+    }
   };
 
   const handleBankingFormCancel = () => {
     setShowBankingForm(false);
+    setEditMode(false);
   };
 
-  if (bankingStatus.isLoading) {
+  const handleEditClick = () => {
+    setEditMode(true);
+    setShowBankingForm(true);
+  };
+
+  const handleAddClick = () => {
+    setEditMode(false);
+    setShowBankingForm(true);
+  };
+
+  if (isLoading) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
@@ -163,7 +103,7 @@ const ModernBankingSection = () => {
     );
   }
 
-  if (bankingStatus.hasSubaccount) {
+  if (error) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
@@ -171,12 +111,38 @@ const ModernBankingSection = () => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={checkBankingStatus}
-            disabled={bankingStatus.isLoading}
+            onClick={refreshSubaccountData}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <RefreshCw className="w-4 h-4" />
+          </Button>
+        </div>
+
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            {error}. Please try refreshing or contact support if the issue
+            persists.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  if (hasValidSubaccount()) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-gray-900">Payment Setup</h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={refreshSubaccountData}
+            disabled={isLoading}
             className="text-gray-500 hover:text-gray-700"
           >
             <RefreshCw
-              className={`w-4 h-4 ${bankingStatus.isLoading ? "animate-spin" : ""}`}
+              className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
             />
           </Button>
         </div>
@@ -184,32 +150,64 @@ const ModernBankingSection = () => {
         {/* Success State */}
         <div className="bg-gradient-to-r from-book-500 to-book-600 rounded-2xl p-6 text-white">
           <div className="flex items-start justify-between">
-            <div className="flex items-start space-x-4">
+            <div className="flex items-start space-x-4 flex-1">
               <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur">
                 <CheckCircle className="w-6 h-6 text-white" />
               </div>
-              <div>
-                <h3 className="text-xl font-bold mb-1">All Set! 🎉</h3>
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="text-xl font-bold">All Set! 🎉</h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleEditClick}
+                    className="text-white hover:bg-white/10 h-8"
+                  >
+                    <Edit3 className="w-4 h-4 mr-1" />
+                    Edit
+                  </Button>
+                </div>
                 <p className="text-white/80 mb-3">
                   Your payment account is active and ready to receive funds
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
-                  {bankingStatus.businessName && (
+                  {subaccountData?.business_name && (
                     <div className="bg-white/10 rounded-lg p-3 backdrop-blur">
                       <p className="text-white/70 text-xs font-medium">
                         Business Name
                       </p>
                       <p className="text-white font-semibold">
-                        {bankingStatus.businessName}
+                        {subaccountData.business_name}
                       </p>
                     </div>
                   )}
-                  {bankingStatus.bankName && (
+                  {subaccountData?.bank_details?.bank_name && (
                     <div className="bg-white/10 rounded-lg p-3 backdrop-blur">
                       <p className="text-white/70 text-xs font-medium">Bank</p>
                       <p className="text-white font-semibold">
-                        {bankingStatus.bankName}
+                        {subaccountData.bank_details.bank_name}
+                      </p>
+                    </div>
+                  )}
+                  {subaccountData?.bank_details?.account_number && (
+                    <div className="bg-white/10 rounded-lg p-3 backdrop-blur">
+                      <p className="text-white/70 text-xs font-medium">
+                        Account
+                      </p>
+                      <p className="text-white font-semibold">
+                        ****
+                        {subaccountData.bank_details.account_number.slice(-4)}
+                      </p>
+                    </div>
+                  )}
+                  {subaccountData?.subaccount_code && (
+                    <div className="bg-white/10 rounded-lg p-3 backdrop-blur">
+                      <p className="text-white/70 text-xs font-medium">
+                        Subaccount
+                      </p>
+                      <p className="text-white font-semibold font-mono text-xs">
+                        {subaccountData.subaccount_code.substring(0, 12)}...
                       </p>
                     </div>
                   )}
@@ -275,13 +273,11 @@ const ModernBankingSection = () => {
         <Button
           variant="ghost"
           size="sm"
-          onClick={checkBankingStatus}
-          disabled={bankingStatus.isLoading}
+          onClick={refreshSubaccountData}
+          disabled={isLoading}
           className="text-gray-500 hover:text-gray-700"
         >
-          <RefreshCw
-            className={`w-4 h-4 ${bankingStatus.isLoading ? "animate-spin" : ""}`}
-          />
+          <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
         </Button>
       </div>
 
@@ -299,7 +295,7 @@ const ModernBankingSection = () => {
                   receiving instant payments from your book sales.
                 </p>
                 <Button
-                  onClick={() => setShowBankingForm(true)}
+                  onClick={handleAddClick}
                   className="bg-white text-blue-600 hover:bg-gray-100 font-semibold"
                   size="lg"
                 >
@@ -380,7 +376,7 @@ const ModernBankingSection = () => {
                 Join thousands of students already earning from their textbooks
               </p>
               <Button
-                onClick={() => setShowBankingForm(true)}
+                onClick={handleAddClick}
                 className="bg-book-600 hover:bg-book-700"
                 size="lg"
               >
@@ -396,14 +392,9 @@ const ModernBankingSection = () => {
             onSuccess={handleBankingFormSuccess}
             onCancel={handleBankingFormCancel}
             showAsModal={false}
+            editMode={editMode}
           />
         </div>
-      )}
-
-      {bankingStatus.lastChecked && (
-        <p className="text-xs text-gray-400 text-center">
-          Last updated: {bankingStatus.lastChecked.toLocaleTimeString()}
-        </p>
       )}
     </div>
   );

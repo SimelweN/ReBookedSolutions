@@ -4,6 +4,7 @@ import { mapBookFromDatabase } from "./bookMapper";
 import { handleBookServiceError } from "./bookErrorHandler";
 import { BookQueryResult } from "./bookTypes";
 import { ActivityService } from "@/services/activityService";
+import { PaystackSubaccountService } from "@/services/paystackSubaccountService";
 
 export const createBook = async (bookData: BookFormData): Promise<Book> => {
   try {
@@ -15,18 +16,16 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       throw new Error("User not authenticated");
     }
 
-    // Verify user has subaccount_code in banking_subaccounts before allowing book creation
-    const { data: subaccountData } = await supabase
-      .from("banking_subaccounts")
-      .select("subaccount_code")
-      .eq("user_id", user.id)
-      .single();
+    // Verify user has valid subaccount before allowing book creation
+    const subaccountValidation =
+      await PaystackSubaccountService.validateSubaccount(user.id);
 
-    if (!subaccountData?.subaccount_code?.trim()) {
-      throw new Error(
-        "Banking setup required: You must complete your banking subaccount setup before creating listings",
-      );
+    if (!subaccountValidation.isValid) {
+      throw new Error(subaccountValidation.message);
     }
+
+    // Get the user's subaccount code for direct linking
+    const userSubaccountCode = subaccountValidation.subaccountCode;
 
     // Fetch province from user's pickup address
     let province = null;
@@ -64,8 +63,8 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       // Continue without province - it's not critical for book creation
     }
 
-    // Create book data without province first (safer approach)
-    const bookDataWithoutProvince = {
+    // Create book data with subaccount_code for direct linking
+    const bookDataWithSubaccount = {
       seller_id: user.id,
       title: bookData.title,
       author: bookData.author,
@@ -79,6 +78,7 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       inside_pages: bookData.insidePages,
       grade: bookData.grade,
       university_year: bookData.universityYear,
+      subaccount_code: userSubaccountCode, // Direct link to seller's subaccount
     };
 
     // Store province for future use when database schema is updated
@@ -90,7 +90,7 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
 
     const { data: book, error } = await supabase
       .from("books")
-      .insert([bookDataWithoutProvince])
+      .insert([bookDataWithSubaccount])
       .select()
       .single();
 
@@ -118,6 +118,11 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
     };
 
     const mappedBook = mapBookFromDatabase(bookWithProfile);
+
+    // Book is now directly linked to seller's subaccount via subaccount_code column
+    console.log(
+      `✅ Book ${book.id} directly linked to subaccount: ${userSubaccountCode}`,
+    );
 
     // Log activity for book listing
     try {

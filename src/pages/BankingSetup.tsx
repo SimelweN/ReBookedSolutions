@@ -22,8 +22,7 @@ import {
   Users,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { handleBankingQueryError } from "@/utils/bankingErrorHandler";
+import { PaystackSubaccountService } from "@/services/paystackSubaccountService";
 import { toast } from "sonner";
 
 const BankingSetup = () => {
@@ -51,40 +50,21 @@ const BankingSetup = () => {
     if (!user?.id) return;
 
     try {
-      const { data: subaccountData, error } = await supabase
-        .from("paystack_subaccounts")
-        .select("subaccount_code, business_name, settlement_bank")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      const status = await PaystackSubaccountService.getUserSubaccountStatus(
+        user.id,
+      );
 
-      if (error) {
-        const { shouldFallback, errorMessage } = handleBankingQueryError(
-          "BankingSetup - checking banking status",
-          error,
-        );
-
-        if (shouldFallback) {
-          setBankingStatus({
-            hasSubaccount: false,
-            businessName: "Banking setup not available",
-          });
-          setIsLoading(false);
-          return;
-        }
-
-        setBankingStatus({ hasSubaccount: false });
-        setIsLoading(false);
-        return;
-      }
-
-      const hasValidSubaccount = !!subaccountData?.subaccount_code?.trim();
       setBankingStatus({
-        hasSubaccount: hasValidSubaccount,
-        subaccountCode: subaccountData?.subaccount_code || undefined,
-        businessName: hasValidSubaccount ? "Banking Active" : undefined,
+        hasSubaccount: status.hasSubaccount,
+        subaccountCode: status.subaccountCode,
+        businessName: status.hasSubaccount ? "Banking Active" : undefined,
+        bankName: status.bankName,
+        accountNumberMasked: status.accountNumber
+          ? `****${status.accountNumber.slice(-4)}`
+          : undefined,
       });
 
-      if (hasValidSubaccount) {
+      if (status.hasSubaccount) {
         toast.success("Banking setup verified!");
       }
     } catch (error) {

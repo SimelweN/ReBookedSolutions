@@ -37,18 +37,7 @@ serve(async (req) => {
   }
 
   try {
-    console.log("Starting subaccount creation process...");
-    console.log("Request method:", req.method);
-    console.log("Request URL:", req.url);
-
-    // Debug environment variables
-    console.log("Environment check:");
-    console.log("- PAYSTACK_SECRET_KEY present:", !!PAYSTACK_SECRET_KEY);
-    console.log("- SUPABASE_URL present:", !!Deno.env.get("SUPABASE_URL"));
-    console.log(
-      "- SUPABASE_SERVICE_ROLE_KEY present:",
-      !!Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),
-    );
+    console.log("Starting subaccount update process...");
 
     if (!PAYSTACK_SECRET_KEY) {
       console.error("PAYSTACK_SECRET_KEY environment variable is not set");
@@ -65,25 +54,15 @@ serve(async (req) => {
       );
     }
 
-    console.log("Environment variables validated, proceeding with request...");
-
     let requestBody;
     try {
-      const bodyText = await req.text();
-      console.log("Raw request body:", bodyText);
-
-      if (!bodyText || bodyText.trim() === "") {
-        throw new Error("Empty request body");
-      }
-
-      requestBody = JSON.parse(bodyText);
-      console.log("Parsed request body:", JSON.stringify(requestBody, null, 2));
+      requestBody = await req.json();
     } catch (parseError) {
       console.error("Failed to parse request body:", parseError);
       return new Response(
         JSON.stringify({
           success: false,
-          message: "Invalid request format: " + parseError.message,
+          message: "Invalid request format",
           error_code: "INVALID_JSON",
         }),
         {
@@ -94,22 +73,24 @@ serve(async (req) => {
     }
 
     const {
+      subaccount_code,
       business_name,
       bank_name,
       account_number,
       primary_contact_email,
-      primary_contact_name,
       metadata,
     } = requestBody;
 
-    console.log("Received request:", {
+    console.log("Received update request:", {
+      subaccount_code,
       business_name,
       bank_name,
       primary_contact_email,
     });
 
-    if (!business_name || !bank_name || !account_number) {
+    if (!subaccount_code || !business_name || !bank_name || !account_number) {
       const missingFields = [];
+      if (!subaccount_code) missingFields.push("subaccount_code");
       if (!business_name) missingFields.push("business_name");
       if (!bank_name) missingFields.push("bank_name");
       if (!account_number) missingFields.push("account_number");
@@ -146,44 +127,48 @@ serve(async (req) => {
       business_name,
       settlement_bank: bankCode,
       account_number,
-      percentage_charge: 0,
       primary_contact_email,
-      primary_contact_name,
       metadata,
     };
 
-    console.log("Creating Paystack subaccount:", {
+    console.log("Updating Paystack subaccount:", {
+      subaccount_code,
       business_name,
       bank_name,
       bankCode,
     });
 
-    const response = await fetch("https://api.paystack.co/subaccount", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `https://api.paystack.co/subaccount/${subaccount_code}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       },
-      body: JSON.stringify(payload),
-    });
+    );
 
     const data = await response.json();
 
     if (!response.ok || !data.status) {
-      console.error("Paystack subaccount creation failed:", {
+      console.error("Paystack subaccount update failed:", {
         status: response.status,
         statusText: response.statusText,
         data,
         payload,
       });
 
-      let errorMessage = "Failed to create payment account";
+      let errorMessage = "Failed to update payment account";
       if (data.message) {
         errorMessage = data.message;
       } else if (response.status === 401) {
         errorMessage = "Payment service authentication failed";
       } else if (response.status === 400) {
         errorMessage = "Invalid banking details provided";
+      } else if (response.status === 404) {
+        errorMessage = "Payment account not found";
       }
 
       return new Response(
@@ -201,11 +186,11 @@ serve(async (req) => {
     }
 
     console.log(
-      "Paystack subaccount created successfully:",
+      "Paystack subaccount updated successfully:",
       data.data.subaccount_code,
     );
 
-    // Now save to our database
+    // Update our database record
     try {
       const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
       const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -227,37 +212,39 @@ serve(async (req) => {
         throw new Error("Failed to get user from token");
       }
 
-      console.log("Saving subaccount to database for user:", user.id);
+      console.log("Updating subaccount in database for user:", user.id);
 
       const { error: dbError } = await supabase
         .from("banking_subaccounts")
-        .insert({
-          user_id: user.id,
+        .update({
           business_name: business_name,
           email: primary_contact_email,
           bank_name: bank_name,
           bank_code: bankCode,
           account_number: account_number,
-          subaccount_code: data.data.subaccount_code,
           paystack_response: data.data,
-          status: "active",
-        });
+          updated_at: new Date().toISOString(),
+        })
+        .eq("user_id", user.id)
+        .eq("subaccount_code", subaccount_code);
 
       if (dbError) {
-        console.error("Failed to save to database:", dbError);
-        // Don't fail the entire request if DB save fails
-        // The Paystack subaccount was created successfully
+        console.error("Failed to update database:", dbError);
+        // Don't fail the entire request if DB update fails
+        // The Paystack subaccount was updated successfully
       } else {
-        console.log("Successfully saved subaccount to database");
+        console.log("Successfully updated subaccount in database");
       }
     } catch (dbError) {
-      console.error("Database save error:", dbError);
-      // Don't fail the entire request if DB save fails
+      console.error("Database update error:", dbError);
+      // Don't fail the entire request if DB update fails
     }
 
     return new Response(
       JSON.stringify({
         success: true,
+        message: "Subaccount updated successfully",
+        subaccount_code: data.data.subaccount_code,
         data: {
           subaccount_code: data.data.subaccount_code,
           id: data.data.id,
@@ -269,7 +256,7 @@ serve(async (req) => {
       },
     );
   } catch (error) {
-    console.error("Error in create-paystack-subaccount function:", error);
+    console.error("Error in update-paystack-subaccount function:", error);
     return new Response(
       JSON.stringify({
         success: false,

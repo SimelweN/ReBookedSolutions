@@ -34,6 +34,7 @@ serve(async (req) => {
       deliveryFee = 0,
       callback_url,
       metadata,
+      splitAmounts,
     } = await req.json();
 
     if (!email || !amount || !bookId || !sellerSubaccountCode) {
@@ -54,8 +55,13 @@ serve(async (req) => {
     const bookPriceInKobo = Math.round(bookPrice * 100);
     const deliveryFeeInKobo = Math.round(deliveryFee * 100);
 
+    // Calculate split percentages more precisely
+    const totalAmount = bookPrice + deliveryFee;
+    const platformFee = Math.round((bookPrice * 10) / 100); // 10% of book price only
+    const sellerAmount = bookPrice - platformFee;
+    const sellerPercentage = Math.round((sellerAmount / totalAmount) * 100);
+
     const reference = `book_${bookId}_${Date.now()}`;
-    const sellerShare = 90; // 90% to seller, 10% to platform
 
     const payload = {
       email,
@@ -65,20 +71,28 @@ serve(async (req) => {
       callback_url,
       metadata: {
         ...metadata,
+        book_price: bookPrice,
         book_price_kobo: bookPriceInKobo,
+        delivery_fee: deliveryFee,
         delivery_fee_kobo: deliveryFeeInKobo,
         total_amount_kobo: amountInKobo,
         seller_id: sellerId,
         book_id: bookId,
+        platform_fee: platformFee,
+        seller_amount: sellerAmount,
+        seller_percentage: sellerPercentage,
       },
-      // Split payment configuration - 90% of total to seller, 10% to platform
+      // Split payment configuration
+      // Seller receives their percentage of total (book price - platform fee + proportional delivery)
+      // Platform receives 10% of book price
+      // Delivery fee proportionally distributed
       split: {
         type: "percentage",
         bearer_type: "subaccount",
         subaccounts: [
           {
             subaccount: sellerSubaccountCode,
-            share: sellerShare,
+            share: sellerPercentage,
           },
         ],
       },
