@@ -37,6 +37,225 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserProfile, AddressData, Address } from "@/types/address";
 
+interface AddressSectionProps {
+  addressData: AddressData | null;
+  onSaveAddresses?: (
+    pickup: Address,
+    shipping: Address,
+    same: boolean,
+  ) => Promise<void>;
+  isLoadingAddress?: boolean;
+}
+
+const AddressSection = ({
+  addressData,
+  onSaveAddresses,
+  isLoadingAddress = false,
+}: AddressSectionProps) => {
+  const { user } = useAuth();
+  const [isEditingPickup, setIsEditingPickup] = useState(false);
+  const [isEditingShipping, setIsEditingShipping] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [pickupAddress, setPickupAddress] = useState<Address | null>(null);
+  const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
+  const [sameAsPickup, setSameAsPickup] = useState(false);
+
+  const formatAddress = (address: Address | null | undefined) => {
+    if (!address) return "Not provided";
+    return `${address.street}, ${address.city}, ${address.province} ${address.postalCode}`;
+  };
+
+  const handlePickupSave = async () => {
+    if (!pickupAddress || !onSaveAddresses) return;
+
+    setIsSaving(true);
+    try {
+      const finalShippingAddress = sameAsPickup
+        ? pickupAddress
+        : shippingAddress || pickupAddress;
+      await onSaveAddresses(pickupAddress, finalShippingAddress, sameAsPickup);
+      toast.success("Pickup address saved successfully!");
+      setIsEditingPickup(false);
+    } catch (error) {
+      console.error("Error saving pickup address:", error);
+      toast.error("Failed to save pickup address");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleShippingSave = async () => {
+    if (!shippingAddress || !onSaveAddresses || !pickupAddress) return;
+
+    setIsSaving(true);
+    try {
+      await onSaveAddresses(pickupAddress, shippingAddress, false);
+      toast.success("Shipping address saved successfully!");
+      setIsEditingShipping(false);
+    } catch (error) {
+      console.error("Error saving shipping address:", error);
+      toast.error("Failed to save shipping address");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Initialize addresses from addressData
+  useEffect(() => {
+    if (addressData?.pickup_address) {
+      setPickupAddress(addressData.pickup_address);
+    }
+    if (addressData?.shipping_address) {
+      setShippingAddress(addressData.shipping_address);
+    }
+  }, [addressData]);
+
+  return (
+    <div className="space-y-6">
+      {/* Pickup Address Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold text-lg">Pickup Address</h3>
+          {!isEditingPickup && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsEditingPickup(true)}
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              {addressData?.pickup_address ? "Edit" : "Add"}
+            </Button>
+          )}
+        </div>
+
+        {isEditingPickup ? (
+          <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
+            <ModernAddressInput
+              onAddressUpdate={setPickupAddress}
+              initialAddress={addressData?.pickup_address || undefined}
+              title="Pickup Address"
+              description="This is where buyers will collect books from you."
+            />
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="same-as-pickup"
+                checked={sameAsPickup}
+                onCheckedChange={setSameAsPickup}
+              />
+              <Label htmlFor="same-as-pickup" className="text-sm">
+                Use this address for shipping as well
+              </Label>
+            </div>
+
+            <div className="flex gap-2">
+              <Button
+                onClick={handlePickupSave}
+                disabled={!pickupAddress || isSaving}
+                className="bg-book-600 hover:bg-book-700"
+              >
+                {isSaving ? "Saving..." : "Save Pickup Address"}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsEditingPickup(false);
+                  setPickupAddress(addressData?.pickup_address || null);
+                }}
+                disabled={isSaving}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <p className="text-sm text-gray-600">
+              {formatAddress(addressData?.pickup_address)}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Shipping Address Section */}
+      {!sameAsPickup && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold text-lg">Shipping Address</h3>
+            {!isEditingShipping && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsEditingShipping(true)}
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                {addressData?.shipping_address ? "Edit" : "Add"}
+              </Button>
+            )}
+          </div>
+
+          {isEditingShipping ? (
+            <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
+              <ModernAddressInput
+                onAddressUpdate={setShippingAddress}
+                initialAddress={addressData?.shipping_address || undefined}
+                title="Shipping Address"
+                description="Where you want items shipped to when buying books."
+              />
+
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleShippingSave}
+                  disabled={!shippingAddress || isSaving}
+                  className="bg-book-600 hover:bg-book-700"
+                >
+                  {isSaving ? "Saving..." : "Save Shipping Address"}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsEditingShipping(false);
+                    setShippingAddress(addressData?.shipping_address || null);
+                  }}
+                  disabled={isSaving}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">
+                {formatAddress(addressData?.shipping_address)}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Quick add button for when no addresses exist */}
+      {!addressData?.pickup_address && !isEditingPickup && (
+        <div className="text-center py-8">
+          <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-600 mb-2">
+            No addresses yet
+          </h3>
+          <p className="text-gray-500 mb-4">
+            Add your pickup address to start selling books
+          </p>
+          <Button
+            onClick={() => setIsEditingPickup(true)}
+            className="bg-book-600 hover:bg-book-700"
+          >
+            <MapPin className="h-4 w-4 mr-2" />
+            Add Pickup Address
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 interface UserProfileTabsProps {
   activeListings: Book[];
   isLoading: boolean;
