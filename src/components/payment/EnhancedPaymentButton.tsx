@@ -94,12 +94,13 @@ const EnhancedPaymentButton: React.FC<EnhancedPaymentButtonProps> = ({
         email: buyerEmail,
         amount: paymentResult.paymentData.amount,
         reference: paymentResult.paymentData.reference,
-        subaccount: validation.subaccountCode!,
+        subaccount: sellerSubaccountCode!,
         metadata: {
           book_id: bookId,
           book_title: bookTitle,
           seller_id: sellerId,
           split_amounts: splitAmounts,
+          subaccount_code: sellerSubaccountCode,
         },
         callback_url: window.location.origin + "/payment-success",
       });
