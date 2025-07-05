@@ -461,14 +461,16 @@ const CampusBooksSection = () => {
           {filteredBooks.length > 9 && (
             <div className="text-center mt-6">
               <Button
-                onClick={() =>
-                  navigate(
-                    "/books" +
-                      (searchTerm
-                        ? `?search=${encodeURIComponent(searchTerm)}`
-                        : ""),
-                  )
-                }
+                onClick={() => {
+                  const params = new URLSearchParams();
+                  if (searchTerm) params.set("search", searchTerm);
+                  if (selectedUniversity !== "all")
+                    params.set("university", selectedUniversity);
+                  if (selectedCategory !== "all")
+                    params.set("category", selectedCategory);
+                  const queryString = params.toString();
+                  navigate("/books" + (queryString ? `?${queryString}` : ""));
+                }}
                 variant="outline"
                 className="border-book-300 text-book-700 hover:bg-book-50"
               >
