@@ -149,102 +149,41 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onConsentChange }) => {
 
   return (
     <>
-      {/* Main consent popup */}
-      <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
-        <Card className="w-full max-w-lg animate-in slide-in-from-bottom-4 duration-300">
-          <CardHeader className="pb-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Cookie className="w-5 h-5 text-book-600" />
-              <CardTitle className="text-lg">Cookie Preferences</CardTitle>
-            </div>
-            <CardDescription className="text-sm leading-relaxed">
-              We use cookies to enhance your experience, analyze site usage, and
-              assist with our marketing efforts. Some cookies are essential for
-              the site to work properly.
-            </CardDescription>
-          </CardHeader>
+      {/* Main consent popup - Compact Design */}
+      <div className="fixed bottom-4 left-4 right-4 sm:left-6 sm:right-6 md:left-auto md:right-6 md:max-w-md z-50">
+        <Card className="shadow-lg border-0 animate-in slide-in-from-bottom-4 duration-300">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <Cookie className="w-5 h-5 text-book-600 mt-0.5 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-sm text-gray-900 mb-1">
+                  We use cookies
+                </h3>
+                <p className="text-xs text-gray-600 leading-relaxed mb-3">
+                  We use cookies to enhance your experience and analyze site
+                  usage. Essential cookies are always active.
+                </p>
 
-          <CardContent className="space-y-4">
-            {/* Quick overview */}
-            <div className="grid grid-cols-1 gap-3">
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-green-600" />
-                  <span className="text-sm font-medium">Required Cookies</span>
-                  <Badge variant="secondary" className="text-xs">
-                    Always Active
-                  </Badge>
+                {/* Action buttons */}
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => setShowDetails(true)}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs h-8"
+                  >
+                    <Settings className="w-3 h-3 mr-1" />
+                    Settings
+                  </Button>
+                  <Button
+                    onClick={handleAcceptAll}
+                    size="sm"
+                    className="flex-1 bg-book-600 hover:bg-book-700 text-xs h-8"
+                  >
+                    Accept All
+                  </Button>
                 </div>
-                <Check className="w-4 h-4 text-green-600" />
               </div>
-
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <ShoppingCart className="w-4 h-4 text-blue-600" />
-                  <span className="text-sm font-medium">
-                    Functional Cookies
-                  </span>
-                </div>
-                <Switch
-                  checked={consent.functional}
-                  onCheckedChange={(checked) =>
-                    setConsent((prev) => ({ ...prev, functional: checked }))
-                  }
-                />
-              </div>
-
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4 text-purple-600" />
-                  <span className="text-sm font-medium">
-                    Analytics & Marketing
-                  </span>
-                </div>
-                <Switch
-                  checked={consent.analytics}
-                  onCheckedChange={(checked) =>
-                    setConsent((prev) => ({ ...prev, analytics: checked }))
-                  }
-                />
-              </div>
-            </div>
-
-            {/* Action buttons */}
-            <div className="flex flex-col sm:flex-row gap-2 pt-2">
-              <Button
-                onClick={handleRejectOptional}
-                variant="outline"
-                className="flex-1 text-sm"
-              >
-                <X className="w-4 h-4 mr-2" />
-                Required Only
-              </Button>
-              <Button
-                onClick={handleAcceptSelected}
-                variant="outline"
-                className="flex-1 text-sm"
-              >
-                <Check className="w-4 h-4 mr-2" />
-                Accept Selected
-              </Button>
-              <Button
-                onClick={handleAcceptAll}
-                className="flex-1 bg-book-600 hover:bg-book-700 text-sm"
-              >
-                Accept All
-              </Button>
-            </div>
-
-            {/* More details link */}
-            <div className="text-center pt-2">
-              <Button
-                variant="link"
-                className="text-xs text-gray-600 p-0 h-auto"
-                onClick={() => setShowDetails(true)}
-              >
-                <Info className="w-3 h-3 mr-1" />
-                View Cookie Details
-              </Button>
             </div>
           </CardContent>
         </Card>
