@@ -514,14 +514,6 @@ function App() {
                             }
                           />
                           <Route
-                            path="/books"
-                            element={
-                              <LazyWrapper>
-                                <BookListing />
-                              </LazyWrapper>
-                            }
-                          />
-                          <Route
                             path="/qa-dashboard"
                             element={
                               <ProtectedRoute>
