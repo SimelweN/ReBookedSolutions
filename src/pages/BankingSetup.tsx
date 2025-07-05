@@ -52,8 +52,8 @@ const BankingSetup = () => {
 
     try {
       const { data: subaccountData, error } = await supabase
-        .from("banking_subaccounts")
-        .select("subaccount_code")
+        .from("paystack_subaccounts")
+        .select("subaccount_code, business_name, settlement_bank")
         .eq("user_id", user.id)
         .maybeSingle();
 
