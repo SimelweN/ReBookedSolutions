@@ -11,6 +11,7 @@ export interface Book {
   backCover?: string;
   insidePages?: string;
   sold: boolean;
+  availability?: "available" | "unavailable" | "sold";
   createdAt: string;
   grade?: string;
   universityYear?: string;

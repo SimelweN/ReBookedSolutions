@@ -464,16 +464,16 @@ const Profile = () => {
                 </Alert>
               )}
 
-              {/* Pickup Address Warning - Only show if user has active listings but no pickup address */}
+              {/* Pickup Address Warning - Show if user has listings that are unavailable due to missing pickup address */}
               {activeListings &&
-                activeListings.some(
-                  (book) =>
-                    !book.availability || book.availability === "unavailable",
-                ) &&
-                addressData &&
-                (!addressData.pickup_address ||
-                  !addressData.pickup_address.streetAddress ||
-                  !addressData.pickup_address.city) && (
+                (activeListings.some(
+                  (book) => book.availability === "unavailable",
+                ) ||
+                  (activeListings.length > 0 &&
+                    addressData &&
+                    (!addressData.pickup_address ||
+                      !addressData.pickup_address.streetAddress ||
+                      !addressData.pickup_address.city))) && (
                   <Alert className="border-orange-200 bg-orange-50">
                     <AlertTriangle className="h-4 w-4 text-orange-600" />
                     <AlertDescription className="text-orange-800">
