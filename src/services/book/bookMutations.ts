@@ -63,8 +63,8 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       // Continue without province - it's not critical for book creation
     }
 
-    // Create book data without province first (safer approach)
-    const bookDataWithoutProvince = {
+    // Create book data with subaccount_code for direct linking
+    const bookDataWithSubaccount = {
       seller_id: user.id,
       title: bookData.title,
       author: bookData.author,
@@ -78,6 +78,7 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       inside_pages: bookData.insidePages,
       grade: bookData.grade,
       university_year: bookData.universityYear,
+      subaccount_code: userSubaccountCode, // Direct link to seller's subaccount
     };
 
     // Store province for future use when database schema is updated
