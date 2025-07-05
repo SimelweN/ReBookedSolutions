@@ -325,7 +325,7 @@ const ModernBankingSection = () => {
                   receiving instant payments from your book sales.
                 </p>
                 <Button
-                  onClick={() => setShowBankingForm(true)}
+                  onClick={handleAddClick}
                   className="bg-white text-blue-600 hover:bg-gray-100 font-semibold"
                   size="lg"
                 >
