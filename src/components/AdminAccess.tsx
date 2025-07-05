@@ -5,7 +5,7 @@ import { Shield } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const AdminAccess = () => {
-  const { profile, isAuthenticated, isAdmin, isLoading } = useAuth();
+  const { isAuthenticated, isAdmin, isLoading } = useAuth();
   const navigate = useNavigate();
 
   // Memoize the visibility logic to prevent unnecessary re-renders

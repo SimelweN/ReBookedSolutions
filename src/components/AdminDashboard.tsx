@@ -18,7 +18,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/contexts/AuthContext";
 import AdminStats from "@/components/admin/AdminStats";
 import AdminEarningsTab from "@/components/admin/AdminEarningsTab";
-import AdminUsersTab from "@/components/admin/AdminUsersTab";
 import EnhancedAdminUsersTab from "@/components/admin/EnhancedAdminUsersTab";
 import AdminListingsTab from "@/components/admin/AdminListingsTab";
 import AdminSettingsTab from "@/components/admin/AdminSettingsTab";
