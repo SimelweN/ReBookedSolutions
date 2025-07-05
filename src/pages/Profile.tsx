@@ -51,12 +51,7 @@ const Profile = () => {
   const { profile, user } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const {
-    hasBankingSetup,
-    showSetupPopup,
-    requireBankingSetup,
-    closeSetupPopup,
-  } = useBankingSetup();
+
   const [isDeleteProfileDialogOpen, setIsDeleteProfileDialogOpen] =
     useState(false);
   const [isCommitSystemDialogOpen, setIsCommitSystemDialogOpen] =
