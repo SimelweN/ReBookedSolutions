@@ -5,7 +5,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import SimpleAddressForm from "@/components/SimpleAddressForm";
+import ModernAddressInput from "@/components/ModernAddressInput";
+import { MapPin } from "lucide-react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useState } from "react";
 
 interface QuickAddressSetupProps {
   isOpen: boolean;
