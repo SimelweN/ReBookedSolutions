@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import BankingDetailsForm from "@/components/BankingDetailsForm";
+import type { Tables } from "@/integrations/supabase/types";
 import {
   Building,
   Shield,
@@ -24,6 +25,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+type BankingSubaccount = Tables<"banking_subaccounts">;
+
 const ModernBankingSection = () => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
@@ -31,11 +34,15 @@ const ModernBankingSection = () => {
   const [bankingStatus, setBankingStatus] = useState<{
     hasSubaccount: boolean;
     subaccountCode: string | null;
+    businessName: string | null;
+    bankName: string | null;
     isLoading: boolean;
     lastChecked: Date | null;
   }>({
     hasSubaccount: false,
     subaccountCode: null,
+    businessName: null,
+    bankName: null,
     isLoading: true,
     lastChecked: null,
   });
@@ -48,8 +55,8 @@ const ModernBankingSection = () => {
     try {
       const { data: subaccountData, error } = await supabase
         .from("banking_subaccounts")
-        .select("subaccount_code")
-        .eq("user_id", user.id)
+        .select("subaccount_code, business_name, bank_name, status")
+        .eq("id", user.id)
         .maybeSingle();
 
       if (error) {
@@ -62,8 +69,10 @@ const ModernBankingSection = () => {
           setBankingStatus({
             hasSubaccount: false,
             subaccountCode: null,
+            businessName: null,
+            bankName: null,
             isLoading: false,
-            error: errorMessage || "Banking setup not available",
+            lastChecked: new Date(),
           });
           return;
         }
@@ -71,6 +80,8 @@ const ModernBankingSection = () => {
         setBankingStatus({
           hasSubaccount: false,
           subaccountCode: null,
+          businessName: null,
+          bankName: null,
           isLoading: false,
           lastChecked: new Date(),
         });
@@ -81,6 +92,8 @@ const ModernBankingSection = () => {
       setBankingStatus({
         hasSubaccount: hasValidSubaccount,
         subaccountCode: subaccountData?.subaccount_code || null,
+        businessName: subaccountData?.business_name || null,
+        bankName: subaccountData?.bank_name || null,
         isLoading: false,
         lastChecked: new Date(),
       });
@@ -93,7 +106,11 @@ const ModernBankingSection = () => {
         "Banking status check failed:",
         error instanceof Error ? error.message : JSON.stringify(error, null, 2),
       );
-      setBankingStatus((prev) => ({ ...prev, isLoading: false }));
+      setBankingStatus((prev) => ({
+        ...prev,
+        isLoading: false,
+        lastChecked: new Date(),
+      }));
     }
   };
 
@@ -147,6 +164,16 @@ const ModernBankingSection = () => {
                   <p className="text-sm text-green-600">
                     Ready to receive payments
                   </p>
+                  {bankingStatus.businessName && (
+                    <p className="text-xs text-green-700 mt-1">
+                      Business: {bankingStatus.businessName}
+                    </p>
+                  )}
+                  {bankingStatus.bankName && (
+                    <p className="text-xs text-green-700">
+                      Bank: {bankingStatus.bankName}
+                    </p>
+                  )}
                   {bankingStatus.subaccountCode && (
                     <p className="text-xs text-green-500 mt-1 font-mono">
                       ID: {bankingStatus.subaccountCode.substring(0, 12)}...
@@ -260,9 +287,9 @@ const ModernBankingSection = () => {
       {/* Action Section */}
       {!bankingStatus.hasSubaccount && !showBankingForm && (
         <div className="space-y-4">
-          <Alert className="border-blue-200 bg-blue-50">
-            <Info className="h-4 w-4 text-blue-600" />
-            <AlertDescription className="text-blue-800">
+          <Alert className="border-green-200 bg-green-50">
+            <Info className="h-4 w-4 text-green-600" />
+            <AlertDescription className="text-green-800">
               <strong>
                 Complete your banking setup to start selling books.
               </strong>
@@ -275,7 +302,7 @@ const ModernBankingSection = () => {
           <div className="space-y-3">
             <Button
               onClick={() => setShowBankingForm(true)}
-              className={`bg-blue-600 hover:bg-blue-700 ${isMobile ? "w-full h-12" : "w-full"}`}
+              className={`bg-green-600 hover:bg-green-700 ${isMobile ? "w-full h-12" : "w-full"}`}
               size={isMobile ? "lg" : "default"}
             >
               <CreditCard className="w-4 h-4 mr-2" />
