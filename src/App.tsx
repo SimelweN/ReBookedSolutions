@@ -651,9 +651,11 @@ function App() {
                           <Route
                             path="/qa-functionality"
                             element={
-                              <LazyWrapper>
-                                <QAFunctionalityDashboard />
-                              </LazyWrapper>
+                              <ProtectedRoute>
+                                <LazyWrapper>
+                                  <QAFunctionalityDashboard />
+                                </LazyWrapper>
+                              </ProtectedRoute>
                             }
                           />
                           <Route
