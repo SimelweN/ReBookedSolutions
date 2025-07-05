@@ -512,6 +512,16 @@ function App() {
                             }
                           />
                           <Route
+                            path="/payments"
+                            element={
+                              <ProtectedRoute>
+                                <LazyWrapper>
+                                  <PaymentDashboard />
+                                </LazyWrapper>
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
                             path="/books"
                             element={
                               <LazyWrapper>
