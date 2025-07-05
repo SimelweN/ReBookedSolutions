@@ -81,7 +81,7 @@ try {
   root.render(
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
-        <MinimalApp />
+        <SimpleApp />
       </QueryClientProvider>
     </React.StrictMode>,
   );
