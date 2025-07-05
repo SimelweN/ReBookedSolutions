@@ -8,9 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
+import BankingDetailsForm from "@/components/BankingDetailsForm";
 import {
   Building,
-  ExternalLink,
   Shield,
   CreditCard,
   CheckCircle,
@@ -20,7 +20,6 @@ import {
   DollarSign,
   Banknote,
   Lock,
-  ArrowRight,
   Info,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -28,6 +27,7 @@ import { toast } from "sonner";
 const ModernBankingSection = () => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
+  const [showBankingForm, setShowBankingForm] = useState(false);
   const [bankingStatus, setBankingStatus] = useState<{
     hasSubaccount: boolean;
     subaccountCode: string | null;
@@ -101,70 +101,17 @@ const ModernBankingSection = () => {
     checkBankingStatus();
   }, [user?.id]);
 
-  // Listen for window messages from banking setup popup
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      // Only accept messages from the banking setup domain
-      if (event.origin !== "https://paystack-vault-south-africa.lovable.app") {
-        return;
-      }
+  const handleBankingFormSuccess = () => {
+    toast.success("Banking details added successfully!");
+    setShowBankingForm(false);
+    // Refresh banking status after successful form submission
+    setTimeout(() => {
+      checkBankingStatus();
+    }, 1000);
+  };
 
-      if (event.data.type === "BANKING_SETUP_COMPLETE") {
-        toast.success("Banking setup completed! Refreshing status...");
-        setTimeout(() => {
-          checkBankingStatus();
-        }, 1000);
-      }
-    };
-
-    window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
-  }, []);
-
-  const openBankingSetup = () => {
-    const bankingUrl = "https://paystack-vault-south-africa.lovable.app";
-
-    // Calculate popup dimensions (responsive)
-    const width = Math.min(800, window.innerWidth * 0.9);
-    const height = Math.min(900, window.innerHeight * 0.9);
-    const left = (window.innerWidth - width) / 2;
-    const top = (window.innerHeight - height) / 2;
-
-    const popup = window.open(
-      bankingUrl,
-      "bankingSetup",
-      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,menubar=no,toolbar=no,location=no,status=no`,
-    );
-
-    if (popup) {
-      popup.focus();
-      toast.info(
-        "Complete your banking setup in the popup window and click 'Refresh Status' when done.",
-      );
-
-      // Check if popup is closed and refresh banking status
-      const checkClosed = setInterval(() => {
-        if (popup.closed) {
-          clearInterval(checkClosed);
-          toast.info(
-            "Banking setup window closed. Click 'Refresh Status' to update.",
-          );
-        }
-      }, 1000);
-
-      // Also poll for status updates while popup is open
-      const pollStatus = setInterval(() => {
-        if (popup.closed) {
-          clearInterval(pollStatus);
-        } else {
-          checkBankingStatus();
-        }
-      }, 3000); // Check every 3 seconds while popup is open
-    } else {
-      toast.error(
-        "Popup blocked. Please allow popups for this site and try again.",
-      );
-    }
+  const handleBankingFormCancel = () => {
+    setShowBankingForm(false);
   };
 
   const StatusCard = () => {
@@ -311,7 +258,7 @@ const ModernBankingSection = () => {
       <Separator />
 
       {/* Action Section */}
-      {!bankingStatus.hasSubaccount && (
+      {!bankingStatus.hasSubaccount && !showBankingForm && (
         <div className="space-y-4">
           <Alert className="border-blue-200 bg-blue-50">
             <Info className="h-4 w-4 text-blue-600" />
@@ -322,23 +269,17 @@ const ModernBankingSection = () => {
               <br />
               This secure process takes just 2 minutes and enables instant
               payments.
-              <br />
-              <span className="text-sm font-medium mt-1 inline-block">
-                💡 After completing banking setup, click "Refresh Status" to
-                update this page.
-              </span>
             </AlertDescription>
           </Alert>
 
           <div className="space-y-3">
             <Button
-              onClick={openBankingSetup}
+              onClick={() => setShowBankingForm(true)}
               className={`bg-blue-600 hover:bg-blue-700 ${isMobile ? "w-full h-12" : "w-full"}`}
               size={isMobile ? "lg" : "default"}
             >
-              <ExternalLink className="w-4 h-4 mr-2" />
-              Complete Banking Setup
-              <ArrowRight className="w-4 h-4 ml-2" />
+              <CreditCard className="w-4 h-4 mr-2" />
+              Add Banking Details
             </Button>
 
             <Button
@@ -353,6 +294,17 @@ const ModernBankingSection = () => {
               {bankingStatus.isLoading ? "Checking..." : "Refresh Status"}
             </Button>
           </div>
+        </div>
+      )}
+
+      {/* Banking Details Form */}
+      {showBankingForm && (
+        <div className="mt-4">
+          <BankingDetailsForm
+            onSuccess={handleBankingFormSuccess}
+            onCancel={handleBankingFormCancel}
+            showAsModal={false}
+          />
         </div>
       )}
 
