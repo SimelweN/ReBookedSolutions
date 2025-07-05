@@ -113,24 +113,33 @@ export class PaystackSubaccountService {
         };
       }
 
-      let functionName: string;
+      // For now, always use create function - update function may not be deployed
+      const functionName = "create-paystack-subaccount";
+
       let requestBody: any;
 
       if (isUpdate && existingStatus.hasSubaccount) {
-        // Update existing subaccount
-        functionName = "update-paystack-subaccount";
+        // For updates, we'll create a new subaccount and update the database record
+        // This is a temporary solution until update function is properly deployed
+        console.log(
+          "Update mode: will create new subaccount and update database record",
+        );
         requestBody = {
-          subaccount_code: existingStatus.subaccountCode,
           business_name: details.business_name.trim(),
-          primary_contact_email: details.email.trim(),
+          email: details.email.trim(),
           bank_name: details.bank_name,
           bank_code: details.bank_code,
           account_number: details.account_number.replace(/\s/g, ""),
-          metadata: { user_id: userId },
+          primary_contact_email: details.email.trim(),
+          primary_contact_name: details.business_name.trim(),
+          metadata: {
+            user_id: userId,
+            is_update: true,
+            existing_subaccount: existingStatus.subaccountCode,
+          },
         };
       } else {
         // Create new subaccount
-        functionName = "create-paystack-subaccount";
         requestBody = {
           business_name: details.business_name.trim(),
           email: details.email.trim(),
