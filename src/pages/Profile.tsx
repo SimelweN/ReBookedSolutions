@@ -663,6 +663,12 @@ const Profile = () => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56">
+                      <DropdownMenuItem
+                        onClick={() => setShowBecomeSellerGuide(true)}
+                      >
+                        <BookOpen className="h-4 w-4 mr-2" />
+                        Become a Seller
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={handleSellerHowItWorks}>
                         <BookOpen className="h-4 w-4 mr-2" />
                         Seller Guide
