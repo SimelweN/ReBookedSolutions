@@ -277,7 +277,7 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
                     businessName: e.target.value,
                   }))
                 }
-                className="pl-10 h-11 rounded-lg border-2 focus:border-green-600 focus:ring-green-600"
+                className="pl-10 h-11 rounded-lg border-2 focus:border-book-600 focus:ring-book-600"
                 required
               />
             </div>
@@ -301,7 +301,7 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, email: e.target.value }))
                 }
-                className="pl-10 h-11 rounded-lg border-2 focus:border-green-600 focus:ring-green-600"
+                className="pl-10 h-11 rounded-lg border-2 focus:border-book-600 focus:ring-book-600"
                 required
               />
             </div>
@@ -356,7 +356,7 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
                 placeholder="Enter your account number"
                 value={formData.accountNumber}
                 onChange={(e) => handleAccountNumberChange(e.target.value)}
-                className="pl-10 h-11 rounded-lg border-2 focus:border-green-600 focus:ring-green-600"
+                className="pl-10 h-11 rounded-lg border-2 focus:border-book-600 focus:ring-book-600"
                 maxLength={15}
                 required
               />
