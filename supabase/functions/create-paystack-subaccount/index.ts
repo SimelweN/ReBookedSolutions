@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
 
 const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
@@ -184,6 +185,56 @@ serve(async (req) => {
       "Paystack subaccount created successfully:",
       data.data.subaccount_code,
     );
+
+    // Now save to our database
+    try {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+      const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+      // Get user_id from JWT token
+      const authHeader = req.headers.get("authorization");
+      if (!authHeader) {
+        throw new Error("No authorization header");
+      }
+
+      const token = authHeader.replace("Bearer ", "");
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser(token);
+
+      if (authError || !user) {
+        throw new Error("Failed to get user from token");
+      }
+
+      console.log("Saving subaccount to database for user:", user.id);
+
+      const { error: dbError } = await supabase
+        .from("paystack_subaccounts")
+        .insert({
+          user_id: user.id,
+          subaccount_code: data.data.subaccount_code,
+          business_name: business_name,
+          account_number: account_number,
+          settlement_bank: bank_name,
+          status: "active",
+          user_type: "seller",
+          percentage_charge: 0,
+          paystack_response: data.data,
+        });
+
+      if (dbError) {
+        console.error("Failed to save to database:", dbError);
+        // Don't fail the entire request if DB save fails
+        // The Paystack subaccount was created successfully
+      } else {
+        console.log("Successfully saved subaccount to database");
+      }
+    } catch (dbError) {
+      console.error("Database save error:", dbError);
+      // Don't fail the entire request if DB save fails
+    }
 
     return new Response(
       JSON.stringify({

@@ -25,7 +25,7 @@ export const useBankingSetup = () => {
       console.log("Checking banking setup for user:", user.id);
 
       const { data: subaccountData, error } = await supabase
-        .from("banking_subaccounts")
+        .from("paystack_subaccounts")
         .select("subaccount_code")
         .eq("user_id", user.id)
         .maybeSingle();

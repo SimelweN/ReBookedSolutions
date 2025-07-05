@@ -45,11 +45,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useSellerRequirements } from "@/hooks/useSellerRequirements";
+import SellerRequirementsDialog from "@/components/SellerRequirementsDialog";
 
 const Profile = () => {
   const { profile, user } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const {
+    requirements,
+    showRequirementsDialog,
+    requireSellerSetup,
+    closeRequirementsDialog,
+  } = useSellerRequirements();
 
   const [isDeleteProfileDialogOpen, setIsDeleteProfileDialogOpen] =
     useState(false);
@@ -502,7 +510,7 @@ const Profile = () => {
                 <CardContent className="space-y-3">
                   <Button
                     onClick={() => {
-                      if (requireBankingSetup("create a listing")) {
+                      if (requireSellerSetup("create a listing")) {
                         navigate("/create-listing");
                       }
                     }}
@@ -639,7 +647,7 @@ const Profile = () => {
             <div className="mb-6">
               <Button
                 onClick={() => {
-                  if (requireBankingSetup("create a listing")) {
+                  if (requireSellerSetup("create a listing")) {
                     navigate("/create-listing");
                   }
                 }}
@@ -663,6 +671,12 @@ const Profile = () => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56">
+                      <DropdownMenuItem
+                        onClick={() => setShowBecomeSellerGuide(true)}
+                      >
+                        <BookOpen className="h-4 w-4 mr-2" />
+                        Become a Seller
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={handleSellerHowItWorks}>
                         <BookOpen className="h-4 w-4 mr-2" />
                         Seller Guide
@@ -759,6 +773,12 @@ const Profile = () => {
         <EnhancedBecomeSellerGuide
           isOpen={showBecomeSellerGuide}
           onClose={() => setShowBecomeSellerGuide(false)}
+        />
+
+        <SellerRequirementsDialog
+          isOpen={showRequirementsDialog}
+          onClose={closeRequirementsDialog}
+          requirements={requirements}
         />
       </div>
     </Layout>

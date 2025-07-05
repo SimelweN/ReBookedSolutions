@@ -22,7 +22,8 @@ import {
   Users,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import BankingService from "@/services/bankingService";
+import { supabase } from "@/integrations/supabase/client";
+import { handleBankingQueryError } from "@/utils/bankingErrorHandler";
 import { toast } from "sonner";
 
 const BankingSetup = () => {
@@ -31,6 +32,7 @@ const BankingSetup = () => {
   const { user } = useAuth();
   const [bankingStatus, setBankingStatus] = useState<{
     hasSubaccount: boolean;
+    subaccountCode?: string;
     businessName?: string;
     bankName?: string;
     accountNumberMasked?: string;
@@ -46,11 +48,48 @@ const BankingSetup = () => {
   }, [user]);
 
   const checkBankingStatus = async () => {
+    if (!user?.id) return;
+
     try {
-      const status = await BankingService.checkBankingStatus();
-      setBankingStatus(status);
+      const { data: subaccountData, error } = await supabase
+        .from("paystack_subaccounts")
+        .select("subaccount_code, business_name, settlement_bank")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (error) {
+        const { shouldFallback, errorMessage } = handleBankingQueryError(
+          "BankingSetup - checking banking status",
+          error,
+        );
+
+        if (shouldFallback) {
+          setBankingStatus({
+            hasSubaccount: false,
+            businessName: "Banking setup not available",
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        setBankingStatus({ hasSubaccount: false });
+        setIsLoading(false);
+        return;
+      }
+
+      const hasValidSubaccount = !!subaccountData?.subaccount_code?.trim();
+      setBankingStatus({
+        hasSubaccount: hasValidSubaccount,
+        subaccountCode: subaccountData?.subaccount_code || undefined,
+        businessName: hasValidSubaccount ? "Banking Active" : undefined,
+      });
+
+      if (hasValidSubaccount) {
+        toast.success("Banking setup verified!");
+      }
     } catch (error) {
       console.error("Error checking banking status:", error);
+      setBankingStatus({ hasSubaccount: false });
     } finally {
       setIsLoading(false);
     }
@@ -150,9 +189,17 @@ const BankingSetup = () => {
                 <div className="space-y-2 text-sm">
                   {bankingStatus.businessName && (
                     <div className="flex justify-between">
-                      <span className="text-green-700">Business Name:</span>
+                      <span className="text-green-700">Status:</span>
                       <span className="font-medium">
                         {bankingStatus.businessName}
+                      </span>
+                    </div>
+                  )}
+                  {bankingStatus.subaccountCode && (
+                    <div className="flex justify-between">
+                      <span className="text-green-700">Account ID:</span>
+                      <span className="font-medium font-mono text-xs">
+                        {bankingStatus.subaccountCode.substring(0, 12)}...
                       </span>
                     </div>
                   )}
