@@ -149,44 +149,47 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onConsentChange }) => {
 
   return (
     <>
-      {/* Main consent popup - Compact Design */}
-      <div className="fixed bottom-4 left-4 right-4 sm:left-6 sm:right-6 md:left-auto md:right-6 md:max-w-md z-50">
-        <Card className="shadow-lg border-0 animate-in slide-in-from-bottom-4 duration-300">
-          <CardContent className="p-4">
-            <div className="flex items-start gap-3">
-              <Cookie className="w-5 h-5 text-book-600 mt-0.5 flex-shrink-0" />
+      {/* Main consent popup - Clean Bottom Banner */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50 animate-in slide-in-from-bottom-4 duration-300">
+        <div className="container mx-auto px-4 py-4 max-w-6xl">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            {/* Content */}
+            <div className="flex items-start gap-3 flex-1">
+              <div className="bg-book-100 p-2 rounded-full flex-shrink-0">
+                <Cookie className="w-4 h-4 text-book-600" />
+              </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-sm text-gray-900 mb-1">
-                  We use cookies
-                </h3>
-                <p className="text-xs text-gray-600 leading-relaxed mb-3">
-                  We use cookies to enhance your experience and analyze site
-                  usage. Essential cookies are always active.
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  We use cookies to improve your experience, analyze usage, and
+                  assist with marketing.
+                  <span className="font-medium">
+                    {" "}
+                    Essential cookies are always active.
+                  </span>
                 </p>
-
-                {/* Action buttons */}
-                <div className="flex gap-2">
-                  <Button
-                    onClick={() => setShowDetails(true)}
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 text-xs h-8"
-                  >
-                    <Settings className="w-3 h-3 mr-1" />
-                    Settings
-                  </Button>
-                  <Button
-                    onClick={handleAcceptAll}
-                    size="sm"
-                    className="flex-1 bg-book-600 hover:bg-book-700 text-xs h-8"
-                  >
-                    Accept All
-                  </Button>
-                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+
+            {/* Action buttons */}
+            <div className="flex gap-3 flex-shrink-0">
+              <Button
+                onClick={() => setShowDetails(true)}
+                variant="outline"
+                size="sm"
+                className="text-sm border-gray-300 hover:bg-gray-50"
+              >
+                Settings
+              </Button>
+              <Button
+                onClick={handleAcceptAll}
+                size="sm"
+                className="bg-book-600 hover:bg-book-700 text-sm px-6"
+              >
+                Accept All
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Detailed cookie information dialog */}
