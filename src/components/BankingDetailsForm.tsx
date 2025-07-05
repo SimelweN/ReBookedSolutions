@@ -21,28 +21,34 @@ import {
   CreditCard,
   Building2,
   Mail,
-  User,
-  Hash,
   Shield,
-  CheckCircle2,
+  CheckCircle,
   AlertCircle,
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
-// South African bank codes (major banks)
-const SOUTH_AFRICAN_BANKS = [
-  { code: "632005", name: "ABSA Bank" },
-  { code: "250655", name: "FNB (First National Bank)" },
-  { code: "051001", name: "Standard Bank" },
-  { code: "470010", name: "Nedbank" },
-  { code: "580105", name: "Investec Bank" },
-  { code: "678910", name: "Capitec Bank" },
-  { code: "462005", name: "Discovery Bank" },
-  { code: "430000", name: "Bidvest Bank" },
-  { code: "220026", name: "Sasfin Bank" },
-  { code: "588757", name: "African Bank" },
+interface BankInfo {
+  name: string;
+  branchCode: string;
+}
+
+const SOUTH_AFRICAN_BANKS: BankInfo[] = [
+  { name: "ABSA Bank", branchCode: "632005" },
+  { name: "Capitec Bank", branchCode: "470010" },
+  { name: "FNB (First National Bank)", branchCode: "250655" },
+  { name: "Nedbank", branchCode: "198765" },
+  { name: "Standard Bank", branchCode: "051001" },
+  { name: "TymeBank", branchCode: "678910" },
+  { name: "African Bank", branchCode: "430000" },
+  { name: "Bidvest Bank", branchCode: "462005" },
+  { name: "Discovery Bank", branchCode: "679000" },
+  { name: "Grindrod Bank", branchCode: "584000" },
+  { name: "Investec", branchCode: "580105" },
+  { name: "Mercantile Bank", branchCode: "450105" },
+  { name: "Sasfin Bank", branchCode: "683000" },
+  { name: "Ubank", branchCode: "431010" },
 ];
 
 interface BankingDetailsFormProps {
@@ -57,76 +63,77 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
   showAsModal = false,
 }) => {
   const [formData, setFormData] = useState({
-    business_name: "",
+    businessName: "",
     email: "",
-    bank_name: "",
-    bank_code: "",
-    account_number: "",
+    bankName: "",
+    accountNumber: "",
   });
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [branchCode, setBranchCode] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  const handleBankChange = (bankName: string) => {
+    const selectedBank = SOUTH_AFRICAN_BANKS.find(
+      (bank) => bank.name === bankName,
+    );
+    setFormData((prev) => ({ ...prev, bankName }));
+    setBranchCode(selectedBank?.branchCode || "");
+  };
+
+  const handleAccountNumberChange = (value: string) => {
+    const digitsOnly = value.replace(/\D/g, "");
+    setFormData((prev) => ({ ...prev, accountNumber: digitsOnly }));
+  };
+
   const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.business_name.trim()) {
-      newErrors.business_name = "Business name is required";
+    if (!formData.businessName.trim()) {
+      toast.error("Business name is required");
+      return false;
     }
 
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
+    if (!formData.email.includes("@")) {
+      toast.error("Please enter a valid email address");
+      return false;
     }
 
-    if (!formData.bank_code) {
-      newErrors.bank_code = "Please select a bank";
+    if (!formData.bankName) {
+      toast.error("Please select a bank");
+      return false;
     }
 
-    if (!formData.account_number.trim()) {
-      newErrors.account_number = "Account number is required";
-    } else if (!/^\d{8,11}$/.test(formData.account_number.replace(/\s/g, ""))) {
-      newErrors.account_number = "Account number must be 8-11 digits";
+    if (formData.accountNumber.length < 8) {
+      toast.error("Account number must be at least 8 digits");
+      return false;
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      toast.error("Please fix the errors below");
-      return;
-    }
+    if (!validateForm()) return;
 
-    setIsLoading(true);
-    setErrors({});
+    setIsSubmitting(true);
 
     try {
-      // Get current session for authentication
       const {
         data: { session },
-        error: sessionError,
       } = await supabase.auth.getSession();
-
-      if (sessionError || !session) {
-        throw new Error("Please log in to add banking details");
+      if (!session) {
+        throw new Error("Please log in to continue");
       }
 
-      // Call the Supabase function
       const { data, error } = await supabase.functions.invoke(
         "create-paystack-subaccount",
         {
           body: {
-            business_name: formData.business_name.trim(),
-            email: formData.email.trim(),
-            bank_name: formData.bank_name,
-            bank_code: formData.bank_code,
-            account_number: formData.account_number.replace(/\s/g, ""), // Remove spaces
+            business_name: formData.businessName,
+            email: formData.email,
+            bank_name: formData.bankName,
+            bank_code: branchCode,
+            account_number: formData.accountNumber,
           },
           headers: {
             Authorization: `Bearer ${session.access_token}`,
@@ -135,83 +142,27 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
       );
 
       if (error) {
-        console.error("Supabase function error:", error);
-        throw new Error(error.message || "Failed to create banking details");
+        throw new Error(error.message || "Failed to submit banking details");
       }
 
-      if (!data.success) {
-        throw new Error(data.error || "Failed to create banking details");
-      }
+      if (data.success) {
+        setIsSuccess(true);
+        toast.success("Banking details added successfully!");
 
-      console.log("Banking details created successfully:", data);
-
-      setIsSuccess(true);
-      toast.success(
-        "Banking details added successfully! You can now start selling.",
-      );
-
-      // Call success callback after a short delay
-      setTimeout(() => {
-        onSuccess?.();
-      }, 1500);
-    } catch (error) {
-      console.error("Error submitting banking details:", error);
-
-      let errorMessage = "Failed to add banking details. Please try again.";
-
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-
-      // Handle specific error cases
-      if (errorMessage.includes("account number")) {
-        setErrors({
-          account_number: "Invalid account number. Please check and try again.",
-        });
-      } else if (errorMessage.includes("bank")) {
-        setErrors({
-          bank_code: "Bank validation failed. Please try a different bank.",
-        });
+        // Call success callback after a short delay
+        setTimeout(() => {
+          onSuccess?.();
+        }, 1500);
       } else {
-        toast.error(errorMessage);
+        throw new Error(data.error || "Failed to create subaccount");
       }
+    } catch (error: any) {
+      const errorMessage =
+        error.message || "There was an error. Please try again.";
+
+      toast.error(errorMessage);
     } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleBankSelect = (bankCode: string) => {
-    const selectedBank = SOUTH_AFRICAN_BANKS.find(
-      (bank) => bank.code === bankCode,
-    );
-    setFormData((prev) => ({
-      ...prev,
-      bank_code: bankCode,
-      bank_name: selectedBank?.name || "",
-    }));
-
-    // Clear bank-related errors
-    if (errors.bank_code) {
-      setErrors((prev) => ({ ...prev, bank_code: "" }));
-    }
-  };
-
-  const formatAccountNumber = (value: string) => {
-    // Remove all non-digits and limit to 11 characters
-    const digits = value.replace(/\D/g, "").slice(0, 11);
-    // Add spaces every 4 digits for better readability
-    return digits.replace(/(\d{4})(?=\d)/g, "$1 ");
-  };
-
-  const handleAccountNumberChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const formatted = formatAccountNumber(e.target.value);
-    setFormData((prev) => ({ ...prev, account_number: formatted }));
-
-    // Clear error when user starts typing
-    if (errors.account_number) {
-      setErrors((prev) => ({ ...prev, account_number: "" }));
+      setIsSubmitting(false);
     }
   };
 
@@ -219,21 +170,21 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
     return (
       <Card className={showAsModal ? "w-full max-w-md mx-auto" : ""}>
         <CardContent className="p-6 text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 className="w-8 h-8 text-green-600" />
+          <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-8 h-8 text-white" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            Banking Details Added Successfully!
+            Banking Details Submitted!
           </h3>
           <p className="text-sm text-gray-600 mb-4">
-            Your payment account has been set up. You can now start listing and
-            selling books.
+            Your payment account has been created successfully. You can now
+            start listing and selling books.
           </p>
           <Button
             onClick={onSuccess}
-            className="w-full bg-book-600 hover:bg-book-700"
+            className="w-full bg-green-600 hover:bg-green-700 text-white"
           >
-            Continue
+            Done
           </Button>
         </CardContent>
       </Card>
@@ -242,162 +193,174 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
 
   return (
     <Card className={showAsModal ? "w-full max-w-md mx-auto" : ""}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <CreditCard className="w-5 h-5 text-book-600" />
+      <CardHeader className="text-center pb-4">
+        <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+          <Building2 className="w-6 h-6 text-white" />
+        </div>
+        <CardTitle className="text-xl font-bold text-gray-900">
           Add Banking Details
         </CardTitle>
-        <CardDescription>
-          Secure banking information for receiving payments from book sales.
+        <CardDescription className="text-sm text-gray-600">
+          Create your secure Paystack subaccount for faster payments
         </CardDescription>
       </CardHeader>
 
       <CardContent>
+        {/* Security Notice */}
+        <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4 flex items-start gap-3">
+          <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="text-xs font-medium text-green-600">
+              Secure & Encrypted
+            </p>
+            <p className="text-xs text-green-700">
+              Your banking information is protected with bank-level security.
+            </p>
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Business Name */}
           <div className="space-y-2">
-            <Label htmlFor="business_name" className="flex items-center gap-2">
-              <Building2 className="w-4 h-4" />
-              Business/Account Holder Name
+            <Label
+              htmlFor="businessName"
+              className="text-sm font-medium text-gray-700"
+            >
+              Business Name *
             </Label>
-            <Input
-              id="business_name"
-              value={formData.business_name}
-              onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  business_name: e.target.value,
-                }));
-                if (errors.business_name)
-                  setErrors((prev) => ({ ...prev, business_name: "" }));
-              }}
-              placeholder="Enter account holder name"
-              className={errors.business_name ? "border-red-500" : ""}
-            />
-            {errors.business_name && (
-              <p className="text-sm text-red-600 flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" />
-                {errors.business_name}
-              </p>
-            )}
+            <div className="relative">
+              <Building2 className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+              <Input
+                id="businessName"
+                type="text"
+                placeholder="Enter your registered business name"
+                value={formData.businessName}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    businessName: e.target.value,
+                  }))
+                }
+                className="pl-10 h-11 rounded-lg border-2 focus:border-green-600 focus:ring-green-600"
+                required
+              />
+            </div>
           </div>
 
           {/* Email */}
           <div className="space-y-2">
-            <Label htmlFor="email" className="flex items-center gap-2">
-              <Mail className="w-4 h-4" />
-              Email Address
+            <Label
+              htmlFor="email"
+              className="text-sm font-medium text-gray-700"
+            >
+              Email Address *
             </Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => {
-                setFormData((prev) => ({ ...prev, email: e.target.value }));
-                if (errors.email) setErrors((prev) => ({ ...prev, email: "" }));
-              }}
-              placeholder="Enter email address"
-              className={errors.email ? "border-red-500" : ""}
-            />
-            {errors.email && (
-              <p className="text-sm text-red-600 flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" />
-                {errors.email}
-              </p>
-            )}
+            <div className="relative">
+              <Mail className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="business@example.com"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, email: e.target.value }))
+                }
+                className="pl-10 h-11 rounded-lg border-2 focus:border-green-600 focus:ring-green-600"
+                required
+              />
+            </div>
           </div>
 
           {/* Bank Selection */}
           <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              <Building2 className="w-4 h-4" />
-              Bank
+            <Label className="text-sm font-medium text-gray-700">
+              Select Your Bank *
             </Label>
-            <Select value={formData.bank_code} onValueChange={handleBankSelect}>
-              <SelectTrigger
-                className={errors.bank_code ? "border-red-500" : ""}
-              >
-                <SelectValue placeholder="Select your bank" />
+            <Select onValueChange={handleBankChange} value={formData.bankName}>
+              <SelectTrigger className="h-11 rounded-lg border-2 focus:border-green-600">
+                <SelectValue placeholder="Choose your bank" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white z-50">
                 {SOUTH_AFRICAN_BANKS.map((bank) => (
-                  <SelectItem key={bank.code} value={bank.code}>
+                  <SelectItem key={bank.name} value={bank.name}>
                     {bank.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            {errors.bank_code && (
-              <p className="text-sm text-red-600 flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" />
-                {errors.bank_code}
-              </p>
-            )}
           </div>
+
+          {/* Branch Code (Auto-filled) */}
+          {branchCode && (
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-700">
+                Branch Code (Auto-filled)
+              </Label>
+              <Input
+                value={branchCode}
+                readOnly
+                className="h-11 rounded-lg border-2 bg-gray-50 text-gray-600"
+              />
+            </div>
+          )}
 
           {/* Account Number */}
           <div className="space-y-2">
-            <Label htmlFor="account_number" className="flex items-center gap-2">
-              <Hash className="w-4 h-4" />
-              Account Number
+            <Label
+              htmlFor="accountNumber"
+              className="text-sm font-medium text-gray-700"
+            >
+              Account Number *
             </Label>
-            <Input
-              id="account_number"
-              value={formData.account_number}
-              onChange={handleAccountNumberChange}
-              placeholder="Enter account number"
-              className={errors.account_number ? "border-red-500" : ""}
-              maxLength={13} // 11 digits + 2 spaces
-            />
-            {errors.account_number && (
-              <p className="text-sm text-red-600 flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" />
-                {errors.account_number}
-              </p>
-            )}
+            <div className="relative">
+              <CreditCard className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+              <Input
+                id="accountNumber"
+                type="text"
+                placeholder="Enter your account number"
+                value={formData.accountNumber}
+                onChange={(e) => handleAccountNumberChange(e.target.value)}
+                className="pl-10 h-11 rounded-lg border-2 focus:border-green-600 focus:ring-green-600"
+                maxLength={15}
+                required
+              />
+            </div>
           </div>
 
-          {/* Security Notice */}
-          <Alert className="border-blue-200 bg-blue-50">
-            <Shield className="h-4 w-4 text-blue-600" />
-            <AlertDescription className="text-blue-800 text-sm">
-              Your banking details are encrypted and securely managed by
-              Paystack. We never store your full account details.
-            </AlertDescription>
-          </Alert>
-
           {/* Action Buttons */}
-          <div className="flex gap-3 pt-2">
+          <div className="pt-4 space-y-3">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full h-11 bg-green-600 hover:bg-green-700 transition-all duration-200 rounded-lg font-medium text-white"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Creating Account...
+                </>
+              ) : (
+                "Create Payment Account"
+              )}
+            </Button>
+
             {onCancel && (
               <Button
                 type="button"
                 variant="outline"
                 onClick={onCancel}
-                className="flex-1"
-                disabled={isLoading}
+                className="w-full h-11"
+                disabled={isSubmitting}
               >
                 Cancel
               </Button>
             )}
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="flex-1 bg-book-600 hover:bg-book-700"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Setting up...
-                </>
-              ) : (
-                <>
-                  <CreditCard className="w-4 h-4 mr-2" />
-                  Add Banking Details
-                </>
-              )}
-            </Button>
           </div>
         </form>
+
+        <div className="text-center pt-4 text-xs text-gray-500 border-t">
+          <p>Powered by Paystack's secure infrastructure</p>
+        </div>
       </CardContent>
     </Card>
   );
