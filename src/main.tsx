@@ -223,6 +223,8 @@ const initializeApp = async () => {
     // Environment error component disabled for production
 
     // Render the app with comprehensive error boundaries
+    console.log("🎨 Rendering React app...");
+
     root.render(
       <React.StrictMode>
         <ErrorBoundary level="app">
@@ -233,9 +235,18 @@ const initializeApp = async () => {
       </React.StrictMode>,
     );
 
-    if (import.meta.env.DEV) {
-      console.log("✅ ReBooked Solutions loaded successfully");
-    }
+    console.log("✅ ReBooked Solutions loaded successfully");
+
+    // Add a fallback check
+    setTimeout(() => {
+      const checkContent = document.querySelector("#root > *");
+      if (!checkContent) {
+        console.error("❌ React app did not render any content!");
+        console.error("This usually indicates a JavaScript error in the app");
+      } else {
+        console.log("✅ React content confirmed rendered");
+      }
+    }, 2000);
   });
 };
 
