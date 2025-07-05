@@ -42,16 +42,48 @@ const SimpleApp = () => {
               <Router>
                 <div style={{ minHeight: "100vh", background: "white" }}>
                   <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/books" element={<BooksPage />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/register" element={<RegisterPage />} />
-                    <Route path="/activity" element={<ActivityPage />} />
-                    <Route path="/profile" element={<ProfilePage />} />
+                    {/* Home route */}
+                    <Route path="/" element={<IndexPage />} />
+
+                    {/* Public routes */}
+                    <Route path="/books" element={<BookListing />} />
+                    <Route path="/books/:id" element={<BookDetails />} />
+                    <Route path="/book/:id" element={<BookDetails />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+
+                    {/* University and Campus Routes */}
                     <Route
                       path="/university-info"
                       element={<UniversityInfoPage />}
                     />
+                    <Route
+                      path="/study-resources"
+                      element={<StudyResources />}
+                    />
+
+                    {/* Shopping and Cart Routes */}
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/shipping" element={<Shipping />} />
+
+                    {/* Support and Info Pages */}
+                    <Route path="/contact" element={<ContactUs />} />
+                    <Route path="/faq" element={<FAQ />} />
+
+                    {/* Protected Routes */}
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/user-profile" element={<UserProfile />} />
+                    <Route path="/create-listing" element={<CreateListing />} />
+                    <Route path="/activity" element={<ActivityLog />} />
+                    <Route path="/my-orders" element={<UserOrders />} />
+                    <Route path="/banking-setup" element={<BankingSetup />} />
+
+                    {/* Admin Routes */}
+                    <Route path="/admin" element={<Admin />} />
+                    <Route path="/admin/reports" element={<AdminReports />} />
+
+                    {/* 404 Route */}
                     <Route
                       path="*"
                       element={
