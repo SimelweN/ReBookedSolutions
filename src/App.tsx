@@ -240,7 +240,6 @@ function App() {
                           <Route path="/" element={<IndexPage />} />
 
                           {/* Public routes */}
-                          <Route path="/register" element={<Register />} />
                           <Route
                             path="/user-profile"
                             element={
