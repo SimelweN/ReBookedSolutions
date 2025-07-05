@@ -24,6 +24,9 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       throw new Error(subaccountValidation.message);
     }
 
+    // Get the user's subaccount code for direct linking
+    const userSubaccountCode = subaccountValidation.subaccountCode;
+
     // Fetch province from user's pickup address
     let province = null;
     try {
