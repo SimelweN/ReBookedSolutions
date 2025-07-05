@@ -5,87 +5,8 @@ import { ThemeProvider } from "next-themes";
 // Import real pages
 import IndexPage from "./pages/Index";
 
-// Simple components to test functionality
-const HomePage = () => (
-  <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-    <h1 style={{ color: "#2563eb" }}>🏠 ReBooked Solutions</h1>
-    <p>Welcome to your textbook marketplace!</p>
-    <nav style={{ marginTop: "20px" }}>
-      <a
-        href="/books"
-        style={{
-          marginRight: "20px",
-          color: "#2563eb",
-          textDecoration: "underline",
-        }}
-      >
-        Browse Books
-      </a>
-      <a
-        href="/university-info"
-        style={{
-          marginRight: "20px",
-          color: "#2563eb",
-          textDecoration: "underline",
-        }}
-      >
-        University Info
-      </a>
-      <a
-        href="/activity"
-        style={{
-          marginRight: "20px",
-          color: "#2563eb",
-          textDecoration: "underline",
-        }}
-      >
-        Activity
-      </a>
-      <a
-        href="/profile"
-        style={{
-          marginRight: "20px",
-          color: "#2563eb",
-          textDecoration: "underline",
-        }}
-      >
-        Profile
-      </a>
-      <a
-        href="/login"
-        style={{
-          marginRight: "20px",
-          color: "#2563eb",
-          textDecoration: "underline",
-        }}
-      >
-        Login
-      </a>
-      <a
-        href="/register"
-        style={{ color: "#2563eb", textDecoration: "underline" }}
-      >
-        Register
-      </a>
-    </nav>
-    <div
-      style={{
-        marginTop: "40px",
-        padding: "20px",
-        background: "#f0f9ff",
-        borderRadius: "8px",
-      }}
-    >
-      <h2>✅ App Status:</h2>
-      <ul>
-        <li>✅ React rendering</li>
-        <li>✅ React Router working</li>
-        <li>✅ Theme provider working</li>
-        <li>⏳ Adding more functionality...</li>
-      </ul>
-    </div>
-  </div>
-);
+// Use real IndexPage component
+const HomePage = () => <IndexPage />;
 
 const BooksPage = () => (
   <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
