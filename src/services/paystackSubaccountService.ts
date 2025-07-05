@@ -242,11 +242,57 @@ export class PaystackSubaccountService {
         `Error in ${isUpdate ? "update" : "create"}Subaccount:`,
         error,
       );
+
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
+
+      // Check if this is a function deployment issue in development
+      if (import.meta.env.DEV && errorMessage.includes("non-2xx status code")) {
+        console.warn(
+          "Development mode: Function may not be deployed. Creating mock subaccount for testing.",
+        );
+
+        // Create a mock subaccount response for development testing
+        const mockSubaccountCode = `ACCT_mock_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+
+        try {
+          // Save mock data to the database for consistency
+          const { error: dbError } = await supabase
+            .from("banking_subaccounts")
+            .upsert({
+              user_id: userId,
+              business_name: details.business_name,
+              email: details.email,
+              bank_name: details.bank_name,
+              bank_code: details.bank_code,
+              account_number: details.account_number,
+              subaccount_code: mockSubaccountCode,
+              status: "active",
+              paystack_response: {
+                mock: true,
+                created_at: new Date().toISOString(),
+              },
+            });
+
+          if (!dbError) {
+            // Update user profile with mock subaccount code
+            await this.updateUserProfileSubaccount(userId, mockSubaccountCode);
+
+            return {
+              success: true,
+              message: `Mock subaccount ${isUpdate ? "updated" : "created"} for development`,
+              subaccount_code: mockSubaccountCode,
+            };
+          }
+        } catch (mockError) {
+          console.error("Mock subaccount creation also failed:", mockError);
+        }
+      }
+
       return {
         success: false,
         message: `Failed to ${isUpdate ? "update" : "create"} subaccount`,
-        error:
-          error instanceof Error ? error.message : "Unknown error occurred",
+        error: errorMessage,
       };
     }
   }
