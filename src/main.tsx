@@ -34,7 +34,7 @@ try {
   root.render(
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
-        <TestApp />
+        <SimpleApp />
       </QueryClientProvider>
     </React.StrictMode>,
   );
