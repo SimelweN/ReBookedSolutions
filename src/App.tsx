@@ -22,7 +22,6 @@ import { initNetworkErrorHandler } from "./utils/networkErrorHandler";
 import { initViteErrorHandler } from "./utils/viteErrorHandler";
 import { initProductionErrorHandler } from "./utils/productionErrorHandler";
 import NetworkErrorBoundary from "./components/NetworkErrorBoundary";
-import ReactContextDiagnostic from "./components/ReactContextDiagnostic";
 import "./App.css";
 
 // Initialize development-only optimizations
