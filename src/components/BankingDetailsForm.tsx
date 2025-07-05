@@ -402,8 +402,10 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Creating Account...
+                  {editMode ? "Updating Account..." : "Creating Account..."}
                 </>
+              ) : editMode ? (
+                "Update Payment Account"
               ) : (
                 "Create Payment Account"
               )}
