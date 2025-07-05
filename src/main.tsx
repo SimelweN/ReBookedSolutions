@@ -17,9 +17,43 @@ const queryClient = new QueryClient({
   },
 });
 
-// Import the real App component
-import App from "./App";
-import ErrorBoundary from "./components/ErrorBoundary";
+// Test basic functionality first
+const TestApp = () => {
+  return (
+    <div
+      style={{
+        padding: "20px",
+        fontFamily: "Arial, sans-serif",
+        background: "white",
+        minHeight: "100vh",
+      }}
+    >
+      <h1 style={{ color: "#2563eb", fontSize: "2rem" }}>
+        ✅ ReBooked Solutions Working!
+      </h1>
+      <p>
+        The issue is with the App.tsx component. Let me fix it step by step.
+      </p>
+      <div
+        style={{
+          marginTop: "20px",
+          padding: "15px",
+          background: "#fee2e2",
+          borderRadius: "8px",
+        }}
+      >
+        <p>
+          <strong>Problem:</strong> Something in App.tsx is causing a fatal
+          error
+        </p>
+        <p>
+          <strong>Solution:</strong> I'll rebuild App.tsx with proper error
+          handling
+        </p>
+      </div>
+    </div>
+  );
+};
 
 // Get root element
 const rootElement = document.getElementById("root");
