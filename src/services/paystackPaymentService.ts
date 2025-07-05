@@ -184,6 +184,71 @@ export class PaystackPaymentService {
   }
 
   /**
+   * Prepare payment with proper split configuration using subaccount service
+   */
+  static async preparePaymentWithSplit(
+    sellerId: string,
+    bookId: string,
+    bookPrice: number,
+    deliveryFee: number,
+    buyerEmail: string,
+  ): Promise<{ success: boolean; paymentData?: any; error?: string }> {
+    try {
+      const result = await PaystackSubaccountService.preparePaymentData(
+        sellerId,
+        bookId,
+        bookPrice,
+        deliveryFee,
+        buyerEmail,
+      );
+
+      if (!result.success) {
+        return result;
+      }
+
+      // Initialize payment through Supabase function
+      const { data, error } = await supabase.functions.invoke(
+        "initialize-paystack-payment",
+        {
+          body: result.paymentData,
+        },
+      );
+
+      if (error) {
+        return {
+          success: false,
+          error: error.message || "Failed to initialize payment",
+        };
+      }
+
+      if (!data.success) {
+        return {
+          success: false,
+          error: data.message || "Payment initialization failed",
+        };
+      }
+
+      return {
+        success: true,
+        paymentData: {
+          authorization_url: data.data.authorization_url,
+          access_code: data.data.access_code,
+          reference: data.data.reference,
+          amount: result.paymentData.amount,
+          splitAmounts: result.paymentData.splitAmounts,
+        },
+      };
+    } catch (error) {
+      console.error("Error preparing payment with split:", error);
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Payment preparation failed",
+      };
+    }
+  }
+
+  /**
    * Initialize payment with Paystack Inline popup
    */
   static async initializePayment(params: PaymentInitialization): Promise<void> {
@@ -1535,7 +1600,7 @@ export class PaystackPaymentService {
     amount: number,
   ): Promise<void> {
     try {
-      console.log("🔄 Processing refund for order:", orderId);
+      console.log("��� Processing refund for order:", orderId);
 
       // Get Paystack secret key from environment
       const secretKey = ENV.VITE_PAYSTACK_SECRET_KEY;
