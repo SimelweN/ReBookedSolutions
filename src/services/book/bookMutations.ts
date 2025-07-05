@@ -115,6 +115,25 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
 
     const mappedBook = mapBookFromDatabase(bookWithProfile);
 
+    // Link book to seller's subaccount (automatic linking through seller_id relationship)
+    try {
+      const linked = await PaystackSubaccountService.linkBooksToSubaccount(
+        user.id,
+      );
+      if (linked) {
+        console.log(
+          `✅ Book ${book.id} automatically linked to seller's subaccount`,
+        );
+      } else {
+        console.warn(
+          `⚠️ Book ${book.id} linking status uncertain, but book was created successfully`,
+        );
+      }
+    } catch (linkError) {
+      console.warn("⚠️ Book linking process encountered an issue:", linkError);
+      // Don't throw here - book creation was successful, linking is automatic through database relationships
+    }
+
     // Log activity for book listing
     try {
       await ActivityService.logBookListing(
