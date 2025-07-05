@@ -559,9 +559,6 @@ const CreateListing = () => {
           />
         </div>
       </BankingRequirementGate>
-
-      {/* Banking Setup Popup */}
-      <BankingSetupPopup isOpen={showSetupPopup} onClose={closeSetupPopup} />
     </Layout>
   );
 };
