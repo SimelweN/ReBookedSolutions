@@ -42,8 +42,6 @@ import UniversityInfoPage from "./pages/UniversityInfo";
 import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
 import AdminPage from "./pages/Admin";
-const Index = () => <IndexPage />;
-const UniversityInfo = () => <UniversityInfoPage />;
 const Login = () => <LoginPage />;
 const Register = () => <RegisterPage />;
 const Admin = () => <AdminPage />;
@@ -60,7 +58,6 @@ const AdminReports = React.lazy(() => import("./pages/AdminReports"));
 const ModernUniversityProfile = React.lazy(
   () => import("./pages/ModernUniversityProfile"),
 );
-const UniversityProfile = React.lazy(() => import("./pages/UniversityProfile"));
 const EnhancedUniversityProfile = React.lazy(
   () => import("./pages/EnhancedUniversityProfile"),
 );
@@ -72,7 +69,6 @@ const Cart = React.lazy(() => import("./pages/Cart"));
 const Checkout = React.lazy(() => import("./pages/Checkout"));
 const Shipping = React.lazy(() => import("./pages/Shipping"));
 const Notifications = React.lazy(() => import("./pages/Notifications"));
-const SimpleQADashboard = React.lazy(() => import("./pages/SimpleQADashboard"));
 const QADashboard = React.lazy(() => import("./pages/QADashboard"));
 const QAFunctionalityDashboard = React.lazy(
   () => import("./components/QADashboard"),
