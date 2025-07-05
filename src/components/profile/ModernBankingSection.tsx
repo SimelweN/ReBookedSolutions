@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 import { handleBankingQueryError } from "@/utils/bankingErrorHandler";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import BankingDetailsForm from "@/components/BankingDetailsForm";
-import type { Tables } from "@/integrations/supabase/types";
+import { PaystackSubaccountService } from "@/services/paystackSubaccountService";
 import {
   Building,
   Shield,
@@ -22,6 +21,8 @@ import {
   Banknote,
   Lock,
   Info,
+  Edit3,
+  Settings,
 } from "lucide-react";
 import { toast } from "sonner";
 
