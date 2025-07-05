@@ -599,17 +599,7 @@ const UserProfileTabs = ({
             </TabsContent>
 
             <TabsContent value="banking" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl md:text-2xl flex items-center">
-                    <CreditCard className="h-6 w-6 mr-2" />
-                    Banking & Payments
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ModernBankingSection />
-                </CardContent>
-              </Card>
+              <ModernBankingSection />
             </TabsContent>
           </>
         )}
