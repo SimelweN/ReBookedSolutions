@@ -78,7 +78,15 @@ export class SellerSubaccountService {
         return null;
       }
 
-      const sellerSubaccount = await this.getSellerSubaccount(book.seller_id);
+      // Use direct subaccount_code from book if available, fallback to seller lookup
+      let sellerSubaccount = book.subaccount_code;
+
+      if (!sellerSubaccount) {
+        console.warn(
+          "Book missing direct subaccount_code, falling back to seller lookup",
+        );
+        sellerSubaccount = await this.getSellerSubaccount(book.seller_id);
+      }
 
       return {
         book,
