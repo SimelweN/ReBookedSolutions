@@ -567,33 +567,11 @@ const UserProfileTabs = ({
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <h3 className="font-semibold text-lg">Pickup Address</h3>
-                      <p className="text-sm text-gray-600">
-                        {formatAddress(addressData?.pickup_address)}
-                      </p>
-                    </div>
-                    <div className="space-y-2">
-                      <h3 className="font-semibold text-lg">
-                        Shipping Address
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        {formatAddress(addressData?.shipping_address)}
-                      </p>
-                    </div>
-                  </div>
-
-                  <Button
-                    onClick={() => setIsAddressEditDialogOpen(true)}
-                    className="w-full md:w-auto bg-book-600 hover:bg-book-700"
-                    disabled={isLoadingAddress}
-                  >
-                    <MapPin className="h-4 w-4 mr-2" />
-                    {isLoadingAddress
-                      ? "Loading..."
-                      : "🗺️ Set Addresses with Maps"}
-                  </Button>
+                  <AddressSection
+                    addressData={addressData}
+                    onSaveAddresses={onSaveAddresses}
+                    isLoadingAddress={isLoadingAddress}
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
