@@ -46,7 +46,7 @@ const GoogleMapsAddressInput = ({
   defaultValue = "",
 }: GoogleMapsAddressInputProps) => {
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
-  const [address, setAddress] = useState(defaultValue);
+  const [address, setAddress] = useState(defaultValue || "");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
     null,
   );
@@ -88,22 +88,36 @@ const GoogleMapsAddressInput = ({
   };
 
   const handlePlaceChanged = useCallback(() => {
-    if (!autocompleteRef.current) return;
+    console.log("🎯 handlePlaceChanged called");
+
+    if (!autocompleteRef.current) {
+      console.warn("❌ No autocomplete ref available");
+      return;
+    }
 
     setIsLoading(true);
 
     try {
       const place = autocompleteRef.current.getPlace();
+      console.log("📍 Place data received:", place);
 
-      if (!place || !place.geometry || !place.geometry.location) {
-        console.warn("No valid place data received");
+      if (!place) {
+        console.warn("❌ No place object received");
+        setIsLoading(false);
+        return;
+      }
+
+      if (!place.geometry || !place.geometry.location) {
+        console.warn("❌ No geometry/location in place data");
         setIsLoading(false);
         return;
       }
 
       const lat = place.geometry.location.lat();
       const lng = place.geometry.location.lng();
-      const formattedAddress = place.formatted_address || "";
+      const formattedAddress = place.formatted_address || place.name || "";
+
+      console.log("✅ Valid place data:", { lat, lng, formattedAddress });
 
       // Extract address components
       const addressComponents = extractAddressComponents(place);
@@ -118,10 +132,14 @@ const GoogleMapsAddressInput = ({
       setAddress(formattedAddress);
       setCoords({ lat, lng });
 
+      console.log("🚀 Calling onAddressSelect with:", addressData);
+
       // Call parent callback with address data
       onAddressSelect(addressData);
+
+      console.log("✅ Address selection completed successfully!");
     } catch (error) {
-      console.error("Error processing place selection:", error);
+      console.error("❌ Error processing place selection:", error);
     } finally {
       setIsLoading(false);
     }
@@ -141,8 +159,17 @@ const GoogleMapsAddressInput = ({
         "address_components",
         "name",
       ]);
+
+      // Add multiple event listeners to ensure selection works
+      autocomplete.addListener("place_changed", handlePlaceChanged);
+
+      // Also listen for when a place is selected from dropdown
+      google.maps.event.addListener(autocomplete, "place_changed", () => {
+        console.log("Place changed event fired!");
+        handlePlaceChanged();
+      });
     },
-    [],
+    [handlePlaceChanged],
   );
 
   return (
@@ -173,8 +200,37 @@ const GoogleMapsAddressInput = ({
               <input
                 type="text"
                 placeholder={placeholder}
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                onKeyDown={(e) => {
+                  // Handle Enter key to trigger place selection
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    // Small delay to ensure autocomplete processes the selection
+                    setTimeout(() => {
+                      if (autocompleteRef.current) {
+                        const place = autocompleteRef.current.getPlace();
+                        if (place && place.geometry) {
+                          console.log("Manual place selection triggered");
+                          handlePlaceChanged();
+                        }
+                      }
+                    }, 100);
+                  }
+                }}
+                onBlur={() => {
+                  // Also try to get place on blur (when user clicks away)
+                  setTimeout(() => {
+                    if (autocompleteRef.current) {
+                      const place = autocompleteRef.current.getPlace();
+                      if (place && place.geometry && !coords) {
+                        console.log("Place selection on blur");
+                        handlePlaceChanged();
+                      }
+                    }
+                  }, 200);
+                }}
                 className={`flex h-10 w-full rounded-md border border-input bg-background pl-10 pr-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${error ? "border-red-500" : ""}`}
-                defaultValue={defaultValue}
                 required={required}
                 style={{ fontSize: "16px" }} // Prevent zoom on mobile
               />

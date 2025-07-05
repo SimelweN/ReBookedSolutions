@@ -53,6 +53,8 @@ const PickupAddressInput = ({
   );
 
   const handleGoogleMapsSelect = (addressData: AddressData) => {
+    console.log("Google Maps address selected:", addressData);
+
     const newAddress: Address = {
       street:
         addressData.street || addressData.formattedAddress.split(",")[0] || "",
@@ -61,9 +63,27 @@ const PickupAddressInput = ({
       postalCode: addressData.postalCode || "",
     };
 
+    console.log("Processed address:", newAddress);
+
     setAddress(newAddress);
     setHasSelectedAddress(true);
-    onAddressUpdate(newAddress);
+
+    // Trigger immediate validation and update
+    const isComplete = Object.values(newAddress).every(
+      (val) => val.trim() !== "",
+    );
+
+    if (isComplete) {
+      console.log("Address is complete, calling onAddressUpdate");
+      onAddressUpdate(newAddress);
+    } else {
+      console.log(
+        "Address incomplete, missing:",
+        Object.entries(newAddress)
+          .filter(([_, val]) => !val.trim())
+          .map(([key, _]) => key),
+      );
+    }
   };
 
   const handleManualUpdate = (field: keyof Address, value: string) => {
@@ -74,8 +94,16 @@ const PickupAddressInput = ({
     const isComplete = Object.values(newAddress).every(
       (val) => val.trim() !== "",
     );
+
     if (isComplete) {
       setHasSelectedAddress(true);
+      console.log(
+        "Manual address complete, calling onAddressUpdate:",
+        newAddress,
+      );
+      onAddressUpdate(newAddress);
+    } else {
+      // Still call update for partial addresses so parent can track changes
       onAddressUpdate(newAddress);
     }
   };

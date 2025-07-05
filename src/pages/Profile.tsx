@@ -47,6 +47,8 @@ import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSellerRequirements } from "@/hooks/useSellerRequirements";
 import SellerRequirementsDialog from "@/components/SellerRequirementsDialog";
+import QuickAddressSetup from "@/components/QuickAddressSetup";
+import QuickFixButton from "@/components/QuickFixButton";
 
 const Profile = () => {
   const { profile, user } = useAuth();
@@ -89,6 +91,7 @@ const Profile = () => {
   const [showBecomeSellerGuide, setShowBecomeSellerGuide] = useState(false);
   const [hasAddress, setHasAddress] = useState(false);
   const [hasBankingDetails, setHasBankingDetails] = useState(false);
+  const [showQuickAddressSetup, setShowQuickAddressSetup] = useState(false);
 
   const loadUserAddresses = useCallback(async () => {
     if (!user?.id) return;
@@ -484,15 +487,7 @@ const Profile = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => {
-                            // Scroll to address tab - this will depend on the tabs implementation
-                            const addressTab = document.querySelector(
-                              '[data-tab="addresses"]',
-                            );
-                            if (addressTab) {
-                              addressTab.scrollIntoView({ behavior: "smooth" });
-                            }
-                          }}
+                          onClick={() => setShowQuickAddressSetup(true)}
                           className="border-orange-300 text-orange-700 hover:bg-orange-100 mt-2"
                         >
                           Add Pickup Address
@@ -615,6 +610,17 @@ const Profile = () => {
 
             {/* Right Content - Tabs (Keep as-is) */}
             <div className="col-span-8">
+              {/* Big ADD ADDRESS Button */}
+              <div className="mb-6">
+                <Button
+                  onClick={() => setShowQuickAddressSetup(true)}
+                  className="w-full h-16 text-xl bg-red-600 hover:bg-red-700 text-white font-bold"
+                  size="lg"
+                >
+                  🏠 ADD YOUR ADDRESS NOW - CLICK HERE 🏠
+                </Button>
+              </div>
+
               <UserProfileTabs
                 activeListings={activeListings}
                 isLoading={isLoadingListings}
@@ -719,6 +725,17 @@ const Profile = () => {
 
             {/* Main Content - Tabs (Keep as-is) */}
             <div className="w-full">
+              {/* Big ADD ADDRESS Button */}
+              <div className="mb-6">
+                <Button
+                  onClick={() => setShowQuickAddressSetup(true)}
+                  className="w-full h-16 text-xl bg-red-600 hover:bg-red-700 text-white font-bold"
+                  size="lg"
+                >
+                  🏠 ADD YOUR ADDRESS NOW - CLICK HERE 🏠
+                </Button>
+              </div>
+
               <UserProfileTabs
                 activeListings={activeListings}
                 isLoading={isLoadingListings}
@@ -779,6 +796,27 @@ const Profile = () => {
           isOpen={showRequirementsDialog}
           onClose={closeRequirementsDialog}
           requirements={requirements}
+        />
+
+        <QuickAddressSetup
+          isOpen={showQuickAddressSetup}
+          onClose={() => setShowQuickAddressSetup(false)}
+          onSuccess={() => {
+            // Refresh address data after successful save
+            loadUserAddresses();
+            toast.success("Address saved! You can now create listings.");
+          }}
+          title="Add Pickup Address"
+          description="Buyers need to know where to collect books from you."
+        />
+
+        {/* Quick Fix Button for easy access */}
+        <QuickFixButton
+          onAddressAdded={loadUserAddresses}
+          onBankingAdded={() => {
+            // Refresh banking status
+            loadUserAddresses();
+          }}
         />
       </div>
     </Layout>

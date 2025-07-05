@@ -164,7 +164,7 @@ const ModernBankingSection = () => {
                     className="text-white hover:bg-white/10 h-8"
                   >
                     <Edit3 className="w-4 h-4 mr-1" />
-                    Edit
+                    Edit Details
                   </Button>
                 </div>
                 <p className="text-white/80 mb-3">
