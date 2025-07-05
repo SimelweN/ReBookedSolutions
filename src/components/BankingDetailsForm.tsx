@@ -116,6 +116,8 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
     setIsSubmitting(true);
 
     try {
+      console.log("Starting banking form submission...");
+
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -123,31 +125,41 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
         throw new Error("Please log in to continue");
       }
 
+      console.log("Session found, preparing request body...");
+
+      const requestBody = {
+        business_name: formData.businessName,
+        bank_name: formData.bankName,
+        account_number: formData.accountNumber,
+        primary_contact_email: formData.email,
+        primary_contact_name: formData.businessName,
+        metadata: {
+          user_id: session.user.id,
+          bank_code: branchCode,
+        },
+      };
+
+      console.log("Request body:", requestBody);
+
       const { data, error } = await supabase.functions.invoke(
         "create-paystack-subaccount",
         {
-          body: {
-            business_name: formData.businessName,
-            bank_name: formData.bankName,
-            account_number: formData.accountNumber,
-            primary_contact_email: formData.email,
-            primary_contact_name: formData.businessName,
-            metadata: {
-              user_id: session.user.id,
-              bank_code: branchCode,
-            },
-          },
+          body: requestBody,
           headers: {
             Authorization: `Bearer ${session.access_token}`,
           },
         },
       );
 
+      console.log("Supabase function response:", { data, error });
+
       if (error) {
+        console.error("Supabase function error:", error);
         throw new Error(error.message || "Failed to submit banking details");
       }
 
-      if (data.success) {
+      if (data && data.success) {
+        console.log("Banking setup successful!");
         setIsSuccess(true);
         toast.success("Banking details added successfully!");
 
@@ -156,11 +168,33 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
           onSuccess?.();
         }, 1500);
       } else {
-        throw new Error(data.error || "Failed to create subaccount");
+        console.error("Banking setup failed:", data);
+        throw new Error(
+          data?.message || data?.error || "Failed to create subaccount",
+        );
       }
     } catch (error: any) {
-      const errorMessage =
-        error.message || "There was an error. Please try again.";
+      console.error("Banking form submission error:", error);
+
+      let errorMessage = "There was an error. Please try again.";
+
+      if (error.message) {
+        errorMessage = error.message;
+      }
+
+      // If it's a Supabase error, try to get more details
+      if (error.details || error.code) {
+        console.error("Detailed error:", {
+          code: error.code,
+          details: error.details,
+          message: error.message,
+        });
+
+        if (error.message.includes("non-2xx")) {
+          errorMessage =
+            "Payment service is temporarily unavailable. Please try again in a few minutes.";
+        }
+      }
 
       toast.error(errorMessage);
     } finally {
