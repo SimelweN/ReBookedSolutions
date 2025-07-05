@@ -466,10 +466,7 @@ const Profile = () => {
 
               {/* Pickup Address Warning - Only show if user has active listings but no pickup address */}
               {activeListings &&
-                activeListings.some(
-                  (book) =>
-                    !book.availability || book.availability === "unavailable",
-                ) &&
+                activeListings.length > 0 &&
                 addressData &&
                 (!addressData.pickup_address ||
                   !addressData.pickup_address.streetAddress ||
