@@ -39,12 +39,30 @@ const EnhancedPaymentButton: React.FC<EnhancedPaymentButtonProps> = ({
     setIsProcessing(true);
 
     try {
-      // Validate seller subaccount first
-      const validation =
-        await PaystackSubaccountService.validateSubaccount(sellerId);
+      // First try to get subaccount code directly from the book
+      const { data: bookData } = await supabase
+        .from("books")
+        .select("subaccount_code, seller_id")
+        .eq("id", bookId)
+        .single();
 
-      if (!validation.isValid) {
-        throw new Error(validation.message);
+      let sellerSubaccountCode = bookData?.subaccount_code;
+
+      if (!sellerSubaccountCode) {
+        // Fallback to seller validation if book doesn't have direct subaccount_code
+        console.warn(
+          "Book missing subaccount_code, validating seller subaccount",
+        );
+        const validation =
+          await PaystackSubaccountService.validateSubaccount(sellerId);
+
+        if (!validation.isValid) {
+          throw new Error(validation.message);
+        }
+
+        sellerSubaccountCode = validation.subaccountCode;
+      } else {
+        console.log("Using direct book subaccount_code:", sellerSubaccountCode);
       }
 
       // Calculate split amounts for display
