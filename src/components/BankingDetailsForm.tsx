@@ -130,10 +130,14 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
         {
           body: {
             business_name: formData.businessName,
-            email: formData.email,
             bank_name: formData.bankName,
-            bank_code: branchCode,
             account_number: formData.accountNumber,
+            primary_contact_email: formData.email,
+            primary_contact_name: formData.businessName,
+            metadata: {
+              user_id: session.user.id,
+              bank_code: branchCode,
+            },
           },
           headers: {
             Authorization: `Bearer ${session.access_token}`,
