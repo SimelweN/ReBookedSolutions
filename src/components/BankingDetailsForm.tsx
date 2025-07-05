@@ -157,65 +157,55 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
     setIsSubmitting(true);
 
     try {
-      console.log("Starting banking form submission...");
-
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error("Please log in to continue");
-      }
-
-      console.log("Session found, preparing request body...");
-
-      const requestBody = {
-        business_name: formData.businessName,
-        bank_name: formData.bankName,
-        account_number: formData.accountNumber,
-        primary_contact_email: formData.email,
-        primary_contact_name: formData.businessName,
-        metadata: {
-          user_id: session.user.id,
-          bank_code: branchCode,
-        },
-      };
-
-      console.log("Request body:", requestBody);
-
-      const { data, error } = await supabase.functions.invoke(
-        "create-paystack-subaccount",
-        {
-          body: requestBody,
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        },
+      console.log(
+        `Starting banking form ${editMode ? "update" : "submission"}...`,
       );
 
-      console.log("Supabase function response:", { data, error });
+      const subaccountDetails = {
+        business_name: formData.businessName,
+        email: formData.email,
+        bank_name: formData.bankName,
+        bank_code: branchCode,
+        account_number: formData.accountNumber,
+      };
 
-      if (error) {
-        console.error("Supabase function error:", error);
-        throw new Error(error.message || "Failed to submit banking details");
-      }
+      const result = await PaystackSubaccountService.createOrUpdateSubaccount(
+        subaccountDetails,
+        editMode,
+      );
 
-      if (data && data.success) {
-        console.log("Banking setup successful!");
+      if (result.success) {
+        console.log(`Banking ${editMode ? "update" : "setup"} successful!`);
         setIsSuccess(true);
-        toast.success("Banking details added successfully!");
+        toast.success(
+          `Banking details ${editMode ? "updated" : "added"} successfully!`,
+        );
+
+        // Link books to subaccount if this is a new creation
+        if (!editMode && result.subaccount_code) {
+          // This will be handled automatically through the service
+          console.log("Subaccount created and linked successfully");
+        }
 
         // Call success callback after a short delay
         setTimeout(() => {
           onSuccess?.();
         }, 1500);
       } else {
-        console.error("Banking setup failed:", data);
+        console.error(
+          `Banking ${editMode ? "update" : "setup"} failed:`,
+          result,
+        );
         throw new Error(
-          data?.message || data?.error || "Failed to create subaccount",
+          result.error ||
+            `Failed to ${editMode ? "update" : "create"} subaccount`,
         );
       }
     } catch (error: any) {
-      console.error("Banking form submission error:", error);
+      console.error(
+        `Banking form ${editMode ? "update" : "submission"} error:`,
+        error,
+      );
 
       let errorMessage = "There was an error. Please try again.";
 
@@ -223,18 +213,9 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
         errorMessage = error.message;
       }
 
-      // If it's a Supabase error, try to get more details
-      if (error.details || error.code) {
-        console.error("Detailed error:", {
-          code: error.code,
-          details: error.details,
-          message: error.message,
-        });
-
-        if (error.message.includes("non-2xx")) {
-          errorMessage =
-            "Payment service is temporarily unavailable. Please try again in a few minutes.";
-        }
+      if (error.message?.includes("non-2xx")) {
+        errorMessage =
+          "Payment service is temporarily unavailable. Please try again in a few minutes.";
       }
 
       toast.error(errorMessage);
