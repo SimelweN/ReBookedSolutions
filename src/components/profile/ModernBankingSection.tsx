@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { handleBankingQueryError } from "@/utils/bankingErrorHandler";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import BankingDetailsForm from "@/components/BankingDetailsForm";
-import { PaystackSubaccountService } from "@/services/paystackSubaccountService";
+import { useSubaccount } from "@/hooks/useSubaccount";
 import {
   Building,
   Shield,
