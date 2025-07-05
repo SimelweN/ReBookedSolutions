@@ -22,8 +22,7 @@ import {
   Users,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { handleBankingQueryError } from "@/utils/bankingErrorHandler";
+import { PaystackSubaccountService } from "@/services/paystackSubaccountService";
 import { toast } from "sonner";
 
 const BankingSetup = () => {
