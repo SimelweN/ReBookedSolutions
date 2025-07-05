@@ -1,6 +1,10 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
+import { AuthProvider } from "./contexts/AuthContext";
+import { CartProvider } from "./contexts/CartContext";
+import GoogleMapsProvider from "./contexts/GoogleMapsContext";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 // Import real pages
 import IndexPage from "./pages/Index";
