@@ -542,16 +542,6 @@ function App() {
                             }
                           />
                           <Route
-                            path="/user-profile"
-                            element={
-                              <ProtectedRoute>
-                                <LazyWrapper>
-                                  <UserProfile />
-                                </LazyWrapper>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
                             path="/create-listing"
                             element={
                               <ProtectedRoute>
