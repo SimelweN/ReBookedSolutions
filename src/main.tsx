@@ -203,11 +203,15 @@ const queryClient = new QueryClient({
 // Initialize the React app with enhanced error handling
 const initializeApp = async () => {
   return measureAsyncPerformance("AppInitialization", async () => {
+    console.log("🚀 Starting app initialization...");
+
     const rootElement = document.getElementById("root");
     if (!rootElement) {
+      console.error("❌ Root element #root not found in DOM");
       throw new Error("Root element #root not found in DOM");
     }
 
+    console.log("✅ Root element found, creating React root...");
     const root = createRoot(rootElement);
 
     // Apply performance optimizations
