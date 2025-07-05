@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Card,
@@ -29,92 +29,86 @@ import {
   GraduationCap,
   AlertCircle,
   Book,
+  ExternalLink,
+  School,
 } from "lucide-react";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities";
+import { getBooks } from "@/services/book/bookQueries";
+import { Book as BookType } from "@/types/book";
+import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 const CampusBooksSection = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const universities = ALL_SOUTH_AFRICAN_UNIVERSITIES;
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUniversity, setSelectedUniversity] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [priceRange, setPriceRange] = useState("all");
+  const [books, setBooks] = useState<BookType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock book data - in production this would come from your database
-  const mockBooks = useMemo(
-    () => [
-      {
-        id: "1",
-        title: "Introduction to Computer Science",
-        author: "John Smith",
-        price: 450.0,
-        condition: "excellent",
-        university: "uct",
-        category: "Computer Science",
-        cover_image: "/api/placeholder/200/250",
-        description:
-          "Comprehensive introduction to computer science fundamentals.",
-        faculty: "Science",
-        location: "Cape Town",
-        tags: ["Programming", "Algorithms", "Data Structures"],
-        seller: "Alex K.",
-      },
-      {
-        id: "2",
-        title: "Calculus and Analytical Geometry",
-        author: "Maria Rodriguez",
-        price: 380.0,
-        condition: "good",
-        university: "wits",
-        category: "Mathematics",
-        cover_image: "/api/placeholder/200/250",
-        description: "Advanced calculus textbook with detailed examples.",
-        faculty: "Science",
-        location: "Johannesburg",
-        tags: ["Calculus", "Geometry", "Mathematics"],
-        seller: "Sarah M.",
-      },
-      {
-        id: "3",
-        title: "Organic Chemistry Principles",
-        author: "Dr. James Wilson",
-        price: 520.0,
-        condition: "very good",
-        university: "up",
-        category: "Chemistry",
-        cover_image: "/api/placeholder/200/250",
-        description: "Essential organic chemistry concepts and reactions.",
-        faculty: "Natural Sciences",
-        location: "Pretoria",
-        tags: ["Chemistry", "Organic", "Laboratory"],
-        seller: "Mike T.",
-      },
-    ],
-    [],
-  );
+  // Load books from the actual marketplace
+  const loadBooks = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const filters: any = {};
+
+      if (searchTerm.trim()) {
+        filters.search = searchTerm.trim();
+      }
+
+      if (selectedUniversity !== "all") {
+        filters.university = selectedUniversity;
+      }
+
+      if (selectedCategory !== "all") {
+        filters.category = selectedCategory;
+      }
+
+      // Apply price range filters
+      if (priceRange === "under-300") {
+        filters.maxPrice = 299;
+      } else if (priceRange === "300-500") {
+        filters.minPrice = 300;
+        filters.maxPrice = 500;
+      } else if (priceRange === "over-500") {
+        filters.minPrice = 501;
+      }
+
+      const booksData = await getBooks(filters);
+      setBooks(booksData);
+    } catch (error) {
+      console.error("Failed to load books:", error);
+      setError("Failed to load books. Please try again.");
+      toast.error("Failed to load books");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [searchTerm, selectedUniversity, selectedCategory, priceRange]);
+
+  // Initial load and whenever filters change
+  useEffect(() => {
+    loadBooks();
+  }, [loadBooks]);
+
+  // Get unique categories from loaded books
+  const categories = useMemo(() => {
+    const uniqueCategories = [
+      ...new Set(books.map((book) => book.category)),
+    ].filter(Boolean);
+    return uniqueCategories.sort();
+  }, [books]);
 
   const filteredBooks = useMemo(() => {
-    return mockBooks.filter((book) => {
-      const matchesSearch =
-        book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        book.author.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesUniversity =
-        selectedUniversity === "all" || book.university === selectedUniversity;
-      const matchesCategory =
-        selectedCategory === "all" || book.category === selectedCategory;
-
-      let matchesPrice = true;
-      if (priceRange === "under-300") matchesPrice = book.price < 300;
-      else if (priceRange === "300-500")
-        matchesPrice = book.price >= 300 && book.price <= 500;
-      else if (priceRange === "over-500") matchesPrice = book.price > 500;
-
-      return (
-        matchesSearch && matchesUniversity && matchesCategory && matchesPrice
-      );
-    });
-  }, [mockBooks, searchTerm, selectedUniversity, selectedCategory, priceRange]);
+    // If we're using server-side filtering, just return the books
+    return books;
+  }, [books]);
 
   const getConditionColor = (condition: string) => {
     switch (condition.toLowerCase()) {
