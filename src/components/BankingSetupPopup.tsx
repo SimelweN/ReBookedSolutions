@@ -84,7 +84,7 @@ const BankingSetupPopup = ({
     } catch (error) {
       console.error(
         "Banking status check failed:",
-        error instanceof Error ? error.message : error,
+        error instanceof Error ? error.message : JSON.stringify(error, null, 2),
       );
     } finally {
       setIsCheckingBanking(false);
