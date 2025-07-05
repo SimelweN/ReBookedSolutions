@@ -36,6 +36,7 @@ import ModernBankingSection from "@/components/profile/ModernBankingSection";
 import ModernAddressInput from "@/components/ModernAddressInput";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 import { UserProfile, AddressData, Address } from "@/types/address";
 
 interface AddressSectionProps {
