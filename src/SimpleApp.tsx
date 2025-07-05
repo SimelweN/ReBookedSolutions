@@ -94,32 +94,43 @@ const SimpleApp = () => {
   console.log("SimpleApp rendering...");
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="light">
-      <Router>
-        <div style={{ minHeight: "100vh", background: "white" }}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/books" element={<BooksPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/activity" element={<ActivityPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/university-info" element={<UniversityInfoPage />} />
-            <Route
-              path="*"
-              element={
-                <div style={{ padding: "20px" }}>
-                  <h1>404 - Page Not Found</h1>
-                  <a href="/" style={{ color: "#2563eb" }}>
-                    ← Back to Home
-                  </a>
+    <ErrorBoundary level="app">
+      <ThemeProvider attribute="class" defaultTheme="light">
+        <GoogleMapsProvider>
+          <AuthProvider>
+            <CartProvider>
+              <Router>
+                <div style={{ minHeight: "100vh", background: "white" }}>
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/books" element={<BooksPage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/activity" element={<ActivityPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route
+                      path="/university-info"
+                      element={<UniversityInfoPage />}
+                    />
+                    <Route
+                      path="*"
+                      element={
+                        <div style={{ padding: "20px" }}>
+                          <h1>404 - Page Not Found</h1>
+                          <a href="/" style={{ color: "#2563eb" }}>
+                            ← Back to Home
+                          </a>
+                        </div>
+                      }
+                    />
+                  </Routes>
                 </div>
-              }
-            />
-          </Routes>
-        </div>
-      </Router>
-    </ThemeProvider>
+              </Router>
+            </CartProvider>
+          </AuthProvider>
+        </GoogleMapsProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 };
 
