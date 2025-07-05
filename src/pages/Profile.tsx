@@ -47,6 +47,7 @@ import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSellerRequirements } from "@/hooks/useSellerRequirements";
 import SellerRequirementsDialog from "@/components/SellerRequirementsDialog";
+import QuickAddressSetup from "@/components/QuickAddressSetup";
 
 const Profile = () => {
   const { profile, user } = useAuth();
@@ -89,6 +90,7 @@ const Profile = () => {
   const [showBecomeSellerGuide, setShowBecomeSellerGuide] = useState(false);
   const [hasAddress, setHasAddress] = useState(false);
   const [hasBankingDetails, setHasBankingDetails] = useState(false);
+  const [showQuickAddressSetup, setShowQuickAddressSetup] = useState(false);
 
   const loadUserAddresses = useCallback(async () => {
     if (!user?.id) return;
@@ -484,15 +486,7 @@ const Profile = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => {
-                            // Scroll to address tab - this will depend on the tabs implementation
-                            const addressTab = document.querySelector(
-                              '[data-tab="addresses"]',
-                            );
-                            if (addressTab) {
-                              addressTab.scrollIntoView({ behavior: "smooth" });
-                            }
-                          }}
+                          onClick={() => setShowQuickAddressSetup(true)}
                           className="border-orange-300 text-orange-700 hover:bg-orange-100 mt-2"
                         >
                           Add Pickup Address
