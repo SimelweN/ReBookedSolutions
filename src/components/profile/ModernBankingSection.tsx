@@ -32,65 +32,17 @@ const ModernBankingSection = () => {
   const isMobile = useIsMobile();
   const [showBankingForm, setShowBankingForm] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const [bankingStatus, setBankingStatus] = useState<{
-    hasSubaccount: boolean;
-    subaccountCode: string | null;
-    businessName: string | null;
-    bankName: string | null;
-    email: string | null;
-    accountNumber: string | null;
-    canEdit: boolean;
-    isLoading: boolean;
-    lastChecked: Date | null;
-  }>({
-    hasSubaccount: false,
-    subaccountCode: null,
-    businessName: null,
-    bankName: null,
-    email: null,
-    accountNumber: null,
-    canEdit: false,
-    isLoading: true,
-    lastChecked: null,
-  });
 
-  const checkBankingStatus = async () => {
-    if (!user?.id) return;
-
-    setBankingStatus((prev) => ({ ...prev, isLoading: true }));
-
-    try {
-      const status = await PaystackSubaccountService.getUserSubaccountStatus(
-        user.id,
-      );
-
-      setBankingStatus({
-        hasSubaccount: status.hasSubaccount,
-        subaccountCode: status.subaccountCode || null,
-        businessName: status.businessName || null,
-        bankName: status.bankName || null,
-        email: status.email || null,
-        accountNumber: status.accountNumber || null,
-        canEdit: status.canEdit,
-        isLoading: false,
-        lastChecked: new Date(),
-      });
-
-      if (status.hasSubaccount) {
-        toast.success("Banking setup verified!");
-      }
-    } catch (error) {
-      console.error(
-        "Banking status check failed:",
-        error instanceof Error ? error.message : JSON.stringify(error, null, 2),
-      );
-      setBankingStatus((prev) => ({
-        ...prev,
-        isLoading: false,
-        lastChecked: new Date(),
-      }));
-    }
-  };
+  // Use the new useSubaccount hook
+  const {
+    subaccountData,
+    isLoading,
+    error,
+    hasValidSubaccount,
+    getSubaccountCode,
+    refreshSubaccountData,
+    linkBooksToSubaccount,
+  } = useSubaccount();
 
   useEffect(() => {
     if (user?.id) {
