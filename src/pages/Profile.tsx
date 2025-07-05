@@ -41,7 +41,6 @@ import { Book } from "@/types/book";
 import { BookDeletionService } from "@/services/bookDeletionService";
 
 import EnhancedBecomeSellerGuide from "@/components/EnhancedBecomeSellerGuide";
-import { useBankingSetup } from "@/hooks/useBankingSetup";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
