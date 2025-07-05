@@ -457,6 +457,14 @@ function App() {
                               </LazyWrapper>
                             }
                           />
+                          <Route
+                            path="/cookie-settings"
+                            element={
+                              <LazyWrapper>
+                                <CookieSettingsPage />
+                              </LazyWrapper>
+                            }
+                          />
 
                           {/* Maps demo routes */}
                           <Route
