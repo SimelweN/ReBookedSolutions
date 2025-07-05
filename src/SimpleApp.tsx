@@ -2,6 +2,9 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 
+// Import real pages
+import IndexPage from "./pages/Index";
+
 // Simple components to test functionality
 const HomePage = () => (
   <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
@@ -144,7 +147,7 @@ const ActivityPage = () => (
 
 const ProfilePage = () => (
   <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-    <h1 style={{ color: "#2563eb" }}>�� Profile</h1>
+    <h1 style={{ color: "#2563eb" }}>👤 Profile</h1>
     <p>Your profile information</p>
     <a href="/" style={{ color: "#2563eb" }}>
       ← Back to Home
