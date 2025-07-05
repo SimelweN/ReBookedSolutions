@@ -35,20 +35,18 @@ interface BankInfo {
 }
 
 const SOUTH_AFRICAN_BANKS: BankInfo[] = [
-  { name: "ABSA Bank", branchCode: "632005" },
+  { name: "Absa Bank", branchCode: "632005" },
   { name: "Capitec Bank", branchCode: "470010" },
-  { name: "FNB (First National Bank)", branchCode: "250655" },
+  { name: "First National Bank (FNB)", branchCode: "250655" },
   { name: "Nedbank", branchCode: "198765" },
   { name: "Standard Bank", branchCode: "051001" },
   { name: "TymeBank", branchCode: "678910" },
   { name: "African Bank", branchCode: "430000" },
-  { name: "Bidvest Bank", branchCode: "462005" },
+  { name: "Bidvest Bank", branchCode: "679000" },
   { name: "Discovery Bank", branchCode: "679000" },
-  { name: "Grindrod Bank", branchCode: "584000" },
-  { name: "Investec", branchCode: "580105" },
-  { name: "Mercantile Bank", branchCode: "450105" },
+  { name: "Investec Bank", branchCode: "580105" },
+  { name: "Mercantile Bank", branchCode: "450905" },
   { name: "Sasfin Bank", branchCode: "683000" },
-  { name: "Ubank", branchCode: "431010" },
 ];
 
 interface BankingDetailsFormProps {
