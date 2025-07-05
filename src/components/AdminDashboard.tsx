@@ -142,33 +142,6 @@ const AdminDashboard = () => {
     loadDashboardData();
   };
 
-  const handleUserAction = async (
-    userId: string,
-    action: "suspend" | "activate",
-  ) => {
-    try {
-      const status = action === "suspend" ? "suspended" : "active";
-      await updateUserStatus(userId, status);
-
-      setUsers(
-        users.map((user) => (user.id === userId ? { ...user, status } : user)),
-      );
-
-      toast.success(`User ${action}d successfully`);
-
-      // Reload stats to reflect the change
-      try {
-        const newStats = await getAdminStats();
-        setStats(newStats);
-      } catch (error) {
-        console.error("Failed to reload stats after user action:", error);
-      }
-    } catch (error) {
-      console.error(`Error ${action}ing user:`, error);
-      handleError(error, `${action} User`);
-    }
-  };
-
   const handleListingAction = async (listingId: string, action: "delete") => {
     if (action !== "delete") return;
 
