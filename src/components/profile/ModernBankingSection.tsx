@@ -81,7 +81,7 @@ const ModernBankingSection = () => {
     setShowBankingForm(true);
   };
 
-  if (bankingStatus.isLoading) {
+  if (isLoading) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
