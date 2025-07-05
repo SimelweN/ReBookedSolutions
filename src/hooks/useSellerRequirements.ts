@@ -38,24 +38,43 @@ export const useSellerRequirements = () => {
       setIsLoading(true);
       console.log("Checking seller requirements for user:", user.id);
 
-      // Check banking setup
-      const { data: subaccountData, error: bankingError } = await supabase
-        .from("paystack_subaccounts")
-        .select("subaccount_code")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
+      // Check banking setup - try multiple tables for consistency
       let hasBankingSetup = false;
-      if (bankingError) {
-        const { shouldFallback } = handleBankingQueryError(
-          "useSellerRequirements - banking check",
-          bankingError,
-        );
-        if (!shouldFallback) {
-          hasBankingSetup = false;
+
+      try {
+        // First check banking_subaccounts table (preferred)
+        const { data: bankingSubaccounts } = await supabase
+          .from("banking_subaccounts")
+          .select("subaccount_code")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (bankingSubaccounts?.subaccount_code?.trim()) {
+          hasBankingSetup = true;
+        } else {
+          // Fallback to paystack_subaccounts table
+          const { data: paystackSubaccounts } = await supabase
+            .from("paystack_subaccounts")
+            .select("subaccount_code")
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+          if (paystackSubaccounts?.subaccount_code?.trim()) {
+            hasBankingSetup = true;
+          } else {
+            // Final fallback to profile table
+            const { data: profileData } = await supabase
+              .from("profiles")
+              .select("subaccount_code")
+              .eq("id", user.id)
+              .maybeSingle();
+
+            hasBankingSetup = !!profileData?.subaccount_code?.trim();
+          }
         }
-      } else {
-        hasBankingSetup = !!subaccountData?.subaccount_code?.trim();
+      } catch (bankingError) {
+        console.warn("Error checking banking setup:", bankingError);
+        hasBankingSetup = false;
       }
 
       // Check pickup address
