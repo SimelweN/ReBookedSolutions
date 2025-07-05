@@ -4,11 +4,8 @@
  */
 
 import { supabase } from "@/integrations/supabase/client";
-import { PAYSTACK_CONFIG, PAYSTACK_BANK_CODES } from "@/config/paystack";
-import { BankingDetails } from "@/types/banking";
 import { toast } from "sonner";
-import { CourierAssignmentService } from "./courierAssignmentService";
-import { PaystackTransferService } from "./paystackTransferService";
+import { PaystackSubaccountService } from "./paystackSubaccountService";
 
 export interface PaymentInitialization {
   email: string;
