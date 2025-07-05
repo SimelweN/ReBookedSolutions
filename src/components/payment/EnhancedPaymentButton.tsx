@@ -4,6 +4,7 @@ import { Loader2, CreditCard, Shield, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 import { PaystackPaymentService } from "@/services/paystackPaymentService";
 import { PaystackSubaccountService } from "@/services/paystackSubaccountService";
+import { supabase } from "@/integrations/supabase/client";
 
 interface EnhancedPaymentButtonProps {
   bookId: string;
