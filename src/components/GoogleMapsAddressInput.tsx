@@ -143,8 +143,17 @@ const GoogleMapsAddressInput = ({
         "address_components",
         "name",
       ]);
+
+      // Add multiple event listeners to ensure selection works
+      autocomplete.addListener("place_changed", handlePlaceChanged);
+
+      // Also listen for when a place is selected from dropdown
+      google.maps.event.addListener(autocomplete, "place_changed", () => {
+        console.log("Place changed event fired!");
+        handlePlaceChanged();
+      });
     },
-    [],
+    [handlePlaceChanged],
   );
 
   return (
@@ -177,6 +186,34 @@ const GoogleMapsAddressInput = ({
                 placeholder={placeholder}
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
+                onKeyDown={(e) => {
+                  // Handle Enter key to trigger place selection
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    // Small delay to ensure autocomplete processes the selection
+                    setTimeout(() => {
+                      if (autocompleteRef.current) {
+                        const place = autocompleteRef.current.getPlace();
+                        if (place && place.geometry) {
+                          console.log("Manual place selection triggered");
+                          handlePlaceChanged();
+                        }
+                      }
+                    }, 100);
+                  }
+                }}
+                onBlur={() => {
+                  // Also try to get place on blur (when user clicks away)
+                  setTimeout(() => {
+                    if (autocompleteRef.current) {
+                      const place = autocompleteRef.current.getPlace();
+                      if (place && place.geometry && !coords) {
+                        console.log("Place selection on blur");
+                        handlePlaceChanged();
+                      }
+                    }
+                  }, 200);
+                }}
                 className={`flex h-10 w-full rounded-md border border-input bg-background pl-10 pr-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${error ? "border-red-500" : ""}`}
                 required={required}
                 style={{ fontSize: "16px" }} // Prevent zoom on mobile
