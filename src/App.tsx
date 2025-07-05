@@ -20,6 +20,7 @@ import { initNetworkErrorHandler } from "./utils/networkErrorHandler";
 import { initViteErrorHandler } from "./utils/viteErrorHandler";
 import { initProductionErrorHandler } from "./utils/productionErrorHandler";
 import NetworkErrorBoundary from "./components/NetworkErrorBoundary";
+import CookieConsent from "./components/CookieConsent";
 import "./App.css";
 
 // Initialize development-only optimizations
