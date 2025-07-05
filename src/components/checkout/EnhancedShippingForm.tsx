@@ -32,6 +32,7 @@ import {
   getEnhancedDeliveryQuotes,
   validateSellersHaveAddresses,
 } from "@/services/enhancedDeliveryService";
+import { UserAutofillService } from "@/services/userAutofillService";
 
 const shippingSchema = z.object({
   recipient_name: z.string().min(1, "Recipient name is required"),
@@ -103,6 +104,11 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   const [selectedDeliveryOption, setSelectedDeliveryOption] =
     useState<DeliveryOption | null>(null);
   const [isLoadingQuotes, setIsLoadingQuotes] = useState(false);
+  const [hasAutofilled, setHasAutofilled] = useState(false);
+  const [manualEntries, setManualEntries] = useState({
+    name: false,
+    email: false,
+  });
 
   const {
     register,
@@ -152,10 +158,25 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
     };
   }, [isLoaded]);
 
-  // Load user's saved address on component mount
+  // Load user's saved address and autofill user info on component mount
   useEffect(() => {
     loadSavedAddress();
+    autofillUserInfo();
   }, []);
+
+  const autofillUserInfo = async () => {
+    if (hasAutofilled) return;
+
+    try {
+      const userInfo = await UserAutofillService.getUserInfo();
+      if (userInfo && !manualEntries.name && !watchedValues.recipient_name) {
+        setValue("recipient_name", userInfo.name);
+      }
+      setHasAutofilled(true);
+    } catch (error) {
+      console.error("Error autofilling user info:", error);
+    }
+  };
 
   // Get delivery quotes when address is complete
   useEffect(() => {
@@ -577,11 +598,24 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="recipient_name">Full Name *</Label>
+                    <Label htmlFor="recipient_name">
+                      Full Name *{" "}
+                      {!manualEntries.name && hasAutofilled && (
+                        <span className="text-xs text-blue-600">
+                          (from account)
+                        </span>
+                      )}
+                    </Label>
                     <Input
                       id="recipient_name"
                       {...register("recipient_name")}
                       placeholder="Enter recipient's full name"
+                      onChange={(e) => {
+                        register("recipient_name").onChange(e);
+                        if (!manualEntries.name) {
+                          setManualEntries((prev) => ({ ...prev, name: true }));
+                        }
+                      }}
                     />
                     {errors.recipient_name && (
                       <p className="text-sm text-red-600 mt-1">
