@@ -224,6 +224,24 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
     }
   };
 
+  if (isLoading) {
+    return (
+      <Card className={showAsModal ? "w-full max-w-md mx-auto" : ""}>
+        <CardContent className="p-6 text-center">
+          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Loader2 className="w-8 h-8 text-gray-600 animate-spin" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Loading Banking Details...
+          </h3>
+          <p className="text-sm text-gray-600">
+            Please wait while we load your existing information.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   if (isSuccess) {
     return (
       <Card className={showAsModal ? "w-full max-w-md mx-auto" : ""}>
