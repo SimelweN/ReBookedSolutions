@@ -192,69 +192,99 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onConsentChange }) => {
         </div>
       </div>
 
-      {/* Detailed cookie information dialog */}
+      {/* Cookie Settings Dialog */}
       <Dialog open={showDetails} onOpenChange={setShowDetails}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Cookie className="w-5 h-5" />
-              Cookie Information
+              <Settings className="w-5 h-5 text-book-600" />
+              Cookie Settings
             </DialogTitle>
             <DialogDescription>
-              Detailed information about all cookies used on this website and
-              their purposes.
+              Choose which cookies you'd like to accept. Essential cookies are
+              required for the site to function.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-6">
-            {cookieCategories.map((category) => (
-              <div key={category.id} className="space-y-3">
-                <div className="flex items-center gap-2">
-                  {category.icon}
-                  <h3 className="font-semibold">{category.title}</h3>
-                  {category.required && (
-                    <Badge variant="secondary" className="text-xs">
-                      Required
-                    </Badge>
-                  )}
+          <div className="space-y-4">
+            {/* Essential Cookies */}
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="bg-green-100 p-1.5 rounded-full">
+                  <Shield className="w-4 h-4 text-green-600" />
                 </div>
-                <p className="text-sm text-gray-600 mb-3">
-                  {category.description}
-                </p>
-
-                <div className="space-y-2">
-                  {category.cookies.map((cookie, index) => (
-                    <div key={index} className="bg-gray-50 rounded-lg p-3">
-                      <div className="font-medium text-sm">{cookie.name}</div>
-                      <div className="text-xs text-gray-600">
-                        {cookie.purpose}
-                      </div>
-                    </div>
-                  ))}
+                <div>
+                  <div className="font-medium text-sm">Essential Cookies</div>
+                  <div className="text-xs text-gray-600">
+                    Required for site functionality
+                  </div>
                 </div>
               </div>
-            ))}
-
-            <div className="border-t pt-4">
-              <h3 className="font-semibold mb-2 flex items-center gap-2">
-                <Shield className="w-4 h-4" />
-                Security & Privacy
-              </h3>
-              <div className="text-sm text-gray-600 space-y-1">
-                <p>
-                  • All cookies are secured with industry-standard encryption
-                </p>
-                <p>• We use HttpOnly and Secure flags where appropriate</p>
-                <p>• SameSite protection prevents cross-site attacks</p>
-                <p>• You can change your preferences anytime in settings</p>
+              <div className="bg-green-500 p-1 rounded-full">
+                <Check className="w-3 h-3 text-white" />
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-4">
-              <Button variant="outline" onClick={() => setShowDetails(false)}>
-                Close
-              </Button>
+            {/* Functional Cookies */}
+            <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="bg-blue-100 p-1.5 rounded-full">
+                  <ShoppingCart className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <div className="font-medium text-sm">Functional Cookies</div>
+                  <div className="text-xs text-gray-600">
+                    Remember login, cart items
+                  </div>
+                </div>
+              </div>
+              <Switch
+                checked={consent.functional}
+                onCheckedChange={(checked) =>
+                  setConsent((prev) => ({ ...prev, functional: checked }))
+                }
+              />
             </div>
+
+            {/* Analytics Cookies */}
+            <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="bg-purple-100 p-1.5 rounded-full">
+                  <BarChart3 className="w-4 h-4 text-purple-600" />
+                </div>
+                <div>
+                  <div className="font-medium text-sm">
+                    Analytics & Marketing
+                  </div>
+                  <div className="text-xs text-gray-600">
+                    Help improve our site
+                  </div>
+                </div>
+              </div>
+              <Switch
+                checked={consent.analytics}
+                onCheckedChange={(checked) =>
+                  setConsent((prev) => ({ ...prev, analytics: checked }))
+                }
+              />
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex gap-2 pt-4">
+            <Button
+              variant="outline"
+              onClick={handleAcceptSelected}
+              className="flex-1"
+            >
+              Save Preferences
+            </Button>
+            <Button
+              onClick={handleAcceptAll}
+              className="flex-1 bg-book-600 hover:bg-book-700"
+            >
+              Accept All
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
