@@ -1,20 +1,5 @@
-import React from "react";
-import { createRoot } from "react-dom/client";
-
-// Simple, reliable initialization
-console.log("🚀 ReBooked Solutions - Starting...");
-
-// Simple test component to check if React renders
-const TestApp = () => {
-  console.log("TestApp rendering...");
-  return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h1 style={{ color: "green" }}>✅ React is Working!</h1>
-      <p>This is a test to verify React rendering works.</p>
-      <p>Current time: {new Date().toLocaleString()}</p>
-    </div>
-  );
-};
+// Simple JS test without React
+console.log("🚀 JavaScript is executing...");
 
 // Get root element
 const rootElement = document.getElementById("root");
@@ -24,11 +9,14 @@ if (!rootElement) {
 
 console.log("Root element found:", rootElement);
 
-// Create React root
-const root = createRoot(rootElement);
-console.log("React root created");
+// Test basic DOM manipulation
+rootElement.innerHTML = `
+  <div style="padding: 20px; font-family: Arial, sans-serif; background: #f0f0f0; border: 2px solid #333;">
+    <h1 style="color: green;">✅ JavaScript is Working!</h1>
+    <p>This is a test to verify basic JavaScript execution.</p>
+    <p>Current time: ${new Date().toLocaleString()}</p>
+    <button onclick="alert('Button clicked!')">Test Button</button>
+  </div>
+`;
 
-// Simple render
-root.render(<TestApp />);
-
-console.log("✅ TestApp rendered successfully");
+console.log("✅ DOM manipulation successful");
