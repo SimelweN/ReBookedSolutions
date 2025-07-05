@@ -54,12 +54,14 @@ interface BankingDetailsFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
   showAsModal?: boolean;
+  editMode?: boolean;
 }
 
 const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
   onSuccess,
   onCancel,
   showAsModal = false,
+  editMode = false,
 }) => {
   const [formData, setFormData] = useState({
     businessName: "",
@@ -71,6 +73,8 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
   const [branchCode, setBranchCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(editMode);
+  const [existingData, setExistingData] = useState<any>(null);
 
   const handleBankChange = (bankName: string) => {
     const selectedBank = SOUTH_AFRICAN_BANKS.find(
