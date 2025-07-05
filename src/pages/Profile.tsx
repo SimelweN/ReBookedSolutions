@@ -45,6 +45,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useSellerRequirements } from "@/hooks/useSellerRequirements";
+import SellerRequirementsDialog from "@/components/SellerRequirementsDialog";
 
 const Profile = () => {
   const { profile, user } = useAuth();
@@ -502,7 +504,7 @@ const Profile = () => {
                 <CardContent className="space-y-3">
                   <Button
                     onClick={() => {
-                      if (requireBankingSetup("create a listing")) {
+                      if (requireSellerSetup("create a listing")) {
                         navigate("/create-listing");
                       }
                     }}
@@ -639,7 +641,7 @@ const Profile = () => {
             <div className="mb-6">
               <Button
                 onClick={() => {
-                  if (requireBankingSetup("create a listing")) {
+                  if (requireSellerSetup("create a listing")) {
                     navigate("/create-listing");
                   }
                 }}
