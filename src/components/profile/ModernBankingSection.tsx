@@ -177,12 +177,25 @@ const ModernBankingSection = () => {
         {/* Success State */}
         <div className="bg-gradient-to-r from-book-500 to-book-600 rounded-2xl p-6 text-white">
           <div className="flex items-start justify-between">
-            <div className="flex items-start space-x-4">
+            <div className="flex items-start space-x-4 flex-1">
               <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur">
                 <CheckCircle className="w-6 h-6 text-white" />
               </div>
-              <div>
-                <h3 className="text-xl font-bold mb-1">All Set! 🎉</h3>
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="text-xl font-bold">All Set! 🎉</h3>
+                  {bankingStatus.canEdit && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleEditClick}
+                      className="text-white hover:bg-white/10 h-8"
+                    >
+                      <Edit3 className="w-4 h-4 mr-1" />
+                      Edit
+                    </Button>
+                  )}
+                </div>
                 <p className="text-white/80 mb-3">
                   Your payment account is active and ready to receive funds
                 </p>
@@ -203,6 +216,26 @@ const ModernBankingSection = () => {
                       <p className="text-white/70 text-xs font-medium">Bank</p>
                       <p className="text-white font-semibold">
                         {bankingStatus.bankName}
+                      </p>
+                    </div>
+                  )}
+                  {bankingStatus.accountNumber && (
+                    <div className="bg-white/10 rounded-lg p-3 backdrop-blur">
+                      <p className="text-white/70 text-xs font-medium">
+                        Account
+                      </p>
+                      <p className="text-white font-semibold">
+                        ****{bankingStatus.accountNumber.slice(-4)}
+                      </p>
+                    </div>
+                  )}
+                  {bankingStatus.email && (
+                    <div className="bg-white/10 rounded-lg p-3 backdrop-blur">
+                      <p className="text-white/70 text-xs font-medium">
+                        Contact
+                      </p>
+                      <p className="text-white font-semibold">
+                        {bankingStatus.email}
                       </p>
                     </div>
                   )}
