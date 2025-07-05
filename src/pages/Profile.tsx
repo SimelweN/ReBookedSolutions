@@ -725,6 +725,17 @@ const Profile = () => {
 
             {/* Main Content - Tabs (Keep as-is) */}
             <div className="w-full">
+              {/* Big ADD ADDRESS Button */}
+              <div className="mb-6">
+                <Button
+                  onClick={() => setShowQuickAddressSetup(true)}
+                  className="w-full h-16 text-xl bg-red-600 hover:bg-red-700 text-white font-bold"
+                  size="lg"
+                >
+                  🏠 ADD YOUR ADDRESS NOW - CLICK HERE 🏠
+                </Button>
+              </div>
+
               <UserProfileTabs
                 activeListings={activeListings}
                 isLoading={isLoadingListings}
