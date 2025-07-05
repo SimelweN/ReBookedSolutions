@@ -83,8 +83,8 @@ const Index = React.memo(() => {
               width={600}
               height={400}
               priority={true}
-              className="rounded-lg shadow-xl max-w-full h-auto w-full max-w-sm md:max-w-full lg:max-w-[715px] lg:mx-auto"
-              containerClassName="w-full"
+              className="rounded-lg shadow-xl w-full h-auto object-cover aspect-[3/2] max-w-lg mx-auto"
+              containerClassName="w-full flex justify-center"
             />
           </div>
         </div>
