@@ -363,7 +363,7 @@ function App() {
                           {/* University and Campus Routes */}
                           <Route
                             path="/university-info"
-                            element={<UniversityInfo />}
+                            element={<UniversityInfoPage />}
                           />
                           <Route
                             path="/university-profile"
