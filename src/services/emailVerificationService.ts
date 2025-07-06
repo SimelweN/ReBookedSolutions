@@ -261,10 +261,17 @@ export class EmailVerificationService {
     if (this.hasErrorParams(params)) {
       const errorMessage =
         params.error_description || "Email verification failed";
-      console.error("❌ Verification error from URL:", {
-        error_code: params.error_code,
-        error_description: params.error_description,
-      });
+      console.error(
+        "❌ Verification error from URL:",
+        JSON.stringify(
+          {
+            error_code: params.error_code,
+            error_description: params.error_description,
+          },
+          null,
+          2,
+        ),
+      );
 
       const errorResult = {
         success: false,
