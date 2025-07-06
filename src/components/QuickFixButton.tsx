@@ -6,15 +6,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MapPin, CreditCard, Plus, Zap } from "lucide-react";
+import { MapPin, Plus, Zap } from "lucide-react";
 import QuickAddressSetup from "@/components/QuickAddressSetup";
-import BankingDetailsForm from "@/components/BankingDetailsForm";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { toast } from "sonner";
 
 interface QuickFixButtonProps {
