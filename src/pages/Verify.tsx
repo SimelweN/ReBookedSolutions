@@ -64,23 +64,59 @@ const Verify = () => {
             navigate("/", { replace: true });
           }, 2000);
         } else {
-          console.error("❌ Email verification failed:", result);
+          console.error("❌ Email verification failed - Raw result:", result);
+          console.error(
+            "❌ Email verification failed - Result type:",
+            typeof result,
+          );
+          console.error(
+            "❌ Email verification failed - Result.error:",
+            result?.error,
+          );
+          console.error(
+            "❌ Email verification failed - Result.message:",
+            result?.message,
+          );
 
           // Get user-friendly error message with better error handling
           let errorMessage: string;
           try {
+            // First try the formatted error message
+            const formattedMessage =
+              EmailVerificationService.getFormattedErrorMessage?.(result);
+            console.log(
+              "Formatted message result:",
+              formattedMessage,
+              typeof formattedMessage,
+            );
+
             errorMessage =
-              EmailVerificationService.getFormattedErrorMessage?.(result) ||
-              result.message ||
-              "Email verification failed";
+              formattedMessage || result.message || "Email verification failed";
+
+            console.log(
+              "Initial error message:",
+              errorMessage,
+              typeof errorMessage,
+            );
 
             // Ensure we don't show [object Object]
             if (typeof errorMessage === "object") {
-              errorMessage = JSON.stringify(errorMessage);
+              console.warn(
+                "Error message is object, converting:",
+                errorMessage,
+              );
+              try {
+                errorMessage = JSON.stringify(errorMessage);
+              } catch {
+                errorMessage = "Email verification failed. Please try again.";
+              }
             }
             if (errorMessage === "[object Object]") {
+              console.warn("Detected [object Object], using fallback");
               errorMessage = "Email verification failed. Please try again.";
             }
+
+            console.log("Final error message:", errorMessage);
           } catch (error) {
             console.error("Error formatting error message:", error);
             errorMessage = "Email verification failed. Please try again.";
@@ -100,6 +136,11 @@ const Verify = () => {
           } else {
             setStatus("error");
             setMessage(errorMessage);
+            console.log(
+              "About to show toast with message:",
+              errorMessage,
+              typeof errorMessage,
+            );
             toast.error(errorMessage);
           }
         }
