@@ -382,118 +382,21 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         </CardContent>
       </Card>
 
-      {/* Delivery Options */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Truck className="w-5 h-5" />
-            Delivery Method
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Button
-              variant={deliveryMethod === "delivery" ? "default" : "outline"}
-              onClick={() => setDeliveryMethod("delivery")}
-              className="h-auto p-4 text-left"
-            >
-              <div>
-                <div className="font-medium">Delivery</div>
-                <div className="text-sm text-gray-500">
-                  We'll deliver to your address
-                </div>
-              </div>
-            </Button>
+      {/* Google Maps Address Picker */}
+      <GoogleMapsAddressPicker
+        onAddressSelect={handleAddressSelect}
+        initialAddress={deliveryAddress}
+      />
 
-            <Button
-              variant={deliveryMethod === "collection" ? "default" : "outline"}
-              onClick={() => setDeliveryMethod("collection")}
-              className="h-auto p-4 text-left"
-            >
-              <div>
-                <div className="font-medium">Collection</div>
-                <div className="text-sm text-gray-500">
-                  Arrange pickup with seller
-                </div>
-              </div>
-            </Button>
-          </div>
-
-          {deliveryMethod === "delivery" && (
-            <div className="space-y-4 mt-6">
-              <h4 className="font-medium flex items-center gap-2">
-                <MapPin className="w-4 h-4" />
-                Delivery Address
-              </h4>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="street">Street Address</Label>
-                  <Input
-                    id="street"
-                    value={deliveryAddress.street}
-                    onChange={(e) =>
-                      handleAddressChange("street", e.target.value)
-                    }
-                    placeholder="123 Main Street"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="city">City</Label>
-                  <Input
-                    id="city"
-                    value={deliveryAddress.city}
-                    onChange={(e) =>
-                      handleAddressChange("city", e.target.value)
-                    }
-                    placeholder="Cape Town"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="province">Province</Label>
-                  <Input
-                    id="province"
-                    value={deliveryAddress.province}
-                    onChange={(e) =>
-                      handleAddressChange("province", e.target.value)
-                    }
-                    placeholder="Western Cape"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="postal_code">Postal Code</Label>
-                  <Input
-                    id="postal_code"
-                    value={deliveryAddress.postal_code}
-                    onChange={(e) =>
-                      handleAddressChange("postal_code", e.target.value)
-                    }
-                    placeholder="8000"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="instructions">
-                  Special Instructions (Optional)
-                </Label>
-                <Textarea
-                  id="instructions"
-                  value={deliveryAddress.special_instructions}
-                  onChange={(e) =>
-                    handleAddressChange("special_instructions", e.target.value)
-                  }
-                  placeholder="Gate code, apartment number, etc."
-                  rows={3}
-                />
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {/* Courier Selection */}
+      {sellerAddress && deliveryAddress.postal_code && (
+        <CourierSelection
+          fromAddress={sellerAddress}
+          toAddress={deliveryAddress}
+          onQuoteSelect={handleCourierQuoteSelect}
+          selectedQuote={selectedCourierQuote}
+        />
+      )}
 
       {/* Price Breakdown */}
       <Card>
