@@ -1,7 +1,14 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, School, GraduationCap, MapPin, Clock } from "lucide-react";
+import {
+  BookOpen,
+  School,
+  GraduationCap,
+  MapPin,
+  Clock,
+  Store,
+} from "lucide-react";
 import { Book } from "@/types/book";
 import { toast } from "sonner";
 
