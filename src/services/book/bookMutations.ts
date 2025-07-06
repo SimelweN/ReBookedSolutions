@@ -10,10 +10,20 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
   try {
     const {
       data: { user },
+      error: authError,
     } = await supabase.auth.getUser();
 
+    if (authError) {
+      console.error("Authentication error:", authError);
+      throw new Error(
+        "Failed to verify user authentication. Please log in again.",
+      );
+    }
+
     if (!user) {
-      throw new Error("User not authenticated");
+      throw new Error(
+        "User not authenticated. Please log in to create a book listing.",
+      );
     }
 
     // Verify user has valid subaccount before allowing book creation
