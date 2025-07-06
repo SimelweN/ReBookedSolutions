@@ -20,6 +20,7 @@ import {
   TestTube,
 } from "lucide-react";
 import { testSupabaseConnection, testSupabaseAuth } from "@/utils/supabaseTest";
+import { testDatabaseSchema } from "@/utils/schemaTest";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -387,6 +388,23 @@ const Login = () => {
                   >
                     <TestTube className="h-4 w-4 mr-2" />
                     Test Direct Auth
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      const result = await testDatabaseSchema();
+                      console.log("Schema test result:", result);
+                      if (result.error) {
+                        toast.error(`Schema test failed: ${result.error}`);
+                      } else {
+                        toast.success("✅ All database columns exist!");
+                      }
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
+                    <TestTube className="h-4 w-4 mr-2" />
+                    Test Database Schema
                   </Button>
                 </div>
               </CardContent>
