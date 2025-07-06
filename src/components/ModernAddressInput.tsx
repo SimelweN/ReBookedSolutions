@@ -86,7 +86,7 @@ const ModernAddressInput: React.FC<ModernAddressInputProps> = ({
       postalCode: addressData.postalCode || "",
     };
 
-    console.log("�� Processed address:", newAddress);
+    console.log("📝 Processed address:", newAddress);
 
     setAddress(newAddress);
     setHasSelectedAddress(true);
@@ -221,6 +221,26 @@ const ModernAddressInput: React.FC<ModernAddressInputProps> = ({
                   </option>
                 ))}
               </select>
+            </div>
+
+            <div>
+              <Label htmlFor="instructions">
+                Notes / Additional Instructions
+              </Label>
+              <textarea
+                id="instructions"
+                placeholder="e.g., Gate code 1234, Unit 5B, Ring bell, Collection from side entrance..."
+                value={address.instructions || ""}
+                onChange={(e) =>
+                  handleManualUpdate("instructions", e.target.value)
+                }
+                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
+                rows={3}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Optional: Add pickup instructions, gate codes, unit numbers, or
+                other helpful details for buyers
+              </p>
             </div>
 
             {error && <p className="text-sm text-red-500">{error}</p>}
