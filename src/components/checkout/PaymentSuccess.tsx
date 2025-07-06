@@ -30,8 +30,8 @@ const PaymentSuccess = ({
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          // Auto-redirect to shipping page
-          navigate("/shipping");
+          // Auto-redirect to user orders page
+          navigate("/my-orders");
           return 0;
         }
         return prev - 1;
@@ -40,6 +40,10 @@ const PaymentSuccess = ({
 
     return () => clearInterval(timer);
   }, [navigate]);
+
+  const handleViewOrders = () => {
+    navigate("/my-orders");
+  };
 
   const handleViewShipping = () => {
     navigate("/shipping");
