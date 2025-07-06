@@ -77,7 +77,16 @@ const CourierQuoteSystem: React.FC<CourierQuoteSystemProps> = ({
       setQuotes([]);
       setQuotesError(null);
     }
-  }, [deliveryAddress, sellerAddress]);
+  }, [
+    deliveryAddress.street,
+    deliveryAddress.city,
+    deliveryAddress.province,
+    deliveryAddress.postal_code,
+    sellerAddress.street,
+    sellerAddress.city,
+    sellerAddress.province,
+    sellerAddress.postal_code,
+  ]);
 
   const handleAddressFieldChange = (
     field: keyof DeliveryAddress,
@@ -149,8 +158,15 @@ const CourierQuoteSystem: React.FC<CourierQuoteSystemProps> = ({
       }
 
       if (data && data.quotes) {
+        interface RawQuote {
+          courier: string;
+          serviceName: string;
+          price: number;
+          estimatedDays: number;
+        }
+
         const formattedQuotes: CourierQuote[] = data.quotes.map(
-          (quote: any) => ({
+          (quote: RawQuote) => ({
             courier: quote.courier as "fastway" | "courier-guy",
             service_name: quote.serviceName,
             price: quote.price,
