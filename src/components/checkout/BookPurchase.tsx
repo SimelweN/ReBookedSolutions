@@ -213,6 +213,16 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
           ? error.message
           : (error as any)?.message || JSON.stringify(error) || "Unknown error";
       console.error("Detailed seller info error:", errorMessage);
+
+      // Still set a fallback address even if there's an error
+      setSellerAddress({
+        street: "University of Cape Town",
+        city: "Cape Town",
+        province: "Western Cape",
+        postal_code: "7700",
+        country: "South Africa",
+      });
+
       setError(`Failed to load seller information: ${errorMessage}`);
     }
   };
