@@ -55,6 +55,9 @@ const SellerMarketplace = () => {
   useEffect(() => {
     if (sellerId) {
       loadSellerMarketplace();
+    } else {
+      setLoading(false);
+      setError("No seller ID provided");
     }
   }, [sellerId, loadSellerMarketplace]);
 
