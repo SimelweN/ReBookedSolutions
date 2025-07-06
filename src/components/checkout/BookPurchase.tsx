@@ -478,7 +478,9 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
               </div>
               <div>
                 <span className="text-gray-600">Delivery:</span>
-                <div className="font-medium capitalize">{deliveryMethod}</div>
+                <div className="font-medium">
+                  {selectedCourierQuote?.service_name || "Standard Delivery"}
+                </div>
               </div>
               <div>
                 <span className="text-gray-600">Total Amount:</span>
@@ -488,18 +490,29 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
               </div>
             </div>
 
-            {deliveryMethod === "delivery" && (
-              <div className="border-t pt-4">
-                <h4 className="font-medium mb-2">Delivery Address:</h4>
-                <div className="text-sm text-gray-600">
+            <div className="border-t pt-4">
+              <h4 className="font-medium mb-2">Delivery Details:</h4>
+              <div className="text-sm text-gray-600 space-y-2">
+                <div>
+                  <strong>Address:</strong>
+                  <br />
                   {deliveryAddress.street}
                   <br />
                   {deliveryAddress.city}, {deliveryAddress.province}
                   <br />
                   {deliveryAddress.postal_code}
                 </div>
+                {selectedCourierQuote && (
+                  <div>
+                    <strong>Courier:</strong>{" "}
+                    {selectedCourierQuote.service_name}
+                    <br />
+                    <strong>Estimated Delivery:</strong>{" "}
+                    {selectedCourierQuote.estimated_days} business days
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </CardContent>
       </Card>
