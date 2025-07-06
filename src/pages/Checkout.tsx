@@ -1,20 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
-import { useCart } from "@/contexts/CartContext";
+import React from "react";
 import Layout from "@/components/Layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ArrowLeft, CreditCard, Truck, MapPin, User } from "lucide-react";
-import CheckoutOrderSummary from "@/components/checkout/CheckoutOrderSummary";
-import EnhancedShippingForm from "@/components/checkout/EnhancedShippingForm";
-import SimpleShippingForm from "@/components/checkout/SimpleShippingForm";
-import PaystackPaymentButton from "@/components/payment/PaystackPaymentButton";
-import GoogleMapsErrorHandler from "@/components/GoogleMapsErrorHandler";
-import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
-import { toast } from "sonner";
+import DeprecatedCheckoutNotice from "@/components/DeprecatedCheckoutNotice";
+import SEO from "@/components/SEO";
 
 interface ShippingData {
   fullName: string;
@@ -39,14 +26,6 @@ interface DeliveryQuote {
 }
 
 const Checkout: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { user, isAuthenticated } = useAuth();
-  const { items, getTotalPrice, clearCart } = useCart();
-  const { loadError } = useGoogleMaps();
-
-  const [currentStep, setCurrentStep] = useState(1);
-  const [shippingData, setShippingData] = useState<ShippingData | null>(null);
   const [deliveryQuotes, setDeliveryQuotes] = useState<DeliveryQuote[]>([]);
   const [selectedDelivery, setSelectedDelivery] =
     useState<DeliveryQuote | null>(null);
