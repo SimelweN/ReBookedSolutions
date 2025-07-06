@@ -107,20 +107,25 @@ const DevelopmentToolsDashboard: React.FC = () => {
 
     const results = [];
 
-    // Test database connection
+    // Test database connection (using circuit breaker)
     try {
-      const { supabase } = await import("@/integrations/supabase/client");
-      const { error } = await supabase.from("profiles").select("id").limit(1);
+      const { checkDatabaseHealth } = await import(
+        "@/utils/databaseHealthCheck"
+      );
+      const dbHealth = await checkDatabaseHealth();
+
       results.push({
         test: "Database Connection",
-        status: error ? "fail" : "pass",
-        message: error ? error.message : "Connected successfully",
+        status: dbHealth.isHealthy ? "pass" : "fail",
+        message: dbHealth.isHealthy
+          ? `Connected successfully (${dbHealth.responseTime}ms${dbHealth.fromCache ? " cached" : ""})`
+          : dbHealth.error || "Connection failed",
       });
     } catch (error) {
       results.push({
         test: "Database Connection",
         status: "fail",
-        message: "Connection failed",
+        message: "Connection test failed",
       });
     }
 
