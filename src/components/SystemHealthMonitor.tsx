@@ -44,7 +44,7 @@ interface SystemStats {
 const SystemHealthMonitor: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
   const { items } = useCart();
-  const [isMonitoring, setIsMonitoring] = useState(false);
+  const [isMonitoring, setIsMonitoring] = useState(false); // Start disabled by default
   const [metrics, setMetrics] = useState<HealthMetric[]>([]);
   const [stats, setStats] = useState<SystemStats | null>(null);
   const [overallHealth, setOverallHealth] = useState<
