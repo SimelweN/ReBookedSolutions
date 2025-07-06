@@ -316,14 +316,17 @@ export const getBookById = async (id: string): Promise<Book | null> => {
           // Continue with fallback seller data instead of failing
         }
 
-        // Use mapBookFromDatabase with fallback seller data
-        const fallbackSeller = {
-          id: bookData.seller_id,
-          name: "Unknown Seller",
-          email: "unknown@example.com",
+        // Add profile data to bookData for mapBookFromDatabase
+        const bookDataWithProfile = {
+          ...bookData,
+          profiles: sellerProfile || {
+            id: bookData.seller_id,
+            name: "Unknown Seller",
+            email: "unknown@example.com",
+          },
         };
 
-        return mapBookFromDatabase(bookData, sellerProfile || fallbackSeller);
+        return mapBookFromDatabase(bookDataWithProfile);
       },
       1,
       1000,
