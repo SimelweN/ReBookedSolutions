@@ -81,23 +81,63 @@ const handleNetworkError = (error: any) => {
   throw error;
 };
 
-export const supabase = createClient<Database>(
-  ENV.VITE_SUPABASE_URL,
-  cleanApiKey,
-  {
-    auth: {
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: true,
-      flowType: "pkce",
-      // Better error handling for failed auth attempts
-      debug: import.meta.env.DEV,
-    },
-    global: {
-      fetch: resistantFetch,
-    },
-  },
-);
+// Only create Supabase client if we have valid configuration
+let supabase: any;
+
+try {
+  if (ENV.VITE_SUPABASE_URL && cleanApiKey) {
+    supabase = createClient<Database>(ENV.VITE_SUPABASE_URL, cleanApiKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+        flowType: "pkce",
+        debug: import.meta.env.DEV,
+      },
+      global: {
+        // Use native fetch with error handling
+        fetch: async (url: RequestInfo | URL, options?: RequestInit) => {
+          try {
+            return await fetch(url, options);
+          } catch (error) {
+            handleNetworkError(error);
+            throw error; // This won't be reached due to handleNetworkError throwing
+          }
+        },
+      },
+    });
+  } else {
+    console.error("❌ Supabase configuration missing - creating mock client");
+    // Create a mock client for development
+    supabase = {
+      auth: {
+        signUp: () => Promise.reject(new Error("Supabase not configured")),
+        signInWithPassword: () =>
+          Promise.reject(new Error("Supabase not configured")),
+        signOut: () => Promise.reject(new Error("Supabase not configured")),
+        getSession: () =>
+          Promise.resolve({ data: { session: null }, error: null }),
+        onAuthStateChange: () => ({
+          data: { subscription: { unsubscribe: () => {} } },
+        }),
+      },
+      from: () => ({
+        select: () => Promise.reject(new Error("Supabase not configured")),
+        insert: () => Promise.reject(new Error("Supabase not configured")),
+        update: () => Promise.reject(new Error("Supabase not configured")),
+        delete: () => Promise.reject(new Error("Supabase not configured")),
+      }),
+      functions: {
+        invoke: () => Promise.reject(new Error("Supabase not configured")),
+      },
+    };
+  }
+} catch (error) {
+  console.error("❌ Failed to initialize Supabase client:", error);
+  throw error;
+}
+
+export { supabase };
 
 // Debug connection on client creation
 if (import.meta.env.DEV) {
