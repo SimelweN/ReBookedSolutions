@@ -52,15 +52,6 @@ const SellerMarketplace = () => {
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
-  useEffect(() => {
-    if (sellerId) {
-      loadSellerMarketplace();
-    } else {
-      setLoading(false);
-      setError("No seller ID provided");
-    }
-  }, [sellerId, loadSellerMarketplace]);
-
   const loadSellerMarketplace = useCallback(async () => {
     if (!sellerId) {
       setError("Seller ID is required");
