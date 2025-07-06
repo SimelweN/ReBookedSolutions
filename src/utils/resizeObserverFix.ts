@@ -162,45 +162,33 @@ if (typeof window !== "undefined" && window.ResizeObserver) {
 
   class SafeResizeObserver {
     private observer: ResizeObserver;
-    private callbacks = new Map<
-      Element,
-      { callback: ResizeObserverCallback; lastCall: number }
-    >();
+    private mainCallback: ResizeObserverCallback;
+    private observedElements = new Map<Element, { lastCall: number }>();
     private debounceTime = 16; // ~60fps
 
     constructor(callback: ResizeObserverCallback) {
+      this.mainCallback = callback;
       this.observer = new OriginalResizeObserver((entries) => {
         const now = Date.now();
 
-        // Group entries by callback and debounce
-        const callbackGroups = new Map<
-          ResizeObserverCallback,
-          ResizeObserverEntry[]
-        >();
-
-        entries.forEach((entry) => {
+        // Filter entries based on debounce timing
+        const validEntries = entries.filter((entry) => {
           const element = entry.target;
-          const callbackData = this.callbacks.get(element);
+          const elementData = this.observedElements.get(element);
 
-          if (
-            callbackData &&
-            now - callbackData.lastCall >= this.debounceTime
-          ) {
-            if (!callbackGroups.has(callbackData.callback)) {
-              callbackGroups.set(callbackData.callback, []);
-            }
-            callbackGroups.get(callbackData.callback)!.push(entry);
-            callbackData.lastCall = now;
+          if (elementData && now - elementData.lastCall >= this.debounceTime) {
+            elementData.lastCall = now;
+            return true;
           }
+          return false;
         });
 
-        // Call each unique callback with its entries
-        callbackGroups.forEach((entries, callback) => {
+        if (validEntries.length > 0) {
           try {
             // Use requestAnimationFrame to prevent layout thrashing
             requestAnimationFrame(() => {
               try {
-                callback(entries, this.observer);
+                this.mainCallback(validEntries, this.observer);
               } catch (error) {
                 // Silently handle errors to prevent console spam
                 if (import.meta.env.DEV) {
@@ -214,13 +202,12 @@ if (typeof window !== "undefined" && window.ResizeObserver) {
           } catch (error) {
             // Silently handle RAF errors
           }
-        });
+        }
       });
     }
 
     observe(element: Element, options?: ResizeObserverOptions) {
-      this.callbacks.set(element, {
-        callback,
+      this.observedElements.set(element, {
         lastCall: 0,
       });
       this.observer.observe(element, options);
