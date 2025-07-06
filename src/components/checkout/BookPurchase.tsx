@@ -198,25 +198,21 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
     if (!user?.id) return;
 
     try {
-      const { data: profile, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
+      // Use simplified address service to get user's shipping address
+      const { getSimpleUserAddresses } = await import(
+        "@/services/simplifiedAddressService"
+      );
+      const userAddresses = await getSimpleUserAddresses(user.id);
 
-      if (error) throw error;
-
-      // Pre-fill delivery address from profile if available
-      if (profile.address) {
+      // Pre-fill delivery address from user's shipping address
+      if (userAddresses.shipping_address) {
+        const shipping = userAddresses.shipping_address;
         setDeliveryAddress({
-          street: profile.address.street || "",
-          city: profile.address.city || "",
-          province: profile.address.province || "",
-          postal_code: profile.address.postal_code || "",
+          street: shipping.streetAddress || "",
+          city: shipping.city || "",
+          province: shipping.province || "",
+          postal_code: shipping.postalCode || "",
           country: "South Africa",
-          lat: profile.address.lat,
-          lng: profile.address.lng,
-          formatted_address: profile.address.formatted_address,
         });
       }
     } catch (error) {
