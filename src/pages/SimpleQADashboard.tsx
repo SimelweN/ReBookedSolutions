@@ -82,10 +82,18 @@ const SimpleQADashboard: React.FC = () => {
     setOrderTestResults([]);
 
     try {
+      const { testOrderSystem } = await import("@/utils/testOrderSystem");
       const results = await testOrderSystem();
       setOrderTestResults(results);
     } catch (error) {
       console.error("Order system tests failed:", error);
+      setOrderTestResults([
+        {
+          name: "Test Import Error",
+          status: "FAILED",
+          error: error.message,
+        },
+      ]);
     } finally {
       setIsRunningOrderTests(false);
     }
@@ -95,6 +103,8 @@ const SimpleQADashboard: React.FC = () => {
     setQuickOrderStatus("Running...");
 
     try {
+      const { checkDatabaseStatus } = await import("@/utils/testOrderSystem");
+
       // Capture console output
       const originalLog = console.log;
       let output = "";
