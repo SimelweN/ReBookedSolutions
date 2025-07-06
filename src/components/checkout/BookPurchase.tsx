@@ -125,7 +125,16 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
 
       console.log("Seller query result:", { seller, error });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
+
+      if (!seller) {
+        throw new Error("Seller profile not found");
+      }
+
+      console.log("Successfully loaded seller:", seller);
       setSellerInfo(seller);
 
       // Set seller address for delivery calculations
