@@ -115,13 +115,20 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         throw new Error("No seller_id provided");
       }
 
-      // Use enhanced seller validation
+      // Add timeout to prevent infinite loading
+      const timeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Seller validation timeout")), 10000),
+      );
+
+      // Use enhanced seller validation with timeout
       const { SellerProfileService } = await import(
         "@/services/sellerProfileService"
       );
-      const validation = await SellerProfileService.validateSellerForPurchase(
-        book.seller_id,
-      );
+
+      const validation = await Promise.race([
+        SellerProfileService.validateSellerForPurchase(book.seller_id),
+        timeout,
+      ]);
 
       if (!validation.isValid) {
         setError(validation.errorMessage || "Seller not available for orders");
