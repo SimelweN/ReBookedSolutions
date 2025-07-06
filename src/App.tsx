@@ -409,60 +409,12 @@ function App() {
                         }
                       />
 
-                      {/* QA Dashboard Routes */}
-                      <Route
-                        path="/qa-dashboard"
-                        element={
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <SimpleQADashboard />
-                          </Suspense>
-                        }
-                      />
+                      {/* QA Dashboard (for quality assurance) */}
                       <Route
                         path="/qa"
                         element={
                           <Suspense fallback={<LoadingSpinner />}>
                             <QADashboard />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/qa-enhanced"
-                        element={
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <EnhancedQADashboard />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/test-orders"
-                        element={
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <TestOrderSystemSimple />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/order-tests"
-                        element={
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <OrderSystemTests />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/verify-migration"
-                        element={
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <MigrationVerify />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/debug-email-verify"
-                        element={
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <DebugEmailVerify />
                           </Suspense>
                         }
                       />
