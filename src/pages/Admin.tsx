@@ -3,6 +3,7 @@ import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import AdminDashboard from "@/components/AdminDashboard";
+import OrderTestComponent from "@/components/OrderTestComponent";
 import { ArrowLeft, Flag, Shield } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import LoadingSpinner from "@/components/LoadingSpinner";
