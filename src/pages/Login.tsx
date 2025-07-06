@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { testSupabaseConnection, testSupabaseAuth } from "@/utils/supabaseTest";
 import { testDatabaseSchema } from "@/utils/schemaTest";
+import { testImplementation } from "@/utils/implementationTest";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -405,6 +406,34 @@ const Login = () => {
                   >
                     <TestTube className="h-4 w-4 mr-2" />
                     Test Database Schema
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      toast.info(
+                        "🔍 Running comprehensive implementation test...",
+                      );
+                      const results = await testImplementation();
+                      console.log("Implementation test results:", results);
+
+                      const allPassed = Object.values(results).every(
+                        (r) => r.passed,
+                      );
+                      if (allPassed) {
+                        toast.success("🎉 All implementation tests passed!");
+                      } else {
+                        const failed = Object.entries(results)
+                          .filter(([_, r]) => !r.passed)
+                          .map(([name, r]) => `${name}: ${r.error}`)
+                          .join(", ");
+                        toast.error(`❌ Tests failed: ${failed}`);
+                      }
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
+                    <TestTube className="h-4 w-4 mr-2" />
+                    Run Full Implementation Test
                   </Button>
                 </div>
               </CardContent>
