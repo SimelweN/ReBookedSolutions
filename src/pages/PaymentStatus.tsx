@@ -348,59 +348,57 @@ const PaymentStatus: React.FC = () => {
                   </div>
 
                   <div className="border-t pt-4">
-                    <h4 className="font-medium mb-3">Items Purchased</h4>
+                    <h4 className="font-medium mb-3">Book Purchased</h4>
                     <div className="space-y-3">
-                      {order.items.map((item, index) => (
-                        <div
-                          key={index}
-                          className="flex justify-between items-start"
-                        >
+                      {order.book ? (
+                        <div className="flex justify-between items-start">
                           <div className="flex-1">
-                            <p className="font-medium text-sm">{item.title}</p>
-                            {item.author && (
+                            <p className="font-medium text-sm">
+                              {order.book.title}
+                            </p>
+                            {order.book.author && (
                               <p className="text-xs text-gray-600">
-                                by {item.author}
+                                by {order.book.author}
                               </p>
                             )}
-                            {item.isbn && (
-                              <p className="text-xs text-gray-600">
-                                ISBN: {item.isbn}
-                              </p>
-                            )}
-                            {item.condition && (
-                              <Badge variant="outline" className="text-xs mt-1">
-                                {item.condition}
-                              </Badge>
+                            {order.book.imageUrl && (
+                              <div className="mt-2">
+                                <img
+                                  src={order.book.imageUrl}
+                                  alt={order.book.title}
+                                  className="w-16 h-20 object-cover rounded"
+                                />
+                              </div>
                             )}
                           </div>
                           <div className="text-right ml-4">
                             <p className="font-medium">
-                              R{(item.price / 100).toFixed(2)}
+                              R{(order.amount / 100).toFixed(2)}
                             </p>
                             <p className="text-xs text-gray-600">Qty: 1</p>
                           </div>
                         </div>
-                      ))}
+                      ) : (
+                        <div className="text-sm text-gray-600">
+                          Book details not available
+                        </div>
+                      )}
                     </div>
                   </div>
 
                   <div className="border-t pt-4 space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span>Subtotal</span>
+                      <span>Book Price</span>
+                      <span>R{(order.amount / 100).toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Delivery</span>
                       <span>
-                        R
-                        {(
-                          (order.amount - (order.delivery_fee || 0)) /
-                          100
-                        ).toFixed(2)}
+                        {order.delivery_option === "pickup"
+                          ? "Collection"
+                          : "Included"}
                       </span>
                     </div>
-                    {order.delivery_fee && (
-                      <div className="flex justify-between text-sm">
-                        <span>Delivery Fee</span>
-                        <span>R{(order.delivery_fee / 100).toFixed(2)}</span>
-                      </div>
-                    )}
                     <div className="flex justify-between font-medium text-lg border-t pt-2">
                       <span>Total Paid</span>
                       <span>R{(order.amount / 100).toFixed(2)}</span>
