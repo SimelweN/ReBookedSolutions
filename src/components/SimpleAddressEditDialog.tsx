@@ -119,10 +119,30 @@ const SimpleAddressEditDialog = ({
 
     setIsSubmitting(true);
     try {
-      const finalShippingAddress = sameAsPickup
-        ? pickupAddress
-        : shippingAddress;
-      await onSave(pickupAddress, finalShippingAddress, sameAsPickup);
+      // Format addresses with all required fields
+      const formattedPickupAddress = {
+        ...pickupAddress,
+        streetAddress: pickupAddress.street,
+        complex: pickupAddress.complex || "",
+        unitNumber: pickupAddress.unitNumber || "",
+        suburb: pickupAddress.suburb || "",
+      };
+
+      const formattedShippingAddress = sameAsPickup
+        ? formattedPickupAddress
+        : {
+            ...shippingAddress,
+            streetAddress: shippingAddress.street,
+            complex: shippingAddress.complex || "",
+            unitNumber: shippingAddress.unitNumber || "",
+            suburb: shippingAddress.suburb || "",
+          };
+
+      await onSave(
+        formattedPickupAddress,
+        formattedShippingAddress,
+        sameAsPickup,
+      );
       toast.success("Addresses updated successfully!");
       onClose();
     } catch (error) {
