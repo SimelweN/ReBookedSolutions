@@ -143,15 +143,8 @@ try {
         debug: import.meta.env.DEV,
       },
       global: {
-        // Use preserved original fetch to avoid FullStory interference
-        fetch: async (url: RequestInfo | URL, options?: RequestInit) => {
-          try {
-            return await originalFetch(url, options);
-          } catch (error) {
-            handleNetworkError(error);
-            throw error; // This won't be reached due to handleNetworkError throwing
-          }
-        },
+        // Use XMLHttpRequest-based fetch to completely bypass FullStory
+        fetch: protectedFetch,
       },
     });
   } else {
