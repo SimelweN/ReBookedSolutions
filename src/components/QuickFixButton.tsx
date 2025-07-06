@@ -55,16 +55,6 @@ const QuickFixButton = ({
                 </div>
               </div>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => setShowBankingSetup(true)}
-              className="cursor-pointer"
-            >
-              <CreditCard className="w-4 h-4 mr-2" />
-              <div>
-                <div className="font-medium">Add Banking Details</div>
-                <div className="text-xs text-gray-500">To receive payments</div>
-              </div>
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
