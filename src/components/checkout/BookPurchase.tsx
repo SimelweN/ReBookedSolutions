@@ -245,13 +245,6 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
     return book.price + deliveryFee;
   };
 
-  const handleAddressChange = (field: keyof DeliveryAddress, value: string) => {
-    setDeliveryAddress((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
   const validateStep1 = () => {
     if (
       !deliveryAddress.street ||
