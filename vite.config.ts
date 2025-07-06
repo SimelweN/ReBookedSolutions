@@ -174,5 +174,7 @@ export default defineConfig(({ mode }) => ({
   esbuild: {
     // Drop console logs and debugger statements in production
     drop: mode === "production" ? ["console", "debugger"] : [],
+    // Minimize dead code
+    treeShaking: true,
   },
 }));
