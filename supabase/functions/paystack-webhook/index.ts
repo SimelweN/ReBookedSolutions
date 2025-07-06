@@ -103,7 +103,11 @@ async function handleSuccessfulPayment(supabase: any, paymentData: any) {
       .single();
 
     if (orderError || !order) {
-      console.error("Order not found:", paymentData.reference);
+      console.error(
+        "Order not found for reference:",
+        paymentData.reference,
+        orderError,
+      );
 
       // Try to find in transactions table as fallback
       const { data: transaction, error: transactionError } = await supabase
@@ -121,6 +125,8 @@ async function handleSuccessfulPayment(supabase: any, paymentData: any) {
       await handleLegacyTransaction(supabase, transaction, paymentData);
       return;
     }
+
+    console.log("Found order for payment:", order.id);
 
     // Update order status to paid
     const { error: updateError } = await supabase
