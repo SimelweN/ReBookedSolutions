@@ -100,13 +100,34 @@ const Profile = () => {
     if (!user?.id) return;
 
     try {
-      const data = await getUserAddresses(user.id);
-      setAddressData(data);
+      const { getSimpleUserAddresses } = await import(
+        "@/services/simplifiedAddressService"
+      );
+      const data = await getSimpleUserAddresses(user.id);
+      setUserAddresses(data);
+
+      // Convert to old format for compatibility
+      if (data.pickup_address) {
+        setAddressData({
+          id: user.id,
+          complex: data.pickup_address.complex || "",
+          unit_number: data.pickup_address.unitNumber || "",
+          street_address: data.pickup_address.streetAddress || "",
+          suburb: data.pickup_address.suburb || "",
+          city: data.pickup_address.city || "",
+          province: data.pickup_address.province || "",
+          postal_code: data.pickup_address.postalCode || "",
+        });
+      } else {
+        setAddressData(null);
+      }
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
       console.error("Error loading addresses:", errorMessage);
       toast.error("Failed to load addresses");
+      setUserAddresses(null);
+      setAddressData(null);
     }
   }, [user?.id]);
 
