@@ -251,8 +251,13 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
     postal_code?: string;
     country?: string;
   }) => {
-    setValue("recipient_name", address.name || "");
-    setValue("phone", address.phone || "");
+    // Only set values if they exist and are not empty, to avoid overriding autofill or user input
+    if (address.name && address.name.trim()) {
+      setValue("recipient_name", address.name);
+    }
+    if (address.phone && address.phone.trim()) {
+      setValue("phone", address.phone);
+    }
     setValue(
       "street_address",
       address.streetAddress || address.street_address || "",
