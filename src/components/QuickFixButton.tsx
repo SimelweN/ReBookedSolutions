@@ -12,15 +12,10 @@ import { toast } from "sonner";
 
 interface QuickFixButtonProps {
   onAddressAdded?: () => void;
-  onBankingAdded?: () => void;
 }
 
-const QuickFixButton = ({
-  onAddressAdded,
-  onBankingAdded,
-}: QuickFixButtonProps) => {
+const QuickFixButton = ({ onAddressAdded }: QuickFixButtonProps) => {
   const [showAddressSetup, setShowAddressSetup] = useState(false);
-  const [showBankingSetup, setShowBankingSetup] = useState(false);
 
   return (
     <>
