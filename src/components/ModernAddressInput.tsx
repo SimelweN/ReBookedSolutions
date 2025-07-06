@@ -25,6 +25,7 @@ interface Address {
   city: string;
   province: string;
   postalCode: string;
+  instructions?: string;
 }
 
 interface ModernAddressInputProps {
