@@ -103,7 +103,14 @@ const ModernAddressInput: React.FC<ModernAddressInputProps> = ({
 
     setAddress(newAddress);
     setHasSelectedAddress(true);
-    onAddressUpdate(newAddress);
+
+    // Convert to backend-compatible format
+    const backendCompatibleAddress = {
+      ...newAddress,
+      streetAddress: newAddress.street, // Add streetAddress for backend compatibility
+    };
+
+    onAddressUpdate(backendCompatibleAddress);
   };
 
   const handleManualUpdate = (field: keyof Address, value: string) => {
@@ -118,7 +125,13 @@ const ModernAddressInput: React.FC<ModernAddressInputProps> = ({
       setHasSelectedAddress(true);
     }
 
-    onAddressUpdate(newAddress);
+    // Convert to backend-compatible format
+    const backendCompatibleAddress = {
+      ...newAddress,
+      streetAddress: newAddress.street, // Add streetAddress for backend compatibility
+    };
+
+    onAddressUpdate(backendCompatibleAddress);
   };
 
   const formatAddressForDisplay = (addr: Address) => {
