@@ -19,6 +19,14 @@ if (process.env.NODE_ENV === "development") {
       "🧪 Order system test utilities loaded. Run testOrderSystem() or checkDatabaseStatus() in console.",
     );
   });
+
+  // Load migration verification utility
+  import("./utils/verifyMigration").then((module) => {
+    (window as any).verifyMigration = module.verifyMigration;
+    console.log(
+      "🔍 Migration verification loaded. Run verifyMigration() to check if migration was successful.",
+    );
+  });
 }
 
 // Import critical pages directly
