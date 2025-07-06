@@ -61,62 +61,24 @@ try {
 // Clean the API key (remove any leading = signs that might have been added by accident)
 const cleanApiKey = ENV.VITE_SUPABASE_ANON_KEY.replace(/^=+/, "");
 
-// Import robust fetch to handle network errors
-import { robustFetch } from "@/utils/networkErrorHandler";
+// Simple error handler for network issues
+const handleNetworkError = (error: any) => {
+  console.warn("🌐 Supabase network error:", error?.message || error);
 
-// Create a network-resistant fetch function
-const resistantFetch = async (
-  url: RequestInfo | URL,
-  options?: RequestInit,
-) => {
-  try {
-    return await robustFetch(url, options);
-  } catch (error) {
-    console.warn("🔗 Supabase fetch failed, using fallback:", error);
-
-    // Fallback: Use XMLHttpRequest if fetch is compromised
-    return new Promise<Response>((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      const method = options?.method || "GET";
-
-      xhr.open(method, url.toString());
-
-      // Set headers
-      if (options?.headers) {
-        const headers = new Headers(options.headers);
-        headers.forEach((value, key) => {
-          xhr.setRequestHeader(key, value);
-        });
-      }
-
-      xhr.onload = () => {
-        const response = new Response(xhr.responseText, {
-          status: xhr.status,
-          statusText: xhr.statusText,
-          headers: new Headers(
-            xhr
-              .getAllResponseHeaders()
-              .split("\r\n")
-              .reduce(
-                (acc, line) => {
-                  const [key, value] = line.split(": ");
-                  if (key && value) acc[key] = value;
-                  return acc;
-                },
-                {} as Record<string, string>,
-              ),
-          ),
-        });
-        resolve(response);
-      };
-
-      xhr.onerror = () => reject(new Error("Network request failed"));
-      xhr.ontimeout = () => reject(new Error("Request timeout"));
-
-      xhr.timeout = 10000; // 10 second timeout
-      xhr.send(options?.body);
-    });
+  // Provide user-friendly error messages
+  if (error?.message?.includes("Network request failed")) {
+    throw new Error(
+      "Unable to connect to the server. Please check your internet connection and try again.",
+    );
   }
+
+  if (error?.message?.includes("Failed to fetch")) {
+    throw new Error(
+      "Connection failed. Please refresh the page and try again.",
+    );
+  }
+
+  throw error;
 };
 
 export const supabase = createClient<Database>(
