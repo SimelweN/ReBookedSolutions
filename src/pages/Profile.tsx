@@ -100,14 +100,18 @@ const Profile = () => {
     if (!user?.id) return;
 
     try {
+      console.log("🏠 Loading user addresses for profile...");
       const { getSimpleUserAddresses } = await import(
         "@/services/simplifiedAddressService"
       );
       const data = await getSimpleUserAddresses(user.id);
+      console.log("📍 Addresses loaded:", data);
+
       setUserAddresses(data);
 
       // Convert to old format for compatibility
       if (data.pickup_address) {
+        console.log("✅ Setting pickup address data");
         setAddressData({
           id: user.id,
           complex: data.pickup_address.complex || "",
@@ -119,13 +123,22 @@ const Profile = () => {
           postal_code: data.pickup_address.postalCode || "",
         });
       } else {
+        console.log("⚠️ No pickup address found");
         setAddressData(null);
       }
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      console.error("Error loading addresses:", errorMessage);
-      toast.error("Failed to load addresses");
+      console.error("❌ Error loading addresses:", errorMessage);
+
+      // Don't show error toast if it's just a missing profile
+      if (
+        !errorMessage.includes("No rows") &&
+        !errorMessage.includes("PGRST116")
+      ) {
+        toast.error("Failed to load addresses");
+      }
+
       setUserAddresses(null);
       setAddressData(null);
     }
