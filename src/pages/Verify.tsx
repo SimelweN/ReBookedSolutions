@@ -44,7 +44,15 @@ const Verify = () => {
           hash: window.location.hash,
         };
 
-        console.log("🔍 All URL parameters:", urlParams);
+        console.log(
+          "🔍 All URL parameters:",
+          JSON.stringify(urlParams, null, 2),
+        );
+        console.log("🔍 Raw searchParams:", window.location.search);
+        console.log("🔍 Individual search params:");
+        for (const [key, value] of searchParams.entries()) {
+          console.log(`  ${key}: ${value}`);
+        }
         setDebugInfo(urlParams);
 
         // Use the verification service
