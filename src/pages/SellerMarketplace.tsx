@@ -377,7 +377,8 @@ const SellerMarketplace = () => {
 
         {/* Books Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {books.length === 0 ? (
+          {books.filter((book) => book.availability === "available").length ===
+          0 ? (
             <div className="col-span-full text-center py-12">
               <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900">
