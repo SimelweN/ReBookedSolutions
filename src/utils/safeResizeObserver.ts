@@ -3,6 +3,8 @@
  * and provides debouncing to improve performance
  */
 
+import React from "react";
+
 interface DebouncedResizeObserverOptions {
   debounceTime?: number;
   maxCallsPerSecond?: number;
