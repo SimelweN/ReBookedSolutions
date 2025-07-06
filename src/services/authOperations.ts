@@ -291,11 +291,29 @@ export const fetchUserProfileQuick = async (
   try {
     console.log("🔄 Quick profile fetch for user:", user.id);
 
+    // Check if we've recently verified table doesn't exist to avoid repeated checks
+    const tableCheckKey = "profiles_table_available";
+    const lastTableCheck = sessionStorage.getItem(tableCheckKey);
+
+    if (lastTableCheck === "false") {
+      const lastCheckTime = sessionStorage.getItem(`${tableCheckKey}_time`);
+      if (lastCheckTime) {
+        const timeSinceCheck = Date.now() - parseInt(lastCheckTime);
+        // Don't recheck for 5 minutes if table was unavailable
+        if (timeSinceCheck < 5 * 60 * 1000) {
+          console.log(
+            "ℹ️ Profiles table previously unavailable - using fallback",
+          );
+          return null;
+        }
+      }
+    }
+
     // Test if profiles table exists with a very quick check
     try {
       const { error: tableCheckError } = (await withTimeout(
         supabase.from("profiles").select("id").limit(1),
-        800, // Ultra-fast timeout for existence check
+        1000, // Slightly longer timeout
         "Table check timeout",
       )) as any;
 
@@ -308,6 +326,12 @@ export const fetchUserProfileQuick = async (
           console.warn(
             "❌ Profiles table does not exist - using fallback profile",
           );
+          // Cache this result to avoid repeated checks
+          sessionStorage.setItem(tableCheckKey, "false");
+          sessionStorage.setItem(
+            `${tableCheckKey}_time`,
+            Date.now().toString(),
+          );
           return null;
         }
 
@@ -319,6 +343,12 @@ export const fetchUserProfileQuick = async (
           console.warn(
             "❌ No permission to access profiles table - using fallback",
           );
+          // Cache this result to avoid repeated checks
+          sessionStorage.setItem(tableCheckKey, "false");
+          sessionStorage.setItem(
+            `${tableCheckKey}_time`,
+            Date.now().toString(),
+          );
           return null;
         }
 
@@ -329,9 +359,16 @@ export const fetchUserProfileQuick = async (
           );
           return null;
         }
+      } else {
+        // Table check succeeded, cache positive result
+        sessionStorage.setItem(tableCheckKey, "true");
+        sessionStorage.setItem(`${tableCheckKey}_time`, Date.now().toString());
       }
     } catch (tableCheckError) {
       console.warn("⚠️ Table existence check failed - using fallback profile");
+      // Cache negative result to avoid immediate retries
+      sessionStorage.setItem(tableCheckKey, "false");
+      sessionStorage.setItem(`${tableCheckKey}_time`, Date.now().toString());
       return null;
     }
 
