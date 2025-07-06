@@ -19,7 +19,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import DuplicatePaymentPrevention from "@/services/duplicatePaymentPrevention";
-import DeliverySelector from "@/components/DeliverySelector";
+import CourierQuoteSystem from "@/components/CourierQuoteSystem";
 import { toast } from "sonner";
 
 interface BookData {
@@ -229,16 +229,9 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
     setDeliveryAddress(address);
   };
 
-  const handleDeliverySelect = (option: any) => {
-    setDeliveryFee(option.price);
-    setSelectedCourierQuote({
-      courier: option.id,
-      service_name: option.name,
-      service_code: option.id.toUpperCase(),
-      price: option.price,
-      estimated_days: option.days,
-      description: option.description,
-    });
+  const handleCourierSelect = (quote: CourierQuote) => {
+    setSelectedCourierQuote(quote);
+    setDeliveryFee(quote.price);
   };
 
   const getTotalAmount = () => {
