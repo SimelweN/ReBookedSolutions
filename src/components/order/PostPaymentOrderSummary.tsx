@@ -285,20 +285,29 @@ Thank you for your purchase!
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {order.delivery_address ? (
+          {order.delivery_address ||
+          order.shipping_address ||
+          order.delivery_data?.delivery_address ? (
             <div>
               <div className="flex items-start gap-2 mb-2">
                 <MapPin className="w-4 h-4 text-gray-500 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium">Delivery Address</p>
-                  <p className="text-sm text-gray-600">
-                    {order.delivery_address.street}
-                    <br />
-                    {order.delivery_address.city},{" "}
-                    {order.delivery_address.province}
-                    <br />
-                    {order.delivery_address.postal_code}
-                  </p>
+                  {(() => {
+                    const address =
+                      order.delivery_address ||
+                      order.shipping_address ||
+                      order.delivery_data?.delivery_address;
+                    return (
+                      <p className="text-sm text-gray-600">
+                        {address.street || address.address_line_1}
+                        <br />
+                        {address.city}, {address.province || address.state}
+                        <br />
+                        {address.postal_code || address.zip_code}
+                      </p>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
