@@ -87,8 +87,15 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
     null,
   );
   const [selectedCourierQuote, setSelectedCourierQuote] =
-    useState<CourierQuote | null>(null);
-  const [deliveryFee, setDeliveryFee] = useState(0);
+    useState<CourierQuote | null>({
+      courier: "standard",
+      service_name: "Standard Delivery",
+      service_code: "STD",
+      price: 85,
+      estimated_days: "3-5",
+      description: "Standard courier delivery",
+    });
+  const [deliveryFee, setDeliveryFee] = useState(85); // Default to standard delivery
   const [sellerInfo, setSellerInfo] = useState<any>(null);
 
   // Load seller information and user profile
