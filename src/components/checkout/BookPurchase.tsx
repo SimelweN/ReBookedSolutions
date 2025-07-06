@@ -145,7 +145,12 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
       }
     } catch (error) {
       console.error("Error loading seller info:", error);
-      setError("Failed to load seller information");
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : (error as any)?.message || JSON.stringify(error) || "Unknown error";
+      console.error("Detailed seller info error:", errorMessage);
+      setError(`Failed to load seller information: ${errorMessage}`);
     }
   };
 
