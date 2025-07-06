@@ -326,10 +326,12 @@ export class EmailVerificationService {
     const error = result.error;
     let baseMessage = "Email verification failed. ";
 
-    if (
-      error?.message?.includes("expired") ||
-      error?.code === "token_expired"
-    ) {
+    // Extract error message safely
+    const errorMessage =
+      error?.message || error?.error_description || error?.description || "";
+    const errorCode = error?.code || error?.error_code || "";
+
+    if (errorMessage.includes("expired") || errorCode === "token_expired") {
       return (
         baseMessage +
         "The verification link has expired. Please register again."
@@ -337,8 +339,8 @@ export class EmailVerificationService {
     }
 
     if (
-      error?.message?.includes("already confirmed") ||
-      error?.code === "email_already_confirmed"
+      errorMessage.includes("already confirmed") ||
+      errorCode === "email_already_confirmed"
     ) {
       return (
         baseMessage +
@@ -346,31 +348,39 @@ export class EmailVerificationService {
       );
     }
 
-    if (
-      error?.message?.includes("invalid") ||
-      error?.code === "invalid_token"
-    ) {
+    if (errorMessage.includes("invalid") || errorCode === "invalid_token") {
       return (
         baseMessage + "The verification link is invalid. Please register again."
       );
     }
 
-    if (error?.message?.includes("Email not confirmed")) {
+    if (errorMessage.includes("Email not confirmed")) {
       return (
         baseMessage +
         "Your email is not yet confirmed. Please check your email for the confirmation link."
       );
     }
 
-    if (
-      error?.message?.includes("not found") ||
-      error?.code === "user_not_found"
-    ) {
+    if (errorMessage.includes("not found") || errorCode === "user_not_found") {
       return baseMessage + "User not found. Please register again.";
     }
 
-    return (
-      baseMessage + (result.message || "Please try again or contact support.")
-    );
+    // Ensure we return a proper string message
+    let finalMessage = result.message || "Please try again or contact support.";
+
+    // Prevent [object Object] from being returned
+    if (typeof finalMessage === "object") {
+      try {
+        finalMessage = JSON.stringify(finalMessage);
+      } catch {
+        finalMessage = "Please try again or contact support.";
+      }
+    }
+
+    if (finalMessage === "[object Object]") {
+      finalMessage = "Please try again or contact support.";
+    }
+
+    return baseMessage + finalMessage;
   }
 }
