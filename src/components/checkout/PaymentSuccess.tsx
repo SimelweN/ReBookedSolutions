@@ -129,7 +129,7 @@ const PaymentSuccess = ({
             <div className="flex items-center justify-center gap-2 text-gray-600">
               <Clock className="h-4 w-4" />
               <span className="text-sm">
-                Redirecting to shipping page in {countdown} seconds
+                Redirecting to your orders in {countdown} seconds
               </span>
             </div>
           </div>
@@ -137,15 +137,15 @@ const PaymentSuccess = ({
           {/* Action Buttons */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Button
-              onClick={handleViewShipping}
+              onClick={handleViewOrders}
               className="bg-book-600 hover:bg-book-700"
             >
-              <Package className="mr-2 h-4 w-4" />
-              View Shipping
-            </Button>
-            <Button onClick={handleViewProfile} variant="outline">
               <Eye className="mr-2 h-4 w-4" />
               View Orders
+            </Button>
+            <Button onClick={handleViewShipping} variant="outline">
+              <Package className="mr-2 h-4 w-4" />
+              Track Shipping
             </Button>
           </div>
 
