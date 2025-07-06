@@ -330,9 +330,9 @@ const EnhancedAddressEditDialog = ({
 
                 {pickupCoords && (
                   <div className="space-y-3">
-                    <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                      <p className="text-sm text-green-800">
-                        <strong>✅ Pickup Address Selected:</strong>
+                    <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                      <p className="text-sm text-gray-700">
+                        <strong>Pickup Address:</strong>
                         <br />
                         {formatAddressForDisplay(pickupAddress)}
                       </p>
