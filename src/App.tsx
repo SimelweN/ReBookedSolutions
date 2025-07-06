@@ -48,6 +48,7 @@ const EnhancedQADashboard = React.lazy(
 const TestOrderSystemSimple = React.lazy(
   () => import("./pages/TestOrderSystemSimple"),
 );
+const OrderSystemTests = React.lazy(() => import("./pages/OrderSystemTests"));
 const StudyResources = React.lazy(() => import("./pages/StudyResources"));
 const UserProfile = React.lazy(() => import("./pages/UserProfile"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
@@ -456,6 +457,14 @@ function App() {
                         element={
                           <Suspense fallback={<LoadingSpinner />}>
                             <TestOrderSystemSimple />
+                          </Suspense>
+                        }
+                      />
+                      <Route
+                        path="/order-tests"
+                        element={
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <OrderSystemTests />
                           </Suspense>
                         }
                       />
