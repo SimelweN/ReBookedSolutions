@@ -118,7 +118,11 @@ export const SimplifiedAddressDialog: React.FC<
 
     setIsLoading(true);
     try {
-      console.log("Starting address save operation...");
+      console.log("Starting address save operation for user:", userId);
+      console.log("Pickup address:", pickupAddress);
+      console.log("Shipping address:", shippingAddress);
+      console.log("Same as pickup:", sameAsPickup);
+
       const result = await saveSimpleUserAddresses(
         userId,
         pickupAddress,
@@ -129,19 +133,27 @@ export const SimplifiedAddressDialog: React.FC<
 
       toast.success("Addresses saved successfully!");
 
-      // Wait a bit to ensure the save is complete
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Wait a bit to ensure UI updates
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       if (onSuccess) {
-        await onSuccess();
+        try {
+          await onSuccess();
+          console.log("onSuccess callback completed");
+        } catch (successError) {
+          console.error("Error in onSuccess callback:", successError);
+          // Don't fail the whole operation for callback errors
+        }
       }
 
       onClose();
     } catch (error) {
       console.error("Error saving addresses:", error);
-      toast.error(
-        error instanceof Error ? error.message : "Failed to save addresses",
-      );
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to save addresses";
+      toast.error(`Address save failed: ${errorMessage}`);
+
+      // Don't close dialog on error so user can retry
     } finally {
       setIsLoading(false);
     }
