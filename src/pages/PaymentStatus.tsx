@@ -183,12 +183,20 @@ const PaymentStatus: React.FC = () => {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
+      case "pending":
+        return <Clock className="w-8 h-8 text-gray-500" />;
       case "paid":
         return <CreditCard className="w-8 h-8 text-blue-500" />;
-      case "ready_for_payout":
+      case "committed":
         return <Package className="w-8 h-8 text-orange-500" />;
-      case "paid_out":
+      case "shipped":
+        return <Truck className="w-8 h-8 text-purple-500" />;
+      case "delivered":
         return <CheckCircle className="w-8 h-8 text-green-500" />;
+      case "cancelled":
+        return <AlertCircle className="w-8 h-8 text-red-500" />;
+      case "refunded":
+        return <DollarSign className="w-8 h-8 text-yellow-500" />;
       default:
         return <Clock className="w-8 h-8 text-gray-500" />;
     }
@@ -196,12 +204,20 @@ const PaymentStatus: React.FC = () => {
 
   const getStatusMessage = (status: string) => {
     switch (status) {
+      case "pending":
+        return "Your order is being processed...";
       case "paid":
-        return "Payment confirmed! Your order is being prepared for shipping.";
-      case "ready_for_payout":
-        return "Your order has been picked up by the courier and is on its way to you.";
-      case "paid_out":
-        return "Order completed! The seller has been paid.";
+        return "Payment confirmed! The seller has 48 hours to commit to your order.";
+      case "committed":
+        return "Great! The seller has committed to your order and will prepare it for collection/delivery.";
+      case "shipped":
+        return "Your order has been shipped and is on its way to you.";
+      case "delivered":
+        return "Order delivered successfully!";
+      case "cancelled":
+        return "This order has been cancelled.";
+      case "refunded":
+        return "This order has been refunded.";
       default:
         return "Processing your order...";
     }
@@ -466,15 +482,28 @@ const PaymentStatus: React.FC = () => {
                     </div>
                   )}
 
-                  {order.collection_deadline && (
+                  {order.commit_deadline && order.status === "paid" && (
                     <div>
                       <p className="text-sm text-gray-600 mb-1">
-                        Collection Deadline
+                        Seller Commitment Deadline
                       </p>
+                      <p className="text-sm font-medium text-orange-600">
+                        {new Date(order.commit_deadline).toLocaleDateString()}{" "}
+                        at{" "}
+                        {new Date(order.commit_deadline).toLocaleTimeString()}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Seller must commit within 48 hours of payment
+                      </p>
+                    </div>
+                  )}
+
+                  {order.committed_at && (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">Committed At</p>
                       <p className="text-sm">
-                        {new Date(
-                          order.collection_deadline,
-                        ).toLocaleDateString()}
+                        {new Date(order.committed_at).toLocaleDateString()} at{" "}
+                        {new Date(order.committed_at).toLocaleTimeString()}
                       </p>
                     </div>
                   )}
