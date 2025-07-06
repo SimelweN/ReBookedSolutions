@@ -134,6 +134,27 @@ const DatabaseMigrationChecker = () => {
       });
 
       if (error) {
+        console.error("Error creating orders table:", error);
+
+        // Enhanced error handling for specific SQL errors
+        if (error.code === "42501") {
+          throw new Error(
+            "Insufficient permissions to create database tables. Please contact an administrator.",
+          );
+        } else if (error.code === "42P01") {
+          throw new Error(
+            "Required database functions not available. Please run database migrations.",
+          );
+        } else if (error.message?.includes("already exists")) {
+          console.log("Orders table already exists");
+          toast.success("Orders table already exists!");
+          return;
+        } else if (error.message?.includes("permission denied")) {
+          throw new Error(
+            "Permission denied. Admin privileges required to create tables.",
+          );
+        }
+
         throw error;
       }
 
