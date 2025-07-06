@@ -124,6 +124,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const upgradeProfileIfNeeded = useCallback(
     async (currentUser: User) => {
+      // Prevent concurrent upgrades for the same user
+      if (profileUpgradeRef.current === currentUser.id) {
+        console.log("ℹ️ Profile upgrade already in progress");
+        return;
+      }
+
       try {
         // Only upgrade if we have a basic fallback profile
         if (profile && !profile.bio && !profile.profile_picture_url) {
@@ -140,6 +146,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             }
           }
 
+          // Mark this user as being upgraded
+          profileUpgradeRef.current = currentUser.id;
+
           const fullProfile = await fetchUserProfileQuick(currentUser);
           if (fullProfile && fullProfile !== profile) {
             setProfile(fullProfile);
@@ -153,6 +162,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         const lastFailKey = `profile_fetch_fail_${currentUser.id}`;
         sessionStorage.setItem(lastFailKey, Date.now().toString());
         console.log("ℹ️ Profile upgrade skipped - will retry later");
+      } finally {
+        // Clear the upgrade lock
+        profileUpgradeRef.current = null;
       }
     },
     [profile],
@@ -619,7 +631,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         // Auth state change will be handled by the listener
         return result;
       } catch (error) {
-        console.log("���� AuthContext: Login error:", error);
+        console.log("������ AuthContext: Login error:", error);
         handleError(error, "Login");
       } finally {
         setIsLoading(false);
