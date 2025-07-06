@@ -78,15 +78,28 @@ const ModernAddressInput: React.FC<ModernAddressInputProps> = ({
   const handleGoogleMapsSelect = (addressData: AddressData) => {
     console.log("🎯 Google Maps address selected:", addressData);
 
+    // Clean up the address to avoid confusing municipal information
+    let cleanStreet =
+      addressData.street || addressData.formattedAddress.split(",")[0] || "";
+    let cleanCity = addressData.city || "";
+
+    // Remove municipal information from city names
+    cleanCity = cleanCity
+      .replace(/Metropolitan Municipality/gi, "")
+      .replace(/Municipality/gi, "")
+      .replace(/City of /gi, "")
+      .replace(/,.*$/gi, "") // Remove everything after first comma
+      .trim();
+
     const newAddress: Address = {
-      street:
-        addressData.street || addressData.formattedAddress.split(",")[0] || "",
-      city: addressData.city || "",
+      street: cleanStreet,
+      city: cleanCity,
       province: addressData.province || "",
       postalCode: addressData.postalCode || "",
+      instructions: address.instructions || "", // Preserve existing instructions
     };
 
-    console.log("📝 Processed address:", newAddress);
+    console.log("📝 Processed clean address:", newAddress);
 
     setAddress(newAddress);
     setHasSelectedAddress(true);
