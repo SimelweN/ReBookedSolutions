@@ -64,7 +64,10 @@ const Verify = () => {
             navigate("/", { replace: true });
           }, 2000);
         } else {
-          console.error("❌ Email verification failed - Raw result:", result);
+          console.error(
+            "❌ Email verification failed - Raw result:",
+            JSON.stringify(result, null, 2),
+          );
           console.error(
             "❌ Email verification failed - Result type:",
             typeof result,
