@@ -51,19 +51,22 @@ const SystemHealthMonitor: React.FC = () => {
     "healthy" | "warning" | "error"
   >("unknown");
 
-  // Initialize monitoring
+  // Initialize monitoring with aggressive throttling
   useEffect(() => {
-    runHealthCheck();
+    // Only run health check if user is authenticated and monitoring is enabled
+    if (isAuthenticated && isMonitoring) {
+      runHealthCheck();
+    }
 
-    // Set up periodic monitoring every 30 seconds
+    // Set up periodic monitoring every 2 minutes (reduced frequency)
     const interval = setInterval(() => {
-      if (isMonitoring) {
+      if (isMonitoring && isAuthenticated) {
         runHealthCheck();
       }
-    }, 30000);
+    }, 120000); // 2 minutes instead of 30 seconds
 
     return () => clearInterval(interval);
-  }, [isMonitoring]);
+  }, [isMonitoring, isAuthenticated]);
 
   const runHealthCheck = async () => {
     const startTime = Date.now();
