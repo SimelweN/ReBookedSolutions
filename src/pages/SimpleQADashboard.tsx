@@ -30,8 +30,8 @@ import EnvironmentChecker from "@/components/EnvironmentChecker";
 import PaystackDashboard from "@/components/PaystackDashboard";
 import DevelopmentToolsDashboard from "@/components/DevelopmentToolsDashboard";
 
-// Order System Test Components
-import { testOrderSystem, checkDatabaseStatus } from "@/utils/testOrderSystem";
+// Order System Test Components - Import dynamically to avoid issues
+// import { testOrderSystem, checkDatabaseStatus } from "@/utils/testOrderSystem";
 
 const SimpleQADashboard: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
