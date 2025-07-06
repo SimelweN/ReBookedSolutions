@@ -99,11 +99,19 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
 
   const loadSellerInfo = async () => {
     try {
+      console.log("Loading seller info for seller_id:", book.seller_id);
+
+      if (!book.seller_id) {
+        throw new Error("No seller_id provided");
+      }
+
       const { data: seller, error } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", book.seller_id)
         .single();
+
+      console.log("Seller query result:", { seller, error });
 
       if (error) throw error;
       setSellerInfo(seller);
