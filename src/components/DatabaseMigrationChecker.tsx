@@ -82,7 +82,7 @@ const DatabaseMigrationChecker = () => {
     try {
       toast.info("Creating orders table...");
 
-      // Run the orders table creation SQL
+      // Run the orders table creation SQL with comprehensive error handling
       const { error } = await supabase.rpc("exec_sql", {
         sql: `
           -- Create orders table for comprehensive order management
