@@ -230,45 +230,46 @@ export const saveSimpleUserAddresses = async (
 export const getSimpleUserAddresses = async (
   userId: string,
 ): Promise<UserAddresses> => {
-  try {
-    console.log("Getting addresses for user:", userId);
+  console.log("Getting addresses for user:", userId);
 
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("pickup_address, shipping_address, addresses_same")
-      .eq("id", userId)
-      .maybeSingle(); // Use maybeSingle to handle cases where profile might not exist
+  const { data, error } = await safeDbOperation(
+    () =>
+      supabase
+        .from("profiles")
+        .select("pickup_address, shipping_address, addresses_same")
+        .eq("id", userId)
+        .maybeSingle(),
+    "getSimpleUserAddresses",
+    { showToast: false }, // Don't show toast for address retrieval
+  );
 
-    if (error) {
-      console.error("Error getting addresses:", error);
-      throw new Error(`Failed to get addresses: ${error.message}`);
-    }
-
-    // If no profile exists, return empty addresses
-    if (!data) {
-      console.log("No profile found for user, returning empty addresses");
-      return {
-        pickup_address: null,
-        shipping_address: null,
-        addresses_same: false,
-      };
-    }
-
-    console.log("Successfully retrieved addresses:", data);
-
-    return {
-      pickup_address: data.pickup_address as SimpleAddress | null,
-      shipping_address: data.shipping_address as SimpleAddress | null,
-      addresses_same: data.addresses_same || false,
-    };
-  } catch (error) {
-    console.error("Error in getSimpleUserAddresses:", error);
+  if (error) {
+    console.error("Error getting addresses:", error);
+    // Return empty addresses as fallback
     return {
       pickup_address: null,
       shipping_address: null,
       addresses_same: false,
     };
   }
+
+  // If no profile exists, return empty addresses
+  if (!data) {
+    console.log("No profile found for user, returning empty addresses");
+    return {
+      pickup_address: null,
+      shipping_address: null,
+      addresses_same: false,
+    };
+  }
+
+  console.log("Successfully retrieved addresses:", data);
+
+  return {
+    pickup_address: data.pickup_address as SimpleAddress | null,
+    shipping_address: data.shipping_address as SimpleAddress | null,
+    addresses_same: data.addresses_same || false,
+  };
 };
 
 /**
