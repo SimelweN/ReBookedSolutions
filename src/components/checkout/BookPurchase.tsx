@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import DuplicatePaymentPrevention from "@/services/duplicatePaymentPrevention";
 import { toast } from "sonner";
 
 interface BookData {
@@ -199,6 +200,32 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
     setError(null);
 
     try {
+      if (!user?.email || !user?.id) {
+        throw new Error("User not authenticated");
+      }
+
+      // Validate purchase attempt
+      const validation =
+        await DuplicatePaymentPrevention.validatePurchaseAttempt(
+          user.email,
+          user.id,
+          book.id,
+          getTotalAmount(),
+        );
+
+      if (!validation.valid) {
+        setError(validation.reason || "Purchase validation failed");
+        toast.error(validation.reason || "Cannot proceed with purchase");
+        return;
+      }
+
+      // Register payment attempt to prevent duplicates
+      DuplicatePaymentPrevention.registerAttempt(
+        user.id,
+        book.id,
+        getTotalAmount(),
+      );
+
       // Call the process-book-purchase function
       const { data, error } = await supabase.functions.invoke(
         "process-book-purchase",
@@ -216,13 +243,36 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
       if (error) throw error;
 
       if (data.success && data.payment_url) {
+        // Update attempt status to pending
+        DuplicatePaymentPrevention.updateAttemptStatus(
+          user.id,
+          book.id,
+          "pending",
+        );
+
         // Redirect to Paystack payment page
         window.location.href = data.payment_url;
       } else {
+        // Update attempt status to failed
+        DuplicatePaymentPrevention.updateAttemptStatus(
+          user.id,
+          book.id,
+          "failed",
+        );
         throw new Error(data.error || "Payment initialization failed");
       }
     } catch (error) {
       console.error("Payment error:", error);
+
+      // Update attempt status to failed
+      if (user?.id) {
+        DuplicatePaymentPrevention.updateAttemptStatus(
+          user.id,
+          book.id,
+          "failed",
+        );
+      }
+
       setError(error instanceof Error ? error.message : "Payment failed");
       toast.error("Payment initialization failed");
     } finally {
