@@ -14,6 +14,7 @@ import {
   Database,
   Lock,
 } from "lucide-react";
+import { ENV } from "@/config/environment";
 
 interface CheckResult {
   name: string;

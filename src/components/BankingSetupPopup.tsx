@@ -23,6 +23,7 @@ import {
   Building,
 } from "lucide-react";
 import { toast } from "sonner";
+import { ENV } from "@/config/environment";
 
 interface BankingSetupPopupProps {
   isOpen: boolean;
