@@ -69,7 +69,7 @@ export interface OrderData {
 
 export class PaystackPaymentService {
   private static readonly PAYSTACK_PUBLIC_KEY =
-    "pk_test_8eeb9c9b5b6c7d1c8e5f5e7b8a9c0d1e2f3g4h5"; // fallback for development
+    import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || "";
 
   /**
    * Check if Paystack library is available and wait for it if needed
