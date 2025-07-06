@@ -199,15 +199,6 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
     }));
   };
 
-  const handleCourierQuoteSelect = (quote: CourierQuote) => {
-    setSelectedCourierQuote(quote);
-    setDeliveryFee(quote.price);
-  };
-
-  const handleAddressSelect = (address: DeliveryAddress) => {
-    setDeliveryAddress(address);
-  };
-
   const validateStep1 = () => {
     if (
       !deliveryAddress.street ||
