@@ -53,6 +53,24 @@ const Verify = () => {
         for (const [key, value] of searchParams.entries()) {
           console.log(`  ${key}: ${value}`);
         }
+
+        // Immediate diagnostic
+        const hasVerificationParams = !!(
+          params.token_hash ||
+          params.token ||
+          params.code
+        );
+        const hasType = !!params.type;
+        const hasErrors = !!(params.error_code || params.error_description);
+
+        console.log("🔍 Quick diagnostic:", {
+          hasVerificationParams,
+          hasType,
+          hasErrors,
+          paramCount: Object.keys(params).filter((k) => params[k]).length,
+          urlLength: window.location.href.length,
+        });
+
         setDebugInfo(urlParams);
 
         // Use the verification service
