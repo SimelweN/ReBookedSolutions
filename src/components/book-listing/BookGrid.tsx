@@ -223,8 +223,18 @@ const BookGrid = ({
                           "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&h=300&fit=crop&auto=format&q=80";
                       }}
                     />
-                    <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded-full text-sm font-semibold text-book-800">
-                      R{book.price.toLocaleString()}
+                    <div className="absolute top-2 right-2 flex flex-col gap-1">
+                      <div className="bg-white px-2 py-1 rounded-full text-sm font-semibold text-book-800">
+                        R{book.price.toLocaleString()}
+                      </div>
+                      <Link
+                        to={`/seller/${book.seller.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="bg-book-600 hover:bg-book-700 text-white px-2 py-1 rounded-full text-xs font-medium transition-colors duration-200 flex items-center gap-1 shadow-sm"
+                      >
+                        <Store className="h-3 w-3" />
+                        ReBooked Mini
+                      </Link>
                     </div>
                     {book.sold && (
                       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
