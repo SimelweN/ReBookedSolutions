@@ -81,7 +81,6 @@ const BookGrid = ({
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {books.map((book) => {
-          console.log("Rendering book:", book.id, book.title);
           const isUnavailable =
             (book as Book & { status?: string }).status === "unavailable";
           const isPendingCommit =
@@ -202,10 +201,8 @@ const BookGrid = ({
                   onClick={(e) => {
                     if (!book.id) {
                       e.preventDefault();
-                      console.error("Book ID is missing for book:", book.title);
                       return;
                     }
-                    console.log("Navigating to book:", book.id);
                   }}
                 >
                   <div className="relative h-48 md:h-56 lg:h-64 overflow-hidden">
