@@ -246,13 +246,26 @@ Thank you for your purchase!
             <div className="flex justify-between text-sm">
               <span>Subtotal</span>
               <span>
-                R{((order.amount - (order.delivery_fee || 0)) / 100).toFixed(2)}
+                R
+                {(
+                  (order.amount -
+                    (order.delivery_data?.delivery_fee ||
+                      order.delivery_fee ||
+                      0)) /
+                  100
+                ).toFixed(2)}
               </span>
             </div>
-            {order.delivery_fee && (
+            {(order.delivery_data?.delivery_fee || order.delivery_fee) && (
               <div className="flex justify-between text-sm">
                 <span>Delivery Fee</span>
-                <span>R{(order.delivery_fee / 100).toFixed(2)}</span>
+                <span>
+                  R
+                  {(
+                    (order.delivery_data?.delivery_fee || order.delivery_fee) /
+                    100
+                  ).toFixed(2)}
+                </span>
               </div>
             )}
             <div className="flex justify-between font-bold text-lg border-t pt-2">
