@@ -241,7 +241,7 @@ const BankingRequirementChecker = () => {
   };
 
   const openBankingSetup = () => {
-    const bankingUrl = "https://paystack-vault-south-africa.lovable.app";
+    const bankingUrl = ENV.VITE_BANKING_VAULT_URL;
 
     // Calculate popup dimensions (responsive)
     const width = Math.min(800, window.innerWidth * 0.9);
@@ -321,7 +321,7 @@ const BankingRequirementChecker = () => {
             ✅ Implementation Status
           </h4>
           <ul className="text-sm text-blue-700 space-y-1">
-            <li>• ✅ Auth & User Validation</li>
+            <li>��� ✅ Auth & User Validation</li>
             <li>• ✅ Block Book Upload Without subaccount_code</li>
             <li>��� ✅ Book Listing Flow with Banking Check</li>
             <li>• ✅ Payment Flow with Seller Subaccount</li>
