@@ -32,7 +32,6 @@ import DevelopmentToolsDashboard from "@/components/DevelopmentToolsDashboard";
 
 // Order System Test Components
 import { testOrderSystem, checkDatabaseStatus } from "@/utils/testOrderSystem";
-import { useState } from "react";
 
 const SimpleQADashboard: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
