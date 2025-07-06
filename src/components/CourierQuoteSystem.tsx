@@ -92,7 +92,27 @@ const CourierQuoteSystem: React.FC<CourierQuoteSystemProps> = ({
   };
 
   const fetchDeliveryQuotes = async () => {
-    if (!addressComplete || !sellerAddress.postal_code) return;
+    console.log("🚚 Attempting to fetch delivery quotes...");
+    console.log("📍 Delivery address:", deliveryAddress);
+    console.log("🏪 Seller address:", sellerAddress);
+
+    // Validate buyer address
+    if (!addressComplete) {
+      console.log("❌ Buyer address incomplete");
+      setQuotesError(
+        "Please complete your delivery address to get shipping quotes",
+      );
+      return;
+    }
+
+    // Validate seller address
+    if (!sellerAddress || !sellerAddress.postal_code || !sellerAddress.city) {
+      console.log("❌ Seller address incomplete:", sellerAddress);
+      setQuotesError(
+        "⚠️ Seller's address is incomplete. Cannot calculate accurate delivery costs. Please contact support.",
+      );
+      return;
+    }
 
     setLoadingQuotes(true);
     setQuotesError(null);
