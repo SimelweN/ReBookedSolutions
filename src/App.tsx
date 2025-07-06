@@ -154,6 +154,14 @@ function App() {
                           </Suspense>
                         }
                       />
+                      <Route
+                        path="/study-tips"
+                        element={
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <StudyResources />
+                          </Suspense>
+                        }
+                      />
 
                       {/* Shopping and Cart Routes */}
                       <Route
