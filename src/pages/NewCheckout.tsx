@@ -16,6 +16,10 @@ const NewCheckout: React.FC = () => {
   // Get book data from navigation state
   const bookData = location.state?.book;
 
+  // Debug book data
+  console.log("NewCheckout - Location state:", location.state);
+  console.log("NewCheckout - Book data:", bookData);
+
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
     return (
