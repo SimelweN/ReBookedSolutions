@@ -431,6 +431,13 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
     console.log("🔥 FORM SUBMIT TRIGGERED!");
     console.log("📋 Form data:", data);
     console.log("❌ Current errors:", errors);
+    console.log("👀 Watched values:", watchedValues);
+    console.log(
+      "📝 Recipient name value:",
+      data.recipient_name,
+      "Length:",
+      data.recipient_name?.length,
+    );
     console.log("🚛 Delivery options:", deliveryOptions);
 
     // Check for form validation errors
@@ -445,7 +452,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
     // If no delivery options, try to get them one more time
     if (deliveryOptions.length === 0) {
-      console.log("⚠��� No delivery options, attempting to get them...");
+      console.log("⚠️ No delivery options, attempting to get them...");
       try {
         await getDeliveryQuotes();
 
