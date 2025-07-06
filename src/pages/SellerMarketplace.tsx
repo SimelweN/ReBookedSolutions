@@ -65,11 +65,9 @@ const SellerMarketplace = () => {
       return;
     }
 
-    // Validate seller ID format (should be UUID)
-    const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    if (!uuidRegex.test(sellerId)) {
-      setError("Invalid seller ID format");
+    // Basic seller ID validation
+    if (sellerId.length < 10) {
+      setError("Invalid seller ID");
       setLoading(false);
       return;
     }
