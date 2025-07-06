@@ -108,6 +108,9 @@ const ModernAddressInput: React.FC<ModernAddressInputProps> = ({
     const backendCompatibleAddress = {
       ...newAddress,
       streetAddress: newAddress.street, // Add streetAddress for backend compatibility
+      complex: "", // Default values for backend compatibility
+      unitNumber: "",
+      suburb: "",
     };
 
     onAddressUpdate(backendCompatibleAddress);
@@ -129,6 +132,9 @@ const ModernAddressInput: React.FC<ModernAddressInputProps> = ({
     const backendCompatibleAddress = {
       ...newAddress,
       streetAddress: newAddress.street, // Add streetAddress for backend compatibility
+      complex: "", // Default values for backend compatibility
+      unitNumber: "",
+      suburb: "",
     };
 
     onAddressUpdate(backendCompatibleAddress);
