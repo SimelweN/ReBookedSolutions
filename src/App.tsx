@@ -29,18 +29,8 @@ const Shipping = React.lazy(() => import("./pages/Shipping"));
 const ContactUs = React.lazy(() => import("./pages/ContactUs"));
 const FAQ = React.lazy(() => import("./pages/FAQ"));
 
-// QA Dashboards
-const SimpleQADashboard = React.lazy(() => import("./pages/SimpleQADashboard"));
+// QA Dashboard (only keep this for quality assurance)
 const QADashboard = React.lazy(() => import("./pages/QADashboard"));
-const EnhancedQADashboard = React.lazy(
-  () => import("./pages/EnhancedQADashboard"),
-);
-const TestOrderSystemSimple = React.lazy(
-  () => import("./pages/TestOrderSystemSimple"),
-);
-const OrderSystemTests = React.lazy(() => import("./pages/OrderSystemTests"));
-const MigrationVerify = React.lazy(() => import("./pages/MigrationVerify"));
-const DebugEmailVerify = React.lazy(() => import("./pages/DebugEmailVerify"));
 const StudyResources = React.lazy(() => import("./pages/StudyResources"));
 const UserProfile = React.lazy(() => import("./pages/UserProfile"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
