@@ -253,13 +253,23 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
       !deliveryAddress.province ||
       !deliveryAddress.postal_code
     ) {
-      setError("Please select a complete delivery address");
+      setError("Please enter a complete delivery address");
       return false;
     }
 
-    if (!selectedCourierQuote) {
-      setError("Please select a delivery option");
-      return false;
+    // Ensure we have a delivery fee set (either from courier selection or default)
+    if (deliveryFee <= 0) {
+      setDeliveryFee(85); // Set default if not set
+      if (!selectedCourierQuote) {
+        setSelectedCourierQuote({
+          courier: "standard",
+          service_name: "Standard Delivery",
+          service_code: "STD",
+          price: 85,
+          estimated_days: "3-5",
+          description: "Standard courier delivery",
+        });
+      }
     }
 
     return true;
