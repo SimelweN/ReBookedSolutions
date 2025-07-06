@@ -115,28 +115,43 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         throw new Error("No seller_id provided");
       }
 
-      // Add timeout to prevent infinite loading
-      const timeout = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Seller validation timeout")), 10000),
+      // Use simplified address service to get seller address
+      const { getSellerDeliveryAddress } = await import(
+        "@/services/simplifiedAddressService"
       );
 
-      // Use enhanced seller validation with timeout
-      const { SellerProfileService } = await import(
-        "@/services/sellerProfileService"
-      );
+      // Get seller delivery address (always returns a valid address)
+      const deliveryAddress = await getSellerDeliveryAddress(book.seller_id);
+      console.log("Got seller delivery address:", deliveryAddress);
 
-      const validation = await Promise.race([
-        SellerProfileService.validateSellerForPurchase(book.seller_id),
-        timeout,
-      ]);
+      setSellerAddress(deliveryAddress);
 
-      if (!validation.isValid) {
-        setError(validation.errorMessage || "Seller not available for orders");
-        return;
-      }
+      // Get basic seller info from profiles
+      const { data: sellerProfile, error: sellerError } = await supabase
+        .from("profiles")
+        .select("id, name, email, subaccount_code")
+        .eq("id", book.seller_id)
+        .single();
 
-      if (!validation.profile) {
-        throw new Error("Seller profile not found");
+      if (sellerError) {
+        console.warn(
+          "Could not load seller profile, using fallback:",
+          sellerError,
+        );
+        setSellerInfo({
+          id: book.seller_id,
+          name: "Unknown Seller",
+          email: "unknown@example.com",
+          has_subaccount: false,
+        });
+      } else {
+        console.log("Successfully loaded seller profile:", sellerProfile);
+        setSellerInfo({
+          id: sellerProfile.id,
+          name: sellerProfile.name || "Unknown Seller",
+          email: sellerProfile.email || "unknown@example.com",
+          has_subaccount: !!sellerProfile.subaccount_code?.trim(),
+        });
       }
 
       console.log(
