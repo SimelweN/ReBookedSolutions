@@ -180,8 +180,14 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
     try {
       const userInfo = await UserAutofillService.getUserInfo();
-      if (userInfo && !manualEntries.name && !watchedValues.recipient_name) {
-        setValue("recipient_name", userInfo.name);
+      if (
+        userInfo &&
+        userInfo.name &&
+        !manualEntries.name &&
+        (!watchedValues.recipient_name ||
+          watchedValues.recipient_name.trim() === "")
+      ) {
+        setValue("recipient_name", userInfo.name, { shouldValidate: true });
       }
       setHasAutofilled(true);
     } catch (error) {
@@ -439,7 +445,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
     // If no delivery options, try to get them one more time
     if (deliveryOptions.length === 0) {
-      console.log("⚠️ No delivery options, attempting to get them...");
+      console.log("⚠��� No delivery options, attempting to get them...");
       try {
         await getDeliveryQuotes();
 
