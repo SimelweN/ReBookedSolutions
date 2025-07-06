@@ -299,84 +299,12 @@ export const fetchUserProfileQuick = async (
       sessionStorage.setItem(logKey, Date.now().toString());
     }
 
-    // Check if we've recently verified table doesn't exist to avoid repeated checks
-    const tableCheckKey = "profiles_table_available";
-    const lastTableCheck = sessionStorage.getItem(tableCheckKey);
+    // Use global circuit breaker for table existence check
+    const { checkDatabaseHealth } = await import("@/utils/databaseHealthCheck");
+    const dbHealth = await checkDatabaseHealth();
 
-    if (lastTableCheck === "false") {
-      const lastCheckTime = sessionStorage.getItem(`${tableCheckKey}_time`);
-      if (lastCheckTime) {
-        const timeSinceCheck = Date.now() - parseInt(lastCheckTime);
-        // Don't recheck for 5 minutes if table was unavailable
-        if (timeSinceCheck < 5 * 60 * 1000) {
-          console.log(
-            "ℹ️ Profiles table previously unavailable - using fallback",
-          );
-          return null;
-        }
-      }
-    }
-
-    // Test if profiles table exists with a very quick check
-    try {
-      const { error: tableCheckError } = (await withTimeout(
-        supabase.from("profiles").select("id").limit(1),
-        1000, // Slightly longer timeout
-        "Table check timeout",
-      )) as any;
-
-      if (tableCheckError) {
-        // Handle specific table missing error
-        if (
-          tableCheckError.message?.includes("relation") &&
-          tableCheckError.message?.includes("does not exist")
-        ) {
-          console.warn(
-            "❌ Profiles table does not exist - using fallback profile",
-          );
-          // Cache this result to avoid repeated checks
-          sessionStorage.setItem(tableCheckKey, "false");
-          sessionStorage.setItem(
-            `${tableCheckKey}_time`,
-            Date.now().toString(),
-          );
-          return null;
-        }
-
-        // Handle permission errors
-        if (
-          tableCheckError.message?.includes("permission denied") ||
-          tableCheckError.code === "42501"
-        ) {
-          console.warn(
-            "❌ No permission to access profiles table - using fallback",
-          );
-          // Cache this result to avoid repeated checks
-          sessionStorage.setItem(tableCheckKey, "false");
-          sessionStorage.setItem(
-            `${tableCheckKey}_time`,
-            Date.now().toString(),
-          );
-          return null;
-        }
-
-        // Handle network/connection errors
-        if (isNetworkError(tableCheckError)) {
-          console.warn(
-            "⚠️ Network error checking profiles table - using fallback",
-          );
-          return null;
-        }
-      } else {
-        // Table check succeeded, cache positive result
-        sessionStorage.setItem(tableCheckKey, "true");
-        sessionStorage.setItem(`${tableCheckKey}_time`, Date.now().toString());
-      }
-    } catch (tableCheckError) {
-      console.warn("⚠️ Table existence check failed - using fallback profile");
-      // Cache negative result to avoid immediate retries
-      sessionStorage.setItem(tableCheckKey, "false");
-      sessionStorage.setItem(`${tableCheckKey}_time`, Date.now().toString());
+    if (!dbHealth.isHealthy) {
+      console.log("ℹ️ Database unavailable - using fallback profile");
       return null;
     }
 
