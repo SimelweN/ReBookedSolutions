@@ -58,6 +58,7 @@ const TestOrderSystemSimple = React.lazy(
 );
 const OrderSystemTests = React.lazy(() => import("./pages/OrderSystemTests"));
 const MigrationVerify = React.lazy(() => import("./pages/MigrationVerify"));
+const DebugEmailVerify = React.lazy(() => import("./pages/DebugEmailVerify"));
 const StudyResources = React.lazy(() => import("./pages/StudyResources"));
 const UserProfile = React.lazy(() => import("./pages/UserProfile"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
@@ -482,6 +483,14 @@ function App() {
                         element={
                           <Suspense fallback={<LoadingSpinner />}>
                             <MigrationVerify />
+                          </Suspense>
+                        }
+                      />
+                      <Route
+                        path="/debug-email-verify"
+                        element={
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <DebugEmailVerify />
                           </Suspense>
                         }
                       />
