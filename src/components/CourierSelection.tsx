@@ -107,7 +107,6 @@ const CourierSelection: React.FC<CourierSelectionProps> = ({
         onQuoteSelect(allQuotes[0]);
       }
     } catch (error) {
-      console.error("Error fetching delivery quotes:", error);
       setError("Failed to fetch delivery quotes. Using standard rates.");
 
       // Use fallback quotes
@@ -158,7 +157,6 @@ const CourierSelection: React.FC<CourierSelectionProps> = ({
 
       return [];
     } catch (error) {
-      console.error("Courier Guy quote error:", error);
       return [];
     }
   };
@@ -197,7 +195,6 @@ const CourierSelection: React.FC<CourierSelectionProps> = ({
 
       return [];
     } catch (error) {
-      console.error("Fastway quote error:", error);
       return [];
     }
   };
