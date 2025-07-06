@@ -61,34 +61,73 @@ try {
 // Clean the API key (remove any leading = signs that might have been added by accident)
 const cleanApiKey = ENV.VITE_SUPABASE_ANON_KEY.replace(/^=+/, "");
 
-// Preserve original fetch before FullStory or other scripts can override it
-const originalFetch = (() => {
-  if (typeof window !== "undefined" && window.fetch) {
-    // Store the original fetch function immediately
-    return window.fetch.bind(window);
-  }
-  return fetch; // Fallback to global fetch
-})();
+// Create a FullStory-proof fetch implementation using XMLHttpRequest
+const createProtectedFetch = () => {
+  return async (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      const url = typeof input === "string" ? input : input.toString();
+      const method = init?.method || "GET";
 
-// Simple error handler for network issues
-const handleNetworkError = (error: any) => {
-  console.warn("🌐 Supabase network error:", error?.message || error);
+      xhr.open(method, url);
 
-  // Provide user-friendly error messages
-  if (error?.message?.includes("Network request failed")) {
-    throw new Error(
-      "Unable to connect to the server. Please check your internet connection and try again.",
-    );
-  }
+      // Set headers
+      if (init?.headers) {
+        const headers = new Headers(init.headers);
+        headers.forEach((value, key) => {
+          xhr.setRequestHeader(key, value);
+        });
+      }
 
-  if (error?.message?.includes("Failed to fetch")) {
-    throw new Error(
-      "Connection failed. Please refresh the page and try again.",
-    );
-  }
+      // Handle response
+      xhr.onload = () => {
+        const headers: Record<string, string> = {};
+        xhr
+          .getAllResponseHeaders()
+          .split("\r\n")
+          .forEach((line) => {
+            const [key, value] = line.split(": ");
+            if (key && value) headers[key] = value;
+          });
 
-  throw error;
+        const response = new Response(xhr.responseText, {
+          status: xhr.status,
+          statusText: xhr.statusText,
+          headers: new Headers(headers),
+        });
+
+        resolve(response);
+      };
+
+      xhr.onerror = () => {
+        console.warn("🌐 Supabase XMLHttpRequest failed");
+        reject(
+          new Error(
+            "Unable to connect to the server. Please check your internet connection and try again.",
+          ),
+        );
+      };
+
+      xhr.ontimeout = () => {
+        reject(new Error("Request timeout. Please try again."));
+      };
+
+      xhr.timeout = 30000; // 30 second timeout
+
+      // Send request
+      if (init?.body) {
+        xhr.send(init.body as any);
+      } else {
+        xhr.send();
+      }
+    });
+  };
 };
+
+const protectedFetch = createProtectedFetch();
 
 // Only create Supabase client if we have valid configuration
 let supabase: any;
