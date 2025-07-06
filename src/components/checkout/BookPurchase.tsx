@@ -417,15 +417,116 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         initialAddress={deliveryAddress}
       />
 
-      {/* Courier Selection */}
-      {sellerAddress && deliveryAddress.postal_code && (
-        <CourierSelection
-          fromAddress={sellerAddress}
-          toAddress={deliveryAddress}
-          onQuoteSelect={handleCourierQuoteSelect}
-          selectedQuote={selectedCourierQuote}
-        />
-      )}
+      {/* Delivery Options Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Truck className="w-5 h-5" />
+            Delivery Options
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {/* Show courier selection if addresses are available */}
+          {sellerAddress && deliveryAddress.postal_code ? (
+            <CourierSelection
+              fromAddress={sellerAddress}
+              toAddress={deliveryAddress}
+              onQuoteSelect={handleCourierQuoteSelect}
+              selectedQuote={selectedCourierQuote}
+            />
+          ) : (
+            /* Fallback delivery selection */
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">
+                {!deliveryAddress.postal_code
+                  ? "Please select a delivery address above to see courier options."
+                  : "Loading delivery options..."}
+              </p>
+
+              {/* Manual delivery option selection as fallback */}
+              <div className="space-y-3">
+                <div
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                    deliveryFee === 85
+                      ? "border-book-500 bg-book-50"
+                      : "border-gray-200 bg-gray-50"
+                  }`}
+                  onClick={() => {
+                    setDeliveryFee(85);
+                    setSelectedCourierQuote({
+                      courier: "standard",
+                      service_name: "Standard Delivery",
+                      service_code: "STD",
+                      price: 85,
+                      estimated_days: "3-5",
+                      description: "Standard courier delivery",
+                    });
+                  }}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-semibold">Standard Delivery</h4>
+                      <p className="text-sm text-gray-600">3-5 business days</p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xl font-bold text-green-600">
+                        R85.00
+                      </span>
+                      {deliveryFee === 85 && (
+                        <div className="flex items-center gap-1 mt-1">
+                          <CheckCircle className="w-4 h-4 text-book-600" />
+                          <span className="text-xs text-book-600 font-medium">
+                            Selected
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                    deliveryFee === 120
+                      ? "border-book-500 bg-book-50"
+                      : "border-gray-200 bg-gray-50"
+                  }`}
+                  onClick={() => {
+                    setDeliveryFee(120);
+                    setSelectedCourierQuote({
+                      courier: "express",
+                      service_name: "Express Delivery",
+                      service_code: "EXP",
+                      price: 120,
+                      estimated_days: "1-2",
+                      description: "Express courier delivery",
+                    });
+                  }}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-semibold">Express Delivery</h4>
+                      <p className="text-sm text-gray-600">1-2 business days</p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xl font-bold text-green-600">
+                        R120.00
+                      </span>
+                      {deliveryFee === 120 && (
+                        <div className="flex items-center gap-1 mt-1">
+                          <CheckCircle className="w-4 h-4 text-book-600" />
+                          <span className="text-xs text-book-600 font-medium">
+                            Selected
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Price Breakdown */}
       <Card>
