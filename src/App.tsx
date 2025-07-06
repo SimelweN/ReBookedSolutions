@@ -31,9 +31,6 @@ const FAQ = React.lazy(() => import("./pages/FAQ"));
 
 // QA Dashboard (only keep this for quality assurance)
 const QADashboard = React.lazy(() => import("./pages/QADashboard"));
-const StudyResources = React.lazy(() => import("./pages/StudyResources"));
-const UserProfile = React.lazy(() => import("./pages/UserProfile"));
-const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
 const UserOrders = React.lazy(() => import("./pages/EnhancedUserOrders"));
 const BankingSetup = React.lazy(() => import("./pages/BankingSetup"));
 const AdminReports = React.lazy(() => import("./pages/AdminReports"));
@@ -55,12 +52,7 @@ const Notifications = React.lazy(() => import("./pages/Notifications"));
 const CheckoutSuccess = React.lazy(() => import("./pages/CheckoutSuccess"));
 const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
 const PaymentCallback = React.lazy(() => import("./pages/PaymentCallback"));
-const EnhancedUniversityProfile = React.lazy(
-  () => import("./pages/EnhancedUniversityProfile"),
-);
-const ModernUniversityProfile = React.lazy(
-  () => import("./pages/ModernUniversityProfile"),
-);
+const UniversityProfile = React.lazy(() => import("./pages/UniversityProfile"));
 
 // Loading component
 const LoadingSpinner = () => (
