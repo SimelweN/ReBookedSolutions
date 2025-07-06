@@ -817,10 +817,15 @@ const Profile = () => {
           onClose={() => setIsAddressDialogOpen(false)}
           userId={user?.id || ""}
           initialAddresses={userAddresses}
-          onSuccess={() => {
-            loadUserAddresses();
-            toast.success("Addresses saved successfully!");
-            setIsAddressDialogOpen(false);
+          onSuccess={async () => {
+            try {
+              console.log("Address save success, reloading addresses...");
+              await loadUserAddresses();
+              console.log("Addresses reloaded successfully");
+            } catch (error) {
+              console.error("Error reloading addresses:", error);
+              toast.error("Addresses saved but failed to refresh display");
+            }
           }}
         />
 
