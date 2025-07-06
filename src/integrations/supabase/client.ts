@@ -93,7 +93,13 @@ const createProtectedFetch = () => {
             if (key && value) headers[key] = value;
           });
 
-        const response = new Response(xhr.responseText, {
+        // Handle responses that shouldn't have a body
+        const statusWithoutBody = [204, 205, 304];
+        const responseBody = statusWithoutBody.includes(xhr.status)
+          ? null
+          : xhr.responseText;
+
+        const response = new Response(responseBody, {
           status: xhr.status,
           statusText: xhr.statusText,
           headers: new Headers(headers),
