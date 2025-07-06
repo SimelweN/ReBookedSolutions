@@ -15,10 +15,8 @@ import {
   Mail,
   Download,
 } from "lucide-react";
-import PaystackPaymentService, {
-  OrderData,
-} from "@/services/paystackPaymentService";
-import { useAuth } from "@/contexts/AuthContext";
+import { OrderData } from "@/services/paystackPaymentService";
+import { useUserOrders } from "@/hooks/useUserOrders";
 import { toast } from "sonner";
 
 interface PostPaymentOrderSummaryProps {
