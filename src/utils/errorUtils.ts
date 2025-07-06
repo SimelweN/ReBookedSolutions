@@ -140,20 +140,53 @@ export const getErrorMessage = (
       errorObj.error_description ||
       errorObj.details ||
       errorObj.hint ||
-      errorObj.statusText;
+      errorObj.statusText ||
+      errorObj.description;
 
     if (possibleMessage && typeof possibleMessage === "string") {
       return possibleMessage;
     }
 
+    // Try to get meaningful error info from nested properties
+    if (errorObj.error && typeof errorObj.error === "object") {
+      const nestedMessage =
+        errorObj.error.message || errorObj.error.description;
+      if (nestedMessage && typeof nestedMessage === "string") {
+        return nestedMessage;
+      }
+    }
+
     // If object has meaningful properties, try to serialize them
     try {
-      const serialized = JSON.stringify(error);
+      const serialized = JSON.stringify(error, null, 2);
       if (serialized && serialized !== "{}" && serialized !== "null") {
+        // Make sure the serialized object is readable
+        if (serialized.length > 200) {
+          // If too long, try to extract key info
+          const keyInfo = {
+            message: errorObj.message,
+            code: errorObj.code,
+            error: errorObj.error,
+            status: errorObj.status,
+          };
+          return `Error: ${JSON.stringify(keyInfo)}`;
+        }
         return `Error details: ${serialized}`;
       }
     } catch (jsonError) {
-      // JSON.stringify failed, continue to fallback
+      // JSON.stringify failed, try alternative
+      try {
+        const keys = Object.keys(error);
+        if (keys.length > 0) {
+          const keyValues = keys
+            .slice(0, 3)
+            .map((key) => `${key}: ${errorObj[key]}`)
+            .join(", ");
+          return `Error: ${keyValues}`;
+        }
+      } catch {
+        // Continue to fallback
+      }
     }
   }
 

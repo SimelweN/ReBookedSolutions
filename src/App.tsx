@@ -10,6 +10,25 @@ import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import { Toaster } from "@/components/ui/sonner";
 import "./App.css";
 
+// Development: Import test utilities (remove in production)
+if (process.env.NODE_ENV === "development") {
+  import("./utils/testOrderSystem").then((module) => {
+    (window as any).testOrderSystem = module.testOrderSystem;
+    (window as any).checkDatabaseStatus = module.checkDatabaseStatus;
+    console.log(
+      "🧪 Order system test utilities loaded. Run testOrderSystem() or checkDatabaseStatus() in console.",
+    );
+  });
+
+  // Load migration verification utility
+  import("./utils/verifyMigration").then((module) => {
+    (window as any).verifyMigration = module.verifyMigration;
+    console.log(
+      "🔍 Migration verification loaded. Run verifyMigration() to check if migration was successful.",
+    );
+  });
+}
+
 // Import critical pages directly
 import IndexPage from "./pages/Index";
 import UniversityInfoPage from "./pages/UniversityInfo";
@@ -27,6 +46,19 @@ const Checkout = React.lazy(() => import("./pages/Checkout"));
 const Shipping = React.lazy(() => import("./pages/Shipping"));
 const ContactUs = React.lazy(() => import("./pages/ContactUs"));
 const FAQ = React.lazy(() => import("./pages/FAQ"));
+
+// QA Dashboards
+const SimpleQADashboard = React.lazy(() => import("./pages/SimpleQADashboard"));
+const QADashboard = React.lazy(() => import("./pages/QADashboard"));
+const EnhancedQADashboard = React.lazy(
+  () => import("./pages/EnhancedQADashboard"),
+);
+const TestOrderSystemSimple = React.lazy(
+  () => import("./pages/TestOrderSystemSimple"),
+);
+const OrderSystemTests = React.lazy(() => import("./pages/OrderSystemTests"));
+const MigrationVerify = React.lazy(() => import("./pages/MigrationVerify"));
+const DebugEmailVerify = React.lazy(() => import("./pages/DebugEmailVerify"));
 const StudyResources = React.lazy(() => import("./pages/StudyResources"));
 const UserProfile = React.lazy(() => import("./pages/UserProfile"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
@@ -402,6 +434,64 @@ function App() {
                               <AdminReports />
                             </Suspense>
                           </AdminProtectedRoute>
+                        }
+                      />
+
+                      {/* QA Dashboard Routes */}
+                      <Route
+                        path="/qa-dashboard"
+                        element={
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <SimpleQADashboard />
+                          </Suspense>
+                        }
+                      />
+                      <Route
+                        path="/qa"
+                        element={
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <QADashboard />
+                          </Suspense>
+                        }
+                      />
+                      <Route
+                        path="/qa-enhanced"
+                        element={
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <EnhancedQADashboard />
+                          </Suspense>
+                        }
+                      />
+                      <Route
+                        path="/test-orders"
+                        element={
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <TestOrderSystemSimple />
+                          </Suspense>
+                        }
+                      />
+                      <Route
+                        path="/order-tests"
+                        element={
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <OrderSystemTests />
+                          </Suspense>
+                        }
+                      />
+                      <Route
+                        path="/verify-migration"
+                        element={
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <MigrationVerify />
+                          </Suspense>
+                        }
+                      />
+                      <Route
+                        path="/debug-email-verify"
+                        element={
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <DebugEmailVerify />
+                          </Suspense>
                         }
                       />
 

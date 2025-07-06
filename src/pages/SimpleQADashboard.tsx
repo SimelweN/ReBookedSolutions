@@ -30,10 +30,18 @@ import EnvironmentChecker from "@/components/EnvironmentChecker";
 import PaystackDashboard from "@/components/PaystackDashboard";
 import DevelopmentToolsDashboard from "@/components/DevelopmentToolsDashboard";
 
+// Order System Test Components - Import dynamically to avoid issues
+// import { testOrderSystem, checkDatabaseStatus } from "@/utils/testOrderSystem";
+
 const SimpleQADashboard: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
   const { items } = useCart();
   const navigate = useNavigate();
+
+  // Order System Test State
+  const [orderTestResults, setOrderTestResults] = useState<any[]>([]);
+  const [isRunningOrderTests, setIsRunningOrderTests] = useState(false);
+  const [quickOrderStatus, setQuickOrderStatus] = useState<string>("");
   const [testResults, setTestResults] = useState<any[]>([]);
 
   const runQuickTest = () => {
@@ -66,6 +74,56 @@ const SimpleQADashboard: React.FC = () => {
       },
     ];
     setTestResults(results);
+  };
+
+  // Order System Test Functions
+  const runOrderSystemTests = async () => {
+    setIsRunningOrderTests(true);
+    setOrderTestResults([]);
+
+    try {
+      const { testOrderSystem } = await import("@/utils/testOrderSystem");
+      const results = await testOrderSystem();
+      setOrderTestResults(results);
+    } catch (error) {
+      console.error("Order system tests failed:", error);
+      setOrderTestResults([
+        {
+          name: "Test Import Error",
+          status: "FAILED",
+          error: error.message,
+        },
+      ]);
+    } finally {
+      setIsRunningOrderTests(false);
+    }
+  };
+
+  const runQuickOrderCheck = async () => {
+    setQuickOrderStatus("Running...");
+
+    try {
+      const { checkDatabaseStatus } = await import("@/utils/testOrderSystem");
+
+      // Capture console output
+      const originalLog = console.log;
+      let output = "";
+      console.log = (...args) => {
+        output += args.join(" ") + "\n";
+        originalLog(...args);
+      };
+
+      await checkDatabaseStatus();
+
+      console.log = originalLog;
+      setQuickOrderStatus(output);
+    } catch (error) {
+      setQuickOrderStatus(`Error: ${error.message}`);
+    }
+  };
+
+  const getOrderTestStatusColor = (status: string) => {
+    return status === "PASSED" ? "bg-green-500" : "bg-red-500";
   };
 
   const getStatusIcon = (status: string) => {
@@ -193,8 +251,9 @@ const SimpleQADashboard: React.FC = () => {
 
         {/* Enhanced QA Testing */}
         <Tabs defaultValue="devtools" className="w-full">
-          <TabsList className="grid w-full grid-cols-10">
+          <TabsList className="grid w-full grid-cols-11">
             <TabsTrigger value="devtools">Dev Tools</TabsTrigger>
+            <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="systemwide">Systemwide</TabsTrigger>
             <TabsTrigger value="environment">Environment</TabsTrigger>
             <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -208,6 +267,175 @@ const SimpleQADashboard: React.FC = () => {
 
           <TabsContent value="devtools">
             <DevelopmentToolsDashboard />
+          </TabsContent>
+
+          <TabsContent value="orders" className="space-y-6">
+            <div className="grid gap-6">
+              {/* Enhanced Order System Tests */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Database className="w-5 h-5" />
+                    Enhanced Order Management System Tests
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="text-sm text-muted-foreground mb-4">
+                    Test all components of the enhanced order system including
+                    48-hour commit system, notifications, and receipts.
+                  </div>
+
+                  {/* Quick Database Status Check */}
+                  <div className="flex gap-2 mb-4">
+                    <Button
+                      onClick={runQuickOrderCheck}
+                      variant="outline"
+                      size="sm"
+                    >
+                      Quick Database Status
+                    </Button>
+                    <Button
+                      onClick={runOrderSystemTests}
+                      disabled={isRunningOrderTests}
+                      size="sm"
+                    >
+                      {isRunningOrderTests
+                        ? "Running Full Tests..."
+                        : "Run Full Order System Tests"}
+                    </Button>
+                  </div>
+
+                  {/* Quick Status Output */}
+                  {quickOrderStatus && (
+                    <div className="bg-muted p-3 rounded-lg">
+                      <h4 className="font-medium mb-2">Database Status:</h4>
+                      <pre className="text-sm whitespace-pre-wrap">
+                        {quickOrderStatus}
+                      </pre>
+                    </div>
+                  )}
+
+                  {/* Full Test Results */}
+                  {orderTestResults.length > 0 && (
+                    <div className="space-y-3">
+                      <div className="flex gap-4 text-sm">
+                        <span>Total: {orderTestResults.length}</span>
+                        <span className="text-green-600">
+                          Passed:{" "}
+                          {
+                            orderTestResults.filter(
+                              (r) => r.status === "PASSED",
+                            ).length
+                          }
+                        </span>
+                        <span className="text-red-600">
+                          Failed:{" "}
+                          {
+                            orderTestResults.filter(
+                              (r) => r.status === "FAILED",
+                            ).length
+                          }
+                        </span>
+                      </div>
+
+                      <div className="space-y-2">
+                        {orderTestResults.map((result, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between p-3 border rounded-lg"
+                          >
+                            <div className="flex items-center gap-3">
+                              <Badge
+                                className={getOrderTestStatusColor(
+                                  result.status,
+                                )}
+                              >
+                                {result.status === "PASSED" ? "✅" : "❌"}{" "}
+                                {result.status}
+                              </Badge>
+                              <span className="font-medium">{result.name}</span>
+                            </div>
+
+                            {result.result && (
+                              <span className="text-sm text-muted-foreground">
+                                {result.result}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Show errors if any */}
+                      {orderTestResults.some((r) => r.error) && (
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                          <h4 className="font-medium text-red-800 mb-2">
+                            Errors:
+                          </h4>
+                          <div className="space-y-1">
+                            {orderTestResults
+                              .filter((r) => r.error)
+                              .map((result, index) => (
+                                <div
+                                  key={index}
+                                  className="text-sm text-red-700"
+                                >
+                                  <strong>{result.name}:</strong> {result.error}
+                                </div>
+                              ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Test Information */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
+                    <h4 className="font-medium text-blue-800 mb-2">
+                      What These Tests Check:
+                    </h4>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div>
+                        <h5 className="font-medium text-blue-700 mb-1">
+                          Database Components
+                        </h5>
+                        <ul className="text-sm text-blue-600 space-y-1">
+                          <li>• Database connection</li>
+                          <li>• Enhanced orders table schema</li>
+                          <li>• Order notifications table</li>
+                          <li>• Receipts table</li>
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h5 className="font-medium text-blue-700 mb-1">
+                          Functions & Features
+                        </h5>
+                        <ul className="text-sm text-blue-600 space-y-1">
+                          <li>• 48-hour commit system</li>
+                          <li>• Auto-cancel expired orders</li>
+                          <li>• Send commit reminders</li>
+                          <li>• Receipt generation</li>
+                          <li>• Notification system</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Setup Instructions */}
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h4 className="font-medium text-yellow-800 mb-2">
+                      Setup Required:
+                    </h4>
+                    <ol className="text-sm text-yellow-700 space-y-1 list-decimal list-inside">
+                      <li>Run the database migration in Supabase SQL Editor</li>
+                      <li>Deploy the Edge Function for automated processing</li>
+                      <li>Set up cron job for hourly order reminders</li>
+                      <li>Update order components to use enhanced service</li>
+                    </ol>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="systemwide">

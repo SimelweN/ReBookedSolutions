@@ -44,7 +44,33 @@ const Verify = () => {
           hash: window.location.hash,
         };
 
-        console.log("🔍 All URL parameters:", urlParams);
+        console.log(
+          "🔍 All URL parameters:",
+          JSON.stringify(urlParams, null, 2),
+        );
+        console.log("🔍 Raw searchParams:", window.location.search);
+        console.log("🔍 Individual search params:");
+        for (const [key, value] of searchParams.entries()) {
+          console.log(`  ${key}: ${value}`);
+        }
+
+        // Immediate diagnostic
+        const hasVerificationParams = !!(
+          params.token_hash ||
+          params.token ||
+          params.code
+        );
+        const hasType = !!params.type;
+        const hasErrors = !!(params.error_code || params.error_description);
+
+        console.log("🔍 Quick diagnostic:", {
+          hasVerificationParams,
+          hasType,
+          hasErrors,
+          paramCount: Object.keys(params).filter((k) => params[k]).length,
+          urlLength: window.location.href.length,
+        });
+
         setDebugInfo(urlParams);
 
         // Use the verification service
@@ -64,12 +90,66 @@ const Verify = () => {
             navigate("/", { replace: true });
           }, 2000);
         } else {
-          console.error("❌ Email verification failed:", result);
+          console.error(
+            "❌ Email verification failed - Raw result:",
+            JSON.stringify(result, null, 2),
+          );
+          console.error(
+            "❌ Email verification failed - Result type:",
+            typeof result,
+          );
+          console.error(
+            "❌ Email verification failed - Result.error:",
+            result?.error,
+          );
+          console.error(
+            "❌ Email verification failed - Result.message:",
+            result?.message,
+          );
 
-          // Get user-friendly error message
-          const errorMessage =
-            EmailVerificationService.getFormattedErrorMessage?.(result) ||
-            result.message;
+          // Get user-friendly error message with better error handling
+          let errorMessage: string;
+          try {
+            // First try the formatted error message
+            const formattedMessage =
+              EmailVerificationService.getFormattedErrorMessage?.(result);
+            console.log(
+              "Formatted message result:",
+              formattedMessage,
+              typeof formattedMessage,
+            );
+
+            errorMessage =
+              formattedMessage || result.message || "Email verification failed";
+
+            console.log(
+              "Initial error message:",
+              errorMessage,
+              typeof errorMessage,
+            );
+
+            // Ensure we don't show [object Object]
+            if (typeof errorMessage === "object") {
+              console.warn(
+                "Error message is object, converting:",
+                errorMessage,
+              );
+              try {
+                errorMessage = JSON.stringify(errorMessage);
+              } catch {
+                errorMessage = "Email verification failed. Please try again.";
+              }
+            }
+            if (errorMessage === "[object Object]") {
+              console.warn("Detected [object Object], using fallback");
+              errorMessage = "Email verification failed. Please try again.";
+            }
+
+            console.log("Final error message:", errorMessage);
+          } catch (error) {
+            console.error("Error formatting error message:", error);
+            errorMessage = "Email verification failed. Please try again.";
+          }
 
           // If no verification parameters found, show debug mode
           if (
@@ -85,6 +165,11 @@ const Verify = () => {
           } else {
             setStatus("error");
             setMessage(errorMessage);
+            console.log(
+              "About to show toast with message:",
+              errorMessage,
+              typeof errorMessage,
+            );
             toast.error(errorMessage);
           }
         }
@@ -95,8 +180,26 @@ const Verify = () => {
         );
         setStatus("error");
 
-        const errorMessage =
-          error?.message || "Unexpected error during verification";
+        // Properly extract error message
+        let errorMessage: string;
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        } else if (typeof error === "string") {
+          errorMessage = error;
+        } else if (error && typeof error === "object") {
+          errorMessage =
+            (error as any)?.message ||
+            (error as any)?.error ||
+            JSON.stringify(error);
+        } else {
+          errorMessage = "Unexpected error during verification";
+        }
+
+        // Ensure we don't show [object Object]
+        if (errorMessage === "[object Object]") {
+          errorMessage = "Unexpected error during verification";
+        }
+
         setMessage(errorMessage);
         toast.error(errorMessage);
       }

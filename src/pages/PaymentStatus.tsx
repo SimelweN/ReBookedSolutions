@@ -20,6 +20,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import PaystackPaymentService, {
   OrderData,
 } from "@/services/paystackPaymentService";
+import {
+  getOrderById,
+  getOrderByReference,
+  getUserOrders,
+  type Order,
+} from "@/services/enhancedOrderService";
 import SEO from "@/components/SEO";
 import { toast } from "sonner";
 
@@ -30,7 +36,7 @@ const PaymentStatus: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
 
   const reference = searchParams.get("reference");
-  const [order, setOrder] = useState<OrderData | null>(null);
+  const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,7 +59,7 @@ const PaymentStatus: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      if (!user?.email) {
+      if (!user?.id) {
         setError("User not authenticated");
         return;
       }
@@ -68,29 +74,129 @@ const PaymentStatus: React.FC = () => {
         }
       }
 
-      // Load order details for the current user
-      const orderIdOrRef = orderId || reference;
-      if (!orderIdOrRef) {
-        setError("No order ID or payment reference provided");
-        return;
+      let foundOrder: Order | null = null;
+
+      console.log("🔍 Starting order lookup with:", {
+        userId: user.id,
+        userEmail: user.email,
+        orderId,
+        reference,
+        urlSearchParams: window.location.search,
+      });
+
+      // Try to load order by ID first
+      if (orderId) {
+        console.log("🔍 Looking up order by ID:", orderId);
+        try {
+          foundOrder = await getOrderById(orderId);
+          console.log("📋 Raw order found by ID:", foundOrder);
+
+          // Check if this order belongs to the current user
+          if (foundOrder) {
+            console.log("🔍 Order ownership check:", {
+              orderBuyerId: foundOrder.buyer_id,
+              orderSellerId: foundOrder.seller_id,
+              currentUserId: user.id,
+              buyerMatch: foundOrder.buyer_id === user.id,
+              sellerMatch: foundOrder.seller_id === user.id,
+            });
+
+            if (
+              foundOrder.buyer_id !== user.id &&
+              foundOrder.seller_id !== user.id
+            ) {
+              console.log("❌ Order found but doesn't belong to current user");
+              foundOrder = null;
+            } else {
+              console.log("✅ Order belongs to current user");
+            }
+          }
+        } catch (error) {
+          console.error("❌ Error looking up order by ID:", error);
+        }
       }
 
-      const foundOrder = await PaystackPaymentService.getUserOrder(
-        user.email,
-        orderIdOrRef,
-      );
+      // If not found by ID, try by reference
+      if (!foundOrder && reference) {
+        console.log("🔍 Looking up order by reference:", reference);
+        try {
+          foundOrder = await getOrderByReference(reference);
+          console.log("📋 Raw order found by reference:", foundOrder);
 
-      console.log("🔍 Order lookup:", {
-        userEmail: user.email,
-        orderIdOrRef,
+          // Check if this order belongs to the current user
+          if (foundOrder) {
+            console.log("🔍 Order ownership check (by reference):", {
+              orderBuyerId: foundOrder.buyer_id,
+              orderSellerId: foundOrder.seller_id,
+              currentUserId: user.id,
+              buyerMatch: foundOrder.buyer_id === user.id,
+              sellerMatch: foundOrder.seller_id === user.id,
+            });
+
+            if (
+              foundOrder.buyer_id !== user.id &&
+              foundOrder.seller_id !== user.id
+            ) {
+              console.log("❌ Order found but doesn't belong to current user");
+              foundOrder = null;
+            } else {
+              console.log("✅ Order belongs to current user");
+            }
+          }
+        } catch (error) {
+          console.error("❌ Error looking up order by reference:", error);
+        }
+      }
+
+      console.log("🔍 Final order lookup result:", {
+        userId: user.id,
+        orderId,
+        reference,
         foundOrder: foundOrder ? "✅ Found" : "❌ Not found",
+        orderData: foundOrder
+          ? {
+              id: foundOrder.id,
+              buyerId: foundOrder.buyer_id,
+              sellerId: foundOrder.seller_id,
+              status: foundOrder.status,
+              paymentStatus: foundOrder.payment_status,
+            }
+          : null,
       });
 
       if (foundOrder) {
         setOrder(foundOrder);
         console.log("✅ Order loaded successfully:", foundOrder.id);
       } else {
-        console.log("❌ Order not found for user:", user.email);
+        console.log("❌ Order not found for user:", user.id);
+
+        // Debug: Check what orders this user has
+        try {
+          const userOrders = await getUserOrders(user.id);
+          console.log(
+            "🔍 User's available orders:",
+            userOrders.map((o) => ({
+              id: o.id,
+              paystack_reference: o.paystack_reference,
+              status: o.status,
+              created_at: o.created_at,
+            })),
+          );
+
+          if (userOrders.length === 0) {
+            console.log("ℹ️ User has no orders at all");
+          } else {
+            console.log(
+              `ℹ️ User has ${userOrders.length} orders, but none match the requested ID/reference`,
+            );
+          }
+        } catch (debugError) {
+          console.error(
+            "❌ Error fetching user orders for debugging:",
+            debugError,
+          );
+        }
+
         setError("Order not found or doesn't belong to your account");
       }
     } catch (error) {
@@ -131,13 +237,14 @@ const PaymentStatus: React.FC = () => {
       ReBooked Solutions - Order Receipt
 
       Order ID: ${order.id}
-      Reference: ${order.paystack_ref}
+      Reference: ${order.paystack_reference}
       Date: ${new Date(order.created_at).toLocaleDateString()}
       Amount: R${(order.amount / 100).toFixed(2)}
       Status: ${order.status}
+      Payment Status: ${order.payment_status}
 
-      Items:
-      ${order.items.map((item) => `- ${item.title}: R${(item.price / 100).toFixed(2)}`).join("\n")}
+      Book Details:
+      ${order.book ? `- ${order.book.title} by ${order.book.author}` : "- Book details not available"}
 
       Thank you for your purchase!
     `;
@@ -153,12 +260,20 @@ const PaymentStatus: React.FC = () => {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
+      case "pending":
+        return <Clock className="w-8 h-8 text-gray-500" />;
       case "paid":
         return <CreditCard className="w-8 h-8 text-blue-500" />;
-      case "ready_for_payout":
+      case "committed":
         return <Package className="w-8 h-8 text-orange-500" />;
-      case "paid_out":
+      case "shipped":
+        return <Truck className="w-8 h-8 text-purple-500" />;
+      case "delivered":
         return <CheckCircle className="w-8 h-8 text-green-500" />;
+      case "cancelled":
+        return <AlertCircle className="w-8 h-8 text-red-500" />;
+      case "refunded":
+        return <DollarSign className="w-8 h-8 text-yellow-500" />;
       default:
         return <Clock className="w-8 h-8 text-gray-500" />;
     }
@@ -166,12 +281,20 @@ const PaymentStatus: React.FC = () => {
 
   const getStatusMessage = (status: string) => {
     switch (status) {
+      case "pending":
+        return "Your order is being processed...";
       case "paid":
-        return "Payment confirmed! Your order is being prepared for shipping.";
-      case "ready_for_payout":
-        return "Your order has been picked up by the courier and is on its way to you.";
-      case "paid_out":
-        return "Order completed! The seller has been paid.";
+        return "Payment confirmed! The seller has 48 hours to commit to your order.";
+      case "committed":
+        return "Great! The seller has committed to your order and will prepare it for collection/delivery.";
+      case "shipped":
+        return "Your order has been shipped and is on its way to you.";
+      case "delivered":
+        return "Order delivered successfully!";
+      case "cancelled":
+        return "This order has been cancelled.";
+      case "refunded":
+        return "This order has been refunded.";
       default:
         return "Processing your order...";
     }
@@ -282,6 +405,12 @@ const PaymentStatus: React.FC = () => {
                 <Badge variant="secondary" className="text-lg px-4 py-2">
                   {order.status.toUpperCase().replace("_", " ")}
                 </Badge>
+                {order.payment_status &&
+                  order.payment_status !== order.status && (
+                    <Badge variant="outline" className="ml-2">
+                      Payment: {order.payment_status}
+                    </Badge>
+                  )}
               </CardContent>
             </Card>
           )}
@@ -312,59 +441,57 @@ const PaymentStatus: React.FC = () => {
                   </div>
 
                   <div className="border-t pt-4">
-                    <h4 className="font-medium mb-3">Items Purchased</h4>
+                    <h4 className="font-medium mb-3">Book Purchased</h4>
                     <div className="space-y-3">
-                      {order.items.map((item, index) => (
-                        <div
-                          key={index}
-                          className="flex justify-between items-start"
-                        >
+                      {order.book ? (
+                        <div className="flex justify-between items-start">
                           <div className="flex-1">
-                            <p className="font-medium text-sm">{item.title}</p>
-                            {item.author && (
+                            <p className="font-medium text-sm">
+                              {order.book.title}
+                            </p>
+                            {order.book.author && (
                               <p className="text-xs text-gray-600">
-                                by {item.author}
+                                by {order.book.author}
                               </p>
                             )}
-                            {item.isbn && (
-                              <p className="text-xs text-gray-600">
-                                ISBN: {item.isbn}
-                              </p>
-                            )}
-                            {item.condition && (
-                              <Badge variant="outline" className="text-xs mt-1">
-                                {item.condition}
-                              </Badge>
+                            {order.book.imageUrl && (
+                              <div className="mt-2">
+                                <img
+                                  src={order.book.imageUrl}
+                                  alt={order.book.title}
+                                  className="w-16 h-20 object-cover rounded"
+                                />
+                              </div>
                             )}
                           </div>
                           <div className="text-right ml-4">
                             <p className="font-medium">
-                              R{(item.price / 100).toFixed(2)}
+                              R{(order.amount / 100).toFixed(2)}
                             </p>
                             <p className="text-xs text-gray-600">Qty: 1</p>
                           </div>
                         </div>
-                      ))}
+                      ) : (
+                        <div className="text-sm text-gray-600">
+                          Book details not available
+                        </div>
+                      )}
                     </div>
                   </div>
 
                   <div className="border-t pt-4 space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span>Subtotal</span>
+                      <span>Book Price</span>
+                      <span>R{(order.amount / 100).toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Delivery</span>
                       <span>
-                        R
-                        {(
-                          (order.amount - (order.delivery_fee || 0)) /
-                          100
-                        ).toFixed(2)}
+                        {order.delivery_option === "pickup"
+                          ? "Collection"
+                          : "Included"}
                       </span>
                     </div>
-                    {order.delivery_fee && (
-                      <div className="flex justify-between text-sm">
-                        <span>Delivery Fee</span>
-                        <span>R{(order.delivery_fee / 100).toFixed(2)}</span>
-                      </div>
-                    )}
                     <div className="flex justify-between font-medium text-lg border-t pt-2">
                       <span>Total Paid</span>
                       <span>R{(order.amount / 100).toFixed(2)}</span>
@@ -382,7 +509,8 @@ const PaymentStatus: React.FC = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {order.delivery_address ? (
+                  {order.delivery_option === "delivery" &&
+                  order.delivery_address ? (
                     <div>
                       <p className="text-sm text-gray-600 mb-1">
                         Delivery Address
@@ -402,7 +530,9 @@ const PaymentStatus: React.FC = () => {
                         Collection Method
                       </p>
                       <p className="text-sm">
-                        Buyer to collect directly from seller
+                        {order.delivery_option === "pickup"
+                          ? "Pickup from seller"
+                          : "Collection method not specified"}
                       </p>
                     </div>
                   )}
@@ -429,15 +559,28 @@ const PaymentStatus: React.FC = () => {
                     </div>
                   )}
 
-                  {order.collection_deadline && (
+                  {order.commit_deadline && order.status === "paid" && (
                     <div>
                       <p className="text-sm text-gray-600 mb-1">
-                        Collection Deadline
+                        Seller Commitment Deadline
                       </p>
+                      <p className="text-sm font-medium text-orange-600">
+                        {new Date(order.commit_deadline).toLocaleDateString()}{" "}
+                        at{" "}
+                        {new Date(order.commit_deadline).toLocaleTimeString()}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Seller must commit within 48 hours of payment
+                      </p>
+                    </div>
+                  )}
+
+                  {order.committed_at && (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">Committed At</p>
                       <p className="text-sm">
-                        {new Date(
-                          order.collection_deadline,
-                        ).toLocaleDateString()}
+                        {new Date(order.committed_at).toLocaleDateString()} at{" "}
+                        {new Date(order.committed_at).toLocaleTimeString()}
                       </p>
                     </div>
                   )}

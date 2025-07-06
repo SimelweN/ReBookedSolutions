@@ -134,15 +134,27 @@ const Admin = () => {
               </h1>
             </div>
 
-            <Button
-              variant="outline"
-              onClick={() => navigate("/admin/reports")}
-              className={`flex items-center ${isMobile ? "w-full" : "w-auto"} min-h-[44px] btn-mobile`}
-              size={isMobile ? "default" : "default"}
-            >
-              <Flag className="mr-2 h-4 w-4" />
-              View Reports
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => navigate("/admin/reports")}
+                className={`flex items-center ${isMobile ? "w-full" : "w-auto"} min-h-[44px] btn-mobile`}
+                size={isMobile ? "default" : "default"}
+              >
+                <Flag className="mr-2 h-4 w-4" />
+                View Reports
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => navigate("/qa-dashboard")}
+                className={`flex items-center ${isMobile ? "w-full" : "w-auto"} min-h-[44px] btn-mobile`}
+                size={isMobile ? "default" : "default"}
+              >
+                <Shield className="mr-2 h-4 w-4" />
+                QA Dashboard
+              </Button>
+            </div>
           </div>
         </div>
 
