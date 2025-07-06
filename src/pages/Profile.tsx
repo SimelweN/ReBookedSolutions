@@ -812,6 +812,18 @@ const Profile = () => {
           description="Buyers need to know where to collect books from you."
         />
 
+        <SimplifiedAddressDialog
+          isOpen={isAddressDialogOpen}
+          onClose={() => setIsAddressDialogOpen(false)}
+          userId={user?.id || ""}
+          initialAddresses={userAddresses}
+          onSuccess={() => {
+            loadUserAddresses();
+            toast.success("Addresses saved successfully!");
+            setIsAddressDialogOpen(false);
+          }}
+        />
+
         {/* Quick Fix Button for easy access */}
         <QuickFixButton onAddressAdded={loadUserAddresses} />
       </div>
