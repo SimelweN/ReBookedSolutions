@@ -355,7 +355,7 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         getTotalAmount(),
       );
 
-      // Call the process-book-purchase function
+      // Call the process-book-purchase function with comprehensive error handling
       const { data, error } = await supabase.functions.invoke(
         "process-book-purchase",
         {
