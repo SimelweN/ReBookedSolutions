@@ -148,17 +148,31 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
 
       setSellerInfo(sellerInfo);
 
-      // Set seller address for delivery calculations
-      if (seller.address) {
-        setSellerAddress({
-          street: seller.address.street || "",
-          city: seller.address.city || "Cape Town",
-          province: seller.address.province || "Western Cape",
-          postal_code: seller.address.postal_code || "8000",
-          country: "South Africa",
-          lat: seller.address.lat,
-          lng: seller.address.lng,
-        });
+      // Set seller address for delivery calculations using enhanced data
+      if (validation.profile.pickup_address) {
+        const formattedAddress =
+          SellerProfileService.formatPickupAddressForDelivery(
+            validation.profile.pickup_address,
+          );
+
+        if (formattedAddress) {
+          setSellerAddress({
+            street: formattedAddress.streetAddress || "",
+            city: formattedAddress.city || "Cape Town",
+            province: formattedAddress.province || "Western Cape",
+            postal_code: formattedAddress.postalCode || "8000",
+            country: "South Africa",
+          });
+        } else {
+          // Fallback if address formatting fails
+          setSellerAddress({
+            street: "University of Cape Town",
+            city: "Cape Town",
+            province: "Western Cape",
+            postal_code: "7700",
+            country: "South Africa",
+          });
+        }
       } else {
         // Default seller address if not available
         setSellerAddress({
