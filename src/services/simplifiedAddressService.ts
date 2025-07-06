@@ -70,15 +70,39 @@ export const saveSimpleUserAddresses = async (
       .single();
 
     // If profile doesn't exist, try to create it
-    if (error && error.code === "PGRST116") {
-      console.log("Profile doesn't exist, creating new profile with addresses");
+    if (
+      error &&
+      (error.code === "PGRST116" ||
+        error.message.includes("violates row-level security"))
+    ) {
+      console.log(
+        "Profile doesn't exist or access denied, checking user info...",
+      );
+
+      // Get basic user info first
+      const { data: userData } = await supabase.auth.getUser();
+
+      if (!userData.user) {
+        throw new Error("User not authenticated");
+      }
+
+      console.log(
+        "Creating new profile with addresses for user:",
+        userData.user.email,
+      );
       const { data: createData, error: createError } = await supabase
         .from("profiles")
         .insert({
           id: userId,
+          email: userData.user.email,
+          name:
+            userData.user.user_metadata?.name ||
+            userData.user.email?.split("@")[0] ||
+            "User",
           pickup_address: pickupAddress,
           shipping_address: finalShippingAddress,
           addresses_same: addressesSame,
+          status: "active",
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
