@@ -38,6 +38,13 @@ const Checkout = React.lazy(() => import("./pages/Checkout"));
 const Shipping = React.lazy(() => import("./pages/Shipping"));
 const ContactUs = React.lazy(() => import("./pages/ContactUs"));
 const FAQ = React.lazy(() => import("./pages/FAQ"));
+
+// QA Dashboards
+const SimpleQADashboard = React.lazy(() => import("./pages/SimpleQADashboard"));
+const QADashboard = React.lazy(() => import("./pages/QADashboard"));
+const EnhancedQADashboard = React.lazy(
+  () => import("./pages/EnhancedQADashboard"),
+);
 const StudyResources = React.lazy(() => import("./pages/StudyResources"));
 const UserProfile = React.lazy(() => import("./pages/UserProfile"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
@@ -413,6 +420,32 @@ function App() {
                               <AdminReports />
                             </Suspense>
                           </AdminProtectedRoute>
+                        }
+                      />
+
+                      {/* QA Dashboard Routes */}
+                      <Route
+                        path="/qa-dashboard"
+                        element={
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <SimpleQADashboard />
+                          </Suspense>
+                        }
+                      />
+                      <Route
+                        path="/qa"
+                        element={
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <QADashboard />
+                          </Suspense>
+                        }
+                      />
+                      <Route
+                        path="/qa-enhanced"
+                        element={
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <EnhancedQADashboard />
+                          </Suspense>
                         }
                       />
 
