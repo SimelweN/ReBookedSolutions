@@ -66,10 +66,25 @@ const Verify = () => {
         } else {
           console.error("❌ Email verification failed:", result);
 
-          // Get user-friendly error message
-          const errorMessage =
-            EmailVerificationService.getFormattedErrorMessage?.(result) ||
-            result.message;
+          // Get user-friendly error message with better error handling
+          let errorMessage: string;
+          try {
+            errorMessage =
+              EmailVerificationService.getFormattedErrorMessage?.(result) ||
+              result.message ||
+              "Email verification failed";
+
+            // Ensure we don't show [object Object]
+            if (typeof errorMessage === "object") {
+              errorMessage = JSON.stringify(errorMessage);
+            }
+            if (errorMessage === "[object Object]") {
+              errorMessage = "Email verification failed. Please try again.";
+            }
+          } catch (error) {
+            console.error("Error formatting error message:", error);
+            errorMessage = "Email verification failed. Please try again.";
+          }
 
           // If no verification parameters found, show debug mode
           if (
@@ -95,8 +110,26 @@ const Verify = () => {
         );
         setStatus("error");
 
-        const errorMessage =
-          error?.message || "Unexpected error during verification";
+        // Properly extract error message
+        let errorMessage: string;
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        } else if (typeof error === "string") {
+          errorMessage = error;
+        } else if (error && typeof error === "object") {
+          errorMessage =
+            (error as any)?.message ||
+            (error as any)?.error ||
+            JSON.stringify(error);
+        } else {
+          errorMessage = "Unexpected error during verification";
+        }
+
+        // Ensure we don't show [object Object]
+        if (errorMessage === "[object Object]") {
+          errorMessage = "Unexpected error during verification";
+        }
+
         setMessage(errorMessage);
         toast.error(errorMessage);
       }
