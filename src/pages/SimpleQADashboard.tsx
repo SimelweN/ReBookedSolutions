@@ -77,6 +77,46 @@ const SimpleQADashboard: React.FC = () => {
     setTestResults(results);
   };
 
+  // Order System Test Functions
+  const runOrderSystemTests = async () => {
+    setIsRunningOrderTests(true);
+    setOrderTestResults([]);
+
+    try {
+      const results = await testOrderSystem();
+      setOrderTestResults(results);
+    } catch (error) {
+      console.error("Order system tests failed:", error);
+    } finally {
+      setIsRunningOrderTests(false);
+    }
+  };
+
+  const runQuickOrderCheck = async () => {
+    setQuickOrderStatus("Running...");
+
+    try {
+      // Capture console output
+      const originalLog = console.log;
+      let output = "";
+      console.log = (...args) => {
+        output += args.join(" ") + "\n";
+        originalLog(...args);
+      };
+
+      await checkDatabaseStatus();
+
+      console.log = originalLog;
+      setQuickOrderStatus(output);
+    } catch (error) {
+      setQuickOrderStatus(`Error: ${error.message}`);
+    }
+  };
+
+  const getOrderTestStatusColor = (status: string) => {
+    return status === "PASSED" ? "bg-green-500" : "bg-red-500";
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "pass":
