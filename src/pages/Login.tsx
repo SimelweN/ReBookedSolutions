@@ -94,9 +94,17 @@ const Login = () => {
         throw new Error("Email and password are required");
       }
 
-      console.log("Attempting login with:", email);
-      await login(email, password);
-      console.log("Login successful, navigating to home");
+      console.log("🔐 Attempting login with:", email);
+      console.log("🔐 Auth context state before login:", { isAuthenticated });
+
+      const result = await login(email, password);
+      console.log("🔐 Login result:", result);
+
+      // Wait a moment for auth state to update
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      console.log("🔐 Auth context state after login:", { isAuthenticated });
+      console.log("🔐 Navigating to home page");
       navigate("/", { replace: true });
     } catch (error: unknown) {
       // Comprehensive error message extraction
