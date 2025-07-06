@@ -245,13 +245,13 @@ serve(async (req) => {
     const paystackPayload = {
       amount: Math.round(totalAmount * 100), // Convert to kobo
       email: user.email,
-      reference: `rb_${order.id}`,
+      reference: paymentReference,
       callback_url: `${Deno.env.get("SUPABASE_URL")}/functions/v1/paystack-webhook`,
       metadata: {
         order_id: order.id,
         book_id: book.id,
         book_title: book.title,
-        buyer_id: user.id,
+        buyer_email: user.email,
         seller_id: book.seller_id,
         delivery_fee: delivery_fee,
       },
