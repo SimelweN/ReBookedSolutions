@@ -34,8 +34,6 @@ const EmergencyBypass: React.FC<{ children: React.ReactNode }> = ({
           element.style.display = "";
         }
       });
-
-      console.log("🚀 Emergency bypass activated - forced loading resolution");
     }, 100);
 
     return () => clearTimeout(timeout);
