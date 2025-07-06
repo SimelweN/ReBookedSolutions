@@ -165,20 +165,12 @@ function App() {
                         }
                       />
 
-                      {/* University Profile Routes */}
+                      {/* University Profile Route */}
                       <Route
                         path="/university/:id"
                         element={
                           <Suspense fallback={<LoadingSpinner />}>
-                            <EnhancedUniversityProfile />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/university-profile"
-                        element={
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <ModernUniversityProfile />
+                            <UniversityProfile />
                           </Suspense>
                         }
                       />
