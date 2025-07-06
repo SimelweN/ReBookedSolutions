@@ -253,7 +253,6 @@ export class BookDeletionService {
         .from("books")
         .update({
           availability: "available",
-          updated_at: new Date().toISOString(),
         })
         .eq("seller_id", userId)
         .eq("availability", "unavailable")
