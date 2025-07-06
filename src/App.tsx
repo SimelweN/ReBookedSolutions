@@ -391,7 +391,6 @@ function App() {
                 </div>
               </Router>
               <Toaster position="top-center" />
-              <BackendStatusIndicator />
             </CartProvider>
           </AuthProvider>
         </GoogleMapsProvider>
