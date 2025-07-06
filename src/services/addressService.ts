@@ -23,45 +23,46 @@ export const saveUserAddresses = async (
   shippingAddress: Address,
   addressesSame: boolean,
 ) => {
-  try {
-    const result = await updateAddressValidation(
-      userId,
-      pickupAddress,
-      shippingAddress,
-      addressesSame,
-    );
+  // First, update the addresses using the validation service
+  const result = await updateAddressValidation(
+    userId,
+    pickupAddress,
+    shippingAddress,
+    addressesSame,
+  );
 
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("pickup_address, shipping_address, addresses_same")
-      .eq("id", userId)
-      .maybeSingle(); // Use maybeSingle() to handle cases where profile might not exist
+  // Then fetch the updated data with proper error handling
+  const { data, error } = await safeDbOperation(
+    () =>
+      supabase
+        .from("profiles")
+        .select("pickup_address, shipping_address, addresses_same")
+        .eq("id", userId)
+        .maybeSingle(),
+    "saveUserAddresses - fetch updated data",
+    { showToast: true },
+  );
 
-    if (error) {
-      safeLogError("Error fetching updated addresses", error);
-      throw error;
-    }
+  if (error) {
+    throw new Error(error.userMessage);
+  }
 
-    // Handle case where profile doesn't exist yet
-    if (!data) {
-      return {
-        pickup_address: null,
-        shipping_address: null,
-        addresses_same: false,
-        canListBooks: result.canListBooks,
-      };
-    }
-
+  // Handle case where profile doesn't exist yet
+  if (!data) {
     return {
-      pickup_address: data.pickup_address,
-      shipping_address: data.shipping_address,
-      addresses_same: data.addresses_same,
+      pickup_address: null,
+      shipping_address: null,
+      addresses_same: false,
       canListBooks: result.canListBooks,
     };
-  } catch (error) {
-    safeLogError("Error saving addresses", error);
-    throw error;
   }
+
+  return {
+    pickup_address: data.pickup_address,
+    shipping_address: data.shipping_address,
+    addresses_same: data.addresses_same,
+    canListBooks: result.canListBooks,
+  };
 };
 
 export const getUserAddresses = async (userId: string) => {
