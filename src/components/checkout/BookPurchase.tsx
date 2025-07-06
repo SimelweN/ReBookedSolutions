@@ -122,7 +122,19 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
 
       // Get seller delivery address (always returns a valid address)
       const deliveryAddress = await getSellerDeliveryAddress(book.seller_id);
-      console.log("Got seller delivery address:", deliveryAddress);
+      console.log("📍 Got seller delivery address:", deliveryAddress);
+
+      // Validate seller address quality
+      if (
+        !deliveryAddress.street ||
+        !deliveryAddress.city ||
+        !deliveryAddress.postal_code
+      ) {
+        console.warn("⚠️ Seller address is incomplete, using fallback");
+        toast.warning(
+          "⚠️ Seller's address is incomplete. Delivery costs may be estimated.",
+        );
+      }
 
       setSellerAddress(deliveryAddress);
 
