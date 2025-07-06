@@ -394,85 +394,87 @@ const SellerMarketplace = () => {
               </p>
             </div>
           ) : (
-            books.map((book) => (
-              <Card
-                key={book.id}
-                className="overflow-hidden hover:shadow-lg transition-shadow"
-              >
-                <div className="aspect-[3/4] relative">
-                  <img
-                    src={book.imageUrl || "/placeholder.svg"}
-                    alt={book.title}
-                    className="w-full h-full object-cover cursor-pointer"
-                    onClick={() => handleViewBook(book.id)}
-                    onError={(e) => {
-                      e.currentTarget.src = "/placeholder.svg";
-                    }}
-                  />
-                  <div className="absolute top-2 left-2">
-                    <Badge className={getConditionColor(book.condition)}>
-                      {book.condition}
-                    </Badge>
-                  </div>
-                  {book.grade && (
-                    <div className="absolute top-2 right-2">
-                      <Badge variant="secondary">{book.grade}</Badge>
+            books
+              .filter((book) => book.availability === "available")
+              .map((book) => (
+                <Card
+                  key={book.id}
+                  className="overflow-hidden hover:shadow-lg transition-shadow"
+                >
+                  <div className="aspect-[3/4] relative">
+                    <img
+                      src={book.imageUrl || "/placeholder.svg"}
+                      alt={book.title}
+                      className="w-full h-full object-cover cursor-pointer"
+                      onClick={() => handleViewBook(book.id)}
+                      onError={(e) => {
+                        e.currentTarget.src = "/placeholder.svg";
+                      }}
+                    />
+                    <div className="absolute top-2 left-2">
+                      <Badge className={getConditionColor(book.condition)}>
+                        {book.condition}
+                      </Badge>
                     </div>
-                  )}
-                </div>
-
-                <CardContent className="p-4">
-                  <h3
-                    className="font-semibold text-gray-900 mb-1 line-clamp-2 cursor-pointer hover:text-book-600"
-                    onClick={() => handleViewBook(book.id)}
-                  >
-                    {book.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 mb-2">{book.author}</p>
-                  <p className="text-sm text-gray-500 mb-2">
-                    {book.description}
-                  </p>
-
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-lg font-bold text-book-600">
-                      {formatPrice(book.price)}
-                    </span>
-                    <div className="text-xs text-gray-500">ReBooked Mini</div>
-                  </div>
-
-                  <div className="flex items-center justify-between mb-3">
-                    <Badge variant="outline">{book.category}</Badge>
-                    <div className="text-xs text-gray-500">
-                      Seller: {profile.id}
-                    </div>
-                  </div>
-
-                  <Button
-                    onClick={() => handleAddToCart(book)}
-                    disabled={
-                      addingToCart === book.id ||
-                      book.availability !== "available"
-                    }
-                    className="w-full"
-                    size="sm"
-                  >
-                    {addingToCart === book.id ? (
-                      <div className="flex items-center">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Adding...
+                    {book.grade && (
+                      <div className="absolute top-2 right-2">
+                        <Badge variant="secondary">{book.grade}</Badge>
                       </div>
-                    ) : book.availability === "sold" ? (
-                      "Sold"
-                    ) : (
-                      <>
-                        <ShoppingCart className="h-4 w-4 mr-2" />
-                        Add to Cart
-                      </>
                     )}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))
+                  </div>
+
+                  <CardContent className="p-4">
+                    <h3
+                      className="font-semibold text-gray-900 mb-1 line-clamp-2 cursor-pointer hover:text-book-600"
+                      onClick={() => handleViewBook(book.id)}
+                    >
+                      {book.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-2">{book.author}</p>
+                    <p className="text-sm text-gray-500 mb-2">
+                      {book.description}
+                    </p>
+
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-lg font-bold text-book-600">
+                        {formatPrice(book.price)}
+                      </span>
+                      <div className="text-xs text-gray-500">ReBooked Mini</div>
+                    </div>
+
+                    <div className="flex items-center justify-between mb-3">
+                      <Badge variant="outline">{book.category}</Badge>
+                      <div className="text-xs text-gray-500">
+                        Seller: {profile.id}
+                      </div>
+                    </div>
+
+                    <Button
+                      onClick={() => handleAddToCart(book)}
+                      disabled={
+                        addingToCart === book.id ||
+                        book.availability !== "available"
+                      }
+                      className="w-full"
+                      size="sm"
+                    >
+                      {addingToCart === book.id ? (
+                        <div className="flex items-center">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Adding...
+                        </div>
+                      ) : book.availability === "sold" ? (
+                        "Sold"
+                      ) : (
+                        <>
+                          <ShoppingCart className="h-4 w-4 mr-2" />
+                          Add to Cart
+                        </>
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))
           )}
         </div>
       </div>
