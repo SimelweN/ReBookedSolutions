@@ -315,18 +315,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             }
           }
 
-          // Background profile maintenance (every 30 seconds)
+          // Background profile maintenance (every 2 minutes)
+          // Initial delay increased to reduce rapid retries
           setTimeout(() => {
             if (session?.user) {
               upgradeProfileIfNeeded(session.user);
             }
-          }, 2000);
+          }, 10000); // 10 seconds instead of 2
 
           const upgradeInterval = setInterval(() => {
             if (session?.user) {
               upgradeProfileIfNeeded(session.user);
             }
-          }, 30000);
+          }, 120000); // 2 minutes instead of 30 seconds
 
           return () => clearInterval(upgradeInterval);
         }
