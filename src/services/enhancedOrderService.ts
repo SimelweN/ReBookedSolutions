@@ -69,6 +69,35 @@ export const getOrderById = async (orderId: string): Promise<Order | null> => {
   }
 };
 
+export const getOrderByReference = async (
+  reference: string,
+): Promise<Order | null> => {
+  try {
+    const { data, error } = await supabase
+      .from("orders")
+      .select(
+        `
+        *,
+        book:books(title, author, image_url),
+        buyer:profiles!orders_buyer_id_fkey(name, email),
+        seller:profiles!orders_seller_id_fkey(name, email)
+      `,
+      )
+      .eq("paystack_reference", reference)
+      .single();
+
+    if (error) {
+      if (error.code === "PGRST116") return null;
+      throw new Error(`Failed to fetch order: ${error.message}`);
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error in getOrderByReference:", error);
+    throw error;
+  }
+};
+
 export const getUserOrders = async (
   userId: string,
   role: "buyer" | "seller" | "all" = "all",
