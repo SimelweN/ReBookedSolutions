@@ -70,28 +70,22 @@ const SystemHealthMonitor: React.FC = () => {
     const newMetrics: HealthMetric[] = [];
 
     try {
-      // 1. Database Connectivity
-      const dbStart = Date.now();
-      try {
-        const { error } = await supabase.from("profiles").select("id").limit(1);
-        newMetrics.push({
-          id: "database",
-          name: "Database Connection",
-          status: error ? "error" : "healthy",
-          value: error ? "Failed" : `${Date.now() - dbStart}ms`,
-          description: error ? error.message : "Supabase connection healthy",
-          lastChecked: new Date(),
-        });
-      } catch (error) {
-        newMetrics.push({
-          id: "database",
-          name: "Database Connection",
-          status: "error",
-          value: "Offline",
-          description: "Cannot connect to database",
-          lastChecked: new Date(),
-        });
-      }
+      // 1. Database Connectivity (using circuit breaker to prevent spam)
+      const { checkDatabaseHealth } = await import(
+        "@/utils/databaseHealthCheck"
+      );
+      const dbHealth = await checkDatabaseHealth();
+
+      newMetrics.push({
+        id: "database",
+        name: "Database Connection",
+        status: dbHealth.isHealthy ? "healthy" : "error",
+        value: dbHealth.isHealthy
+          ? `${dbHealth.responseTime}ms${dbHealth.fromCache ? " (cached)" : ""}`
+          : "Failed",
+        description: dbHealth.error || "Supabase connection healthy",
+        lastChecked: dbHealth.lastChecked,
+      });
 
       // 2. Authentication System
       newMetrics.push({
