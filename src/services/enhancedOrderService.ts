@@ -20,19 +20,25 @@ export const createEnhancedOrder = async (
     const { data, error } = await supabase
       .from("orders")
       .insert([orderData])
-      .select(
-        `
-        *,
-        book:books(title, author, image_url),
-        buyer:profiles!orders_buyer_id_fkey(name, email),
-        seller:profiles!orders_seller_id_fkey(name, email)
-      `,
-      )
+      .select("*")
       .single();
 
     if (error) {
       console.error("Error creating enhanced order:", error);
       throw new Error(`Failed to create order: ${error.message}`);
+    }
+
+    // Manually fetch book data if needed
+    if (data?.book_id) {
+      const { data: bookData } = await supabase
+        .from("books")
+        .select("title, author, image_url")
+        .eq("id", data.book_id)
+        .single();
+
+      if (bookData) {
+        data.book = bookData;
+      }
     }
 
     return data;
@@ -46,20 +52,26 @@ export const getOrderById = async (orderId: string): Promise<Order | null> => {
   try {
     const { data, error } = await supabase
       .from("orders")
-      .select(
-        `
-        *,
-        book:books(title, author, image_url),
-        buyer:profiles!orders_buyer_id_fkey(name, email),
-        seller:profiles!orders_seller_id_fkey(name, email)
-      `,
-      )
+      .select("*")
       .eq("id", orderId)
       .single();
 
     if (error) {
       if (error.code === "PGRST116") return null;
       throw new Error(`Failed to fetch order: ${error.message}`);
+    }
+
+    // Manually fetch related data if needed
+    if (data?.book_id) {
+      const { data: bookData } = await supabase
+        .from("books")
+        .select("title, author, image_url")
+        .eq("id", data.book_id)
+        .single();
+
+      if (bookData) {
+        data.book = bookData;
+      }
     }
 
     return data;
@@ -75,20 +87,26 @@ export const getOrderByReference = async (
   try {
     const { data, error } = await supabase
       .from("orders")
-      .select(
-        `
-        *,
-        book:books(title, author, image_url),
-        buyer:profiles!orders_buyer_id_fkey(name, email),
-        seller:profiles!orders_seller_id_fkey(name, email)
-      `,
-      )
+      .select("*")
       .eq("paystack_reference", reference)
       .single();
 
     if (error) {
       if (error.code === "PGRST116") return null;
       throw new Error(`Failed to fetch order: ${error.message}`);
+    }
+
+    // Manually fetch related data if needed
+    if (data?.book_id) {
+      const { data: bookData } = await supabase
+        .from("books")
+        .select("title, author, image_url")
+        .eq("id", data.book_id)
+        .single();
+
+      if (bookData) {
+        data.book = bookData;
+      }
     }
 
     return data;
@@ -105,14 +123,7 @@ export const getUserOrders = async (
   try {
     let query = supabase
       .from("orders")
-      .select(
-        `
-        *,
-        book:books(title, author, image_url),
-        buyer:profiles!orders_buyer_id_fkey(name, email),
-        seller:profiles!orders_seller_id_fkey(name, email)
-      `,
-      )
+      .select("*")
       .order("created_at", { ascending: false });
 
     if (role === "buyer") {
@@ -127,6 +138,23 @@ export const getUserOrders = async (
 
     if (error) {
       throw new Error(`Failed to fetch orders: ${error.message}`);
+    }
+
+    // Manually fetch book data for each order
+    if (data && data.length > 0) {
+      for (const order of data) {
+        if (order.book_id) {
+          const { data: bookData } = await supabase
+            .from("books")
+            .select("title, author, image_url")
+            .eq("id", order.book_id)
+            .single();
+
+          if (bookData) {
+            order.book = bookData;
+          }
+        }
+      }
     }
 
     return data || [];
