@@ -49,11 +49,10 @@ interface DeliveryAddress {
 }
 
 interface CourierQuote {
-  courier: string;
+  courier: "fastway" | "courier-guy";
   service_name: string;
-  service_code: string;
   price: number;
-  estimated_days: string;
+  estimated_days: number;
   description: string;
 }
 
