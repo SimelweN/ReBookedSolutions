@@ -56,8 +56,8 @@ export const saveSimpleUserAddresses = async (
       ? pickupAddress
       : shippingAddress;
 
-    // Update the profile with addresses
-    const { data, error } = await supabase
+    // Try to update the profile with addresses
+    let { data, error } = await supabase
       .from("profiles")
       .update({
         pickup_address: pickupAddress,
@@ -69,7 +69,31 @@ export const saveSimpleUserAddresses = async (
       .select("pickup_address, shipping_address, addresses_same")
       .single();
 
-    if (error) {
+    // If profile doesn't exist, try to create it
+    if (error && error.code === "PGRST116") {
+      console.log("Profile doesn't exist, creating new profile with addresses");
+      const { data: createData, error: createError } = await supabase
+        .from("profiles")
+        .insert({
+          id: userId,
+          pickup_address: pickupAddress,
+          shipping_address: finalShippingAddress,
+          addresses_same: addressesSame,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .select("pickup_address, shipping_address, addresses_same")
+        .single();
+
+      if (createError) {
+        console.error("Error creating profile with addresses:", createError);
+        throw new Error(
+          `Failed to create profile with addresses: ${createError.message}`,
+        );
+      }
+
+      data = createData;
+    } else if (error) {
       console.error("Error saving addresses:", error);
       throw new Error(`Failed to save addresses: ${error.message}`);
     }
