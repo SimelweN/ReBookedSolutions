@@ -133,17 +133,27 @@ const CommitToOrder: React.FC<CommitToOrderProps> = ({
 
       if (error) throw error;
 
-      // Create notification for buyer
-      await supabase.from("notifications").insert({
-        user_id: order.buyer_email, // This should be buyer_id in production
-        type: "order_committed",
-        title: "Seller Committed to Your Order",
-        message: `The seller has committed to your order for "${order.items[0]?.title}". Your book will be prepared for delivery.`,
-        data: {
-          order_id: order.id,
-          order_type: "buyer",
-        },
-      });
+      // Create notification for buyer with error handling
+      const { error: notificationError } = await supabase
+        .from("notifications")
+        .insert({
+          user_id: order.buyer_email, // This should be buyer_id in production
+          type: "order_committed",
+          title: "Seller Committed to Your Order",
+          message: `The seller has committed to your order for "${order.items[0]?.title}". Your book will be prepared for delivery.`,
+          data: {
+            order_id: order.id,
+            order_type: "buyer",
+          },
+        });
+
+      if (notificationError) {
+        console.warn(
+          "Failed to create notification for buyer:",
+          notificationError,
+        );
+        // Don't throw here - order commitment was successful, notification is secondary
+      }
 
       toast.success(
         "Order committed successfully! The buyer has been notified.",
@@ -176,17 +186,27 @@ const CommitToOrder: React.FC<CommitToOrderProps> = ({
 
       if (error) throw error;
 
-      // Create notification for buyer
-      await supabase.from("notifications").insert({
-        user_id: order.buyer_email, // This should be buyer_id in production
-        type: "order_cancelled",
-        title: "Order Cancelled by Seller",
-        message: `Unfortunately, the seller cannot fulfill your order for "${order.items[0]?.title}". Your payment will be refunded.`,
-        data: {
-          order_id: order.id,
-          order_type: "buyer",
-        },
-      });
+      // Create notification for buyer with error handling
+      const { error: notificationError } = await supabase
+        .from("notifications")
+        .insert({
+          user_id: order.buyer_email, // This should be buyer_id in production
+          type: "order_cancelled",
+          title: "Order Cancelled by Seller",
+          message: `Unfortunately, the seller cannot fulfill your order for "${order.items[0]?.title}". Your payment will be refunded.`,
+          data: {
+            order_id: order.id,
+            order_type: "buyer",
+          },
+        });
+
+      if (notificationError) {
+        console.warn(
+          "Failed to create notification for buyer:",
+          notificationError,
+        );
+        // Don't throw here - order cancellation was successful, notification is secondary
+      }
 
       toast.success(
         "Order cancelled. The buyer will be notified and refunded.",
