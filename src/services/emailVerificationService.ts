@@ -255,7 +255,7 @@ export class EmailVerificationService {
   ): Promise<VerificationResult> {
     console.log("🔍 Starting comprehensive email verification");
     console.log("📍 URL:", currentUrl);
-    console.log("📍 Params:", params);
+    console.log("📍 Params:", JSON.stringify(params, null, 2));
 
     // Check for errors first
     if (this.hasErrorParams(params)) {
