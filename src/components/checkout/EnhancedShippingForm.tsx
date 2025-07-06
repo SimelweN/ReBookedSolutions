@@ -119,6 +119,16 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
     reset,
   } = useForm<ShippingFormData>({
     resolver: zodResolver(shippingSchema),
+    defaultValues: {
+      recipient_name: "",
+      phone: "",
+      street_address: "",
+      apartment: "",
+      city: "",
+      province: "",
+      postal_code: "",
+      special_instructions: "",
+    },
   });
 
   const watchedValues = watch();
