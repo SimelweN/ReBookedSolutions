@@ -119,7 +119,7 @@ const UserOrders: React.FC = () => {
             </Alert>
 
             <div className="text-center mt-6 space-x-4">
-              <Button onClick={loadUserOrders} variant="outline">
+              <Button onClick={refetch} variant="outline">
                 Try Again
               </Button>
               <Button onClick={() => navigate("/")}>Go to Homepage</Button>
