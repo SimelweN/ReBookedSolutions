@@ -213,10 +213,20 @@ export const updateBook = async (
   try {
     const {
       data: { user },
+      error: authError,
     } = await supabase.auth.getUser();
 
+    if (authError) {
+      console.error("Authentication error:", authError);
+      throw new Error(
+        "Failed to verify user authentication. Please log in again.",
+      );
+    }
+
     if (!user) {
-      throw new Error("User not authenticated");
+      throw new Error(
+        "User not authenticated. Please log in to update your book.",
+      );
     }
 
     // First verify the user owns this book
@@ -226,12 +236,23 @@ export const updateBook = async (
       .eq("id", bookId)
       .single();
 
-    if (fetchError || !existingBook) {
-      throw new Error("Book not found");
+    if (fetchError) {
+      console.error("Error fetching book for update:", fetchError);
+      if (fetchError.code === "PGRST116") {
+        throw new Error("Book not found. It may have been deleted.");
+      } else if (fetchError.code === "42P01") {
+        throw new Error("Database table not found. Please contact support.");
+      } else {
+        throw new Error("Failed to fetch book details. Please try again.");
+      }
+    }
+
+    if (!existingBook) {
+      throw new Error("Book not found. It may have been deleted.");
     }
 
     if (existingBook.seller_id !== user.id) {
-      throw new Error("User not authorized to edit this book");
+      throw new Error("You are not authorized to edit this book.");
     }
 
     const updateData: any = {};
