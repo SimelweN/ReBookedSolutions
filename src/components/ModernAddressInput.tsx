@@ -272,6 +272,29 @@ const ModernAddressInput: React.FC<ModernAddressInputProps> = ({
           </Alert>
         )}
 
+        {/* Instructions field - always show when address is selected */}
+        {hasSelectedAddress && (
+          <div>
+            <Label htmlFor="instructions">
+              Additional Instructions (Optional)
+            </Label>
+            <textarea
+              id="instructions"
+              placeholder="e.g., Gate code 1234, Unit 5B, Ring bell, Collection from side entrance..."
+              value={address.instructions || ""}
+              onChange={(e) =>
+                handleManualUpdate("instructions", e.target.value)
+              }
+              className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none mt-2"
+              rows={3}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Add pickup instructions, gate codes, unit numbers, or other
+              helpful details for buyers
+            </p>
+          </div>
+        )}
+
         {/* Warning if incomplete */}
         {!isAddressComplete && address.street && (
           <Alert className="border-orange-200 bg-orange-50">
