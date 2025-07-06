@@ -87,6 +87,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Ref to track current state and prevent duplicate updates
   const currentUserIdRef = useRef<string | null>(null);
+  const initializingRef = useRef<boolean>(false);
+  const profileUpgradeRef = useRef<string | null>(null); // Track which user is being upgraded
 
   const isAuthenticated = !!user && !!session;
   const isAdmin = profile?.isAdmin === true;
@@ -122,18 +124,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const upgradeProfileIfNeeded = useCallback(
     async (currentUser: User) => {
+      // Prevent concurrent upgrades for the same user
+      if (profileUpgradeRef.current === currentUser.id) {
+        console.log("ℹ️ Profile upgrade already in progress");
+        return;
+      }
+
       try {
         // Only upgrade if we have a basic fallback profile
         if (profile && !profile.bio && !profile.profile_picture_url) {
+          // Check if we've recently failed to avoid rapid retries
+          const lastFailKey = `profile_fetch_fail_${currentUser.id}`;
+          const lastFail = sessionStorage.getItem(lastFailKey);
+          if (lastFail) {
+            const lastFailTime = parseInt(lastFail);
+            const timeSinceLastFail = Date.now() - lastFailTime;
+            // Don't retry for 5 minutes after a failure
+            if (timeSinceLastFail < 5 * 60 * 1000) {
+              console.log("ℹ️ Profile upgrade skipped - recent failure");
+              return;
+            }
+          }
+
+          // Mark this user as being upgraded
+          profileUpgradeRef.current = currentUser.id;
+
           const fullProfile = await fetchUserProfileQuick(currentUser);
           if (fullProfile && fullProfile !== profile) {
             setProfile(fullProfile);
             console.log("✅ Profile upgraded successfully");
+            // Clear failure timestamp on success
+            sessionStorage.removeItem(lastFailKey);
           }
         }
       } catch (error) {
-        // Don't log upgrade failures as errors since it's not critical
-        console.log("ℹ️ Profile upgrade skipped");
+        // Mark failure timestamp to prevent rapid retries
+        const lastFailKey = `profile_fetch_fail_${currentUser.id}`;
+        sessionStorage.setItem(lastFailKey, Date.now().toString());
+        console.log("ℹ️ Profile upgrade skipped - will retry later");
+      } finally {
+        // Clear the upgrade lock
+        profileUpgradeRef.current = null;
       }
     },
     [profile],
@@ -298,18 +329,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             }
           }
 
-          // Background profile maintenance (every 30 seconds)
+          // Background profile maintenance (every 2 minutes)
+          // Initial delay increased to reduce rapid retries
           setTimeout(() => {
             if (session?.user) {
               upgradeProfileIfNeeded(session.user);
             }
-          }, 2000);
+          }, 10000); // 10 seconds instead of 2
 
           const upgradeInterval = setInterval(() => {
             if (session?.user) {
               upgradeProfileIfNeeded(session.user);
             }
-          }, 30000);
+          }, 120000); // 2 minutes instead of 30 seconds
 
           return () => clearInterval(upgradeInterval);
         }
@@ -599,7 +631,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         // Auth state change will be handled by the listener
         return result;
       } catch (error) {
-        console.log("���� AuthContext: Login error:", error);
+        console.log("������ AuthContext: Login error:", error);
         handleError(error, "Login");
       } finally {
         setIsLoading(false);

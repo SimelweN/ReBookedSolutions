@@ -92,7 +92,7 @@ export default defineConfig(({ mode }) => ({
           }
 
           if (
-            id.includes("/pages/EnhancedUniversityProfile") ||
+            id.includes("/pages/UniversityProfile") ||
             id.includes("/university-info/")
           ) {
             return "university";

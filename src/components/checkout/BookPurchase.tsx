@@ -122,7 +122,19 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
 
       // Get seller delivery address (always returns a valid address)
       const deliveryAddress = await getSellerDeliveryAddress(book.seller_id);
-      console.log("Got seller delivery address:", deliveryAddress);
+      console.log("📍 Got seller delivery address:", deliveryAddress);
+
+      // Validate seller address quality
+      if (
+        !deliveryAddress.street ||
+        !deliveryAddress.city ||
+        !deliveryAddress.postal_code
+      ) {
+        console.warn("⚠️ Seller address is incomplete, using fallback");
+        toast.warning(
+          "⚠️ Seller's address is incomplete. Delivery costs may be estimated.",
+        );
+      }
 
       setSellerAddress(deliveryAddress);
 
@@ -198,15 +210,21 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
     if (!user?.id) return;
 
     try {
+      console.log("🏠 Loading user address data for checkout...");
       // Use simplified address service to get user's shipping address
       const { getSimpleUserAddresses } = await import(
         "@/services/simplifiedAddressService"
       );
       const userAddresses = await getSimpleUserAddresses(user.id);
 
+      console.log("📍 User addresses retrieved:", userAddresses);
+
       // Pre-fill delivery address from user's shipping address
       if (userAddresses.shipping_address) {
         const shipping = userAddresses.shipping_address;
+        console.log(
+          "✅ Pre-filling delivery address from saved shipping address",
+        );
         setDeliveryAddress({
           street: shipping.streetAddress || "",
           city: shipping.city || "",
@@ -214,15 +232,27 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
           postal_code: shipping.postalCode || "",
           country: "South Africa",
         });
+      } else {
+        console.log(
+          "⚠️ No saved shipping address found - user will need to enter address manually",
+        );
+        // Show a helpful message to the user
+        toast.info(
+          "💡 You'll need to enter your delivery address. Consider saving it in your profile for next time!",
+        );
       }
     } catch (error) {
-      console.error("Error loading user profile:", error);
+      console.error("❌ Error loading user profile:", error);
       const errorMessage =
         error instanceof Error
           ? error.message
           : (error as any)?.message || JSON.stringify(error) || "Unknown error";
       console.error("Detailed user profile error:", errorMessage);
-      // Don't set error state for user profile as it's not critical
+
+      // Show a gentle warning to the user but don't block the purchase
+      toast.warning(
+        "⚠️ Couldn't load your saved address. You'll need to enter your delivery address manually.",
+      );
     }
   };
 
@@ -240,22 +270,42 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
   };
 
   const validateStep1 = () => {
-    if (
-      !deliveryAddress.street ||
-      !deliveryAddress.city ||
-      !deliveryAddress.province ||
-      !deliveryAddress.postal_code
-    ) {
-      setError("Please enter a complete delivery address");
+    console.log("🔍 Validating checkout step 1...");
+    console.log("📍 Current delivery address:", deliveryAddress);
+    console.log("🚚 Selected courier quote:", selectedCourierQuote);
+
+    // Check each required field specifically
+    const missingFields = [];
+    if (!deliveryAddress.street?.trim()) missingFields.push("street address");
+    if (!deliveryAddress.city?.trim()) missingFields.push("city");
+    if (!deliveryAddress.province?.trim()) missingFields.push("province");
+    if (!deliveryAddress.postal_code?.trim()) missingFields.push("postal code");
+
+    if (missingFields.length > 0) {
+      const errorMsg = `❌ Please enter your ${missingFields.join(", ")} for delivery`;
+      setError(errorMsg);
+      toast.error(errorMsg);
+      return false;
+    }
+
+    // Validate seller address exists
+    if (!sellerAddress || !sellerAddress.street || !sellerAddress.city) {
+      const errorMsg =
+        "❌ Seller's address is not available. Cannot calculate delivery costs.";
+      setError(errorMsg);
+      toast.error(errorMsg);
       return false;
     }
 
     // Ensure courier is selected
     if (!selectedCourierQuote || deliveryFee <= 0) {
-      setError("Please select a delivery option to see pricing");
+      const errorMsg = "❌ Please select a delivery option to continue";
+      setError(errorMsg);
+      toast.error(errorMsg);
       return false;
     }
 
+    console.log("✅ Checkout validation passed");
     return true;
   };
 

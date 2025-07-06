@@ -289,49 +289,22 @@ export const fetchUserProfileQuick = async (
   user: User,
 ): Promise<Profile | null> => {
   try {
-    console.log("🔄 Quick profile fetch for user:", user.id);
+    // Reduce logging frequency - only log once per minute per user
+    const logKey = `profile_fetch_log_${user.id}`;
+    const lastLog = sessionStorage.getItem(logKey);
+    const shouldLog = !lastLog || Date.now() - parseInt(lastLog) > 60000;
 
-    // Test if profiles table exists with a very quick check
-    try {
-      const { error: tableCheckError } = (await withTimeout(
-        supabase.from("profiles").select("id").limit(1),
-        800, // Ultra-fast timeout for existence check
-        "Table check timeout",
-      )) as any;
+    if (shouldLog) {
+      console.log("🔄 Quick profile fetch for user:", user.id);
+      sessionStorage.setItem(logKey, Date.now().toString());
+    }
 
-      if (tableCheckError) {
-        // Handle specific table missing error
-        if (
-          tableCheckError.message?.includes("relation") &&
-          tableCheckError.message?.includes("does not exist")
-        ) {
-          console.warn(
-            "❌ Profiles table does not exist - using fallback profile",
-          );
-          return null;
-        }
+    // Use global circuit breaker for table existence check
+    const { checkDatabaseHealth } = await import("@/utils/databaseHealthCheck");
+    const dbHealth = await checkDatabaseHealth();
 
-        // Handle permission errors
-        if (
-          tableCheckError.message?.includes("permission denied") ||
-          tableCheckError.code === "42501"
-        ) {
-          console.warn(
-            "❌ No permission to access profiles table - using fallback",
-          );
-          return null;
-        }
-
-        // Handle network/connection errors
-        if (isNetworkError(tableCheckError)) {
-          console.warn(
-            "⚠️ Network error checking profiles table - using fallback",
-          );
-          return null;
-        }
-      }
-    } catch (tableCheckError) {
-      console.warn("⚠️ Table existence check failed - using fallback profile");
+    if (!dbHealth.isHealthy) {
+      console.log("ℹ️ Database unavailable - using fallback profile");
       return null;
     }
 

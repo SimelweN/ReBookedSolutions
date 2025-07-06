@@ -118,10 +118,15 @@ export const SimplifiedAddressDialog: React.FC<
 
     setIsLoading(true);
     try {
-      console.log("Starting address save operation for user:", userId);
-      console.log("Pickup address:", pickupAddress);
-      console.log("Shipping address:", shippingAddress);
-      console.log("Same as pickup:", sameAsPickup);
+      console.log("🏠 Starting address save operation for user:", userId);
+      console.log("📍 Pickup address:", pickupAddress);
+      console.log("🚚 Shipping address:", shippingAddress);
+      console.log("🔄 Same as pickup:", sameAsPickup);
+
+      // Verify user is authenticated
+      if (!userId) {
+        throw new Error("User ID is required to save addresses");
+      }
 
       const result = await saveSimpleUserAddresses(
         userId,
@@ -129,29 +134,54 @@ export const SimplifiedAddressDialog: React.FC<
         shippingAddress,
         sameAsPickup,
       );
-      console.log("Address save completed successfully:", result);
+      console.log("✅ Address save completed successfully:", result);
 
-      toast.success("Addresses saved successfully!");
+      // Verify the save was successful by checking the returned data
+      if (!result.pickup_address || !result.pickup_address.streetAddress) {
+        throw new Error(
+          "Address save verification failed - pickup address not saved",
+        );
+      }
 
-      // Wait a bit to ensure UI updates
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      toast.success(
+        "✅ Addresses saved successfully! You can now list books and receive deliveries.",
+      );
+
+      // Wait a bit to ensure database propagation
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       if (onSuccess) {
         try {
+          console.log("🔄 Calling onSuccess callback...");
           await onSuccess();
-          console.log("onSuccess callback completed");
+          console.log("✅ onSuccess callback completed");
         } catch (successError) {
-          console.error("Error in onSuccess callback:", successError);
-          // Don't fail the whole operation for callback errors
+          console.error("❌ Error in onSuccess callback:", successError);
+          // Don't fail the whole operation for callback errors, just warn user
+          toast.warning(
+            "Addresses saved but UI refresh failed. Please refresh the page.",
+          );
         }
       }
 
       onClose();
     } catch (error) {
-      console.error("Error saving addresses:", error);
+      console.error("❌ Error saving addresses:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Failed to save addresses";
-      toast.error(`Address save failed: ${errorMessage}`);
+
+      // Provide specific error messages based on error type
+      let userMessage = errorMessage;
+      if (errorMessage.includes("violates row-level security")) {
+        userMessage = "Permission denied. Please try logging out and back in.";
+      } else if (errorMessage.includes("timeout")) {
+        userMessage =
+          "Save timed out. Please check your connection and try again.";
+      } else if (errorMessage.includes("PGRST116")) {
+        userMessage = "Profile not found. Please try logging out and back in.";
+      }
+
+      toast.error(`❌ Address save failed: ${userMessage}`);
 
       // Don't close dialog on error so user can retry
     } finally {
