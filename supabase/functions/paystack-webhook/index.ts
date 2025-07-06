@@ -188,12 +188,16 @@ async function handleSuccessfulPayment(supabase: any, paymentData: any) {
       console.error("Error creating payment split record:", splitError);
     }
 
-    // Ensure book remains sold
-    if (order.book_id) {
-      await supabase
-        .from("books")
-        .update({ sold: true })
-        .eq("id", order.book_id);
+    // Ensure books remain sold
+    if (order.items && Array.isArray(order.items)) {
+      for (const item of order.items) {
+        if (item.book_id) {
+          await supabase
+            .from("books")
+            .update({ sold: true })
+            .eq("id", item.book_id);
+        }
+      }
     }
 
     console.log("Payment processed successfully for order:", order.id);
