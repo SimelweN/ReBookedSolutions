@@ -72,6 +72,15 @@ const SellerMarketplace = () => {
       return;
     }
 
+    // Validate seller ID format (should be UUID)
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(sellerId)) {
+      setError("Invalid seller ID format");
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
@@ -90,14 +99,15 @@ const SellerMarketplace = () => {
       );
 
       if (!data) {
-        setError("Seller not found");
+        setError(
+          "This seller's profile is not available or they haven't set up their account yet.",
+        );
         return;
       }
 
       setMarketplace(data);
     } catch (err) {
-      console.error("Error loading seller marketplace:", err);
-      setError("Failed to load seller marketplace");
+      setError("Unable to load seller marketplace. Please try again later.");
     } finally {
       setLoading(false);
     }
