@@ -545,8 +545,16 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
               },
             );
 
-            console.error("Detailed errors:", errorMessages);
-            toast.error(
+            console.error("Detailed errors:", errorMessages.join(", "));
+
+            // Find the first required field that's empty
+            const firstError = Object.entries(validationErrors)[0];
+            if (firstError && firstError[1]?.message) {
+              toast.error(`Please complete: ${firstError[1].message}`, {
+                description: "All required fields must be filled",
+              });
+            } else {
+              toast.error(
               `Please fix these fields: ${Object.keys(validationErrors).join(", ")}`,
             );
           })}
