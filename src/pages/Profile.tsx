@@ -511,7 +511,7 @@ const Profile = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setShowQuickAddressSetup(true)}
+                          onClick={() => setIsAddressDialogOpen(true)}
                           className="border-orange-300 text-orange-700 hover:bg-orange-100 mt-2"
                         >
                           Add Pickup Address
