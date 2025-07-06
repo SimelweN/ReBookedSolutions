@@ -160,13 +160,14 @@ const PaymentStatus: React.FC = () => {
       ReBooked Solutions - Order Receipt
 
       Order ID: ${order.id}
-      Reference: ${order.paystack_ref}
+      Reference: ${order.paystack_reference}
       Date: ${new Date(order.created_at).toLocaleDateString()}
       Amount: R${(order.amount / 100).toFixed(2)}
       Status: ${order.status}
+      Payment Status: ${order.payment_status}
 
-      Items:
-      ${order.items.map((item) => `- ${item.title}: R${(item.price / 100).toFixed(2)}`).join("\n")}
+      Book Details:
+      ${order.book ? `- ${order.book.title} by ${order.book.author}` : "- Book details not available"}
 
       Thank you for your purchase!
     `;
@@ -311,6 +312,12 @@ const PaymentStatus: React.FC = () => {
                 <Badge variant="secondary" className="text-lg px-4 py-2">
                   {order.status.toUpperCase().replace("_", " ")}
                 </Badge>
+                {order.payment_status &&
+                  order.payment_status !== order.status && (
+                    <Badge variant="outline" className="ml-2">
+                      Payment: {order.payment_status}
+                    </Badge>
+                  )}
               </CardContent>
             </Card>
           )}
@@ -411,7 +418,8 @@ const PaymentStatus: React.FC = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {order.delivery_address ? (
+                  {order.delivery_option === "delivery" &&
+                  order.delivery_address ? (
                     <div>
                       <p className="text-sm text-gray-600 mb-1">
                         Delivery Address
@@ -431,7 +439,9 @@ const PaymentStatus: React.FC = () => {
                         Collection Method
                       </p>
                       <p className="text-sm">
-                        Buyer to collect directly from seller
+                        {order.delivery_option === "pickup"
+                          ? "Pickup from seller"
+                          : "Collection method not specified"}
                       </p>
                     </div>
                   )}
