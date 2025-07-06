@@ -20,6 +20,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import PaystackPaymentService, {
   OrderData,
 } from "@/services/paystackPaymentService";
+import {
+  getOrderById,
+  getOrderByReference,
+  getUserOrders,
+  type Order,
+} from "@/services/enhancedOrderService";
 import SEO from "@/components/SEO";
 import { toast } from "sonner";
 
@@ -30,7 +36,7 @@ const PaymentStatus: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
 
   const reference = searchParams.get("reference");
-  const [order, setOrder] = useState<OrderData | null>(null);
+  const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,7 +59,7 @@ const PaymentStatus: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      if (!user?.email) {
+      if (!user?.id) {
         setError("User not authenticated");
         return;
       }
@@ -68,21 +74,44 @@ const PaymentStatus: React.FC = () => {
         }
       }
 
-      // Load order details for the current user
-      const orderIdOrRef = orderId || reference;
-      if (!orderIdOrRef) {
-        setError("No order ID or payment reference provided");
-        return;
+      let foundOrder: Order | null = null;
+
+      // Try to load order by ID first
+      if (orderId) {
+        console.log("🔍 Looking up order by ID:", orderId);
+        foundOrder = await getOrderById(orderId);
+
+        // Check if this order belongs to the current user
+        if (
+          foundOrder &&
+          foundOrder.buyer_id !== user.id &&
+          foundOrder.seller_id !== user.id
+        ) {
+          console.log("❌ Order found but doesn't belong to current user");
+          foundOrder = null;
+        }
       }
 
-      const foundOrder = await PaystackPaymentService.getUserOrder(
-        user.email,
-        orderIdOrRef,
-      );
+      // If not found by ID, try by reference
+      if (!foundOrder && reference) {
+        console.log("🔍 Looking up order by reference:", reference);
+        foundOrder = await getOrderByReference(reference);
+
+        // Check if this order belongs to the current user
+        if (
+          foundOrder &&
+          foundOrder.buyer_id !== user.id &&
+          foundOrder.seller_id !== user.id
+        ) {
+          console.log("❌ Order found but doesn't belong to current user");
+          foundOrder = null;
+        }
+      }
 
       console.log("🔍 Order lookup:", {
-        userEmail: user.email,
-        orderIdOrRef,
+        userId: user.id,
+        orderId,
+        reference,
         foundOrder: foundOrder ? "✅ Found" : "❌ Not found",
       });
 
@@ -90,7 +119,7 @@ const PaymentStatus: React.FC = () => {
         setOrder(foundOrder);
         console.log("✅ Order loaded successfully:", foundOrder.id);
       } else {
-        console.log("❌ Order not found for user:", user.email);
+        console.log("❌ Order not found for user:", user.id);
         setError("Order not found or doesn't belong to your account");
       }
     } catch (error) {
