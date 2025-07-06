@@ -148,12 +148,17 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       handleBookServiceError(error, "create book");
     }
 
-    // Fetch seller profile
-    const { data: seller } = await supabase
+    // Fetch seller profile with error handling
+    const { data: seller, error: sellerError } = await supabase
       .from("profiles")
       .select("id, name, email")
       .eq("id", user.id)
       .single();
+
+    if (sellerError) {
+      console.warn("Could not fetch seller profile:", sellerError);
+      // Continue without seller profile - book creation was successful
+    }
 
     const bookWithProfile: BookQueryResult = {
       ...book,
