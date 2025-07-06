@@ -382,12 +382,7 @@ const GoogleMapsAddressPicker: React.FC<GoogleMapsAddressPickerProps> = ({
 
         {/* Selected Address Display & Edit */}
         {selectedAddress && (
-          <div className="space-y-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-            <div className="flex items-center gap-2 text-green-800">
-              <CheckCircle className="w-4 h-4" />
-              <span className="font-medium">Address Selected</span>
-            </div>
-
+          <div className="space-y-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="street">Street Address</Label>
