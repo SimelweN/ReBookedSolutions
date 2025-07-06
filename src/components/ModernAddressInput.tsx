@@ -63,6 +63,7 @@ const ModernAddressInput: React.FC<ModernAddressInputProps> = ({
       city: "",
       province: "",
       postalCode: "",
+      instructions: "",
     },
   );
 
@@ -85,7 +86,7 @@ const ModernAddressInput: React.FC<ModernAddressInputProps> = ({
       postalCode: addressData.postalCode || "",
     };
 
-    console.log("📝 Processed address:", newAddress);
+    console.log("�� Processed address:", newAddress);
 
     setAddress(newAddress);
     setHasSelectedAddress(true);
