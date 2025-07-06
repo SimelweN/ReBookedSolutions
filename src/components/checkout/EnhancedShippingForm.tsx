@@ -620,6 +620,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
                       id="recipient_name"
                       {...register("recipient_name")}
                       placeholder="Enter recipient's full name"
+                      className={errors.recipient_name ? "border-red-500" : ""}
                       onChange={(e) => {
                         register("recipient_name").onChange(e);
                         if (!manualEntries.name) {
