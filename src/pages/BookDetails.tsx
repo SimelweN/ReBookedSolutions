@@ -60,17 +60,31 @@ const BookDetails = () => {
       return;
     }
 
-    // Add to cart and proceed to checkout
+    // Navigate to new checkout flow with book data
     try {
-      // Add book to cart
-      addToCart(book);
-      toast.success("Book added to cart. Proceeding to checkout...");
+      if (book.sold) {
+        toast.error("This book has already been sold");
+        return;
+      }
 
-      // Navigate to integrated checkout
-      navigate("/checkout");
+      // Navigate to new checkout flow with book data
+      navigate("/purchase", {
+        state: {
+          book: {
+            id: book.id,
+            title: book.title,
+            author: book.author,
+            price: book.price,
+            condition: book.condition,
+            isbn: book.isbn,
+            image_url: book.image_url,
+            seller_id: book.seller_id,
+          },
+        },
+      });
     } catch (error) {
-      console.error("Error proceeding to checkout:", error);
-      toast.error("Unable to proceed to checkout. Please try again.");
+      console.error("Error proceeding to purchase:", error);
+      toast.error("Unable to proceed to purchase. Please try again.");
     }
   };
 
