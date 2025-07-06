@@ -150,7 +150,15 @@ export { supabase };
 
 // Debug connection on client creation
 if (import.meta.env.DEV) {
-  console.log("🔗 Supabase client initialized with FullStory-resistant fetch");
+  console.log("🔗 Supabase client initialized with protected fetch");
   console.log("URL:", ENV.VITE_SUPABASE_URL);
   console.log("Key starts with:", cleanApiKey.substring(0, 20) + "...");
+
+  // Detect if FullStory is interfering
+  if (typeof window !== "undefined" && window.fetch !== originalFetch) {
+    console.warn(
+      "⚠️ Third-party script (likely FullStory) has overridden fetch API",
+    );
+    console.log("✅ Using preserved original fetch for Supabase requests");
+  }
 }
