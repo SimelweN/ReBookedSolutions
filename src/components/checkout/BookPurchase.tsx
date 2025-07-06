@@ -154,67 +154,6 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         });
       }
 
-      console.log(
-        "Successfully loaded enhanced seller profile:",
-        validation.profile,
-      );
-
-      // Convert to compatible format
-      const sellerInfo = {
-        id: validation.profile.seller_id,
-        name: validation.profile.seller_name,
-        email: validation.profile.seller_email,
-        pickup_address: validation.profile.pickup_address,
-        has_subaccount: validation.profile.has_subaccount,
-      };
-
-      setSellerInfo(sellerInfo);
-
-      // Set seller address for delivery calculations using enhanced data
-      let addressSet = false;
-
-      try {
-        if (validation.profile.pickup_address) {
-          const formattedAddress =
-            SellerProfileService.formatPickupAddressForDelivery(
-              validation.profile.pickup_address,
-            );
-
-          if (
-            formattedAddress &&
-            formattedAddress.streetAddress &&
-            formattedAddress.city
-          ) {
-            setSellerAddress({
-              street: formattedAddress.streetAddress,
-              city: formattedAddress.city,
-              province: formattedAddress.province || "Western Cape",
-              postal_code: formattedAddress.postalCode || "8000",
-              country: "South Africa",
-            });
-            addressSet = true;
-            console.log(
-              "Successfully set seller address from profile:",
-              formattedAddress,
-            );
-          }
-        }
-      } catch (addressError) {
-        console.warn("Error formatting seller address:", addressError);
-      }
-
-      // Always ensure we have a seller address - use fallback if needed
-      if (!addressSet) {
-        console.log("Using fallback seller address");
-        setSellerAddress({
-          street: "University of Cape Town",
-          city: "Cape Town",
-          province: "Western Cape",
-          postal_code: "7700",
-          country: "South Africa",
-        });
-      }
-
       // Load seller's Paystack subaccount if needed
       if (!book.seller_subaccount_code) {
         const { data: bankingData } = await supabase
