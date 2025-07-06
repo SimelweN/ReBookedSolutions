@@ -119,6 +119,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
     reset,
   } = useForm<ShippingFormData>({
     resolver: zodResolver(shippingSchema),
+    mode: "onSubmit",
     defaultValues: {
       recipient_name: "",
       phone: "",
