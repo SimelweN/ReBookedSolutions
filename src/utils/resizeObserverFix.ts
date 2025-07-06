@@ -214,12 +214,12 @@ if (typeof window !== "undefined" && window.ResizeObserver) {
     }
 
     unobserve(element: Element) {
-      this.callbacks.delete(element);
+      this.observedElements.delete(element);
       this.observer.unobserve(element);
     }
 
     disconnect() {
-      this.callbacks.clear();
+      this.observedElements.clear();
       this.observer.disconnect();
     }
   }
