@@ -83,11 +83,13 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
     city: "",
     province: "",
     postal_code: "",
-    special_instructions: "",
+    country: "South Africa",
   });
-  const [deliveryMethod, setDeliveryMethod] = useState<
-    "delivery" | "collection"
-  >("delivery");
+  const [sellerAddress, setSellerAddress] = useState<DeliveryAddress | null>(
+    null,
+  );
+  const [selectedCourierQuote, setSelectedCourierQuote] =
+    useState<CourierQuote | null>(null);
   const [deliveryFee, setDeliveryFee] = useState(0);
   const [sellerInfo, setSellerInfo] = useState<any>(null);
 
@@ -199,18 +201,31 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
     }));
   };
 
+  const handleCourierQuoteSelect = (quote: CourierQuote) => {
+    setSelectedCourierQuote(quote);
+    setDeliveryFee(quote.price);
+  };
+
+  const handleAddressSelect = (address: DeliveryAddress) => {
+    setDeliveryAddress(address);
+  };
+
   const validateStep1 = () => {
-    if (deliveryMethod === "delivery") {
-      if (
-        !deliveryAddress.street ||
-        !deliveryAddress.city ||
-        !deliveryAddress.province ||
-        !deliveryAddress.postal_code
-      ) {
-        setError("Please fill in all delivery address fields");
-        return false;
-      }
+    if (
+      !deliveryAddress.street ||
+      !deliveryAddress.city ||
+      !deliveryAddress.province ||
+      !deliveryAddress.postal_code
+    ) {
+      setError("Please select a complete delivery address");
+      return false;
     }
+
+    if (!selectedCourierQuote) {
+      setError("Please select a delivery option");
+      return false;
+    }
+
     return true;
   };
 
