@@ -311,7 +311,7 @@ const Notifications = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-end gap-2 flex-shrink-0 relative z-20">
+                    <div className="flex items-center justify-end gap-2 flex-shrink-0">
                       {!notification.read && (
                         <Button
                           variant="ghost"
