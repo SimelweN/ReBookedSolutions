@@ -22,6 +22,9 @@ export interface Book {
     id: string;
     name: string;
     email: string;
+    hasAddress?: boolean;
+    hasSubaccount?: boolean;
+    isReadyForOrders?: boolean;
   };
 }
 
