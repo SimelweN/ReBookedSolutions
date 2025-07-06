@@ -169,6 +169,34 @@ const PaymentStatus: React.FC = () => {
         console.log("✅ Order loaded successfully:", foundOrder.id);
       } else {
         console.log("❌ Order not found for user:", user.id);
+
+        // Debug: Check what orders this user has
+        try {
+          const userOrders = await getUserOrders(user.id);
+          console.log(
+            "🔍 User's available orders:",
+            userOrders.map((o) => ({
+              id: o.id,
+              paystack_reference: o.paystack_reference,
+              status: o.status,
+              created_at: o.created_at,
+            })),
+          );
+
+          if (userOrders.length === 0) {
+            console.log("ℹ️ User has no orders at all");
+          } else {
+            console.log(
+              `ℹ️ User has ${userOrders.length} orders, but none match the requested ID/reference`,
+            );
+          }
+        } catch (debugError) {
+          console.error(
+            "❌ Error fetching user orders for debugging:",
+            debugError,
+          );
+        }
+
         setError("Order not found or doesn't belong to your account");
       }
     } catch (error) {
