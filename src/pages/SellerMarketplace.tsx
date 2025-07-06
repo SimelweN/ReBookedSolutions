@@ -254,7 +254,7 @@ const SellerMarketplace = () => {
 
               <div className="flex-1 text-center md:text-left">
                 <h1 className="text-3xl font-bold text-gray-900">
-                  {profile.name}
+                  Seller: {profile.id}
                 </h1>
                 {profile.bio && (
                   <p className="text-gray-600 mt-2">{profile.bio}</p>
@@ -272,28 +272,15 @@ const SellerMarketplace = () => {
                     <Calendar className="h-4 w-4 mr-1" />
                     Member since {new Date(profile.memberSince).getFullYear()}
                   </div>
-
-                  {profile.rating && (
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Star className="h-4 w-4 mr-1 fill-yellow-400 text-yellow-400" />
-                      {profile.rating.toFixed(1)}
-                    </div>
-                  )}
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 text-center">
+              <div className="grid grid-cols-1 gap-4 text-center">
                 <div>
                   <div className="text-2xl font-bold text-book-600">
                     {availableBooks}
                   </div>
-                  <div className="text-sm text-gray-600">Available</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-gray-700">
-                    {profile.totalSales || 0}
-                  </div>
-                  <div className="text-sm text-gray-600">Sold</div>
+                  <div className="text-sm text-gray-600">Available Books</div>
                 </div>
               </div>
             </div>
@@ -442,12 +429,22 @@ const SellerMarketplace = () => {
                     {book.title}
                   </h3>
                   <p className="text-sm text-gray-600 mb-2">{book.author}</p>
+                  <p className="text-sm text-gray-500 mb-2">
+                    {book.description}
+                  </p>
 
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-lg font-bold text-book-600">
                       {formatPrice(book.price)}
                     </span>
+                    <div className="text-xs text-gray-500">ReBooked Mini</div>
+                  </div>
+
+                  <div className="flex items-center justify-between mb-3">
                     <Badge variant="outline">{book.category}</Badge>
+                    <div className="text-xs text-gray-500">
+                      Seller: {profile.id}
+                    </div>
                   </div>
 
                   <Button
