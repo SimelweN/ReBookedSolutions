@@ -242,14 +242,13 @@ const ImprovedAddressInput = ({
 
         {/* Address Confirmation */}
         {hasSelectedAddress && isAddressComplete && (
-          <Alert className="border-green-200 bg-green-50">
-            <MapPin className="h-4 w-4 text-green-600" />
-            <AlertDescription className="text-green-800">
-              <strong>✅ Address Confirmed:</strong>
+          <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+            <p className="text-sm text-gray-700">
+              <strong>Address:</strong>
               <br />
               {formatAddressForDisplay(address)}
-            </AlertDescription>
-          </Alert>
+            </p>
+          </div>
         )}
 
         {/* Warning if incomplete */}
