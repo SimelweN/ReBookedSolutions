@@ -242,19 +242,10 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
       return false;
     }
 
-    // Ensure we have a delivery fee set (either from courier selection or default)
-    if (deliveryFee <= 0) {
-      setDeliveryFee(85); // Set default if not set
-      if (!selectedCourierQuote) {
-        setSelectedCourierQuote({
-          courier: "standard",
-          service_name: "Standard Delivery",
-          service_code: "STD",
-          price: 85,
-          estimated_days: "3-5",
-          description: "Standard courier delivery",
-        });
-      }
+    // Ensure courier is selected
+    if (!selectedCourierQuote || deliveryFee <= 0) {
+      setError("Please select a delivery option to see pricing");
+      return false;
     }
 
     return true;
