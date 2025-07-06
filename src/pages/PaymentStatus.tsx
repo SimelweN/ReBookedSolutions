@@ -76,43 +76,92 @@ const PaymentStatus: React.FC = () => {
 
       let foundOrder: Order | null = null;
 
+      console.log("🔍 Starting order lookup with:", {
+        userId: user.id,
+        userEmail: user.email,
+        orderId,
+        reference,
+        urlSearchParams: window.location.search,
+      });
+
       // Try to load order by ID first
       if (orderId) {
         console.log("🔍 Looking up order by ID:", orderId);
-        foundOrder = await getOrderById(orderId);
+        try {
+          foundOrder = await getOrderById(orderId);
+          console.log("📋 Raw order found by ID:", foundOrder);
 
-        // Check if this order belongs to the current user
-        if (
-          foundOrder &&
-          foundOrder.buyer_id !== user.id &&
-          foundOrder.seller_id !== user.id
-        ) {
-          console.log("❌ Order found but doesn't belong to current user");
-          foundOrder = null;
+          // Check if this order belongs to the current user
+          if (foundOrder) {
+            console.log("🔍 Order ownership check:", {
+              orderBuyerId: foundOrder.buyer_id,
+              orderSellerId: foundOrder.seller_id,
+              currentUserId: user.id,
+              buyerMatch: foundOrder.buyer_id === user.id,
+              sellerMatch: foundOrder.seller_id === user.id,
+            });
+
+            if (
+              foundOrder.buyer_id !== user.id &&
+              foundOrder.seller_id !== user.id
+            ) {
+              console.log("❌ Order found but doesn't belong to current user");
+              foundOrder = null;
+            } else {
+              console.log("✅ Order belongs to current user");
+            }
+          }
+        } catch (error) {
+          console.error("❌ Error looking up order by ID:", error);
         }
       }
 
       // If not found by ID, try by reference
       if (!foundOrder && reference) {
         console.log("🔍 Looking up order by reference:", reference);
-        foundOrder = await getOrderByReference(reference);
+        try {
+          foundOrder = await getOrderByReference(reference);
+          console.log("📋 Raw order found by reference:", foundOrder);
 
-        // Check if this order belongs to the current user
-        if (
-          foundOrder &&
-          foundOrder.buyer_id !== user.id &&
-          foundOrder.seller_id !== user.id
-        ) {
-          console.log("❌ Order found but doesn't belong to current user");
-          foundOrder = null;
+          // Check if this order belongs to the current user
+          if (foundOrder) {
+            console.log("🔍 Order ownership check (by reference):", {
+              orderBuyerId: foundOrder.buyer_id,
+              orderSellerId: foundOrder.seller_id,
+              currentUserId: user.id,
+              buyerMatch: foundOrder.buyer_id === user.id,
+              sellerMatch: foundOrder.seller_id === user.id,
+            });
+
+            if (
+              foundOrder.buyer_id !== user.id &&
+              foundOrder.seller_id !== user.id
+            ) {
+              console.log("❌ Order found but doesn't belong to current user");
+              foundOrder = null;
+            } else {
+              console.log("✅ Order belongs to current user");
+            }
+          }
+        } catch (error) {
+          console.error("❌ Error looking up order by reference:", error);
         }
       }
 
-      console.log("🔍 Order lookup:", {
+      console.log("🔍 Final order lookup result:", {
         userId: user.id,
         orderId,
         reference,
         foundOrder: foundOrder ? "✅ Found" : "❌ Not found",
+        orderData: foundOrder
+          ? {
+              id: foundOrder.id,
+              buyerId: foundOrder.buyer_id,
+              sellerId: foundOrder.seller_id,
+              status: foundOrder.status,
+              paymentStatus: foundOrder.payment_status,
+            }
+          : null,
       });
 
       if (foundOrder) {
