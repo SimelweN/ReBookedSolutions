@@ -281,9 +281,9 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         {
           body: {
             book_id: book.id,
-            delivery_method: deliveryMethod,
-            delivery_address:
-              deliveryMethod === "delivery" ? deliveryAddress : null,
+            delivery_method: "delivery", // Always delivery with courier
+            delivery_address: deliveryAddress,
+            courier_info: selectedCourierQuote,
             payment_method: "paystack",
           },
         },
