@@ -144,12 +144,16 @@ const BankingRequirementChecker = () => {
                 details: "Database-level protection is active",
               });
             } else {
-              // Delete the test book if it was created
-              await supabase
+              // Delete the test book if it was created with error handling
+              const { error: deleteError } = await supabase
                 .from("books")
                 .delete()
                 .eq("title", "TEST_BOOK_DELETE_ME")
                 .eq("seller_id", user.id);
+
+              if (deleteError) {
+                console.warn("Failed to delete test book:", deleteError);
+              }
 
               results.push({
                 name: "RLS Policy",
