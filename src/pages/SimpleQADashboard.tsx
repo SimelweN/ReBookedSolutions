@@ -38,6 +38,11 @@ const SimpleQADashboard: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
   const { items } = useCart();
   const navigate = useNavigate();
+
+  // Order System Test State
+  const [orderTestResults, setOrderTestResults] = useState<any[]>([]);
+  const [isRunningOrderTests, setIsRunningOrderTests] = useState(false);
+  const [quickOrderStatus, setQuickOrderStatus] = useState<string>("");
   const [testResults, setTestResults] = useState<any[]>([]);
 
   const runQuickTest = () => {
