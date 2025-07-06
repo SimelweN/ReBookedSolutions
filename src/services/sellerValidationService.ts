@@ -33,7 +33,7 @@ export class SellerValidationService {
         const pickupAddress = addressDetails?.pickup_address;
         hasAddress = !!(
           pickupAddress &&
-          pickupAddress.streetAddress &&
+          (pickupAddress.streetAddress || pickupAddress.street) &&
           pickupAddress.city &&
           pickupAddress.province &&
           pickupAddress.postalCode
