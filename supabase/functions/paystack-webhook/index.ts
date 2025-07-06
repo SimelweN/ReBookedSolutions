@@ -184,10 +184,6 @@ async function handleSuccessfulPayment(supabase: any, paymentData: any) {
       );
     }
 
-    if (splitError) {
-      console.error("Error creating payment split record:", splitError);
-    }
-
     // Ensure books remain sold
     if (order.items && Array.isArray(order.items)) {
       for (const item of order.items) {
