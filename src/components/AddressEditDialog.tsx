@@ -58,7 +58,10 @@ const AddressEditDialog = ({
       if (addressData.pickup_address) {
         const pickupData = addressData.pickup_address;
         setPickupAddress({
+          complex: pickupData.complex || "",
+          unitNumber: pickupData.unitNumber || "",
           street: pickupData.street || pickupData.streetAddress || "",
+          suburb: pickupData.suburb || "",
           city: pickupData.city || "",
           province: pickupData.province || "",
           postalCode: pickupData.postalCode || "",
