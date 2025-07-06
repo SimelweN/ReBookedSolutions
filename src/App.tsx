@@ -148,22 +148,6 @@ function App() {
                         path="/university-info"
                         element={<UniversityInfoPage />}
                       />
-                      <Route
-                        path="/study-resources"
-                        element={
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <StudyResources />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/study-tips"
-                        element={
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <StudyResources />
-                          </Suspense>
-                        }
-                      />
 
                       {/* University Profile Route */}
                       <Route
