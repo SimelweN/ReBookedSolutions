@@ -289,7 +289,15 @@ export const fetchUserProfileQuick = async (
   user: User,
 ): Promise<Profile | null> => {
   try {
-    console.log("🔄 Quick profile fetch for user:", user.id);
+    // Reduce logging frequency - only log once per minute per user
+    const logKey = `profile_fetch_log_${user.id}`;
+    const lastLog = sessionStorage.getItem(logKey);
+    const shouldLog = !lastLog || Date.now() - parseInt(lastLog) > 60000;
+
+    if (shouldLog) {
+      console.log("🔄 Quick profile fetch for user:", user.id);
+      sessionStorage.setItem(logKey, Date.now().toString());
+    }
 
     // Check if we've recently verified table doesn't exist to avoid repeated checks
     const tableCheckKey = "profiles_table_available";
