@@ -169,6 +169,26 @@ export const logError = (error: HandledError, context?: ErrorContext): void => {
   // Example: sendToLoggingService(logData);
 };
 
+// Safe log error utility that handles any error type
+export const safeLogError = (
+  message: string,
+  error: unknown,
+  context?: ErrorContext,
+): void => {
+  const handledError = classifyError(error, context);
+
+  // Only log to console in development
+  if (import.meta.env.DEV) {
+    console.error(`[${message}]`, {
+      error: handledError.message,
+      code: handledError.code,
+      severity: handledError.severity,
+      context: context || {},
+      originalError: error,
+    });
+  }
+};
+
 // Show user-friendly error messages
 export const notifyUser = (error: HandledError): void => {
   if (!error.shouldNotifyUser) return;
