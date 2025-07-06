@@ -262,7 +262,7 @@ export class SellerValidationService {
   }
 
   /**
-   * Check if user can proceed with creating a new listing
+   * Check if user can proceed with creating a new listing (uses enhanced validation)
    */
   static async canCreateListing(userId: string): Promise<{
     allowed: boolean;
@@ -273,7 +273,8 @@ export class SellerValidationService {
       actionUrl: string;
     };
   }> {
-    const validation = await this.validateSellerRequirements(userId);
+    // Use enhanced validation by default, with fallback
+    const validation = await this.validateSellerRequirementsEnhanced(userId);
 
     if (validation.canSell) {
       return { allowed: true };
@@ -287,6 +288,18 @@ export class SellerValidationService {
       allowed: false,
       blockMessage,
     };
+  }
+
+  /**
+   * Quick check using new database functions
+   */
+  static async canCreateListingQuick(userId: string): Promise<boolean> {
+    try {
+      return await SellerProfileService.isSellerReadyForOrders(userId);
+    } catch (error) {
+      console.error("Error in quick seller check:", error);
+      return false;
+    }
   }
 
   /**
