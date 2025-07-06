@@ -289,42 +289,95 @@ export class EmailVerificationService {
 
     // Method 1: Token hash verification (preferred)
     if (params.token_hash && params.type) {
+      console.log("🔐 Trying Method 1: Token hash verification", {
+        token_hash_length: params.token_hash.length,
+        type: params.type,
+      });
       const result = await this.verifyWithTokenHash(
         params.token_hash,
         params.type,
       );
-      if (result.success) {
-        return result;
-      }
-      console.log("Token hash verification failed, trying other methods...");
-    }
-
-    // Method 2: Legacy token verification
-    if (params.token && params.type) {
-      const result = await this.verifyWithLegacyToken(
-        params.token,
-        params.type,
+      console.log(
+        "🔐 Token hash verification result:",
+        JSON.stringify(result, null, 2),
       );
       if (result.success) {
         return result;
       }
-      console.log("Legacy token verification failed, trying other methods...");
+      console.log("❌ Token hash verification failed, trying other methods...");
+    } else {
+      console.log(
+        "⏭️ Skipping Method 1: Token hash verification (missing params)",
+        {
+          has_token_hash: !!params.token_hash,
+          has_type: !!params.type,
+        },
+      );
+    }
+
+    // Method 2: Legacy token verification
+    if (params.token && params.type) {
+      console.log("🔐 Trying Method 2: Legacy token verification", {
+        token_length: params.token.length,
+        type: params.type,
+      });
+      const result = await this.verifyWithLegacyToken(
+        params.token,
+        params.type,
+      );
+      console.log(
+        "🔐 Legacy token verification result:",
+        JSON.stringify(result, null, 2),
+      );
+      if (result.success) {
+        return result;
+      }
+      console.log(
+        "❌ Legacy token verification failed, trying other methods...",
+      );
+    } else {
+      console.log(
+        "⏭️ Skipping Method 2: Legacy token verification (missing params)",
+        {
+          has_token: !!params.token,
+          has_type: !!params.type,
+        },
+      );
     }
 
     // Method 3: PKCE code exchange
     if (params.code || currentUrl.includes("code=")) {
+      console.log("🔐 Trying Method 3: PKCE code exchange", {
+        has_code_param: !!params.code,
+        url_contains_code: currentUrl.includes("code="),
+        url_length: currentUrl.length,
+      });
       const result = await this.verifyWithCodeExchange(currentUrl);
+      console.log("🔐 Code exchange result:", JSON.stringify(result, null, 2));
       if (result.success) {
         return result;
       }
-      console.log("Code exchange failed, trying other methods...");
+      console.log("❌ Code exchange failed, trying other methods...");
+    } else {
+      console.log("⏭️ Skipping Method 3: PKCE code exchange (no code found)", {
+        has_code: !!params.code,
+        url_has_code: currentUrl.includes("code="),
+      });
     }
 
     // Method 4: Check existing session
+    console.log("🔐 Trying Method 4: Check existing session");
     const sessionResult = await this.checkExistingSession();
+    console.log(
+      "🔐 Session check result:",
+      JSON.stringify(sessionResult, null, 2),
+    );
     if (sessionResult.success) {
       return sessionResult;
     }
+    console.log("❌ Session check failed");
+
+    console.log("❌ All verification methods exhausted");
 
     // If all methods fail
     const failureResult = {
