@@ -66,6 +66,69 @@ export const getDeliveryQuotes = async (
   }
 };
 
+/**
+ * Get delivery quotes using enhanced seller profile data
+ */
+export const getDeliveryQuotesWithSeller = async (
+  sellerId: string,
+  toAddress: DeliveryAddress,
+  weight: number = 1,
+): Promise<DeliveryQuote[]> => {
+  try {
+    console.log("Getting delivery quotes with seller profile:", {
+      sellerId,
+      toAddress,
+      weight,
+    });
+
+    // Get seller profile with pickup address
+    const sellerProfile =
+      await SellerProfileService.getSellerProfileForDelivery(sellerId);
+
+    if (!sellerProfile) {
+      console.error("Seller profile not found for delivery quotes");
+      throw new Error("Seller profile not available");
+    }
+
+    const fromAddress = SellerProfileService.formatPickupAddressForDelivery(
+      sellerProfile.pickup_address,
+    );
+
+    if (!fromAddress) {
+      console.error("Seller pickup address not available");
+      throw new Error("Seller pickup address not available");
+    }
+
+    // Convert to delivery service format
+    const formattedFromAddress: DeliveryAddress = {
+      streetAddress: fromAddress.streetAddress,
+      suburb: fromAddress.suburb,
+      city: fromAddress.city,
+      province: fromAddress.province,
+      postalCode: fromAddress.postalCode,
+    };
+
+    return await getDeliveryQuotes(formattedFromAddress, toAddress, weight);
+  } catch (error) {
+    console.error("Error in getDeliveryQuotesWithSeller:", error);
+    // Return fallback quotes if seller lookup fails
+    return [
+      {
+        courier: "fastway",
+        price: 85,
+        estimatedDays: 3,
+        serviceName: "Fastway Standard",
+      },
+      {
+        courier: "courier-guy",
+        price: 95,
+        estimatedDays: 2,
+        serviceName: "Courier Guy Express",
+      },
+    ];
+  }
+};
+
 export const createDeliveryBooking = async (
   quote: DeliveryQuote,
   fromAddress: DeliveryAddress,
