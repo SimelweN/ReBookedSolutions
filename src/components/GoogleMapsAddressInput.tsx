@@ -88,10 +88,7 @@ const GoogleMapsAddressInput = ({
   };
 
   const handlePlaceChanged = useCallback(() => {
-    console.log("🎯 handlePlaceChanged called");
-
     if (!autocompleteRef.current) {
-      console.warn("❌ No autocomplete ref available");
       return;
     }
 
