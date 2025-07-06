@@ -156,6 +156,94 @@ if (import.meta.env.DEV) {
   setInterval(suppressResizeObserverErrors, 5000);
 }
 
+// Polyfill ResizeObserver with a safer version that includes debouncing
+if (typeof window !== "undefined" && window.ResizeObserver) {
+  const OriginalResizeObserver = window.ResizeObserver;
+
+  class SafeResizeObserver {
+    private observer: ResizeObserver;
+    private callbacks = new Map<
+      Element,
+      { callback: ResizeObserverCallback; lastCall: number }
+    >();
+    private debounceTime = 16; // ~60fps
+
+    constructor(callback: ResizeObserverCallback) {
+      this.observer = new OriginalResizeObserver((entries) => {
+        const now = Date.now();
+
+        // Group entries by callback and debounce
+        const callbackGroups = new Map<
+          ResizeObserverCallback,
+          ResizeObserverEntry[]
+        >();
+
+        entries.forEach((entry) => {
+          const element = entry.target;
+          const callbackData = this.callbacks.get(element);
+
+          if (
+            callbackData &&
+            now - callbackData.lastCall >= this.debounceTime
+          ) {
+            if (!callbackGroups.has(callbackData.callback)) {
+              callbackGroups.set(callbackData.callback, []);
+            }
+            callbackGroups.get(callbackData.callback)!.push(entry);
+            callbackData.lastCall = now;
+          }
+        });
+
+        // Call each unique callback with its entries
+        callbackGroups.forEach((entries, callback) => {
+          try {
+            // Use requestAnimationFrame to prevent layout thrashing
+            requestAnimationFrame(() => {
+              try {
+                callback(entries, this.observer);
+              } catch (error) {
+                // Silently handle errors to prevent console spam
+                if (import.meta.env.DEV) {
+                  console.debug(
+                    "ResizeObserver callback error handled:",
+                    error,
+                  );
+                }
+              }
+            });
+          } catch (error) {
+            // Silently handle RAF errors
+          }
+        });
+      });
+    }
+
+    observe(element: Element, options?: ResizeObserverOptions) {
+      this.callbacks.set(element, {
+        callback,
+        lastCall: 0,
+      });
+      this.observer.observe(element, options);
+    }
+
+    unobserve(element: Element) {
+      this.callbacks.delete(element);
+      this.observer.unobserve(element);
+    }
+
+    disconnect() {
+      this.callbacks.clear();
+      this.observer.disconnect();
+    }
+  }
+
+  // Only replace in development to avoid breaking production behavior
+  if (import.meta.env.DEV) {
+    // @ts-ignore
+    window.ResizeObserver = SafeResizeObserver;
+  }
+}
+
 export default {
   restoreConsoleError,
   suppressResizeObserverErrors,
