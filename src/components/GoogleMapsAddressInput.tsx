@@ -96,16 +96,13 @@ const GoogleMapsAddressInput = ({
 
     try {
       const place = autocompleteRef.current.getPlace();
-      console.log("📍 Place data received:", place);
 
       if (!place) {
-        console.warn("❌ No place object received");
         setIsLoading(false);
         return;
       }
 
       if (!place.geometry || !place.geometry.location) {
-        console.warn("❌ No geometry/location in place data");
         setIsLoading(false);
         return;
       }
@@ -162,7 +159,6 @@ const GoogleMapsAddressInput = ({
 
       // Also listen for when a place is selected from dropdown
       google.maps.event.addListener(autocomplete, "place_changed", () => {
-        console.log("Place changed event fired!");
         handlePlaceChanged();
       });
     },
@@ -208,7 +204,6 @@ const GoogleMapsAddressInput = ({
                       if (autocompleteRef.current) {
                         const place = autocompleteRef.current.getPlace();
                         if (place && place.geometry) {
-                          console.log("Manual place selection triggered");
                           handlePlaceChanged();
                         }
                       }
@@ -221,7 +216,6 @@ const GoogleMapsAddressInput = ({
                     if (autocompleteRef.current) {
                       const place = autocompleteRef.current.getPlace();
                       if (place && place.geometry && !coords) {
-                        console.log("Place selection on blur");
                         handlePlaceChanged();
                       }
                     }
