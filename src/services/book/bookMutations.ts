@@ -30,11 +30,25 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
     // Fetch province from user's pickup address
     let province = null;
     try {
-      const { data: profileData } = await supabase
+      const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .select("pickup_address")
         .eq("id", user.id)
         .single();
+
+      if (profileError) {
+        if (profileError.code === "PGRST116") {
+          // No profile found - this is okay, continue without province
+          console.log("No profile found for user, continuing without province");
+        } else {
+          console.warn(
+            "Error fetching user profile for province:",
+            profileError,
+          );
+          // Continue without province - it's not critical for book creation
+        }
+        return; // Exit the try block early
+      }
 
       if (profileData?.pickup_address) {
         // Check if pickup_address has province property
@@ -96,6 +110,31 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
 
     if (error) {
       console.error("Error creating book:", error.message || String(error));
+
+      // Enhanced error handling with specific error types
+      if (error.code === "23505") {
+        throw new Error(
+          "A book with similar details already exists. Please check your listings.",
+        );
+      } else if (error.code === "23502") {
+        throw new Error(
+          "Missing required book information. Please fill in all required fields.",
+        );
+      } else if (error.code === "42P01") {
+        throw new Error("Database table not found. Please contact support.");
+      } else if (error.message?.includes("permission")) {
+        throw new Error(
+          "You don't have permission to create books. Please contact support.",
+        );
+      } else if (
+        error.message?.includes("network") ||
+        error.message?.includes("timeout")
+      ) {
+        throw new Error(
+          "Network error. Please check your connection and try again.",
+        );
+      }
+
       handleBookServiceError(error, "create book");
     }
 
