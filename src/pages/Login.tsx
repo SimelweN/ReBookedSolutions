@@ -17,11 +17,7 @@ import {
   Key,
   UserPlus,
   RefreshCw,
-  TestTube,
 } from "lucide-react";
-import { testSupabaseConnection, testSupabaseAuth } from "@/utils/supabaseTest";
-import { testDatabaseSchema } from "@/utils/schemaTest";
-import { testImplementation } from "@/utils/implementationTest";
 
 const Login = () => {
   const [email, setEmail] = useState("");
