@@ -25,6 +25,21 @@ export interface Order {
   metadata?: any;
   created_at: string;
   updated_at: string;
+
+  // Optional joined data from relations
+  book?: {
+    title: string;
+    author: string;
+    imageUrl?: string;
+  };
+  buyer?: {
+    name: string;
+    email: string;
+  };
+  seller?: {
+    name: string;
+    email: string;
+  };
 }
 
 export interface Receipt {
@@ -54,6 +69,13 @@ export interface OrderNotification {
   message: string;
   read: boolean;
   sent_at: string;
+
+  // Optional joined order data
+  order?: {
+    id: string;
+    amount: number;
+    status: string;
+  };
 }
 
 export type OrderStatus = Order["status"];
