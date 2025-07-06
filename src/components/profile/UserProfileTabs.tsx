@@ -317,65 +317,113 @@ const UserProfileTabs = ({
     <div className="w-full">
       <Tabs defaultValue="listings" className="w-full">
         <TabsList
-          className={`w-full ${isMobile ? "grid grid-cols-5 gap-0.5 h-auto p-1" : "flex"}`}
+          className={`w-full bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 rounded-xl shadow-sm ${
+            isMobile ? "grid grid-cols-5 gap-1 h-auto p-2" : "flex h-14"
+          }`}
         >
           <TabsTrigger
             value="listings"
-            className={`${isMobile ? "h-14 text-xs px-0.5 flex-col" : "flex-1"} flex items-center justify-center`}
+            className={`${
+              isMobile
+                ? "h-16 text-xs px-1 flex-col gap-1 rounded-lg"
+                : "flex-1 h-12 rounded-lg"
+            } flex items-center justify-center data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:border data-[state=active]:border-book-200 data-[state=active]:text-book-700 transition-all duration-200 hover:bg-white/50`}
           >
-            <span className={isMobile ? "text-center leading-tight" : ""}>
-              {isMobile
-                ? `📚 ${activeListings.length}`
-                : `Active Listings (${activeListings.length})`}
-            </span>
-            {isMobile && (
-              <span className="text-[10px] opacity-75">Listings</span>
+            {isMobile ? (
+              <>
+                <BookOpen className="h-4 w-4 text-book-600" />
+                <span className="font-medium">{activeListings.length}</span>
+                <span className="text-[10px] opacity-75">Listings</span>
+              </>
+            ) : (
+              <div className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4" />
+                <span className="font-medium">
+                  Listings ({activeListings.length})
+                </span>
+              </div>
             )}
           </TabsTrigger>
           <TabsTrigger
             value="activity"
-            className={`${isMobile ? "h-14 text-xs px-0.5 flex-col" : "flex-1"} flex items-center justify-center`}
+            className={`${
+              isMobile
+                ? "h-16 text-xs px-1 flex-col gap-1 rounded-lg"
+                : "flex-1 h-12 rounded-lg"
+            } flex items-center justify-center data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:border data-[state=active]:border-book-200 data-[state=active]:text-book-700 transition-all duration-200 hover:bg-white/50`}
           >
-            <span className={isMobile ? "text-center leading-tight" : ""}>
-              {isMobile ? "📊" : "Activity"}
-            </span>
-            {isMobile && (
-              <span className="text-[10px] opacity-75">Activity</span>
+            {isMobile ? (
+              <>
+                <Clock className="h-4 w-4 text-book-600" />
+                <span className="font-medium">Activity</span>
+              </>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4" />
+                <span className="font-medium">Activity</span>
+              </div>
             )}
           </TabsTrigger>
           {isOwnProfile && (
             <>
               <TabsTrigger
                 value="account"
-                className={`${isMobile ? "h-14 text-xs px-0.5 flex-col" : "flex-1"} flex items-center justify-center`}
+                className={`${
+                  isMobile
+                    ? "h-16 text-xs px-1 flex-col gap-1 rounded-lg"
+                    : "flex-1 h-12 rounded-lg"
+                } flex items-center justify-center data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:border data-[state=active]:border-book-200 data-[state=active]:text-book-700 transition-all duration-200 hover:bg-white/50`}
               >
-                <span className={isMobile ? "text-center leading-tight" : ""}>
-                  {isMobile ? "👤" : "Account"}
-                </span>
-                {isMobile && (
-                  <span className="text-[10px] opacity-75">Account</span>
+                {isMobile ? (
+                  <>
+                    <User className="h-4 w-4 text-book-600" />
+                    <span className="font-medium">Account</span>
+                  </>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    <span className="font-medium">Account</span>
+                  </div>
                 )}
               </TabsTrigger>
               <TabsTrigger
                 value="addresses"
-                className={`${isMobile ? "h-14 text-xs px-0.5 flex-col" : "flex-1"} flex items-center justify-center`}
+                className={`${
+                  isMobile
+                    ? "h-16 text-xs px-1 flex-col gap-1 rounded-lg"
+                    : "flex-1 h-12 rounded-lg"
+                } flex items-center justify-center data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:border data-[state=active]:border-book-200 data-[state=active]:text-book-700 transition-all duration-200 hover:bg-white/50`}
               >
-                <span className={isMobile ? "text-center leading-tight" : ""}>
-                  {isMobile ? "📍" : "Addresses"}
-                </span>
-                {isMobile && (
-                  <span className="text-[10px] opacity-75">Address</span>
+                {isMobile ? (
+                  <>
+                    <MapPin className="h-4 w-4 text-book-600" />
+                    <span className="font-medium">Address</span>
+                  </>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    <span className="font-medium">Addresses</span>
+                  </div>
                 )}
               </TabsTrigger>
               <TabsTrigger
                 value="banking"
-                className={`${isMobile ? "h-14 text-xs px-0.5 flex-col" : "flex-1"} flex items-center justify-center`}
+                className={`${
+                  isMobile
+                    ? "h-16 text-xs px-1 flex-col gap-1 rounded-lg"
+                    : "flex-1 h-12 rounded-lg"
+                } flex items-center justify-center data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:border data-[state=active]:border-book-200 data-[state=active]:text-book-700 transition-all duration-200 hover:bg-white/50`}
               >
-                <span className={isMobile ? "text-center leading-tight" : ""}>
-                  {isMobile ? "💳" : "Banking"}
-                </span>
-                {isMobile && (
-                  <span className="text-[10px] opacity-75">Banking</span>
+                {isMobile ? (
+                  <>
+                    <CreditCard className="h-4 w-4 text-book-600" />
+                    <span className="font-medium">Banking</span>
+                  </>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="h-4 w-4" />
+                    <span className="font-medium">Banking</span>
+                  </div>
                 )}
               </TabsTrigger>
             </>
