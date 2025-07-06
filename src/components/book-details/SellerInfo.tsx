@@ -1,19 +1,21 @@
-
-import { Card, CardContent } from '@/components/ui/card';
-import { User, Calendar } from 'lucide-react';
+import { Card, CardContent } from "@/components/ui/card";
+import { User, Calendar, CheckCircle, AlertCircle } from "lucide-react";
 
 interface SellerInfoProps {
   seller: {
     id: string;
     name: string;
     email: string;
+    hasAddress?: boolean;
+    hasSubaccount?: boolean;
+    isReadyForOrders?: boolean;
   };
   onViewProfile: () => void;
 }
 
 const SellerInfo = ({ seller, onViewProfile }: SellerInfoProps) => {
   console.log("SellerInfo received seller data:", seller);
-  
+
   return (
     <Card>
       <CardContent className="p-4">
@@ -21,7 +23,7 @@ const SellerInfo = ({ seller, onViewProfile }: SellerInfoProps) => {
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <User className="h-4 w-4 text-gray-500" />
-            <span className="font-medium">{seller?.name || 'Loading...'}</span>
+            <span className="font-medium">{seller?.name || "Loading..."}</span>
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-gray-500" />
