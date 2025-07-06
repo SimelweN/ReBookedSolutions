@@ -198,15 +198,21 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
     if (!user?.id) return;
 
     try {
+      console.log("🏠 Loading user address data for checkout...");
       // Use simplified address service to get user's shipping address
       const { getSimpleUserAddresses } = await import(
         "@/services/simplifiedAddressService"
       );
       const userAddresses = await getSimpleUserAddresses(user.id);
 
+      console.log("📍 User addresses retrieved:", userAddresses);
+
       // Pre-fill delivery address from user's shipping address
       if (userAddresses.shipping_address) {
         const shipping = userAddresses.shipping_address;
+        console.log(
+          "✅ Pre-filling delivery address from saved shipping address",
+        );
         setDeliveryAddress({
           street: shipping.streetAddress || "",
           city: shipping.city || "",
@@ -214,15 +220,27 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
           postal_code: shipping.postalCode || "",
           country: "South Africa",
         });
+      } else {
+        console.log(
+          "⚠️ No saved shipping address found - user will need to enter address manually",
+        );
+        // Show a helpful message to the user
+        toast.info(
+          "💡 You'll need to enter your delivery address. Consider saving it in your profile for next time!",
+        );
       }
     } catch (error) {
-      console.error("Error loading user profile:", error);
+      console.error("❌ Error loading user profile:", error);
       const errorMessage =
         error instanceof Error
           ? error.message
           : (error as any)?.message || JSON.stringify(error) || "Unknown error";
       console.error("Detailed user profile error:", errorMessage);
-      // Don't set error state for user profile as it's not critical
+
+      // Show a gentle warning to the user but don't block the purchase
+      toast.warning(
+        "⚠️ Couldn't load your saved address. You'll need to enter your delivery address manually.",
+      );
     }
   };
 
