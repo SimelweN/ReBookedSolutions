@@ -168,6 +168,15 @@ const Admin = () => {
           </ErrorBoundary>
         </div>
 
+        {/* Order Testing Component */}
+        <div
+          className={`bg-white rounded-lg shadow-md ${isMobile ? "p-3 card-mobile" : "p-4 md:p-6"} overflow-hidden`}
+        >
+          <ErrorBoundary level="component">
+            <OrderTestComponent />
+          </ErrorBoundary>
+        </div>
+
         <div
           className={`bg-white rounded-lg shadow-md ${isMobile ? "p-3 card-mobile" : "p-4 md:p-6"} overflow-hidden`}
         >
