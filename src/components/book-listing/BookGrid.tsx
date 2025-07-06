@@ -222,10 +222,33 @@ const BookGrid = ({
                       {book.title}
                     </h3>
                     <p className="text-gray-600 mb-2">{book.author}</p>
-                    <p className="text-gray-500 text-sm mb-auto line-clamp-2">
+                    <p className="text-gray-500 text-sm mb-2 line-clamp-2">
                       {book.description}
                     </p>
-                    <div className="flex flex-wrap items-center justify-between mt-4 gap-1">
+
+                    {/* Price and ReBooked Mini */}
+                    <div className="mb-3 flex items-center justify-between">
+                      <div className="text-lg font-bold text-book-600">
+                        R{book.price.toLocaleString()}
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/seller/${book.seller.id}`);
+                        }}
+                        className="bg-book-600 hover:bg-book-700 text-white px-2 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1"
+                      >
+                        <Store className="h-3 w-3" />
+                        ReBooked Mini
+                      </button>
+                    </div>
+
+                    {/* Seller ID instead of name */}
+                    <div className="mb-3 text-xs text-gray-500">
+                      Seller: {book.seller.id}
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-between mt-auto gap-1">
                       <span className="bg-book-100 text-book-800 px-2 py-1 rounded text-xs font-medium">
                         {book.condition}
                       </span>
