@@ -192,6 +192,38 @@ const AddressEditDialog = ({
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Pickup Address</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="pickup-complex">
+                  Complex/Building (Optional)
+                </Label>
+                <Input
+                  id="pickup-complex"
+                  value={pickupAddress.complex || ""}
+                  onChange={(e) =>
+                    setPickupAddress((prev) => ({
+                      ...prev,
+                      complex: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g., University Heights"
+                  disabled={isLoading}
+                />
+              </div>
+              <div>
+                <Label htmlFor="pickup-unit">Unit/Apt Number (Optional)</Label>
+                <Input
+                  id="pickup-unit"
+                  value={pickupAddress.unitNumber || ""}
+                  onChange={(e) =>
+                    setPickupAddress((prev) => ({
+                      ...prev,
+                      unitNumber: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g., 4B, Unit 12"
+                  disabled={isLoading}
+                />
+              </div>
               <div className="md:col-span-2">
                 <Label htmlFor="pickup-street">Street Address</Label>
                 <Input
@@ -205,6 +237,21 @@ const AddressEditDialog = ({
                   }
                   placeholder="Enter street address"
                   required
+                  disabled={isLoading}
+                />
+              </div>
+              <div>
+                <Label htmlFor="pickup-suburb">Suburb/Area (Optional)</Label>
+                <Input
+                  id="pickup-suburb"
+                  value={pickupAddress.suburb || ""}
+                  onChange={(e) =>
+                    setPickupAddress((prev) => ({
+                      ...prev,
+                      suburb: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g., Rosebank, Newlands"
                   disabled={isLoading}
                 />
               </div>
