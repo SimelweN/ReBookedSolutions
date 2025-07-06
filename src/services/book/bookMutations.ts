@@ -323,10 +323,20 @@ export const deleteBook = async (bookId: string): Promise<void> => {
   try {
     const {
       data: { user },
+      error: authError,
     } = await supabase.auth.getUser();
 
+    if (authError) {
+      console.error("Authentication error:", authError);
+      throw new Error(
+        "Failed to verify user authentication. Please log in again.",
+      );
+    }
+
     if (!user) {
-      throw new Error("User not authenticated");
+      throw new Error(
+        "User not authenticated. Please log in to delete your book.",
+      );
     }
 
     console.log("Attempting to delete book:", bookId);
@@ -338,17 +348,35 @@ export const deleteBook = async (bookId: string): Promise<void> => {
       .eq("id", bookId)
       .single();
 
-    if (fetchError || !existingBook) {
-      console.error("Book not found:", fetchError);
-      throw new Error("Book not found");
+    if (fetchError) {
+      console.error("Error fetching book for deletion:", fetchError);
+      if (fetchError.code === "PGRST116") {
+        throw new Error("Book not found. It may have already been deleted.");
+      } else if (fetchError.code === "42P01") {
+        throw new Error("Database table not found. Please contact support.");
+      } else {
+        throw new Error("Failed to fetch book details. Please try again.");
+      }
     }
 
-    // Check if user is admin
-    const { data: profile } = await supabase
+    if (!existingBook) {
+      throw new Error("Book not found. It may have already been deleted.");
+    }
+
+    // Check if user is admin with error handling
+    const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("is_admin")
       .eq("id", user.id)
       .single();
+
+    if (profileError) {
+      console.warn(
+        "Could not fetch user profile for admin check:",
+        profileError,
+      );
+      // Continue with owner check only
+    }
 
     const isAdmin = profile?.is_admin || false;
     const isOwner = existingBook.seller_id === user.id;
