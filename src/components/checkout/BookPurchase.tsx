@@ -270,22 +270,42 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
   };
 
   const validateStep1 = () => {
-    if (
-      !deliveryAddress.street ||
-      !deliveryAddress.city ||
-      !deliveryAddress.province ||
-      !deliveryAddress.postal_code
-    ) {
-      setError("Please enter a complete delivery address");
+    console.log("🔍 Validating checkout step 1...");
+    console.log("📍 Current delivery address:", deliveryAddress);
+    console.log("🚚 Selected courier quote:", selectedCourierQuote);
+
+    // Check each required field specifically
+    const missingFields = [];
+    if (!deliveryAddress.street?.trim()) missingFields.push("street address");
+    if (!deliveryAddress.city?.trim()) missingFields.push("city");
+    if (!deliveryAddress.province?.trim()) missingFields.push("province");
+    if (!deliveryAddress.postal_code?.trim()) missingFields.push("postal code");
+
+    if (missingFields.length > 0) {
+      const errorMsg = `❌ Please enter your ${missingFields.join(", ")} for delivery`;
+      setError(errorMsg);
+      toast.error(errorMsg);
+      return false;
+    }
+
+    // Validate seller address exists
+    if (!sellerAddress || !sellerAddress.street || !sellerAddress.city) {
+      const errorMsg =
+        "❌ Seller's address is not available. Cannot calculate delivery costs.";
+      setError(errorMsg);
+      toast.error(errorMsg);
       return false;
     }
 
     // Ensure courier is selected
     if (!selectedCourierQuote || deliveryFee <= 0) {
-      setError("Please select a delivery option to see pricing");
+      const errorMsg = "❌ Please select a delivery option to continue";
+      setError(errorMsg);
+      toast.error(errorMsg);
       return false;
     }
 
+    console.log("✅ Checkout validation passed");
     return true;
   };
 
