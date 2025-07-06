@@ -87,6 +87,8 @@ const Profile = () => {
   const [deletingBooks, setDeletingBooks] = useState<Set<string>>(new Set());
   const [isTemporarilyAway, setIsTemporarilyAway] = useState(false);
   const [showDangerZone, setShowDangerZone] = useState(false);
+  const [isAddressDialogOpen, setIsAddressDialogOpen] = useState(false);
+  const [userAddresses, setUserAddresses] = useState(null);
   const [needsBankingSetup, setNeedsBankingSetup] = useState(false);
   const [showBankingPrompt, setShowBankingPrompt] = useState(false);
   const [showBecomeSellerGuide, setShowBecomeSellerGuide] = useState(false);
