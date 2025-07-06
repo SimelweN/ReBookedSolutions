@@ -230,7 +230,13 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         country: "South Africa",
       });
 
-      setError(`Failed to load seller information: ${errorMessage}`);
+      // Handle timeout errors differently
+      if (errorMessage.includes("timeout")) {
+        console.warn("Seller validation timed out, proceeding with fallback");
+        // Don't set error for timeout - just proceed with fallback
+      } else {
+        setError(`Failed to load seller information: ${errorMessage}`);
+      }
     }
   };
 
