@@ -72,8 +72,14 @@ const SellerMarketplace = () => {
 
       const filters = {
         search: searchQuery || undefined,
-        category: categoryFilter || undefined,
-        condition: conditionFilter || undefined,
+        category:
+          categoryFilter && categoryFilter !== "all"
+            ? categoryFilter
+            : undefined,
+        condition:
+          conditionFilter && conditionFilter !== "all"
+            ? conditionFilter
+            : undefined,
         minPrice: minPrice ? parseFloat(minPrice) : undefined,
         maxPrice: maxPrice ? parseFloat(maxPrice) : undefined,
       };
