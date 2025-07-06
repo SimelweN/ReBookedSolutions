@@ -272,6 +272,9 @@ const SimpleQADashboard: React.FC = () => {
 
           <TabsContent value="orders" className="space-y-6">
             <div className="grid gap-6">
+              {/* Order Testing Component */}
+              <OrderTestComponent />
+
               {/* Enhanced Order System Tests */}
               <Card>
                 <CardHeader>
