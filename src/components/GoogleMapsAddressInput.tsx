@@ -128,7 +128,6 @@ const GoogleMapsAddressInput = ({
       onAddressSelect(addressData);
     } catch (error) {
       // Handle error silently
-    }
     } finally {
       setIsLoading(false);
     }
