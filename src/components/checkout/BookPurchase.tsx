@@ -149,32 +149,41 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
       setSellerInfo(sellerInfo);
 
       // Set seller address for delivery calculations using enhanced data
-      if (validation.profile.pickup_address) {
-        const formattedAddress =
-          SellerProfileService.formatPickupAddressForDelivery(
-            validation.profile.pickup_address,
-          );
+      let addressSet = false;
 
-        if (formattedAddress) {
-          setSellerAddress({
-            street: formattedAddress.streetAddress || "",
-            city: formattedAddress.city || "Cape Town",
-            province: formattedAddress.province || "Western Cape",
-            postal_code: formattedAddress.postalCode || "8000",
-            country: "South Africa",
-          });
-        } else {
-          // Fallback if address formatting fails
-          setSellerAddress({
-            street: "University of Cape Town",
-            city: "Cape Town",
-            province: "Western Cape",
-            postal_code: "7700",
-            country: "South Africa",
-          });
+      try {
+        if (validation.profile.pickup_address) {
+          const formattedAddress =
+            SellerProfileService.formatPickupAddressForDelivery(
+              validation.profile.pickup_address,
+            );
+
+          if (
+            formattedAddress &&
+            formattedAddress.streetAddress &&
+            formattedAddress.city
+          ) {
+            setSellerAddress({
+              street: formattedAddress.streetAddress,
+              city: formattedAddress.city,
+              province: formattedAddress.province || "Western Cape",
+              postal_code: formattedAddress.postalCode || "8000",
+              country: "South Africa",
+            });
+            addressSet = true;
+            console.log(
+              "Successfully set seller address from profile:",
+              formattedAddress,
+            );
+          }
         }
-      } else {
-        // Default seller address if not available
+      } catch (addressError) {
+        console.warn("Error formatting seller address:", addressError);
+      }
+
+      // Always ensure we have a seller address - use fallback if needed
+      if (!addressSet) {
+        console.log("Using fallback seller address");
         setSellerAddress({
           street: "University of Cape Town",
           city: "Cape Town",
