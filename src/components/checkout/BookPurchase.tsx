@@ -21,6 +21,8 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import DuplicatePaymentPrevention from "@/services/duplicatePaymentPrevention";
+import GoogleMapsAddressPicker from "@/components/GoogleMapsAddressPicker";
+import CourierSelection from "@/components/CourierSelection";
 import { toast } from "sonner";
 
 interface BookData {
@@ -41,7 +43,21 @@ interface DeliveryAddress {
   city: string;
   province: string;
   postal_code: string;
+  country: string;
+  lat?: number;
+  lng?: number;
+  formatted_address?: string;
+  place_id?: string;
   special_instructions?: string;
+}
+
+interface CourierQuote {
+  courier: string;
+  service_name: string;
+  service_code: string;
+  price: number;
+  estimated_days: string;
+  description: string;
 }
 
 interface BookPurchaseProps {
@@ -92,6 +108,28 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
       if (error) throw error;
       setSellerInfo(seller);
 
+      // Set seller address for delivery calculations
+      if (seller.address) {
+        setSellerAddress({
+          street: seller.address.street || "",
+          city: seller.address.city || "Cape Town",
+          province: seller.address.province || "Western Cape",
+          postal_code: seller.address.postal_code || "8000",
+          country: "South Africa",
+          lat: seller.address.lat,
+          lng: seller.address.lng,
+        });
+      } else {
+        // Default seller address if not available
+        setSellerAddress({
+          street: "University of Cape Town",
+          city: "Cape Town",
+          province: "Western Cape",
+          postal_code: "7700",
+          country: "South Africa",
+        });
+      }
+
       // Load seller's Paystack subaccount if needed
       if (!book.seller_subaccount_code) {
         const { data: bankingData } = await supabase
@@ -130,7 +168,10 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
           city: profile.address.city || "",
           province: profile.address.province || "",
           postal_code: profile.address.postal_code || "",
-          special_instructions: "",
+          country: "South Africa",
+          lat: profile.address.lat,
+          lng: profile.address.lng,
+          formatted_address: profile.address.formatted_address,
         });
       }
     } catch (error) {
@@ -138,21 +179,14 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
     }
   };
 
-  const calculateDeliveryFee = async () => {
-    if (deliveryMethod === "collection") {
-      setDeliveryFee(0);
-      return;
-    }
-
-    // Simple delivery fee calculation
-    // In production, this would integrate with courier APIs
-    const baseDeliveryFee = 50; // R50 base delivery fee
-    setDeliveryFee(baseDeliveryFee);
+  const handleCourierQuoteSelect = (quote: CourierQuote) => {
+    setSelectedCourierQuote(quote);
+    setDeliveryFee(quote.price);
   };
 
-  useEffect(() => {
-    calculateDeliveryFee();
-  }, [deliveryMethod, deliveryAddress]);
+  const handleAddressSelect = (address: DeliveryAddress) => {
+    setDeliveryAddress(address);
+  };
 
   const getTotalAmount = () => {
     return book.price + deliveryFee;
