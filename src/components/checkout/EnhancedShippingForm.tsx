@@ -650,6 +650,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
                       id="phone"
                       {...register("phone")}
                       placeholder="e.g., 081 234 5678"
+                      className={errors.phone ? "border-red-500" : ""}
                     />
                     {errors.phone && (
                       <p className="text-sm text-red-600 mt-1">
