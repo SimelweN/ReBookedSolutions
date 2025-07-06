@@ -163,6 +163,24 @@ function App() {
                         }
                       />
 
+                      {/* University Profile Routes */}
+                      <Route
+                        path="/university/:id"
+                        element={
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <React.lazy(() => import("./pages/EnhancedUniversityProfile")) />
+                          </Suspense>
+                        }
+                      />
+                      <Route
+                        path="/university-profile"
+                        element={
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <React.lazy(() => import("./pages/ModernUniversityProfile")) />
+                          </Suspense>
+                        }
+                      />
+
                       {/* Shopping and Cart Routes */}
                       <Route
                         path="/cart"
