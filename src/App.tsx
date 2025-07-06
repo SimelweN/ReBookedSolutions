@@ -10,25 +10,6 @@ import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import { Toaster } from "@/components/ui/sonner";
 import "./App.css";
 
-// Development: Import test utilities (remove in production)
-if (process.env.NODE_ENV === "development") {
-  import("./utils/testOrderSystem").then((module) => {
-    (window as any).testOrderSystem = module.testOrderSystem;
-    (window as any).checkDatabaseStatus = module.checkDatabaseStatus;
-    console.log(
-      "🧪 Order system test utilities loaded. Run testOrderSystem() or checkDatabaseStatus() in console.",
-    );
-  });
-
-  // Load migration verification utility
-  import("./utils/verifyMigration").then((module) => {
-    (window as any).verifyMigration = module.verifyMigration;
-    console.log(
-      "🔍 Migration verification loaded. Run verifyMigration() to check if migration was successful.",
-    );
-  });
-}
-
 // Import critical pages directly
 import IndexPage from "./pages/Index";
 import UniversityInfoPage from "./pages/UniversityInfo";
