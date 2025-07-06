@@ -181,6 +181,12 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
       }
     } catch (error) {
       console.error("Error loading user profile:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : (error as any)?.message || JSON.stringify(error) || "Unknown error";
+      console.error("Detailed user profile error:", errorMessage);
+      // Don't set error state for user profile as it's not critical
     }
   };
 
