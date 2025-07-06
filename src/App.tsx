@@ -358,16 +358,7 @@ function App() {
                           </ProtectedRoute>
                         }
                       />
-                      <Route
-                        path="/activity"
-                        element={
-                          <ProtectedRoute>
-                            <Suspense fallback={<LoadingSpinner />}>
-                              <ActivityLog />
-                            </Suspense>
-                          </ProtectedRoute>
-                        }
-                      />
+
                       <Route
                         path="/my-orders"
                         element={
