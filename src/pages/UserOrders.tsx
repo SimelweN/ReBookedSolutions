@@ -22,49 +22,21 @@ import { toast } from "sonner";
 
 const UserOrders: React.FC = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuth();
-  const [orders, setOrders] = useState<OrderData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { isAuthenticated } = useAuth();
+  const { orders, loading, error, refetch } = useUserOrders();
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/login");
       return;
     }
+  }, [isAuthenticated, navigate]);
 
-    if (user?.email) {
-      loadUserOrders();
+  useEffect(() => {
+    if (orders.length === 0 && !loading && !error) {
+      toast.info("No orders found. Start shopping to see your purchases here!");
     }
-  }, [user, isAuthenticated]);
-
-  const loadUserOrders = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      if (!user?.email) {
-        setError("User email not available");
-        return;
-      }
-
-      const userOrders = await PaystackPaymentService.getUserOrders(user.email);
-      setOrders(userOrders);
-
-      if (userOrders.length === 0) {
-        toast.info(
-          "No orders found. Start shopping to see your purchases here!",
-        );
-      }
-    } catch (error) {
-      console.error("Error loading user orders:", error);
-      setError(
-        error instanceof Error ? error.message : "Failed to load orders",
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [orders, loading, error]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
