@@ -171,9 +171,10 @@ export const saveSimpleUserAddresses = async (
       throw new Error(errorMessage);
     }
 
-    console.log("Successfully saved addresses:", data);
+    console.log("✅ Successfully saved addresses:", data);
 
     // Verify the save was successful by reading back the data
+    console.log("🔍 Verifying address save...");
     const { data: verifyData, error: verifyError } = await supabase
       .from("profiles")
       .select("pickup_address, shipping_address, addresses_same")
@@ -181,19 +182,38 @@ export const saveSimpleUserAddresses = async (
       .single();
 
     if (verifyError) {
-      console.warn("Could not verify address save:", verifyError);
-      // Still return the data we think we saved
+      console.warn("⚠️ Could not verify address save:", verifyError);
+      // Still return the data we think we saved, but log the warning
     } else {
-      console.log("Address save verified:", verifyData);
+      console.log("✅ Address save verified:", verifyData);
       // Use the verified data
       data = verifyData;
+
+      // Additional validation of the verified data
+      if (
+        !data.pickup_address ||
+        !data.pickup_address.streetAddress ||
+        !data.pickup_address.city ||
+        !data.pickup_address.province ||
+        !data.pickup_address.postalCode
+      ) {
+        console.error(
+          "❌ Verification failed: pickup address incomplete after save",
+        );
+        throw new Error(
+          "Address save verification failed - pickup address is incomplete",
+        );
+      }
     }
 
-    return {
+    const result = {
       pickup_address: data.pickup_address as SimpleAddress,
       shipping_address: data.shipping_address as SimpleAddress,
       addresses_same: data.addresses_same || false,
     };
+
+    console.log("🎉 Address save operation completed successfully:", result);
+    return result;
   } catch (error) {
     console.error("Error in saveSimpleUserAddresses:", error);
     throw error;
