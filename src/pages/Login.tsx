@@ -346,6 +346,53 @@ const Login = () => {
         <div className="w-full max-w-md">
           {renderErrorCard()}
 
+          {/* Development Test Buttons */}
+          {import.meta.env.DEV && (
+            <Card className="mb-4 bg-yellow-50 border-yellow-200">
+              <CardContent className="pt-4">
+                <div className="text-sm text-yellow-800 mb-2">
+                  🔧 Development Tools
+                </div>
+                <div className="space-y-2">
+                  <Button
+                    onClick={async () => {
+                      const result = await testSupabaseConnection();
+                      toast(
+                        result ? "✅ Connection OK" : "❌ Connection Failed",
+                      );
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
+                    <TestTube className="h-4 w-4 mr-2" />
+                    Test Supabase Connection
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      if (!email || !password) {
+                        toast.error("Enter email and password first");
+                        return;
+                      }
+                      const result = await testSupabaseAuth(email, password);
+                      toast(
+                        result.success
+                          ? "✅ Auth Test OK"
+                          : "❌ Auth Test Failed",
+                      );
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
+                    <TestTube className="h-4 w-4 mr-2" />
+                    Test Direct Auth
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
             <div className="p-6 sm:p-8">
               <h1 className="text-2xl font-bold text-center text-gray-800 mb-8">
