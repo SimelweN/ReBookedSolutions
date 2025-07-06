@@ -87,6 +87,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Ref to track current state and prevent duplicate updates
   const currentUserIdRef = useRef<string | null>(null);
+  const initializingRef = useRef<boolean>(false);
+  const profileUpgradeRef = useRef<string | null>(null); // Track which user is being upgraded
 
   const isAuthenticated = !!user && !!session;
   const isAdmin = profile?.isAdmin === true;
