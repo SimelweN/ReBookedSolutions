@@ -31,14 +31,20 @@ const AddressEditDialog = ({
   isLoading,
 }: AddressEditDialogProps) => {
   const [pickupAddress, setPickupAddress] = useState({
+    complex: "",
+    unitNumber: "",
     street: "",
+    suburb: "",
     city: "",
     province: "",
     postalCode: "",
   });
 
   const [shippingAddress, setShippingAddress] = useState({
+    complex: "",
+    unitNumber: "",
     street: "",
+    suburb: "",
     city: "",
     province: "",
     postalCode: "",
