@@ -832,12 +832,26 @@ const Profile = () => {
           initialAddresses={userAddresses}
           onSuccess={async () => {
             try {
-              console.log("Address save success, reloading addresses...");
+              console.log(
+                "🔄 Address save success, reloading addresses and listings...",
+              );
+
+              // Reload addresses first
               await loadUserAddresses();
-              console.log("Addresses reloaded successfully");
+              console.log("✅ Addresses reloaded successfully");
+
+              // Reload listings to update availability status
+              await loadActiveListings();
+              console.log("✅ Listings reloaded successfully");
+
+              toast.success(
+                "🎉 Addresses updated! Your listings are now available to buyers.",
+              );
             } catch (error) {
-              console.error("Error reloading addresses:", error);
-              toast.error("Addresses saved but failed to refresh display");
+              console.error("❌ Error reloading after address save:", error);
+              toast.warning(
+                "⚠️ Addresses saved but display refresh failed. Please refresh the page to see updates.",
+              );
             }
           }}
         />
