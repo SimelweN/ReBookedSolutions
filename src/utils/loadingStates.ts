@@ -1,8 +1,8 @@
 // Comprehensive loading states utility to replace missing loading states
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from "react";
 
-export type LoadingState = 'idle' | 'loading' | 'success' | 'error';
+export type LoadingState = "idle" | "loading" | "success" | "error";
 
 export interface LoadingStateConfig {
   minDuration?: number; // Minimum loading duration in ms
@@ -25,9 +25,9 @@ export interface AsyncOperationState<T = any> {
 // Custom hook for managing async operations
 export const useAsyncOperation = <T = any>(
   operation: () => Promise<T>,
-  config: LoadingStateConfig = {}
+  config: LoadingStateConfig = {},
 ): AsyncOperationState<T> => {
-  const [state, setState] = useState<LoadingState>('idle');
+  const [state, setState] = useState<LoadingState>("idle");
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
@@ -40,9 +40,9 @@ export const useAsyncOperation = <T = any>(
   } = config;
 
   const execute = useCallback(async () => {
-    setState('loading');
+    setState("loading");
     setError(null);
-    
+
     const startTime = Date.now();
     let timeoutId: NodeJS.Timeout;
 
@@ -50,43 +50,53 @@ export const useAsyncOperation = <T = any>(
       // Set timeout for maximum duration
       const timeoutPromise = new Promise<never>((_, reject) => {
         timeoutId = setTimeout(() => {
-          reject(new Error('Operation timed out'));
+          reject(new Error("Operation timed out"));
         }, maxDuration);
       });
 
       // Race between operation and timeout
-      const result = await Promise.race([
-        operation(),
-        timeoutPromise,
-      ]);
+      const result = await Promise.race([operation(), timeoutPromise]);
 
       clearTimeout(timeoutId);
 
       // Ensure minimum duration
       const elapsed = Date.now() - startTime;
       if (elapsed < minDuration) {
-        await new Promise(resolve => setTimeout(resolve, minDuration - elapsed));
+        await new Promise((resolve) =>
+          setTimeout(resolve, minDuration - elapsed),
+        );
       }
 
       setData(result);
-      setState('success');
+      setState("success");
       setRetryCount(0);
     } catch (err) {
       clearTimeout(timeoutId!);
-      
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+
+      const errorMessage =
+        err instanceof Error ? err.message : "Unknown error occurred";
       setError(errorMessage);
-      setState('error');
+      setState("error");
 
       // Auto-retry if configured
       if (retryCount < retryAttempts) {
-        setTimeout(() => {
-          setRetryCount(prev => prev + 1);
-          execute();
-        }, retryDelay * (retryCount + 1)); // Exponential backoff
+        setTimeout(
+          () => {
+            setRetryCount((prev) => prev + 1);
+            execute();
+          },
+          retryDelay * (retryCount + 1),
+        ); // Exponential backoff
       }
     }
-  }, [operation, minDuration, maxDuration, retryAttempts, retryDelay, retryCount]);
+  }, [
+    operation,
+    minDuration,
+    maxDuration,
+    retryAttempts,
+    retryDelay,
+    retryCount,
+  ]);
 
   const retry = useCallback(() => {
     setRetryCount(0);
@@ -94,7 +104,7 @@ export const useAsyncOperation = <T = any>(
   }, [execute]);
 
   const reset = useCallback(() => {
-    setState('idle');
+    setState("idle");
     setData(null);
     setError(null);
     setRetryCount(0);
@@ -104,9 +114,9 @@ export const useAsyncOperation = <T = any>(
     state,
     data,
     error,
-    isLoading: state === 'loading',
-    isSuccess: state === 'success',
-    isError: state === 'error',
+    isLoading: state === "loading",
+    isSuccess: state === "success",
+    isError: state === "error",
     retry,
     reset,
   };
@@ -115,40 +125,54 @@ export const useAsyncOperation = <T = any>(
 // Hook for managing multiple async operations
 export const useMultipleAsyncOperations = <T extends Record<string, any>>(
   operations: Record<keyof T, () => Promise<T[keyof T]>>,
-  config: LoadingStateConfig = {}
+  config: LoadingStateConfig = {},
 ) => {
-  const [states, setStates] = useState<Record<keyof T, LoadingState>>(() => 
-    Object.keys(operations).reduce((acc, key) => ({ ...acc, [key]: 'idle' }), {} as Record<keyof T, LoadingState>)
+  const [states, setStates] = useState<Record<keyof T, LoadingState>>(() =>
+    Object.keys(operations).reduce(
+      (acc, key) => ({ ...acc, [key]: "idle" }),
+      {} as Record<keyof T, LoadingState>,
+    ),
   );
-  
+
   const [data, setData] = useState<Partial<T>>({});
   const [errors, setErrors] = useState<Record<keyof T, string | null>>(() =>
-    Object.keys(operations).reduce((acc, key) => ({ ...acc, [key]: null }), {} as Record<keyof T, string | null>)
+    Object.keys(operations).reduce(
+      (acc, key) => ({ ...acc, [key]: null }),
+      {} as Record<keyof T, string | null>,
+    ),
   );
 
-  const executeOperation = useCallback(async <K extends keyof T>(key: K) => {
-    setStates(prev => ({ ...prev, [key]: 'loading' }));
-    setErrors(prev => ({ ...prev, [key]: null }));
+  const executeOperation = useCallback(
+    async <K extends keyof T>(key: K) => {
+      setStates((prev) => ({ ...prev, [key]: "loading" }));
+      setErrors((prev) => ({ ...prev, [key]: null }));
 
-    try {
-      const result = await operations[key]();
-      setData(prev => ({ ...prev, [key]: result }));
-      setStates(prev => ({ ...prev, [key]: 'success' }));
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
-      setErrors(prev => ({ ...prev, [key]: errorMessage }));
-      setStates(prev => ({ ...prev, [key]: 'error' }));
-    }
-  }, [operations]);
+      try {
+        const result = await operations[key]();
+        setData((prev) => ({ ...prev, [key]: result }));
+        setStates((prev) => ({ ...prev, [key]: "success" }));
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Unknown error occurred";
+        setErrors((prev) => ({ ...prev, [key]: errorMessage }));
+        setStates((prev) => ({ ...prev, [key]: "error" }));
+      }
+    },
+    [operations],
+  );
 
   const executeAll = useCallback(async () => {
-    const promises = Object.keys(operations).map(key => executeOperation(key as keyof T));
+    const promises = Object.keys(operations).map((key) =>
+      executeOperation(key as keyof T),
+    );
     await Promise.allSettled(promises);
   }, [operations, executeOperation]);
 
-  const isLoading = Object.values(states).some(state => state === 'loading');
-  const isAllSuccess = Object.values(states).every(state => state === 'success');
-  const hasErrors = Object.values(errors).some(error => error !== null);
+  const isLoading = Object.values(states).some((state) => state === "loading");
+  const isAllSuccess = Object.values(states).every(
+    (state) => state === "success",
+  );
+  const hasErrors = Object.values(errors).some((error) => error !== null);
 
   return {
     states,
@@ -162,83 +186,21 @@ export const useMultipleAsyncOperations = <T extends Record<string, any>>(
   };
 };
 
-// Generic loading wrapper component
-export interface LoadingWrapperProps {
-  isLoading: boolean;
-  error?: string | null;
-  data?: any;
-  children: React.ReactNode;
-  loadingComponent?: React.ReactNode;
-  errorComponent?: React.ReactNode;
-  emptyComponent?: React.ReactNode;
-  showEmpty?: boolean;
-}
-
-export const LoadingWrapper: React.FC<LoadingWrapperProps> = ({
-  isLoading,
-  error,
-  data,
-  children,
-  loadingComponent,
-  errorComponent,
-  emptyComponent,
-  showEmpty = false,
-}) => {
-  if (isLoading) {
-    return (
-      <>
-        {loadingComponent || (
-          <div className="flex justify-center items-center p-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-book-600"></div>
-          </div>
-        )}
-      </>
-    );
-  }
-
-  if (error) {
-    return (
-      <>
-        {errorComponent || (
-          <div className="text-center p-8">
-            <div className="text-red-600 mb-2">Error occurred</div>
-            <div className="text-gray-600 text-sm">{error}</div>
-          </div>
-        )}
-      </>
-    );
-  }
-
-  if (showEmpty && (!data || (Array.isArray(data) && data.length === 0))) {
-    return (
-      <>
-        {emptyComponent || (
-          <div className="text-center p-8 text-gray-500">
-            No data available
-          </div>
-        )}
-      </>
-    );
-  }
-
-  return <>{children}</>;
-};
-
 // Utility for creating loading states with Supabase
 export const createSupabaseLoader = <T>(
-  query: () => Promise<{ data: T | null; error: any }>
+  query: () => Promise<{ data: T | null; error: any }>,
 ) => {
   return async (): Promise<T> => {
     const { data, error } = await query();
-    
+
     if (error) {
-      throw new Error(error.message || 'Database error occurred');
+      throw new Error(error.message || "Database error occurred");
     }
-    
+
     if (!data) {
-      throw new Error('No data returned');
+      throw new Error("No data returned");
     }
-    
+
     return data;
   };
 };
@@ -255,7 +217,7 @@ export interface PaginatedState<T> {
 
 export const usePaginatedData = <T>(
   loadPage: (page: number) => Promise<{ items: T[]; hasMore: boolean }>,
-  pageSize: number = 20
+  pageSize: number = 20,
 ): PaginatedState<T> => {
   const [items, setItems] = useState<T[]>([]);
   const [loading, setLoading] = useState(false);
@@ -271,11 +233,12 @@ export const usePaginatedData = <T>(
 
     try {
       const result = await loadPage(currentPage);
-      setItems(prev => [...prev, ...result.items]);
+      setItems((prev) => [...prev, ...result.items]);
       setHasMore(result.hasMore);
-      setCurrentPage(prev => prev + 1);
+      setCurrentPage((prev) => prev + 1);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load more items';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to load more items";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -287,7 +250,7 @@ export const usePaginatedData = <T>(
     setCurrentPage(0);
     setHasMore(true);
     setError(null);
-    
+
     setLoading(true);
     try {
       const result = await loadPage(0);
@@ -295,7 +258,8 @@ export const usePaginatedData = <T>(
       setHasMore(result.hasMore);
       setCurrentPage(1);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to refresh items';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to refresh items";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -320,10 +284,10 @@ export const usePaginatedData = <T>(
 // Debounced loading state (useful for search)
 export const useDebouncedAsyncOperation = <T>(
   operation: (query: string) => Promise<T>,
-  delay: number = 300
+  delay: number = 300,
 ) => {
-  const [query, setQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -350,14 +314,15 @@ export const useDebouncedAsyncOperation = <T>(
     setError(null);
 
     operation(debouncedQuery)
-      .then(result => {
+      .then((result) => {
         if (!cancelled) {
           setData(result);
         }
       })
-      .catch(err => {
+      .catch((err) => {
         if (!cancelled) {
-          const errorMessage = err instanceof Error ? err.message : 'Search failed';
+          const errorMessage =
+            err instanceof Error ? err.message : "Search failed";
           setError(errorMessage);
         }
       })
