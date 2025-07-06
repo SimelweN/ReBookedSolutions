@@ -311,6 +311,7 @@ export class PaystackPaymentService {
       throw new Error("Paystack payment library not available");
     }
 
+    console.log(`✅ Using successful method: ${loadMethod}`);
     console.log("✅ PaystackPop ready:", typeof PaystackPop);
 
     return new Promise((resolve, reject) => {
