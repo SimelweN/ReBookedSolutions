@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
-
 import { getUserAddresses } from "./addressService";
+import { SellerProfileService } from "./sellerProfileService";
 
 export interface SellerValidationResult {
   canSell: boolean;
