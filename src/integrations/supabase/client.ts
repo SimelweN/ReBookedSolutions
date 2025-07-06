@@ -61,6 +61,15 @@ try {
 // Clean the API key (remove any leading = signs that might have been added by accident)
 const cleanApiKey = ENV.VITE_SUPABASE_ANON_KEY.replace(/^=+/, "");
 
+// Preserve original fetch before FullStory or other scripts can override it
+const originalFetch = (() => {
+  if (typeof window !== "undefined" && window.fetch) {
+    // Store the original fetch function immediately
+    return window.fetch.bind(window);
+  }
+  return fetch; // Fallback to global fetch
+})();
+
 // Simple error handler for network issues
 const handleNetworkError = (error: any) => {
   console.warn("🌐 Supabase network error:", error?.message || error);
