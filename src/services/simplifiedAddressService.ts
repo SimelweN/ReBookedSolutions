@@ -124,6 +124,22 @@ export const saveSimpleUserAddresses = async (
 
     console.log("Successfully saved addresses:", data);
 
+    // Verify the save was successful by reading back the data
+    const { data: verifyData, error: verifyError } = await supabase
+      .from("profiles")
+      .select("pickup_address, shipping_address, addresses_same")
+      .eq("id", userId)
+      .single();
+
+    if (verifyError) {
+      console.warn("Could not verify address save:", verifyError);
+      // Still return the data we think we saved
+    } else {
+      console.log("Address save verified:", verifyData);
+      // Use the verified data
+      data = verifyData;
+    }
+
     return {
       pickup_address: data.pickup_address as SimpleAddress,
       shipping_address: data.shipping_address as SimpleAddress,
