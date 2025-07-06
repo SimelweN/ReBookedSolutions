@@ -58,6 +58,10 @@ export class EmailVerificationService {
       });
 
       if (error) {
+        console.error(
+          "Token hash verification error:",
+          JSON.stringify(error, null, 2),
+        );
         logError("Token hash verification error", error);
         return {
           success: false,
@@ -109,6 +113,10 @@ export class EmailVerificationService {
       });
 
       if (error) {
+        console.error(
+          "Legacy token verification error:",
+          JSON.stringify(error, null, 2),
+        );
         logError("Legacy token verification error", error);
         return {
           success: false,
@@ -156,6 +164,7 @@ export class EmailVerificationService {
       const { data, error } = await supabase.auth.exchangeCodeForSession(url);
 
       if (error) {
+        console.error("Code exchange error:", JSON.stringify(error, null, 2));
         logError("Code exchange error", error);
         return {
           success: false,
@@ -201,6 +210,7 @@ export class EmailVerificationService {
       const { data: sessionData, error } = await supabase.auth.getSession();
 
       if (error) {
+        console.error("Session check error:", JSON.stringify(error, null, 2));
         logError("Session check error", error);
         return {
           success: false,
