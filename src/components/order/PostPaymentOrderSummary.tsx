@@ -31,7 +31,7 @@ const PostPaymentOrderSummary: React.FC<PostPaymentOrderSummaryProps> = ({
   onClose,
 }) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { getOrderByReference } = useUserOrders();
   const [order, setOrder] = useState<OrderData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,16 +45,8 @@ const PostPaymentOrderSummary: React.FC<PostPaymentOrderSummaryProps> = ({
       setIsLoading(true);
       setError(null);
 
-      if (!user?.email) {
-        setError("User not authenticated");
-        return;
-      }
-
       // Try to fetch the order using payment reference
-      const foundOrder = await PaystackPaymentService.getUserOrder(
-        user.email,
-        paymentReference,
-      );
+      const foundOrder = await getOrderByReference(paymentReference);
 
       if (foundOrder) {
         setOrder(foundOrder);
@@ -64,11 +56,13 @@ const PostPaymentOrderSummary: React.FC<PostPaymentOrderSummaryProps> = ({
           setOrder(orderData as OrderData);
         } else {
           setError("Order details not found");
+          toast.error("Could not find order details");
         }
       }
     } catch (error) {
       console.error("Error loading order details:", error);
       setError("Failed to load order details");
+      toast.error("Failed to load order details");
     } finally {
       setIsLoading(false);
     }
