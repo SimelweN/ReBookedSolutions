@@ -329,6 +329,7 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
             delivery_method: "delivery", // Always delivery with courier
             delivery_address: deliveryAddress,
             courier_info: selectedCourierQuote,
+            delivery_fee: deliveryFee,
             payment_method: "paystack",
           },
         },
