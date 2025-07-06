@@ -105,6 +105,15 @@ const SellerMarketplace = () => {
     maxPrice,
   ]);
 
+  useEffect(() => {
+    if (sellerId) {
+      loadSellerMarketplace();
+    } else {
+      setLoading(false);
+      setError("No seller ID provided");
+    }
+  }, [sellerId, loadSellerMarketplace]);
+
   const handleAddToCart = async (book: SellerBookListing) => {
     if (!marketplace?.profile) return;
 
