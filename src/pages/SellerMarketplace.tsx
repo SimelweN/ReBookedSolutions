@@ -319,7 +319,7 @@ const SellerMarketplace = () => {
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Categories</SelectItem>
+                  <SelectItem value="all">All Categories</SelectItem>
                   <SelectItem value="Textbook">Textbooks</SelectItem>
                   <SelectItem value="Study Guide">Study Guides</SelectItem>
                   <SelectItem value="Reference">Reference</SelectItem>
@@ -335,7 +335,7 @@ const SellerMarketplace = () => {
                   <SelectValue placeholder="Condition" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Conditions</SelectItem>
+                  <SelectItem value="all">All Conditions</SelectItem>
                   <SelectItem value="New">New</SelectItem>
                   <SelectItem value="Good">Good</SelectItem>
                   <SelectItem value="Better">Better</SelectItem>
