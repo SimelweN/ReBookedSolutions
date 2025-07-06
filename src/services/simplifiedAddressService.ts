@@ -26,41 +26,73 @@ export const saveSimpleUserAddresses = async (
   addressesSame: boolean = false,
 ): Promise<UserAddresses> => {
   try {
-    console.log("Saving addresses for user:", userId, {
+    console.log("🏠 Saving addresses for user:", userId, {
       pickupAddress,
       shippingAddress,
       addressesSame,
     });
 
-    // Validate required fields
+    // Strict validation of required fields
+    if (!userId || userId.trim() === "") {
+      throw new Error("User ID is required");
+    }
+
     if (
-      !pickupAddress.streetAddress ||
-      !pickupAddress.city ||
-      !pickupAddress.province ||
-      !pickupAddress.postalCode
+      !pickupAddress.streetAddress?.trim() ||
+      !pickupAddress.city?.trim() ||
+      !pickupAddress.province?.trim() ||
+      !pickupAddress.postalCode?.trim()
     ) {
-      throw new Error("Pickup address is missing required fields");
+      throw new Error(
+        "Pickup address is missing required fields: streetAddress, city, province, postalCode",
+      );
     }
 
     if (
       !addressesSame &&
-      (!shippingAddress.streetAddress ||
-        !shippingAddress.city ||
-        !shippingAddress.province ||
-        !shippingAddress.postalCode)
+      (!shippingAddress.streetAddress?.trim() ||
+        !shippingAddress.city?.trim() ||
+        !shippingAddress.province?.trim() ||
+        !shippingAddress.postalCode?.trim())
     ) {
-      throw new Error("Shipping address is missing required fields");
+      throw new Error(
+        "Shipping address is missing required fields: streetAddress, city, province, postalCode",
+      );
     }
 
+    // Clean and normalize the data
+    const cleanPickupAddress: SimpleAddress = {
+      streetAddress: pickupAddress.streetAddress.trim(),
+      city: pickupAddress.city.trim(),
+      province: pickupAddress.province.trim(),
+      postalCode: pickupAddress.postalCode.trim(),
+      complex: pickupAddress.complex?.trim() || "",
+      unitNumber: pickupAddress.unitNumber?.trim() || "",
+      suburb: pickupAddress.suburb?.trim() || "",
+    };
+
     const finalShippingAddress = addressesSame
-      ? pickupAddress
-      : shippingAddress;
+      ? cleanPickupAddress
+      : {
+          streetAddress: shippingAddress.streetAddress.trim(),
+          city: shippingAddress.city.trim(),
+          province: shippingAddress.province.trim(),
+          postalCode: shippingAddress.postalCode.trim(),
+          complex: shippingAddress.complex?.trim() || "",
+          unitNumber: shippingAddress.unitNumber?.trim() || "",
+          suburb: shippingAddress.suburb?.trim() || "",
+        };
+
+    console.log("🧹 Cleaned addresses:", {
+      pickup: cleanPickupAddress,
+      shipping: finalShippingAddress,
+    });
 
     // Try to update the profile with addresses
     let { data, error } = await supabase
       .from("profiles")
       .update({
-        pickup_address: pickupAddress,
+        pickup_address: cleanPickupAddress,
         shipping_address: finalShippingAddress,
         addresses_same: addressesSame,
         updated_at: new Date().toISOString(),
