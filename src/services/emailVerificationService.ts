@@ -256,7 +256,7 @@ export class EmailVerificationService {
         error_description: params.error_description,
       });
 
-      return {
+      const errorResult = {
         success: false,
         message: errorMessage,
         method: "url_error",
@@ -265,6 +265,9 @@ export class EmailVerificationService {
           description: params.error_description,
         },
       };
+
+      console.log("EmailVerificationService returning URL error:", errorResult);
+      return errorResult;
     }
 
     // Method 1: Token hash verification (preferred)
@@ -307,12 +310,18 @@ export class EmailVerificationService {
     }
 
     // If all methods fail
-    return {
+    const failureResult = {
       success: false,
       message:
         "Unable to verify email with any available method. Please try registering again or contact support.",
       method: "all_failed",
     };
+
+    console.log(
+      "EmailVerificationService returning failure result:",
+      failureResult,
+    );
+    return failureResult;
   }
 
   /**
