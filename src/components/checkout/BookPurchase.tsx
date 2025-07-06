@@ -93,6 +93,18 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
 
   // Load seller information and user profile
   useEffect(() => {
+    console.log("BookPurchase - Book data received:", book);
+
+    if (!book.seller_id) {
+      setError("Invalid book data: missing seller information");
+      return;
+    }
+
+    if (!user?.id) {
+      setError("User not authenticated");
+      return;
+    }
+
     loadSellerInfo();
     loadUserProfile();
   }, [book.seller_id, user?.id]);
