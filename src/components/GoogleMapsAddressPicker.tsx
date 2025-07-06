@@ -209,12 +209,107 @@ const GoogleMapsAddressPicker: React.FC<GoogleMapsAddressPickerProps> = ({
 
   if (loadError) {
     return (
-      <Alert className="mt-4">
-        <AlertDescription>
-          Google Maps failed to load. Please check your internet connection and
-          try again.
-        </AlertDescription>
-      </Alert>
+      <Card className={className}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="w-5 h-5" />
+            Delivery Address
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Alert>
+            <AlertDescription>
+              Google Maps is not available. Please enter your address manually.
+            </AlertDescription>
+          </Alert>
+
+          {/* Manual address input fallback */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="street">Street Address</Label>
+              <Input
+                id="street"
+                value={selectedAddress?.street || ""}
+                onChange={(e) => {
+                  const address = {
+                    street: e.target.value,
+                    city: selectedAddress?.city || "",
+                    province: selectedAddress?.province || "",
+                    postal_code: selectedAddress?.postal_code || "",
+                    country: "South Africa",
+                  };
+                  setSelectedAddress(address);
+                  onAddressSelect(address);
+                }}
+                placeholder="123 Main Street"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="city">City</Label>
+              <Input
+                id="city"
+                value={selectedAddress?.city || ""}
+                onChange={(e) => {
+                  const address = {
+                    ...selectedAddress,
+                    street: selectedAddress?.street || "",
+                    city: e.target.value,
+                    province: selectedAddress?.province || "",
+                    postal_code: selectedAddress?.postal_code || "",
+                    country: "South Africa",
+                  };
+                  setSelectedAddress(address);
+                  onAddressSelect(address);
+                }}
+                placeholder="Cape Town"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="province">Province</Label>
+              <Input
+                id="province"
+                value={selectedAddress?.province || ""}
+                onChange={(e) => {
+                  const address = {
+                    ...selectedAddress,
+                    street: selectedAddress?.street || "",
+                    city: selectedAddress?.city || "",
+                    province: e.target.value,
+                    postal_code: selectedAddress?.postal_code || "",
+                    country: "South Africa",
+                  };
+                  setSelectedAddress(address);
+                  onAddressSelect(address);
+                }}
+                placeholder="Western Cape"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="postal_code">Postal Code</Label>
+              <Input
+                id="postal_code"
+                value={selectedAddress?.postal_code || ""}
+                onChange={(e) => {
+                  const address = {
+                    ...selectedAddress,
+                    street: selectedAddress?.street || "",
+                    city: selectedAddress?.city || "",
+                    province: selectedAddress?.province || "",
+                    postal_code: e.target.value,
+                    country: "South Africa",
+                  };
+                  setSelectedAddress(address);
+                  onAddressSelect(address);
+                }}
+                placeholder="8000"
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
