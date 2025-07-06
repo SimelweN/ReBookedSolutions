@@ -137,6 +137,7 @@ export type Database = {
       books: {
         Row: {
           author: string;
+          availability: string | null;
           back_cover: string | null;
           category: string;
           condition: string;
@@ -152,7 +153,9 @@ export type Database = {
           seller_id: string;
           sold: boolean;
           title: string;
+          university: string | null;
           university_year: string | null;
+          updated_at: string | null;
         };
         Insert: {
           author: string;
