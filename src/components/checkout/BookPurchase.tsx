@@ -405,23 +405,29 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         </CardContent>
       </Card>
 
-      {/* Delivery Selector */}
-      <DeliverySelector
-        onAddressChange={handleAddressChange}
-        onDeliverySelect={handleDeliverySelect}
-        selectedDelivery={
-          selectedCourierQuote
-            ? {
-                id: selectedCourierQuote.courier,
-                name: selectedCourierQuote.service_name,
-                price: selectedCourierQuote.price,
-                days: selectedCourierQuote.estimated_days,
-                description: selectedCourierQuote.description,
-              }
-            : undefined
-        }
-        initialAddress={deliveryAddress}
-      />
+      {/* Courier Quote System */}
+      {sellerAddress ? (
+        <CourierQuoteSystem
+          sellerAddress={sellerAddress}
+          onAddressChange={handleAddressChange}
+          onQuoteSelect={handleCourierSelect}
+          selectedQuote={selectedCourierQuote}
+          initialAddress={deliveryAddress}
+        />
+      ) : (
+        <Card>
+          <CardContent className="p-6 text-center">
+            <AlertTriangle className="w-12 h-12 text-orange-500 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">
+              Loading Seller Information
+            </h3>
+            <p className="text-gray-600">
+              Please wait while we load the seller's location to calculate
+              delivery options.
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Price Breakdown */}
       <Card>
