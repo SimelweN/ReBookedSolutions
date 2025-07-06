@@ -170,33 +170,57 @@ const CourierQuoteSystem: React.FC<CourierQuoteSystemProps> = ({
         }
       }
     } catch (error) {
-      console.error("Error fetching delivery quotes:", error);
-      setQuotesError(
+      console.error("❌ Error fetching delivery quotes:", error);
+      const errorMessage =
         error instanceof Error
           ? error.message
-          : "Failed to get delivery quotes",
-      );
+          : "Failed to get delivery quotes";
 
+      // Provide user-friendly error messages
+      let userMessage = errorMessage;
+      if (errorMessage.includes("timeout")) {
+        userMessage = "⏱️ Request timed out. Using standard delivery rates.";
+      } else if (
+        errorMessage.includes("network") ||
+        errorMessage.includes("connection")
+      ) {
+        userMessage = "🌐 Network error. Using standard delivery rates.";
+      } else if (
+        errorMessage.includes("address") ||
+        errorMessage.includes("location")
+      ) {
+        userMessage =
+          "📍 Address validation failed. Using estimated delivery rates.";
+      } else {
+        userMessage =
+          "⚠️ Couldn't get real-time quotes. Using standard delivery rates.";
+      }
+
+      setQuotesError(userMessage);
+
+      console.log("🔄 Using fallback delivery quotes");
       // Set fallback quotes
       const fallbackQuotes: CourierQuote[] = [
         {
           courier: "fastway",
-          service_name: "Fastway Standard",
+          service_name: "Fastway Standard (Estimated)",
           price: 85,
           estimated_days: 3,
-          description: "Reliable standard delivery service",
+          description: "Reliable standard delivery service - estimated rate",
         },
         {
           courier: "courier-guy",
-          service_name: "Courier Guy Express",
+          service_name: "Courier Guy Express (Estimated)",
           price: 95,
           estimated_days: 2,
-          description: "Fast express delivery service",
+          description: "Fast express delivery service - estimated rate",
         },
       ];
 
       setQuotes(fallbackQuotes);
-      if (!selectedQuote) {
+
+      // Auto-select cheapest fallback option
+      if (!selectedQuote && fallbackQuotes.length > 0) {
         onQuoteSelect(fallbackQuotes[0]);
       }
     } finally {
