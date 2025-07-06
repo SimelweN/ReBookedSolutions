@@ -118,14 +118,24 @@ export const SimplifiedAddressDialog: React.FC<
 
     setIsLoading(true);
     try {
-      await saveSimpleUserAddresses(
+      console.log("Starting address save operation...");
+      const result = await saveSimpleUserAddresses(
         userId,
         pickupAddress,
         shippingAddress,
         sameAsPickup,
       );
+      console.log("Address save completed successfully:", result);
+
       toast.success("Addresses saved successfully!");
-      onSuccess?.();
+
+      // Wait a bit to ensure the save is complete
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      if (onSuccess) {
+        await onSuccess();
+      }
+
       onClose();
     } catch (error) {
       console.error("Error saving addresses:", error);
