@@ -3,7 +3,6 @@ import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import AdminDashboard from "@/components/AdminDashboard";
-import OrderTestComponent from "@/components/OrderTestComponent";
 import { ArrowLeft, Flag, Shield } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -165,15 +164,6 @@ const Admin = () => {
         >
           <ErrorBoundary level="component">
             <BankingRequirementChecker />
-          </ErrorBoundary>
-        </div>
-
-        {/* Order Testing Component */}
-        <div
-          className={`bg-white rounded-lg shadow-md ${isMobile ? "p-3 card-mobile" : "p-4 md:p-6"} overflow-hidden`}
-        >
-          <ErrorBoundary level="component">
-            <OrderTestComponent />
           </ErrorBoundary>
         </div>
 
