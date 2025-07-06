@@ -115,25 +115,38 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         throw new Error("No seller_id provided");
       }
 
-      const { data: seller, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", book.seller_id)
-        .single();
+      // Use enhanced seller validation
+      const { SellerProfileService } = await import(
+        "@/services/sellerProfileService"
+      );
+      const validation = await SellerProfileService.validateSellerForPurchase(
+        book.seller_id,
+      );
 
-      console.log("Seller query result:", { seller, error });
-
-      if (error) {
-        console.error("Supabase error:", error);
-        throw error;
+      if (!validation.isValid) {
+        setError(validation.errorMessage || "Seller not available for orders");
+        return;
       }
 
-      if (!seller) {
+      if (!validation.profile) {
         throw new Error("Seller profile not found");
       }
 
-      console.log("Successfully loaded seller:", seller);
-      setSellerInfo(seller);
+      console.log(
+        "Successfully loaded enhanced seller profile:",
+        validation.profile,
+      );
+
+      // Convert to compatible format
+      const sellerInfo = {
+        id: validation.profile.seller_id,
+        name: validation.profile.seller_name,
+        email: validation.profile.seller_email,
+        pickup_address: validation.profile.pickup_address,
+        has_subaccount: validation.profile.has_subaccount,
+      };
+
+      setSellerInfo(sellerInfo);
 
       // Set seller address for delivery calculations
       if (seller.address) {
