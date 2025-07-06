@@ -111,8 +111,6 @@ const GoogleMapsAddressInput = ({
       const lng = place.geometry.location.lng();
       const formattedAddress = place.formatted_address || place.name || "";
 
-      console.log("✅ Valid place data:", { lat, lng, formattedAddress });
-
       // Extract address components
       const addressComponents = extractAddressComponents(place);
 
@@ -126,14 +124,11 @@ const GoogleMapsAddressInput = ({
       setAddress(formattedAddress);
       setCoords({ lat, lng });
 
-      console.log("🚀 Calling onAddressSelect with:", addressData);
-
       // Call parent callback with address data
       onAddressSelect(addressData);
-
-      console.log("✅ Address selection completed successfully!");
     } catch (error) {
-      console.error("❌ Error processing place selection:", error);
+      // Handle error silently
+    }
     } finally {
       setIsLoading(false);
     }
