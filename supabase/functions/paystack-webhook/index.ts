@@ -103,7 +103,11 @@ async function handleSuccessfulPayment(supabase: any, paymentData: any) {
       .single();
 
     if (orderError || !order) {
-      console.error("Order not found:", paymentData.reference);
+      console.error(
+        "Order not found for reference:",
+        paymentData.reference,
+        orderError,
+      );
 
       // Try to find in transactions table as fallback
       const { data: transaction, error: transactionError } = await supabase
@@ -122,14 +126,22 @@ async function handleSuccessfulPayment(supabase: any, paymentData: any) {
       return;
     }
 
+    console.log("Found order for payment:", order.id);
+
     // Update order status to paid
     const { error: updateError } = await supabase
       .from("orders")
       .update({
         status: "paid",
         paid_at: new Date().toISOString(),
-        payment_held: true, // Hold payment until courier collection
         updated_at: new Date().toISOString(),
+        payment_data: {
+          ...order.payment_data,
+          payment_verified: true,
+          payment_completed_at: new Date().toISOString(),
+          paystack_amount: paymentData.amount,
+          paystack_gateway_response: paymentData.gateway_response,
+        },
       })
       .eq("id", order.id);
 
@@ -138,29 +150,50 @@ async function handleSuccessfulPayment(supabase: any, paymentData: any) {
       return;
     }
 
-    // Create payment split record for tracking
-    const { error: splitError } = await supabase.from("payment_splits").insert({
-      order_id: order.id,
-      seller_subaccount: order.seller_subaccount_code,
-      book_amount: order.book_price,
-      delivery_amount: order.delivery_fee || 0,
-      platform_commission: order.platform_fee,
-      seller_amount: order.seller_amount,
-      courier_amount: order.delivery_fee || 0,
-      split_executed: true,
-      paystack_reference: paymentData.reference,
-    });
+    // Create payment split record for tracking (if table exists)
+    const deliveryFee = order.delivery_data?.delivery_fee || 0;
+    const bookAmount =
+      order.items?.reduce((sum: number, item: any) => sum + item.price, 0) ||
+      order.amount;
 
-    if (splitError) {
-      console.error("Error creating payment split record:", splitError);
+    try {
+      const { error: splitError } = await supabase
+        .from("payment_splits")
+        .insert({
+          order_id: order.id,
+          seller_subaccount: order.payment_data?.seller_subaccount_code,
+          book_amount: bookAmount,
+          delivery_amount: deliveryFee,
+          platform_commission: Math.round(order.amount * 0.1),
+          seller_amount: Math.round(order.amount * 0.9),
+          courier_amount: deliveryFee,
+          split_executed: true,
+          paystack_reference: paymentData.reference,
+        });
+
+      if (splitError) {
+        console.error(
+          "Error creating payment split record (non-critical):",
+          splitError,
+        );
+      }
+    } catch (splitError) {
+      console.error(
+        "Payment splits table may not exist (non-critical):",
+        splitError,
+      );
     }
 
-    // Ensure book remains sold
-    if (order.book_id) {
-      await supabase
-        .from("books")
-        .update({ sold: true })
-        .eq("id", order.book_id);
+    // Ensure books remain sold
+    if (order.items && Array.isArray(order.items)) {
+      for (const item of order.items) {
+        if (item.book_id) {
+          await supabase
+            .from("books")
+            .update({ sold: true })
+            .eq("id", item.book_id);
+        }
+      }
     }
 
     console.log("Payment processed successfully for order:", order.id);

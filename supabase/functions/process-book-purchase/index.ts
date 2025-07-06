@@ -165,23 +165,42 @@ serve(async (req) => {
     });
 
     // Step 6: Create order record (using new orders table structure)
+    const orderItems = [
+      {
+        book_id: book.id,
+        title: book.title,
+        author: book.author || "Unknown",
+        price: Math.round(amount * 100), // Price in kobo
+        condition: book.condition || "Used",
+        isbn: book.isbn || "",
+        image_url: book.image_url || "",
+        seller_id: book.seller_id,
+      },
+    ];
+
+    const paymentReference = `rb_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+
     const { data: order, error: orderError } = await supabase
       .from("orders")
       .insert({
         buyer_email: user.email,
-        buyer_id: user.id,
         seller_id: book.seller_id,
-        book_id: book.id,
-        book_title: book.title,
-        book_price: amount,
-        delivery_fee: delivery_fee,
-        platform_fee: platformCommission,
-        seller_amount: sellerAmount,
         amount: Math.round(totalAmount * 100), // Store in kobo
-        seller_subaccount_code: sellerSubaccount,
         status: "pending",
+        paystack_ref: paymentReference,
+        items: orderItems,
         shipping_address: delivery_address,
-        payment_held: false,
+        delivery_data: {
+          delivery_fee: delivery_fee,
+          delivery_address: delivery_address,
+        },
+        payment_data: {
+          book_price: amount,
+          delivery_fee: delivery_fee,
+          platform_commission: platformCommission,
+          seller_amount: sellerAmount,
+          seller_subaccount_code: sellerSubaccount,
+        },
         metadata: {
           delivery_address: delivery_address,
           payment_method: payment_method,
@@ -226,13 +245,13 @@ serve(async (req) => {
     const paystackPayload = {
       amount: Math.round(totalAmount * 100), // Convert to kobo
       email: user.email,
-      reference: `rb_${order.id}`,
+      reference: paymentReference,
       callback_url: `${Deno.env.get("SUPABASE_URL")}/functions/v1/paystack-webhook`,
       metadata: {
         order_id: order.id,
         book_id: book.id,
         book_title: book.title,
-        buyer_id: user.id,
+        buyer_email: user.email,
         seller_id: book.seller_id,
         delivery_fee: delivery_fee,
       },

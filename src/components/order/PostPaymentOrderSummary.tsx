@@ -15,10 +15,8 @@ import {
   Mail,
   Download,
 } from "lucide-react";
-import PaystackPaymentService, {
-  OrderData,
-} from "@/services/paystackPaymentService";
-import { useAuth } from "@/contexts/AuthContext";
+import { OrderData } from "@/services/paystackPaymentService";
+import { useUserOrders } from "@/hooks/useUserOrders";
 import { toast } from "sonner";
 
 interface PostPaymentOrderSummaryProps {
@@ -33,7 +31,7 @@ const PostPaymentOrderSummary: React.FC<PostPaymentOrderSummaryProps> = ({
   onClose,
 }) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { getOrderByReference } = useUserOrders();
   const [order, setOrder] = useState<OrderData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,16 +45,8 @@ const PostPaymentOrderSummary: React.FC<PostPaymentOrderSummaryProps> = ({
       setIsLoading(true);
       setError(null);
 
-      if (!user?.email) {
-        setError("User not authenticated");
-        return;
-      }
-
       // Try to fetch the order using payment reference
-      const foundOrder = await PaystackPaymentService.getUserOrder(
-        user.email,
-        paymentReference,
-      );
+      const foundOrder = await getOrderByReference(paymentReference);
 
       if (foundOrder) {
         setOrder(foundOrder);
@@ -66,11 +56,13 @@ const PostPaymentOrderSummary: React.FC<PostPaymentOrderSummaryProps> = ({
           setOrder(orderData as OrderData);
         } else {
           setError("Order details not found");
+          toast.error("Could not find order details");
         }
       }
     } catch (error) {
       console.error("Error loading order details:", error);
       setError("Failed to load order details");
+      toast.error("Failed to load order details");
     } finally {
       setIsLoading(false);
     }
@@ -246,13 +238,26 @@ Thank you for your purchase!
             <div className="flex justify-between text-sm">
               <span>Subtotal</span>
               <span>
-                R{((order.amount - (order.delivery_fee || 0)) / 100).toFixed(2)}
+                R
+                {(
+                  (order.amount -
+                    (order.delivery_data?.delivery_fee ||
+                      order.delivery_fee ||
+                      0)) /
+                  100
+                ).toFixed(2)}
               </span>
             </div>
-            {order.delivery_fee && (
+            {(order.delivery_data?.delivery_fee || order.delivery_fee) && (
               <div className="flex justify-between text-sm">
                 <span>Delivery Fee</span>
-                <span>R{(order.delivery_fee / 100).toFixed(2)}</span>
+                <span>
+                  R
+                  {(
+                    (order.delivery_data?.delivery_fee || order.delivery_fee) /
+                    100
+                  ).toFixed(2)}
+                </span>
               </div>
             )}
             <div className="flex justify-between font-bold text-lg border-t pt-2">
@@ -272,20 +277,29 @@ Thank you for your purchase!
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {order.delivery_address ? (
+          {order.delivery_address ||
+          order.shipping_address ||
+          order.delivery_data?.delivery_address ? (
             <div>
               <div className="flex items-start gap-2 mb-2">
                 <MapPin className="w-4 h-4 text-gray-500 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium">Delivery Address</p>
-                  <p className="text-sm text-gray-600">
-                    {order.delivery_address.street}
-                    <br />
-                    {order.delivery_address.city},{" "}
-                    {order.delivery_address.province}
-                    <br />
-                    {order.delivery_address.postal_code}
-                  </p>
+                  {(() => {
+                    const address =
+                      order.delivery_address ||
+                      order.shipping_address ||
+                      order.delivery_data?.delivery_address;
+                    return (
+                      <p className="text-sm text-gray-600">
+                        {address.street || address.address_line_1}
+                        <br />
+                        {address.city}, {address.province || address.state}
+                        <br />
+                        {address.postal_code || address.zip_code}
+                      </p>
+                    );
+                  })()}
                 </div>
               </div>
             </div>

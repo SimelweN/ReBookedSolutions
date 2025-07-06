@@ -36,17 +36,16 @@ const Cart = () => {
       return;
     }
 
-    setIsProcessing(true);
-    try {
-      // Navigate to integrated checkout page
-      navigate("/checkout");
-      toast.success("Proceeding to checkout...");
-    } catch (error) {
-      console.error("Checkout error:", error);
-      toast.error("Something went wrong. Please try again.");
-    } finally {
-      setIsProcessing(false);
-    }
+    // Show info about new purchase flow
+    toast.info(
+      "Our checkout has been upgraded! Please purchase books individually from the book details page.",
+      {
+        duration: 5000,
+      },
+    );
+
+    // Navigate to books page
+    navigate("/books");
   };
 
   if (items.length === 0) {

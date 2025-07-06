@@ -789,13 +789,7 @@ const Profile = () => {
         />
 
         {/* Quick Fix Button for easy access */}
-        <QuickFixButton
-          onAddressAdded={loadUserAddresses}
-          onBankingAdded={() => {
-            // Refresh banking status
-            loadUserAddresses();
-          }}
-        />
+        <QuickFixButton onAddressAdded={loadUserAddresses} />
       </div>
     </Layout>
   );

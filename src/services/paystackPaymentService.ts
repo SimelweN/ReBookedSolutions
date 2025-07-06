@@ -59,10 +59,20 @@ export interface OrderData {
   items: Array<{
     book_id: string;
     title: string;
+    author?: string;
     price: number;
+    condition?: string;
+    isbn?: string;
+    image_url?: string;
     seller_id: string;
   }>;
   shipping_address?: any;
+  delivery_address?: any;
+  delivery_fee?: number;
+  payment_data?: any;
+  delivery_data?: any;
+  metadata?: any;
+  paid_at?: string;
   created_at: string;
   updated_at: string;
 }

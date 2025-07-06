@@ -10,25 +10,6 @@ import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import { Toaster } from "@/components/ui/sonner";
 import "./App.css";
 
-// Development: Import test utilities (remove in production)
-if (process.env.NODE_ENV === "development") {
-  import("./utils/testOrderSystem").then((module) => {
-    (window as any).testOrderSystem = module.testOrderSystem;
-    (window as any).checkDatabaseStatus = module.checkDatabaseStatus;
-    console.log(
-      "🧪 Order system test utilities loaded. Run testOrderSystem() or checkDatabaseStatus() in console.",
-    );
-  });
-
-  // Load migration verification utility
-  import("./utils/verifyMigration").then((module) => {
-    (window as any).verifyMigration = module.verifyMigration;
-    console.log(
-      "🔍 Migration verification loaded. Run verifyMigration() to check if migration was successful.",
-    );
-  });
-}
-
 // Import critical pages directly
 import IndexPage from "./pages/Index";
 import UniversityInfoPage from "./pages/UniversityInfo";
@@ -43,25 +24,13 @@ const Profile = React.lazy(() => import("./pages/Profile"));
 const CreateListing = React.lazy(() => import("./pages/CreateListing"));
 const Cart = React.lazy(() => import("./pages/Cart"));
 const Checkout = React.lazy(() => import("./pages/Checkout"));
+const NewCheckout = React.lazy(() => import("./pages/NewCheckout"));
 const Shipping = React.lazy(() => import("./pages/Shipping"));
 const ContactUs = React.lazy(() => import("./pages/ContactUs"));
 const FAQ = React.lazy(() => import("./pages/FAQ"));
 
-// QA Dashboards
-const SimpleQADashboard = React.lazy(() => import("./pages/SimpleQADashboard"));
+// QA Dashboard (only keep this for quality assurance)
 const QADashboard = React.lazy(() => import("./pages/QADashboard"));
-const EnhancedQADashboard = React.lazy(
-  () => import("./pages/EnhancedQADashboard"),
-);
-const TestOrderSystemSimple = React.lazy(
-  () => import("./pages/TestOrderSystemSimple"),
-);
-const OrderSystemTests = React.lazy(() => import("./pages/OrderSystemTests"));
-const MigrationVerify = React.lazy(() => import("./pages/MigrationVerify"));
-const DebugEmailVerify = React.lazy(() => import("./pages/DebugEmailVerify"));
-const StudyResources = React.lazy(() => import("./pages/StudyResources"));
-const UserProfile = React.lazy(() => import("./pages/UserProfile"));
-const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
 const UserOrders = React.lazy(() => import("./pages/EnhancedUserOrders"));
 const BankingSetup = React.lazy(() => import("./pages/BankingSetup"));
 const AdminReports = React.lazy(() => import("./pages/AdminReports"));
@@ -83,12 +52,7 @@ const Notifications = React.lazy(() => import("./pages/Notifications"));
 const CheckoutSuccess = React.lazy(() => import("./pages/CheckoutSuccess"));
 const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
 const PaymentCallback = React.lazy(() => import("./pages/PaymentCallback"));
-const EnhancedUniversityProfile = React.lazy(
-  () => import("./pages/EnhancedUniversityProfile"),
-);
-const ModernUniversityProfile = React.lazy(
-  () => import("./pages/ModernUniversityProfile"),
-);
+const UniversityProfile = React.lazy(() => import("./pages/UniversityProfile"));
 
 // Loading component
 const LoadingSpinner = () => (
@@ -184,37 +148,13 @@ function App() {
                         path="/university-info"
                         element={<UniversityInfoPage />}
                       />
-                      <Route
-                        path="/study-resources"
-                        element={
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <StudyResources />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/study-tips"
-                        element={
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <StudyResources />
-                          </Suspense>
-                        }
-                      />
 
-                      {/* University Profile Routes */}
+                      {/* University Profile Route */}
                       <Route
                         path="/university/:id"
                         element={
                           <Suspense fallback={<LoadingSpinner />}>
-                            <EnhancedUniversityProfile />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/university-profile"
-                        element={
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <ModernUniversityProfile />
+                            <UniversityProfile />
                           </Suspense>
                         }
                       />
@@ -308,16 +248,7 @@ function App() {
                           </ProtectedRoute>
                         }
                       />
-                      <Route
-                        path="/user-profile"
-                        element={
-                          <ProtectedRoute>
-                            <Suspense fallback={<LoadingSpinner />}>
-                              <UserProfile />
-                            </Suspense>
-                          </ProtectedRoute>
-                        }
-                      />
+
                       <Route
                         path="/create-listing"
                         element={
@@ -346,6 +277,14 @@ function App() {
                               <Checkout />
                             </Suspense>
                           </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/purchase"
+                        element={
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <NewCheckout />
+                          </Suspense>
                         }
                       />
                       <Route
@@ -386,16 +325,7 @@ function App() {
                           </ProtectedRoute>
                         }
                       />
-                      <Route
-                        path="/activity"
-                        element={
-                          <ProtectedRoute>
-                            <Suspense fallback={<LoadingSpinner />}>
-                              <ActivityLog />
-                            </Suspense>
-                          </ProtectedRoute>
-                        }
-                      />
+
                       <Route
                         path="/my-orders"
                         element={
@@ -437,60 +367,12 @@ function App() {
                         }
                       />
 
-                      {/* QA Dashboard Routes */}
-                      <Route
-                        path="/qa-dashboard"
-                        element={
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <SimpleQADashboard />
-                          </Suspense>
-                        }
-                      />
+                      {/* QA Dashboard (for quality assurance) */}
                       <Route
                         path="/qa"
                         element={
                           <Suspense fallback={<LoadingSpinner />}>
                             <QADashboard />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/qa-enhanced"
-                        element={
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <EnhancedQADashboard />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/test-orders"
-                        element={
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <TestOrderSystemSimple />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/order-tests"
-                        element={
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <OrderSystemTests />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/verify-migration"
-                        element={
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <MigrationVerify />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path="/debug-email-verify"
-                        element={
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <DebugEmailVerify />
                           </Suspense>
                         }
                       />

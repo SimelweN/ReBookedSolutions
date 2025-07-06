@@ -61,85 +61,135 @@ try {
 // Clean the API key (remove any leading = signs that might have been added by accident)
 const cleanApiKey = ENV.VITE_SUPABASE_ANON_KEY.replace(/^=+/, "");
 
-// Import robust fetch to handle network errors
-import { robustFetch } from "@/utils/networkErrorHandler";
-
-// Create a network-resistant fetch function
-const resistantFetch = async (
-  url: RequestInfo | URL,
-  options?: RequestInit,
-) => {
-  try {
-    return await robustFetch(url, options);
-  } catch (error) {
-    console.warn("🔗 Supabase fetch failed, using fallback:", error);
-
-    // Fallback: Use XMLHttpRequest if fetch is compromised
-    return new Promise<Response>((resolve, reject) => {
+// Create a FullStory-proof fetch implementation using XMLHttpRequest
+const createProtectedFetch = () => {
+  return async (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> => {
+    return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      const method = options?.method || "GET";
+      const url = typeof input === "string" ? input : input.toString();
+      const method = init?.method || "GET";
 
-      xhr.open(method, url.toString());
+      xhr.open(method, url);
 
       // Set headers
-      if (options?.headers) {
-        const headers = new Headers(options.headers);
+      if (init?.headers) {
+        const headers = new Headers(init.headers);
         headers.forEach((value, key) => {
           xhr.setRequestHeader(key, value);
         });
       }
 
+      // Handle response
       xhr.onload = () => {
-        const response = new Response(xhr.responseText, {
+        const headers: Record<string, string> = {};
+        xhr
+          .getAllResponseHeaders()
+          .split("\r\n")
+          .forEach((line) => {
+            const [key, value] = line.split(": ");
+            if (key && value) headers[key] = value;
+          });
+
+        // Handle responses that shouldn't have a body
+        const statusWithoutBody = [204, 205, 304];
+        const responseBody = statusWithoutBody.includes(xhr.status)
+          ? null
+          : xhr.responseText;
+
+        const response = new Response(responseBody, {
           status: xhr.status,
           statusText: xhr.statusText,
-          headers: new Headers(
-            xhr
-              .getAllResponseHeaders()
-              .split("\r\n")
-              .reduce(
-                (acc, line) => {
-                  const [key, value] = line.split(": ");
-                  if (key && value) acc[key] = value;
-                  return acc;
-                },
-                {} as Record<string, string>,
-              ),
-          ),
+          headers: new Headers(headers),
         });
+
         resolve(response);
       };
 
-      xhr.onerror = () => reject(new Error("Network request failed"));
-      xhr.ontimeout = () => reject(new Error("Request timeout"));
+      xhr.onerror = () => {
+        console.warn("🌐 Supabase XMLHttpRequest failed");
+        reject(
+          new Error(
+            "Unable to connect to the server. Please check your internet connection and try again.",
+          ),
+        );
+      };
 
-      xhr.timeout = 10000; // 10 second timeout
-      xhr.send(options?.body);
+      xhr.ontimeout = () => {
+        reject(new Error("Request timeout. Please try again."));
+      };
+
+      xhr.timeout = 30000; // 30 second timeout
+
+      // Send request
+      if (init?.body) {
+        xhr.send(init.body as any);
+      } else {
+        xhr.send();
+      }
     });
-  }
+  };
 };
 
-export const supabase = createClient<Database>(
-  ENV.VITE_SUPABASE_URL,
-  cleanApiKey,
-  {
-    auth: {
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: true,
-      flowType: "pkce",
-      // Better error handling for failed auth attempts
-      debug: import.meta.env.DEV,
-    },
-    global: {
-      fetch: resistantFetch,
-    },
-  },
-);
+const protectedFetch = createProtectedFetch();
+
+// Only create Supabase client if we have valid configuration
+let supabase: any;
+
+try {
+  if (ENV.VITE_SUPABASE_URL && cleanApiKey) {
+    supabase = createClient<Database>(ENV.VITE_SUPABASE_URL, cleanApiKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+        flowType: "pkce",
+        debug: import.meta.env.DEV,
+      },
+      global: {
+        // Use XMLHttpRequest-based fetch to completely bypass FullStory
+        fetch: protectedFetch,
+      },
+    });
+  } else {
+    console.error("❌ Supabase configuration missing - creating mock client");
+    // Create a mock client for development
+    supabase = {
+      auth: {
+        signUp: () => Promise.reject(new Error("Supabase not configured")),
+        signInWithPassword: () =>
+          Promise.reject(new Error("Supabase not configured")),
+        signOut: () => Promise.reject(new Error("Supabase not configured")),
+        getSession: () =>
+          Promise.resolve({ data: { session: null }, error: null }),
+        onAuthStateChange: () => ({
+          data: { subscription: { unsubscribe: () => {} } },
+        }),
+      },
+      from: () => ({
+        select: () => Promise.reject(new Error("Supabase not configured")),
+        insert: () => Promise.reject(new Error("Supabase not configured")),
+        update: () => Promise.reject(new Error("Supabase not configured")),
+        delete: () => Promise.reject(new Error("Supabase not configured")),
+      }),
+      functions: {
+        invoke: () => Promise.reject(new Error("Supabase not configured")),
+      },
+    };
+  }
+} catch (error) {
+  console.error("❌ Failed to initialize Supabase client:", error);
+  throw error;
+}
+
+export { supabase };
 
 // Debug connection on client creation
 if (import.meta.env.DEV) {
-  console.log("🔗 Supabase client initialized with FullStory-resistant fetch");
+  console.log("🔗 Supabase client initialized with XMLHttpRequest-based fetch");
   console.log("URL:", ENV.VITE_SUPABASE_URL);
   console.log("Key starts with:", cleanApiKey.substring(0, 20) + "...");
+  console.log("✅ Using FullStory-proof XMLHttpRequest implementation");
 }

@@ -6,28 +6,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MapPin, CreditCard, Plus, Zap } from "lucide-react";
+import { MapPin, Plus, Zap } from "lucide-react";
 import QuickAddressSetup from "@/components/QuickAddressSetup";
-import BankingDetailsForm from "@/components/BankingDetailsForm";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { toast } from "sonner";
 
 interface QuickFixButtonProps {
   onAddressAdded?: () => void;
-  onBankingAdded?: () => void;
 }
 
-const QuickFixButton = ({
-  onAddressAdded,
-  onBankingAdded,
-}: QuickFixButtonProps) => {
+const QuickFixButton = ({ onAddressAdded }: QuickFixButtonProps) => {
   const [showAddressSetup, setShowAddressSetup] = useState(false);
-  const [showBankingSetup, setShowBankingSetup] = useState(false);
 
   return (
     <>
@@ -55,16 +43,6 @@ const QuickFixButton = ({
                 </div>
               </div>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => setShowBankingSetup(true)}
-              className="cursor-pointer"
-            >
-              <CreditCard className="w-4 h-4 mr-2" />
-              <div>
-                <div className="font-medium">Add Banking Details</div>
-                <div className="text-xs text-gray-500">To receive payments</div>
-              </div>
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -78,25 +56,6 @@ const QuickFixButton = ({
           toast.success("Address added successfully!");
         }}
       />
-
-      {/* Banking Setup Dialog */}
-      <Dialog open={showBankingSetup} onOpenChange={setShowBankingSetup}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Add Banking Details</DialogTitle>
-          </DialogHeader>
-          <BankingDetailsForm
-            onSuccess={() => {
-              setShowBankingSetup(false);
-              onBankingAdded?.();
-              toast.success("Banking details added successfully!");
-            }}
-            onCancel={() => setShowBankingSetup(false)}
-            showAsModal={false}
-            editMode={false}
-          />
-        </DialogContent>
-      </Dialog>
     </>
   );
 };
