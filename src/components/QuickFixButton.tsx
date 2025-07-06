@@ -56,25 +56,6 @@ const QuickFixButton = ({ onAddressAdded }: QuickFixButtonProps) => {
           toast.success("Address added successfully!");
         }}
       />
-
-      {/* Banking Setup Dialog */}
-      <Dialog open={showBankingSetup} onOpenChange={setShowBankingSetup}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Add Banking Details</DialogTitle>
-          </DialogHeader>
-          <BankingDetailsForm
-            onSuccess={() => {
-              setShowBankingSetup(false);
-              onBankingAdded?.();
-              toast.success("Banking details added successfully!");
-            }}
-            onCancel={() => setShowBankingSetup(false)}
-            showAsModal={false}
-            editMode={false}
-          />
-        </DialogContent>
-      </Dialog>
     </>
   );
 };
