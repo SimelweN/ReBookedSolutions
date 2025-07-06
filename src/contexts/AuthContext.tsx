@@ -608,32 +608,51 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = useCallback(async () => {
     try {
+      console.log("🚪 [AuthContext] Starting logout process");
       setIsLoading(true);
-      const { error } = await supabase.auth.signOut();
+
+      // Clear all local state immediately
+      setUser(null);
+      setProfile(null);
+      setSession(null);
+
+      // Clear all browser storage
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // Clear any cookies
+      document.cookie.split(";").forEach((c) => {
+        const eqPos = c.indexOf("=");
+        const name = eqPos > -1 ? c.substr(0, eqPos) : c;
+        document.cookie =
+          name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+      });
+
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut({ scope: "global" });
 
       // Handle specific case where there's no session to sign out from
       if (error && error.message === "Auth session missing!") {
         console.log("ℹ️ [AuthContext] No active session to sign out from");
         // This is actually fine - user is already signed out
       } else if (error) {
-        throw error;
+        console.warn("⚠️ [AuthContext] Logout error:", error);
+        // Don't throw - we still want to complete the logout process
       }
 
-      // Always clear local state regardless of signOut result
-      setUser(null);
-      setProfile(null);
-      setSession(null);
+      console.log("✅ [AuthContext] Logout completed successfully");
     } catch (error) {
       // For logout, we still want to clear local state even if signOut fails
       console.warn(
         "⚠️ [AuthContext] Logout error, but clearing local state:",
         error,
       );
-      setUser(null);
-      setProfile(null);
-      setSession(null);
     } finally {
       setIsLoading(false);
+      // Force a page reload to ensure clean state
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 100);
     }
   }, []);
 
