@@ -110,7 +110,7 @@ const BookGrid = ({
 
               {isUnavailable ? (
                 <div className="block flex-1">
-                  <div className="relative h-48 overflow-hidden">
+                  <div className="relative h-48 md:h-56 lg:h-64 overflow-hidden">
                     <img
                       src={book.imageUrl}
                       alt={book.title}
@@ -201,7 +201,7 @@ const BookGrid = ({
                     console.log("Navigating to book:", book.id);
                   }}
                 >
-                  <div className="relative h-48 overflow-hidden">
+                  <div className="relative h-48 md:h-56 lg:h-64 overflow-hidden">
                     <img
                       src={book.imageUrl}
                       alt={book.title}
