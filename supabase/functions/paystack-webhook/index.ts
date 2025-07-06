@@ -134,8 +134,14 @@ async function handleSuccessfulPayment(supabase: any, paymentData: any) {
       .update({
         status: "paid",
         paid_at: new Date().toISOString(),
-        payment_held: true, // Hold payment until courier collection
         updated_at: new Date().toISOString(),
+        payment_data: {
+          ...order.payment_data,
+          payment_verified: true,
+          payment_completed_at: new Date().toISOString(),
+          paystack_amount: paymentData.amount,
+          paystack_gateway_response: paymentData.gateway_response,
+        },
       })
       .eq("id", order.id);
 
