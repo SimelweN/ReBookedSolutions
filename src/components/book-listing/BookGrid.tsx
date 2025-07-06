@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -27,6 +27,7 @@ const BookGrid = ({
   currentUserId,
   onCommitBook,
 }: BookGridProps) => {
+  const navigate = useNavigate();
   const handleCommit = async (bookId: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -211,14 +212,16 @@ const BookGrid = ({
                       <div className="bg-white px-2 py-1 rounded-full text-sm font-semibold text-book-800">
                         R{book.price.toLocaleString()}
                       </div>
-                      <Link
-                        to={`/seller/${book.seller.id}`}
-                        onClick={(e) => e.stopPropagation()}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/seller/${book.seller.id}`);
+                        }}
                         className="bg-book-600 hover:bg-book-700 text-white px-2 py-1 rounded-full text-xs font-medium transition-colors duration-200 flex items-center gap-1 shadow-sm"
                       >
                         <Store className="h-3 w-3" />
                         ReBooked Mini
-                      </Link>
+                      </button>
                     </div>
                     {book.sold && (
                       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
