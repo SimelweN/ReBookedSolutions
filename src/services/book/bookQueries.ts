@@ -407,9 +407,13 @@ export const getBooksByUser = async (userId: string): Promise<Book[]> => {
         }
 
         // Map books using the seller profile
-        const books = booksData.map((bookData) =>
-          mapBookFromDatabase(bookData, seller),
-        );
+        const books = booksData.map((bookData) => {
+          const bookDataWithProfile = {
+            ...bookData,
+            profiles: seller,
+          };
+          return mapBookFromDatabase(bookDataWithProfile);
+        });
 
         console.log(
           `✅ Successfully fetched ${books.length} books for user ${userId}`,
