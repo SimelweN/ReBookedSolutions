@@ -25,6 +25,7 @@ interface Address {
   city: string;
   province: string;
   postalCode: string;
+  instructions?: string;
 }
 
 interface ModernAddressInputProps {
@@ -62,6 +63,7 @@ const ModernAddressInput: React.FC<ModernAddressInputProps> = ({
       city: "",
       province: "",
       postalCode: "",
+      instructions: "",
     },
   );
 
@@ -76,19 +78,42 @@ const ModernAddressInput: React.FC<ModernAddressInputProps> = ({
   const handleGoogleMapsSelect = (addressData: AddressData) => {
     console.log("🎯 Google Maps address selected:", addressData);
 
+    // Clean up the address to avoid confusing municipal information
+    let cleanStreet =
+      addressData.street || addressData.formattedAddress.split(",")[0] || "";
+    let cleanCity = addressData.city || "";
+
+    // Remove municipal information from city names
+    cleanCity = cleanCity
+      .replace(/Metropolitan Municipality/gi, "")
+      .replace(/Municipality/gi, "")
+      .replace(/City of /gi, "")
+      .replace(/,.*$/gi, "") // Remove everything after first comma
+      .trim();
+
     const newAddress: Address = {
-      street:
-        addressData.street || addressData.formattedAddress.split(",")[0] || "",
-      city: addressData.city || "",
+      street: cleanStreet,
+      city: cleanCity,
       province: addressData.province || "",
       postalCode: addressData.postalCode || "",
+      instructions: address.instructions || "", // Preserve existing instructions
     };
 
-    console.log("📝 Processed address:", newAddress);
+    console.log("📝 Processed clean address:", newAddress);
 
     setAddress(newAddress);
     setHasSelectedAddress(true);
-    onAddressUpdate(newAddress);
+
+    // Convert to backend-compatible format
+    const backendCompatibleAddress = {
+      ...newAddress,
+      streetAddress: newAddress.street, // Add streetAddress for backend compatibility
+      complex: "", // Default values for backend compatibility
+      unitNumber: "",
+      suburb: "",
+    };
+
+    onAddressUpdate(backendCompatibleAddress);
   };
 
   const handleManualUpdate = (field: keyof Address, value: string) => {
@@ -103,7 +128,16 @@ const ModernAddressInput: React.FC<ModernAddressInputProps> = ({
       setHasSelectedAddress(true);
     }
 
-    onAddressUpdate(newAddress);
+    // Convert to backend-compatible format
+    const backendCompatibleAddress = {
+      ...newAddress,
+      streetAddress: newAddress.street, // Add streetAddress for backend compatibility
+      complex: "", // Default values for backend compatibility
+      unitNumber: "",
+      suburb: "",
+    };
+
+    onAddressUpdate(backendCompatibleAddress);
   };
 
   const formatAddressForDisplay = (addr: Address) => {
@@ -135,16 +169,16 @@ const ModernAddressInput: React.FC<ModernAddressInputProps> = ({
           </Alert>
         )}
 
-        {/* Toggle between Google Maps and Manual Entry */}
+        {/* Simple toggle without advertising Google Maps */}
         {hasGoogleMapsKey && (
-          <div className="flex items-center space-x-2 p-3 bg-blue-50 rounded-lg">
+          <div className="flex items-center space-x-2 mb-4">
             <Checkbox
               id="manual-entry"
               checked={useManualEntry}
               onCheckedChange={(checked) => setUseManualEntry(checked === true)}
             />
             <Label htmlFor="manual-entry" className="text-sm">
-              Enter address manually instead of using Google Maps
+              Enter address manually
             </Label>
           </div>
         )}
@@ -221,6 +255,26 @@ const ModernAddressInput: React.FC<ModernAddressInputProps> = ({
               </select>
             </div>
 
+            <div>
+              <Label htmlFor="instructions">
+                Notes / Additional Instructions
+              </Label>
+              <textarea
+                id="instructions"
+                placeholder="e.g., Gate code 1234, Unit 5B, Ring bell, Collection from side entrance..."
+                value={address.instructions || ""}
+                onChange={(e) =>
+                  handleManualUpdate("instructions", e.target.value)
+                }
+                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
+                rows={3}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Optional: Add pickup instructions, gate codes, unit numbers, or
+                other helpful details for buyers
+              </p>
+            </div>
+
             {error && <p className="text-sm text-red-500">{error}</p>}
           </div>
         )}
@@ -235,6 +289,29 @@ const ModernAddressInput: React.FC<ModernAddressInputProps> = ({
               {formatAddressForDisplay(address)}
             </AlertDescription>
           </Alert>
+        )}
+
+        {/* Instructions field - always show when address is selected */}
+        {hasSelectedAddress && (
+          <div>
+            <Label htmlFor="instructions">
+              Additional Instructions (Optional)
+            </Label>
+            <textarea
+              id="instructions"
+              placeholder="e.g., Gate code 1234, Unit 5B, Ring bell, Collection from side entrance..."
+              value={address.instructions || ""}
+              onChange={(e) =>
+                handleManualUpdate("instructions", e.target.value)
+              }
+              className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none mt-2"
+              rows={3}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Add pickup instructions, gate codes, unit numbers, or other
+              helpful details for buyers
+            </p>
+          </div>
         )}
 
         {/* Warning if incomplete */}

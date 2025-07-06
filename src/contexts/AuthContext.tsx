@@ -570,11 +570,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const login = useCallback(
     async (email: string, password: string) => {
       try {
+        console.log("🔐 AuthContext: Starting login process");
         setIsLoading(true);
         const result = await loginUser(email, password);
+        console.log("🔐 AuthContext: loginUser completed, result:", result);
+
+        // Check if we have a session after login
+        const { data: sessionData } = await supabase.auth.getSession();
+        console.log("🔐 AuthContext: Session after login:", sessionData);
+
         // Auth state change will be handled by the listener
         return result;
       } catch (error) {
+        console.log("🔐 AuthContext: Login error:", error);
         handleError(error, "Login");
       } finally {
         setIsLoading(false);

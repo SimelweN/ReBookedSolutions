@@ -69,7 +69,7 @@ export interface OrderData {
 
 export class PaystackPaymentService {
   private static readonly PAYSTACK_PUBLIC_KEY =
-    "pk_test_8eeb9c9b5b6c7d1c8e5f5e7b8a9c0d1e2f3g4h5"; // fallback for development
+    import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || "";
 
   /**
    * Check if Paystack library is available and wait for it if needed
@@ -258,44 +258,46 @@ export class PaystackPaymentService {
 
     console.log("🔍 Initializing Paystack payment...");
 
-    // Check if PaystackPop is available
-    if (!window.PaystackPop) {
-      console.error("❌ Paystack library not loaded");
+    // Ensure Paystack is loaded
+    const isLoaded = await this.ensurePaystackLoaded();
+    if (!isLoaded) {
       throw new Error(
         "Paystack payment library not available - all loading methods failed",
       );
     }
 
-    console.log(`✅ Using successful method: ${successfulMethod.method}`);
-
-    // Get PaystackPop based on successful method
+    // Get PaystackPop - try multiple sources
     let PaystackPop;
+    let loadMethod = "Unknown";
 
-    if (successfulMethod.method === "NPM Package Import") {
-      try {
-        const paystackModule = await import("@paystack/inline-js");
-        if (paystackModule.PaystackPop) {
-          PaystackPop = paystackModule.PaystackPop;
-        } else if (paystackModule.default) {
-          PaystackPop = paystackModule.default;
-        } else if (typeof paystackModule === "function") {
-          PaystackPop = paystackModule;
-        }
-      } catch (error) {
-        console.error("NPM package import failed in production:", error);
+    // Try NPM package import first
+    try {
+      const paystackModule = await import("@paystack/inline-js");
+      if (paystackModule.PaystackPop) {
+        PaystackPop = paystackModule.PaystackPop;
+        loadMethod = "NPM Package Import (PaystackPop)";
+      } else if (paystackModule.default) {
+        PaystackPop = paystackModule.default;
+        loadMethod = "NPM Package Import (default)";
+      } else if (typeof paystackModule === "function") {
+        PaystackPop = paystackModule;
+        loadMethod = "NPM Package Import (function)";
       }
+    } catch (error) {
+      console.log("NPM package import not available, trying globals:", error);
     }
 
-    // Try global objects
-    if (!PaystackPop) {
+    // Try global PaystackPop
+    if (!PaystackPop && (window as any).PaystackPop) {
       PaystackPop = (window as any).PaystackPop;
+      loadMethod = "Global PaystackPop";
     }
 
     // Fallback to global Paystack object
     if (!PaystackPop) {
       const globalPaystack = (window as any).Paystack;
       if (globalPaystack && typeof globalPaystack.setup === "function") {
-        console.log("Using global Paystack object as fallback");
+        loadMethod = "Global Paystack fallback";
         PaystackPop = class {
           newTransaction(config: any) {
             globalPaystack.setup(config);
@@ -309,6 +311,7 @@ export class PaystackPaymentService {
       throw new Error("Paystack payment library not available");
     }
 
+    console.log(`✅ Using successful method: ${loadMethod}`);
     console.log("✅ PaystackPop ready:", typeof PaystackPop);
 
     return new Promise((resolve, reject) => {

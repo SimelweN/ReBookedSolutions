@@ -34,6 +34,8 @@ export const mapBookFromDatabase = (bookData: BookQueryResult): Book => {
     backCover: bookData.back_cover,
     insidePages: bookData.inside_pages,
     sold: bookData.sold || false,
+    availability:
+      bookData.availability || (bookData.sold ? "sold" : "available"),
     createdAt: bookData.created_at || new Date().toISOString(),
     grade: bookData.grade,
     universityYear: bookData.university_year,

@@ -119,6 +119,17 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
     reset,
   } = useForm<ShippingFormData>({
     resolver: zodResolver(shippingSchema),
+    mode: "onSubmit",
+    defaultValues: {
+      recipient_name: "",
+      phone: "",
+      street_address: "",
+      apartment: "",
+      city: "",
+      province: "",
+      postal_code: "",
+      special_instructions: "",
+    },
   });
 
   const watchedValues = watch();
@@ -169,8 +180,14 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
     try {
       const userInfo = await UserAutofillService.getUserInfo();
-      if (userInfo && !manualEntries.name && !watchedValues.recipient_name) {
-        setValue("recipient_name", userInfo.name);
+      if (
+        userInfo &&
+        userInfo.name &&
+        !manualEntries.name &&
+        (!watchedValues.recipient_name ||
+          watchedValues.recipient_name.trim() === "")
+      ) {
+        setValue("recipient_name", userInfo.name, { shouldValidate: true });
       }
       setHasAutofilled(true);
     } catch (error) {
@@ -234,8 +251,13 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
     postal_code?: string;
     country?: string;
   }) => {
-    setValue("recipient_name", address.name || "");
-    setValue("phone", address.phone || "");
+    // Only set values if they exist and are not empty, to avoid overriding autofill or user input
+    if (address.name && address.name.trim()) {
+      setValue("recipient_name", address.name);
+    }
+    if (address.phone && address.phone.trim()) {
+      setValue("phone", address.phone);
+    }
     setValue(
       "street_address",
       address.streetAddress || address.street_address || "",
@@ -414,6 +436,13 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
     console.log("🔥 FORM SUBMIT TRIGGERED!");
     console.log("📋 Form data:", data);
     console.log("❌ Current errors:", errors);
+    console.log("👀 Watched values:", watchedValues);
+    console.log(
+      "📝 Recipient name value:",
+      data.recipient_name,
+      "Length:",
+      data.recipient_name?.length,
+    );
     console.log("🚛 Delivery options:", deliveryOptions);
 
     // Check for form validation errors
@@ -423,6 +452,13 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
       const errorFields = Object.keys(errors);
       toast.error(`Please fix these fields: ${errorFields.join(", ")}`);
+      return;
+    }
+
+    // Additional validation check for critical fields
+    if (!data.recipient_name || data.recipient_name.trim() === "") {
+      console.error("❌ Critical validation: recipient_name is empty");
+      toast.error("Please enter the recipient's full name");
       return;
     }
 
@@ -535,10 +571,19 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
               },
             );
 
-            console.error("Detailed errors:", errorMessages);
-            toast.error(
-              `Please fix these fields: ${Object.keys(validationErrors).join(", ")}`,
-            );
+            console.error("Detailed errors:", errorMessages.join(", "));
+
+            // Find the first required field that's empty
+            const firstError = Object.entries(validationErrors)[0];
+            if (firstError && firstError[1]?.message) {
+              toast.error(`Please complete: ${firstError[1].message}`, {
+                description: "All required fields must be filled",
+              });
+            } else {
+              toast.error(
+                `Please fix these fields: ${Object.keys(validationErrors).join(", ")}`,
+              );
+            }
           })}
           className="space-y-6"
         >
@@ -610,6 +655,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
                       id="recipient_name"
                       {...register("recipient_name")}
                       placeholder="Enter recipient's full name"
+                      className={errors.recipient_name ? "border-red-500" : ""}
                       onChange={(e) => {
                         register("recipient_name").onChange(e);
                         if (!manualEntries.name) {
@@ -630,6 +676,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
                       id="phone"
                       {...register("phone")}
                       placeholder="e.g., 081 234 5678"
+                      className={errors.phone ? "border-red-500" : ""}
                     />
                     {errors.phone && (
                       <p className="text-sm text-red-600 mt-1">

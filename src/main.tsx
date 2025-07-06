@@ -3,6 +3,9 @@ import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 
+// Import ResizeObserver error suppression
+import "./utils/resizeObserverFix";
+
 console.log("🚀 ReBooked Solutions - Starting...");
 
 // Create query client with basic settings
@@ -17,8 +20,8 @@ const queryClient = new QueryClient({
   },
 });
 
-// Import the working SimpleApp
-import SimpleApp from "./SimpleApp";
+// Import the simplified App
+import App from "./App";
 
 // Get root element
 const rootElement = document.getElementById("root");
@@ -34,7 +37,7 @@ try {
   root.render(
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
-        <SimpleApp />
+        <App />
       </QueryClientProvider>
     </React.StrictMode>,
   );

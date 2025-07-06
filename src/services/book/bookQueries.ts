@@ -220,6 +220,8 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
             frontCover: bookData.front_cover || "",
             backCover: bookData.back_cover || "",
             sold: bookData.sold || false,
+            availability:
+              bookData.availability || (bookData.sold ? "sold" : "available"),
             createdAt: bookData.created_at || new Date().toISOString(),
             sellerId: bookData.seller_id,
             seller: {
@@ -314,14 +316,17 @@ export const getBookById = async (id: string): Promise<Book | null> => {
           // Continue with fallback seller data instead of failing
         }
 
-        // Use mapBookFromDatabase with fallback seller data
-        const fallbackSeller = {
-          id: bookData.seller_id,
-          name: "Unknown Seller",
-          email: "unknown@example.com",
+        // Add profile data to bookData for mapBookFromDatabase
+        const bookDataWithProfile = {
+          ...bookData,
+          profiles: sellerProfile || {
+            id: bookData.seller_id,
+            name: "Unknown Seller",
+            email: "unknown@example.com",
+          },
         };
 
-        return mapBookFromDatabase(bookData, sellerProfile || fallbackSeller);
+        return mapBookFromDatabase(bookDataWithProfile);
       },
       1,
       1000,
@@ -402,9 +407,13 @@ export const getBooksByUser = async (userId: string): Promise<Book[]> => {
         }
 
         // Map books using the seller profile
-        const books = booksData.map((bookData) =>
-          mapBookFromDatabase(bookData, seller),
-        );
+        const books = booksData.map((bookData) => {
+          const bookDataWithProfile = {
+            ...bookData,
+            profiles: seller,
+          };
+          return mapBookFromDatabase(bookDataWithProfile);
+        });
 
         console.log(
           `✅ Successfully fetched ${books.length} books for user ${userId}`,

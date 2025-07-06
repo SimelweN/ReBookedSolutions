@@ -17,7 +17,11 @@ import {
   Key,
   UserPlus,
   RefreshCw,
+  TestTube,
 } from "lucide-react";
+import { testSupabaseConnection, testSupabaseAuth } from "@/utils/supabaseTest";
+import { testDatabaseSchema } from "@/utils/schemaTest";
+import { testImplementation } from "@/utils/implementationTest";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -94,9 +98,17 @@ const Login = () => {
         throw new Error("Email and password are required");
       }
 
-      console.log("Attempting login with:", email);
-      await login(email, password);
-      console.log("Login successful, navigating to home");
+      console.log("🔐 Attempting login with:", email);
+      console.log("🔐 Auth context state before login:", { isAuthenticated });
+
+      const result = await login(email, password);
+      console.log("🔐 Login result:", result);
+
+      // Wait a moment for auth state to update
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      console.log("🔐 Auth context state after login:", { isAuthenticated });
+      console.log("🔐 Navigating to home page");
       navigate("/", { replace: true });
     } catch (error: unknown) {
       // Comprehensive error message extraction
@@ -336,6 +348,98 @@ const Login = () => {
         <div className="w-full max-w-md">
           {renderErrorCard()}
 
+          {/* Development Test Buttons */}
+          {import.meta.env.DEV && (
+            <Card className="mb-4 bg-yellow-50 border-yellow-200">
+              <CardContent className="pt-4">
+                <div className="text-sm text-yellow-800 mb-2">
+                  🔧 Development Tools
+                </div>
+                <div className="space-y-2">
+                  <Button
+                    onClick={async () => {
+                      const result = await testSupabaseConnection();
+                      toast(
+                        result ? "✅ Connection OK" : "❌ Connection Failed",
+                      );
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
+                    <TestTube className="h-4 w-4 mr-2" />
+                    Test Supabase Connection
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      if (!email || !password) {
+                        toast.error("Enter email and password first");
+                        return;
+                      }
+                      const result = await testSupabaseAuth(email, password);
+                      toast(
+                        result.success
+                          ? "✅ Auth Test OK"
+                          : "❌ Auth Test Failed",
+                      );
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
+                    <TestTube className="h-4 w-4 mr-2" />
+                    Test Direct Auth
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      const result = await testDatabaseSchema();
+                      console.log("Schema test result:", result);
+                      if (result.error) {
+                        toast.error(`Schema test failed: ${result.error}`);
+                      } else {
+                        toast.success("✅ All database columns exist!");
+                      }
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
+                    <TestTube className="h-4 w-4 mr-2" />
+                    Test Database Schema
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      toast.info(
+                        "🔍 Running comprehensive implementation test...",
+                      );
+                      const results = await testImplementation();
+                      console.log("Implementation test results:", results);
+
+                      const allPassed = Object.values(results).every(
+                        (r) => r.passed,
+                      );
+                      if (allPassed) {
+                        toast.success("🎉 All implementation tests passed!");
+                      } else {
+                        const failed = Object.entries(results)
+                          .filter(([_, r]) => !r.passed)
+                          .map(([name, r]) => `${name}: ${r.error}`)
+                          .join(", ");
+                        toast.error(`❌ Tests failed: ${failed}`);
+                      }
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
+                    <TestTube className="h-4 w-4 mr-2" />
+                    Run Full Implementation Test
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
             <div className="p-6 sm:p-8">
               <h1 className="text-2xl font-bold text-center text-gray-800 mb-8">
@@ -389,7 +493,7 @@ const Login = () => {
                     <Input
                       id="password"
                       type="password"
-                      placeholder="••••••••"
+                      placeholder="•••���••••"
                       className="pl-10 h-12 border-gray-300 focus:border-book-500 focus:ring-book-500 rounded-lg"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
