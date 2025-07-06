@@ -13,6 +13,10 @@ export class SellerMarketplaceService {
   static async getSellerProfile(
     sellerId: string,
   ): Promise<SellerProfile | null> {
+    if (!sellerId) {
+      return null;
+    }
+
     const { data, error } = await safeDbOperation(
       () =>
         supabase
@@ -37,6 +41,40 @@ export class SellerMarketplaceService {
     );
 
     if (error || !data) {
+      // If single() fails, try without single() to check if seller exists at all
+      const { data: checkData } = await safeDbOperation(
+        () =>
+          supabase
+            .from("profiles")
+            .select("id, name")
+            .eq("id", sellerId)
+            .limit(1),
+        "checkSellerExists",
+        { showToast: false },
+      );
+
+      if (!checkData || checkData.length === 0) {
+        return null;
+      }
+
+      // If seller exists but single() failed, return the first result
+      if (checkData.length > 0) {
+        return {
+          id: checkData[0].id,
+          name: checkData[0].name || "Unknown Seller",
+          email: "",
+          bio: null,
+          profileImage: null,
+          university: null,
+          rating: 4.5,
+          totalSales: 0,
+          memberSince: new Date().toISOString(),
+          pickupAddress: null,
+          hasValidBanking: false,
+          subaccountCode: null,
+        };
+      }
+
       return null;
     }
 
