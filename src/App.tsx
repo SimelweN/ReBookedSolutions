@@ -51,6 +51,12 @@ const Notifications = React.lazy(() => import("./pages/Notifications"));
 const CheckoutSuccess = React.lazy(() => import("./pages/CheckoutSuccess"));
 const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
 const PaymentCallback = React.lazy(() => import("./pages/PaymentCallback"));
+const EnhancedUniversityProfile = React.lazy(
+  () => import("./pages/EnhancedUniversityProfile"),
+);
+const ModernUniversityProfile = React.lazy(
+  () => import("./pages/ModernUniversityProfile"),
+);
 
 // Loading component
 const LoadingSpinner = () => (
@@ -168,7 +174,7 @@ function App() {
                         path="/university/:id"
                         element={
                           <Suspense fallback={<LoadingSpinner />}>
-                            <React.lazy(() => import("./pages/EnhancedUniversityProfile")) />
+                            <EnhancedUniversityProfile />
                           </Suspense>
                         }
                       />
@@ -176,7 +182,7 @@ function App() {
                         path="/university-profile"
                         element={
                           <Suspense fallback={<LoadingSpinner />}>
-                            <React.lazy(() => import("./pages/ModernUniversityProfile")) />
+                            <ModernUniversityProfile />
                           </Suspense>
                         }
                       />
