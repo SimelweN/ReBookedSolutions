@@ -67,19 +67,27 @@ const BookDetails = () => {
         return;
       }
 
+      // Debug book data before navigation
+      console.log("BookDetails - Original book data:", book);
+      console.log("BookDetails - seller_id:", book.seller_id);
+
+      const bookForPurchase = {
+        id: book.id,
+        title: book.title,
+        author: book.author,
+        price: book.price,
+        condition: book.condition,
+        isbn: book.isbn,
+        image_url: book.image_url,
+        seller_id: book.seller_id,
+      };
+
+      console.log("BookDetails - Book data for purchase:", bookForPurchase);
+
       // Navigate to new checkout flow with book data
       navigate("/purchase", {
         state: {
-          book: {
-            id: book.id,
-            title: book.title,
-            author: book.author,
-            price: book.price,
-            condition: book.condition,
-            isbn: book.isbn,
-            image_url: book.image_url,
-            seller_id: book.seller_id,
-          },
+          book: bookForPurchase,
         },
       });
     } catch (error) {
