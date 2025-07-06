@@ -203,14 +203,10 @@ const ModernAddressAutocomplete: React.FC<ModernAddressAutocompleteProps> = ({
 
       {/* Loading State */}
       {!ready && (
-        <Alert className="border-blue-200 bg-blue-50">
-          <Loader2 className="h-4 w-4 text-blue-600 animate-spin" />
-          <AlertDescription className="text-blue-800">
-            <strong>Loading Google Maps...</strong>
-            <br />
-            Please wait while we initialize the address search.
-          </AlertDescription>
-        </Alert>
+        <div className="flex items-center gap-2 text-gray-500 text-sm">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span>Loading address search...</span>
+        </div>
       )}
     </div>
   );
