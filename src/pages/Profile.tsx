@@ -7,6 +7,7 @@ import DeleteProfileDialog from "@/components/DeleteProfileDialog";
 import ReportIssueDialog from "@/components/ReportIssueDialog";
 import HowItWorksDialog from "@/components/HowItWorksDialog";
 import CommitSystemExplainer from "@/components/CommitSystemExplainer";
+import SimplifiedAddressDialog from "@/components/SimplifiedAddressDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -86,6 +87,8 @@ const Profile = () => {
   const [deletingBooks, setDeletingBooks] = useState<Set<string>>(new Set());
   const [isTemporarilyAway, setIsTemporarilyAway] = useState(false);
   const [showDangerZone, setShowDangerZone] = useState(false);
+  const [isAddressDialogOpen, setIsAddressDialogOpen] = useState(false);
+  const [userAddresses, setUserAddresses] = useState(null);
   const [needsBankingSetup, setNeedsBankingSetup] = useState(false);
   const [showBankingPrompt, setShowBankingPrompt] = useState(false);
   const [showBecomeSellerGuide, setShowBecomeSellerGuide] = useState(false);
@@ -97,13 +100,34 @@ const Profile = () => {
     if (!user?.id) return;
 
     try {
-      const data = await getUserAddresses(user.id);
-      setAddressData(data);
+      const { getSimpleUserAddresses } = await import(
+        "@/services/simplifiedAddressService"
+      );
+      const data = await getSimpleUserAddresses(user.id);
+      setUserAddresses(data);
+
+      // Convert to old format for compatibility
+      if (data.pickup_address) {
+        setAddressData({
+          id: user.id,
+          complex: data.pickup_address.complex || "",
+          unit_number: data.pickup_address.unitNumber || "",
+          street_address: data.pickup_address.streetAddress || "",
+          suburb: data.pickup_address.suburb || "",
+          city: data.pickup_address.city || "",
+          province: data.pickup_address.province || "",
+          postal_code: data.pickup_address.postalCode || "",
+        });
+      } else {
+        setAddressData(null);
+      }
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
       console.error("Error loading addresses:", errorMessage);
       toast.error("Failed to load addresses");
+      setUserAddresses(null);
+      setAddressData(null);
     }
   }, [user?.id]);
 
@@ -487,7 +511,7 @@ const Profile = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setShowQuickAddressSetup(true)}
+                          onClick={() => setIsAddressDialogOpen(true)}
                           className="border-orange-300 text-orange-700 hover:bg-orange-100 mt-2"
                         >
                           Add Pickup Address
@@ -786,6 +810,23 @@ const Profile = () => {
           }}
           title="Add Pickup Address"
           description="Buyers need to know where to collect books from you."
+        />
+
+        <SimplifiedAddressDialog
+          isOpen={isAddressDialogOpen}
+          onClose={() => setIsAddressDialogOpen(false)}
+          userId={user?.id || ""}
+          initialAddresses={userAddresses}
+          onSuccess={async () => {
+            try {
+              console.log("Address save success, reloading addresses...");
+              await loadUserAddresses();
+              console.log("Addresses reloaded successfully");
+            } catch (error) {
+              console.error("Error reloading addresses:", error);
+              toast.error("Addresses saved but failed to refresh display");
+            }
+          }}
         />
 
         {/* Quick Fix Button for easy access */}

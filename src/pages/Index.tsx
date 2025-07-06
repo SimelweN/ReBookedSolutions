@@ -25,7 +25,7 @@ const Index = React.memo(() => {
     () => [
       { name: "Computer Science", icon: "💻" },
       { name: "Mathematics", icon: "📊" },
-      { name: "Biology", icon: "���" },
+      { name: "Biology", icon: "🧬" },
       { name: "Chemistry", icon: "⚗️" },
       { name: "Physics", icon: "🔭" },
       { name: "Economics", icon: "📈" },

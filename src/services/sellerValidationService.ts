@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
-
 import { getUserAddresses } from "./addressService";
+import { SellerProfileService } from "./sellerProfileService";
 
 export interface SellerValidationResult {
   canSell: boolean;
@@ -12,6 +12,57 @@ export interface SellerValidationResult {
 }
 
 export class SellerValidationService {
+  /**
+   * Enhanced validation using new database functions
+   */
+  static async validateSellerRequirementsEnhanced(
+    userId: string,
+  ): Promise<SellerValidationResult> {
+    try {
+      const isReady = await SellerProfileService.isSellerReadyForOrders(userId);
+      const profile =
+        await SellerProfileService.getSellerProfileForDelivery(userId);
+
+      const missingRequirements: string[] = [];
+      let hasAddress = false;
+      let hasBankingDetails = false;
+
+      if (profile) {
+        hasAddress = !!profile.pickup_address;
+        hasBankingDetails = profile.has_subaccount;
+
+        if (!hasAddress) {
+          missingRequirements.push(
+            "A valid pickup address is required. Buyers need to know where to collect books from.",
+          );
+        }
+
+        if (!hasBankingDetails) {
+          missingRequirements.push(
+            "Banking setup is required to receive payments. Complete your banking details and Paystack subaccount setup via our secure banking portal.",
+          );
+        }
+      } else {
+        missingRequirements.push(
+          "Unable to verify seller profile. Please try again.",
+        );
+      }
+
+      return {
+        canSell: isReady,
+        missingRequirements,
+        hasAddress,
+        hasBankingDetails,
+        addressDetails: profile?.pickup_address,
+        bankingDetails: null, // We don't expose sensitive banking details
+      };
+    } catch (error) {
+      console.error("Error in enhanced seller validation:", error);
+      // Fallback to the original method
+      return this.validateSellerRequirements(userId);
+    }
+  }
+
   /**
    * Comprehensive check to determine if user can list/sell books
    */
@@ -211,7 +262,7 @@ export class SellerValidationService {
   }
 
   /**
-   * Check if user can proceed with creating a new listing
+   * Check if user can proceed with creating a new listing (uses enhanced validation)
    */
   static async canCreateListing(userId: string): Promise<{
     allowed: boolean;
@@ -222,7 +273,8 @@ export class SellerValidationService {
       actionUrl: string;
     };
   }> {
-    const validation = await this.validateSellerRequirements(userId);
+    // Use enhanced validation by default, with fallback
+    const validation = await this.validateSellerRequirementsEnhanced(userId);
 
     if (validation.canSell) {
       return { allowed: true };
@@ -236,6 +288,18 @@ export class SellerValidationService {
       allowed: false,
       blockMessage,
     };
+  }
+
+  /**
+   * Quick check using new database functions
+   */
+  static async canCreateListingQuick(userId: string): Promise<boolean> {
+    try {
+      return await SellerProfileService.isSellerReadyForOrders(userId);
+    } catch (error) {
+      console.error("Error in quick seller check:", error);
+      return false;
+    }
   }
 
   /**

@@ -290,14 +290,10 @@ const Notifications = () => {
               <Card
                 key={notification.id}
                 className={`
-                  transition-all duration-200 relative
+                  transition-all duration-200
                   ${!notification.read ? "bg-blue-50 border-blue-200 shadow-md" : "shadow-sm"}
-                  hover:shadow-lg z-10
+                  hover:shadow-lg
                 `}
-                style={{
-                  zIndex: formattedNotifications.length - index + 10,
-                  position: "relative",
-                }}
               >
                 <CardHeader className="pb-3 p-4 sm:p-6">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
@@ -315,7 +311,7 @@ const Notifications = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-end gap-2 flex-shrink-0 relative z-20">
+                    <div className="flex items-center justify-end gap-2 flex-shrink-0">
                       {!notification.read && (
                         <Button
                           variant="ghost"

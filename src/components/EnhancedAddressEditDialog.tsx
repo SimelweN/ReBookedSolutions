@@ -260,7 +260,7 @@ const EnhancedAddressEditDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[85vh] overflow-y-auto sm:w-full">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Navigation className="h-5 w-5 text-book-600" />
@@ -330,9 +330,9 @@ const EnhancedAddressEditDialog = ({
 
                 {pickupCoords && (
                   <div className="space-y-3">
-                    <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                      <p className="text-sm text-green-800">
-                        <strong>✅ Pickup Address Selected:</strong>
+                    <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                      <p className="text-sm text-gray-700">
+                        <strong>Pickup Address:</strong>
                         <br />
                         {formatAddressForDisplay(pickupAddress)}
                       </p>
@@ -455,9 +455,9 @@ const EnhancedAddressEditDialog = ({
 
                   {shippingCoords && (
                     <div className="space-y-3">
-                      <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                        <p className="text-sm text-green-800">
-                          <strong>✅ Shipping Address Selected:</strong>
+                      <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                        <p className="text-sm text-gray-700">
+                          <strong>Shipping Address:</strong>
                           <br />
                           {formatAddressForDisplay(shippingAddress)}
                         </p>

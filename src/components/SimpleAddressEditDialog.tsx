@@ -119,10 +119,30 @@ const SimpleAddressEditDialog = ({
 
     setIsSubmitting(true);
     try {
-      const finalShippingAddress = sameAsPickup
-        ? pickupAddress
-        : shippingAddress;
-      await onSave(pickupAddress, finalShippingAddress, sameAsPickup);
+      // Format addresses with all required fields
+      const formattedPickupAddress = {
+        ...pickupAddress,
+        streetAddress: pickupAddress.street,
+        complex: pickupAddress.complex || "",
+        unitNumber: pickupAddress.unitNumber || "",
+        suburb: pickupAddress.suburb || "",
+      };
+
+      const formattedShippingAddress = sameAsPickup
+        ? formattedPickupAddress
+        : {
+            ...shippingAddress,
+            streetAddress: shippingAddress.street,
+            complex: shippingAddress.complex || "",
+            unitNumber: shippingAddress.unitNumber || "",
+            suburb: shippingAddress.suburb || "",
+          };
+
+      await onSave(
+        formattedPickupAddress,
+        formattedShippingAddress,
+        sameAsPickup,
+      );
       toast.success("Addresses updated successfully!");
       onClose();
     } catch (error) {
@@ -135,7 +155,7 @@ const SimpleAddressEditDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-lg max-h-[85vh] overflow-y-auto sm:w-full">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5 text-book-600" />

@@ -201,33 +201,12 @@ const ModernAddressAutocomplete: React.FC<ModernAddressAutocompleteProps> = ({
 
       {error && <p className="text-sm text-red-500">{error}</p>}
 
-      {/* Selected Address Preview */}
-      {selectedAddress && (
-        <Alert className="border-green-200 bg-green-50">
-          <CheckCircle className="h-4 w-4 text-green-600" />
-          <AlertDescription className="text-green-800">
-            <strong>✅ Address Selected:</strong>
-            <br />
-            {selectedAddress.formattedAddress}
-            <br />
-            <small className="text-green-600">
-              Coordinates: {selectedAddress.latitude.toFixed(6)},{" "}
-              {selectedAddress.longitude.toFixed(6)}
-            </small>
-          </AlertDescription>
-        </Alert>
-      )}
-
       {/* Loading State */}
       {!ready && (
-        <Alert className="border-blue-200 bg-blue-50">
-          <Loader2 className="h-4 w-4 text-blue-600 animate-spin" />
-          <AlertDescription className="text-blue-800">
-            <strong>Loading Google Maps...</strong>
-            <br />
-            Please wait while we initialize the address search.
-          </AlertDescription>
-        </Alert>
+        <div className="flex items-center gap-2 text-gray-500 text-sm">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span>Loading address search...</span>
+        </div>
       )}
     </div>
   );

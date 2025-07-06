@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { SellerProfileService } from "./sellerProfileService";
 
 export interface DeliveryAddress {
   street: string;
@@ -30,73 +31,46 @@ export interface CartItem {
 }
 
 /**
- * Get seller's address from their profile
+ * Get seller's address from their profile using the new database functions
  */
 export const getSellerAddress = async (
   sellerId: string,
 ): Promise<DeliveryAddress | null> => {
   try {
-    let { data: addresses, error } = await supabase
-      .from("addresses")
-      .select("*")
-      .eq("user_id", sellerId)
-      .eq("type", "pickup")
-      .single();
+    // Use the new seller profile service
+    const sellerProfile =
+      await SellerProfileService.getSellerProfileForDelivery(sellerId);
 
-    if (error) {
-      console.warn(
-        "No pickup address found for seller, trying shipping address:",
-        error,
-      );
-
-      // Fallback to shipping address
-      const { data: fallbackAddress, error: fallbackError } = await supabase
-        .from("addresses")
-        .select("*")
-        .eq("user_id", sellerId)
-        .eq("type", "shipping")
-        .single();
-
-      if (fallbackError) {
-        console.warn(
-          "No addresses found for seller:",
-          sellerId,
-          "- seller needs to add pickup/shipping address",
-        );
-
-        // Return a default fallback address or indicate seller needs to set up address
-        return {
-          street: "Address not set",
-          city: "Unknown",
-          province: "Unknown",
-          postal_code: "0000",
-          contact_name: "Seller",
-          contact_phone: "",
-        };
-      }
-
-      addresses = fallbackAddress;
-    }
-
-    if (!addresses) {
-      console.error("Seller address data is empty for seller:", sellerId);
+    if (!sellerProfile) {
+      console.warn("No seller profile found for:", sellerId);
       return null;
     }
 
-    // Get seller's profile for contact info
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("name, phone")
-      .eq("id", sellerId)
-      .single();
+    // Format the pickup address for delivery
+    const formattedAddress =
+      SellerProfileService.formatPickupAddressForDelivery(
+        sellerProfile.pickup_address,
+      );
+
+    if (!formattedAddress) {
+      console.warn("No valid pickup address found for seller:", sellerId);
+      return {
+        street: "Address not set",
+        city: "Unknown",
+        province: "Unknown",
+        postal_code: "0000",
+        contact_name: sellerProfile.seller_name || "Seller",
+        contact_phone: "",
+      };
+    }
 
     return {
-      street: addresses.street_address,
-      city: addresses.city,
-      province: addresses.province,
-      postal_code: addresses.postal_code,
-      contact_name: profile?.name || "Seller",
-      contact_phone: profile?.phone || "",
+      street: formattedAddress.streetAddress,
+      city: formattedAddress.city,
+      province: formattedAddress.province,
+      postal_code: formattedAddress.postalCode,
+      contact_name: sellerProfile.seller_name || "Seller",
+      contact_phone: "",
     };
   } catch (error) {
     console.error("Error fetching seller address:", error);

@@ -115,45 +115,42 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         throw new Error("No seller_id provided");
       }
 
-      const { data: seller, error } = await supabase
+      // Use simplified address service to get seller address
+      const { getSellerDeliveryAddress } = await import(
+        "@/services/simplifiedAddressService"
+      );
+
+      // Get seller delivery address (always returns a valid address)
+      const deliveryAddress = await getSellerDeliveryAddress(book.seller_id);
+      console.log("Got seller delivery address:", deliveryAddress);
+
+      setSellerAddress(deliveryAddress);
+
+      // Get basic seller info from profiles
+      const { data: sellerProfile, error: sellerError } = await supabase
         .from("profiles")
-        .select("*")
+        .select("id, name, email, subaccount_code")
         .eq("id", book.seller_id)
         .single();
 
-      console.log("Seller query result:", { seller, error });
-
-      if (error) {
-        console.error("Supabase error:", error);
-        throw error;
-      }
-
-      if (!seller) {
-        throw new Error("Seller profile not found");
-      }
-
-      console.log("Successfully loaded seller:", seller);
-      setSellerInfo(seller);
-
-      // Set seller address for delivery calculations
-      if (seller.address) {
-        setSellerAddress({
-          street: seller.address.street || "",
-          city: seller.address.city || "Cape Town",
-          province: seller.address.province || "Western Cape",
-          postal_code: seller.address.postal_code || "8000",
-          country: "South Africa",
-          lat: seller.address.lat,
-          lng: seller.address.lng,
+      if (sellerError) {
+        console.warn(
+          "Could not load seller profile, using fallback:",
+          sellerError,
+        );
+        setSellerInfo({
+          id: book.seller_id,
+          name: "Unknown Seller",
+          email: "unknown@example.com",
+          has_subaccount: false,
         });
       } else {
-        // Default seller address if not available
-        setSellerAddress({
-          street: "University of Cape Town",
-          city: "Cape Town",
-          province: "Western Cape",
-          postal_code: "7700",
-          country: "South Africa",
+        console.log("Successfully loaded seller profile:", sellerProfile);
+        setSellerInfo({
+          id: sellerProfile.id,
+          name: sellerProfile.name || "Unknown Seller",
+          email: sellerProfile.email || "unknown@example.com",
+          has_subaccount: !!sellerProfile.subaccount_code?.trim(),
         });
       }
 
@@ -177,7 +174,23 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
           ? error.message
           : (error as any)?.message || JSON.stringify(error) || "Unknown error";
       console.error("Detailed seller info error:", errorMessage);
-      setError(`Failed to load seller information: ${errorMessage}`);
+
+      // Still set a fallback address even if there's an error
+      setSellerAddress({
+        street: "University of Cape Town",
+        city: "Cape Town",
+        province: "Western Cape",
+        postal_code: "7700",
+        country: "South Africa",
+      });
+
+      // Handle timeout errors differently
+      if (errorMessage.includes("timeout")) {
+        console.warn("Seller validation timed out, proceeding with fallback");
+        // Don't set error for timeout - just proceed with fallback
+      } else {
+        setError(`Failed to load seller information: ${errorMessage}`);
+      }
     }
   };
 
@@ -185,25 +198,21 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
     if (!user?.id) return;
 
     try {
-      const { data: profile, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
+      // Use simplified address service to get user's shipping address
+      const { getSimpleUserAddresses } = await import(
+        "@/services/simplifiedAddressService"
+      );
+      const userAddresses = await getSimpleUserAddresses(user.id);
 
-      if (error) throw error;
-
-      // Pre-fill delivery address from profile if available
-      if (profile.address) {
+      // Pre-fill delivery address from user's shipping address
+      if (userAddresses.shipping_address) {
+        const shipping = userAddresses.shipping_address;
         setDeliveryAddress({
-          street: profile.address.street || "",
-          city: profile.address.city || "",
-          province: profile.address.province || "",
-          postal_code: profile.address.postal_code || "",
+          street: shipping.streetAddress || "",
+          city: shipping.city || "",
+          province: shipping.province || "",
+          postal_code: shipping.postalCode || "",
           country: "South Africa",
-          lat: profile.address.lat,
-          lng: profile.address.lng,
-          formatted_address: profile.address.formatted_address,
         });
       }
     } catch (error) {

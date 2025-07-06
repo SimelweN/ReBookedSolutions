@@ -83,18 +83,7 @@ const GoogleMapsLoader: React.FC<GoogleMapsLoaderProps> = ({ children }) => {
     );
   }
 
-  return (
-    <div>
-      <Alert className="border-green-200 bg-green-50 mb-3">
-        <CheckCircle className="h-4 w-4 text-green-600" />
-        <AlertDescription className="text-green-800 text-sm">
-          <strong>✅ Google Maps Ready!</strong> Start typing to search for
-          addresses.
-        </AlertDescription>
-      </Alert>
-      {children}
-    </div>
-  );
+  return <div>{children}</div>;
 };
 
 export default GoogleMapsLoader;

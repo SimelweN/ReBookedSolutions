@@ -31,14 +31,20 @@ const AddressEditDialog = ({
   isLoading,
 }: AddressEditDialogProps) => {
   const [pickupAddress, setPickupAddress] = useState({
+    complex: "",
+    unitNumber: "",
     street: "",
+    suburb: "",
     city: "",
     province: "",
     postalCode: "",
   });
 
   const [shippingAddress, setShippingAddress] = useState({
+    complex: "",
+    unitNumber: "",
     street: "",
+    suburb: "",
     city: "",
     province: "",
     postalCode: "",
@@ -52,7 +58,10 @@ const AddressEditDialog = ({
       if (addressData.pickup_address) {
         const pickupData = addressData.pickup_address;
         setPickupAddress({
+          complex: pickupData.complex || "",
+          unitNumber: pickupData.unitNumber || "",
           street: pickupData.street || pickupData.streetAddress || "",
+          suburb: pickupData.suburb || "",
           city: pickupData.city || "",
           province: pickupData.province || "",
           postalCode: pickupData.postalCode || "",
@@ -130,17 +139,23 @@ const AddressEditDialog = ({
     }
 
     try {
-      // Ensure we're passing the correct format with streetAddress field
+      // Ensure we're passing the correct format with all required fields
       const formattedPickupAddress = {
         ...pickupAddress,
-        streetAddress: pickupAddress.street, // Map street to streetAddress for backend compatibility
+        streetAddress: pickupAddress.street,
+        complex: pickupAddress.complex || "",
+        unitNumber: pickupAddress.unitNumber || "",
+        suburb: pickupAddress.suburb || "",
       };
 
       const formattedShippingAddress = sameAsPickup
         ? formattedPickupAddress
         : {
             ...shippingAddress,
-            streetAddress: shippingAddress.street, // Map street to streetAddress for backend compatibility
+            streetAddress: shippingAddress.street,
+            complex: shippingAddress.complex || "",
+            unitNumber: shippingAddress.unitNumber || "",
+            suburb: shippingAddress.suburb || "",
           };
 
       await onSave(
@@ -164,7 +179,7 @@ const AddressEditDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-lg max-h-[85vh] overflow-y-auto sm:w-full">
         <DialogHeader>
           <DialogTitle className="flex items-center">
             <MapPin className="h-5 w-5 text-book-600 mr-2" />
@@ -177,6 +192,38 @@ const AddressEditDialog = ({
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Pickup Address</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="pickup-complex">
+                  Complex/Building (Optional)
+                </Label>
+                <Input
+                  id="pickup-complex"
+                  value={pickupAddress.complex || ""}
+                  onChange={(e) =>
+                    setPickupAddress((prev) => ({
+                      ...prev,
+                      complex: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g., University Heights"
+                  disabled={isLoading}
+                />
+              </div>
+              <div>
+                <Label htmlFor="pickup-unit">Unit/Apt Number (Optional)</Label>
+                <Input
+                  id="pickup-unit"
+                  value={pickupAddress.unitNumber || ""}
+                  onChange={(e) =>
+                    setPickupAddress((prev) => ({
+                      ...prev,
+                      unitNumber: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g., 4B, Unit 12"
+                  disabled={isLoading}
+                />
+              </div>
               <div className="md:col-span-2">
                 <Label htmlFor="pickup-street">Street Address</Label>
                 <Input
@@ -190,6 +237,21 @@ const AddressEditDialog = ({
                   }
                   placeholder="Enter street address"
                   required
+                  disabled={isLoading}
+                />
+              </div>
+              <div>
+                <Label htmlFor="pickup-suburb">Suburb/Area (Optional)</Label>
+                <Input
+                  id="pickup-suburb"
+                  value={pickupAddress.suburb || ""}
+                  onChange={(e) =>
+                    setPickupAddress((prev) => ({
+                      ...prev,
+                      suburb: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g., Rosebank, Newlands"
                   disabled={isLoading}
                 />
               </div>
