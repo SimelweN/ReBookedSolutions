@@ -130,17 +130,23 @@ const AddressEditDialog = ({
     }
 
     try {
-      // Ensure we're passing the correct format with streetAddress field
+      // Ensure we're passing the correct format with all required fields
       const formattedPickupAddress = {
         ...pickupAddress,
-        streetAddress: pickupAddress.street, // Map street to streetAddress for backend compatibility
+        streetAddress: pickupAddress.street,
+        complex: pickupAddress.complex || "",
+        unitNumber: pickupAddress.unitNumber || "",
+        suburb: pickupAddress.suburb || "",
       };
 
       const formattedShippingAddress = sameAsPickup
         ? formattedPickupAddress
         : {
             ...shippingAddress,
-            streetAddress: shippingAddress.street, // Map street to streetAddress for backend compatibility
+            streetAddress: shippingAddress.street,
+            complex: shippingAddress.complex || "",
+            unitNumber: shippingAddress.unitNumber || "",
+            suburb: shippingAddress.suburb || "",
           };
 
       await onSave(
