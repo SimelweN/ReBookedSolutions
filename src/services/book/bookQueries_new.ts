@@ -261,6 +261,9 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
               id: sellerProfile.id,
               name: sellerProfile.name,
               email: sellerProfile.email,
+              hasAddress: sellerProfile.hasAddress,
+              hasSubaccount: sellerProfile.hasSubaccount,
+              isReadyForOrders: sellerProfile.isReadyForOrders,
             },
           };
         });
