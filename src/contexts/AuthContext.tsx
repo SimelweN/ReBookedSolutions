@@ -125,15 +125,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         // Only upgrade if we have a basic fallback profile
         if (profile && !profile.bio && !profile.profile_picture_url) {
+          // Check if we've recently failed to avoid rapid retries
+          const lastFailKey = `profile_fetch_fail_${currentUser.id}`;
+          const lastFail = sessionStorage.getItem(lastFailKey);
+          if (lastFail) {
+            const lastFailTime = parseInt(lastFail);
+            const timeSinceLastFail = Date.now() - lastFailTime;
+            // Don't retry for 5 minutes after a failure
+            if (timeSinceLastFail < 5 * 60 * 1000) {
+              console.log("ℹ️ Profile upgrade skipped - recent failure");
+              return;
+            }
+          }
+
           const fullProfile = await fetchUserProfileQuick(currentUser);
           if (fullProfile && fullProfile !== profile) {
             setProfile(fullProfile);
             console.log("✅ Profile upgraded successfully");
+            // Clear failure timestamp on success
+            sessionStorage.removeItem(lastFailKey);
           }
         }
       } catch (error) {
-        // Don't log upgrade failures as errors since it's not critical
-        console.log("ℹ️ Profile upgrade skipped");
+        // Mark failure timestamp to prevent rapid retries
+        const lastFailKey = `profile_fetch_fail_${currentUser.id}`;
+        sessionStorage.setItem(lastFailKey, Date.now().toString());
+        console.log("ℹ️ Profile upgrade skipped - will retry later");
       }
     },
     [profile],
