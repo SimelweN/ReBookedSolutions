@@ -150,18 +150,39 @@ async function handleSuccessfulPayment(supabase: any, paymentData: any) {
       return;
     }
 
-    // Create payment split record for tracking
-    const { error: splitError } = await supabase.from("payment_splits").insert({
-      order_id: order.id,
-      seller_subaccount: order.seller_subaccount_code,
-      book_amount: order.book_price,
-      delivery_amount: order.delivery_fee || 0,
-      platform_commission: order.platform_fee,
-      seller_amount: order.seller_amount,
-      courier_amount: order.delivery_fee || 0,
-      split_executed: true,
-      paystack_reference: paymentData.reference,
-    });
+    // Create payment split record for tracking (if table exists)
+    const deliveryFee = order.delivery_data?.delivery_fee || 0;
+    const bookAmount =
+      order.items?.reduce((sum: number, item: any) => sum + item.price, 0) ||
+      order.amount;
+
+    try {
+      const { error: splitError } = await supabase
+        .from("payment_splits")
+        .insert({
+          order_id: order.id,
+          seller_subaccount: order.payment_data?.seller_subaccount_code,
+          book_amount: bookAmount,
+          delivery_amount: deliveryFee,
+          platform_commission: Math.round(order.amount * 0.1),
+          seller_amount: Math.round(order.amount * 0.9),
+          courier_amount: deliveryFee,
+          split_executed: true,
+          paystack_reference: paymentData.reference,
+        });
+
+      if (splitError) {
+        console.error(
+          "Error creating payment split record (non-critical):",
+          splitError,
+        );
+      }
+    } catch (splitError) {
+      console.error(
+        "Payment splits table may not exist (non-critical):",
+        splitError,
+      );
+    }
 
     if (splitError) {
       console.error("Error creating payment split record:", splitError);
