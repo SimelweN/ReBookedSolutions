@@ -178,14 +178,13 @@ const GoogleMapsPickupInput = ({
 
         {coords && address && (
           <div className="space-y-3">
-            <Alert className="border-green-200 bg-green-50">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <AlertDescription className="text-green-800">
-                <strong>✅ Pickup Address Selected:</strong>
+            <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+              <p className="text-sm text-gray-700">
+                <strong>Pickup Address:</strong>
                 <br />
                 {address}
-              </AlertDescription>
-            </Alert>
+              </p>
+            </div>
 
             <div className="border rounded-lg overflow-hidden">
               <GoogleMap
