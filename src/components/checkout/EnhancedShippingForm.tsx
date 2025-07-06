@@ -555,8 +555,9 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
               });
             } else {
               toast.error(
-              `Please fix these fields: ${Object.keys(validationErrors).join(", ")}`,
-            );
+                `Please fix these fields: ${Object.keys(validationErrors).join(", ")}`,
+              );
+            }
           })}
           className="space-y-6"
         >
