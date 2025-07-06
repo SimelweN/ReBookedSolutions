@@ -62,7 +62,12 @@ const CourierSelection: React.FC<CourierSelectionProps> = ({
     ) {
       fetchDeliveryQuotes();
     }
-  }, [fromAddress, toAddress]);
+  }, [
+    fromAddress.postal_code,
+    toAddress.postal_code,
+    fromAddress.city,
+    toAddress.city,
+  ]);
 
   const fetchDeliveryQuotes = async () => {
     setLoading(true);
@@ -102,7 +107,6 @@ const CourierSelection: React.FC<CourierSelectionProps> = ({
         onQuoteSelect(allQuotes[0]);
       }
     } catch (error) {
-      console.error("Error fetching delivery quotes:", error);
       setError("Failed to fetch delivery quotes. Using standard rates.");
 
       // Use fallback quotes
@@ -132,8 +136,16 @@ const CourierSelection: React.FC<CourierSelectionProps> = ({
 
       if (error) throw error;
 
+      interface CourierGuyQuote {
+        service_name?: string;
+        service_code?: string;
+        price?: number;
+        estimated_days?: string;
+        description?: string;
+      }
+
       if (data.success && data.quotes) {
-        return data.quotes.map((quote: any) => ({
+        return data.quotes.map((quote: CourierGuyQuote) => ({
           courier: "courier-guy",
           service_name: quote.service_name || "Courier Guy Standard",
           service_code: quote.service_code || "STD",
@@ -145,7 +157,6 @@ const CourierSelection: React.FC<CourierSelectionProps> = ({
 
       return [];
     } catch (error) {
-      console.error("Courier Guy quote error:", error);
       return [];
     }
   };
@@ -163,8 +174,16 @@ const CourierSelection: React.FC<CourierSelectionProps> = ({
 
       if (error) throw error;
 
+      interface FastwayQuote {
+        service_name?: string;
+        service_code?: string;
+        cost?: number;
+        delivery_timeframe?: string;
+        service_description?: string;
+      }
+
       if (data.success && data.quotes) {
-        return data.quotes.map((quote: any) => ({
+        return data.quotes.map((quote: FastwayQuote) => ({
           courier: "fastway",
           service_name: quote.service_name || "Fastway Standard",
           service_code: quote.service_code || "STANDARD",
@@ -176,7 +195,6 @@ const CourierSelection: React.FC<CourierSelectionProps> = ({
 
       return [];
     } catch (error) {
-      console.error("Fastway quote error:", error);
       return [];
     }
   };

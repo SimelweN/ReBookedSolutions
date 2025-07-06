@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { safeDbOperation } from "@/utils/databaseErrorHandler";
 
 export interface SimpleAddress {
   streetAddress: string;
@@ -88,18 +89,26 @@ export const saveSimpleUserAddresses = async (
       shipping: finalShippingAddress,
     });
 
-    // Try to update the profile with addresses
-    let { data, error } = await supabase
-      .from("profiles")
-      .update({
-        pickup_address: cleanPickupAddress,
-        shipping_address: finalShippingAddress,
-        addresses_same: addressesSame,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", userId)
-      .select("pickup_address, shipping_address, addresses_same")
-      .single();
+    // Try to update the profile with addresses using safe database operation
+    const updateResult = await safeDbOperation(
+      () =>
+        supabase
+          .from("profiles")
+          .update({
+            pickup_address: cleanPickupAddress,
+            shipping_address: finalShippingAddress,
+            addresses_same: addressesSame,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", userId)
+          .select("pickup_address, shipping_address, addresses_same")
+          .single(),
+      "saveSimpleUserAddresses - update profile",
+      { showToast: false }, // Don't show toast yet, handle profile creation case first
+    );
+
+    let data = updateResult.data;
+    let error = updateResult.error;
 
     // If profile doesn't exist, try to create it
     if (
@@ -127,67 +136,62 @@ export const saveSimpleUserAddresses = async (
         userData.user.email,
       );
 
-      const { data: createData, error: createError } = await supabase
-        .from("profiles")
-        .insert({
-          id: userId,
-          email: userData.user.email,
-          name:
-            userData.user.user_metadata?.name ||
-            userData.user.email?.split("@")[0] ||
-            "User",
-          pickup_address: cleanPickupAddress,
-          shipping_address: finalShippingAddress,
-          addresses_same: addressesSame,
-          status: "active",
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .select("pickup_address, shipping_address, addresses_same")
-        .single();
+      const createResult = await safeDbOperation(
+        () =>
+          supabase
+            .from("profiles")
+            .insert({
+              id: userId,
+              email: userData.user.email,
+              name:
+                userData.user.user_metadata?.name ||
+                userData.user.email?.split("@")[0] ||
+                "User",
+              pickup_address: cleanPickupAddress,
+              shipping_address: finalShippingAddress,
+              addresses_same: addressesSame,
+              status: "active",
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            })
+            .select("pickup_address, shipping_address, addresses_same")
+            .single(),
+        "saveSimpleUserAddresses - create profile",
+        { showToast: true },
+      );
 
-      if (createError) {
-        console.error("❌ Error creating profile with addresses:", createError);
-        throw new Error(
-          `Failed to create profile with addresses: ${createError.message}. This might be a permissions issue - please try logging out and back in.`,
-        );
+      if (createResult.error) {
+        throw new Error(createResult.error.userMessage);
       }
 
       console.log("✅ Profile created successfully with addresses");
-      data = createData;
+      data = createResult.data;
     } else if (error) {
-      console.error("❌ Error saving addresses:", error);
-      // Provide more specific error messages
-      let errorMessage = `Failed to save addresses: ${error.message}`;
-      if (error.message.includes("timeout")) {
-        errorMessage =
-          "Save operation timed out. Please check your connection and try again.";
-      } else if (
-        error.message.includes("permission") ||
-        error.message.includes("unauthorized")
-      ) {
-        errorMessage = "Permission denied. Please try logging out and back in.";
-      }
-      throw new Error(errorMessage);
+      throw new Error(error.userMessage);
     }
 
     console.log("✅ Successfully saved addresses:", data);
 
     // Verify the save was successful by reading back the data
     console.log("🔍 Verifying address save...");
-    const { data: verifyData, error: verifyError } = await supabase
-      .from("profiles")
-      .select("pickup_address, shipping_address, addresses_same")
-      .eq("id", userId)
-      .single();
+    const verifyResult = await safeDbOperation(
+      () =>
+        supabase
+          .from("profiles")
+          .select("pickup_address, shipping_address, addresses_same")
+          .eq("id", userId)
+          .single(),
+      "saveSimpleUserAddresses - verify save",
+      { showToast: false }, // Don't show toast for verification
+    );
 
-    if (verifyError) {
-      console.warn("⚠️ Could not verify address save:", verifyError);
+    if (verifyResult.error) {
+      console.warn("⚠️ Could not verify address save:", verifyResult.error);
       // Still return the data we think we saved, but log the warning
     } else {
-      console.log("✅ Address save verified:", verifyData);
+      console.log("✅ Address save verified:", verifyResult.data);
       // Use the verified data
-      data = verifyData;
+      data = verifyResult.data;
 
       // Additional validation of the verified data
       if (
@@ -226,45 +230,46 @@ export const saveSimpleUserAddresses = async (
 export const getSimpleUserAddresses = async (
   userId: string,
 ): Promise<UserAddresses> => {
-  try {
-    console.log("Getting addresses for user:", userId);
+  console.log("Getting addresses for user:", userId);
 
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("pickup_address, shipping_address, addresses_same")
-      .eq("id", userId)
-      .maybeSingle(); // Use maybeSingle to handle cases where profile might not exist
+  const { data, error } = await safeDbOperation(
+    () =>
+      supabase
+        .from("profiles")
+        .select("pickup_address, shipping_address, addresses_same")
+        .eq("id", userId)
+        .maybeSingle(),
+    "getSimpleUserAddresses",
+    { showToast: false }, // Don't show toast for address retrieval
+  );
 
-    if (error) {
-      console.error("Error getting addresses:", error);
-      throw new Error(`Failed to get addresses: ${error.message}`);
-    }
-
-    // If no profile exists, return empty addresses
-    if (!data) {
-      console.log("No profile found for user, returning empty addresses");
-      return {
-        pickup_address: null,
-        shipping_address: null,
-        addresses_same: false,
-      };
-    }
-
-    console.log("Successfully retrieved addresses:", data);
-
-    return {
-      pickup_address: data.pickup_address as SimpleAddress | null,
-      shipping_address: data.shipping_address as SimpleAddress | null,
-      addresses_same: data.addresses_same || false,
-    };
-  } catch (error) {
-    console.error("Error in getSimpleUserAddresses:", error);
+  if (error) {
+    console.error("Error getting addresses:", error);
+    // Return empty addresses as fallback
     return {
       pickup_address: null,
       shipping_address: null,
       addresses_same: false,
     };
   }
+
+  // If no profile exists, return empty addresses
+  if (!data) {
+    console.log("No profile found for user, returning empty addresses");
+    return {
+      pickup_address: null,
+      shipping_address: null,
+      addresses_same: false,
+    };
+  }
+
+  console.log("Successfully retrieved addresses:", data);
+
+  return {
+    pickup_address: data.pickup_address as SimpleAddress | null,
+    shipping_address: data.shipping_address as SimpleAddress | null,
+    addresses_same: data.addresses_same || false,
+  };
 };
 
 /**

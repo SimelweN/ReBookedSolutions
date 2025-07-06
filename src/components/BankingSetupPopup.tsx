@@ -23,6 +23,7 @@ import {
   Building,
 } from "lucide-react";
 import { toast } from "sonner";
+import { ENV } from "@/config/environment";
 
 interface BankingSetupPopupProps {
   isOpen: boolean;
@@ -100,7 +101,7 @@ const BankingSetupPopup = ({
 
   const openBankingVault = () => {
     // Open external banking site in popup
-    const bankingUrl = "https://paystack-vault-south-africa.lovable.app";
+    const bankingUrl = ENV.VITE_BANKING_VAULT_URL;
 
     // Calculate popup dimensions (responsive)
     const width = Math.min(800, window.innerWidth * 0.9);

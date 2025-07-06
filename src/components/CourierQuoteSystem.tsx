@@ -77,7 +77,16 @@ const CourierQuoteSystem: React.FC<CourierQuoteSystemProps> = ({
       setQuotes([]);
       setQuotesError(null);
     }
-  }, [deliveryAddress, sellerAddress]);
+  }, [
+    deliveryAddress.street,
+    deliveryAddress.city,
+    deliveryAddress.province,
+    deliveryAddress.postal_code,
+    sellerAddress.street,
+    sellerAddress.city,
+    sellerAddress.province,
+    sellerAddress.postal_code,
+  ]);
 
   const handleAddressFieldChange = (
     field: keyof DeliveryAddress,
@@ -92,13 +101,8 @@ const CourierQuoteSystem: React.FC<CourierQuoteSystemProps> = ({
   };
 
   const fetchDeliveryQuotes = async () => {
-    console.log("🚚 Attempting to fetch delivery quotes...");
-    console.log("📍 Delivery address:", deliveryAddress);
-    console.log("🏪 Seller address:", sellerAddress);
-
     // Validate buyer address
     if (!addressComplete) {
-      console.log("❌ Buyer address incomplete");
       setQuotesError(
         "Please complete your delivery address to get shipping quotes",
       );
@@ -107,7 +111,6 @@ const CourierQuoteSystem: React.FC<CourierQuoteSystemProps> = ({
 
     // Validate seller address
     if (!sellerAddress || !sellerAddress.postal_code || !sellerAddress.city) {
-      console.log("❌ Seller address incomplete:", sellerAddress);
       setQuotesError(
         "⚠️ Seller's address is incomplete. Cannot calculate accurate delivery costs. Please contact support.",
       );
@@ -144,13 +147,19 @@ const CourierQuoteSystem: React.FC<CourierQuoteSystemProps> = ({
       );
 
       if (error) {
-        console.error("Delivery quotes error:", error);
         throw new Error(error.message || "Failed to get delivery quotes");
       }
 
       if (data && data.quotes) {
+        interface RawQuote {
+          courier: string;
+          serviceName: string;
+          price: number;
+          estimatedDays: number;
+        }
+
         const formattedQuotes: CourierQuote[] = data.quotes.map(
-          (quote: any) => ({
+          (quote: RawQuote) => ({
             courier: quote.courier as "fastway" | "courier-guy",
             service_name: quote.serviceName,
             price: quote.price,
@@ -170,7 +179,6 @@ const CourierQuoteSystem: React.FC<CourierQuoteSystemProps> = ({
         }
       }
     } catch (error) {
-      console.error("❌ Error fetching delivery quotes:", error);
       const errorMessage =
         error instanceof Error
           ? error.message
@@ -197,8 +205,6 @@ const CourierQuoteSystem: React.FC<CourierQuoteSystemProps> = ({
       }
 
       setQuotesError(userMessage);
-
-      console.log("🔄 Using fallback delivery quotes");
       // Set fallback quotes
       const fallbackQuotes: CourierQuote[] = [
         {

@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { safeLogError } from "@/utils/errorHandling";
+import { safeDbOperation } from "@/utils/databaseErrorHandler";
 
 interface Address {
   complex?: string;
@@ -90,21 +91,23 @@ export const updateAddressValidation = async (
       : validateAddress(shippingAddress);
     const canList = isPickupValid && isShippingValid;
 
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        pickup_address: pickupAddress as Record<string, unknown>,
-        shipping_address: shippingAddress as Record<string, unknown>,
-        addresses_same: addressesSame,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", userId);
+    const { data, error } = await safeDbOperation(
+      () =>
+        supabase
+          .from("profiles")
+          .update({
+            pickup_address: pickupAddress as Record<string, unknown>,
+            shipping_address: shippingAddress as Record<string, unknown>,
+            addresses_same: addressesSame,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", userId),
+      "updateAddressValidation",
+      { showToast: true },
+    );
 
     if (error) {
-      safeLogError("Error updating address validation", error, { userId });
-      throw new Error(
-        `Failed to update address validation: ${error.message || "Unknown error"}`,
-      );
+      throw new Error(error.userMessage);
     }
 
     return { canListBooks: canList };

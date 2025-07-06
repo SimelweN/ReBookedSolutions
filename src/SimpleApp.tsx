@@ -31,8 +31,6 @@ import AdminReports from "./pages/AdminReports";
 // All real page components are imported and ready to use
 
 const SimpleApp = () => {
-  console.log("SimpleApp rendering...");
-
   return (
     <ErrorBoundary level="app">
       <ThemeProvider attribute="class" defaultTheme="light">

@@ -108,7 +108,6 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
           setBranchCode(selectedBank?.branchCode || "");
         }
       } catch (error) {
-        console.error("Error loading existing data:", error);
         toast.error("Failed to load existing banking details");
       } finally {
         setIsLoading(false);
@@ -135,7 +134,7 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
         setHasAutofilled(true);
       }
     } catch (error) {
-      console.error("Error autofilling banking form:", error);
+      // Silently fail autofill attempts
     }
   };
 
@@ -184,10 +183,6 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
     setIsSubmitting(true);
 
     try {
-      console.log(
-        `Starting banking form ${editMode ? "update" : "submission"}...`,
-      );
-
       const subaccountDetails = {
         business_name: formData.businessName,
         email: formData.email,
@@ -202,47 +197,31 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
       );
 
       if (result.success) {
-        console.log(`Banking ${editMode ? "update" : "setup"} successful!`);
         setIsSuccess(true);
         toast.success(
           `Banking details ${editMode ? "updated" : "added"} successfully!`,
         );
-
-        // Link books to subaccount if this is a new creation
-        if (!editMode && result.subaccount_code) {
-          // This will be handled automatically through the service
-          console.log("Subaccount created and linked successfully");
-        }
 
         // Call success callback after a short delay
         setTimeout(() => {
           onSuccess?.();
         }, 1500);
       } else {
-        console.error(
-          `Banking ${editMode ? "update" : "setup"} failed:`,
-          result,
-        );
         throw new Error(
           result.error ||
             `Failed to ${editMode ? "update" : "create"} subaccount`,
         );
       }
-    } catch (error: any) {
-      console.error(
-        `Banking form ${editMode ? "update" : "submission"} error:`,
-        error,
-      );
-
+    } catch (error) {
       let errorMessage = "There was an error. Please try again.";
 
-      if (error.message) {
+      if (error instanceof Error) {
         errorMessage = error.message;
-      }
 
-      if (error.message?.includes("non-2xx")) {
-        errorMessage =
-          "Payment service is temporarily unavailable. Please try again in a few minutes.";
+        if (error.message.includes("non-2xx")) {
+          errorMessage =
+            "Payment service is temporarily unavailable. Please try again in a few minutes.";
+        }
       }
 
       toast.error(errorMessage);

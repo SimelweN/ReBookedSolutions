@@ -91,7 +91,6 @@ const GoogleMapsPickupInput = ({
       postalCode,
     };
 
-    console.log("Pickup address selected:", addressData);
     onAddressSelect(addressData);
   };
 
