@@ -233,23 +233,28 @@ export class SellerMarketplaceService {
       search?: string;
     },
   ): Promise<SellerMarketplace | null> {
-    // Get profile and books in parallel
-    const [profile, books] = await Promise.all([
-      this.getSellerProfile(sellerId),
-      this.getSellerBooks(sellerId, bookFilters),
-    ]);
+    try {
+      // Get profile and books in parallel
+      const [profile, books] = await Promise.all([
+        this.getSellerProfile(sellerId),
+        this.getSellerBooks(sellerId, bookFilters),
+      ]);
 
-    if (!profile) {
+      if (!profile) {
+        return null;
+      }
+
+      return {
+        profile,
+        books,
+        totalBooks: books.length,
+        availableBooks: books.filter(
+          (book) => book.availability === "available",
+        ).length,
+      };
+    } catch (error) {
       return null;
     }
-
-    return {
-      profile,
-      books,
-      totalBooks: books.length,
-      availableBooks: books.filter((book) => book.availability === "available")
-        .length,
-    };
   }
 
   /**
