@@ -264,16 +264,7 @@ function App() {
                           </ProtectedRoute>
                         }
                       />
-                      <Route
-                        path="/user-profile"
-                        element={
-                          <ProtectedRoute>
-                            <Suspense fallback={<LoadingSpinner />}>
-                              <UserProfile />
-                            </Suspense>
-                          </ProtectedRoute>
-                        }
-                      />
+
                       <Route
                         path="/create-listing"
                         element={
