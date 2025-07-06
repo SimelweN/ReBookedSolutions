@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,9 +15,8 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import PaystackPaymentService, {
-  OrderData,
-} from "@/services/paystackPaymentService";
+import { OrderData } from "@/services/paystackPaymentService";
+import { useUserOrders } from "@/hooks/useUserOrders";
 import SEO from "@/components/SEO";
 import { toast } from "sonner";
 
