@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -56,16 +56,9 @@ const SellerMarketplace = () => {
     if (sellerId) {
       loadSellerMarketplace();
     }
-  }, [
-    sellerId,
-    searchQuery,
-    categoryFilter,
-    conditionFilter,
-    minPrice,
-    maxPrice,
-  ]);
+  }, [sellerId, loadSellerMarketplace]);
 
-  const loadSellerMarketplace = async () => {
+  const loadSellerMarketplace = useCallback(async () => {
     if (!sellerId) {
       setError("Seller ID is required");
       setLoading(false);
@@ -111,7 +104,14 @@ const SellerMarketplace = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [
+    sellerId,
+    searchQuery,
+    categoryFilter,
+    conditionFilter,
+    minPrice,
+    maxPrice,
+  ]);
 
   const handleAddToCart = async (book: SellerBookListing) => {
     if (!marketplace?.profile) return;
