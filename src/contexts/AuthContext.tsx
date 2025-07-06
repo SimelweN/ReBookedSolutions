@@ -150,6 +150,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         if (session.user) {
           // Check if this is actually a new user to prevent unnecessary updates
           if (currentUserIdRef.current !== session.user.id) {
+            // If switching users, clear everything first to prevent mixing data
+            if (currentUserIdRef.current !== null) {
+              console.log(
+                "🔄 [AuthContext] User switching detected, clearing state first",
+              );
+              setUser(null);
+              setProfile(null);
+              setSession(null);
+
+              // Clear local storage to prevent data contamination
+              localStorage.removeItem("supabase.auth.token");
+              sessionStorage.clear();
+
+              // Small delay to ensure state is cleared
+              await new Promise((resolve) => setTimeout(resolve, 100));
+            }
+
             currentUserIdRef.current = session.user.id;
 
             // Batch state updates to prevent multiple re-renders and glitching
@@ -162,7 +179,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             setIsLoading(false); // Immediately stop loading for UI responsiveness
 
             console.log(
-              "ℹ️ [AuthContext] Auth state updated for new user:",
+              "✅ [AuthContext] Auth state updated for user:",
               session.user.id,
             );
           } else {
@@ -582,7 +599,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         // Auth state change will be handled by the listener
         return result;
       } catch (error) {
-        console.log("🔐 AuthContext: Login error:", error);
+        console.log("���� AuthContext: Login error:", error);
         handleError(error, "Login");
       } finally {
         setIsLoading(false);
