@@ -137,16 +137,16 @@ const ModernAddressInput: React.FC<ModernAddressInputProps> = ({
           </Alert>
         )}
 
-        {/* Toggle between Google Maps and Manual Entry */}
+        {/* Simple toggle without advertising Google Maps */}
         {hasGoogleMapsKey && (
-          <div className="flex items-center space-x-2 p-3 bg-blue-50 rounded-lg">
+          <div className="flex items-center space-x-2 mb-4">
             <Checkbox
               id="manual-entry"
               checked={useManualEntry}
               onCheckedChange={(checked) => setUseManualEntry(checked === true)}
             />
             <Label htmlFor="manual-entry" className="text-sm">
-              Enter address manually instead of using Google Maps
+              Enter address manually
             </Label>
           </div>
         )}
