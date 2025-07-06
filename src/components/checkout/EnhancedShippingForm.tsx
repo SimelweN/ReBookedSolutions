@@ -455,6 +455,13 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
       return;
     }
 
+    // Additional validation check for critical fields
+    if (!data.recipient_name || data.recipient_name.trim() === "") {
+      console.error("❌ Critical validation: recipient_name is empty");
+      toast.error("Please enter the recipient's full name");
+      return;
+    }
+
     // If no delivery options, try to get them one more time
     if (deliveryOptions.length === 0) {
       console.log("⚠️ No delivery options, attempting to get them...");
