@@ -47,8 +47,8 @@ const SellerMarketplace = () => {
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
-  const [conditionFilter, setConditionFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [conditionFilter, setConditionFilter] = useState("all");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
@@ -366,8 +366,8 @@ const SellerMarketplace = () => {
             </div>
 
             {(searchQuery ||
-              categoryFilter ||
-              conditionFilter ||
+              (categoryFilter && categoryFilter !== "all") ||
+              (conditionFilter && conditionFilter !== "all") ||
               minPrice ||
               maxPrice) && (
               <div className="mt-4 flex justify-end">
@@ -375,8 +375,8 @@ const SellerMarketplace = () => {
                   variant="outline"
                   onClick={() => {
                     setSearchQuery("");
-                    setCategoryFilter("");
-                    setConditionFilter("");
+                    setCategoryFilter("all");
+                    setConditionFilter("all");
                     setMinPrice("");
                     setMaxPrice("");
                   }}
