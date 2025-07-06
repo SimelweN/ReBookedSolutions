@@ -1,28 +1,49 @@
--- Fix books table schema issues
+-- Fix books table schema issues - SPECIFIC UPDATES
 -- Add missing columns that the frontend expects
 
--- Add availability column if it doesn't exist
-ALTER TABLE public.books 
-ADD COLUMN IF NOT EXISTS availability TEXT DEFAULT 'available' 
+-- ====================================================================
+-- BOOKS TABLE SPECIFIC SCHEMA FIXES
+-- ====================================================================
+
+-- 1. Add availability column with exact enum values
+ALTER TABLE public.books
+ADD COLUMN IF NOT EXISTS availability TEXT DEFAULT 'available';
+
+-- Add specific constraint for availability values
+ALTER TABLE public.books
+DROP CONSTRAINT IF EXISTS books_availability_check;
+ALTER TABLE public.books
+ADD CONSTRAINT books_availability_check
 CHECK (availability IN ('available', 'unavailable', 'sold'));
 
--- Create index for availability for better query performance
-CREATE INDEX IF NOT EXISTS idx_books_availability ON public.books (availability);
-
--- Update existing books to have proper availability status
--- Books that are sold should have availability = 'sold'
-UPDATE public.books 
-SET availability = 'sold' 
-WHERE sold = true AND (availability IS NULL OR availability != 'sold');
-
--- Books that are not sold should have availability = 'available'
-UPDATE public.books 
-SET availability = 'available' 
-WHERE sold = false AND (availability IS NULL OR availability = 'sold');
-
--- Add updated_at column for tracking changes (optional)
-ALTER TABLE public.books 
+-- 2. Add updated_at column for BookDeletionService
+ALTER TABLE public.books
 ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+
+-- 3. Add university column (frontend Book interface expects this)
+ALTER TABLE public.books
+ADD COLUMN IF NOT EXISTS university TEXT;
+
+-- ====================================================================
+-- DATA MIGRATION - Update existing records
+-- ====================================================================
+
+-- Set availability based on sold status for existing records
+UPDATE public.books
+SET availability = CASE
+    WHEN sold = true THEN 'sold'
+    ELSE 'available'
+END
+WHERE availability IS NULL;
+
+-- ====================================================================
+-- INDEXES - Specific performance optimizations
+-- ====================================================================
+
+CREATE INDEX IF NOT EXISTS idx_books_availability ON public.books (availability);
+CREATE INDEX IF NOT EXISTS idx_books_availability_sold ON public.books (availability, sold);
+CREATE INDEX IF NOT EXISTS idx_books_university ON public.books (university);
+CREATE INDEX IF NOT EXISTS idx_books_seller_availability ON public.books (seller_id, availability);
 
 -- Create function to automatically update updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -50,11 +71,11 @@ CREATE POLICY "books_public_view" ON public.books
 DO $$
 BEGIN
     IF NOT EXISTS (
-        SELECT 1 FROM information_schema.table_constraints 
+        SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_name = 'books_seller_id_fkey'
     ) THEN
-        ALTER TABLE public.books 
-        ADD CONSTRAINT books_seller_id_fkey 
+        ALTER TABLE public.books
+        ADD CONSTRAINT books_seller_id_fkey
         FOREIGN KEY (seller_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
     END IF;
 END$$;
@@ -71,7 +92,7 @@ COMMENT ON COLUMN public.books.availability IS 'Book availability status: availa
 COMMENT ON COLUMN public.books.updated_at IS 'Timestamp of last update';
 
 -- Success message
-SELECT 
+SELECT
     'BOOKS TABLE SCHEMA FIX COMPLETE!' as status,
     'Added availability and updated_at columns' as schema_changes,
     'Updated existing data to proper availability status' as data_migration,
