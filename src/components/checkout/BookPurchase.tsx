@@ -370,7 +370,33 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         },
       );
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error processing book purchase:", error);
+
+        // Enhanced error handling for specific error types
+        if (error.message?.includes("authentication")) {
+          throw new Error("Authentication failed. Please log in again.");
+        } else if (error.message?.includes("not found")) {
+          throw new Error("Book not found. It may have been sold or removed.");
+        } else if (error.message?.includes("already sold")) {
+          throw new Error("This book has already been sold to another buyer.");
+        } else if (error.message?.includes("insufficient funds")) {
+          throw new Error("Payment failed due to insufficient funds.");
+        } else if (
+          error.message?.includes("network") ||
+          error.message?.includes("timeout")
+        ) {
+          throw new Error(
+            "Network error. Please check your connection and try again.",
+          );
+        } else if (error.message?.includes("paystack")) {
+          throw new Error(
+            "Payment processing error. Please try again or use a different payment method.",
+          );
+        }
+
+        throw error;
+      }
 
       if (data.success && data.payment_url) {
         // Update attempt status to pending
