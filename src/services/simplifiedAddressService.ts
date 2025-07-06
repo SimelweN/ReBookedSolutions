@@ -105,23 +105,28 @@ export const saveSimpleUserAddresses = async (
     if (
       error &&
       (error.code === "PGRST116" ||
-        error.message.includes("violates row-level security"))
+        error.message.includes("violates row-level security") ||
+        error.message.includes("No rows") ||
+        error.message.includes("0 rows"))
     ) {
       console.log(
-        "Profile doesn't exist or access denied, checking user info...",
+        "🔄 Profile doesn't exist or access denied, creating new profile...",
       );
 
       // Get basic user info first
-      const { data: userData } = await supabase.auth.getUser();
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
 
-      if (!userData.user) {
-        throw new Error("User not authenticated");
+      if (userError || !userData.user) {
+        console.error("❌ Authentication error:", userError);
+        throw new Error("User not authenticated or session expired");
       }
 
       console.log(
-        "Creating new profile with addresses for user:",
+        "👤 Creating new profile with addresses for user:",
         userData.user.email,
       );
+
       const { data: createData, error: createError } = await supabase
         .from("profiles")
         .insert({
@@ -131,7 +136,7 @@ export const saveSimpleUserAddresses = async (
             userData.user.user_metadata?.name ||
             userData.user.email?.split("@")[0] ||
             "User",
-          pickup_address: pickupAddress,
+          pickup_address: cleanPickupAddress,
           shipping_address: finalShippingAddress,
           addresses_same: addressesSame,
           status: "active",
@@ -142,16 +147,28 @@ export const saveSimpleUserAddresses = async (
         .single();
 
       if (createError) {
-        console.error("Error creating profile with addresses:", createError);
+        console.error("❌ Error creating profile with addresses:", createError);
         throw new Error(
-          `Failed to create profile with addresses: ${createError.message}`,
+          `Failed to create profile with addresses: ${createError.message}. This might be a permissions issue - please try logging out and back in.`,
         );
       }
 
+      console.log("✅ Profile created successfully with addresses");
       data = createData;
     } else if (error) {
-      console.error("Error saving addresses:", error);
-      throw new Error(`Failed to save addresses: ${error.message}`);
+      console.error("❌ Error saving addresses:", error);
+      // Provide more specific error messages
+      let errorMessage = `Failed to save addresses: ${error.message}`;
+      if (error.message.includes("timeout")) {
+        errorMessage =
+          "Save operation timed out. Please check your connection and try again.";
+      } else if (
+        error.message.includes("permission") ||
+        error.message.includes("unauthorized")
+      ) {
+        errorMessage = "Permission denied. Please try logging out and back in.";
+      }
+      throw new Error(errorMessage);
     }
 
     console.log("Successfully saved addresses:", data);
