@@ -107,15 +107,13 @@ const BookDetails = () => {
         price: book.price,
         condition: book.condition,
         isbn: book.isbn,
-        image_url: book.image_url,
-        seller_id: book.seller_id,
-        seller_subaccount_code: sellerValidation.subaccountCode,
+        image_url: book.imageUrl,
+        seller_id: book.seller?.id || book.seller_id,
+        seller_subaccount_code:
+          book.seller_subaccount_code || book.subaccountCode,
       };
 
-      console.log(
-        "✅ Seller validation passed, proceeding to checkout:",
-        bookForPurchase,
-      );
+      console.log("✅ Proceeding to checkout with book:", bookForPurchase);
 
       // Navigate to new checkout flow with book data
       navigate("/checkout", {
