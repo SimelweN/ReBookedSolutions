@@ -378,10 +378,10 @@ export const getBookById = async (id: string): Promise<Book | null> => {
           "✅ [getBookById] Book data fetched successfully, fetching seller profile...",
         );
 
-        // Then get seller profile separately
+        // Then get seller profile separately (including pickup_address for hasAddress check)
         const { data: profileData, error: profileError } = await supabase
           .from("profiles")
-          .select("id, name, email")
+          .select("id, name, email, pickup_address")
           .eq("id", bookData.seller_id)
           .single();
 
