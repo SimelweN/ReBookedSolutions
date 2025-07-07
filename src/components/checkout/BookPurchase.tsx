@@ -312,6 +312,9 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
           "💡 You'll need to enter your delivery address. Consider saving it in your profile for next time!",
         );
       }
+
+      // Mark user profile loading as complete
+      setUserProfileLoading(false);
     } catch (error) {
       console.error("❌ Error loading user profile:", error);
       const errorMessage =
