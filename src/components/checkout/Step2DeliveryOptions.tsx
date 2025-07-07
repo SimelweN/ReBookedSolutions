@@ -71,7 +71,9 @@ const Step2DeliveryOptions: React.FC<Step2DeliveryOptionsProps> = ({
       else zoneType = "national";
 
       // ✅ Use real courier API pricing instead of hardcoded values
-      const { RealCourierPricing } = await import("@/services/realCourierPricing");
+      const { RealCourierPricing } = await import(
+        "@/services/realCourierPricing"
+      );
 
       const quoteRequest = {
         from: {
@@ -108,7 +110,10 @@ const Step2DeliveryOptions: React.FC<Step2DeliveryOptionsProps> = ({
       const baseOptions: DeliveryOption[] = [];
 
       // Process Courier Guy quotes
-      if (courierGuyQuotes.status === "fulfilled" && courierGuyQuotes.value.length > 0) {
+      if (
+        courierGuyQuotes.status === "fulfilled" &&
+        courierGuyQuotes.value.length > 0
+      ) {
         courierGuyQuotes.value.forEach((quote) => {
           baseOptions.push({
             courier: "courier-guy",
@@ -122,7 +127,10 @@ const Step2DeliveryOptions: React.FC<Step2DeliveryOptionsProps> = ({
       }
 
       // Process Fastway quotes
-      if (fastwayQuotes.status === "fulfilled" && fastwayQuotes.value.length > 0) {
+      if (
+        fastwayQuotes.status === "fulfilled" &&
+        fastwayQuotes.value.length > 0
+      ) {
         fastwayQuotes.value.forEach((quote) => {
           baseOptions.push({
             courier: "fastway",
@@ -162,39 +170,40 @@ const Step2DeliveryOptions: React.FC<Step2DeliveryOptionsProps> = ({
             {
               courier: "courier-guy",
               service_name: "Courier Guy Provincial",
-            price: 120,
-            estimated_days: 2,
-            description: "Within province delivery, 2-3 business days",
-            zone_type: "provincial",
-          },
-          {
-            courier: "fastway",
-            service_name: "Fastway Provincial",
-            price: 135,
-            estimated_days: 2,
-            description: "Provincial express delivery",
-            zone_type: "provincial",
-          },
-        );
-      } else {
-        baseOptions.push(
-          {
-            courier: "courier-guy",
-            service_name: "Courier Guy National",
-            price: 180,
-            estimated_days: 3,
-            description: "Cross-province delivery, 3-5 business days",
-            zone_type: "national",
-          },
-          {
-            courier: "fastway",
-            service_name: "Fastway National",
-            price: 200,
-            estimated_days: 3,
-            description: "National express delivery",
-            zone_type: "national",
-          },
-        );
+              price: 120,
+              estimated_days: 2,
+              description: "Within province delivery, 2-3 business days",
+              zone_type: "provincial",
+            },
+            {
+              courier: "fastway",
+              service_name: "Fastway Provincial",
+              price: 135,
+              estimated_days: 2,
+              description: "Provincial express delivery",
+              zone_type: "provincial",
+            },
+          );
+        } else {
+          baseOptions.push(
+            {
+              courier: "courier-guy",
+              service_name: "Courier Guy National",
+              price: 180,
+              estimated_days: 3,
+              description: "Cross-province delivery, 3-5 business days",
+              zone_type: "national",
+            },
+            {
+              courier: "fastway",
+              service_name: "Fastway National",
+              price: 200,
+              estimated_days: 3,
+              description: "National express delivery",
+              zone_type: "national",
+            },
+          );
+        }
       }
 
       // Try to get real-time quotes if available
