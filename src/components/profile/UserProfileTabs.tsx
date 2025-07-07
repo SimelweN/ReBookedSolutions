@@ -32,6 +32,7 @@ import ProfileEditDialog from "@/components/ProfileEditDialog";
 import UnavailableBookCard from "@/components/UnavailableBookCard";
 import ModernBankingSection from "@/components/profile/ModernBankingSection";
 import AddressManager from "@/components/profile/AddressManager";
+import PendingCommitsSection from "@/components/profile/PendingCommitsSection";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
