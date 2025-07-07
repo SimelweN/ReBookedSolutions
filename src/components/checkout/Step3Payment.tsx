@@ -79,11 +79,32 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
           .select("*")
           .eq("user_id", orderSummary.book.seller_id);
 
-        console.log("🔍 All seller subaccounts found:", {
+        // If no active subaccount, try any subaccount with code
+        if (
+          !sellerSubaccount &&
+          allSellerSubaccounts &&
+          allSellerSubaccounts.length > 0
+        ) {
+          const anySubaccountWithCode = allSellerSubaccounts.find(
+            (sub) => sub.subaccount_code,
+          );
+          if (anySubaccountWithCode) {
+            sellerSubaccount = {
+              subaccount_code: anySubaccountWithCode.subaccount_code,
+              status: anySubaccountWithCode.status,
+            };
+            console.log(
+              "���� Using non-active subaccount for payment:",
+              sellerSubaccount,
+            );
+          }
+        }
+
+        console.log("🔍 Final seller subaccount decision:", {
           seller_id: orderSummary.book.seller_id,
           all_subaccounts: allSellerSubaccounts,
-          active_result: sellerSubaccount,
-          error: subaccountError,
+          chosen_subaccount: sellerSubaccount,
+          original_error: subaccountError,
         });
 
         if (!sellerSubaccount?.subaccount_code) {
