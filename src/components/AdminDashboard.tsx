@@ -54,6 +54,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import ProgramReview from "@/components/admin/ProgramReview";
+import DatabaseTest from "@/components/admin/DatabaseTest";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -1160,6 +1161,8 @@ const AdminDashboard = () => {
 
           {/* Settings Tab */}
           <TabsContent value="settings" className="space-y-6">
+            <DatabaseTest />
+
             <Card className="border-0 shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
