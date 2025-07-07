@@ -46,13 +46,30 @@ serve(async (req) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     if (data.status === "success") {
-      // Update order status in database
+      // Get the order first to ensure we have seller_id
+      const { data: existingOrder, error: fetchError } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("paystack_ref", reference)
+        .single();
+
+      if (fetchError || !existingOrder) {
+        console.error("Order not found for reference:", reference, fetchError);
+        throw new Error("Order not found for payment verification");
+      }
+
+      // Calculate commit deadline (48 hours from payment)
+      const commitDeadline = new Date();
+      commitDeadline.setHours(commitDeadline.getHours() + 48);
+
+      // Update order status in database with commit deadline
       const { error: orderError } = await supabase
         .from("orders")
         .update({
           status: "paid",
           payment_data: data,
           paid_at: new Date(data.paid_at).toISOString(),
+          commit_deadline: commitDeadline.toISOString(),
           updated_at: new Date().toISOString(),
         })
         .eq("paystack_ref", reference);
@@ -60,6 +77,68 @@ serve(async (req) => {
       if (orderError) {
         console.error("Error updating order:", orderError);
         // Don't throw - payment was successful, log the issue
+      } else {
+        console.log(
+          "✅ Order updated with commit deadline:",
+          commitDeadline.toISOString(),
+        );
+
+        // Create notification for seller about pending commit
+        try {
+          const { error: notificationError } = await supabase
+            .from("order_notifications")
+            .insert({
+              order_id: existingOrder.id,
+              user_id: existingOrder.seller_id,
+              type: "commit_required",
+              title: "Payment Received - Commit Required",
+              message: `Payment received for your book order #${existingOrder.id.slice(0, 8)}. You have 48 hours to commit to this sale.`,
+              read: false,
+              created_at: new Date().toISOString(),
+            });
+
+          if (notificationError) {
+            console.warn(
+              "Failed to create commit notification:",
+              notificationError,
+            );
+          } else {
+            console.log(
+              "✅ Commit notification created for seller:",
+              existingOrder.seller_id,
+            );
+          }
+        } catch (notifError) {
+          console.warn("Notification creation failed:", notifError);
+        }
+
+        // Also create notification for buyer
+        try {
+          const { error: buyerNotificationError } = await supabase
+            .from("order_notifications")
+            .insert({
+              order_id: existingOrder.id,
+              user_id: existingOrder.buyer_id,
+              type: "payment_confirmed",
+              title: "Payment Confirmed",
+              message: `Your payment for order #${existingOrder.id.slice(0, 8)} has been confirmed. The seller has 48 hours to commit to your order.`,
+              read: false,
+              created_at: new Date().toISOString(),
+            });
+
+          if (buyerNotificationError) {
+            console.warn(
+              "Failed to create buyer notification:",
+              buyerNotificationError,
+            );
+          } else {
+            console.log(
+              "✅ Payment confirmation notification created for buyer",
+            );
+          }
+        } catch (buyerNotifError) {
+          console.warn("Buyer notification creation failed:", buyerNotifError);
+        }
       }
 
       // Send success notification email (optional)
