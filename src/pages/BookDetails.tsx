@@ -86,6 +86,7 @@ const BookDetails = () => {
       console.log("BookDetails - seller_id:", book.seller_id);
 
       // ✅ As a buyer, proceed to checkout - checkout flow will handle address collection
+      // Note: We'll validate seller readiness in the checkout flow, not here
 
       const bookForPurchase = {
         id: book.id,
