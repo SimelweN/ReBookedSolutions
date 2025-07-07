@@ -40,15 +40,22 @@ const Step2DeliveryOptions: React.FC<Step2DeliveryOptionsProps> = ({
     fetchDeliveryOptions();
   }, [buyerAddress, sellerAddress]);
 
+  /**
+   * 🚚 API Equivalent: POST /api/delivery/calculate
+   * Uses seller address + buyer address + courier APIs to get delivery options
+   */
   const fetchDeliveryOptions = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      console.log("Fetching delivery options...", {
-        from: sellerAddress,
-        to: buyerAddress,
-      });
+      console.log(
+        "🚚 POST /api/delivery/calculate - Fetching delivery options...",
+        {
+          from: sellerAddress,
+          to: buyerAddress,
+        },
+      );
 
       // Determine zone type based on provinces
       const isLocal =
