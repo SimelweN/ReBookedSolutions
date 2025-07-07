@@ -205,6 +205,20 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
             console.warn("Failed to update order status:", updateError);
           }
 
+          // Mark book as sold
+          const { error: bookError } = await supabase
+            .from("books")
+            .update({
+              sold: true,
+              availability: "sold",
+              sold_at: new Date().toISOString(),
+            })
+            .eq("id", orderSummary.book.id);
+
+          if (bookError) {
+            console.warn("Failed to mark book as sold:", bookError);
+          }
+
           // Create order confirmation data using the database order
           const orderConfirmation = {
             order_id: createdOrder.id,
