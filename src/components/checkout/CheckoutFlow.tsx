@@ -121,12 +121,17 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ book }) => {
         );
       }
     } catch (error) {
-      console.error("Checkout initialization error:", error);
+      console.error("❌ Checkout initialization error:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to initialize checkout";
       setCheckoutState((prev) => ({
         ...prev,
-        error: "Failed to initialize checkout. Please try again.",
+        error: errorMessage,
         loading: false,
       }));
+      toast.error(errorMessage);
     }
   };
 
