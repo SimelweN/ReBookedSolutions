@@ -366,7 +366,11 @@ const AdminDashboard = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span>Recent Users</span>
-                    <Button size="sm" variant="outline">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setSelectedTab("users")}
+                    >
                       <Eye className="h-4 w-4 mr-2" />
                       View All
                     </Button>
