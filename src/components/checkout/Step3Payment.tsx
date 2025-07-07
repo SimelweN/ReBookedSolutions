@@ -130,6 +130,14 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
         );
 
         // Create order in database first so it appears in purchase history
+        console.log("🔄 Creating order with data:", {
+          buyer_id: userId,
+          buyer_email: userData.user.email,
+          seller_id: orderSummary.book.seller_id,
+          book_id: orderSummary.book.id,
+          paystack_ref: paymentData.data.reference,
+        });
+
         const { data: createdOrder, error: orderError } = await supabase
           .from("orders")
           .insert([
