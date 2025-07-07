@@ -139,10 +139,10 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
         // Create order in database first so it appears in purchase history
         // Validate required data before creating order
         if (
-          !userId ||
           !userData.user.email ||
           !orderSummary.book.seller_id ||
-          !orderSummary.book.id
+          !orderSummary.book.id ||
+          !paymentData.data.reference
         ) {
           throw new Error("Missing required order data");
         }
