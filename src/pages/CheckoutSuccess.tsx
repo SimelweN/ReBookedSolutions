@@ -69,11 +69,30 @@ const CheckoutSuccess: React.FC = () => {
           body: { reference },
         });
 
+      console.log(
+        "📊 [CheckoutSuccess] Verification result:",
+        verificationResult,
+      );
+      console.log(
+        "❌ [CheckoutSuccess] Verification error:",
+        verificationError,
+      );
+
       if (verificationError || !verificationResult) {
+        console.error(
+          "❌ [CheckoutSuccess] Payment verification failed:",
+          verificationError,
+        );
         throw new Error(
           verificationError?.message || "Payment verification failed",
         );
       }
+
+      console.log(
+        "🔍 [CheckoutSuccess] Verification status:",
+        verificationResult.status,
+      );
+      console.log("📦 [CheckoutSuccess] Order data:", verificationResult.order);
 
       if (verificationResult.status === "success" && verificationResult.order) {
         // Convert the order data to our OrderConfirmation format
