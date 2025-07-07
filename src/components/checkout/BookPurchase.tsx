@@ -134,7 +134,7 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         !deliveryAddress.city ||
         !deliveryAddress.postal_code
       ) {
-        console.warn("⚠�� Seller address is incomplete, using fallback");
+        console.warn("⚠️ Seller address is incomplete, using fallback");
         toast.warning(
           "⚠️ Seller's address is incomplete. Delivery costs may be estimated.",
         );
@@ -509,7 +509,7 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
       </Card>
 
       {/* Courier Quote System */}
-      {sellerAddress ? (
+      {sellerAddress && !sellerInfoLoading ? (
         <CourierQuoteSystem
           sellerAddress={sellerAddress}
           onAddressChange={handleAddressChange}
@@ -517,16 +517,26 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
           selectedQuote={selectedCourierQuote}
           initialAddress={deliveryAddress}
         />
+      ) : sellerInfoLoading ? (
+        <Card>
+          <CardContent className="p-6 text-center">
+            <div className="animate-spin w-8 h-8 border-2 border-book-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <h3 className="text-lg font-semibold mb-2">
+              Loading Delivery Options
+            </h3>
+            <p className="text-gray-600">Setting up delivery calculation...</p>
+          </CardContent>
+        </Card>
       ) : (
         <Card>
           <CardContent className="p-6 text-center">
             <AlertTriangle className="w-12 h-12 text-orange-500 mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">
-              Loading Seller Information
+              Address Setup Required
             </h3>
             <p className="text-gray-600">
-              Please wait while we load the seller's location to calculate
-              delivery options.
+              Unable to calculate delivery costs. Please try refreshing the
+              page.
             </p>
           </CardContent>
         </Card>
