@@ -132,7 +132,27 @@ const QADashboard: React.FC = () => {
 
       if (error) {
         console.error("Demo order creation error:", error);
-        toast.error(`Failed to create demo order: ${error.message}`);
+
+        let errorMessage = "Failed to create demo order";
+        if (error.message) {
+          errorMessage = error.message;
+        } else if (error.details) {
+          errorMessage = error.details;
+        } else if (typeof error === "string") {
+          errorMessage = error;
+        }
+
+        toast.error(errorMessage);
+
+        setTestResults((prev) => ({
+          ...prev,
+          demoOrder: {
+            success: false,
+            error: errorMessage,
+            created_at: new Date().toISOString(),
+          },
+        }));
+
         return;
       }
 
