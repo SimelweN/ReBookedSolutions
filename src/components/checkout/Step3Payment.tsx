@@ -332,6 +332,7 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
                 ...createdOrder.metadata,
                 cancelled_at: new Date().toISOString(),
                 cancellation_reason: "payment_failed",
+                error: paymentError.message,
               },
             })
             .eq("id", createdOrder.id);
@@ -340,11 +341,27 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
             console.warn("Failed to update cancelled order:", cleanupError);
           }
 
+          let errorMessage = "Payment failed";
           if (paymentError.message?.includes("cancelled")) {
-            toast.warning("Payment cancelled");
+            errorMessage = "Payment cancelled";
+            toast.warning(errorMessage);
+          } else if (
+            paymentError.message?.includes("popup") ||
+            paymentError.message?.includes("blocked")
+          ) {
+            errorMessage =
+              "Payment popup was blocked. Please allow popups and try again.";
+            toast.error(errorMessage);
+          } else if (paymentError.message?.includes("library not available")) {
+            errorMessage =
+              "Payment system not available. Please refresh the page and try again.";
+            toast.error(errorMessage);
           } else {
-            onPaymentError(paymentError.message || "Payment failed");
+            errorMessage = paymentError.message || "Payment failed";
+            toast.error(errorMessage);
           }
+
+          onPaymentError(errorMessage);
           setProcessing(false);
         }
       } else {
