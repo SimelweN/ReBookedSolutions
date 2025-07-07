@@ -111,12 +111,16 @@ const ActivityLog: React.FC = () => {
 
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case "book_listed":
-        return <Package className="h-4 w-4" />;
-      case "order_placed":
+      case "listing_created":
+        return <BookOpen className="h-4 w-4" />;
+      case "purchase":
+        return <ShoppingBag className="h-4 w-4" />;
+      case "sale":
         return <CreditCard className="h-4 w-4" />;
       case "profile_updated":
         return <User className="h-4 w-4" />;
+      case "login":
+        return <UserPlus className="h-4 w-4" />;
       default:
         return <Activity className="h-4 w-4" />;
     }
@@ -124,14 +128,18 @@ const ActivityLog: React.FC = () => {
 
   const getActivityColor = (type: string) => {
     switch (type) {
-      case "book_listed":
+      case "listing_created":
         return "bg-green-100 text-green-800";
-      case "order_placed":
+      case "purchase":
         return "bg-blue-100 text-blue-800";
+      case "sale":
+        return "bg-emerald-100 text-emerald-800";
       case "profile_updated":
         return "bg-purple-100 text-purple-800";
-      default:
+      case "login":
         return "bg-gray-100 text-gray-800";
+      default:
+        return "bg-orange-100 text-orange-800";
     }
   };
 
