@@ -310,12 +310,10 @@ export const canUserListBooks = async (userId: string): Promise<boolean> => {
  */
 export const getSellerDeliveryAddress = async (sellerId: string) => {
   try {
-    console.log("Getting seller delivery address for:", sellerId);
+    console.log("🔍 Getting seller delivery address for:", sellerId);
 
-    const addresses = await getSimpleUserAddresses(sellerId);
-
-    if (!addresses.pickup_address) {
-      console.warn("Seller has no pickup address, using fallback");
+    if (!sellerId || sellerId.trim() === "") {
+      console.warn("❌ No seller ID provided, using fallback address");
       return {
         street: "University of Cape Town",
         city: "Cape Town",
@@ -325,23 +323,63 @@ export const getSellerDeliveryAddress = async (sellerId: string) => {
       };
     }
 
-    return {
-      street: addresses.pickup_address.streetAddress,
-      city: addresses.pickup_address.city,
-      province: addresses.pickup_address.province,
-      postal_code: addresses.pickup_address.postalCode,
+    const addresses = await getSimpleUserAddresses(sellerId);
+    console.log("📍 Seller addresses retrieved:", addresses);
+
+    if (!addresses.pickup_address) {
+      console.warn("⚠️ Seller has no pickup address, using fallback");
+      return {
+        street: "University of Cape Town",
+        city: "Cape Town",
+        province: "Western Cape",
+        postal_code: "7700",
+        country: "South Africa",
+      };
+    }
+
+    // Validate that we have the minimum required fields
+    const pickup = addresses.pickup_address;
+    if (
+      !pickup.streetAddress ||
+      !pickup.city ||
+      !pickup.province ||
+      !pickup.postalCode
+    ) {
+      console.warn("⚠️ Seller pickup address is incomplete:", pickup);
+      return {
+        street: "University of Cape Town",
+        city: "Cape Town",
+        province: "Western Cape",
+        postal_code: "7700",
+        country: "South Africa",
+      };
+    }
+
+    const deliveryAddress = {
+      street: pickup.streetAddress.trim(),
+      city: pickup.city.trim(),
+      province: pickup.province.trim(),
+      postal_code: pickup.postalCode.trim(),
       country: "South Africa",
     };
+
+    console.log(
+      "✅ Successfully retrieved seller delivery address:",
+      deliveryAddress,
+    );
+    return deliveryAddress;
   } catch (error) {
-    console.error("Error getting seller delivery address:", error);
+    console.error("❌ Error getting seller delivery address:", error);
 
     // Return fallback address
-    return {
+    const fallbackAddress = {
       street: "University of Cape Town",
       city: "Cape Town",
       province: "Western Cape",
       postal_code: "7700",
       country: "South Africa",
     };
+    console.log("🔄 Using fallback address:", fallbackAddress);
+    return fallbackAddress;
   }
 };
