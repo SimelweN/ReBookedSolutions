@@ -342,6 +342,16 @@ function App() {
                           </ProtectedRoute>
                         }
                       />
+                      <Route
+                        path="/receipt/:reference"
+                        element={
+                          <ProtectedRoute>
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <Receipt />
+                            </Suspense>
+                          </ProtectedRoute>
+                        }
+                      />
 
                       <Route
                         path="/my-orders"
