@@ -212,19 +212,6 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
           };
 
           return mapBookFromDatabase(bookDataWithProfile, sellerProfile);
-            frontCover: bookData.front_cover || "",
-            backCover: bookData.back_cover || "",
-            sold: bookData.sold || false,
-            availability:
-              bookData.availability || (bookData.sold ? "sold" : "available"),
-            createdAt: bookData.created_at || new Date().toISOString(),
-            sellerId: bookData.seller_id,
-            seller: {
-              id: sellerProfile.id,
-              name: sellerProfile.name,
-              email: sellerProfile.email,
-            },
-          };
         });
 
         console.log(
