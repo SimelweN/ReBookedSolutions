@@ -567,38 +567,46 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-3 md:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
+        <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Admin Dashboard
+            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              {isMobile ? "Admin Panel" : "Admin Dashboard"}
             </h1>
-            <p className="text-gray-600 mt-1">
-              Welcome back, {user?.user_metadata?.name || user?.email}
+            <p className="text-gray-600 mt-1 text-sm md:text-base">
+              Welcome back,{" "}
+              {isMobile
+                ? user?.user_metadata?.name?.split(" ")[0] ||
+                  user?.email?.split("@")[0]
+                : user?.user_metadata?.name || user?.email}
             </p>
           </div>
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 md:space-x-3">
             <Button
               variant="outline"
               onClick={handleRefresh}
               disabled={isLoading}
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-1 md:space-x-2"
+              size={isMobile ? "sm" : "default"}
             >
               <RefreshCw
-                className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+                className={`h-3 w-3 md:h-4 md:w-4 ${isLoading ? "animate-spin" : ""}`}
               />
-              <span>Refresh</span>
+              <span className="text-xs md:text-sm">Refresh</span>
             </Button>
-            <Badge variant="secondary" className="bg-green-100 text-green-800">
-              System Healthy
+            <Badge
+              variant="secondary"
+              className="bg-green-100 text-green-800 text-xs md:text-sm"
+            >
+              {isMobile ? "Healthy" : "System Healthy"}
             </Badge>
           </div>
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
