@@ -193,6 +193,22 @@ const CheckoutSuccess: React.FC = () => {
                 Please wait while we confirm your payment and create your
                 order...
               </p>
+
+              <div className="mt-8 text-center">
+                <p className="text-sm text-gray-500 mb-4">
+                  Taking longer than usual?
+                </p>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setError("Verification timeout - please check your orders");
+                    setLoading(false);
+                  }}
+                  className="bg-white"
+                >
+                  Skip to Order Check
+                </Button>
+              </div>
             </div>
           </div>
         </div>
