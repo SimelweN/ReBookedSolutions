@@ -129,47 +129,57 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
           "@/services/paystackPaymentService"
         );
 
-        await PaystackPaymentService.processPayment({
-          key:
-            paymentData.data.public_key ||
-            import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
-          email: userData.user.email,
-          amount: orderSummary.total_price * 100,
-          reference: paymentData.data.reference,
-          currency: "ZAR",
-          onSuccess: async (transaction: any) => {
-            console.log("✅ Paystack payment successful:", transaction);
-
-            // Create order confirmation data
-            const orderConfirmation = {
-              order_id: paymentData.data.reference,
-              payment_reference: transaction.reference,
-              book_id: orderSummary.book.id,
-              seller_id: orderSummary.book.seller_id,
-              buyer_id: userId,
+        try {
+          const result = await PaystackPaymentService.processPayment({
+            email: userData.user.email,
+            amount: orderSummary.total_price * 100,
+            reference: paymentData.data.reference,
+            subaccount: orderSummary.book.seller_subaccount_code,
+            metadata: {
+              order_data: orderData,
               book_title: orderSummary.book.title,
-              book_price: orderSummary.book_price,
               delivery_method: orderSummary.delivery.service_name,
-              delivery_price: orderSummary.delivery_price,
-              total_paid: orderSummary.total_price,
-              created_at: new Date().toISOString(),
-              status: "completed",
-            };
+              buyer_id: userId,
+            },
+          });
 
-            // Call the success handler to show Step4Confirmation
-            onPaymentSuccess(orderConfirmation);
-            toast.success("Payment completed successfully! 🎉");
-          },
-          onCancel: () => {
-            console.log("❌ Paystack payment cancelled");
-            setProcessing(false);
+          if (result.cancelled) {
+            console.log("❌ Paystack payment cancelled by user");
             toast.warning("Payment cancelled");
-          },
-          onClose: () => {
-            console.log("ℹ️ Paystack popup closed");
             setProcessing(false);
-          },
-        });
+            return;
+          }
+
+          console.log("✅ Paystack payment successful:", result);
+
+          // Create order confirmation data
+          const orderConfirmation = {
+            order_id: paymentData.data.reference,
+            payment_reference: result.reference,
+            book_id: orderSummary.book.id,
+            seller_id: orderSummary.book.seller_id,
+            buyer_id: userId,
+            book_title: orderSummary.book.title,
+            book_price: orderSummary.book_price,
+            delivery_method: orderSummary.delivery.service_name,
+            delivery_price: orderSummary.delivery_price,
+            total_paid: orderSummary.total_price,
+            created_at: new Date().toISOString(),
+            status: "completed",
+          };
+
+          // Call the success handler to show Step4Confirmation
+          onPaymentSuccess(orderConfirmation);
+          toast.success("Payment completed successfully! 🎉");
+        } catch (paymentError) {
+          console.error("Payment processing error:", paymentError);
+          if (paymentError.message?.includes("cancelled")) {
+            toast.warning("Payment cancelled");
+          } else {
+            onPaymentError(paymentError.message || "Payment failed");
+          }
+          setProcessing(false);
+        }
       } else {
         console.error("Payment response:", paymentData);
         throw new Error("No payment access code received from Paystack");
