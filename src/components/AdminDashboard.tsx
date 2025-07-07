@@ -258,15 +258,91 @@ const AdminDashboard = () => {
       await Promise.all([
         loadUserStats(),
         loadBookStats(),
+        loadSalesStats(),
+        loadReportsStats(),
         loadRecentUsers(),
         loadRecentBooks(),
       ]);
-      toast.success("Dashboard data loaded successfully");
+      console.log("Dashboard data loaded successfully");
     } catch (error) {
       console.error("Error loading dashboard data:", error);
-      toast.error("Failed to load dashboard data");
+      toast.error("Failed to load some dashboard data");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadSalesStats = async () => {
+    try {
+      // Try to load from orders table first
+      const { data: ordersData, error: ordersError } = await supabase
+        .from("orders")
+        .select("amount, created_at, status");
+
+      if (!ordersError && ordersData) {
+        const today = new Date();
+        const currentMonth = today.getMonth();
+        const currentYear = today.getFullYear();
+
+        const totalSales = ordersData
+          .filter(
+            (order) => order.status === "completed" || order.status === "paid",
+          )
+          .reduce((total, order) => total + (order.amount || 0), 0);
+
+        const salesThisMonth = ordersData.filter((order) => {
+          const orderDate = new Date(order.created_at);
+          return (
+            orderDate.getMonth() === currentMonth &&
+            orderDate.getFullYear() === currentYear &&
+            (order.status === "completed" || order.status === "paid")
+          );
+        }).length;
+
+        setStats((prev) => ({
+          ...prev,
+          totalSales: Math.round(totalSales / 100), // Convert from kobo to ZAR
+          salesThisMonth,
+        }));
+      } else {
+        // Fallback: try transactions table if it exists
+        const { data: transactionsData } = await supabase
+          .from("transactions")
+          .select("total_amount, created_at, status");
+
+        if (transactionsData) {
+          const totalSales = transactionsData
+            .filter((tx) => tx.status === "completed" || tx.status === "paid")
+            .reduce((total, tx) => total + (tx.total_amount || 0), 0);
+
+          setStats((prev) => ({
+            ...prev,
+            totalSales: Math.round(totalSales / 100),
+          }));
+        }
+      }
+    } catch (error) {
+      console.warn("Could not load sales stats:", error);
+      // Don't throw error, just continue with other data
+    }
+  };
+
+  const loadReportsStats = async () => {
+    try {
+      const { data: reportsData, error: reportsError } = await supabase
+        .from("reports")
+        .select("id, status")
+        .eq("status", "pending");
+
+      if (!reportsError && reportsData) {
+        setStats((prev) => ({
+          ...prev,
+          pendingReports: reportsData.length,
+        }));
+      }
+    } catch (error) {
+      console.warn("Could not load reports stats:", error);
+      // Reports table might not exist, continue without error
     }
   };
 
@@ -274,10 +350,15 @@ const AdminDashboard = () => {
     try {
       const { data: usersData, error: usersError } = await supabase
         .from("profiles")
-        .select("id, created_at")
-        .not("role", "eq", "admin");
+        .select("id, created_at, role")
+        .neq("role", "admin");
 
-      if (!usersError && usersData) {
+      if (usersError) {
+        console.error("Error fetching user stats:", usersError);
+        return;
+      }
+
+      if (usersData) {
         const today = new Date().toDateString();
         const newUsersToday = usersData.filter(
           (user) => new Date(user.created_at).toDateString() === today,
@@ -300,7 +381,12 @@ const AdminDashboard = () => {
         .from("books")
         .select("id, created_at, price, status");
 
-      if (!booksError && booksData) {
+      if (booksError) {
+        console.error("Error fetching book stats:", booksError);
+        return;
+      }
+
+      if (booksData) {
         const activeBooks = booksData.filter(
           (book) => book.status === "active",
         ).length;

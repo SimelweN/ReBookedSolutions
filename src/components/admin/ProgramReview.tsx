@@ -32,6 +32,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PendingProgram {
   id: string;
@@ -63,91 +64,71 @@ const ProgramReview = () => {
   const [reviewNotes, setReviewNotes] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
-  // Mock data - replace with real API calls
+  // Load real program submissions from database
   useEffect(() => {
-    const mockPrograms: PendingProgram[] = [
-      {
-        id: "1",
-        programName: "Bachelor of Data Science",
-        universityName: "University of Cape Town",
-        facultyName: "Faculty of Science",
-        submittedBy: "user123@student.ac.za",
-        submittedAt: "2024-01-15T10:30:00Z",
-        status: "pending",
-        apsRequirement: 35,
-        duration: "3 years",
-        description:
-          "A comprehensive program covering data analytics, machine learning, and statistical methods.",
-        subjects: [
-          { name: "Mathematics", level: 6, isRequired: true },
-          { name: "Physical Sciences", level: 5, isRequired: true },
-          { name: "Information Technology", level: 4, isRequired: false },
-        ],
-        careerProspects: [
-          "Data Scientist",
-          "Business Analyst",
-          "Machine Learning Engineer",
-        ],
-      },
-      {
-        id: "2",
-        programName: "Bachelor of Renewable Energy Engineering",
-        universityName: "Stellenbosch University",
-        facultyName: "Faculty of Engineering",
-        submittedBy: "contributor@example.com",
-        submittedAt: "2024-01-14T14:20:00Z",
-        status: "pending",
-        apsRequirement: 38,
-        duration: "4 years",
-        description:
-          "Engineering program focused on sustainable energy solutions and green technology.",
-        subjects: [
-          { name: "Mathematics", level: 7, isRequired: true },
-          { name: "Physical Sciences", level: 6, isRequired: true },
-          {
-            name: "Engineering Graphics and Design",
-            level: 5,
-            isRequired: true,
-          },
-        ],
-        careerProspects: [
-          "Renewable Energy Engineer",
-          "Sustainability Consultant",
-          "Energy Systems Analyst",
-        ],
-      },
-      {
-        id: "3",
-        programName: "Bachelor of Digital Marketing",
-        universityName: "University of Witwatersrand",
-        facultyName: "Faculty of Commerce and Management",
-        submittedBy: "student@wits.ac.za",
-        submittedAt: "2024-01-13T09:15:00Z",
-        status: "approved",
-        apsRequirement: 30,
-        duration: "3 years",
-        description:
-          "Modern marketing program with focus on digital strategies and analytics.",
-        subjects: [
-          { name: "English Home Language", level: 5, isRequired: true },
-          { name: "Mathematics", level: 4, isRequired: true },
-          { name: "Business Studies", level: 5, isRequired: false },
-        ],
-        careerProspects: [
-          "Digital Marketing Manager",
-          "SEO Specialist",
-          "Social Media Manager",
-        ],
-        reviewNotes:
-          "Approved - Good coverage of modern digital marketing topics.",
-      },
-    ];
-
-    setTimeout(() => {
-      setPrograms(mockPrograms);
-      setIsLoading(false);
-    }, 1000);
+    loadPrograms();
   }, []);
+
+  const loadPrograms = async () => {
+    setIsLoading(true);
+    try {
+      // Try to load from user_submitted_programs table
+      const { data: programsData, error: programsError } = await supabase
+        .from("user_submitted_programs")
+        .select(
+          `
+          id,
+          program_name,
+          university_name,
+          faculty_name,
+          submitted_by,
+          submitted_at,
+          status,
+          aps_requirement,
+          duration,
+          description,
+          subjects,
+          career_prospects,
+          review_notes
+        `,
+        )
+        .order("submitted_at", { ascending: false });
+
+      if (programsError) {
+        console.error("Error loading programs:", programsError);
+        // Set empty array if table doesn't exist
+        setPrograms([]);
+      } else if (programsData) {
+        const formattedPrograms: PendingProgram[] = programsData.map(
+          (program) => ({
+            id: program.id,
+            programName: program.program_name || "Unknown Program",
+            universityName: program.university_name || "Unknown University",
+            facultyName: program.faculty_name || "Unknown Faculty",
+            submittedBy: program.submitted_by || "Unknown User",
+            submittedAt: program.submitted_at || new Date().toISOString(),
+            status:
+              (program.status as "pending" | "approved" | "rejected") ||
+              "pending",
+            apsRequirement: program.aps_requirement || 0,
+            duration: program.duration || "Unknown",
+            description: program.description || "No description provided",
+            subjects: program.subjects || [],
+            careerProspects: program.career_prospects || [],
+            reviewNotes: program.review_notes,
+          }),
+        );
+        setPrograms(formattedPrograms);
+      } else {
+        setPrograms([]);
+      }
+    } catch (error) {
+      console.warn("Programs table may not exist:", error);
+      setPrograms([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const filteredPrograms = programs.filter((program) => {
     const matchesSearch =
