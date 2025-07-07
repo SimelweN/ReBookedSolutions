@@ -268,21 +268,12 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ book }) => {
           )}
 
         {checkoutState.step.current === 2 && !checkoutState.buyer_address && (
-          <div className="max-w-2xl mx-auto">
-            <Alert>
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>
-                Please add your delivery address in your profile to continue.
-                <br />
-                <button
-                  onClick={() => navigate("/profile")}
-                  className="text-blue-600 hover:text-blue-800 underline mt-2"
-                >
-                  Go to Profile Settings
-                </button>
-              </AlertDescription>
-            </Alert>
-          </div>
+          <AddressInput
+            title="Enter Your Delivery Address"
+            onAddressSubmit={handleAddressSubmit}
+            onSaveToProfile={handleSaveAddressToProfile}
+            loading={checkoutState.loading}
+          />
         )}
 
         {checkoutState.step.current === 3 && checkoutState.order_summary && (
