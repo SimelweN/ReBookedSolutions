@@ -162,26 +162,9 @@ const BookGrid = ({
                         {book.description}
                       </p>
 
-                      {/* Price and ReBooked Mini */}
-                      <div className="mb-3 flex items-center justify-between">
-                        <div className="text-lg font-bold text-book-600">
-                          R{book.price.toLocaleString()}
-                        </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/seller/${book.seller.id}`);
-                          }}
-                          className="bg-book-600 hover:bg-book-700 text-white px-2 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1"
-                        >
-                          <Store className="h-3 w-3" />
-                          ReBooked Mini
-                        </button>
-                      </div>
-
-                      {/* Seller ID instead of name */}
+                      {/* Seller information */}
                       <div className="mb-3 text-xs text-gray-500">
-                        Seller: {book.seller.id}
+                        Seller: {book.seller.name}
                       </div>
 
                       <div className="flex flex-wrap items-center justify-between mt-auto gap-1">
@@ -263,26 +246,9 @@ const BookGrid = ({
                         {book.description}
                       </p>
 
-                      {/* Price and ReBooked Mini */}
-                      <div className="mb-3 flex items-center justify-between">
-                        <div className="text-lg font-bold text-book-600">
-                          R{book.price.toLocaleString()}
-                        </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/seller/${book.seller.id}`);
-                          }}
-                          className="bg-book-600 hover:bg-book-700 text-white px-2 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1"
-                        >
-                          <Store className="h-3 w-3" />
-                          ReBooked Mini
-                        </button>
-                      </div>
-
-                      {/* Seller ID instead of name */}
+                      {/* Seller information */}
                       <div className="mb-3 text-xs text-gray-500">
-                        Seller: {book.seller.id}
+                        Seller: {book.seller.name}
                       </div>
 
                       <div className="flex flex-wrap items-center justify-between mt-auto gap-1">

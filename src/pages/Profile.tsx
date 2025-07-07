@@ -7,7 +7,6 @@ import DeleteProfileDialog from "@/components/DeleteProfileDialog";
 import ReportIssueDialog from "@/components/ReportIssueDialog";
 import HowItWorksDialog from "@/components/HowItWorksDialog";
 import CommitSystemExplainer from "@/components/CommitSystemExplainer";
-import SimplifiedAddressDialog from "@/components/SimplifiedAddressDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -35,7 +34,6 @@ import {
   Eye,
 } from "lucide-react";
 import UserProfileTabs from "@/components/profile/UserProfileTabs";
-import { saveUserAddresses, getUserAddresses } from "@/services/addressService";
 import { getUserBooks } from "@/services/book/bookQueries";
 import { deleteBook } from "@/services/book/bookMutations";
 import { Book } from "@/types/book";
@@ -48,8 +46,6 @@ import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSellerRequirements } from "@/hooks/useSellerRequirements";
 import SellerRequirementsDialog from "@/components/SellerRequirementsDialog";
-import QuickAddressSetup from "@/components/QuickAddressSetup";
-import QuickFixButton from "@/components/QuickFixButton";
 
 const Profile = () => {
   const { profile, user } = useAuth();
@@ -87,61 +83,17 @@ const Profile = () => {
   const [deletingBooks, setDeletingBooks] = useState<Set<string>>(new Set());
   const [isTemporarilyAway, setIsTemporarilyAway] = useState(false);
   const [showDangerZone, setShowDangerZone] = useState(false);
-  const [isAddressDialogOpen, setIsAddressDialogOpen] = useState(false);
-  const [userAddresses, setUserAddresses] = useState(null);
+
   const [needsBankingSetup, setNeedsBankingSetup] = useState(false);
   const [showBankingPrompt, setShowBankingPrompt] = useState(false);
   const [showBecomeSellerGuide, setShowBecomeSellerGuide] = useState(false);
   const [hasAddress, setHasAddress] = useState(false);
   const [hasBankingDetails, setHasBankingDetails] = useState(false);
-  const [showQuickAddressSetup, setShowQuickAddressSetup] = useState(false);
 
+  // Address loading is now handled by AddressManager component
+  // Keeping this stub for compatibility
   const loadUserAddresses = useCallback(async () => {
-    if (!user?.id) return;
-
-    try {
-      console.log("🏠 Loading user addresses for profile...");
-      const { getSimpleUserAddresses } = await import(
-        "@/services/simplifiedAddressService"
-      );
-      const data = await getSimpleUserAddresses(user.id);
-      console.log("📍 Addresses loaded:", data);
-
-      setUserAddresses(data);
-
-      // Convert to old format for compatibility
-      if (data.pickup_address) {
-        console.log("✅ Setting pickup address data");
-        setAddressData({
-          id: user.id,
-          complex: data.pickup_address.complex || "",
-          unit_number: data.pickup_address.unitNumber || "",
-          street_address: data.pickup_address.streetAddress || "",
-          suburb: data.pickup_address.suburb || "",
-          city: data.pickup_address.city || "",
-          province: data.pickup_address.province || "",
-          postal_code: data.pickup_address.postalCode || "",
-        });
-      } else {
-        console.log("⚠️ No pickup address found");
-        setAddressData(null);
-      }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      console.error("❌ Error loading addresses:", errorMessage);
-
-      // Don't show error toast if it's just a missing profile
-      if (
-        !errorMessage.includes("No rows") &&
-        !errorMessage.includes("PGRST116")
-      ) {
-        toast.error("Failed to load addresses");
-      }
-
-      setUserAddresses(null);
-      setAddressData(null);
-    }
+    console.log("Address loading handled by AddressManager component");
   }, [user?.id]);
 
   const loadActiveListings = useCallback(async () => {
@@ -256,9 +208,8 @@ const Profile = () => {
         addressData.pickup_address.province &&
         addressData.pickup_address.postalCode;
 
-      // Save the addresses
-      await saveUserAddresses(user.id, pickup, shipping, same);
-      await loadUserAddresses();
+      // Address saving is now handled by AddressManager component
+      // This function is kept for compatibility but no longer actively used
 
       // Check if user has pickup address after
       const hasPickupAddressNow =
@@ -524,7 +475,7 @@ const Profile = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setIsAddressDialogOpen(true)}
+                          onClick={() => navigate("/profile?tab=addresses")}
                           className="border-orange-300 text-orange-700 hover:bg-orange-100 mt-2"
                         >
                           Add Pickup Address
@@ -812,52 +763,6 @@ const Profile = () => {
           onClose={closeRequirementsDialog}
           requirements={requirements}
         />
-
-        <QuickAddressSetup
-          isOpen={showQuickAddressSetup}
-          onClose={() => setShowQuickAddressSetup(false)}
-          onSuccess={() => {
-            // Refresh address data after successful save
-            loadUserAddresses();
-            toast.success("Address saved! You can now create listings.");
-          }}
-          title="Add Pickup Address"
-          description="Buyers need to know where to collect books from you."
-        />
-
-        <SimplifiedAddressDialog
-          isOpen={isAddressDialogOpen}
-          onClose={() => setIsAddressDialogOpen(false)}
-          userId={user?.id || ""}
-          initialAddresses={userAddresses}
-          onSuccess={async () => {
-            try {
-              console.log(
-                "🔄 Address save success, reloading addresses and listings...",
-              );
-
-              // Reload addresses first
-              await loadUserAddresses();
-              console.log("✅ Addresses reloaded successfully");
-
-              // Reload listings to update availability status
-              await loadActiveListings();
-              console.log("✅ Listings reloaded successfully");
-
-              toast.success(
-                "🎉 Addresses updated! Your listings are now available to buyers.",
-              );
-            } catch (error) {
-              console.error("❌ Error reloading after address save:", error);
-              toast.warning(
-                "⚠️ Addresses saved but display refresh failed. Please refresh the page to see updates.",
-              );
-            }
-          }}
-        />
-
-        {/* Quick Fix Button for easy access */}
-        <QuickFixButton onAddressAdded={loadUserAddresses} />
       </div>
     </Layout>
   );

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +10,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { UserProfile } from "@/types/address";
-import EmailChangeDialog from "@/components/EmailChangeDialog";
 
 interface AccountInformationProps {
   profile: UserProfile;
@@ -24,11 +23,16 @@ const AccountInformation = ({
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [showEmailChange, setShowEmailChange] = useState(false);
   const [formData, setFormData] = useState({
     name: profile.name || "",
-    bio: profile.bio || "",
   });
+
+  // Sync formData with profile changes
+  useEffect(() => {
+    setFormData({
+      name: profile.name || "",
+    });
+  }, [profile.name]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -46,7 +50,6 @@ const AccountInformation = ({
         .from("profiles")
         .update({
           name: formData.name,
-          bio: formData.bio,
           updated_at: new Date().toISOString(),
         })
         .eq("id", user.id)
@@ -59,7 +62,6 @@ const AccountInformation = ({
       const updatedProfile: UserProfile = {
         ...profile,
         name: data.name,
-        bio: data.bio,
         updated_at: data.updated_at,
         pickup_address:
           typeof data.pickup_address === "object" &&
@@ -97,7 +99,6 @@ const AccountInformation = ({
   const handleCancel = () => {
     setFormData({
       name: profile.name || "",
-      bio: profile.bio || "",
     });
     setIsEditing(false);
   };
@@ -125,23 +126,6 @@ const AccountInformation = ({
                 </p>
               )}
             </div>
-
-            <div>
-              <Label htmlFor="bio">Bio</Label>
-              {isEditing ? (
-                <textarea
-                  id="bio"
-                  value={formData.bio}
-                  onChange={(e) => handleInputChange("bio", e.target.value)}
-                  placeholder="Tell us about yourself..."
-                  className="min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                />
-              ) : (
-                <p className="text-sm text-gray-600 mt-1">
-                  {profile.bio || "No bio added yet"}
-                </p>
-              )}
-            </div>
           </div>
 
           <Separator />
@@ -149,16 +133,10 @@ const AccountInformation = ({
           <div className="space-y-4">
             <div>
               <Label>Email Address</Label>
-              <div className="flex items-center justify-between mt-1">
-                <span className="text-sm text-gray-600">{user?.email}</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowEmailChange(true)}
-                >
-                  Change Email
-                </Button>
-              </div>
+              <p className="text-sm text-gray-600 mt-1">{user?.email}</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Email cannot be changed from this page for security reasons
+              </p>
             </div>
 
             <div>
@@ -209,11 +187,6 @@ const AccountInformation = ({
           </div>
         </CardContent>
       </Card>
-
-      <EmailChangeDialog
-        open={showEmailChange}
-        onOpenChange={setShowEmailChange}
-      />
     </>
   );
 };
