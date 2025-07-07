@@ -16,6 +16,11 @@ import {
   getSellerDeliveryAddress,
   getSimpleUserAddresses,
 } from "@/services/simplifiedAddressService";
+import {
+  validateCheckoutStart,
+  getSellerCheckoutData,
+  getBuyerCheckoutData,
+} from "@/services/checkoutValidationService";
 import { supabase } from "@/integrations/supabase/client";
 import Step1OrderSummary from "./Step1OrderSummary";
 import Step2DeliveryOptions from "./Step2DeliveryOptions";
