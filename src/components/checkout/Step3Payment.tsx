@@ -292,7 +292,7 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
               availability: "sold",
               sold_at: new Date().toISOString(),
             })
-            .eq("id", orderSummary.book.id);
+            .eq("id", bookItem.book_id);
 
           if (bookError) {
             console.warn("Failed to mark book as sold:", bookError);
