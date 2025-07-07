@@ -30,8 +30,10 @@ import { useUserOrders } from "@/hooks/useUserOrders";
 const ActivityLog: React.FC = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
-  const [activities, setActivities] = useState<ActivityItem[]>([]);
+  const [activities, setActivities] = useState<ActivityType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { orders } = useUserOrders();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -40,38 +42,71 @@ const ActivityLog: React.FC = () => {
     }
 
     loadActivityLog();
-  }, [isAuthenticated]); // Removed navigate and loadActivityLog to prevent loops
+  }, [isAuthenticated, user?.id]);
 
-  const loadActivityLog = () => {
-    setLoading(true);
-
-    // For now, show sample activities - you can connect to your ActivityService later
-    const sampleActivities: ActivityItem[] = [
-      {
-        id: "1",
-        type: "book_listed",
-        description: "Listed a new book for sale",
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: "2",
-        type: "profile_updated",
-        description: "Updated profile information",
-        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: "3",
-        type: "order_placed",
-        description: "Placed an order for a textbook",
-        timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
-      },
-    ];
-
-    // Simulate loading delay
-    setTimeout(() => {
-      setActivities(sampleActivities);
+  const loadActivityLog = async () => {
+    if (!user?.id) {
       setLoading(false);
-    }, 300);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Get activities from ActivityService
+      const userActivities = await ActivityService.getUserActivities(
+        user.id,
+        50,
+      );
+
+      // Add purchase activities from orders
+      const purchaseActivities = orders.map((order, index) => ({
+        id: `purchase-${order.id}`,
+        user_id: user.id,
+        type: "purchase" as const,
+        title: "Book Purchase",
+        description: `Purchased ${order.items.length} book${order.items.length > 1 ? "s" : ""} for R${(order.amount / 100).toFixed(2)}`,
+        metadata: {
+          orderId: order.id,
+          amount: order.amount,
+          itemCount: order.items.length,
+          status: order.status,
+        },
+        created_at: order.created_at,
+      }));
+
+      // Combine and sort activities
+      const allActivities = [...userActivities, ...purchaseActivities].sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
+
+      setActivities(allActivities);
+    } catch (err) {
+      console.error("Error loading activity log:", err);
+      setError("Failed to load activity. Some activities may not be shown.");
+
+      // Still show purchase activities if main activity service fails
+      const purchaseActivities = orders.map((order) => ({
+        id: `purchase-${order.id}`,
+        user_id: user.id,
+        type: "purchase" as const,
+        title: "Book Purchase",
+        description: `Purchased ${order.items.length} book${order.items.length > 1 ? "s" : ""} for R${(order.amount / 100).toFixed(2)}`,
+        metadata: {
+          orderId: order.id,
+          amount: order.amount,
+          itemCount: order.items.length,
+          status: order.status,
+        },
+        created_at: order.created_at,
+      }));
+
+      setActivities(purchaseActivities);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getActivityIcon = (type: string) => {
