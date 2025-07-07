@@ -837,21 +837,7 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
         </Card>
       )}
 
-      {/* Demo Testing Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Settings className="h-5 w-5" />
-            Demo Environment & Testing
-          </CardTitle>
-          <CardDescription>
-            Test demo keys, payment functionality, and commit system
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <DemoTester />
-        </CardContent>
-      </Card>
+      {/* Note: Demo testing functionality has been moved to QA Dashboard in Admin Panel */}
     </div>
   );
 };
