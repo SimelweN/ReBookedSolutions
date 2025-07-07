@@ -55,21 +55,42 @@ const EnhancedUserOrders: React.FC = () => {
   }, [user, isAuthenticated, loadOrders, navigate]);
 
   const loadOrders = useCallback(async () => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      console.log("No user ID available for loading orders");
+      setLoading(false);
+      return;
+    }
 
     try {
       setLoading(true);
+      console.log("Loading orders for user:", user.id);
 
       const [buyerOrdersData, sellerOrdersData] = await Promise.all([
-        getUserOrders(user.id, "buyer"),
-        getUserOrders(user.id, "seller"),
+        getUserOrders(user.id, "buyer").catch((err) => {
+          console.error("Error loading buyer orders:", err);
+          return [];
+        }),
+        getUserOrders(user.id, "seller").catch((err) => {
+          console.error("Error loading seller orders:", err);
+          return [];
+        }),
       ]);
 
+      console.log(
+        "Loaded orders - Buyer:",
+        buyerOrdersData.length,
+        "Seller:",
+        sellerOrdersData.length,
+      );
       setBuyerOrders(buyerOrdersData);
       setSellerOrders(sellerOrdersData);
     } catch (error) {
       console.error("Error loading orders:", error);
-      toast.error("Failed to load orders");
+      toast.error("Failed to load orders. Using demo data.");
+
+      // Fallback to empty arrays if there's an error
+      setBuyerOrders([]);
+      setSellerOrders([]);
     } finally {
       setLoading(false);
     }
