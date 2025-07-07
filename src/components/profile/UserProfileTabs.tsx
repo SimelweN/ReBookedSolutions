@@ -62,7 +62,12 @@ const AddressSection = ({
 
   const formatAddress = (address: Address | null | undefined) => {
     if (!address) return "Not provided";
-    return `${address.street}, ${address.city}, ${address.province} ${address.postalCode}`;
+    const street = address.street || address.streetAddress || "";
+    const postalCode = address.postalCode || address.postal_code || "";
+    if (!street || !address.city || !address.province || !postalCode) {
+      return "Not provided";
+    }
+    return `${street}, ${address.city}, ${address.province} ${postalCode}`;
   };
 
   const handlePickupSave = async () => {
@@ -300,7 +305,12 @@ const UserProfileTabs = ({
 
   const formatAddress = (address: Address | null | undefined) => {
     if (!address) return "Not provided";
-    return `${address.street}, ${address.city}, ${address.province} ${address.postalCode}`;
+    const street = address.street || address.streetAddress || "";
+    const postalCode = address.postalCode || address.postal_code || "";
+    if (!street || !address.city || !address.province || !postalCode) {
+      return "Not provided";
+    }
+    return `${street}, ${address.city}, ${address.province} ${postalCode}`;
   };
 
   // Commit data will be fetched from API when the feature is ready
