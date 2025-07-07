@@ -288,10 +288,16 @@ export const MultiSellerCart: React.FC<MultiSellerCartProps> = ({
               {sellerCarts.length > 1 && (
                 <div className="flex items-center gap-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <Package className="h-4 w-4 text-blue-600" />
-                  <div className="text-sm text-blue-800">
+                  <div className="flex-1 text-sm text-blue-800">
                     <strong>Multiple sellers:</strong> Each seller's books will
                     be shipped separately. You'll need to checkout each seller
                     individually to minimize courier costs.
+                    <button
+                      onClick={() => setShowExplainer(true)}
+                      className="ml-2 text-blue-600 hover:text-blue-700 underline font-medium"
+                    >
+                      Why is this?
+                    </button>
                   </div>
                 </div>
               )}
