@@ -91,13 +91,7 @@ export const validateSellerForListing = async (
 
     let sellerAddress;
     if (hasAddress) {
-      sellerAddress = {
-        street: addresses.pickup_address!.streetAddress,
-        city: addresses.pickup_address!.city,
-        province: addresses.pickup_address!.province,
-        postal_code: addresses.pickup_address!.postalCode,
-        country: "South Africa",
-      };
+      sellerAddress = normalizeAddress(addresses.pickup_address!);
     } else {
       errors.push("You must add your pickup address before listing books");
     }
