@@ -281,7 +281,18 @@ export const getBookById = async (id: string): Promise<Book | null> => {
       async () => {
         const { data: bookData, error: bookError } = await supabase
           .from("books")
-          .select("*")
+          .select(
+            `
+            *,
+            seller_street,
+            seller_city,
+            seller_province,
+            seller_postal_code,
+            seller_country,
+            seller_subaccount_code,
+            profiles!books_seller_id_fkey(id, name, email)
+          `,
+          )
           .eq("id", id)
           .single();
 
