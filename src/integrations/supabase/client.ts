@@ -156,6 +156,47 @@ try {
   } else {
     console.error("❌ Supabase configuration missing - creating mock client");
     // Create a mock client for development
+    const createMockQueryBuilder = () => {
+      const mockError = new Error("Supabase not configured");
+      const mockQuery = {
+        select: () => mockQuery,
+        insert: () => mockQuery,
+        update: () => mockQuery,
+        delete: () => mockQuery,
+        limit: () => mockQuery,
+        single: () => mockQuery,
+        range: () => mockQuery,
+        order: () => mockQuery,
+        filter: () => mockQuery,
+        eq: () => mockQuery,
+        neq: () => mockQuery,
+        gt: () => mockQuery,
+        gte: () => mockQuery,
+        lt: () => mockQuery,
+        lte: () => mockQuery,
+        like: () => mockQuery,
+        ilike: () => mockQuery,
+        is: () => mockQuery,
+        in: () => mockQuery,
+        contains: () => mockQuery,
+        containedBy: () => mockQuery,
+        rangeGt: () => mockQuery,
+        rangeGte: () => mockQuery,
+        rangeLt: () => mockQuery,
+        rangeLte: () => mockQuery,
+        rangeAdjacent: () => mockQuery,
+        overlaps: () => mockQuery,
+        textSearch: () => mockQuery,
+        match: () => mockQuery,
+        not: () => mockQuery,
+        or: () => mockQuery,
+        then: () => Promise.reject(mockError),
+        catch: () => Promise.reject(mockError),
+        finally: () => Promise.reject(mockError),
+      };
+      return mockQuery;
+    };
+
     supabase = {
       auth: {
         signUp: () => Promise.reject(new Error("Supabase not configured")),
@@ -168,12 +209,7 @@ try {
           data: { subscription: { unsubscribe: () => {} } },
         }),
       },
-      from: () => ({
-        select: () => Promise.reject(new Error("Supabase not configured")),
-        insert: () => Promise.reject(new Error("Supabase not configured")),
-        update: () => Promise.reject(new Error("Supabase not configured")),
-        delete: () => Promise.reject(new Error("Supabase not configured")),
-      }),
+      from: () => createMockQueryBuilder(),
       functions: {
         invoke: () => Promise.reject(new Error("Supabase not configured")),
       },
