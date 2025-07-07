@@ -52,7 +52,7 @@ const EnhancedUserOrders: React.FC = () => {
     if (user?.id) {
       loadOrders();
     }
-  }, [user, isAuthenticated, loadOrders, navigate]);
+  }, [user?.id, isAuthenticated, navigate, loadOrders]);
 
   const loadOrders = useCallback(async () => {
     if (!user?.id) {
