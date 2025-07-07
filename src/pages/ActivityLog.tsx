@@ -41,43 +41,36 @@ const ActivityLog: React.FC = () => {
     loadActivityLog();
   }, [isAuthenticated]); // Removed navigate and loadActivityLog to prevent loops
 
-  const loadActivityLog = async () => {
-    try {
-      setLoading(true);
+  const loadActivityLog = () => {
+    setLoading(true);
 
-      // For now, show sample activities - you can connect to your ActivityService later
-      const sampleActivities: ActivityItem[] = [
-        {
-          id: "1",
-          type: "book_listed",
-          description: "Listed a new book for sale",
-          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        },
-        {
-          id: "2",
-          type: "profile_updated",
-          description: "Updated profile information",
-          timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        },
-        {
-          id: "3",
-          type: "order_placed",
-          description: "Placed an order for a textbook",
-          timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
-        },
-      ];
+    // For now, show sample activities - you can connect to your ActivityService later
+    const sampleActivities: ActivityItem[] = [
+      {
+        id: "1",
+        type: "book_listed",
+        description: "Listed a new book for sale",
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: "2",
+        type: "profile_updated",
+        description: "Updated profile information",
+        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: "3",
+        type: "order_placed",
+        description: "Placed an order for a textbook",
+        timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+      },
+    ];
 
-      // Simulate loading delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
+    // Simulate loading delay
+    setTimeout(() => {
       setActivities(sampleActivities);
-    } catch (error) {
-      console.error("Error loading activity log:", error);
-      toast.error("Failed to load activity log");
-      setActivities([]);
-    } finally {
       setLoading(false);
-    }
+    }, 300);
   };
 
   const getActivityIcon = (type: string) => {
