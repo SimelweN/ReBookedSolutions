@@ -77,12 +77,26 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ book }) => {
         .select(
           `
           *,
-          profiles!books_seller_id_fkey(
-            id, name, email
-          )
+          seller_street,
+          seller_city,
+          seller_province,
+          seller_postal_code,
+          seller_country,
+          seller_subaccount_code
         `,
         )
         .eq("id", book.id)
+        .single();
+
+      if (bookError || !bookData) {
+        throw new Error("Failed to load book details");
+      }
+
+      // Get seller profile separately
+      const { data: sellerProfile, error: sellerError } = await supabase
+        .from("profiles")
+        .select("id, name, email")
+        .eq("id", bookData.seller_id)
         .single();
 
       if (bookError || !bookData) {
