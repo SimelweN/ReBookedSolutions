@@ -52,6 +52,8 @@ const CheckoutSuccess = React.lazy(() => import("./pages/CheckoutSuccess"));
 const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
 const PaymentCallback = React.lazy(() => import("./pages/PaymentCallback"));
 const UniversityProfile = React.lazy(() => import("./pages/UniversityProfile"));
+const Receipt = React.lazy(() => import("./pages/Receipt"));
+const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
 
 // Loading component
 const LoadingSpinner = () => (
@@ -341,9 +343,40 @@ function App() {
                           </ProtectedRoute>
                         }
                       />
+                      <Route
+                        path="/receipt/:reference"
+                        element={
+                          <ProtectedRoute>
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <Receipt />
+                            </Suspense>
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/activity"
+                        element={
+                          <ProtectedRoute>
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <ActivityLog />
+                            </Suspense>
+                          </ProtectedRoute>
+                        }
+                      />
 
                       <Route
                         path="/my-orders"
+                        element={
+                          <ProtectedRoute>
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <UserOrders />
+                            </Suspense>
+                          </ProtectedRoute>
+                        }
+                      />
+                      {/* Redirect /orders to /my-orders */}
+                      <Route
+                        path="/orders"
                         element={
                           <ProtectedRoute>
                             <Suspense fallback={<LoadingSpinner />}>

@@ -1,8 +1,16 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Package, Clock, Eye, ArrowRight } from "lucide-react";
+import {
+  CheckCircle,
+  Package,
+  Clock,
+  Eye,
+  ArrowRight,
+  Receipt,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import ReceiptDownloader from "@/components/receipt/ReceiptDownloader";
 
 interface PaymentSuccessProps {
   reference: string;
@@ -10,9 +18,21 @@ interface PaymentSuccessProps {
   items: Array<{
     id: string;
     title: string;
+    author?: string;
     price: number;
   }>;
   isCartCheckout: boolean;
+  buyer?: {
+    name: string;
+    email: string;
+  };
+  seller?: {
+    name: string;
+    email: string;
+  };
+  deliveryMethod?: string;
+  deliveryFee?: number;
+  deliveryAddress?: any;
   onClose?: () => void;
 }
 
@@ -21,10 +41,16 @@ const PaymentSuccess = ({
   amount,
   items,
   isCartCheckout,
+  buyer,
+  seller,
+  deliveryMethod,
+  deliveryFee,
+  deliveryAddress,
   onClose,
 }: PaymentSuccessProps) => {
   const navigate = useNavigate();
   const [countdown, setCountdown] = useState(10);
+  const [showReceipt, setShowReceipt] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -51,6 +77,10 @@ const PaymentSuccess = ({
 
   const handleViewProfile = () => {
     navigate("/profile");
+  };
+
+  const toggleReceipt = () => {
+    setShowReceipt(!showReceipt);
   };
 
   return (
@@ -132,6 +162,40 @@ const PaymentSuccess = ({
                 Redirecting to your orders in {countdown} seconds
               </span>
             </div>
+          </div>
+
+          {/* Receipt Download */}
+          <div className="bg-green-50 p-4 rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Receipt className="h-4 w-4 text-green-600" />
+                <span className="font-medium text-green-800">
+                  Download Receipt
+                </span>
+              </div>
+              <Button
+                onClick={toggleReceipt}
+                variant="outline"
+                size="sm"
+                className="text-green-700 border-green-300 hover:bg-green-100"
+              >
+                {showReceipt ? "Hide" : "Show"} Receipt
+              </Button>
+            </div>
+
+            {showReceipt && (
+              <ReceiptDownloader
+                reference={reference}
+                amount={amount}
+                items={items}
+                buyer={buyer}
+                seller={seller}
+                deliveryMethod={deliveryMethod}
+                deliveryFee={deliveryFee}
+                deliveryAddress={deliveryAddress}
+                timestamp={new Date().toISOString()}
+              />
+            )}
           </div>
 
           {/* Action Buttons */}

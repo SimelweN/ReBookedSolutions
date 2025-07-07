@@ -30,6 +30,8 @@ import {
   confirmDelivery,
   type Order,
 } from "@/services/orderManagementService";
+import { commitToOrder } from "@/services/enhancedOrderService";
+import CommitToOrder from "@/components/CommitToOrder";
 import SEO from "@/components/SEO";
 import { toast } from "sonner";
 
@@ -43,6 +45,88 @@ const EnhancedUserOrders: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
 
+  const loadOrders = useCallback(async () => {
+    if (!user?.id) {
+      console.log("No user ID available for loading orders");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      console.log("Loading orders for user:", user.id);
+
+      const [buyerOrdersData, sellerOrdersData] = await Promise.all([
+        getUserOrders(user.id, "buyer").catch((err) => {
+          console.error("Error loading buyer orders:", err);
+          return [];
+        }),
+        getUserOrders(user.id, "seller").catch((err) => {
+          console.error("Error loading seller orders:", err);
+          return [];
+        }),
+      ]);
+
+      console.log(
+        "Loaded orders - Buyer:",
+        buyerOrdersData.length,
+        "Seller:",
+        sellerOrdersData.length,
+      );
+      setBuyerOrders(buyerOrdersData);
+      setSellerOrders(sellerOrdersData);
+    } catch (error) {
+      console.error("Error loading orders:", error);
+      toast.error(
+        "Failed to load orders. Please check your internet connection and try again.",
+      );
+
+      // Show sample data if real data fails to load (for development)
+      if (import.meta.env.DEV) {
+        console.log("Development mode: Adding sample orders");
+        const sampleOrders: Order[] = [
+          {
+            id: "sample-order-1",
+            buyer_id: user.id,
+            seller_id: "other-user",
+            book_id: "sample-book-1",
+            paystack_reference: "sample-ref-123",
+            total_amount: 15000,
+            book_price: 12000,
+            delivery_fee: 3000,
+            platform_fee: 0,
+            seller_amount: 12000,
+            status: "paid",
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            book: {
+              title: "Sample Textbook",
+              author: "Sample Author",
+              imageUrl: undefined,
+            },
+            buyer: {
+              name: "Sample Buyer",
+              email: "buyer@example.com",
+            },
+            seller: {
+              name: "Sample Seller",
+              email: "seller@example.com",
+            },
+          },
+        ];
+
+        // Add sample orders based on role
+        setBuyerOrders(sampleOrders);
+        setSellerOrders(user.id === "other-user" ? sampleOrders : []);
+      } else {
+        setBuyerOrders([]);
+        setSellerOrders([]);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id]);
+
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/login");
@@ -52,28 +136,7 @@ const EnhancedUserOrders: React.FC = () => {
     if (user?.id) {
       loadOrders();
     }
-  }, [user, isAuthenticated, loadOrders, navigate]);
-
-  const loadOrders = useCallback(async () => {
-    if (!user?.id) return;
-
-    try {
-      setLoading(true);
-
-      const [buyerOrdersData, sellerOrdersData] = await Promise.all([
-        getUserOrders(user.id, "buyer"),
-        getUserOrders(user.id, "seller"),
-      ]);
-
-      setBuyerOrders(buyerOrdersData);
-      setSellerOrders(sellerOrdersData);
-    } catch (error) {
-      console.error("Error loading orders:", error);
-      toast.error("Failed to load orders");
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.id]);
+  }, [user?.id, isAuthenticated, navigate, loadOrders]);
 
   const handleConfirmDelivery = async (orderId: string) => {
     try {
@@ -81,6 +144,17 @@ const EnhancedUserOrders: React.FC = () => {
       await loadOrders(); // Reload orders to show updated status
     } catch (error) {
       // Error already handled in service
+    }
+  };
+
+  const handleCommitToOrder = async (orderId: string) => {
+    try {
+      await commitToOrder(orderId);
+      await loadOrders(); // Reload orders to show updated status
+      toast.success("Successfully committed to the order!");
+    } catch (error) {
+      console.error("Error committing to order:", error);
+      toast.error("Failed to commit to order. Please try again.");
     }
   };
 
@@ -254,6 +328,18 @@ const EnhancedUserOrders: React.FC = () => {
                     View
                   </Link>
                 </Button>
+
+                {/* Seller Actions */}
+                {userRole === "seller" && order.status === "paid" && (
+                  <Button
+                    size="sm"
+                    onClick={() => handleCommitToOrder(order.id)}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <CheckCircle className="h-4 w-4 mr-1" />
+                    Commit to Order
+                  </Button>
+                )}
 
                 {/* Buyer Actions */}
                 {userRole === "buyer" && order.status === "delivered" && (

@@ -313,7 +313,8 @@ export const retryWithConnection = async <T>(
         error?.message?.includes("auth") ||
         error?.code === "PGRST116" || // Not found
         error?.message?.includes("permission") ||
-        error?.message?.includes("unauthorized")
+        error?.message?.includes("unauthorized") ||
+        errorCode === "SUPABASE_NOT_CONFIGURED" // Don't retry Supabase config issues
       ) {
         console.warn(`Not retrying error: ${errorMessage} (non-retryable)`);
         throw error;

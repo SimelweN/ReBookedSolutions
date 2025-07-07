@@ -32,33 +32,53 @@ export async function checkDatabaseStatus(): Promise<DatabaseStatus> {
   };
 
   try {
-    // Test basic connection
-    const { error: connectionError } = await supabase
-      .from("profiles")
-      .select("id")
-      .limit(1);
+    // Test basic connection - handle both real and mock Supabase client
+    try {
+      const { error: connectionError } = await supabase
+        .from("profiles")
+        .select("id")
+        .limit(1);
 
-    if (connectionError) {
-      if (
-        connectionError.message?.includes("relation") &&
-        connectionError.message?.includes("does not exist")
-      ) {
+      if (connectionError) {
+        if (connectionError.message?.includes("Supabase not configured")) {
+          status.errors.push(
+            "Supabase client not properly configured - check environment variables",
+          );
+          status.setupInstructions =
+            "Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables";
+        } else if (
+          connectionError.message?.includes("relation") &&
+          connectionError.message?.includes("does not exist")
+        ) {
+          status.errors.push(
+            "Profiles table does not exist - this is the main cause of loading spinner",
+          );
+          status.setupInstructions =
+            "Run the complete_database_setup.sql script in your Supabase SQL editor";
+        } else if (connectionError.message?.includes("permission denied")) {
+          status.errors.push("Permission denied accessing profiles table");
+          status.setupInstructions = "Check RLS policies in Supabase dashboard";
+        } else {
+          status.errors.push(
+            `Database connection error: ${connectionError.message}`,
+          );
+        }
+      } else {
+        status.isConnected = true;
+        status.tablesExist.profiles = true;
+      }
+    } catch (queryError: any) {
+      if (queryError.message?.includes("Supabase not configured")) {
         status.errors.push(
-          "Profiles table does not exist - this is the main cause of loading spinner",
+          "Supabase client not properly configured - check environment variables",
         );
         status.setupInstructions =
-          "Run the complete_database_setup.sql script in your Supabase SQL editor";
-      } else if (connectionError.message?.includes("permission denied")) {
-        status.errors.push("Permission denied accessing profiles table");
-        status.setupInstructions = "Check RLS policies in Supabase dashboard";
+          "Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables";
       } else {
         status.errors.push(
-          `Database connection error: ${connectionError.message}`,
+          `Failed to execute database query: ${queryError.message}`,
         );
       }
-    } else {
-      status.isConnected = true;
-      status.tablesExist.profiles = true;
     }
 
     // Check other critical tables
@@ -75,14 +95,23 @@ export async function checkDatabaseStatus(): Promise<DatabaseStatus> {
 
         if (!error) {
           status.tablesExist[table as keyof typeof status.tablesExist] = true;
+        } else if (error.message?.includes("Supabase not configured")) {
+          // Skip table checks if Supabase is not configured
+          break;
         } else if (
           error.message?.includes("relation") &&
           error.message?.includes("does not exist")
         ) {
           status.errors.push(`${table} table does not exist`);
         }
-      } catch (error) {
-        status.errors.push(`Error checking ${table} table: ${error}`);
+      } catch (error: any) {
+        if (error.message?.includes("Supabase not configured")) {
+          // Skip remaining table checks if Supabase is not configured
+          break;
+        }
+        status.errors.push(
+          `Error checking ${table} table: ${error.message || error}`,
+        );
       }
     }
   } catch (error) {

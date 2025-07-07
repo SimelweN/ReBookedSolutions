@@ -156,26 +156,108 @@ try {
   } else {
     console.error("❌ Supabase configuration missing - creating mock client");
     // Create a mock client for development
+    const createMockQueryBuilder = () => {
+      const mockError = {
+        message:
+          "Supabase not configured - please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables",
+        code: "SUPABASE_NOT_CONFIGURED",
+      };
+      const mockResponse = { data: null, error: mockError };
+      const mockPromise = Promise.resolve(mockResponse);
+
+      const mockQuery = {
+        select: () => mockQuery,
+        insert: () => mockQuery,
+        update: () => mockQuery,
+        delete: () => mockQuery,
+        limit: () => mockQuery,
+        single: () => mockQuery,
+        range: () => mockQuery,
+        order: () => mockQuery,
+        filter: () => mockQuery,
+        eq: () => mockQuery,
+        neq: () => mockQuery,
+        gt: () => mockQuery,
+        gte: () => mockQuery,
+        lt: () => mockQuery,
+        lte: () => mockQuery,
+        like: () => mockQuery,
+        ilike: () => mockQuery,
+        is: () => mockQuery,
+        in: () => mockQuery,
+        contains: () => mockQuery,
+        containedBy: () => mockQuery,
+        rangeGt: () => mockQuery,
+        rangeGte: () => mockQuery,
+        rangeLt: () => mockQuery,
+        rangeLte: () => mockQuery,
+        rangeAdjacent: () => mockQuery,
+        overlaps: () => mockQuery,
+        textSearch: () => mockQuery,
+        match: () => mockQuery,
+        not: () => mockQuery,
+        or: () => mockQuery,
+        then: (onFulfilled?: any, onRejected?: any) =>
+          mockPromise.then(onFulfilled, onRejected),
+        catch: (onRejected?: any) => mockPromise.catch(onRejected),
+        finally: (onFinally?: any) => mockPromise.finally(onFinally),
+        // Make it awaitable
+        [Symbol.toStringTag]: "Promise",
+      };
+
+      // Make the query builder await-able
+      Object.setPrototypeOf(mockQuery, Promise.prototype);
+
+      return mockQuery;
+    };
+
+    const mockError = {
+      message:
+        "Supabase not configured - please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables",
+      code: "SUPABASE_NOT_CONFIGURED",
+    };
+
     supabase = {
       auth: {
-        signUp: () => Promise.reject(new Error("Supabase not configured")),
+        signUp: () =>
+          Promise.resolve({
+            data: { user: null, session: null },
+            error: mockError,
+          }),
         signInWithPassword: () =>
-          Promise.reject(new Error("Supabase not configured")),
-        signOut: () => Promise.reject(new Error("Supabase not configured")),
+          Promise.resolve({
+            data: { user: null, session: null },
+            error: mockError,
+          }),
+        signOut: () => Promise.resolve({ error: mockError }),
         getSession: () =>
           Promise.resolve({ data: { session: null }, error: null }),
         onAuthStateChange: () => ({
           data: { subscription: { unsubscribe: () => {} } },
         }),
+        getUser: () =>
+          Promise.resolve({ data: { user: null }, error: mockError }),
+        refreshSession: () =>
+          Promise.resolve({
+            data: { user: null, session: null },
+            error: mockError,
+          }),
+        updateUser: () =>
+          Promise.resolve({ data: { user: null }, error: mockError }),
+        resetPasswordForEmail: () =>
+          Promise.resolve({ data: {}, error: mockError }),
       },
-      from: () => ({
-        select: () => Promise.reject(new Error("Supabase not configured")),
-        insert: () => Promise.reject(new Error("Supabase not configured")),
-        update: () => Promise.reject(new Error("Supabase not configured")),
-        delete: () => Promise.reject(new Error("Supabase not configured")),
-      }),
+      from: () => createMockQueryBuilder(),
       functions: {
-        invoke: () => Promise.reject(new Error("Supabase not configured")),
+        invoke: () => Promise.resolve({ data: null, error: mockError }),
+      },
+      storage: {
+        from: () => ({
+          upload: () => Promise.resolve({ data: null, error: mockError }),
+          download: () => Promise.resolve({ data: null, error: mockError }),
+          list: () => Promise.resolve({ data: null, error: mockError }),
+          remove: () => Promise.resolve({ data: null, error: mockError }),
+        }),
       },
     };
   }
