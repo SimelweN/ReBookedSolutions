@@ -71,59 +71,11 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
         throw new Error("User authentication error");
       }
 
-      // Check if seller has subaccount
+      // Seller subaccount should already be available from books table
       if (!orderSummary.book.seller_subaccount_code) {
-        // Try to get seller's subaccount from database
-        let { data: sellerSubaccount, error: subaccountError } = await supabase
-          .from("banking_subaccounts")
-          .select("subaccount_code, status")
-          .eq("user_id", orderSummary.book.seller_id)
-          .eq("status", "active")
-          .single();
-
-        // First check all subaccounts for debugging
-        const { data: allSellerSubaccounts } = await supabase
-          .from("banking_subaccounts")
-          .select("*")
-          .eq("user_id", orderSummary.book.seller_id);
-
-        // If no active subaccount, try any subaccount with code
-        if (
-          !sellerSubaccount &&
-          allSellerSubaccounts &&
-          allSellerSubaccounts.length > 0
-        ) {
-          const anySubaccountWithCode = allSellerSubaccounts.find(
-            (sub) => sub.subaccount_code,
-          );
-          if (anySubaccountWithCode) {
-            sellerSubaccount = {
-              subaccount_code: anySubaccountWithCode.subaccount_code,
-              status: anySubaccountWithCode.status,
-            };
-            console.log(
-              "📦 Using non-active subaccount for payment:",
-              sellerSubaccount,
-            );
-          }
-        }
-
-        console.log("🔍 Final seller subaccount decision:", {
-          seller_id: orderSummary.book.seller_id,
-          all_subaccounts: allSellerSubaccounts,
-          chosen_subaccount: sellerSubaccount,
-          original_error: subaccountError,
-        });
-
-        if (!sellerSubaccount?.subaccount_code) {
-          throw new Error(
-            "Seller payment setup is incomplete. The seller needs to set up their banking details before accepting payments.",
-          );
-        }
-
-        // Update the book data with the found subaccount
-        orderSummary.book.seller_subaccount_code =
-          sellerSubaccount.subaccount_code;
+        throw new Error(
+          "Seller payment setup is incomplete. The seller needs to set up their banking details before accepting payments.",
+        );
       }
 
       // Prepare payment request
