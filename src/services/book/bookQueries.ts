@@ -474,10 +474,10 @@ export const getBooksByUser = async (userId: string): Promise<Book[]> => {
           return [];
         }
 
-        // Fetch seller profile
+        // Fetch seller profile (including pickup_address for hasAddress check)
         const { data: sellerProfile, error: sellerError } = await supabase
           .from("profiles")
-          .select("id, name, email")
+          .select("id, name, email, pickup_address")
           .eq("id", userId)
           .single();
 
@@ -485,6 +485,7 @@ export const getBooksByUser = async (userId: string): Promise<Book[]> => {
           id: userId,
           name: "Unknown Seller",
           email: "unknown@example.com",
+          pickup_address: null,
         };
 
         const seller = sellerProfile || fallbackSeller;
