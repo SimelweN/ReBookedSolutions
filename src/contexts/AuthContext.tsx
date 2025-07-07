@@ -170,13 +170,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     [profile],
   );
 
+  // Add debouncing to prevent rapid auth state changes
+  const authChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const handleAuthStateChange = useCallback(
     async (session: Session, event?: string) => {
-      try {
-        console.log("🔄 [AuthContext] Handling auth state change:", {
-          event,
-          userId: session.user?.id,
-        });
+      // Clear any pending auth state change
+      if (authChangeTimeoutRef.current) {
+        clearTimeout(authChangeTimeoutRef.current);
+      }
+
+      // Debounce auth state changes to prevent glitching
+      authChangeTimeoutRef.current = setTimeout(async () => {
+        try {
+          console.log("🔄 [AuthContext] Handling auth state change:", {
+            event,
+            userId: session.user?.id,
+          });
 
         if (session.user) {
           // Check if this is actually a new user to prevent unnecessary updates
