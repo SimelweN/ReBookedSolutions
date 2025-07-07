@@ -8,14 +8,13 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 interface ExpiredRecord {
   id: string;
-  buyer_id: string;
+  buyer_email: string;
   seller_id: string;
-  book_id?: string;
+  items?: any[];
   amount: number;
-  paystack_reference?: string;
-  buyer_email?: string;
-  expires_at?: string;
-  commit_deadline?: string;
+  paystack_ref?: string;
+  created_at: string;
+  paid_at?: string;
 }
 
 serve(async (req) => {
@@ -30,35 +29,22 @@ serve(async (req) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     const now = new Date().toISOString();
 
-    // Find expired transactions
-    const { data: expiredTransactions, error: transactionError } =
-      await supabase
-        .from("transactions")
-        .select("*")
-        .eq("status", "paid_pending_seller")
-        .or(`expires_at.lt.${now},commit_deadline.lt.${now}`)
-        .limit(50); // Process in batches
+    // Find orders that have been paid for more than 7 days (expired)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    if (transactionError) {
-      console.warn("Error fetching expired transactions:", transactionError);
-    }
-
-    // Find expired orders
     const { data: expiredOrders, error: orderError } = await supabase
       .from("orders")
       .select("*")
       .eq("status", "paid")
-      .or(`expires_at.lt.${now},commit_deadline.lt.${now}`)
+      .lt("paid_at", sevenDaysAgo.toISOString())
       .limit(50); // Process in batches
 
     if (orderError) {
       console.warn("Error fetching expired orders:", orderError);
     }
 
-    const allExpiredRecords: ExpiredRecord[] = [
-      ...(expiredTransactions || []),
-      ...(expiredOrders || []),
-    ];
+    const allExpiredRecords: ExpiredRecord[] = expiredOrders || [];
 
     console.log(
       `📊 Found ${allExpiredRecords.length} expired records to process`,
@@ -69,60 +55,58 @@ serve(async (req) => {
 
     for (const record of allExpiredRecords) {
       try {
-        console.log(`⏰ Processing expired record: ${record.id}`);
+        console.log(`⏰ Processing expired order: ${record.id}`);
 
-        // Determine which table this record is from
-        const isTransaction = expiredTransactions?.some(
-          (t) => t.id === record.id,
-        );
-        const tableName = isTransaction ? "transactions" : "orders";
-
-        // Update record status to expired
+        // Update order status to cancelled
         const { error: updateError } = await supabase
-          .from(tableName)
+          .from("orders")
           .update({
-            status: "expired",
+            status: "cancelled",
             updated_at: now,
+            metadata: {
+              ...record.metadata,
+              auto_cancelled_at: now,
+              auto_cancel_reason: "Expired - no seller action within 7 days",
+            },
           })
           .eq("id", record.id);
 
         if (updateError) {
-          console.error(
-            `Error updating ${tableName} ${record.id}:`,
-            updateError,
-          );
+          console.error(`Error updating order ${record.id}:`, updateError);
           errorCount++;
           continue;
         }
 
-        // Relist the book as available
-        if (record.book_id) {
-          const { error: bookUpdateError } = await supabase
-            .from("books")
-            .update({
-              sold: false,
-              available: true,
-              status: "available",
-              updated_at: now,
-            })
-            .eq("id", record.book_id);
+        // Relist the books as available
+        if (record.items && Array.isArray(record.items)) {
+          for (const item of record.items) {
+            if (item.book_id) {
+              const { error: bookUpdateError } = await supabase
+                .from("books")
+                .update({
+                  sold: false,
+                  available: true,
+                  status: "available",
+                  updated_at: now,
+                })
+                .eq("id", item.book_id);
 
-          if (bookUpdateError) {
-            console.warn(
-              `Could not relist book ${record.book_id}:`,
-              bookUpdateError,
-            );
-          } else {
-            console.log(`📚 Book ${record.book_id} relisted as available`);
+              if (bookUpdateError) {
+                console.warn(
+                  `Could not relist book ${item.book_id}:`,
+                  bookUpdateError,
+                );
+              } else {
+                console.log(`📚 Book ${item.book_id} relisted as available`);
+              }
+            }
           }
         }
 
         // Process refund if Paystack reference exists
-        if (record.paystack_reference && PAYSTACK_SECRET_KEY) {
+        if (record.paystack_ref && PAYSTACK_SECRET_KEY) {
           try {
-            console.log(
-              `💳 Processing refund for: ${record.paystack_reference}`,
-            );
+            console.log(`💳 Processing refund for: ${record.paystack_ref}`);
 
             const refundResponse = await fetch(
               "https://api.paystack.co/refund",
@@ -133,11 +117,11 @@ serve(async (req) => {
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                  transaction: record.paystack_reference,
+                  transaction: record.paystack_ref,
                   amount: record.amount, // Amount in kobo
                   currency: "ZAR",
-                  customer_note: "Refund for expired seller commitment window",
-                  merchant_note: `Auto-refund for ${tableName} ${record.id} - seller did not commit within 48 hours`,
+                  customer_note: "Refund for expired order",
+                  merchant_note: `Auto-refund for order ${record.id} - expired after 7 days`,
                 }),
               },
             );
@@ -146,23 +130,26 @@ serve(async (req) => {
 
             if (refundResult.status) {
               console.log(
-                `✅ Refund successful for ${record.paystack_reference}:`,
+                `✅ Refund successful for ${record.paystack_ref}:`,
                 refundResult.data,
               );
 
               // Update record with refund details
               await supabase
-                .from(tableName)
+                .from("orders")
                 .update({
-                  status: "refunded",
-                  refund_reference: refundResult.data?.reference,
-                  refunded_at: now,
+                  status: "cancelled",
+                  metadata: {
+                    ...record.metadata,
+                    refund_reference: refundResult.data?.reference,
+                    refunded_at: now,
+                  },
                   updated_at: now,
                 })
                 .eq("id", record.id);
             } else {
               console.error(
-                `❌ Refund failed for ${record.paystack_reference}:`,
+                `❌ Refund failed for ${record.paystack_ref}:`,
                 refundResult.message,
               );
               errorCount++;
@@ -170,7 +157,7 @@ serve(async (req) => {
             }
           } catch (refundError) {
             console.error(
-              `💥 Refund processing error for ${record.paystack_reference}:`,
+              `💥 Refund processing error for ${record.paystack_ref}:`,
               refundError,
             );
             errorCount++;
@@ -178,32 +165,22 @@ serve(async (req) => {
           }
         }
 
-        // Create notifications for both parties
+        // Create notification for seller (buyer notification would need buyer_id which is not in current schema)
         try {
-          // Notification for buyer
-          await supabase.from("order_notifications").insert({
-            order_id: record.id,
-            user_id: record.buyer_id,
-            type: "commit_expired_refund",
-            title: "Order Automatically Cancelled - Refund Processed",
-            message: `Your order #${record.id.slice(0, 8)} was automatically cancelled because the seller did not commit within 48 hours. Your refund has been processed.`,
-            read: false,
-          });
-
           // Notification for seller
           await supabase.from("order_notifications").insert({
             order_id: record.id,
             user_id: record.seller_id,
-            type: "commit_expired_penalty",
-            title: "Sale Automatically Cancelled - Commitment Window Expired",
-            message: `Your sale for order #${record.id.slice(0, 8)} was automatically cancelled for not committing within 48 hours. The buyer has been refunded and the book has been relisted.`,
+            type: "order_expired",
+            title: "Order Automatically Cancelled - Expired",
+            message: `Your order #${record.id.slice(0, 8)} was automatically cancelled after 7 days without action. The books have been relisted.`,
             read: false,
           });
 
-          console.log(`📬 Expiry notifications sent for record ${record.id}`);
+          console.log(`📬 Expiry notification sent for order ${record.id}`);
         } catch (notificationError) {
           console.warn(
-            `Failed to send expiry notifications for ${record.id}:`,
+            `Failed to send expiry notification for ${record.id}:`,
             notificationError,
           );
         }

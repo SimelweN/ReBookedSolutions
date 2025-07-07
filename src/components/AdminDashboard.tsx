@@ -54,12 +54,15 @@ import {
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from "@/hooks/use-mobile";
+import AdminMobileLayout from "@/components/admin/AdminMobileLayout";
 import ProgramReview from "@/components/admin/ProgramReview";
 import DatabaseTest from "@/components/admin/DatabaseTest";
 import QADashboard from "@/components/admin/QADashboard";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTab, setSelectedTab] = useState("overview");
   const [isLoading, setIsLoading] = useState(false);
@@ -565,118 +568,139 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-3 md:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
+        <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Admin Dashboard
+            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              {isMobile ? "Admin Panel" : "Admin Dashboard"}
             </h1>
-            <p className="text-gray-600 mt-1">
-              Welcome back, {user?.user_metadata?.name || user?.email}
+            <p className="text-gray-600 mt-1 text-sm md:text-base">
+              Welcome back,{" "}
+              {isMobile
+                ? user?.user_metadata?.name?.split(" ")[0] ||
+                  user?.email?.split("@")[0]
+                : user?.user_metadata?.name || user?.email}
             </p>
           </div>
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 md:space-x-3">
             <Button
               variant="outline"
               onClick={handleRefresh}
               disabled={isLoading}
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-1 md:space-x-2"
+              size={isMobile ? "sm" : "default"}
             >
               <RefreshCw
-                className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+                className={`h-3 w-3 md:h-4 md:w-4 ${isLoading ? "animate-spin" : ""}`}
               />
-              <span>Refresh</span>
+              <span className="text-xs md:text-sm">Refresh</span>
             </Button>
-            <Badge variant="secondary" className="bg-green-100 text-green-800">
-              System Healthy
+            <Badge
+              variant="secondary"
+              className="bg-green-100 text-green-800 text-xs md:text-sm"
+            >
+              {isMobile ? "Healthy" : "System Healthy"}
             </Badge>
           </div>
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white">
-            <CardContent className="p-6">
+            <CardContent className="p-3 md:p-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-blue-100 text-sm font-medium">
-                    Total Users
+                <div className="min-w-0 flex-1">
+                  <p className="text-blue-100 text-xs md:text-sm font-medium">
+                    {isMobile ? "Users" : "Total Users"}
                   </p>
-                  <p className="text-3xl font-bold">
-                    {stats.totalUsers.toLocaleString()}
+                  <p className="text-xl md:text-3xl font-bold">
+                    {isMobile
+                      ? stats.totalUsers > 999
+                        ? `${(stats.totalUsers / 1000).toFixed(1)}k`
+                        : stats.totalUsers
+                      : stats.totalUsers.toLocaleString()}
                   </p>
-                  <div className="flex items-center mt-2">
-                    <ArrowUpRight className="h-4 w-4 text-green-300" />
-                    <span className="text-sm text-green-300">
-                      +{stats.newUsersToday} today
+                  <div className="flex items-center mt-1 md:mt-2">
+                    <ArrowUpRight className="h-3 w-3 md:h-4 md:w-4 text-green-300" />
+                    <span className="text-xs md:text-sm text-green-300 truncate">
+                      +{stats.newUsersToday} {isMobile ? "" : "today"}
                     </span>
                   </div>
                 </div>
-                <Users className="h-8 w-8 text-blue-200" />
+                <Users className="h-6 w-6 md:h-8 md:w-8 text-blue-200 flex-shrink-0" />
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-0 shadow-lg bg-gradient-to-br from-emerald-500 to-emerald-600 text-white">
-            <CardContent className="p-6">
+            <CardContent className="p-3 md:p-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-emerald-100 text-sm font-medium">
-                    Active Books
+                <div className="min-w-0 flex-1">
+                  <p className="text-emerald-100 text-xs md:text-sm font-medium">
+                    {isMobile ? "Books" : "Active Books"}
                   </p>
-                  <p className="text-3xl font-bold">{stats.activeBooks}</p>
-                  <div className="flex items-center mt-2">
-                    <ArrowUpRight className="h-4 w-4 text-green-300" />
-                    <span className="text-sm text-green-300">
-                      +{stats.booksListedToday} today
+                  <p className="text-xl md:text-3xl font-bold">
+                    {stats.activeBooks}
+                  </p>
+                  <div className="flex items-center mt-1 md:mt-2">
+                    <ArrowUpRight className="h-3 w-3 md:h-4 md:w-4 text-green-300" />
+                    <span className="text-xs md:text-sm text-green-300 truncate">
+                      +{stats.booksListedToday} {isMobile ? "" : "today"}
                     </span>
                   </div>
                 </div>
-                <BookOpen className="h-8 w-8 text-emerald-200" />
+                <BookOpen className="h-6 w-6 md:h-8 md:w-8 text-emerald-200 flex-shrink-0" />
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-500 to-purple-600 text-white">
-            <CardContent className="p-6">
+            <CardContent className="p-3 md:p-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-purple-100 text-sm font-medium">
-                    Total Sales
+                <div className="min-w-0 flex-1">
+                  <p className="text-purple-100 text-xs md:text-sm font-medium">
+                    {isMobile ? "Sales" : "Total Sales"}
                   </p>
-                  <p className="text-3xl font-bold">
-                    R{stats.totalSales.toLocaleString()}
+                  <p className="text-xl md:text-3xl font-bold">
+                    R
+                    {isMobile
+                      ? stats.totalSales > 999
+                        ? `${(stats.totalSales / 1000).toFixed(1)}k`
+                        : stats.totalSales
+                      : stats.totalSales.toLocaleString()}
                   </p>
-                  <div className="flex items-center mt-2">
-                    <ArrowUpRight className="h-4 w-4 text-green-300" />
-                    <span className="text-sm text-green-300">
-                      {stats.salesThisMonth} this month
+                  <div className="flex items-center mt-1 md:mt-2">
+                    <ArrowUpRight className="h-3 w-3 md:h-4 md:w-4 text-green-300" />
+                    <span className="text-xs md:text-sm text-green-300 truncate">
+                      {stats.salesThisMonth} {isMobile ? "" : "this month"}
                     </span>
                   </div>
                 </div>
-                <DollarSign className="h-8 w-8 text-purple-200" />
+                <DollarSign className="h-6 w-6 md:h-8 md:w-8 text-purple-200 flex-shrink-0" />
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-0 shadow-lg bg-gradient-to-br from-amber-500 to-orange-500 text-white">
-            <CardContent className="p-6">
+            <CardContent className="p-3 md:p-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-orange-100 text-sm font-medium">
-                    Pending Reports
+                <div className="min-w-0 flex-1">
+                  <p className="text-orange-100 text-xs md:text-sm font-medium">
+                    {isMobile ? "Reports" : "Pending Reports"}
                   </p>
-                  <p className="text-3xl font-bold">{stats.pendingReports}</p>
-                  <div className="flex items-center mt-2">
-                    <AlertTriangle className="h-4 w-4 text-yellow-300" />
-                    <span className="text-sm text-yellow-300">
-                      Needs attention
+                  <p className="text-xl md:text-3xl font-bold">
+                    {stats.pendingReports}
+                  </p>
+                  <div className="flex items-center mt-1 md:mt-2">
+                    <AlertTriangle className="h-3 w-3 md:h-4 md:w-4 text-yellow-300" />
+                    <span className="text-xs md:text-sm text-yellow-300 truncate">
+                      {isMobile ? "Alert" : "Needs attention"}
                     </span>
                   </div>
                 </div>
-                <Activity className="h-8 w-8 text-orange-200" />
+                <Activity className="h-6 w-6 md:h-8 md:w-8 text-orange-200 flex-shrink-0" />
               </div>
             </CardContent>
           </Card>

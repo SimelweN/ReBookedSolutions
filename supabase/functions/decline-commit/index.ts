@@ -56,62 +56,30 @@ serve(async (req) => {
       throw new Error("Unauthorized: You can only decline your own sales");
     }
 
-    // Try to find transaction first, then order
-    let transactionData = null;
-    let orderData = null;
+    // Find the order
+    const orderIdToUse = orderId || transactionId;
+    const { data: order, error: orderError } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("id", orderIdToUse)
+      .eq("seller_id", sellerId)
+      .single();
 
-    if (transactionId) {
-      // Check transaction table
-      const { data: transaction, error: transactionError } = await supabase
-        .from("transactions")
-        .select("*")
-        .eq("id", transactionId)
-        .eq("seller_id", sellerId)
-        .single();
-
-      if (transactionError) {
-        console.warn("Transaction not found:", transactionError);
-      } else {
-        transactionData = transaction;
-      }
-    }
-
-    if (orderId || (!transactionData && orderId)) {
-      // Check orders table
-      const { data: order, error: orderError } = await supabase
-        .from("orders")
-        .select("*")
-        .eq("id", orderId || transactionId)
-        .eq("seller_id", sellerId)
-        .single();
-
-      if (orderError) {
-        console.warn("Order not found:", orderError);
-      } else {
-        orderData = order;
-      }
-    }
-
-    if (!transactionData && !orderData) {
+    if (orderError || !order) {
       throw new Error(
-        "Transaction or order not found, or you don't have permission to decline this sale",
+        "Order not found, or you don't have permission to decline this sale",
       );
     }
 
-    // Use whichever data we found
-    const data = transactionData || orderData;
-    const isTransaction = !!transactionData;
-    const tableName = isTransaction ? "transactions" : "orders";
+    console.log(`Processing decline for order:`, order.id);
 
-    console.log(`Processing decline for ${tableName}:`, data.id);
-
-    // Check if already declined or committed
-    if (data.status === "declined_by_seller") {
+    // Check if already cancelled
+    if (order.status === "cancelled") {
       return new Response(
         JSON.stringify({
           success: true,
           message: "Sale already declined",
-          data: data,
+          data: order,
         }),
         {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -119,39 +87,30 @@ serve(async (req) => {
       );
     }
 
-    if (data.seller_committed || data.status === "committed") {
+    if (order.status === "ready_for_payout" || order.status === "paid_out") {
       throw new Error("Cannot decline a sale that has already been committed");
     }
 
-    // Check if expired (48 hours)
+    // Check current status - should be 'paid'
+    if (order.status !== "paid") {
+      throw new Error(`Cannot decline sale with status: ${order.status}`);
+    }
+
     const now = new Date();
-    const deadline = data.expires_at || data.commit_deadline;
 
-    if (deadline && new Date(deadline) < now) {
-      throw new Error(
-        "Cannot decline an expired commit (48 hours have passed)",
-      );
-    }
-
-    // Check current status - should be 'paid' or 'paid_pending_seller'
-    const validStatuses = ["paid", "paid_pending_seller"];
-    if (!validStatuses.includes(data.status)) {
-      throw new Error(`Cannot decline sale with status: ${data.status}`);
-    }
-
-    // Update the transaction/order to declined status
-    const updateData = {
-      status: "declined_by_seller",
-      seller_committed: false,
-      declined_at: now.toISOString(),
-      decline_reason: reason || "Seller declined the order",
-      updated_at: now.toISOString(),
-    };
-
+    // Update the order to cancelled status
     const { data: updatedRecord, error: updateError } = await supabase
-      .from(tableName)
-      .update(updateData)
-      .eq("id", data.id)
+      .from("orders")
+      .update({
+        status: "cancelled",
+        updated_at: now.toISOString(),
+        metadata: {
+          ...order.metadata,
+          declined_at: now.toISOString(),
+          decline_reason: reason || "Seller declined the order",
+        },
+      })
+      .eq("id", order.id)
       .eq("seller_id", sellerId)
       .select()
       .single();
@@ -163,31 +122,35 @@ serve(async (req) => {
 
     console.log("✅ Sale declined successfully:", updatedRecord.id);
 
-    // Relist the book as available
-    if (data.book_id) {
-      const { error: bookUpdateError } = await supabase
-        .from("books")
-        .update({
-          sold: false,
-          available: true,
-          status: "available",
-          updated_at: now.toISOString(),
-        })
-        .eq("id", data.book_id);
+    // Relist the books as available
+    if (order.items && Array.isArray(order.items)) {
+      for (const item of order.items) {
+        if (item.book_id) {
+          const { error: bookUpdateError } = await supabase
+            .from("books")
+            .update({
+              sold: false,
+              available: true,
+              status: "available",
+              updated_at: now.toISOString(),
+            })
+            .eq("id", item.book_id);
 
-      if (bookUpdateError) {
-        console.warn("Could not relist book:", bookUpdateError);
-      } else {
-        console.log("✅ Book relisted as available:", data.book_id);
+          if (bookUpdateError) {
+            console.warn("Could not relist book:", bookUpdateError);
+          } else {
+            console.log("✅ Book relisted as available:", item.book_id);
+          }
+        }
       }
     }
 
     // Process refund if Paystack reference exists
     let refundProcessed = false;
-    if (data.paystack_reference && PAYSTACK_SECRET_KEY) {
+    if (order.paystack_ref && PAYSTACK_SECRET_KEY) {
       try {
         console.log(
-          `💳 Processing refund for declined order: ${data.paystack_reference}`,
+          `💳 Processing refund for declined order: ${order.paystack_ref}`,
         );
 
         const refundResponse = await fetch("https://api.paystack.co/refund", {
@@ -197,11 +160,11 @@ serve(async (req) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            transaction: data.paystack_reference,
-            amount: data.amount, // Amount in kobo
+            transaction: order.paystack_ref,
+            amount: order.amount, // Amount in kobo
             currency: "ZAR",
             customer_note: "Refund for declined order",
-            merchant_note: `Refund for ${tableName} ${data.id} - seller declined the order`,
+            merchant_note: `Refund for order ${order.id} - seller declined the order`,
           }),
         });
 
@@ -212,14 +175,17 @@ serve(async (req) => {
 
           // Update record with refund details
           await supabase
-            .from(tableName)
+            .from("orders")
             .update({
-              status: "refunded",
-              refund_reference: refundResult.data?.reference,
-              refunded_at: now.toISOString(),
+              status: "cancelled",
+              metadata: {
+                ...order.metadata,
+                refund_reference: refundResult.data?.reference,
+                refunded_at: now.toISOString(),
+              },
               updated_at: now.toISOString(),
             })
-            .eq("id", data.id);
+            .eq("id", order.id);
 
           refundProcessed = true;
         } else {
@@ -230,29 +196,19 @@ serve(async (req) => {
       }
     }
 
-    // Create notifications for both buyer and seller
+    // Create notification for seller (buyer notification would need buyer_id which is not in current schema)
     try {
-      // Notification for buyer
-      await supabase.from("order_notifications").insert({
-        order_id: data.id,
-        user_id: data.buyer_id,
-        type: "sale_declined",
-        title: "Order Declined by Seller",
-        message: `Unfortunately, the seller declined your order #${data.id.slice(0, 8)}. ${refundProcessed ? "Your refund has been processed." : "Please contact support for refund assistance."}`,
-        read: false,
-      });
-
       // Notification for seller
       await supabase.from("order_notifications").insert({
-        order_id: data.id,
-        user_id: data.seller_id,
+        order_id: order.id,
+        user_id: order.seller_id,
         type: "decline_confirmed",
         title: "Order Decline Confirmed",
-        message: `You have declined order #${data.id.slice(0, 8)}. The buyer has been notified and ${refundProcessed ? "automatically refunded" : "will receive refund assistance"}.`,
+        message: `You have declined order #${order.id.slice(0, 8)}. The books have been relisted and ${refundProcessed ? "buyer automatically refunded" : "buyer will receive refund assistance"}.`,
         read: false,
       });
 
-      console.log("✅ Decline notifications created");
+      console.log("✅ Decline notification created");
     } catch (notificationError) {
       console.warn("Failed to create notifications:", notificationError);
       // Don't fail the decline for notification issues

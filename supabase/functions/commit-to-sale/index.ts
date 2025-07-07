@@ -54,62 +54,30 @@ serve(async (req) => {
       throw new Error("Unauthorized: You can only commit to your own sales");
     }
 
-    // Try to find transaction first, then order
-    let transactionData = null;
-    let orderData = null;
+    // Find the order
+    const orderIdToUse = orderId || transactionId;
+    const { data: order, error: orderError } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("id", orderIdToUse)
+      .eq("seller_id", sellerId)
+      .single();
 
-    if (transactionId) {
-      // Check transaction table
-      const { data: transaction, error: transactionError } = await supabase
-        .from("transactions")
-        .select("*")
-        .eq("id", transactionId)
-        .eq("seller_id", sellerId)
-        .single();
-
-      if (transactionError) {
-        console.warn("Transaction not found:", transactionError);
-      } else {
-        transactionData = transaction;
-      }
-    }
-
-    if (orderId || (!transactionData && orderId)) {
-      // Check orders table
-      const { data: order, error: orderError } = await supabase
-        .from("orders")
-        .select("*")
-        .eq("id", orderId || transactionId)
-        .eq("seller_id", sellerId)
-        .single();
-
-      if (orderError) {
-        console.warn("Order not found:", orderError);
-      } else {
-        orderData = order;
-      }
-    }
-
-    if (!transactionData && !orderData) {
+    if (orderError || !order) {
       throw new Error(
-        "Transaction or order not found, or you don't have permission to commit this sale",
+        "Order not found, or you don't have permission to commit this sale",
       );
     }
 
-    // Use whichever data we found
-    const data = transactionData || orderData;
-    const isTransaction = !!transactionData;
-    const tableName = isTransaction ? "transactions" : "orders";
+    console.log(`Processing commit for order:`, order.id);
 
-    console.log(`Processing commit for ${tableName}:`, data.id);
-
-    // Check if already committed
-    if (data.seller_committed || data.status === "committed") {
+    // Check if already ready for payout (committed)
+    if (order.status === "ready_for_payout") {
       return new Response(
         JSON.stringify({
           success: true,
           message: "Sale already committed",
-          data: data,
+          data: order,
         }),
         {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -117,32 +85,21 @@ serve(async (req) => {
       );
     }
 
-    // Check if expired (48 hours)
+    // Check current status - should be 'paid'
+    if (order.status !== "paid") {
+      throw new Error(`Cannot commit sale with status: ${order.status}`);
+    }
+
     const now = new Date();
-    const deadline = data.expires_at || data.commit_deadline;
 
-    if (deadline && new Date(deadline) < now) {
-      throw new Error("Commit window has expired (48 hours have passed)");
-    }
-
-    // Check current status - should be 'paid' or 'paid_pending_seller'
-    const validStatuses = ["paid", "paid_pending_seller"];
-    if (!validStatuses.includes(data.status)) {
-      throw new Error(`Cannot commit sale with status: ${data.status}`);
-    }
-
-    // Update the transaction/order to committed status
-    const updateData = {
-      status: "committed",
-      seller_committed: true,
-      committed_at: now.toISOString(),
-      updated_at: now.toISOString(),
-    };
-
+    // Update the order to ready_for_payout status
     const { data: updatedRecord, error: updateError } = await supabase
-      .from(tableName)
-      .update(updateData)
-      .eq("id", data.id)
+      .from("orders")
+      .update({
+        status: "ready_for_payout",
+        updated_at: now.toISOString(),
+      })
+      .eq("id", order.id)
       .eq("seller_id", sellerId)
       .select()
       .single();
@@ -154,48 +111,42 @@ serve(async (req) => {
 
     console.log("✅ Sale committed successfully:", updatedRecord.id);
 
-    // Update book status to sold
-    if (data.book_id) {
-      const { error: bookUpdateError } = await supabase
-        .from("books")
-        .update({
-          sold: true,
-          available: false,
-          status: "sold",
-          updated_at: now.toISOString(),
-        })
-        .eq("id", data.book_id);
+    // Update book statuses to sold for all items
+    if (order.items && Array.isArray(order.items)) {
+      for (const item of order.items) {
+        if (item.book_id) {
+          const { error: bookUpdateError } = await supabase
+            .from("books")
+            .update({
+              sold: true,
+              available: false,
+              status: "sold",
+              updated_at: now.toISOString(),
+            })
+            .eq("id", item.book_id);
 
-      if (bookUpdateError) {
-        console.warn("Could not update book status:", bookUpdateError);
-      } else {
-        console.log("✅ Book marked as sold:", data.book_id);
+          if (bookUpdateError) {
+            console.warn("Could not update book status:", bookUpdateError);
+          } else {
+            console.log("✅ Book marked as sold:", item.book_id);
+          }
+        }
       }
     }
 
-    // Create notifications for both buyer and seller
+    // Create notification for seller (buyer notification would need buyer_id which is not in current schema)
     try {
-      // Notification for buyer
-      await supabase.from("order_notifications").insert({
-        order_id: data.id,
-        user_id: data.buyer_id,
-        type: "sale_committed",
-        title: "Seller Committed to Your Order",
-        message: `Great news! The seller has committed to your order #${data.id.slice(0, 8)}. Your book will be prepared for delivery.`,
-        read: false,
-      });
-
       // Notification for seller
       await supabase.from("order_notifications").insert({
-        order_id: data.id,
-        user_id: data.seller_id,
+        order_id: order.id,
+        user_id: order.seller_id,
         type: "commitment_confirmed",
         title: "Sale Commitment Confirmed",
-        message: `You have successfully committed to order #${data.id.slice(0, 8)}. Please prepare your book for courier collection.`,
+        message: `You have successfully committed to order #${order.id.slice(0, 8)}. Your books are ready for payout processing.`,
         read: false,
       });
 
-      console.log("✅ Notifications created for sale commitment");
+      console.log("✅ Seller notification created for sale commitment");
     } catch (notificationError) {
       console.warn("Failed to create notifications:", notificationError);
       // Don't fail the commit for notification issues
