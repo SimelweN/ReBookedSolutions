@@ -272,6 +272,28 @@ export const getBookById = async (id: string): Promise<Book | null> => {
       async () => {
         console.log("🔄 [getBookById] Making database query for book:", id);
 
+        // Test basic connection first
+        try {
+          const { error: connectionError } = await supabase
+            .from("books")
+            .select("id")
+            .limit(1);
+
+          if (connectionError) {
+            console.error(
+              "❌ [getBookById] Connection test failed:",
+              connectionError,
+            );
+            throw new Error(
+              `Database connection failed: ${connectionError.message}`,
+            );
+          }
+          console.log("✅ [getBookById] Database connection test passed");
+        } catch (error) {
+          console.error("❌ [getBookById] Connection test error:", error);
+          throw error;
+        }
+
         // First get book data - try with all fields
         let { data: bookData, error: bookError } = await supabase
           .from("books")
