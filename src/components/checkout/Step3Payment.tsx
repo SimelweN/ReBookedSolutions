@@ -118,6 +118,13 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
       }
 
       // Use Paystack popup instead of redirect
+      console.log("🔍 Payment data received:", paymentData);
+
+      if (!paymentData.data?.reference) {
+        console.error("❌ No reference in payment data:", paymentData);
+        throw new Error("No payment reference received from Paystack");
+      }
+
       if (paymentData.data?.access_code && paymentData.data?.reference) {
         console.log(
           "Opening Paystack popup with access code:",
