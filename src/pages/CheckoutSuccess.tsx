@@ -112,20 +112,32 @@ const CheckoutSuccess: React.FC = () => {
           status: order.status || "completed",
         };
 
+        console.log(
+          "✅ [CheckoutSuccess] Order confirmation created:",
+          orderConfirmation,
+        );
         setOrderData(orderConfirmation);
+        console.log(
+          "🎉 [CheckoutSuccess] Order data set successfully, loading should stop",
+        );
         toast.success("Payment verified successfully! 🎉");
       } else {
+        console.error(
+          "❌ [CheckoutSuccess] Payment verification unsuccessful:",
+          verificationResult,
+        );
         throw new Error(
           verificationResult.message || "Payment verification failed",
         );
       }
     } catch (err) {
-      console.error("Payment callback error:", err);
+      console.error("❌ [CheckoutSuccess] Payment callback error:", err);
       const errorMessage =
         err instanceof Error ? err.message : "Unknown error occurred";
       setError(errorMessage);
       toast.error("Payment verification failed: " + errorMessage);
     } finally {
+      console.log("🏁 [CheckoutSuccess] Setting loading to false");
       setLoading(false);
     }
   };
