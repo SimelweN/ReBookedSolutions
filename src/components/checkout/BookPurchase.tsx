@@ -97,12 +97,28 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
     if (!book.seller_id) {
       setError("Invalid book data: missing seller information");
       setSellerInfoLoading(false);
+      // Set fallback address even if seller_id is missing
+      setSellerAddress({
+        street: "University of Cape Town",
+        city: "Cape Town",
+        province: "Western Cape",
+        postal_code: "7700",
+        country: "South Africa",
+      });
       return;
     }
 
     if (!user?.id) {
       setError("User not authenticated");
       setSellerInfoLoading(false);
+      // Set fallback address if user not authenticated
+      setSellerAddress({
+        street: "University of Cape Town",
+        city: "Cape Town",
+        province: "Western Cape",
+        postal_code: "7700",
+        country: "South Africa",
+      });
       return;
     }
 
