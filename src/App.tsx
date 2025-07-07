@@ -33,8 +33,6 @@ const Shipping = React.lazy(() => import("./pages/Shipping"));
 const ContactUs = React.lazy(() => import("./pages/ContactUs"));
 const FAQ = React.lazy(() => import("./pages/FAQ"));
 
-// QA Dashboard (only keep this for quality assurance)
-const QADashboard = React.lazy(() => import("./pages/QADashboard"));
 const UserOrders = React.lazy(() => import("./pages/EnhancedUserOrders"));
 const BankingSetup = React.lazy(() => import("./pages/BankingSetup"));
 const AdminReports = React.lazy(() => import("./pages/AdminReports"));
@@ -394,16 +392,6 @@ function App() {
                               <AdminReports />
                             </Suspense>
                           </AdminProtectedRoute>
-                        }
-                      />
-
-                      {/* QA Dashboard (for quality assurance) */}
-                      <Route
-                        path="/qa"
-                        element={
-                          <Suspense fallback={<LoadingSpinner />}>
-                            <QADashboard />
-                          </Suspense>
                         }
                       />
 
