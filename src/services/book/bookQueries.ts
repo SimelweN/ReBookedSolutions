@@ -272,17 +272,7 @@ export const getBookById = async (id: string): Promise<Book | null> => {
         // First get book data
         const { data: bookData, error: bookError } = await supabase
           .from("books")
-          .select(
-            `
-            *,
-            seller_street,
-            seller_city,
-            seller_province,
-            seller_postal_code,
-            seller_country,
-            seller_subaccount_code
-          `,
-          )
+          .select("*")
           .eq("id", id)
           .single();
 
