@@ -43,17 +43,6 @@ const EnhancedUserOrders: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/login");
-      return;
-    }
-
-    if (user?.id) {
-      loadOrders();
-    }
-  }, [user?.id, isAuthenticated, navigate, loadOrders]);
-
   const loadOrders = useCallback(async () => {
     if (!user?.id) {
       console.log("No user ID available for loading orders");
