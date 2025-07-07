@@ -186,16 +186,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
               console.log(
                 "🔄 [AuthContext] User switching detected, clearing state first",
               );
-              setUser(null);
-              setProfile(null);
-              setSession(null);
+
+              // Use React's startTransition for non-urgent updates to prevent glitching
+              startTransition(() => {
+                setUser(null);
+                setProfile(null);
+                setSession(null);
+              });
 
               // Clear local storage to prevent data contamination
               localStorage.removeItem("supabase.auth.token");
               sessionStorage.clear();
 
               // Small delay to ensure state is cleared
-              await new Promise((resolve) => setTimeout(resolve, 100));
+              await new Promise((resolve) => setTimeout(resolve, 200));
             }
 
             currentUserIdRef.current = session.user.id;
@@ -203,11 +207,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             // Batch state updates to prevent multiple re-renders and glitching
             const fallbackProfile = createUserFallbackProfile(session.user);
 
-            // Use React's automatic batching by updating state synchronously
-            setSession(session);
-            setUser(session.user);
-            setProfile(fallbackProfile);
-            setIsLoading(false); // Immediately stop loading for UI responsiveness
+            // Use startTransition for smooth state updates
+            startTransition(() => {
+              setSession(session);
+              setUser(session.user);
+              setProfile(fallbackProfile);
+              setIsLoading(false);
+            });
 
             console.log(
               "✅ [AuthContext] Auth state updated for user:",
@@ -217,6 +223,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             console.log(
               "ℹ️ [AuthContext] Skipping duplicate auth update for same user",
             );
+            return; // Early return to prevent unnecessary processing
           }
 
           // Try to load full profile in background (non-blocking)
