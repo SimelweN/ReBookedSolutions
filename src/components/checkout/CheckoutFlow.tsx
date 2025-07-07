@@ -135,9 +135,9 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ book }) => {
         ...book,
         seller_subaccount_code: bookData.seller_subaccount_code,
         seller: {
-          id: bookData.profiles?.id || bookData.seller_id,
-          name: bookData.profiles?.name || "Seller",
-          email: bookData.profiles?.email || "",
+          id: sellerProfile?.id || bookData.seller_id,
+          name: sellerProfile?.name || "Seller",
+          email: sellerProfile?.email || "",
           hasAddress: true,
           hasSubaccount: true,
           isReadyForOrders: true,
