@@ -39,7 +39,7 @@ const ActivityLog: React.FC = () => {
     }
 
     loadActivityLog();
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated]); // Removed navigate and loadActivityLog to prevent loops
 
   const loadActivityLog = async () => {
     try {
