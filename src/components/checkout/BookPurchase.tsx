@@ -185,6 +185,9 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
           book.seller_subaccount_code = bankingData.subaccount_code;
         }
       }
+
+      // Mark loading as complete
+      setSellerInfoLoading(false);
     } catch (error) {
       console.error("Error loading seller info:", error);
       const errorMessage =
