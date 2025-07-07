@@ -21,6 +21,7 @@ import {
   markMultipleAsRead,
   deleteMultipleNotifications,
 } from "@/services/notificationService";
+import NotificationCleanupService from "@/services/notificationCleanupService";
 
 interface NotificationItem {
   id: string;
@@ -45,6 +46,7 @@ const Notifications = () => {
   } = useNotifications();
 
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isCleaningUp, setIsCleaningUp] = useState(false);
 
   // Convert notifications to the expected format
   const formattedNotifications: NotificationItem[] = useMemo(() => {
@@ -179,6 +181,38 @@ const Notifications = () => {
     refreshNotifications();
   };
 
+  const cleanupSpamNotifications = async () => {
+    if (!user) return;
+
+    setIsCleaningUp(true);
+    try {
+      toast.info("Cleaning up duplicate and spam notifications...");
+
+      const result = await NotificationCleanupService.cleanupUserNotifications(
+        user.id,
+      );
+
+      if (result.success) {
+        if (result.removed > 0) {
+          toast.success(
+            `Cleaned up ${result.removed} duplicate/spam notifications!`,
+          );
+          // Refresh notifications to show updated list
+          await refreshNotifications();
+        } else {
+          toast.info("No spam notifications found to clean up");
+        }
+      } else {
+        toast.error(result.error || "Failed to clean up notifications");
+      }
+    } catch (error) {
+      console.error("Error cleaning up notifications:", error);
+      toast.error("Failed to clean up notifications");
+    } finally {
+      setIsCleaningUp(false);
+    }
+  };
+
   if (isLoading && formattedNotifications.length === 0) {
     return (
       <Layout>
@@ -253,6 +287,18 @@ const Notifications = () => {
                   <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                 ) : null}
                 Mark All Read ({unreadCount})
+              </Button>
+              <Button
+                variant="outline"
+                onClick={cleanupSpamNotifications}
+                disabled={isCleaningUp || isProcessing}
+                className="w-full sm:w-auto text-sm bg-yellow-50 hover:bg-yellow-100 text-yellow-800 border-yellow-200"
+                size="sm"
+              >
+                {isCleaningUp ? (
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                ) : null}
+                Clean Up Spam
               </Button>
               <Button
                 variant="outline"
