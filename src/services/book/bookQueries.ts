@@ -503,7 +503,7 @@ export const getBooksByUser = async (userId: string): Promise<Book[]> => {
             ...bookData,
             profiles: seller,
           };
-          return mapBookFromDatabase(bookDataWithProfile);
+          return mapBookFromDatabase(bookDataWithProfile, seller);
         });
 
         console.log(
