@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -11,10 +12,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MapPin, Edit, CheckCircle, AlertCircle } from "lucide-react";
+import {
+  MapPin,
+  Edit,
+  CheckCircle,
+  AlertCircle,
+  Truck,
+  Home,
+} from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import GoogleMapsAddressInput from "@/components/GoogleMapsAddressInput";
 
 interface AddressData {
   streetAddress: string;
@@ -22,6 +31,12 @@ interface AddressData {
   province: string;
   postalCode: string;
   instructions?: string;
+}
+
+interface UserAddresses {
+  pickup_address: AddressData | null;
+  shipping_address: AddressData | null;
+  addresses_same: boolean;
 }
 
 const SOUTH_AFRICAN_PROVINCES = [
@@ -38,12 +53,17 @@ const SOUTH_AFRICAN_PROVINCES = [
 
 const AddressManager = () => {
   const { user } = useAuth();
-  const [savedAddress, setSavedAddress] = useState<AddressData | null>(null);
+  const [savedAddresses, setSavedAddresses] = useState<UserAddresses>({
+    pickup_address: null,
+    shipping_address: null,
+    addresses_same: false,
+  });
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [sameAsPickup, setSameAsPickup] = useState(false);
 
-  const [formData, setFormData] = useState<AddressData>({
+  const [pickupAddress, setPickupAddress] = useState<AddressData>({
     streetAddress: "",
     city: "",
     province: "",
@@ -51,84 +71,144 @@ const AddressManager = () => {
     instructions: "",
   });
 
-  // Load saved address on component mount
+  const [shippingAddress, setShippingAddress] = useState<AddressData>({
+    streetAddress: "",
+    city: "",
+    province: "",
+    postalCode: "",
+    instructions: "",
+  });
+
+  // Load saved addresses on component mount
   useEffect(() => {
-    loadSavedAddress();
+    loadSavedAddresses();
   }, [user?.id]);
 
-  const loadSavedAddress = async () => {
+  // Sync shipping address with pickup when sameAsPickup is checked
+  useEffect(() => {
+    if (sameAsPickup) {
+      setShippingAddress(pickupAddress);
+    }
+  }, [sameAsPickup, pickupAddress]);
+
+  const loadSavedAddresses = async () => {
     if (!user?.id) return;
 
     setIsLoading(true);
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select("pickup_address")
+        .select("pickup_address, shipping_address, addresses_same")
         .eq("id", user.id)
         .single();
 
       if (error) {
-        console.error("Error loading address:", error);
-        setSavedAddress(null);
+        console.error("Error loading addresses:", error);
+        setSavedAddresses({
+          pickup_address: null,
+          shipping_address: null,
+          addresses_same: false,
+        });
         return;
       }
 
-      if (data?.pickup_address) {
-        const address = data.pickup_address as any;
-        const formattedAddress: AddressData = {
-          streetAddress: address.streetAddress || address.street || "",
-          city: address.city || "",
-          province: address.province || "",
-          postalCode: address.postalCode || address.postal_code || "",
-          instructions: address.instructions || "",
-        };
-        setSavedAddress(formattedAddress);
-        setFormData(formattedAddress);
+      const pickup = data?.pickup_address as AddressData | null;
+      const shipping = data?.shipping_address as AddressData | null;
+      const same = data?.addresses_same || false;
+
+      setSavedAddresses({
+        pickup_address: pickup,
+        shipping_address: shipping,
+        addresses_same: same,
+      });
+
+      if (pickup) {
+        setPickupAddress(pickup);
       }
+      if (shipping) {
+        setShippingAddress(shipping);
+      }
+      setSameAsPickup(same);
     } catch (error) {
-      console.error("Error loading address:", error);
+      console.error("Error loading addresses:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleInputChange = (field: keyof AddressData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const handlePickupAddressSelect = (address: any) => {
+    const formattedAddress: AddressData = {
+      streetAddress: address.formatted_address || "",
+      city: address.city || "",
+      province: address.province || "",
+      postalCode: address.postal_code || "",
+      instructions: "",
+    };
+    setPickupAddress(formattedAddress);
+  };
+
+  const handleShippingAddressSelect = (address: any) => {
+    const formattedAddress: AddressData = {
+      streetAddress: address.formatted_address || "",
+      city: address.city || "",
+      province: address.province || "",
+      postalCode: address.postal_code || "",
+      instructions: "",
+    };
+    setShippingAddress(formattedAddress);
+  };
+
+  const handleInputChange = (
+    addressType: "pickup" | "shipping",
+    field: keyof AddressData,
+    value: string,
+  ) => {
+    if (addressType === "pickup") {
+      setPickupAddress((prev) => ({ ...prev, [field]: value }));
+    } else {
+      setShippingAddress((prev) => ({ ...prev, [field]: value }));
+    }
+  };
+
+  const validateAddress = (address: AddressData, type: string): boolean => {
+    if (!address.streetAddress.trim()) {
+      toast.error(`${type} street address is required`);
+      return false;
+    }
+    if (!address.city.trim()) {
+      toast.error(`${type} city is required`);
+      return false;
+    }
+    if (!address.province) {
+      toast.error(`${type} province is required`);
+      return false;
+    }
+    if (!address.postalCode.trim()) {
+      toast.error(`${type} postal code is required`);
+      return false;
+    }
+    return true;
   };
 
   const handleSave = async () => {
-    // Validate required fields
-    if (!formData.streetAddress.trim()) {
-      toast.error("Street address is required");
-      return;
-    }
-    if (!formData.city.trim()) {
-      toast.error("City is required");
-      return;
-    }
-    if (!formData.province) {
-      toast.error("Province is required");
-      return;
-    }
-    if (!formData.postalCode.trim()) {
-      toast.error("Postal code is required");
-      return;
-    }
+    // Validate pickup address
+    if (!validateAddress(pickupAddress, "Pickup")) return;
+
+    // Validate shipping address if different from pickup
+    if (!sameAsPickup && !validateAddress(shippingAddress, "Shipping")) return;
 
     setIsSaving(true);
     try {
-      const addressToSave = {
-        streetAddress: formData.streetAddress.trim(),
-        city: formData.city.trim(),
-        province: formData.province,
-        postalCode: formData.postalCode.trim(),
-        instructions: formData.instructions?.trim() || "",
-      };
+      const finalShippingAddress = sameAsPickup
+        ? pickupAddress
+        : shippingAddress;
 
       const { error } = await supabase
         .from("profiles")
         .update({
-          pickup_address: addressToSave,
+          pickup_address: pickupAddress,
+          shipping_address: finalShippingAddress,
+          addresses_same: sameAsPickup,
           updated_at: new Date().toISOString(),
         })
         .eq("id", user!.id);
@@ -137,12 +217,16 @@ const AddressManager = () => {
         throw error;
       }
 
-      setSavedAddress(addressToSave);
+      setSavedAddresses({
+        pickup_address: pickupAddress,
+        shipping_address: finalShippingAddress,
+        addresses_same: sameAsPickup,
+      });
       setIsEditing(false);
-      toast.success("Address saved successfully!");
+      toast.success("Addresses saved successfully!");
     } catch (error) {
-      console.error("Error saving address:", error);
-      toast.error("Failed to save address. Please try again.");
+      console.error("Error saving addresses:", error);
+      toast.error("Failed to save addresses. Please try again.");
     } finally {
       setIsSaving(false);
     }
@@ -153,23 +237,22 @@ const AddressManager = () => {
   };
 
   const handleCancel = () => {
-    if (savedAddress) {
-      setFormData(savedAddress);
-    } else {
-      setFormData({
-        streetAddress: "",
-        city: "",
-        province: "",
-        postalCode: "",
-        instructions: "",
-      });
+    if (savedAddresses.pickup_address) {
+      setPickupAddress(savedAddresses.pickup_address);
     }
+    if (savedAddresses.shipping_address) {
+      setShippingAddress(savedAddresses.shipping_address);
+    }
+    setSameAsPickup(savedAddresses.addresses_same);
     setIsEditing(false);
   };
 
   const formatAddress = (address: AddressData) => {
     return `${address.streetAddress}, ${address.city}, ${address.province} ${address.postalCode}`;
   };
+
+  const hasAddresses =
+    savedAddresses.pickup_address && savedAddresses.shipping_address;
 
   if (isLoading) {
     return (
@@ -183,7 +266,7 @@ const AddressManager = () => {
         <CardContent>
           <div className="flex items-center justify-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-book-600"></div>
-            <span className="ml-2">Loading address...</span>
+            <span className="ml-2">Loading addresses...</span>
           </div>
         </CardContent>
       </Card>
@@ -198,7 +281,7 @@ const AddressManager = () => {
             <MapPin className="h-5 w-5 mr-2" />
             Address Information
           </div>
-          {savedAddress && !isEditing && (
+          {hasAddresses && !isEditing && (
             <Button variant="outline" size="sm" onClick={handleEdit}>
               <Edit className="h-4 w-4 mr-1" />
               Edit
@@ -206,74 +289,108 @@ const AddressManager = () => {
           )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {!isEditing && savedAddress ? (
-          // Display saved address
-          <div className="space-y-3">
+      <CardContent className="space-y-6">
+        {!isEditing && hasAddresses ? (
+          // Display saved addresses
+          <div className="space-y-4">
             <Alert className="border-green-200 bg-green-50">
               <CheckCircle className="h-4 w-4 text-green-600" />
               <AlertDescription className="text-green-800">
-                <div className="font-medium mb-1">Saved Address:</div>
-                <div>{formatAddress(savedAddress)}</div>
-                {savedAddress.instructions && (
-                  <div className="mt-2 text-sm">
-                    <strong>Instructions:</strong> {savedAddress.instructions}
+                <div className="space-y-3">
+                  <div>
+                    <div className="font-medium mb-1 flex items-center">
+                      <Home className="h-4 w-4 mr-2" />
+                      Pickup Address:
+                    </div>
+                    <div>{formatAddress(savedAddresses.pickup_address!)}</div>
+                    {savedAddresses.pickup_address!.instructions && (
+                      <div className="mt-1 text-sm">
+                        <strong>Instructions:</strong>{" "}
+                        {savedAddresses.pickup_address!.instructions}
+                      </div>
+                    )}
                   </div>
-                )}
+
+                  <div>
+                    <div className="font-medium mb-1 flex items-center">
+                      <Truck className="h-4 w-4 mr-2" />
+                      Shipping Address:
+                    </div>
+                    {savedAddresses.addresses_same ? (
+                      <div className="text-sm text-green-600">
+                        Same as pickup address
+                      </div>
+                    ) : (
+                      <>
+                        <div>
+                          {formatAddress(savedAddresses.shipping_address!)}
+                        </div>
+                        {savedAddresses.shipping_address!.instructions && (
+                          <div className="mt-1 text-sm">
+                            <strong>Instructions:</strong>{" "}
+                            {savedAddresses.shipping_address!.instructions}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
               </AlertDescription>
             </Alert>
           </div>
         ) : (
-          // Address form
-          <div className="space-y-4">
-            {!savedAddress && (
+          // Address forms
+          <div className="space-y-6">
+            {!hasAddresses && (
               <Alert className="border-blue-200 bg-blue-50">
                 <AlertCircle className="h-4 w-4 text-blue-600" />
                 <AlertDescription className="text-blue-800">
-                  Add your address to start listing books. This will be your
-                  pickup location for buyers.
+                  Add your pickup and shipping addresses to start listing and
+                  buying books.
                 </AlertDescription>
               </Alert>
             )}
 
-            <div className="grid grid-cols-1 gap-4">
-              <div>
-                <Label htmlFor="streetAddress">
-                  Street Address <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="streetAddress"
-                  value={formData.streetAddress}
-                  onChange={(e) =>
-                    handleInputChange("streetAddress", e.target.value)
-                  }
-                  placeholder="e.g., 123 Main Street"
-                  required
-                />
-              </div>
+            {/* Pickup Address */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold flex items-center">
+                <Home className="h-5 w-5 mr-2 text-book-600" />
+                Pickup Address
+              </h3>
+              <p className="text-sm text-gray-600">
+                Where buyers will collect books from you
+              </p>
+
+              <GoogleMapsAddressInput
+                onAddressSelect={handlePickupAddressSelect}
+                placeholder="Search for your pickup address..."
+                initialValue={pickupAddress.streetAddress}
+              />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="city">
+                  <Label htmlFor="pickup-city">
                     City <span className="text-red-500">*</span>
                   </Label>
                   <Input
-                    id="city"
-                    value={formData.city}
-                    onChange={(e) => handleInputChange("city", e.target.value)}
+                    id="pickup-city"
+                    value={pickupAddress.city}
+                    onChange={(e) =>
+                      handleInputChange("pickup", "city", e.target.value)
+                    }
                     placeholder="e.g., Cape Town"
                     required
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="province">
+                  <Label htmlFor="pickup-province">
                     Province <span className="text-red-500">*</span>
                   </Label>
                   <Select
-                    value={formData.province}
+                    value={pickupAddress.province}
                     onValueChange={(value) =>
-                      handleInputChange("province", value)
+                      handleInputChange("pickup", "province", value)
                     }
                   >
                     <SelectTrigger>
@@ -291,14 +408,14 @@ const AddressManager = () => {
               </div>
 
               <div>
-                <Label htmlFor="postalCode">
+                <Label htmlFor="pickup-postal">
                   Postal Code <span className="text-red-500">*</span>
                 </Label>
                 <Input
-                  id="postalCode"
-                  value={formData.postalCode}
+                  id="pickup-postal"
+                  value={pickupAddress.postalCode}
                   onChange={(e) =>
-                    handleInputChange("postalCode", e.target.value)
+                    handleInputChange("pickup", "postalCode", e.target.value)
                   }
                   placeholder="e.g., 8001"
                   required
@@ -306,25 +423,133 @@ const AddressManager = () => {
               </div>
 
               <div>
-                <Label htmlFor="instructions">
-                  Additional Instructions (Optional)
+                <Label htmlFor="pickup-instructions">
+                  Pickup Instructions (Optional)
                 </Label>
                 <textarea
-                  id="instructions"
-                  value={formData.instructions}
+                  id="pickup-instructions"
+                  value={pickupAddress.instructions}
                   onChange={(e) =>
-                    handleInputChange("instructions", e.target.value)
+                    handleInputChange("pickup", "instructions", e.target.value)
                   }
                   placeholder="e.g., Gate code 1234, Unit 5B, Ring bell, Collection from side entrance..."
                   className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
                   rows={3}
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  Add pickup instructions, gate codes, unit numbers, or other
-                  helpful details for buyers
-                </p>
               </div>
             </div>
+
+            {/* Same as pickup checkbox */}
+            <div className="flex items-center space-x-2 p-4 bg-gray-50 rounded-lg">
+              <Checkbox
+                id="same-address"
+                checked={sameAsPickup}
+                onCheckedChange={(checked) =>
+                  setSameAsPickup(checked as boolean)
+                }
+              />
+              <Label htmlFor="same-address" className="font-medium">
+                📦 My shipping address is the same as my pickup address
+              </Label>
+            </div>
+
+            {/* Shipping Address */}
+            {!sameAsPickup && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold flex items-center">
+                  <Truck className="h-5 w-5 mr-2 text-book-600" />
+                  Shipping Address
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Where you want items delivered when buying books
+                </p>
+
+                <GoogleMapsAddressInput
+                  onAddressSelect={handleShippingAddressSelect}
+                  placeholder="Search for your shipping address..."
+                  initialValue={shippingAddress.streetAddress}
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="shipping-city">
+                      City <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="shipping-city"
+                      value={shippingAddress.city}
+                      onChange={(e) =>
+                        handleInputChange("shipping", "city", e.target.value)
+                      }
+                      placeholder="e.g., Cape Town"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="shipping-province">
+                      Province <span className="text-red-500">*</span>
+                    </Label>
+                    <Select
+                      value={shippingAddress.province}
+                      onValueChange={(value) =>
+                        handleInputChange("shipping", "province", value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select province" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {SOUTH_AFRICAN_PROVINCES.map((province) => (
+                          <SelectItem key={province} value={province}>
+                            {province}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="shipping-postal">
+                    Postal Code <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="shipping-postal"
+                    value={shippingAddress.postalCode}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "shipping",
+                        "postalCode",
+                        e.target.value,
+                      )
+                    }
+                    placeholder="e.g., 8001"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="shipping-instructions">
+                    Delivery Instructions (Optional)
+                  </Label>
+                  <textarea
+                    id="shipping-instructions"
+                    value={shippingAddress.instructions}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "shipping",
+                        "instructions",
+                        e.target.value,
+                      )
+                    }
+                    placeholder="e.g., Gate code 1234, Unit 5B, Ring bell, Leave at front door..."
+                    className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
+                    rows={3}
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="flex gap-2 pt-4">
               <Button
@@ -332,7 +557,7 @@ const AddressManager = () => {
                 disabled={isSaving}
                 className="bg-book-600 hover:bg-book-700"
               >
-                {isSaving ? "Saving..." : "Save Address"}
+                {isSaving ? "Saving..." : "Save Addresses"}
               </Button>
               {isEditing && (
                 <Button
