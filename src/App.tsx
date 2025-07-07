@@ -278,6 +278,14 @@ function App() {
                           </ProtectedRoute>
                         }
                       />
+                      <Route
+                        path="/purchase"
+                        element={
+                          <Suspense fallback={<LoadingSpinner />}>
+                            <NewCheckout />
+                          </Suspense>
+                        }
+                      />
 
                       <Route
                         path="/seller/:sellerId"
