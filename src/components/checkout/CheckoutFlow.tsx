@@ -94,31 +94,46 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ book }) => {
       }
 
       // Validate seller data from books table
-      if (!bookData.seller_subaccount_code) {
+      if (!bookData.subaccount_code) {
         throw new Error(
           "Seller payment setup is incomplete. The seller needs to set up their banking details.",
         );
       }
 
-      if (
-        !bookData.seller_street ||
-        !bookData.seller_city ||
-        !bookData.seller_province ||
-        !bookData.seller_postal_code
-      ) {
+      // Get seller address from profile (since book table columns don't exist yet)
+      const { data: sellerProfileData, error: sellerProfileError } =
+        await supabase
+          .from("profiles")
+          .select("pickup_address")
+          .eq("id", bookData.seller_id)
+          .single();
+
+      if (sellerProfileError || !sellerProfileData?.pickup_address) {
         throw new Error(
           "Seller address is incomplete. The seller needs to update their pickup address.",
         );
       }
 
-      // Create seller address from book table data
+      const pickupAddress = sellerProfileData.pickup_address as any;
       const sellerAddress = {
-        street: bookData.seller_street,
-        city: bookData.seller_city,
-        province: bookData.seller_province,
-        postal_code: bookData.seller_postal_code,
-        country: bookData.seller_country || "South Africa",
+        street: pickupAddress.streetAddress || pickupAddress.street || "",
+        city: pickupAddress.city || "",
+        province: pickupAddress.province || "",
+        postal_code:
+          pickupAddress.postalCode || pickupAddress.postal_code || "",
+        country: "South Africa",
       };
+
+      if (
+        !sellerAddress.street ||
+        !sellerAddress.city ||
+        !sellerAddress.province ||
+        !sellerAddress.postal_code
+      ) {
+        throw new Error(
+          "Seller address is incomplete. The seller needs to update their pickup address.",
+        );
+      }
 
       // Update book with complete seller data
       const updatedBook = {
