@@ -37,6 +37,20 @@ export interface CheckoutValidationResult {
 }
 
 /**
+ * ✅ Normalize and save address in consistent format
+ */
+export const normalizeAddress = (address: any) => {
+  return {
+    street: address.streetAddress?.trim() || address.street?.trim() || "",
+    city: address.city?.trim() || "",
+    province: address.province?.trim() || "",
+    postal_code:
+      address.postalCode?.trim() || address.postal_code?.trim() || "",
+    country: "South Africa",
+  };
+};
+
+/**
  * ❗ DISALLOW listing books if seller has no subaccount or address
  */
 export const validateSellerForListing = async (
