@@ -67,9 +67,14 @@ const NotificationBell: React.FC = () => {
   };
 
   const handleNotificationClick = async (notification: Notification) => {
-    // Mark as read
+    // Mark as read with error handling
     if (!notification.read) {
-      await markAsRead(notification.id);
+      try {
+        await markAsRead(notification.id);
+      } catch (error) {
+        console.error("Error marking notification as read:", error);
+        // Don't prevent navigation even if marking as read fails
+      }
     }
 
     // Navigate based on notification type
