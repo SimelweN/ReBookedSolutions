@@ -567,9 +567,11 @@ const AdminDashboard = () => {
     await loadDashboardData();
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-3 md:p-6">
-      <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
+  if (isMobile) {
+    return (
+      <AdminMobileLayout title="Admin Dashboard" showDevDashboard={true}>
+        <div className="p-3 space-y-4">
+          <div className="max-w-7xl mx-auto space-y-4">
         {/* Header */}
         <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
           <div>
@@ -641,9 +643,7 @@ const AdminDashboard = () => {
                   <p className="text-emerald-100 text-xs md:text-sm font-medium">
                     {isMobile ? "Books" : "Active Books"}
                   </p>
-                  <p className="text-xl md:text-3xl font-bold">
-                    {stats.activeBooks}
-                  </p>
+                  <p className="text-xl md:text-3xl font-bold">{stats.activeBooks}</p>
                   <div className="flex items-center mt-1 md:mt-2">
                     <ArrowUpRight className="h-3 w-3 md:h-4 md:w-4 text-green-300" />
                     <span className="text-xs md:text-sm text-green-300 truncate">
@@ -664,12 +664,10 @@ const AdminDashboard = () => {
                     {isMobile ? "Sales" : "Total Sales"}
                   </p>
                   <p className="text-xl md:text-3xl font-bold">
-                    R
-                    {isMobile
-                      ? stats.totalSales > 999
-                        ? `${(stats.totalSales / 1000).toFixed(1)}k`
-                        : stats.totalSales
-                      : stats.totalSales.toLocaleString()}
+                    R{isMobile
+                      ? (stats.totalSales > 999 ? `${(stats.totalSales/1000).toFixed(1)}k` : stats.totalSales)
+                      : stats.totalSales.toLocaleString()
+                    }
                   </p>
                   <div className="flex items-center mt-1 md:mt-2">
                     <ArrowUpRight className="h-3 w-3 md:h-4 md:w-4 text-green-300" />
@@ -690,9 +688,7 @@ const AdminDashboard = () => {
                   <p className="text-orange-100 text-xs md:text-sm font-medium">
                     {isMobile ? "Reports" : "Pending Reports"}
                   </p>
-                  <p className="text-xl md:text-3xl font-bold">
-                    {stats.pendingReports}
-                  </p>
+                  <p className="text-xl md:text-3xl font-bold">{stats.pendingReports}</p>
                   <div className="flex items-center mt-1 md:mt-2">
                     <AlertTriangle className="h-3 w-3 md:h-4 md:w-4 text-yellow-300" />
                     <span className="text-xs md:text-sm text-yellow-300 truncate">
