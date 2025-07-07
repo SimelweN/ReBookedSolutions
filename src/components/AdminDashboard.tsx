@@ -351,10 +351,13 @@ const AdminDashboard = () => {
       const { data: usersData, error: usersError } = await supabase
         .from("profiles")
         .select("id, created_at, role")
-        .neq("role", "admin");
+        .or("role.is.null,role.neq.admin");
 
       if (usersError) {
-        console.error("Error fetching user stats:", usersError);
+        console.error(
+          "Error fetching user stats:",
+          usersError.message || usersError,
+        );
         return;
       }
 
@@ -372,17 +375,33 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error("Error loading user stats:", error);
+      console.error("Full error details:", JSON.stringify(error, null, 2));
+      // Set fallback values
+      setStats((prev) => ({
+        ...prev,
+        totalUsers: 0,
+        newUsersToday: 0,
+      }));
     }
   };
 
   const loadBookStats = async () => {
     try {
+      // Try with basic fields first, then add others if they exist
       const { data: booksData, error: booksError } = await supabase
         .from("books")
-        .select("id, created_at, price, status");
+        .select("id, created_at, price, status")
+        .limit(1000); // Add limit for performance
 
       if (booksError) {
-        console.error("Error fetching book stats:", booksError);
+        console.error(
+          "Error fetching book stats:",
+          booksError.message || booksError,
+        );
+        console.error(
+          "Full error object:",
+          JSON.stringify(booksError, null, 2),
+        );
         return;
       }
 
@@ -403,6 +422,13 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error("Error loading book stats:", error);
+      console.error("Full error details:", JSON.stringify(error, null, 2));
+      // Set fallback values
+      setStats((prev) => ({
+        ...prev,
+        activeBooks: 0,
+        booksListedToday: 0,
+      }));
     }
   };
 
@@ -411,12 +437,15 @@ const AdminDashboard = () => {
       const { data: usersData, error: usersError } = await supabase
         .from("profiles")
         .select("id, name, email, created_at, status, role")
-        .neq("role", "admin")
+        .or("role.is.null,role.neq.admin")
         .order("created_at", { ascending: false })
         .limit(5);
 
       if (usersError) {
-        console.error("Error fetching users:", usersError);
+        console.error(
+          "Error fetching users:",
+          usersError.message || usersError,
+        );
         return;
       }
 
@@ -434,6 +463,7 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error("Error loading recent users:", error);
+      console.error("Full error details:", JSON.stringify(error, null, 2));
       setRecentUsers([]);
     }
   };
@@ -448,7 +478,10 @@ const AdminDashboard = () => {
         .limit(5);
 
       if (booksError) {
-        console.error("Error fetching books:", booksError);
+        console.error(
+          "Error fetching books:",
+          booksError.message || booksError,
+        );
         return;
       }
 
@@ -483,6 +516,7 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error("Error loading recent books:", error);
+      console.error("Full error details:", JSON.stringify(error, null, 2));
       setRecentBooks([]);
     }
   };
