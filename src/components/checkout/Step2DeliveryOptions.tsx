@@ -70,33 +70,98 @@ const Step2DeliveryOptions: React.FC<Step2DeliveryOptionsProps> = ({
       else if (isProvincial) zoneType = "provincial";
       else zoneType = "national";
 
-      // Create delivery options based on zone
+      // ✅ Use real courier API pricing instead of hardcoded values
+      const { RealCourierPricing } = await import("@/services/realCourierPricing");
+
+      const quoteRequest = {
+        from: {
+          street: sellerAddress.street,
+          city: sellerAddress.city,
+          province: sellerAddress.province,
+          postal_code: sellerAddress.postal_code,
+          country: sellerAddress.country,
+        },
+        to: {
+          street: buyerAddress.street,
+          city: buyerAddress.city,
+          province: buyerAddress.province,
+          postal_code: buyerAddress.postal_code,
+          country: buyerAddress.country,
+        },
+        parcel: {
+          weight: 0.5, // Default book weight
+          length: 25,
+          width: 20,
+          height: 5,
+          value: 100, // Default value for insurance
+        },
+      };
+
+      console.log("📞 Fetching real courier quotes:", quoteRequest);
+
+      // Get real quotes from both couriers
+      const [courierGuyQuotes, fastwayQuotes] = await Promise.allSettled([
+        RealCourierPricing.getCourierGuyQuotes(quoteRequest),
+        RealCourierPricing.getFastwayQuotes(quoteRequest),
+      ]);
+
       const baseOptions: DeliveryOption[] = [];
 
-      if (zoneType === "local") {
-        baseOptions.push(
-          {
+      // Process Courier Guy quotes
+      if (courierGuyQuotes.status === "fulfilled" && courierGuyQuotes.value.length > 0) {
+        courierGuyQuotes.value.forEach((quote) => {
+          baseOptions.push({
             courier: "courier-guy",
-            service_name: "Courier Guy Local",
-            price: 85,
-            estimated_days: 1,
-            description: "Same city delivery within 1 business day",
-            zone_type: "local",
-          },
-          {
+            service_name: quote.service_name,
+            price: quote.price,
+            estimated_days: parseInt(quote.estimated_days) || 1,
+            description: quote.description,
+            zone_type: zoneType,
+          });
+        });
+      }
+
+      // Process Fastway quotes
+      if (fastwayQuotes.status === "fulfilled" && fastwayQuotes.value.length > 0) {
+        fastwayQuotes.value.forEach((quote) => {
+          baseOptions.push({
             courier: "fastway",
-            service_name: "Fastway Local",
-            price: 95,
-            estimated_days: 1,
-            description: "Same city express delivery",
-            zone_type: "local",
-          },
-        );
-      } else if (zoneType === "provincial") {
-        baseOptions.push(
-          {
-            courier: "courier-guy",
-            service_name: "Courier Guy Provincial",
+            service_name: quote.service_name,
+            price: quote.price,
+            estimated_days: parseInt(quote.estimated_days) || 1,
+            description: quote.description,
+            zone_type: zoneType,
+          });
+        });
+      }
+
+      // Fallback to zone-based pricing if APIs fail
+      if (baseOptions.length === 0) {
+        console.warn("⚠️ No API quotes available, using fallback pricing");
+        if (zoneType === "local") {
+          baseOptions.push(
+            {
+              courier: "courier-guy",
+              service_name: "Courier Guy Local",
+              price: 85,
+              estimated_days: 1,
+              description: "Same city delivery within 1 business day",
+              zone_type: "local",
+            },
+            {
+              courier: "fastway",
+              service_name: "Fastway Local",
+              price: 95,
+              estimated_days: 1,
+              description: "Same city express delivery",
+              zone_type: "local",
+            },
+          );
+        } else if (zoneType === "provincial") {
+          baseOptions.push(
+            {
+              courier: "courier-guy",
+              service_name: "Courier Guy Provincial",
             price: 120,
             estimated_days: 2,
             description: "Within province delivery, 2-3 business days",
