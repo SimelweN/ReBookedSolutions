@@ -88,8 +88,31 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ book }) => {
         );
       }
 
+      // Load seller subaccount if not present
+      let updatedBook = checkoutState.book;
+      if (!book.seller_subaccount_code) {
+        console.log("Loading seller subaccount for:", book.seller_id);
+        const { data: sellerSubaccount } = await supabase
+          .from("banking_subaccounts")
+          .select("subaccount_code")
+          .eq("user_id", book.seller_id)
+          .eq("is_active", true)
+          .single();
+
+        if (sellerSubaccount?.subaccount_code) {
+          updatedBook = {
+            ...book,
+            seller_subaccount_code: sellerSubaccount.subaccount_code,
+          };
+          console.log("✅ Seller subaccount loaded");
+        } else {
+          console.warn("⚠️ Seller has no active subaccount");
+        }
+      }
+
       setCheckoutState((prev) => ({
         ...prev,
+        book: updatedBook,
         seller_address: sellerAddr,
         buyer_address: buyerAddr,
         loading: false,
