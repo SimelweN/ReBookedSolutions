@@ -305,6 +305,11 @@ export const getBookById = async (id: string): Promise<Book | null> => {
           throw bookError;
         }
 
+        if (!bookData) {
+          console.log(`No book found with ID: ${id}`);
+          return null;
+        }
+
         // Then get seller profile separately
         const { data: profileData, error: profileError } = await supabase
           .from("profiles")
@@ -314,50 +319,16 @@ export const getBookById = async (id: string): Promise<Book | null> => {
 
         // Profile error is not critical - continue without it
         if (profileError) {
-          console.warn(`Could not fetch profile for seller ${bookData.seller_id}:`, profileError);
+          console.warn(
+            `Could not fetch profile for seller ${bookData.seller_id}:`,
+            profileError,
+          );
         }
 
         // Combine book and profile data
         const bookDataWithProfile = {
           ...bookData,
-          profiles: profileData || null,
-        };
-
-          logDetailedError("Failed to fetch book by ID", {
-            bookId: id,
-            error: bookError,
-            code: errorCode,
-          });
-
-          throw new Error(
-            `Failed to fetch book: ${errorMessage} (Code: ${errorCode})`,
-          );
-        }
-
-        if (!bookData) {
-          console.log(`No book found with ID: ${id}`);
-          return null;
-        }
-
-        // Fetch seller profile separately
-        const { data: sellerProfile, error: sellerError } = await supabase
-          .from("profiles")
-          .select("id, name, email")
-          .eq("id", bookData.seller_id)
-          .single();
-
-        if (sellerError) {
-          console.warn(
-            `Failed to fetch seller profile for book ${id}:`,
-            sellerError.message,
-          );
-          // Continue with fallback seller data instead of failing
-        }
-
-        // Add profile data to bookData for mapBookFromDatabase
-        const bookDataWithProfile = {
-          ...bookData,
-          profiles: sellerProfile || {
+          profiles: profileData || {
             id: bookData.seller_id,
             name: "Unknown Seller",
             email: "unknown@example.com",
