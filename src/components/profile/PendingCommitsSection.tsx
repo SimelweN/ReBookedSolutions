@@ -50,58 +50,52 @@ const PendingCommitsSection: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      console.log("🔍 Loading pending commits for user:", user.id);
+      const commits = await CommitSystemService.getPendingCommits(user.id);
+      setPendingCommits(commits);
 
-      // Get orders where this user is the seller and status is "paid" (needs commit)
-      const { data: orders, error: ordersError } = await supabase
-        .from("orders")
-        .select("*")
-        .eq("seller_id", user.id)
-        .eq("status", "paid")
-        .order("created_at", { ascending: false });
-
-      if (ordersError) {
-        console.error("Orders query error:", ordersError);
-        throw ordersError;
-      }
-
-      console.log("📊 Found orders for seller:", orders?.length || 0);
-      console.log("Orders data:", orders);
-
-      // Also check for demo orders where user could be testing
-      const { data: demoOrders, error: demoError } = await supabase
-        .from("orders")
-        .select("*")
-        .eq("status", "paid")
-        .contains("metadata", { demo_order: true })
-        .order("created_at", { ascending: false });
-
-      if (!demoError && demoOrders) {
-        console.log("📊 Found demo orders:", demoOrders.length);
-        // Add demo orders to the list for testing purposes
-        const allOrders = [...(orders || []), ...demoOrders];
-        setPendingCommits(allOrders);
-      } else {
-        setPendingCommits(orders || []);
-      }
+      console.log(
+        `📊 Loaded ${commits.length} pending commits for seller:`,
+        user.id,
+      );
     } catch (err) {
       console.error("Error loading pending commits:", err);
-
-      // Check if it's a missing table error
-      const errorMessage = err instanceof Error ? err.message : "Unknown error";
-
-      if (
-        errorMessage.includes("relation") &&
-        errorMessage.includes("does not exist")
-      ) {
-        console.log("Orders table not available - this is normal in demo mode");
-        setError(null);
-        setPendingCommits([]);
-      } else {
-        setError(`Failed to load pending commitments: ${errorMessage}`);
-      }
+      setError("Failed to load pending commitments");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCommitToSale = async (commitData: CommitData) => {
+    if (!user?.id) return;
+
+    try {
+      setCommitting((prev) => new Set([...prev, commitData.id]));
+
+      const result = await CommitSystemService.commitToSale(
+        commitData.id,
+        user.id,
+      );
+
+      if (result.success) {
+        toast.success(result.message);
+
+        // Remove from pending commits list
+        setPendingCommits((prev) => prev.filter((c) => c.id !== commitData.id));
+
+        // Optionally reload to ensure sync
+        loadPendingCommits();
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error("Error committing to sale:", error);
+      toast.error("Failed to commit to sale. Please try again.");
+    } finally {
+      setCommitting((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(commitData.id);
+        return newSet;
+      });
     }
   };
 
