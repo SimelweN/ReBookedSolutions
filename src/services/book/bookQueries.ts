@@ -146,6 +146,14 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
           console.error(`[Books query failed] ${errorMessage}`);
           safeBooksLogError("Books query failed", booksError);
 
+          // Handle Supabase not configured gracefully
+          if (errorCode === "SUPABASE_NOT_CONFIGURED") {
+            console.warn(
+              "⚠️ Supabase not configured - returning empty books list",
+            );
+            return [];
+          }
+
           throw new Error(
             `Failed to fetch books: ${errorMessage} (Code: ${errorCode})`,
           );
