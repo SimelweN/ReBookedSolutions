@@ -13,18 +13,19 @@ import {
   ArrowLeft,
   Calendar,
   User,
+  ShoppingBag,
+  BookOpen,
+  UserPlus,
+  AlertCircle,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import SEO from "@/components/SEO";
 import { toast } from "sonner";
-
-interface ActivityItem {
-  id: string;
-  type: string;
-  description: string;
-  timestamp: string;
-  metadata?: any;
-}
+import {
+  ActivityService,
+  Activity as ActivityType,
+} from "@/services/activityService";
+import { useUserOrders } from "@/hooks/useUserOrders";
 
 const ActivityLog: React.FC = () => {
   const navigate = useNavigate();
