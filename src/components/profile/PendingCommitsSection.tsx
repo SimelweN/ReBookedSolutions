@@ -201,109 +201,228 @@ const PendingCommitsSection: React.FC = () => {
         ) : (
           <div className="space-y-4">
             {pendingCommits.map((commit) => {
-              const expired = isExpired(commit.commit_deadline);
+              const statusInfo = CommitSystemService.getCommitStatus(commit);
+              const expired = CommitSystemService.isCommitExpired(commit);
+              const timeRemaining =
+                CommitSystemService.getTimeRemaining(commit);
+              const isCommittingThis = committing.has(commit.id);
 
               return (
                 <div
                   key={commit.id}
-                  className={`border rounded-lg p-4 ${
+                  className={`border rounded-lg p-4 transition-all ${
                     expired
                       ? "border-red-200 bg-red-50"
-                      : "border-orange-200 bg-orange-50"
+                      : statusInfo.urgent
+                        ? "border-orange-200 bg-orange-50 shadow-orange-100 shadow-lg"
+                        : "border-blue-200 bg-blue-50"
                   }`}
                 >
                   {/* Header */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <Package className="h-4 w-4 text-orange-600" />
-                      <span className="font-medium text-orange-800">
-                        Order #{commit.id.slice(0, 8)}
-                      </span>
-                      {expired ? (
-                        <Badge variant="destructive">Expired</Badge>
-                      ) : (
-                        <Badge
-                          variant="outline"
-                          className="text-orange-700 border-orange-300"
-                        >
-                          {formatTimeRemaining(commit.commit_deadline)}
-                        </Badge>
-                      )}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`p-2 rounded-full ${
+                          expired
+                            ? "bg-red-100"
+                            : statusInfo.urgent
+                              ? "bg-orange-100"
+                              : "bg-blue-100"
+                        }`}
+                      >
+                        <Package
+                          className={`h-4 w-4 ${
+                            expired
+                              ? "text-red-600"
+                              : statusInfo.urgent
+                                ? "text-orange-600"
+                                : "text-blue-600"
+                          }`}
+                        />
+                      </div>
+                      <div>
+                        <span className="font-semibold text-gray-900">
+                          Sale #{commit.id.slice(0, 8)}
+                        </span>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge
+                            variant={
+                              expired
+                                ? "destructive"
+                                : statusInfo.urgent
+                                  ? "outline"
+                                  : "secondary"
+                            }
+                            className={`text-xs ${statusInfo.color}`}
+                          >
+                            {statusInfo.status}
+                          </Badge>
+                          {!expired && (
+                            <div className="flex items-center gap-1 text-xs text-gray-600">
+                              <Timer className="h-3 w-3" />
+                              {timeRemaining}
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
+
                     <div className="text-right">
-                      <div className="font-semibold text-orange-800">
+                      <div className="text-xl font-bold text-gray-900">
                         R{(commit.amount / 100).toFixed(2)}
                       </div>
-                      <div className="text-xs text-orange-600">
-                        You receive: R{((commit.amount * 0.9) / 100).toFixed(2)}
+                      <div className="text-sm text-green-600 font-medium">
+                        You get: R{((commit.amount * 0.9) / 100).toFixed(2)}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        (90% after 10% platform fee)
                       </div>
                     </div>
                   </div>
 
                   {/* Order Details */}
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center gap-2 text-sm">
-                      <User className="h-3 w-3 text-gray-500" />
-                      <span className="text-gray-600">Buyer:</span>
-                      <span className="font-medium">{commit.buyer_email}</span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-sm">
+                        <User className="h-3 w-3 text-gray-500" />
+                        <span className="text-gray-600">Buyer:</span>
+                        <span className="font-medium">
+                          {commit.buyer_email || "Loading..."}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-sm">
+                        <Calendar className="h-3 w-3 text-gray-500" />
+                        <span className="text-gray-600">Paid:</span>
+                        <span className="font-medium">
+                          {new Date(
+                            commit.paid_at || commit.created_at,
+                          ).toLocaleString()}
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-2 text-sm">
-                      <Calendar className="h-3 w-3 text-gray-500" />
-                      <span className="text-gray-600">Paid:</span>
-                      <span className="font-medium">
-                        {new Date(
-                          commit.paid_at || commit.created_at,
-                        ).toLocaleString()}
-                      </span>
-                    </div>
-
-                    {/* Items */}
-                    <div className="text-sm">
-                      <span className="text-gray-600">Items:</span>
-                      <div className="ml-4 mt-1">
-                        {commit.items?.map((item, index) => (
-                          <div key={index} className="flex justify-between">
-                            <span>{item.title}</span>
+                    <div className="space-y-2">
+                      <div className="text-sm">
+                        <span className="text-gray-600 font-medium">Book:</span>
+                        <div className="mt-1">
+                          {commit.metadata?.book_title ? (
                             <span className="font-medium">
-                              R{item.price.toFixed(2)}
+                              {commit.metadata.book_title}
                             </span>
-                          </div>
-                        )) || (
-                          <span className="text-gray-500">
-                            Order details loading...
-                          </span>
-                        )}
+                          ) : (
+                            <span className="text-gray-500 italic">
+                              Book details loading...
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
+
+                  {/* Countdown Bar for urgent items */}
+                  {!expired && statusInfo.urgent && (
+                    <div className="mb-4">
+                      <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+                        <span>Time remaining</span>
+                        <span className="font-mono">{timeRemaining}</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className={`h-2 rounded-full transition-all ${
+                            statusInfo.status === "Urgent"
+                              ? "bg-red-500"
+                              : "bg-orange-500"
+                          }`}
+                          style={{
+                            width: `${Math.max(10, ((new Date(commit.expires_at || commit.commit_deadline!).getTime() - Date.now()) / (48 * 60 * 60 * 1000)) * 100)}%`,
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Actions */}
                   {expired ? (
                     <Alert>
                       <AlertTriangle className="h-4 w-4" />
                       <AlertDescription>
-                        This order has expired. The buyer has been refunded
-                        automatically.
+                        This commitment window has expired. The buyer has been
+                        automatically refunded and the book has been relisted
+                        for sale.
                       </AlertDescription>
                     </Alert>
                   ) : (
                     <div className="space-y-3">
-                      <Alert>
+                      <Alert
+                        className={
+                          statusInfo.urgent
+                            ? "border-orange-300 bg-orange-50"
+                            : "border-blue-300 bg-blue-50"
+                        }
+                      >
                         <Clock className="h-4 w-4" />
                         <AlertDescription>
                           <strong>Action Required:</strong> You have{" "}
-                          {formatTimeRemaining(commit.commit_deadline)} to
-                          commit to this sale. Click "Commit to Sale" below to
-                          confirm you can fulfill this order.
+                          {timeRemaining} to commit to this sale. By committing,
+                          you confirm that you have the book ready and can
+                          fulfill this order.
                         </AlertDescription>
                       </Alert>
 
-                      {/* Commit Component */}
-                      <CommitToOrder
-                        order={commit as OrderData}
-                        onCommitSuccess={handleCommitSuccess}
-                      />
+                      {/* Commit Button */}
+                      <div className="flex gap-3">
+                        <Button
+                          onClick={() => handleCommitToSale(commit)}
+                          disabled={isCommittingThis}
+                          className={`flex-1 ${
+                            statusInfo.urgent
+                              ? "bg-orange-600 hover:bg-orange-700"
+                              : "bg-green-600 hover:bg-green-700"
+                          } text-white font-medium`}
+                        >
+                          {isCommittingThis ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              Committing...
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle className="h-4 w-4 mr-2" />✅ Commit
+                              to Sale
+                            </>
+                          )}
+                        </Button>
+
+                        <Button
+                          variant="outline"
+                          onClick={() =>
+                            navigate(`/payment-status/${commit.id}`)
+                          }
+                          className="border-gray-300"
+                        >
+                          <Eye className="h-4 w-4 mr-2" />
+                          View Details
+                        </Button>
+                      </div>
+
+                      <div className="text-xs text-gray-600 bg-gray-50 p-3 rounded-lg">
+                        <strong>What happens when you commit:</strong>
+                        <ul className="mt-1 space-y-1 ml-4 list-disc">
+                          <li>
+                            Your book is marked as sold and removed from
+                            listings
+                          </li>
+                          <li>Courier will contact you to arrange pickup</li>
+                          <li>
+                            You'll receive payment after successful delivery
+                          </li>
+                          <li>
+                            Buyer will be notified that you've committed to the
+                            sale
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                   )}
                 </div>
