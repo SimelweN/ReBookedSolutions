@@ -55,6 +55,8 @@ const PendingCommitsSection: React.FC = () => {
       setLoading(true);
       setError(null);
 
+      console.log("🔍 Loading pending commits for user:", user.id);
+
       // Get orders where this user is the seller and status is "paid" (needs commit)
       const { data: orders, error: ordersError } = await supabase
         .from("orders")
@@ -64,10 +66,29 @@ const PendingCommitsSection: React.FC = () => {
         .order("created_at", { ascending: false });
 
       if (ordersError) {
+        console.error("Orders query error:", ordersError);
         throw ordersError;
       }
 
-      setPendingCommits(orders || []);
+      console.log("📊 Found orders for seller:", orders?.length || 0);
+      console.log("Orders data:", orders);
+
+      // Also check for demo orders where user could be testing
+      const { data: demoOrders, error: demoError } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("status", "paid")
+        .contains("metadata", { demo_order: true })
+        .order("created_at", { ascending: false });
+
+      if (!demoError && demoOrders) {
+        console.log("📊 Found demo orders:", demoOrders.length);
+        // Add demo orders to the list for testing purposes
+        const allOrders = [...(orders || []), ...demoOrders];
+        setPendingCommits(allOrders);
+      } else {
+        setPendingCommits(orders || []);
+      }
     } catch (err) {
       console.error("Error loading pending commits:", err);
 
@@ -82,7 +103,7 @@ const PendingCommitsSection: React.FC = () => {
         setError(null);
         setPendingCommits([]);
       } else {
-        setError("Failed to load pending commitments");
+        setError(`Failed to load pending commitments: ${errorMessage}`);
       }
     } finally {
       setLoading(false);
