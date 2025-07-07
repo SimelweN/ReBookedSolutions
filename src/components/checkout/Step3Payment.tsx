@@ -272,8 +272,11 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
             .from("orders")
             .update({
               status: "cancelled",
-              payment_status: "cancelled",
-              cancelled_at: new Date().toISOString(),
+              metadata: {
+                ...createdOrder.metadata,
+                cancelled_at: new Date().toISOString(),
+                cancellation_reason: "payment_failed",
+              },
             })
             .eq("id", createdOrder.id);
 
