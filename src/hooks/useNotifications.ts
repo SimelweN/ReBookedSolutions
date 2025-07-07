@@ -205,10 +205,17 @@ export const useNotifications = (): NotificationHookReturn => {
 
         // Check if we got valid data
         if (Array.isArray(userNotifications)) {
-          // Deduplicate notifications by ID to prevent duplicates
+          // Enhanced deduplication to prevent notification spam
           const uniqueNotifications = userNotifications.filter(
             (notification, index, array) =>
               array.findIndex((n) => n.id === notification.id) === index,
+          );
+
+          // Sort by created_at to ensure consistent ordering
+          uniqueNotifications.sort(
+            (a, b) =>
+              new Date(b.created_at || 0).getTime() -
+              new Date(a.created_at || 0).getTime(),
           );
 
           // Additional check to prevent setting duplicate data
@@ -227,11 +234,27 @@ export const useNotifications = (): NotificationHookReturn => {
             );
 
           if (hasChanges) {
-            setNotifications(uniqueNotifications);
-            // Update the global manager
-            notificationManager.current.updateNotifications(
-              uniqueNotifications,
+            // Rate limit: don't update more than once per second
+            const now = Date.now();
+            const lastUpdate = sessionStorage.getItem(
+              "notifications_last_update",
             );
+            const timeSinceLastUpdate = lastUpdate
+              ? now - parseInt(lastUpdate)
+              : 1000;
+
+            if (timeSinceLastUpdate >= 1000) {
+              setNotifications(uniqueNotifications);
+              sessionStorage.setItem(
+                "notifications_last_update",
+                now.toString(),
+              );
+
+              // Update the global manager
+              notificationManager.current.updateNotifications(
+                uniqueNotifications,
+              );
+            }
           }
           setHasError(false);
           setLastError(undefined);
