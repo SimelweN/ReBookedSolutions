@@ -77,11 +77,51 @@ const EnhancedUserOrders: React.FC = () => {
       setSellerOrders(sellerOrdersData);
     } catch (error) {
       console.error("Error loading orders:", error);
-      toast.error("Failed to load orders. Using demo data.");
+      toast.error(
+        "Failed to load orders. Please check your internet connection and try again.",
+      );
 
-      // Fallback to empty arrays if there's an error
-      setBuyerOrders([]);
-      setSellerOrders([]);
+      // Show sample data if real data fails to load (for development)
+      if (import.meta.env.DEV) {
+        console.log("Development mode: Adding sample orders");
+        const sampleOrders: Order[] = [
+          {
+            id: "sample-order-1",
+            buyer_id: user.id,
+            seller_id: "other-user",
+            book_id: "sample-book-1",
+            paystack_reference: "sample-ref-123",
+            total_amount: 15000,
+            book_price: 12000,
+            delivery_fee: 3000,
+            platform_fee: 0,
+            seller_amount: 12000,
+            status: "paid",
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            book: {
+              title: "Sample Textbook",
+              author: "Sample Author",
+              imageUrl: undefined,
+            },
+            buyer: {
+              name: "Sample Buyer",
+              email: "buyer@example.com",
+            },
+            seller: {
+              name: "Sample Seller",
+              email: "seller@example.com",
+            },
+          },
+        ];
+
+        // Add sample orders based on role
+        setBuyerOrders(sampleOrders);
+        setSellerOrders(user.id === "other-user" ? sampleOrders : []);
+      } else {
+        setBuyerOrders([]);
+        setSellerOrders([]);
+      }
     } finally {
       setLoading(false);
     }
