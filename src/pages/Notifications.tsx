@@ -175,7 +175,6 @@ const Notifications = () => {
   };
 
   const handleRetry = () => {
-    clearError();
     refreshNotifications();
   };
 
