@@ -290,10 +290,15 @@ const Notifications = () => {
               <Card
                 key={notification.id}
                 className={`
-                  transition-all duration-200
+                  transition-all duration-200 cursor-pointer
                   ${!notification.read ? "bg-blue-50 border-blue-200 shadow-md" : "shadow-sm"}
-                  hover:shadow-lg
+                  hover:shadow-lg hover:border-blue-300
                 `}
+                onClick={() => {
+                  if (!notification.read) {
+                    markAsRead(notification.id);
+                  }
+                }}
               >
                 <CardHeader className="pb-3 p-4 sm:p-6">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">

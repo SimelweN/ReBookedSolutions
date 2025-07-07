@@ -227,7 +227,7 @@ const ActivityLog: React.FC = () => {
               className="flex-1"
             >
               <Package className="mr-2 h-4 w-4" />
-              My Orders
+              View Orders
             </Button>
           </div>
         </div>

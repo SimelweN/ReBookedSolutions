@@ -218,9 +218,12 @@ export const useNotifications = (): NotificationHookReturn => {
               new Date(a.created_at || 0).getTime(),
           );
 
+          // Limit to prevent memory issues and excessive notifications
+          const limitedNotifications = uniqueNotifications.slice(0, 50);
+
           // Additional check to prevent setting duplicate data
           const newNotificationIds = new Set(
-            uniqueNotifications.map((n) => n.id),
+            limitedNotifications.map((n) => n.id),
           );
           const currentNotificationIds = new Set(
             notifications.map((n) => n.id),
@@ -228,7 +231,7 @@ export const useNotifications = (): NotificationHookReturn => {
 
           // Only update if the notifications have actually changed
           const hasChanges =
-            uniqueNotifications.length !== notifications.length ||
+            limitedNotifications.length !== notifications.length ||
             !Array.from(newNotificationIds).every((id) =>
               currentNotificationIds.has(id),
             );
@@ -244,7 +247,7 @@ export const useNotifications = (): NotificationHookReturn => {
               : 1000;
 
             if (timeSinceLastUpdate >= 1000) {
-              setNotifications(uniqueNotifications);
+              setNotifications(limitedNotifications);
               sessionStorage.setItem(
                 "notifications_last_update",
                 now.toString(),
@@ -252,7 +255,7 @@ export const useNotifications = (): NotificationHookReturn => {
 
               // Update the global manager
               notificationManager.current.updateNotifications(
-                uniqueNotifications,
+                limitedNotifications,
               );
             }
           }
