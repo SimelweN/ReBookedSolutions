@@ -111,6 +111,7 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
   }, [book.seller_id, user?.id]);
 
   const loadSellerInfo = async () => {
+    setSellerInfoLoading(true);
     try {
       console.log("Loading seller info for seller_id:", book.seller_id);
 
