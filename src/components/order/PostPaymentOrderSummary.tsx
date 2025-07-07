@@ -37,6 +37,7 @@ const PostPaymentOrderSummary: React.FC<PostPaymentOrderSummaryProps> = ({
   const [order, setOrder] = useState<OrderData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showReceipt, setShowReceipt] = useState(false);
 
   useEffect(() => {
     loadOrderDetails();
