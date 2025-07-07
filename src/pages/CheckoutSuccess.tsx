@@ -25,25 +25,43 @@ const CheckoutSuccess: React.FC = () => {
 
   const processPaymentCallback = async () => {
     try {
+      console.log("🔄 [CheckoutSuccess] Starting payment verification process");
+      console.log(
+        "🔍 [CheckoutSuccess] URL search params:",
+        Object.fromEntries(searchParams),
+      );
+      console.log("🔍 [CheckoutSuccess] Location state:", location.state);
+
       setLoading(true);
 
       // Get payment reference from URL params
       const reference =
         searchParams.get("reference") || searchParams.get("trxref");
 
+      console.log("📝 [CheckoutSuccess] Payment reference found:", reference);
+
       if (!reference) {
         // Check if order data was passed through state (from successful payment)
         const stateOrderData = location.state?.orderData;
+        console.log("🔍 [CheckoutSuccess] State order data:", stateOrderData);
+
         if (stateOrderData) {
+          console.log("✅ [CheckoutSuccess] Using order data from state");
           setOrderData(stateOrderData);
           setLoading(false);
           return;
         }
 
+        console.error(
+          "❌ [CheckoutSuccess] No payment reference or state data found",
+        );
         throw new Error("No payment reference found");
       }
 
-      console.log("Verifying payment with reference:", reference);
+      console.log(
+        "📞 [CheckoutSuccess] Verifying payment with reference:",
+        reference,
+      );
 
       // Verify payment with Paystack
       const { data: verificationResult, error: verificationError } =
