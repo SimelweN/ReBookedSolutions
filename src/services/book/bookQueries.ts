@@ -405,11 +405,15 @@ export const getBookById = async (id: string): Promise<Book | null> => {
             id: bookData.seller_id,
             name: "Unknown Seller",
             email: "unknown@example.com",
+            pickup_address: null,
           },
         };
 
         console.log("🔄 [getBookById] Mapping book data...");
-        const mappedBook = mapBookFromDatabase(bookDataWithProfile);
+        const mappedBook = mapBookFromDatabase(
+          bookDataWithProfile,
+          profileData,
+        );
         console.log("✅ [getBookById] Book mapped successfully:", mappedBook);
 
         return mappedBook;
