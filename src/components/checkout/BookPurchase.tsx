@@ -284,13 +284,15 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         console.log(
           "✅ Pre-filling delivery address from saved shipping address",
         );
-        setDeliveryAddress({
+        const prefillAddress = {
           street: shipping.streetAddress || "",
           city: shipping.city || "",
           province: shipping.province || "",
           postal_code: shipping.postalCode || "",
           country: "South Africa",
-        });
+        };
+        console.log("📝 Pre-filling delivery address:", prefillAddress);
+        setDeliveryAddress(prefillAddress);
       } else {
         console.log(
           "⚠️ No saved shipping address found - user will need to enter address manually",
