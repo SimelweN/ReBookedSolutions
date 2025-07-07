@@ -250,11 +250,7 @@ const Navbar = () => {
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <div className="flex items-center mr-3">
-                        <NotificationBadge
-                          className="h-5 w-5"
-                          iconSize="h-5 w-5"
-                          showCount={false}
-                        />
+                        <NotificationBell />
                       </div>
                       Notifications
                     </Link>
