@@ -164,7 +164,7 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
         try {
           const profilesPromise = supabase
             .from("profiles")
-            .select("id, name, email")
+            .select("id, name, email, pickup_address")
             .in("id", sellerIds);
 
           const profilesTimeout = new Promise((_, reject) =>
