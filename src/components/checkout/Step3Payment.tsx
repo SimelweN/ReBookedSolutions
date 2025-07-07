@@ -74,9 +74,16 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
             .eq("status", "active")
             .single();
 
-        console.log("Fetching seller subaccount:", {
+        // First check all subaccounts for debugging
+        const { data: allSellerSubaccounts } = await supabase
+          .from("banking_subaccounts")
+          .select("*")
+          .eq("user_id", orderSummary.book.seller_id);
+
+        console.log("🔍 All seller subaccounts found:", {
           seller_id: orderSummary.book.seller_id,
-          result: sellerSubaccount,
+          all_subaccounts: allSellerSubaccounts,
+          active_result: sellerSubaccount,
           error: subaccountError,
         });
 
