@@ -186,9 +186,9 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
 
     const mappedBook = mapBookFromDatabase(bookWithProfile);
 
-    // Book is now directly linked to seller's subaccount via subaccount_code column
+    // Book is now directly linked to seller's subaccount and contains seller address
     console.log(
-      `✅ Book ${book.id} directly linked to subaccount: ${userSubaccountCode}`,
+      `✅ Book ${book.id} created with seller data - subaccount: ${userSubaccountCode}, address: ${sellerAddress ? "included" : "not available"}`,
     );
 
     // Log activity for book listing
