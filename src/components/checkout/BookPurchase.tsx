@@ -339,7 +339,8 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         "⚠️ Couldn't load your saved address. You'll need to enter your delivery address manually.",
       );
 
-      // Mark user profile loading as complete even on error
+      // Mark user profile loading as complete even on error and clear timeout
+      clearTimeout(userTimeoutId);
       setUserProfileLoading(false);
     }
   };
