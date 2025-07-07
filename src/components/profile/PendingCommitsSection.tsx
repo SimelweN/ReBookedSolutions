@@ -21,32 +21,25 @@ import CommitSystemService, {
   CommitData,
 } from "@/services/commitSystemService";
 
-interface PendingCommit {
-  id: string;
-  amount: number;
-  status: string;
-  created_at: string;
-  commit_deadline?: string;
-  paid_at?: string;
-  seller_id: string;
-  buyer_email: string;
-  items: Array<{
-    title: string;
-    author?: string;
-    price: number;
-  }>;
-}
-
 const PendingCommitsSection: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [pendingCommits, setPendingCommits] = useState<PendingCommit[]>([]);
+  const [pendingCommits, setPendingCommits] = useState<CommitData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [committing, setCommitting] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (user?.id) {
       loadPendingCommits();
+
+      // Set up real-time subscription
+      const unsubscribe = CommitSystemService.subscribeToCommitUpdates(
+        user.id,
+        setPendingCommits,
+      );
+
+      return unsubscribe;
     }
   }, [user?.id]);
 
