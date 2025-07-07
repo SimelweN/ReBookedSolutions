@@ -608,23 +608,27 @@ const AdminDashboard = () => {
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white">
-            <CardContent className="p-6">
+            <CardContent className="p-3 md:p-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-blue-100 text-sm font-medium">
-                    Total Users
+                <div className="min-w-0 flex-1">
+                  <p className="text-blue-100 text-xs md:text-sm font-medium">
+                    {isMobile ? "Users" : "Total Users"}
                   </p>
-                  <p className="text-3xl font-bold">
-                    {stats.totalUsers.toLocaleString()}
+                  <p className="text-xl md:text-3xl font-bold">
+                    {isMobile
+                      ? stats.totalUsers > 999
+                        ? `${(stats.totalUsers / 1000).toFixed(1)}k`
+                        : stats.totalUsers
+                      : stats.totalUsers.toLocaleString()}
                   </p>
-                  <div className="flex items-center mt-2">
-                    <ArrowUpRight className="h-4 w-4 text-green-300" />
-                    <span className="text-sm text-green-300">
-                      +{stats.newUsersToday} today
+                  <div className="flex items-center mt-1 md:mt-2">
+                    <ArrowUpRight className="h-3 w-3 md:h-4 md:w-4 text-green-300" />
+                    <span className="text-xs md:text-sm text-green-300 truncate">
+                      +{stats.newUsersToday} {isMobile ? "" : "today"}
                     </span>
                   </div>
                 </div>
-                <Users className="h-8 w-8 text-blue-200" />
+                <Users className="h-6 w-6 md:h-8 md:w-8 text-blue-200 flex-shrink-0" />
               </div>
             </CardContent>
           </Card>
