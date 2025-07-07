@@ -117,16 +117,62 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
         throw new Error(paymentData.message || "Payment initialization failed");
       }
 
-      // Redirect to Paystack checkout
-      if (paymentData.data?.authorization_url) {
+      // Use Paystack popup instead of redirect
+      if (paymentData.data?.access_code && paymentData.data?.reference) {
         console.log(
-          "Redirecting to Paystack:",
-          paymentData.data.authorization_url,
+          "Opening Paystack popup with access code:",
+          paymentData.data.access_code,
         );
-        window.location.href = paymentData.data.authorization_url;
+
+        // Import and use PaystackPop for modal experience
+        const { PaystackPaymentService } = await import(
+          "@/services/paystackPaymentService"
+        );
+
+        await PaystackPaymentService.processPayment({
+          key:
+            paymentData.data.public_key ||
+            import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
+          email: userData.user.email,
+          amount: orderSummary.total_price * 100,
+          reference: paymentData.data.reference,
+          currency: "ZAR",
+          onSuccess: async (transaction: any) => {
+            console.log("✅ Paystack payment successful:", transaction);
+
+            // Create order confirmation data
+            const orderConfirmation = {
+              order_id: paymentData.data.reference,
+              payment_reference: transaction.reference,
+              book_id: orderSummary.book.id,
+              seller_id: orderSummary.book.seller_id,
+              buyer_id: userId,
+              book_title: orderSummary.book.title,
+              book_price: orderSummary.book_price,
+              delivery_method: orderSummary.delivery.service_name,
+              delivery_price: orderSummary.delivery_price,
+              total_paid: orderSummary.total_price,
+              created_at: new Date().toISOString(),
+              status: "completed",
+            };
+
+            // Call the success handler to show Step4Confirmation
+            onPaymentSuccess(orderConfirmation);
+            toast.success("Payment completed successfully! 🎉");
+          },
+          onCancel: () => {
+            console.log("❌ Paystack payment cancelled");
+            setProcessing(false);
+            toast.warning("Payment cancelled");
+          },
+          onClose: () => {
+            console.log("ℹ️ Paystack popup closed");
+            setProcessing(false);
+          },
+        });
       } else {
         console.error("Payment response:", paymentData);
-        throw new Error("No payment URL received from Paystack");
+        throw new Error("No payment access code received from Paystack");
       }
     } catch (err) {
       console.error("Payment initialization error:", err);
