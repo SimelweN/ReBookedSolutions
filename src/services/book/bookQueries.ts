@@ -279,6 +279,7 @@ export const getBookById = async (id: string): Promise<Book | null> => {
 
     return await retryWithConnection(
       async () => {
+        // First get book data
         const { data: bookData, error: bookError } = await supabase
           .from("books")
           .select(
@@ -289,11 +290,21 @@ export const getBookById = async (id: string): Promise<Book | null> => {
             seller_province,
             seller_postal_code,
             seller_country,
-            seller_subaccount_code,
-            profiles!books_seller_id_fkey(id, name, email)
+            seller_subaccount_code
           `,
           )
           .eq("id", id)
+          .single();
+
+        if (bookError) {
+          throw bookError;
+        }
+
+        // Then get seller profile separately
+        const { data: profileData, error: profileError } = await supabase
+          .from("profiles")
+          .select("id, name, email")
+          .eq("id", bookData.seller_id)
           .single();
 
         if (bookError) {
