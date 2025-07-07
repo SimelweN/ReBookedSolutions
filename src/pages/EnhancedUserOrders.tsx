@@ -85,6 +85,17 @@ const EnhancedUserOrders: React.FC = () => {
     }
   }, [user?.id]);
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
+    if (user?.id) {
+      loadOrders();
+    }
+  }, [user?.id, isAuthenticated, navigate, loadOrders]);
+
   const handleConfirmDelivery = async (orderId: string) => {
     try {
       await confirmDelivery(orderId);
