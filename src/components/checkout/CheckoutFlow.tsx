@@ -93,6 +93,20 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ book }) => {
       let updatedBook = checkoutState.book;
       if (!book.seller_subaccount_code) {
         console.log("Loading seller subaccount for:", book.seller_id);
+
+        // First, let's see all subaccounts for this seller
+        const { data: allSubaccounts, error: allError } = await supabase
+          .from("banking_subaccounts")
+          .select("*")
+          .eq("user_id", book.seller_id);
+
+        console.log("🔍 All seller subaccounts:", {
+          allSubaccounts,
+          allError,
+          seller_id: book.seller_id,
+        });
+
+        // Then try to get active one
         const { data: sellerSubaccount, error: subaccountError } =
           await supabase
             .from("banking_subaccounts")
@@ -101,7 +115,7 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ book }) => {
             .eq("status", "active")
             .single();
 
-        console.log("Subaccount query result:", {
+        console.log("✅ Active subaccount query result:", {
           sellerSubaccount,
           subaccountError,
         });
