@@ -52,6 +52,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import ProgramReview from "@/components/admin/ProgramReview";
 
 const AdminDashboard = () => {
@@ -137,18 +138,50 @@ const AdminDashboard = () => {
     }
 
     try {
-      // Simulate sending announcement to all users
       toast.success("Sending announcement to all users...");
 
-      // Here you would typically call your notification service
-      // await notificationService.broadcastAnnouncement(announcement);
+      // Get all users to send notifications to
+      const { data: users, error: usersError } = await supabase
+        .from("profiles")
+        .select("id")
+        .neq("role", "admin"); // Don't send to admins
 
-      setTimeout(() => {
-        toast.success("Announcement sent successfully to all users!");
-        setAnnouncement("");
-        setShowAnnouncementDialog(false);
-      }, 2000);
+      if (usersError) {
+        console.error("Error fetching users:", usersError);
+        toast.error("Failed to fetch users");
+        return;
+      }
+
+      if (!users || users.length === 0) {
+        toast.warning("No users found to send announcement to");
+        return;
+      }
+
+      // Create notifications for all users
+      const notifications = users.map((user) => ({
+        user_id: user.id,
+        title: "System Announcement",
+        message: announcement.trim(),
+        type: "info" as const,
+        read: false,
+        created_at: new Date().toISOString(),
+      }));
+
+      const { error: notificationError } = await supabase
+        .from("notifications")
+        .insert(notifications);
+
+      if (notificationError) {
+        console.error("Error creating notifications:", notificationError);
+        toast.error("Failed to send notifications");
+        return;
+      }
+
+      toast.success(`Announcement sent successfully to ${users.length} users!`);
+      setAnnouncement("");
+      setShowAnnouncementDialog(false);
     } catch (error) {
+      console.error("Error sending announcement:", error);
       toast.error("Failed to send announcement");
     }
   };
