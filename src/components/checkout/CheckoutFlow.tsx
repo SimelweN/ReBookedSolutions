@@ -106,14 +106,27 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ book }) => {
           seller_id: book.seller_id,
         });
 
-        // Then try to get active one
-        const { data: sellerSubaccount, error: subaccountError } =
-          await supabase
-            .from("banking_subaccounts")
-            .select("subaccount_code, status")
-            .eq("user_id", book.seller_id)
-            .eq("status", "active")
-            .single();
+        // Try to get active one, or any available one
+        let { data: sellerSubaccount, error: subaccountError } = await supabase
+          .from("banking_subaccounts")
+          .select("subaccount_code, status")
+          .eq("user_id", book.seller_id)
+          .eq("status", "active")
+          .single();
+
+        // If no active subaccount found, try to get any subaccount with subaccount_code
+        if (!sellerSubaccount && allSubaccounts && allSubaccounts.length > 0) {
+          const anySubaccountWithCode = allSubaccounts.find(
+            (sub) => sub.subaccount_code,
+          );
+          if (anySubaccountWithCode) {
+            sellerSubaccount = {
+              subaccount_code: anySubaccountWithCode.subaccount_code,
+              status: anySubaccountWithCode.status,
+            };
+            console.log("📦 Using non-active subaccount:", sellerSubaccount);
+          }
+        }
 
         console.log("✅ Active subaccount query result:", {
           sellerSubaccount,
