@@ -36,7 +36,9 @@ import {
   BookOpen,
   Lightbulb,
   FileText,
+  Settings,
 } from "lucide-react";
+import DemoTester from "./DemoTester";
 
 interface AdminUtilitiesTabProps {
   className?: string;
