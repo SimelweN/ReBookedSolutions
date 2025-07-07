@@ -14,7 +14,9 @@ import {
   Phone,
   Mail,
   Download,
+  Receipt,
 } from "lucide-react";
+import ReceiptDownloader from "@/components/receipt/ReceiptDownloader";
 import { OrderData } from "@/services/paystackPaymentService";
 import { useUserOrders } from "@/hooks/useUserOrders";
 import { toast } from "sonner";
