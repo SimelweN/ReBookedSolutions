@@ -224,7 +224,8 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         }
       }
 
-      // Mark loading as complete
+      // Mark loading as complete and clear timeout
+      clearTimeout(timeoutId);
       setSellerInfoLoading(false);
     } catch (error) {
       console.error("Error loading seller info:", error);
