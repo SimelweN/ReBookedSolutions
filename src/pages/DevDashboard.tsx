@@ -660,11 +660,8 @@ const DevDashboard: React.FC = () => {
     }
   };
 
-  const WrapperComponent = isMobile ? AdminMobileLayout : Layout;
-  const wrapperProps = isMobile ? { title: "Development Dashboard" } : {};
-
   return (
-    <WrapperComponent {...wrapperProps}>
+    <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-50 p-3 md:p-6">
         <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
           {/* Header */}
@@ -1506,7 +1503,7 @@ const DevDashboard: React.FC = () => {
           </Tabs>
         </div>
       </div>
-    </WrapperComponent>
+    </Layout>
   );
 };
 
