@@ -235,7 +235,7 @@ const Notifications = () => {
                 <div>
                   <span className="font-medium">Connection Issues</span>
                   <p className="text-sm mt-1">
-                    {lastError || "Unable to load notifications"}
+                    {hasError || "Unable to load notifications"}
                   </p>
                 </div>
                 <Button
