@@ -149,16 +149,10 @@ const AccountInformation = ({
           <div className="space-y-4">
             <div>
               <Label>Email Address</Label>
-              <div className="flex items-center justify-between mt-1">
-                <span className="text-sm text-gray-600">{user?.email}</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowEmailChange(true)}
-                >
-                  Change Email
-                </Button>
-              </div>
+              <p className="text-sm text-gray-600 mt-1">{user?.email}</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Email cannot be changed from this page for security reasons
+              </p>
             </div>
 
             <div>
