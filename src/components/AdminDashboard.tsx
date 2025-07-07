@@ -52,6 +52,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import ProgramReview from "@/components/admin/ProgramReview";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -318,7 +319,7 @@ const AdminDashboard = () => {
           onValueChange={setSelectedTab}
           className="space-y-6"
         >
-          <TabsList className="grid grid-cols-3 lg:grid-cols-5 w-full bg-white shadow-sm border">
+          <TabsList className="grid grid-cols-3 lg:grid-cols-6 w-full bg-white shadow-sm border">
             <TabsTrigger
               value="overview"
               className="flex items-center space-x-2"
@@ -333,6 +334,13 @@ const AdminDashboard = () => {
             <TabsTrigger value="books" className="flex items-center space-x-2">
               <BookOpen className="h-4 w-4" />
               <span>Books</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="programs"
+              className="flex items-center space-x-2"
+            >
+              <BookOpen className="h-4 w-4" />
+              <span>Programs</span>
             </TabsTrigger>
             <TabsTrigger
               value="analytics"
@@ -398,7 +406,11 @@ const AdminDashboard = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span>Recent Book Listings</span>
-                    <Button size="sm" variant="outline">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setSelectedTab("books")}
+                    >
                       <Eye className="h-4 w-4 mr-2" />
                       View All
                     </Button>
@@ -466,14 +478,84 @@ const AdminDashboard = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12">
-                  <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    User Management
-                  </h3>
-                  <p className="text-gray-500">
-                    Advanced user management features coming soon
-                  </p>
+                <div className="space-y-4">
+                  {recentUsers
+                    .filter(
+                      (user) =>
+                        user.name
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase()) ||
+                        user.email
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase()),
+                    )
+                    .map((user) => (
+                      <div
+                        key={user.id}
+                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border"
+                      >
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900">
+                            {user.name}
+                          </p>
+                          <p className="text-sm text-gray-500">{user.email}</p>
+                          <p className="text-xs text-gray-400">
+                            Joined: {user.joinDate}
+                          </p>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <Badge
+                            variant={
+                              user.status === "active" ? "default" : "secondary"
+                            }
+                          >
+                            {user.status}
+                          </Badge>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem>
+                                <Eye className="h-4 w-4 mr-2" />
+                                View Profile
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <Edit className="h-4 w-4 mr-2" />
+                                Edit User
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem className="text-red-600">
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Suspend User
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
+                    ))}
+
+                  {recentUsers.filter(
+                    (user) =>
+                      user.name
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase()) ||
+                      user.email
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase()),
+                  ).length === 0 && (
+                    <div className="text-center py-12">
+                      <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">
+                        No users found
+                      </h3>
+                      <p className="text-gray-500">
+                        Try adjusting your search criteria
+                      </p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -486,6 +568,15 @@ const AdminDashboard = () => {
                 <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
                   <CardTitle>Book Management</CardTitle>
                   <div className="flex items-center space-x-2">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Input
+                        placeholder="Search books..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 w-64"
+                      />
+                    </div>
                     <Button size="sm" variant="outline">
                       <Filter className="h-4 w-4 mr-2" />
                       Filter
@@ -498,14 +589,99 @@ const AdminDashboard = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12">
-                  <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Book Management
-                  </h3>
-                  <p className="text-gray-500">
-                    Book management and moderation tools coming soon
-                  </p>
+                <div className="space-y-4">
+                  {recentBooks
+                    .filter(
+                      (book) =>
+                        book.title
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase()) ||
+                        book.author
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase()) ||
+                        book.seller
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase()),
+                    )
+                    .map((book) => (
+                      <div
+                        key={book.id}
+                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border"
+                      >
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900">
+                            {book.title}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            by {book.author}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            Seller: {book.seller}
+                          </p>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <div className="text-right">
+                            <p className="font-medium text-gray-900">
+                              R{book.price}
+                            </p>
+                            <Badge
+                              variant={
+                                book.status === "active"
+                                  ? "default"
+                                  : "secondary"
+                              }
+                            >
+                              {book.status}
+                            </Badge>
+                          </div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem>
+                                <Eye className="h-4 w-4 mr-2" />
+                                View Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <Edit className="h-4 w-4 mr-2" />
+                                Edit Listing
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem className="text-red-600">
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Remove Listing
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
+                    ))}
+
+                  {recentBooks.filter(
+                    (book) =>
+                      book.title
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase()) ||
+                      book.author
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase()) ||
+                      book.seller
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase()),
+                  ).length === 0 && (
+                    <div className="text-center py-12">
+                      <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">
+                        No books found
+                      </h3>
+                      <p className="text-gray-500">
+                        Try adjusting your search criteria
+                      </p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -532,6 +708,11 @@ const AdminDashboard = () => {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Programs Tab */}
+          <TabsContent value="programs" className="space-y-6">
+            <ProgramReview />
           </TabsContent>
 
           {/* Settings Tab */}

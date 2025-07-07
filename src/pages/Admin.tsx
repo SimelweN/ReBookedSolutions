@@ -7,7 +7,6 @@ import { ArrowLeft, Flag, Shield } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import BankingRequirementChecker from "@/components/BankingRequirementChecker";
 
 const Admin = () => {
   const { user, profile, isLoading, isAuthenticated, isAdmin } = useAuth();
@@ -156,15 +155,6 @@ const Admin = () => {
               </Button>
             </div>
           </div>
-        </div>
-
-        {/* Banking Requirements Checker */}
-        <div
-          className={`bg-white rounded-lg shadow-md ${isMobile ? "p-3 card-mobile" : "p-4 md:p-6"} overflow-hidden`}
-        >
-          <ErrorBoundary level="component">
-            <BankingRequirementChecker />
-          </ErrorBoundary>
         </div>
 
         <div
