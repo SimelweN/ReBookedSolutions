@@ -169,10 +169,26 @@ export const addNotification = async (
     const notificationKey = `${notification.userId}-${notification.title}-${notification.type}-${messageHash}`;
     const now = Date.now();
 
-    // Enhanced duplicate prevention for "Welcome back!" notifications
+    // Enhanced duplicate prevention with different rules per notification type
     let duplicateWindow = DUPLICATE_PREVENTION_WINDOW; // Default 1 minute
-    if (notification.title.includes("Welcome back")) {
-      duplicateWindow = 86400000; // 24 hours for welcome back notifications (1 day)
+
+    // Specific rules for different notification types
+    if (
+      notification.title.includes("Welcome back") ||
+      notification.title.includes("Successfully logged in")
+    ) {
+      console.log(
+        "[NotificationService] Blocking login notification - these are disabled to prevent spam",
+      );
+      return; // Block all login notifications completely
+    }
+
+    if (notification.title.includes("Listings Reactivated")) {
+      duplicateWindow = 3600000; // 1 hour for listing notifications
+    }
+
+    if (notification.title.includes("Book Sold")) {
+      duplicateWindow = 300000; // 5 minutes for sales notifications
     }
 
     // Check if we recently sent a similar notification
@@ -184,19 +200,41 @@ export const addNotification = async (
       return; // Skip sending duplicate notification
     }
 
-    // Check database for recent similar notifications (additional protection)
+    // Enhanced database check - look for exact message matches too
     const { data: recentDbNotifications, error: checkError } = await supabase
       .from("notifications")
-      .select("id, created_at")
+      .select("id, created_at, message")
       .eq("user_id", notification.userId)
       .eq("title", notification.title)
       .eq("type", notification.type)
       .gte("created_at", new Date(now - duplicateWindow).toISOString())
-      .limit(1);
+      .limit(5);
 
     if (checkError) {
       console.warn("Failed to check for duplicate notifications:", checkError);
       // Continue with insertion - don't fail completely
+    } else if (recentDbNotifications && recentDbNotifications.length > 0) {
+      // Check for exact message duplicates
+      const exactMatch = recentDbNotifications.find(
+        (dbNotif) => dbNotif.message === notification.message,
+      );
+
+      if (exactMatch) {
+        console.log(
+          `[NotificationService] Preventing exact duplicate notification found in database: ${notification.title}`,
+        );
+        // Mark as sent to prevent future attempts
+        recentNotifications.set(notificationKey, now);
+        return;
+      }
+
+      // Check for too many similar notifications
+      if (recentDbNotifications.length >= 3) {
+        console.log(
+          `[NotificationService] Too many similar notifications recently (${recentDbNotifications.length}): ${notification.title}`,
+        );
+        return;
+      }
     } else if (recentDbNotifications && recentDbNotifications.length > 0) {
       console.log(
         `[NotificationService] Found recent similar notification in database, skipping: ${notification.title}`,
