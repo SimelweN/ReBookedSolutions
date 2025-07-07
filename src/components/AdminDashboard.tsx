@@ -24,10 +24,6 @@ import AdminSettingsTab from "@/components/admin/AdminSettingsTab";
 import AdminContactTab from "@/components/admin/AdminContactTab";
 import AdminResourcesTab from "@/components/admin/AdminResourcesTab";
 import AdminProgramsTab from "@/components/admin/AdminProgramsTab";
-import SystemHealthCheck from "@/components/SystemHealthCheck";
-
-import ErrorFallback from "@/components/ErrorFallback";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import { useErrorHandler } from "@/hooks/useErrorHandler";
 import {
   TrendingUp,
