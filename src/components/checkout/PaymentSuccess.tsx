@@ -18,9 +18,21 @@ interface PaymentSuccessProps {
   items: Array<{
     id: string;
     title: string;
+    author?: string;
     price: number;
   }>;
   isCartCheckout: boolean;
+  buyer?: {
+    name: string;
+    email: string;
+  };
+  seller?: {
+    name: string;
+    email: string;
+  };
+  deliveryMethod?: string;
+  deliveryFee?: number;
+  deliveryAddress?: any;
   onClose?: () => void;
 }
 
