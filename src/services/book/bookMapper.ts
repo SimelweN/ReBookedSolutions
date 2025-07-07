@@ -42,10 +42,34 @@ export const mapBookFromDatabase = (bookData: BookQueryResult): Book => {
     university: bookData.university,
     province: bookData.province || null,
     subaccountCode: bookData.subaccount_code,
+    // Seller address data for efficient checkout
+    seller_street: (bookData as any).seller_street,
+    seller_city: (bookData as any).seller_city,
+    seller_province: (bookData as any).seller_province,
+    seller_postal_code: (bookData as any).seller_postal_code,
+    seller_country: (bookData as any).seller_country,
+    seller_subaccount_code: (bookData as any).seller_subaccount_code,
     seller: {
       id: bookData.seller_id,
       name: profile?.name || `User ${bookData.seller_id.slice(0, 8)}`,
       email: profile?.email || "",
+      hasAddress: !!(
+        (bookData as any).seller_street &&
+        (bookData as any).seller_city &&
+        (bookData as any).seller_province &&
+        (bookData as any).seller_postal_code
+      ),
+      hasSubaccount: !!(
+        (bookData as any).seller_subaccount_code || bookData.subaccount_code
+      ),
+      isReadyForOrders: !!(
+        ((bookData as any).seller_subaccount_code ||
+          bookData.subaccount_code) &&
+        (bookData as any).seller_street &&
+        (bookData as any).seller_city &&
+        (bookData as any).seller_province &&
+        (bookData as any).seller_postal_code
+      ),
     },
   };
 };
