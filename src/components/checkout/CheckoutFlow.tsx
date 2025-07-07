@@ -162,6 +162,45 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ book }) => {
     navigate("/books");
   };
 
+  const handleAddressSubmit = (address: CheckoutAddress) => {
+    setCheckoutState((prev) => ({
+      ...prev,
+      buyer_address: address,
+    }));
+    toast.success("Address saved! Loading delivery options...");
+  };
+
+  const handleSaveAddressToProfile = async (address: CheckoutAddress) => {
+    if (!user?.id) return;
+
+    try {
+      const { saveSimpleUserAddresses } = await import(
+        "@/services/simplifiedAddressService"
+      );
+
+      const simpleAddress = {
+        streetAddress: address.street,
+        city: address.city,
+        province: address.province,
+        postalCode: address.postal_code,
+      };
+
+      await saveSimpleUserAddresses(
+        user.id,
+        simpleAddress, // Use as pickup address
+        simpleAddress, // Use as shipping address
+        true, // Addresses are the same
+      );
+
+      toast.success("Address saved to your profile!");
+    } catch (error) {
+      console.error("Failed to save address to profile:", error);
+      toast.error(
+        "Failed to save address to profile, but proceeding with order",
+      );
+    }
+  };
+
   const getProgressValue = () => {
     switch (checkoutState.step.current) {
       case 1:
