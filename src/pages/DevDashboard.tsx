@@ -67,6 +67,7 @@ import {
   PieChart,
   TrendingUp,
   Layers,
+  Plus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
