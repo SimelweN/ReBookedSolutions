@@ -410,12 +410,17 @@ const AdminDashboard = () => {
     try {
       const { data: usersData, error: usersError } = await supabase
         .from("profiles")
-        .select("id, name, email, created_at, status")
-        .not("role", "eq", "admin")
+        .select("id, name, email, created_at, status, role")
+        .neq("role", "admin")
         .order("created_at", { ascending: false })
         .limit(5);
 
-      if (!usersError && usersData) {
+      if (usersError) {
+        console.error("Error fetching users:", usersError);
+        return;
+      }
+
+      if (usersData && usersData.length > 0) {
         const formattedUsers = usersData.map((user) => ({
           id: user.id,
           name: user.name || "Unknown User",
@@ -424,9 +429,12 @@ const AdminDashboard = () => {
           status: user.status || "active",
         }));
         setRecentUsers(formattedUsers);
+      } else {
+        setRecentUsers([]);
       }
     } catch (error) {
       console.error("Error loading recent users:", error);
+      setRecentUsers([]);
     }
   };
 

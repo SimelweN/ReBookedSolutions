@@ -144,7 +144,22 @@ const ProgramReview = () => {
 
   const handleApprove = async (programId: string) => {
     try {
-      // In real implementation, make API call here
+      const { error } = await supabase
+        .from("user_submitted_programs")
+        .update({
+          status: "approved",
+          review_notes: reviewNotes || "Approved by admin",
+          reviewed_at: new Date().toISOString(),
+        })
+        .eq("id", programId);
+
+      if (error) {
+        console.error("Error approving program:", error);
+        toast.error("Failed to approve program in database");
+        return;
+      }
+
+      // Update local state
       setPrograms((prev) =>
         prev.map((program) =>
           program.id === programId
@@ -156,6 +171,7 @@ const ProgramReview = () => {
       setSelectedProgram(null);
       setReviewNotes("");
     } catch (error) {
+      console.error("Error approving program:", error);
       toast.error("Failed to approve program");
     }
   };
@@ -167,6 +183,22 @@ const ProgramReview = () => {
         return;
       }
 
+      const { error } = await supabase
+        .from("user_submitted_programs")
+        .update({
+          status: "rejected",
+          review_notes: reviewNotes,
+          reviewed_at: new Date().toISOString(),
+        })
+        .eq("id", programId);
+
+      if (error) {
+        console.error("Error rejecting program:", error);
+        toast.error("Failed to reject program in database");
+        return;
+      }
+
+      // Update local state
       setPrograms((prev) =>
         prev.map((program) =>
           program.id === programId
@@ -178,6 +210,7 @@ const ProgramReview = () => {
       setSelectedProgram(null);
       setReviewNotes("");
     } catch (error) {
+      console.error("Error rejecting program:", error);
       toast.error("Failed to reject program");
     }
   };
