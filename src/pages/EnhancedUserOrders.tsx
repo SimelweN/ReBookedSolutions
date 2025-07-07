@@ -289,6 +289,18 @@ const EnhancedUserOrders: React.FC = () => {
                   </Link>
                 </Button>
 
+                {/* Seller Actions */}
+                {userRole === "seller" && order.status === "paid" && (
+                  <Button
+                    size="sm"
+                    onClick={() => handleCommitToOrder(order.id)}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <CheckCircle className="h-4 w-4 mr-1" />
+                    Commit to Order
+                  </Button>
+                )}
+
                 {/* Buyer Actions */}
                 {userRole === "buyer" && order.status === "delivered" && (
                   <Button
