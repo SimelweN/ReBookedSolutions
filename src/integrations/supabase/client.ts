@@ -157,8 +157,13 @@ try {
     console.error("❌ Supabase configuration missing - creating mock client");
     // Create a mock client for development
     const createMockQueryBuilder = () => {
-      const mockError = new Error("Supabase not configured");
-      const mockPromise = Promise.resolve({ data: null, error: mockError });
+      const mockError = {
+        message:
+          "Supabase not configured - please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables",
+        code: "SUPABASE_NOT_CONFIGURED",
+      };
+      const mockResponse = { data: null, error: mockError };
+      const mockPromise = Promise.resolve(mockResponse);
 
       const mockQuery = {
         select: () => mockQuery,
