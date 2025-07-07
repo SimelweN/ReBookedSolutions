@@ -41,6 +41,11 @@ const PaymentSuccess = ({
   amount,
   items,
   isCartCheckout,
+  buyer,
+  seller,
+  deliveryMethod,
+  deliveryFee,
+  deliveryAddress,
   onClose,
 }: PaymentSuccessProps) => {
   const navigate = useNavigate();
