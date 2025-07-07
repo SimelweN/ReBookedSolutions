@@ -85,7 +85,7 @@ const BookDetails = () => {
       console.log("BookDetails - Book data for purchase:", bookForPurchase);
 
       // Navigate to new checkout flow with book data
-      navigate("/purchase", {
+      navigate("/checkout", {
         state: {
           book: bookForPurchase,
         },
