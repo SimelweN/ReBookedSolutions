@@ -363,6 +363,17 @@ function App() {
                           </ProtectedRoute>
                         }
                       />
+                      {/* Redirect /orders to /my-orders */}
+                      <Route
+                        path="/orders"
+                        element={
+                          <ProtectedRoute>
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <UserOrders />
+                            </Suspense>
+                          </ProtectedRoute>
+                        }
+                      />
                       <Route
                         path="/banking-setup"
                         element={
