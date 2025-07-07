@@ -11,11 +11,13 @@ import {
   Package,
   AlertTriangle,
   X,
+  Info,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { MultiSellerCartService } from "@/services/multiSellerCartService";
 import { SellerCart, MultiSellerCartState } from "@/types/multiSellerCart";
+import MultiSellerCartExplainer from "./MultiSellerCartExplainer";
 
 interface MultiSellerCartProps {
   isOpen: boolean;
@@ -33,6 +35,7 @@ export const MultiSellerCart: React.FC<MultiSellerCartProps> = ({
     totalValue: 0,
   });
   const [loading, setLoading] = useState(false);
+  const [showExplainer, setShowExplainer] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -112,6 +115,17 @@ export const MultiSellerCart: React.FC<MultiSellerCartProps> = ({
             <Badge variant="secondary">
               {cartState.totalItems} item{cartState.totalItems !== 1 ? "s" : ""}
             </Badge>
+            {sellerCarts.length > 1 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowExplainer(true)}
+                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                title="Why do I have multiple carts?"
+              >
+                <Info className="h-4 w-4" />
+              </Button>
+            )}
           </div>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-4 w-4" />
@@ -274,10 +288,16 @@ export const MultiSellerCart: React.FC<MultiSellerCartProps> = ({
               {sellerCarts.length > 1 && (
                 <div className="flex items-center gap-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <Package className="h-4 w-4 text-blue-600" />
-                  <div className="text-sm text-blue-800">
+                  <div className="flex-1 text-sm text-blue-800">
                     <strong>Multiple sellers:</strong> Each seller's books will
                     be shipped separately. You'll need to checkout each seller
                     individually to minimize courier costs.
+                    <button
+                      onClick={() => setShowExplainer(true)}
+                      className="ml-2 text-blue-600 hover:text-blue-700 underline font-medium"
+                    >
+                      Why is this?
+                    </button>
                   </div>
                 </div>
               )}
@@ -308,6 +328,12 @@ export const MultiSellerCart: React.FC<MultiSellerCartProps> = ({
           )}
         </div>
       </div>
+
+      {/* Multi-Seller Cart Explainer */}
+      <MultiSellerCartExplainer
+        isOpen={showExplainer}
+        onClose={() => setShowExplainer(false)}
+      />
     </div>
   );
 };

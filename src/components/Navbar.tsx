@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import AdminAccess from "./AdminAccess";
 import CartButton from "./CartButton";
-import NotificationBadge from "./NotificationBadge";
+import NotificationBell from "./NotificationBell";
 import { toast } from "sonner";
 import { preloadOnHover } from "@/utils/routePreloader";
 
@@ -109,7 +109,7 @@ const Navbar = () => {
             {isAuthenticated ? (
               <>
                 <CartButton />
-                <NotificationBadge />
+                <NotificationBell />
 
                 <div className="flex items-center space-x-1 lg:space-x-2">
                   <Link
@@ -250,11 +250,7 @@ const Navbar = () => {
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <div className="flex items-center mr-3">
-                        <NotificationBadge
-                          className="h-5 w-5"
-                          iconSize="h-5 w-5"
-                          showCount={false}
-                        />
+                        <NotificationBell />
                       </div>
                       Notifications
                     </Link>

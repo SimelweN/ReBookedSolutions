@@ -38,11 +38,9 @@ const Notifications = () => {
   const {
     notifications,
     unreadCount,
-    isLoading,
-    hasError,
-    lastError,
-    refreshNotifications,
-    clearError,
+    loading: isLoading,
+    error: hasError,
+    refetch: refreshNotifications,
   } = useNotifications();
 
   const [isProcessing, setIsProcessing] = useState(false);
@@ -177,7 +175,6 @@ const Notifications = () => {
   };
 
   const handleRetry = () => {
-    clearError();
     refreshNotifications();
   };
 
@@ -238,7 +235,7 @@ const Notifications = () => {
                 <div>
                   <span className="font-medium">Connection Issues</span>
                   <p className="text-sm mt-1">
-                    {lastError || "Unable to load notifications"}
+                    {hasError || "Unable to load notifications"}
                   </p>
                 </div>
                 <Button

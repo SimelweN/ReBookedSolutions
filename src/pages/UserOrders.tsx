@@ -33,10 +33,10 @@ const UserOrders: React.FC = () => {
   }, [isAuthenticated, navigate]);
 
   useEffect(() => {
-    if (orders.length === 0 && !loading && !error) {
-      toast.info("No orders found. Start shopping to see your purchases here!");
+    if (orders.length === 0 && !loading && !error && isAuthenticated) {
+      console.log("No orders found for user");
     }
-  }, [orders, loading, error]);
+  }, [orders, loading, error, isAuthenticated]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {

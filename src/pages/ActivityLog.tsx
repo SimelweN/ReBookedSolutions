@@ -13,24 +13,28 @@ import {
   ArrowLeft,
   Calendar,
   User,
+  ShoppingBag,
+  BookOpen,
+  UserPlus,
+  AlertCircle,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import SEO from "@/components/SEO";
 import { toast } from "sonner";
-
-interface ActivityItem {
-  id: string;
-  type: string;
-  description: string;
-  timestamp: string;
-  metadata?: any;
-}
+import {
+  ActivityService,
+  Activity as ActivityType,
+} from "@/services/activityService";
+import { useUserOrders } from "@/hooks/useUserOrders";
+import PendingCommitsSection from "@/components/profile/PendingCommitsSection";
 
 const ActivityLog: React.FC = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
-  const [activities, setActivities] = useState<ActivityItem[]>([]);
+  const [activities, setActivities] = useState<ActivityType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { orders } = useUserOrders();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -39,48 +43,85 @@ const ActivityLog: React.FC = () => {
     }
 
     loadActivityLog();
-  }, [isAuthenticated]); // Removed navigate and loadActivityLog to prevent loops
+  }, [isAuthenticated, user?.id]);
 
-  const loadActivityLog = () => {
-    setLoading(true);
-
-    // For now, show sample activities - you can connect to your ActivityService later
-    const sampleActivities: ActivityItem[] = [
-      {
-        id: "1",
-        type: "book_listed",
-        description: "Listed a new book for sale",
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: "2",
-        type: "profile_updated",
-        description: "Updated profile information",
-        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: "3",
-        type: "order_placed",
-        description: "Placed an order for a textbook",
-        timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
-      },
-    ];
-
-    // Simulate loading delay
-    setTimeout(() => {
-      setActivities(sampleActivities);
+  const loadActivityLog = async () => {
+    if (!user?.id) {
       setLoading(false);
-    }, 300);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Get activities from ActivityService
+      const userActivities = await ActivityService.getUserActivities(
+        user.id,
+        50,
+      );
+
+      // Add purchase activities from orders
+      const purchaseActivities = orders.map((order, index) => ({
+        id: `purchase-${order.id}`,
+        user_id: user.id,
+        type: "purchase" as const,
+        title: "Book Purchase",
+        description: `Purchased ${order.items.length} book${order.items.length > 1 ? "s" : ""} for R${(order.amount / 100).toFixed(2)}`,
+        metadata: {
+          orderId: order.id,
+          amount: order.amount,
+          itemCount: order.items.length,
+          status: order.status,
+        },
+        created_at: order.created_at,
+      }));
+
+      // Combine and sort activities
+      const allActivities = [...userActivities, ...purchaseActivities].sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
+
+      setActivities(allActivities);
+    } catch (err) {
+      console.error("Error loading activity log:", err);
+      setError("Failed to load activity. Some activities may not be shown.");
+
+      // Still show purchase activities if main activity service fails
+      const purchaseActivities = orders.map((order) => ({
+        id: `purchase-${order.id}`,
+        user_id: user.id,
+        type: "purchase" as const,
+        title: "Book Purchase",
+        description: `Purchased ${order.items.length} book${order.items.length > 1 ? "s" : ""} for R${(order.amount / 100).toFixed(2)}`,
+        metadata: {
+          orderId: order.id,
+          amount: order.amount,
+          itemCount: order.items.length,
+          status: order.status,
+        },
+        created_at: order.created_at,
+      }));
+
+      setActivities(purchaseActivities);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case "book_listed":
-        return <Package className="h-4 w-4" />;
-      case "order_placed":
+      case "listing_created":
+        return <BookOpen className="h-4 w-4" />;
+      case "purchase":
+        return <ShoppingBag className="h-4 w-4" />;
+      case "sale":
         return <CreditCard className="h-4 w-4" />;
       case "profile_updated":
         return <User className="h-4 w-4" />;
+      case "login":
+        return <UserPlus className="h-4 w-4" />;
       default:
         return <Activity className="h-4 w-4" />;
     }
@@ -88,14 +129,18 @@ const ActivityLog: React.FC = () => {
 
   const getActivityColor = (type: string) => {
     switch (type) {
-      case "book_listed":
+      case "listing_created":
         return "bg-green-100 text-green-800";
-      case "order_placed":
+      case "purchase":
         return "bg-blue-100 text-blue-800";
+      case "sale":
+        return "bg-emerald-100 text-emerald-800";
       case "profile_updated":
         return "bg-purple-100 text-purple-800";
-      default:
+      case "login":
         return "bg-gray-100 text-gray-800";
+      default:
+        return "bg-orange-100 text-orange-800";
     }
   };
 
@@ -160,6 +205,17 @@ const ActivityLog: React.FC = () => {
             </div>
           </div>
 
+          {/* Error Alert */}
+          {error && (
+            <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <AlertCircle className="h-4 w-4 text-yellow-600" />
+              <span className="text-sm text-yellow-800">{error}</span>
+            </div>
+          )}
+
+          {/* Pending Commits Section */}
+          <PendingCommitsSection />
+
           {/* Activity List */}
           <Card>
             <CardHeader>
@@ -197,16 +253,28 @@ const ActivityLog: React.FC = () => {
 
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
-                          <p className="font-medium">{activity.description}</p>
+                          <div>
+                            <p className="font-medium">{activity.title}</p>
+                            <p className="text-sm text-gray-600 mt-1">
+                              {activity.description}
+                            </p>
+                          </div>
                           <div className="flex items-center gap-2 text-sm text-gray-500">
                             <Calendar className="h-3 w-3" />
-                            {formatTimestamp(activity.timestamp)}
+                            {formatTimestamp(activity.created_at)}
                           </div>
                         </div>
 
-                        <Badge variant="outline" className="mt-2">
-                          {activity.type.replace(/_/g, " ")}
-                        </Badge>
+                        <div className="flex items-center gap-2 mt-2">
+                          <Badge variant="outline">
+                            {activity.type.replace(/_/g, " ")}
+                          </Badge>
+                          {activity.metadata?.status && (
+                            <Badge variant="secondary" className="text-xs">
+                              {activity.metadata.status}
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}

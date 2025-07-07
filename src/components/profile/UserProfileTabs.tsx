@@ -32,6 +32,7 @@ import ProfileEditDialog from "@/components/ProfileEditDialog";
 import UnavailableBookCard from "@/components/UnavailableBookCard";
 import ModernBankingSection from "@/components/profile/ModernBankingSection";
 import AddressManager from "@/components/profile/AddressManager";
+import PendingCommitsSection from "@/components/profile/PendingCommitsSection";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -304,17 +305,23 @@ const UserProfileTabs = ({
         </TabsContent>
 
         <TabsContent value="activity" className="space-y-4">
+          {/* Pending Commits Section - Only show for own profile */}
+          {isOwnProfile && <PendingCommitsSection />}
+
           <Card>
             <CardHeader>
               <CardTitle className="text-xl md:text-2xl flex items-center">
                 <Clock className="h-6 w-6 mr-2" />
-                Activity
+                Recent Activity
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center py-8">
                 <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">No recent activity</p>
+                <p className="text-gray-600 mb-2">No recent activity</p>
+                <p className="text-sm text-gray-500">
+                  Activity like purchases, sales, and listings will appear here
+                </p>
               </div>
             </CardContent>
           </Card>

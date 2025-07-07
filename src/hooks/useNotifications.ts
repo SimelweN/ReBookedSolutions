@@ -1,456 +1,241 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  getNotifications,
-  clearNotificationCache,
-} from "@/services/notificationService";
-import { Database } from "@/integrations/supabase/types";
+import { toast } from "sonner";
 
-type Notification = Database["public"]["Tables"]["notifications"]["Row"];
+export interface Notification {
+  id: string;
+  order_id?: string;
+  user_id: string;
+  type: string;
+  title: string;
+  message: string;
+  read: boolean;
+  created_at: string;
+  updated_at?: string;
+}
 
-// Global singleton state for notifications to prevent multiple subscriptions
-class NotificationManager {
-  private static instance: NotificationManager;
-  private subscriptionRef: { unsubscribe: () => void } | null = null;
-  private subscribingRef: boolean = false;
-  private currentUserId: string | null = null;
-  private listeners: Set<(notifications: Notification[]) => void> = new Set();
-  private notifications: Notification[] = [];
+export interface UseNotificationsResult {
+  notifications: Notification[];
+  unreadCount: number;
+  loading: boolean;
+  error: string | null;
+  markAsRead: (notificationId: string) => Promise<void>;
+  markAllAsRead: () => Promise<void>;
+  refetch: () => Promise<void>;
+}
 
-  static getInstance(): NotificationManager {
-    if (!NotificationManager.instance) {
-      NotificationManager.instance = new NotificationManager();
-    }
-    return NotificationManager.instance;
-  }
+export const useNotifications = (): UseNotificationsResult => {
+  const { user } = useAuth();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  addListener(callback: (notifications: Notification[]) => void) {
-    this.listeners.add(callback);
-    // Immediately call with current data if available
-    if (this.notifications.length > 0) {
-      callback(this.notifications);
-    }
-  }
-
-  removeListener(callback: (notifications: Notification[]) => void) {
-    this.listeners.delete(callback);
-  }
-
-  private notifyListeners() {
-    this.listeners.forEach((callback) => callback(this.notifications));
-  }
-
-  updateNotifications(notifications: Notification[]) {
-    this.notifications = notifications;
-    this.notifyListeners();
-  }
-
-  get listenersCount() {
-    return this.listeners.size;
-  }
-
-  setupSubscription(userId: string, refreshCallback: () => Promise<void>) {
-    // If we already have a subscription for this user, don't create another
-    if (
-      this.subscribingRef ||
-      (this.subscriptionRef && this.currentUserId === userId)
-    ) {
-      console.log(
-        "[NotificationManager] Subscription already exists for user:",
-        userId,
-      );
+  const fetchNotifications = async () => {
+    if (!user?.id) {
+      setNotifications([]);
+      setLoading(false);
       return;
     }
 
-    // Clean up any existing subscription for a different user
-    if (this.subscriptionRef && this.currentUserId !== userId) {
-      console.log(
-        "[NotificationManager] Switching subscription from",
-        this.currentUserId,
-        "to",
-        userId,
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Try to get order notifications first
+      let { data: orderNotifications, error: orderError } = await supabase
+        .from("order_notifications")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(50);
+
+      if (orderError) {
+        // Check if table doesn't exist
+        if (
+          orderError.code === "42P01" ||
+          orderError.message?.includes("relation") ||
+          orderError.message?.includes("does not exist")
+        ) {
+          console.log("Order notifications table not available");
+          orderNotifications = [];
+        } else {
+          throw orderError;
+        }
+      }
+
+      // Fallback to regular notifications table
+      let fallbackNotifications: Notification[] = [];
+      try {
+        const { data: regularNotifications, error: regularError } =
+          await supabase
+            .from("notifications")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false })
+            .limit(50);
+
+        if (!regularError && regularNotifications) {
+          fallbackNotifications = regularNotifications.map((notif) => ({
+            id: notif.id,
+            user_id: notif.user_id,
+            type: notif.type || "info",
+            title: notif.title || "Notification",
+            message: notif.message || notif.description || "",
+            read: notif.read || false,
+            created_at: notif.created_at,
+            updated_at: notif.updated_at,
+          }));
+        }
+      } catch (fallbackError) {
+        console.log("Regular notifications table also not available");
+      }
+
+      // Combine notifications
+      const allNotifications = [
+        ...(orderNotifications || []),
+        ...fallbackNotifications,
+      ].sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
       );
-      this.cleanup();
+
+      setNotifications(allNotifications);
+    } catch (err) {
+      console.error("Error fetching notifications:", err);
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch notifications";
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    this.currentUserId = userId;
-    this.subscribingRef = true;
+  const markAsRead = async (notificationId: string) => {
+    try {
+      // Find the notification to determine which table to update
+      const notification = notifications.find((n) => n.id === notificationId);
+      if (!notification) return;
 
-    const channelName = `notifications_${userId}_${Date.now()}`;
-    console.log(
-      "[NotificationManager] Setting up subscription for user:",
-      userId,
-      "channel:",
-      channelName,
-    );
+      // Try order_notifications table first
+      let { error } = await supabase
+        .from("order_notifications")
+        .update({ read: true, updated_at: new Date().toISOString() })
+        .eq("id", notificationId);
+
+      // If that fails, try regular notifications table
+      if (
+        error &&
+        (error.code === "42P01" || error.message?.includes("relation"))
+      ) {
+        const { error: fallbackError } = await supabase
+          .from("notifications")
+          .update({ read: true, updated_at: new Date().toISOString() })
+          .eq("id", notificationId);
+
+        if (fallbackError) {
+          throw fallbackError;
+        }
+      } else if (error) {
+        throw error;
+      }
+
+      // Update local state
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n)),
+      );
+    } catch (err) {
+      console.error("Error marking notification as read:", err);
+      console.log("Error type:", typeof err);
+      console.log("Error object:", err);
+
+      let errorMessage = "Failed to mark notification as read";
+
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === "string") {
+        errorMessage = err;
+      } else if (err && typeof err === "object") {
+        // Handle Supabase error objects specifically
+        const errorObj = err as any;
+        if (errorObj.message) {
+          errorMessage = errorObj.message;
+        } else if (errorObj.error_description) {
+          errorMessage = errorObj.error_description;
+        } else if (errorObj.details) {
+          errorMessage = errorObj.details;
+        } else {
+          try {
+            errorMessage = JSON.stringify(err);
+          } catch (stringifyError) {
+            errorMessage = "Unknown error occurred";
+          }
+        }
+      }
+
+      toast.error(errorMessage);
+    }
+  };
+
+  const markAllAsRead = async () => {
+    if (!user?.id) return;
 
     try {
-      const channel = supabase.channel(channelName);
+      const unreadNotifications = notifications.filter((n) => !n.read);
 
-      channel.on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "notifications",
-          filter: `user_id=eq.${userId}`,
-        },
-        (payload) => {
-          console.log(
-            "[NotificationManager] Received event:",
-            payload.eventType,
-          );
-          if (payload.eventType === "INSERT") {
-            clearNotificationCache(userId);
-            refreshCallback().catch(console.error);
-          }
-        },
-      );
+      for (const notification of unreadNotifications) {
+        await markAsRead(notification.id);
+      }
 
-      channel.subscribe((status) => {
-        console.log("[NotificationManager] Subscription status:", status);
-        if (status === "SUBSCRIBED") {
-          this.subscribingRef = false;
-        } else if (status === "CHANNEL_ERROR" || status === "CLOSED") {
-          this.subscriptionRef = null;
-          this.subscribingRef = false;
-        }
-      });
-
-      this.subscriptionRef = channel;
-    } catch (error) {
-      console.error(
-        "[NotificationManager] Error setting up subscription:",
-        error,
-      );
-      this.subscriptionRef = null;
-      this.subscribingRef = false;
+      toast.success("All notifications marked as read");
+    } catch (err) {
+      console.error("Error marking all notifications as read:", err);
+      toast.error("Failed to mark all notifications as read");
     }
-  }
+  };
 
-  cleanup() {
-    if (this.subscriptionRef) {
-      try {
-        this.subscriptionRef.unsubscribe();
-        console.log("[NotificationManager] Cleaned up subscription");
-      } catch (error) {
-        console.error("[NotificationManager] Error during cleanup:", error);
-      } finally {
-        this.subscriptionRef = null;
-      }
-    }
-    this.subscribingRef = false;
-    this.currentUserId = null;
-    this.notifications = [];
-  }
-}
-
-interface NotificationHookReturn {
-  unreadCount: number;
-  totalCount: number;
-  notifications: Notification[];
-  isLoading: boolean;
-  hasError: boolean;
-  lastError?: string;
-  refreshNotifications: () => Promise<void>;
-  clearError: () => void;
-}
-
-export const useNotifications = (): NotificationHookReturn => {
-  const { user, isAuthenticated } = useAuth();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  const [lastError, setLastError] = useState<string | undefined>();
-  const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const subscriptionRetryRef = useRef<NodeJS.Timeout | null>(null);
-  const retryCountRef = useRef(0);
-  const isInitialLoadRef = useRef(true);
-  const refreshingRef = useRef(false); // Prevent concurrent refreshes
-  const notificationManager = useRef(NotificationManager.getInstance());
-
-  const MAX_RETRY_ATTEMPTS = 3;
-  const RETRY_DELAYS = [5000, 15000, 30000]; // Progressive retry delays
-
-  const clearError = useCallback(() => {
-    setHasError(false);
-    setLastError(undefined);
-    retryCountRef.current = 0;
-  }, []);
-
-  const refreshNotifications = useCallback(
-    async (isRetry = false) => {
-      if (!isAuthenticated || !user) {
-        setNotifications([]);
-        setHasError(false);
-        setLastError(undefined);
-        return;
-      }
-
-      // Prevent concurrent refresh calls and duplicate notifications
-      if (refreshingRef.current) {
-        console.log("⚠️ [Notifications] Refresh already in progress, skipping");
-        return;
-      }
-
-      refreshingRef.current = true;
-
-      try {
-        // Only show loading on initial load or manual refresh (not on retries)
-        if (!isRetry || isInitialLoadRef.current) {
-          setIsLoading(true);
-        }
-        const userNotifications = await getNotifications(user.id);
-
-        // Check if we got valid data
-        if (Array.isArray(userNotifications)) {
-          // Enhanced deduplication to prevent notification spam
-          const uniqueNotifications = userNotifications.filter(
-            (notification, index, array) =>
-              array.findIndex((n) => n.id === notification.id) === index,
-          );
-
-          // Sort by created_at to ensure consistent ordering
-          uniqueNotifications.sort(
-            (a, b) =>
-              new Date(b.created_at || 0).getTime() -
-              new Date(a.created_at || 0).getTime(),
-          );
-
-          // Limit to prevent memory issues and excessive notifications
-          const limitedNotifications = uniqueNotifications.slice(0, 50);
-
-          // Additional check to prevent setting duplicate data
-          const newNotificationIds = new Set(
-            limitedNotifications.map((n) => n.id),
-          );
-          const currentNotificationIds = new Set(
-            notifications.map((n) => n.id),
-          );
-
-          // Only update if the notifications have actually changed
-          const hasChanges =
-            limitedNotifications.length !== notifications.length ||
-            !Array.from(newNotificationIds).every((id) =>
-              currentNotificationIds.has(id),
-            );
-
-          if (hasChanges) {
-            // Rate limit: don't update more than once per second
-            const now = Date.now();
-            const lastUpdate = sessionStorage.getItem(
-              "notifications_last_update",
-            );
-            const timeSinceLastUpdate = lastUpdate
-              ? now - parseInt(lastUpdate)
-              : 1000;
-
-            if (timeSinceLastUpdate >= 1000) {
-              setNotifications(limitedNotifications);
-              sessionStorage.setItem(
-                "notifications_last_update",
-                now.toString(),
-              );
-
-              // Update the global manager
-              notificationManager.current.updateNotifications(
-                limitedNotifications,
-              );
-            }
-          }
-          setHasError(false);
-          setLastError(undefined);
-          retryCountRef.current = 0;
-          isInitialLoadRef.current = false;
-
-          // Clear any pending retry
-          if (retryTimeoutRef.current) {
-            clearTimeout(retryTimeoutRef.current);
-            retryTimeoutRef.current = null;
-          }
-        } else {
-          throw new Error("Invalid data format received");
-        }
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Unknown error";
-        console.error(
-          `[NotificationHook] Error fetching notifications:`,
-          errorMessage,
-        );
-
-        // Handle 403 errors with session refresh
-        if (
-          errorMessage.includes("403") ||
-          errorMessage.includes("forbidden")
-        ) {
-          console.log(
-            "[NotificationHook] 403 error detected, attempting session refresh",
-          );
-          try {
-            const {
-              data: { session },
-            } = await supabase.auth.refreshSession();
-            if (session) {
-              console.log(
-                "[NotificationHook] Session refreshed, retrying notification fetch",
-              );
-              // Clear error and retry immediately
-              setHasError(false);
-              setLastError(undefined);
-              setTimeout(() => refreshNotifications(true), 1000);
-              return;
-            }
-          } catch (refreshError) {
-            console.error(
-              "[NotificationHook] Session refresh failed:",
-              refreshError,
-            );
-          }
-        }
-
-        // Set user-friendly error state
-        setHasError(true);
-        setLastError(error instanceof Error ? error : new Error(errorMessage));
-
-        // Only retry on network or temporary errors, not on auth errors
-        if (
-          errorMessage.includes("network") ||
-          errorMessage.includes("timeout") ||
-          errorMessage.includes("Failed to fetch")
-        ) {
-          if (retryCountRef.current < MAX_RETRY_ATTEMPTS) {
-            retryCountRef.current++;
-            const retryDelay =
-              RETRY_DELAYS[retryCountRef.current - 1] ||
-              RETRY_DELAYS[RETRY_DELAYS.length - 1];
-
-            console.log(
-              `[NotificationHook] Scheduling retry ${retryCountRef.current}/${MAX_RETRY_ATTEMPTS} in ${retryDelay}ms`,
-            );
-
-            retryTimeoutRef.current = setTimeout(() => {
-              refreshNotifications(true);
-            }, retryDelay);
-          } else {
-            console.warn(
-              `[NotificationHook] Max retry attempts reached (${MAX_RETRY_ATTEMPTS})`,
-            );
-          }
-        } else {
-          console.warn(
-            `[NotificationHook] Non-retryable error: ${errorMessage}`,
-          );
-        }
-      } finally {
-        setIsLoading(false);
-        refreshingRef.current = false;
-      }
-    },
-    [user, isAuthenticated, notifications],
-  );
-
-  // Initial load effect with better duplicate prevention
   useEffect(() => {
-    if (isAuthenticated && user) {
-      // Only refresh if we haven't loaded data for this user yet
-      if (isInitialLoadRef.current || notifications.length === 0) {
-        refreshNotifications();
-      }
-    } else {
-      // Clear state when user logs out
-      setNotifications([]);
-      setHasError(false);
-      setLastError(undefined);
-      retryCountRef.current = 0;
-      isInitialLoadRef.current = true;
+    fetchNotifications();
 
-      if (retryTimeoutRef.current) {
-        clearTimeout(retryTimeoutRef.current);
-        retryTimeoutRef.current = null;
-      }
+    // Set up real-time subscription for order notifications
+    if (user?.id) {
+      // Create a unique channel name to avoid subscription conflicts
+      const channelName = `order-notifications-${user.id}-${Date.now()}`;
 
-      if (subscriptionRetryRef.current) {
-        clearTimeout(subscriptionRetryRef.current);
-        subscriptionRetryRef.current = null;
-      }
+      const subscription = supabase
+        .channel(channelName)
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "order_notifications",
+            filter: `user_id=eq.${user.id}`,
+          },
+          (payload) => {
+            console.log("Notification change received:", payload);
+            fetchNotifications(); // Refetch to get updated data
+          },
+        )
+        .subscribe();
+
+      return () => {
+        subscription.unsubscribe();
+      };
     }
-  }, [user?.id, isAuthenticated]); // Only depend on user ID and auth status
+  }, [user?.id]);
 
-  // Set up listener for global notification manager
-  useEffect(() => {
-    const manager = notificationManager.current;
-
-    const handleNotificationUpdate = (newNotifications: Notification[]) => {
-      setNotifications(newNotifications);
-    };
-
-    // Add this component as a listener
-    manager.addListener(handleNotificationUpdate);
-
-    // Set up subscription if user is authenticated
-    if (isAuthenticated && user?.id) {
-      manager.setupSubscription(user.id, () => refreshNotifications(false));
-    } else {
-      // Clean up when user logs out
-      manager.cleanup();
-    }
-
-    // Cleanup function
-    return () => {
-      manager.removeListener(handleNotificationUpdate);
-    };
-  }, [user?.id, isAuthenticated]);
-
-  // Cleanup retry timeout and subscription on unmount
-  useEffect(() => {
-    // Set up periodic cleanup to prevent memory issues
-    const cleanupInterval = setInterval(() => {
-      // Force garbage collection of old notification data
-      if (notifications.length > 200) {
-        console.log(
-          "[NotificationHook] Cleaning up old notifications for performance",
-        );
-        setNotifications((prev) => prev.slice(-100)); // Keep only last 100 notifications
-      }
-    }, 60000); // Every minute
-
-    return () => {
-      console.log(
-        "[NotificationHook] Component unmounting - cleaning up all resources",
-      );
-
-      clearInterval(cleanupInterval);
-
-      if (retryTimeoutRef.current) {
-        clearTimeout(retryTimeoutRef.current);
-        retryTimeoutRef.current = null;
-      }
-
-      // Clean up global manager when the last component unmounts
-      if (notificationManager.current.listenersCount === 0) {
-        notificationManager.current.cleanup();
-      }
-
-      // Reset state
-      refreshingRef.current = false;
-      isInitialLoadRef.current = true;
-    };
-  }, [notifications.length]);
-
-  // Performance optimization: memoize computed values
   const unreadCount = notifications.filter((n) => !n.read).length;
-  const totalCount = notifications.length;
 
   return {
-    unreadCount,
-    totalCount,
     notifications,
-    isLoading,
-    hasError,
-    lastError,
-    refreshNotifications: () => refreshNotifications(false),
-    clearError,
+    unreadCount,
+    loading,
+    error,
+    markAsRead,
+    markAllAsRead,
+    refetch: fetchNotifications,
   };
 };
+
+export default useNotifications;

@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "deploy:functions": "bash scripts/deploy-edge-functions.sh",
+    "deploy:commit-system": "supabase functions deploy commit-to-sale && supabase functions deploy decline-commit && supabase functions deploy auto-expire-commits",
+    "deploy:db": "supabase db push",
+    "deploy:backend": "npm run deploy:db && npm run deploy:commit-system",
+    "test:functions": "supabase functions logs --follow",
+    "setup:env": "cp supabase/.env.example .env && echo 'Please edit .env with your actual values'",
+    "migrate:db": "supabase migration new",
+    "reset:db": "supabase db reset --linked",
+    "start:local": "supabase start",
+    "stop:local": "supabase stop"
+  }
+}

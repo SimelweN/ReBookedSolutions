@@ -49,12 +49,14 @@ import {
   BarChart3,
   ArrowUpRight,
   ArrowDownRight,
+  TestTube,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import ProgramReview from "@/components/admin/ProgramReview";
 import DatabaseTest from "@/components/admin/DatabaseTest";
+import QADashboard from "@/components/admin/QADashboard";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -731,7 +733,7 @@ const AdminDashboard = () => {
           onValueChange={setSelectedTab}
           className="space-y-6"
         >
-          <TabsList className="grid grid-cols-3 lg:grid-cols-6 w-full bg-white shadow-sm border">
+          <TabsList className="grid grid-cols-3 lg:grid-cols-7 w-full bg-white shadow-sm border">
             <TabsTrigger
               value="overview"
               className="flex items-center space-x-2"
@@ -760,6 +762,10 @@ const AdminDashboard = () => {
             >
               <BarChart3 className="h-4 w-4" />
               <span>Analytics</span>
+            </TabsTrigger>
+            <TabsTrigger value="qa" className="flex items-center space-x-2">
+              <Shield className="h-4 w-4" />
+              <span>QA Testing</span>
             </TabsTrigger>
             <TabsTrigger
               value="settings"
@@ -1157,6 +1163,11 @@ const AdminDashboard = () => {
           {/* Programs Tab */}
           <TabsContent value="programs" className="space-y-6">
             <ProgramReview />
+          </TabsContent>
+
+          {/* QA Testing Tab */}
+          <TabsContent value="qa" className="space-y-6">
+            <QADashboard />
           </TabsContent>
 
           {/* Settings Tab */}

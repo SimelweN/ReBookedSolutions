@@ -55,6 +55,7 @@ const PaymentCallback = React.lazy(() => import("./pages/PaymentCallback"));
 const UniversityProfile = React.lazy(() => import("./pages/UniversityProfile"));
 const Receipt = React.lazy(() => import("./pages/Receipt"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
+const DevDashboard = React.lazy(() => import("./pages/DevDashboard"));
 
 // Loading component
 const LoadingSpinner = () => (
@@ -422,6 +423,18 @@ function App() {
                           <AdminProtectedRoute>
                             <Suspense fallback={<LoadingSpinner />}>
                               <AdminReports />
+                            </Suspense>
+                          </AdminProtectedRoute>
+                        }
+                      />
+
+                      {/* Development Dashboard - Admin only */}
+                      <Route
+                        path="/dev-dashboard"
+                        element={
+                          <AdminProtectedRoute>
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <DevDashboard />
                             </Suspense>
                           </AdminProtectedRoute>
                         }
