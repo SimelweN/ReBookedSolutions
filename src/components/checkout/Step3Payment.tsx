@@ -129,6 +129,43 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
           "@/services/paystackPaymentService"
         );
 
+        // Create order in database first so it appears in purchase history
+        const { data: createdOrder, error: orderError } = await supabase
+          .from("orders")
+          .insert([
+            {
+              book_id: orderSummary.book.id,
+              seller_id: orderSummary.book.seller_id,
+              buyer_id: userId,
+              book_title: orderSummary.book.title,
+              book_price: orderSummary.book_price,
+              delivery_method: orderSummary.delivery.service_name,
+              delivery_price: orderSummary.delivery_price,
+              total_amount: orderSummary.total_price,
+              status: "pending",
+              payment_status: "pending",
+              paystack_ref: paymentData.data.reference,
+              seller_subaccount_code: orderSummary.book.seller_subaccount_code,
+              buyer_address: orderSummary.buyer_address,
+              seller_address: orderSummary.seller_address,
+              metadata: {
+                order_data: orderData,
+                book_title: orderSummary.book.title,
+                delivery_method: orderSummary.delivery.service_name,
+                buyer_id: userId,
+              },
+            },
+          ])
+          .select()
+          .single();
+
+        if (orderError) {
+          console.error("Failed to create order:", orderError);
+          throw new Error("Failed to create order record");
+        }
+
+        console.log("✅ Order created in database:", createdOrder);
+
         try {
           const result = await PaystackPaymentService.processPayment({
             email: userData.user.email,
@@ -136,6 +173,7 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
             reference: paymentData.data.reference,
             subaccount: orderSummary.book.seller_subaccount_code,
             metadata: {
+              order_id: createdOrder.id,
               order_data: orderData,
               book_title: orderSummary.book.title,
               delivery_method: orderSummary.delivery.service_name,
@@ -144,7 +182,7 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
           });
 
           if (result.cancelled) {
-            console.log("❌ Paystack payment cancelled by user");
+            console.log("��� Paystack payment cancelled by user");
             toast.warning("Payment cancelled");
             setProcessing(false);
             return;
