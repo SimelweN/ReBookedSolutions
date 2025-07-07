@@ -182,7 +182,7 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
           });
 
           if (result.cancelled) {
-            console.log("��� Paystack payment cancelled by user");
+            console.log("❌ Paystack payment cancelled by user");
             toast.warning("Payment cancelled");
             setProcessing(false);
             return;
@@ -190,20 +190,35 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
 
           console.log("✅ Paystack payment successful:", result);
 
-          // Create order confirmation data
+          // Update order status to paid
+          const { error: updateError } = await supabase
+            .from("orders")
+            .update({
+              status: "paid",
+              payment_status: "paid",
+              paid_at: new Date().toISOString(),
+              paystack_data: result,
+            })
+            .eq("id", createdOrder.id);
+
+          if (updateError) {
+            console.warn("Failed to update order status:", updateError);
+          }
+
+          // Create order confirmation data using the database order
           const orderConfirmation = {
-            order_id: paymentData.data.reference,
+            order_id: createdOrder.id,
             payment_reference: result.reference,
-            book_id: orderSummary.book.id,
-            seller_id: orderSummary.book.seller_id,
-            buyer_id: userId,
-            book_title: orderSummary.book.title,
-            book_price: orderSummary.book_price,
-            delivery_method: orderSummary.delivery.service_name,
-            delivery_price: orderSummary.delivery_price,
-            total_paid: orderSummary.total_price,
-            created_at: new Date().toISOString(),
-            status: "completed",
+            book_id: createdOrder.book_id,
+            seller_id: createdOrder.seller_id,
+            buyer_id: createdOrder.buyer_id,
+            book_title: createdOrder.book_title,
+            book_price: createdOrder.book_price,
+            delivery_method: createdOrder.delivery_method,
+            delivery_price: createdOrder.delivery_price,
+            total_paid: createdOrder.total_amount,
+            created_at: createdOrder.created_at,
+            status: "paid",
           };
 
           // Call the success handler to show Step4Confirmation
