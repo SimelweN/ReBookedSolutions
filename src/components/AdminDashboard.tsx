@@ -61,68 +61,21 @@ const AdminDashboard = () => {
   const [selectedTab, setSelectedTab] = useState("overview");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Mock data - replace with real API calls
+  // Real data state - will be populated from API calls
   const [stats, setStats] = useState({
-    totalUsers: 1247,
-    activeBooks: 523,
-    totalSales: 89234,
-    pendingReports: 12,
-    monthlyGrowth: 15.3,
-    newUsersToday: 23,
-    booksListedToday: 45,
-    salesThisMonth: 156,
+    totalUsers: 0,
+    activeBooks: 0,
+    totalSales: 0,
+    pendingReports: 0,
+    monthlyGrowth: 0,
+    newUsersToday: 0,
+    booksListedToday: 0,
+    salesThisMonth: 0,
   });
 
-  const [recentUsers, setRecentUsers] = useState([
-    {
-      id: 1,
-      name: "Alice Johnson",
-      email: "alice@university.ac.za",
-      joinDate: "2024-01-15",
-      status: "active",
-    },
-    {
-      id: 2,
-      name: "Bob Smith",
-      email: "bob@student.ac.za",
-      joinDate: "2024-01-14",
-      status: "active",
-    },
-    {
-      id: 3,
-      name: "Carol Davis",
-      email: "carol@edu.ac.za",
-      joinDate: "2024-01-13",
-      status: "pending",
-    },
-  ]);
+  const [recentUsers, setRecentUsers] = useState([]);
 
-  const [recentBooks, setRecentBooks] = useState([
-    {
-      id: 1,
-      title: "Advanced Mathematics",
-      author: "Dr. Smith",
-      price: 450,
-      seller: "John Doe",
-      status: "active",
-    },
-    {
-      id: 2,
-      title: "Physics Textbook",
-      author: "Prof. Johnson",
-      price: 380,
-      seller: "Jane Smith",
-      status: "sold",
-    },
-    {
-      id: 3,
-      title: "Chemistry Lab Manual",
-      author: "Dr. Brown",
-      price: 280,
-      seller: "Mike Wilson",
-      status: "active",
-    },
-  ]);
+  const [recentBooks, setRecentBooks] = useState([]);
 
   // State for dialogs
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
@@ -194,7 +147,7 @@ const AdminDashboard = () => {
       // Simulate report generation
       await new Promise((resolve) => setTimeout(resolve, 3000));
 
-      // Create sample CSV data
+      // Create real CSV data from current stats
       const reportData = [
         ["Date", "Total Users", "Active Books", "Revenue (ZAR)", "Orders"],
         [
@@ -203,20 +156,6 @@ const AdminDashboard = () => {
           stats.activeBooks,
           stats.totalSales,
           stats.salesThisMonth,
-        ],
-        [
-          "Yesterday",
-          stats.totalUsers - 23,
-          stats.activeBooks - 45,
-          stats.totalSales - 5600,
-          stats.salesThisMonth - 12,
-        ],
-        [
-          "2 days ago",
-          stats.totalUsers - 51,
-          stats.activeBooks - 67,
-          stats.totalSales - 8900,
-          stats.salesThisMonth - 18,
         ],
       ];
 
@@ -307,13 +246,135 @@ const AdminDashboard = () => {
     },
   ];
 
-  const handleRefresh = async () => {
+  // Load real data on component mount
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Load real stats from database
+      await Promise.all([
+        loadUserStats(),
+        loadBookStats(),
+        loadRecentUsers(),
+        loadRecentBooks(),
+      ]);
+      toast.success("Dashboard data loaded successfully");
+    } catch (error) {
+      console.error("Error loading dashboard data:", error);
+      toast.error("Failed to load dashboard data");
+    } finally {
       setIsLoading(false);
-      toast.success("Dashboard refreshed successfully");
-    }, 1000);
+    }
+  };
+
+  const loadUserStats = async () => {
+    try {
+      const { data: usersData, error: usersError } = await supabase
+        .from("profiles")
+        .select("id, created_at")
+        .not("role", "eq", "admin");
+
+      if (!usersError && usersData) {
+        const today = new Date().toDateString();
+        const newUsersToday = usersData.filter(
+          (user) => new Date(user.created_at).toDateString() === today,
+        ).length;
+
+        setStats((prev) => ({
+          ...prev,
+          totalUsers: usersData.length,
+          newUsersToday,
+        }));
+      }
+    } catch (error) {
+      console.error("Error loading user stats:", error);
+    }
+  };
+
+  const loadBookStats = async () => {
+    try {
+      const { data: booksData, error: booksError } = await supabase
+        .from("books")
+        .select("id, created_at, price, status");
+
+      if (!booksError && booksData) {
+        const activeBooks = booksData.filter(
+          (book) => book.status === "active",
+        ).length;
+        const today = new Date().toDateString();
+        const booksListedToday = booksData.filter(
+          (book) => new Date(book.created_at).toDateString() === today,
+        ).length;
+
+        setStats((prev) => ({
+          ...prev,
+          activeBooks,
+          booksListedToday,
+        }));
+      }
+    } catch (error) {
+      console.error("Error loading book stats:", error);
+    }
+  };
+
+  const loadRecentUsers = async () => {
+    try {
+      const { data: usersData, error: usersError } = await supabase
+        .from("profiles")
+        .select("id, name, email, created_at, status")
+        .not("role", "eq", "admin")
+        .order("created_at", { ascending: false })
+        .limit(5);
+
+      if (!usersError && usersData) {
+        const formattedUsers = usersData.map((user) => ({
+          id: user.id,
+          name: user.name || "Unknown User",
+          email: user.email || "No email",
+          joinDate: new Date(user.created_at).toLocaleDateString(),
+          status: user.status || "active",
+        }));
+        setRecentUsers(formattedUsers);
+      }
+    } catch (error) {
+      console.error("Error loading recent users:", error);
+    }
+  };
+
+  const loadRecentBooks = async () => {
+    try {
+      const { data: booksData, error: booksError } = await supabase
+        .from("books")
+        .select(
+          `
+          id, title, author, price, status, created_at,
+          profiles!books_seller_id_fkey(name)
+        `,
+        )
+        .order("created_at", { ascending: false })
+        .limit(5);
+
+      if (!booksError && booksData) {
+        const formattedBooks = booksData.map((book) => ({
+          id: book.id,
+          title: book.title || "Untitled Book",
+          author: book.author || "Unknown Author",
+          price: book.price || 0,
+          seller: book.profiles?.name || "Unknown Seller",
+          status: book.status || "active",
+        }));
+        setRecentBooks(formattedBooks);
+      }
+    } catch (error) {
+      console.error("Error loading recent books:", error);
+    }
+  };
+
+  const handleRefresh = async () => {
+    await loadDashboardData();
   };
 
   return (
@@ -543,31 +604,45 @@ const AdminDashboard = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {recentUsers.map((user) => (
-                      <div
-                        key={user.id}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                      >
-                        <div>
-                          <p className="font-medium text-gray-900">
-                            {user.name}
-                          </p>
-                          <p className="text-sm text-gray-500">{user.email}</p>
-                          <p className="text-xs text-gray-400">
-                            {user.joinDate}
-                          </p>
-                        </div>
-                        <Badge
-                          variant={
-                            user.status === "active" ? "default" : "secondary"
-                          }
+                  {isLoading ? (
+                    <div className="text-center py-4">
+                      <RefreshCw className="h-6 w-6 text-gray-400 mx-auto mb-2 animate-spin" />
+                      <p className="text-sm text-gray-500">Loading...</p>
+                    </div>
+                  ) : recentUsers.length === 0 ? (
+                    <div className="text-center py-4">
+                      <Users className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-sm text-gray-500">No users yet</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {recentUsers.slice(0, 3).map((user) => (
+                        <div
+                          key={user.id}
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                         >
-                          {user.status}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {user.name}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {user.email}
+                            </p>
+                            <p className="text-xs text-gray-400">
+                              {user.joinDate}
+                            </p>
+                          </div>
+                          <Badge
+                            variant={
+                              user.status === "active" ? "default" : "secondary"
+                            }
+                          >
+                            {user.status}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -587,38 +662,52 @@ const AdminDashboard = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {recentBooks.map((book) => (
-                      <div
-                        key={book.id}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                      >
-                        <div>
-                          <p className="font-medium text-gray-900">
-                            {book.title}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            by {book.author}
-                          </p>
-                          <p className="text-xs text-gray-400">
-                            Seller: {book.seller}
-                          </p>
+                  {isLoading ? (
+                    <div className="text-center py-4">
+                      <RefreshCw className="h-6 w-6 text-gray-400 mx-auto mb-2 animate-spin" />
+                      <p className="text-sm text-gray-500">Loading...</p>
+                    </div>
+                  ) : recentBooks.length === 0 ? (
+                    <div className="text-center py-4">
+                      <BookOpen className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-sm text-gray-500">No books yet</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {recentBooks.slice(0, 3).map((book) => (
+                        <div
+                          key={book.id}
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                        >
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {book.title}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              by {book.author}
+                            </p>
+                            <p className="text-xs text-gray-400">
+                              Seller: {book.seller}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-medium text-gray-900">
+                              R{book.price}
+                            </p>
+                            <Badge
+                              variant={
+                                book.status === "active"
+                                  ? "default"
+                                  : "secondary"
+                              }
+                            >
+                              {book.status}
+                            </Badge>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className="font-medium text-gray-900">
-                            R{book.price}
-                          </p>
-                          <Badge
-                            variant={
-                              book.status === "active" ? "default" : "secondary"
-                            }
-                          >
-                            {book.status}
-                          </Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
