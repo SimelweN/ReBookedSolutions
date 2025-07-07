@@ -192,31 +192,26 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
               id,
               name: "Unknown Seller",
               email: "unknown@example.com",
+              pickup_address: null,
             });
           }
         });
 
-        // Map books to include seller information
+        // Map books using the book mapper for consistency
         const books: Book[] = booksData.map((bookData: any) => {
           const sellerProfile = profilesMap.get(bookData.seller_id) || {
             id: bookData.seller_id,
             name: "Unknown Seller",
             email: "unknown@example.com",
+            pickup_address: null,
           };
 
-          // Create book object with safe fallbacks
-          return {
-            id: bookData.id,
-            title: bookData.title || "Untitled",
-            author: bookData.author || "Unknown Author",
-            price: bookData.price || 0,
-            condition: bookData.condition || "unknown",
-            category: bookData.category || "uncategorized",
-            grade: bookData.grade || "",
-            university: bookData.university || "",
-            universityYear: bookData.university_year || "",
-            description: bookData.description || "",
-            imageUrl: bookData.image_url || bookData.front_cover || "",
+          const bookDataWithProfile = {
+            ...bookData,
+            profiles: sellerProfile,
+          };
+
+          return mapBookFromDatabase(bookDataWithProfile, sellerProfile);
             frontCover: bookData.front_cover || "",
             backCover: bookData.back_cover || "",
             sold: bookData.sold || false,
