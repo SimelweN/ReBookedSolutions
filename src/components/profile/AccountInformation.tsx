@@ -10,7 +10,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { UserProfile } from "@/types/address";
-import EmailChangeDialog from "@/components/EmailChangeDialog";
 
 interface AccountInformationProps {
   profile: UserProfile;
@@ -24,7 +23,6 @@ const AccountInformation = ({
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [showEmailChange, setShowEmailChange] = useState(false);
   const [formData, setFormData] = useState({
     name: profile.name || "",
     bio: profile.bio || "",
@@ -211,11 +209,6 @@ const AccountInformation = ({
           </div>
         </CardContent>
       </Card>
-
-      <EmailChangeDialog
-        open={showEmailChange}
-        onOpenChange={setShowEmailChange}
-      />
     </>
   );
 };
