@@ -130,12 +130,25 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
         );
 
         // Create order in database first so it appears in purchase history
+        // Validate required data before creating order
+        if (
+          !userId ||
+          !userData.user.email ||
+          !orderSummary.book.seller_id ||
+          !orderSummary.book.id
+        ) {
+          throw new Error("Missing required order data");
+        }
+
         console.log("🔄 Creating order with data:", {
           buyer_id: userId,
           buyer_email: userData.user.email,
           seller_id: orderSummary.book.seller_id,
           book_id: orderSummary.book.id,
           paystack_ref: paymentData.data.reference,
+          book_price: orderSummary.book_price,
+          delivery_price: orderSummary.delivery_price,
+          total_price: orderSummary.total_price,
         });
 
         const { data: createdOrder, error: orderError } = await supabase
