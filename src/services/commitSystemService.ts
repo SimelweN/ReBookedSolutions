@@ -61,7 +61,17 @@ export class CommitSystemService {
 
       if (error) {
         console.error("❌ Commit Edge Function error:", error);
-        throw new Error(error.message || "Failed to commit sale");
+
+        // Handle different types of edge function errors
+        if (error.message?.includes("FunctionsHttpError")) {
+          throw new Error("Commit function is not deployed or accessible");
+        } else if (error.message?.includes("Failed to send a request")) {
+          throw new Error(
+            "Cannot reach commit function - it may not be deployed",
+          );
+        } else {
+          throw new Error(error.message || "Failed to commit sale");
+        }
       }
 
       if (!data.success) {
