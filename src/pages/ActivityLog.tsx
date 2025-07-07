@@ -213,6 +213,9 @@ const ActivityLog: React.FC = () => {
             </div>
           )}
 
+          {/* Pending Commits Section */}
+          <PendingCommitsSection />
+
           {/* Activity List */}
           <Card>
             <CardHeader>
