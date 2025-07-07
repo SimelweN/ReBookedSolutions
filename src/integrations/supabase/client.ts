@@ -158,6 +158,8 @@ try {
     // Create a mock client for development
     const createMockQueryBuilder = () => {
       const mockError = new Error("Supabase not configured");
+      const mockPromise = Promise.resolve({ data: null, error: mockError });
+
       const mockQuery = {
         select: () => mockQuery,
         insert: () => mockQuery,
@@ -190,10 +192,17 @@ try {
         match: () => mockQuery,
         not: () => mockQuery,
         or: () => mockQuery,
-        then: () => Promise.reject(mockError),
-        catch: () => Promise.reject(mockError),
-        finally: () => Promise.reject(mockError),
+        then: (onFulfilled?: any, onRejected?: any) =>
+          mockPromise.then(onFulfilled, onRejected),
+        catch: (onRejected?: any) => mockPromise.catch(onRejected),
+        finally: (onFinally?: any) => mockPromise.finally(onFinally),
+        // Make it awaitable
+        [Symbol.toStringTag]: "Promise",
       };
+
+      // Make the query builder await-able
+      Object.setPrototypeOf(mockQuery, Promise.prototype);
+
       return mockQuery;
     };
 
