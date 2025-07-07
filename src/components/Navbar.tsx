@@ -244,6 +244,30 @@ const Navbar = () => {
                       Profile
                     </Link>
 
+                    <Link
+                      to="/notifications"
+                      className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-book-600 rounded-md min-h-[44px] mb-2"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <div className="flex items-center mr-3">
+                        <NotificationBadge
+                          className="h-5 w-5"
+                          iconSize="h-5 w-5"
+                          showCount={false}
+                        />
+                      </div>
+                      Notifications
+                    </Link>
+
+                    <Link
+                      to="/cart"
+                      className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-book-600 rounded-md min-h-[44px] mb-2"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Package className="w-5 h-5 mr-3" />
+                      Cart
+                    </Link>
+
                     <button
                       onClick={() => {
                         handleLogout();

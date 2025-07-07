@@ -254,90 +254,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
               // Keep the fallback profile - don't change loading state
             });
 
-          // Add login notification for new sign-ins only (prevent duplicates)
-          if (event === "SIGNED_IN" && !isInitializing) {
-            try {
-              const sessionKey = `loginNotification_${session.user.id}`;
-              const localStorageKey = `lastLoginNotif_${session.user.id}`;
-              const lastNotificationTime = sessionStorage.getItem(sessionKey);
-              const lastLocalNotificationTime =
-                localStorage.getItem(localStorageKey);
-              const now = Date.now();
-
-              // Enhanced duplicate prevention:
-              // 1. Check session storage for this browser session
-              // 2. Check local storage for persistent checking across sessions
-              // 3. Require at least 30 minutes between notifications
-              const shouldSendNotification =
-                !lastNotificationTime &&
-                (!lastLocalNotificationTime ||
-                  now - parseInt(lastLocalNotificationTime) > 1800000); // 30 minutes
-
-              if (shouldSendNotification) {
-                // ENHANCED: Add session-wide lock to prevent multiple notifications
-                const lockKey = `notification_lock_${session.user.id}`;
-                const existingLock = sessionStorage.getItem(lockKey);
-
-                if (existingLock && now - parseInt(existingLock) < 5000) {
-                  // 5 second lock
-                  console.log(
-                    "[AuthContext] Skipping notification - recent lock exists",
-                  );
-                  return;
-                }
-
-                // Check if we already showed welcome notification today
-                const today = new Date().toDateString();
-                const lastWelcomeKey = `last_welcome_${session.user.id}`;
-                const lastWelcome = localStorage.getItem(lastWelcomeKey);
-
-                // Also check session storage to prevent multiple notifications in the same session
-                const sessionWelcomeKey = `session_welcome_${session.user.id}`;
-                const hasSessionWelcome =
-                  sessionStorage.getItem(sessionWelcomeKey);
-
-                // Only show welcome notification once per day AND once per session
-                if (lastWelcome !== today && !hasSessionWelcome) {
-                  // Set lock immediately
-                  sessionStorage.setItem(lockKey, now.toString());
-                  sessionStorage.setItem(sessionKey, now.toString());
-                  localStorage.setItem(localStorageKey, now.toString());
-                  localStorage.setItem(lastWelcomeKey, today);
-                  sessionStorage.setItem(sessionWelcomeKey, "true");
-
-                  // Use safe notification operation to prevent Suspense issues
-                  safeNotificationOperation(
-                    () =>
-                      addNotification({
-                        userId: session.user.id,
-                        title: "Welcome back!",
-                        message: `Successfully logged in at ${new Date().toLocaleString()}`,
-                        type: "success",
-                        read: false,
-                      }),
-                    () => {
-                      // Fallback if notification fails
-                      console.warn(
-                        "[AuthContext] Login notification failed - removing locks",
-                      );
-                      sessionStorage.removeItem(sessionKey);
-                      sessionStorage.removeItem(lockKey);
-                      localStorage.removeItem(localStorageKey);
-                    },
-                  );
-                } else {
-                  console.log(
-                    "[AuthContext] Skipping duplicate login notification - recent notification exists",
-                  );
-                }
-              }
-            } catch (notifError) {
-              console.warn(
-                "[AuthContext] Login notification setup failed:",
-                notifError,
-              );
-            }
-          }
+          // DISABLED: Login notifications are too spammy
+          // Users can see they're logged in from the UI state
+          console.log(
+            "[AuthContext] Skipping login notification to prevent spam",
+          );
 
           // Background profile maintenance (every 2 minutes)
           // Initial delay increased to reduce rapid retries

@@ -35,6 +35,7 @@ import { UserSubmittedProgram, Subject } from "@/types/university";
 import { SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const FACULTY_OPTIONS = [
   "Faculty of Science",
@@ -204,23 +205,29 @@ const AddProgramForm = () => {
     setIsSubmitting(true);
 
     try {
-      const submissionData: UserSubmittedProgram = {
-        ...(formData as UserSubmittedProgram),
-        submittedBy: user.id,
-        submittedAt: new Date().toISOString(),
-        status: "pending",
-        careerProspects:
+      const submissionData = {
+        program_name: formData.programName,
+        university_name: formData.universityName,
+        faculty_name: formData.facultyName,
+        submitted_by: user.id,
+        aps_requirement: formData.apsRequirement,
+        duration: formData.duration,
+        description: formData.description,
+        subjects: formData.subjects || [],
+        career_prospects:
           formData.careerProspects?.filter((p) => p.trim()) || [],
+        status: "pending",
       };
 
-      // Here you would typically send to your backend
-      // In a real implementation, this would submit to your backend API
-      // For now, we'll just simulate success
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(true);
-        }, 1000);
-      });
+      const { error } = await supabase
+        .from("user_submitted_programs")
+        .insert([submissionData]);
+
+      if (error) {
+        console.error("Error submitting program:", error);
+        toast.error("Failed to submit program to database. Please try again.");
+        return;
+      }
 
       setShowSuccess(true);
       toast.success(

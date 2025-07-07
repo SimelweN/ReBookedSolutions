@@ -21,6 +21,7 @@ import {
   markMultipleAsRead,
   deleteMultipleNotifications,
 } from "@/services/notificationService";
+import NotificationCleanupService from "@/services/notificationCleanupService";
 
 interface NotificationItem {
   id: string;
@@ -45,6 +46,7 @@ const Notifications = () => {
   } = useNotifications();
 
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isCleaningUp, setIsCleaningUp] = useState(false);
 
   // Convert notifications to the expected format
   const formattedNotifications: NotificationItem[] = useMemo(() => {
@@ -78,19 +80,29 @@ const Notifications = () => {
     try {
       const date = new Date(timestamp);
       const now = new Date();
+
+      // Validate the date
+      if (isNaN(date.getTime())) {
+        return "Unknown time";
+      }
+
       const diff = now.getTime() - date.getTime();
       const minutes = Math.floor(diff / (1000 * 60));
       const hours = Math.floor(minutes / 60);
       const days = Math.floor(hours / 24);
 
-      if (days > 0) {
-        return `${days} day${days > 1 ? "s" : ""} ago`;
-      } else if (hours > 0) {
-        return `${hours} hour${hours > 1 ? "s" : ""} ago`;
-      } else if (minutes > 0) {
-        return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
-      } else {
+      // If timestamp is in the future or very recent (< 30 seconds), show "Just now"
+      if (diff < 30000 || diff < 0) {
         return "Just now";
+      } else if (minutes < 60) {
+        return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
+      } else if (hours < 24) {
+        return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
+      } else if (days < 7) {
+        return `${days} day${days !== 1 ? "s" : ""} ago`;
+      } else {
+        // For older notifications, show the actual date
+        return date.toLocaleDateString();
       }
     } catch (error) {
       return "Unknown time";
@@ -167,6 +179,38 @@ const Notifications = () => {
   const handleRetry = () => {
     clearError();
     refreshNotifications();
+  };
+
+  const cleanupSpamNotifications = async () => {
+    if (!user) return;
+
+    setIsCleaningUp(true);
+    try {
+      toast.info("Cleaning up duplicate and spam notifications...");
+
+      const result = await NotificationCleanupService.cleanupUserNotifications(
+        user.id,
+      );
+
+      if (result.success) {
+        if (result.removed > 0) {
+          toast.success(
+            `Cleaned up ${result.removed} duplicate/spam notifications!`,
+          );
+          // Refresh notifications to show updated list
+          await refreshNotifications();
+        } else {
+          toast.info("No spam notifications found to clean up");
+        }
+      } else {
+        toast.error(result.error || "Failed to clean up notifications");
+      }
+    } catch (error) {
+      console.error("Error cleaning up notifications:", error);
+      toast.error("Failed to clean up notifications");
+    } finally {
+      setIsCleaningUp(false);
+    }
   };
 
   if (isLoading && formattedNotifications.length === 0) {
@@ -246,6 +290,18 @@ const Notifications = () => {
               </Button>
               <Button
                 variant="outline"
+                onClick={cleanupSpamNotifications}
+                disabled={isCleaningUp || isProcessing}
+                className="w-full sm:w-auto text-sm bg-yellow-50 hover:bg-yellow-100 text-yellow-800 border-yellow-200"
+                size="sm"
+              >
+                {isCleaningUp ? (
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                ) : null}
+                Clean Up Spam
+              </Button>
+              <Button
+                variant="outline"
                 onClick={clearAll}
                 disabled={isProcessing}
                 className="w-full sm:w-auto text-sm"
@@ -290,10 +346,15 @@ const Notifications = () => {
               <Card
                 key={notification.id}
                 className={`
-                  transition-all duration-200
+                  transition-all duration-200 cursor-pointer
                   ${!notification.read ? "bg-blue-50 border-blue-200 shadow-md" : "shadow-sm"}
-                  hover:shadow-lg
+                  hover:shadow-lg hover:border-blue-300
                 `}
+                onClick={() => {
+                  if (!notification.read) {
+                    markAsRead(notification.id);
+                  }
+                }}
               >
                 <CardHeader className="pb-3 p-4 sm:p-6">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
