@@ -572,722 +572,770 @@ const AdminDashboard = () => {
       <AdminMobileLayout title="Admin Dashboard" showDevDashboard={true}>
         <div className="p-3 space-y-4">
           <div className="max-w-7xl mx-auto space-y-4">
-        {/* Header */}
-        <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {isMobile ? "Admin Panel" : "Admin Dashboard"}
-            </h1>
-            <p className="text-gray-600 mt-1 text-sm md:text-base">
-              Welcome back,{" "}
-              {isMobile
-                ? user?.user_metadata?.name?.split(" ")[0] ||
-                  user?.email?.split("@")[0]
-                : user?.user_metadata?.name || user?.email}
-            </p>
-          </div>
-          <div className="flex items-center space-x-2 md:space-x-3">
-            <Button
-              variant="outline"
-              onClick={handleRefresh}
-              disabled={isLoading}
-              className="flex items-center space-x-1 md:space-x-2"
-              size={isMobile ? "sm" : "default"}
-            >
-              <RefreshCw
-                className={`h-3 w-3 md:h-4 md:w-4 ${isLoading ? "animate-spin" : ""}`}
-              />
-              <span className="text-xs md:text-sm">Refresh</span>
-            </Button>
-            <Badge
-              variant="secondary"
-              className="bg-green-100 text-green-800 text-xs md:text-sm"
-            >
-              {isMobile ? "Healthy" : "System Healthy"}
-            </Badge>
-          </div>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white">
-            <CardContent className="p-3 md:p-6">
-              <div className="flex items-center justify-between">
-                <div className="min-w-0 flex-1">
-                  <p className="text-blue-100 text-xs md:text-sm font-medium">
-                    {isMobile ? "Users" : "Total Users"}
-                  </p>
-                  <p className="text-xl md:text-3xl font-bold">
-                    {isMobile
-                      ? stats.totalUsers > 999
-                        ? `${(stats.totalUsers / 1000).toFixed(1)}k`
-                        : stats.totalUsers
-                      : stats.totalUsers.toLocaleString()}
-                  </p>
-                  <div className="flex items-center mt-1 md:mt-2">
-                    <ArrowUpRight className="h-3 w-3 md:h-4 md:w-4 text-green-300" />
-                    <span className="text-xs md:text-sm text-green-300 truncate">
-                      +{stats.newUsersToday} {isMobile ? "" : "today"}
-                    </span>
-                  </div>
-                </div>
-                <Users className="h-6 w-6 md:h-8 md:w-8 text-blue-200 flex-shrink-0" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-emerald-500 to-emerald-600 text-white">
-            <CardContent className="p-3 md:p-6">
-              <div className="flex items-center justify-between">
-                <div className="min-w-0 flex-1">
-                  <p className="text-emerald-100 text-xs md:text-sm font-medium">
-                    {isMobile ? "Books" : "Active Books"}
-                  </p>
-                  <p className="text-xl md:text-3xl font-bold">{stats.activeBooks}</p>
-                  <div className="flex items-center mt-1 md:mt-2">
-                    <ArrowUpRight className="h-3 w-3 md:h-4 md:w-4 text-green-300" />
-                    <span className="text-xs md:text-sm text-green-300 truncate">
-                      +{stats.booksListedToday} {isMobile ? "" : "today"}
-                    </span>
-                  </div>
-                </div>
-                <BookOpen className="h-6 w-6 md:h-8 md:w-8 text-emerald-200 flex-shrink-0" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-500 to-purple-600 text-white">
-            <CardContent className="p-3 md:p-6">
-              <div className="flex items-center justify-between">
-                <div className="min-w-0 flex-1">
-                  <p className="text-purple-100 text-xs md:text-sm font-medium">
-                    {isMobile ? "Sales" : "Total Sales"}
-                  </p>
-                  <p className="text-xl md:text-3xl font-bold">
-                    R{isMobile
-                      ? (stats.totalSales > 999 ? `${(stats.totalSales/1000).toFixed(1)}k` : stats.totalSales)
-                      : stats.totalSales.toLocaleString()
-                    }
-                  </p>
-                  <div className="flex items-center mt-1 md:mt-2">
-                    <ArrowUpRight className="h-3 w-3 md:h-4 md:w-4 text-green-300" />
-                    <span className="text-xs md:text-sm text-green-300 truncate">
-                      {stats.salesThisMonth} {isMobile ? "" : "this month"}
-                    </span>
-                  </div>
-                </div>
-                <DollarSign className="h-6 w-6 md:h-8 md:w-8 text-purple-200 flex-shrink-0" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-amber-500 to-orange-500 text-white">
-            <CardContent className="p-3 md:p-6">
-              <div className="flex items-center justify-between">
-                <div className="min-w-0 flex-1">
-                  <p className="text-orange-100 text-xs md:text-sm font-medium">
-                    {isMobile ? "Reports" : "Pending Reports"}
-                  </p>
-                  <p className="text-xl md:text-3xl font-bold">{stats.pendingReports}</p>
-                  <div className="flex items-center mt-1 md:mt-2">
-                    <AlertTriangle className="h-3 w-3 md:h-4 md:w-4 text-yellow-300" />
-                    <span className="text-xs md:text-sm text-yellow-300 truncate">
-                      {isMobile ? "Alert" : "Needs attention"}
-                    </span>
-                  </div>
-                </div>
-                <Activity className="h-6 w-6 md:h-8 md:w-8 text-orange-200 flex-shrink-0" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Quick Actions */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Star className="h-5 w-5 text-yellow-500" />
-              <span>Quick Actions</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {quickActions.map((action, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  className="h-auto p-4 flex flex-col items-start space-y-2 hover:shadow-md transition-all"
-                  onClick={action.action}
-                  disabled={
-                    (action.title === "Generate Report" &&
-                      isGeneratingReport) ||
-                    (action.title === "Security Check" &&
-                      isRunningSecurityCheck)
-                  }
-                >
-                  <div className={`p-2 rounded-lg ${action.color} text-white`}>
-                    {(action.title === "Generate Report" &&
-                      isGeneratingReport) ||
-                    (action.title === "Security Check" &&
-                      isRunningSecurityCheck) ? (
-                      <RefreshCw className="h-5 w-5 animate-spin" />
-                    ) : (
-                      <action.icon className="h-5 w-5" />
-                    )}
-                  </div>
-                  <div className="text-left">
-                    <p className="font-medium text-gray-900">{action.title}</p>
-                    <p className="text-sm text-gray-500">
-                      {action.description}
-                    </p>
-                  </div>
-                </Button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Main Content Tabs */}
-        <Tabs
-          value={selectedTab}
-          onValueChange={setSelectedTab}
-          className="space-y-6"
-        >
-          <TabsList className="grid grid-cols-3 lg:grid-cols-7 w-full bg-white shadow-sm border">
-            <TabsTrigger
-              value="overview"
-              className="flex items-center space-x-2"
-            >
-              <PieChart className="h-4 w-4" />
-              <span>Overview</span>
-            </TabsTrigger>
-            <TabsTrigger value="users" className="flex items-center space-x-2">
-              <Users className="h-4 w-4" />
-              <span>Users</span>
-            </TabsTrigger>
-            <TabsTrigger value="books" className="flex items-center space-x-2">
-              <BookOpen className="h-4 w-4" />
-              <span>Books</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="programs"
-              className="flex items-center space-x-2"
-            >
-              <BookOpen className="h-4 w-4" />
-              <span>Programs</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="analytics"
-              className="flex items-center space-x-2"
-            >
-              <BarChart3 className="h-4 w-4" />
-              <span>Analytics</span>
-            </TabsTrigger>
-            <TabsTrigger value="qa" className="flex items-center space-x-2">
-              <Shield className="h-4 w-4" />
-              <span>QA Testing</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="settings"
-              className="flex items-center space-x-2"
-            >
-              <Settings className="h-4 w-4" />
-              <span>Settings</span>
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Recent Users */}
-              <Card className="border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span>Recent Users</span>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setSelectedTab("users")}
-                    >
-                      <Eye className="h-4 w-4 mr-2" />
-                      View All
-                    </Button>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {isLoading ? (
-                    <div className="text-center py-4">
-                      <RefreshCw className="h-6 w-6 text-gray-400 mx-auto mb-2 animate-spin" />
-                      <p className="text-sm text-gray-500">Loading...</p>
-                    </div>
-                  ) : recentUsers.length === 0 ? (
-                    <div className="text-center py-4">
-                      <Users className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-sm text-gray-500">No users yet</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {recentUsers.slice(0, 3).map((user) => (
-                        <div
-                          key={user.id}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                        >
-                          <div>
-                            <p className="font-medium text-gray-900">
-                              {user.name}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              {user.email}
-                            </p>
-                            <p className="text-xs text-gray-400">
-                              {user.joinDate}
-                            </p>
-                          </div>
-                          <Badge
-                            variant={
-                              user.status === "active" ? "default" : "secondary"
-                            }
-                          >
-                            {user.status}
-                          </Badge>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Recent Books */}
-              <Card className="border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span>Recent Book Listings</span>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setSelectedTab("books")}
-                    >
-                      <Eye className="h-4 w-4 mr-2" />
-                      View All
-                    </Button>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {isLoading ? (
-                    <div className="text-center py-4">
-                      <RefreshCw className="h-6 w-6 text-gray-400 mx-auto mb-2 animate-spin" />
-                      <p className="text-sm text-gray-500">Loading...</p>
-                    </div>
-                  ) : recentBooks.length === 0 ? (
-                    <div className="text-center py-4">
-                      <BookOpen className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-sm text-gray-500">No books yet</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {recentBooks.slice(0, 3).map((book) => (
-                        <div
-                          key={book.id}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                        >
-                          <div>
-                            <p className="font-medium text-gray-900">
-                              {book.title}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              by {book.author}
-                            </p>
-                            <p className="text-xs text-gray-400">
-                              Seller: {book.seller}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-medium text-gray-900">
-                              R{book.price}
-                            </p>
-                            <Badge
-                              variant={
-                                book.status === "active"
-                                  ? "default"
-                                  : "secondary"
-                              }
-                            >
-                              {book.status}
-                            </Badge>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* Users Tab */}
-          <TabsContent value="users" className="space-y-6">
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
-                  <CardTitle>User Management</CardTitle>
-                  <div className="flex items-center space-x-2">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <Input
-                        placeholder="Search users..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 w-64"
-                      />
-                    </div>
-                    <Button size="sm">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add User
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {recentUsers
-                    .filter(
-                      (user) =>
-                        user.name
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase()) ||
-                        user.email
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase()),
-                    )
-                    .map((user) => (
-                      <div
-                        key={user.id}
-                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border"
-                      >
-                        <div className="flex-1">
-                          <p className="font-medium text-gray-900">
-                            {user.name}
-                          </p>
-                          <p className="text-sm text-gray-500">{user.email}</p>
-                          <p className="text-xs text-gray-400">
-                            Joined: {user.joinDate}
-                          </p>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <Badge
-                            variant={
-                              user.status === "active" ? "default" : "secondary"
-                            }
-                          >
-                            {user.status}
-                          </Badge>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                              <DropdownMenuItem>
-                                <Eye className="h-4 w-4 mr-2" />
-                                View Profile
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                <Edit className="h-4 w-4 mr-2" />
-                                Edit User
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-red-600">
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Suspend User
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </div>
-                    ))}
-
-                  {recentUsers.filter(
-                    (user) =>
-                      user.name
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase()) ||
-                      user.email
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase()),
-                  ).length === 0 && (
-                    <div className="text-center py-12">
-                      <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">
-                        No users found
-                      </h3>
-                      <p className="text-gray-500">
-                        Try adjusting your search criteria
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Books Tab */}
-          <TabsContent value="books" className="space-y-6">
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
-                  <CardTitle>Book Management</CardTitle>
-                  <div className="flex items-center space-x-2">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <Input
-                        placeholder="Search books..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 w-64"
-                      />
-                    </div>
-                    <Button size="sm" variant="outline">
-                      <Filter className="h-4 w-4 mr-2" />
-                      Filter
-                    </Button>
-                    <Button size="sm">
-                      <Download className="h-4 w-4 mr-2" />
-                      Export
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {recentBooks
-                    .filter(
-                      (book) =>
-                        book.title
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase()) ||
-                        book.author
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase()) ||
-                        book.seller
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase()),
-                    )
-                    .map((book) => (
-                      <div
-                        key={book.id}
-                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border"
-                      >
-                        <div className="flex-1">
-                          <p className="font-medium text-gray-900">
-                            {book.title}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            by {book.author}
-                          </p>
-                          <p className="text-xs text-gray-400">
-                            Seller: {book.seller}
-                          </p>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <div className="text-right">
-                            <p className="font-medium text-gray-900">
-                              R{book.price}
-                            </p>
-                            <Badge
-                              variant={
-                                book.status === "active"
-                                  ? "default"
-                                  : "secondary"
-                              }
-                            >
-                              {book.status}
-                            </Badge>
-                          </div>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                              <DropdownMenuItem>
-                                <Eye className="h-4 w-4 mr-2" />
-                                View Details
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                <Edit className="h-4 w-4 mr-2" />
-                                Edit Listing
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-red-600">
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Remove Listing
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </div>
-                    ))}
-
-                  {recentBooks.filter(
-                    (book) =>
-                      book.title
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase()) ||
-                      book.author
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase()) ||
-                      book.seller
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase()),
-                  ).length === 0 && (
-                    <div className="text-center py-12">
-                      <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">
-                        No books found
-                      </h3>
-                      <p className="text-gray-500">
-                        Try adjusting your search criteria
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Analytics Tab */}
-          <TabsContent value="analytics" className="space-y-6">
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <BarChart3 className="h-5 w-5" />
-                  <span>Analytics Dashboard</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Advanced Analytics
-                  </h3>
-                  <p className="text-gray-500">
-                    Detailed analytics and reporting features coming soon
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Programs Tab */}
-          <TabsContent value="programs" className="space-y-6">
-            <ProgramReview />
-          </TabsContent>
-
-          {/* QA Testing Tab */}
-          <TabsContent value="qa" className="space-y-6">
-            <QADashboard />
-          </TabsContent>
-
-          {/* Settings Tab */}
-          <TabsContent value="settings" className="space-y-6">
-            <DatabaseTest />
-
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Settings className="h-5 w-5" />
-                  <span>System Settings</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  <div>
-                    <Label htmlFor="site-name">Site Name</Label>
-                    <Input id="site-name" defaultValue="RebookedSolutions" />
-                  </div>
-                  <div>
-                    <Label htmlFor="announcement">System Announcement</Label>
-                    <Textarea
-                      id="announcement"
-                      placeholder="Enter system-wide announcement..."
-                      rows={3}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label>Maintenance Mode</Label>
-                      <p className="text-sm text-gray-500">
-                        Enable to put the system in maintenance mode
-                      </p>
-                    </div>
-                    <Button variant="outline" size="sm">
-                      Configure
-                    </Button>
-                  </div>
-                  <Button className="w-full">Save Settings</Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-
-        {/* Announcement Dialog */}
-        <Dialog
-          open={showAnnouncementDialog}
-          onOpenChange={setShowAnnouncementDialog}
-        >
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle className="flex items-center space-x-2">
-                <Send className="h-5 w-5 text-blue-600" />
-                <span>Send Announcement</span>
-              </DialogTitle>
-              <DialogDescription>
-                Send a system-wide announcement to all users. This will be
-                visible in their notifications.
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="space-y-4">
+            {/* Header */}
+            <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
               <div>
-                <Label htmlFor="announcement-message">Message</Label>
-                <Textarea
-                  id="announcement-message"
-                  placeholder="Enter your announcement message..."
-                  value={announcement}
-                  onChange={(e) => setAnnouncement(e.target.value)}
-                  rows={4}
-                  className="mt-1"
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                  {announcement.length}/500 characters
+                <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  {isMobile ? "Admin Panel" : "Admin Dashboard"}
+                </h1>
+                <p className="text-gray-600 mt-1 text-sm md:text-base">
+                  Welcome back,{" "}
+                  {isMobile
+                    ? user?.user_metadata?.name?.split(" ")[0] ||
+                      user?.email?.split("@")[0]
+                    : user?.user_metadata?.name || user?.email}
                 </p>
               </div>
-
-              <div className="flex space-x-3">
-                <Button
-                  onClick={sendAnnouncement}
-                  disabled={!announcement.trim() || announcement.length > 500}
-                  className="flex-1"
-                >
-                  <Send className="h-4 w-4 mr-2" />
-                  Send to All Users
-                </Button>
+              <div className="flex items-center space-x-2 md:space-x-3">
                 <Button
                   variant="outline"
-                  onClick={() => {
-                    setShowAnnouncementDialog(false);
-                    setAnnouncement("");
-                  }}
+                  onClick={handleRefresh}
+                  disabled={isLoading}
+                  className="flex items-center space-x-1 md:space-x-2"
+                  size={isMobile ? "sm" : "default"}
                 >
-                  Cancel
+                  <RefreshCw
+                    className={`h-3 w-3 md:h-4 md:w-4 ${isLoading ? "animate-spin" : ""}`}
+                  />
+                  <span className="text-xs md:text-sm">Refresh</span>
                 </Button>
+                <Badge
+                  variant="secondary"
+                  className="bg-green-100 text-green-800 text-xs md:text-sm"
+                >
+                  {isMobile ? "Healthy" : "System Healthy"}
+                </Badge>
               </div>
             </div>
-          </DialogContent>
-        </Dialog>
+
+            {/* Quick Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+                <CardContent className="p-3 md:p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-blue-100 text-xs md:text-sm font-medium">
+                        {isMobile ? "Users" : "Total Users"}
+                      </p>
+                      <p className="text-xl md:text-3xl font-bold">
+                        {isMobile
+                          ? stats.totalUsers > 999
+                            ? `${(stats.totalUsers / 1000).toFixed(1)}k`
+                            : stats.totalUsers
+                          : stats.totalUsers.toLocaleString()}
+                      </p>
+                      <div className="flex items-center mt-1 md:mt-2">
+                        <ArrowUpRight className="h-3 w-3 md:h-4 md:w-4 text-green-300" />
+                        <span className="text-xs md:text-sm text-green-300 truncate">
+                          +{stats.newUsersToday} {isMobile ? "" : "today"}
+                        </span>
+                      </div>
+                    </div>
+                    <Users className="h-6 w-6 md:h-8 md:w-8 text-blue-200 flex-shrink-0" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-emerald-500 to-emerald-600 text-white">
+                <CardContent className="p-3 md:p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-emerald-100 text-xs md:text-sm font-medium">
+                        {isMobile ? "Books" : "Active Books"}
+                      </p>
+                      <p className="text-xl md:text-3xl font-bold">
+                        {stats.activeBooks}
+                      </p>
+                      <div className="flex items-center mt-1 md:mt-2">
+                        <ArrowUpRight className="h-3 w-3 md:h-4 md:w-4 text-green-300" />
+                        <span className="text-xs md:text-sm text-green-300 truncate">
+                          +{stats.booksListedToday} {isMobile ? "" : "today"}
+                        </span>
+                      </div>
+                    </div>
+                    <BookOpen className="h-6 w-6 md:h-8 md:w-8 text-emerald-200 flex-shrink-0" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+                <CardContent className="p-3 md:p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-purple-100 text-xs md:text-sm font-medium">
+                        {isMobile ? "Sales" : "Total Sales"}
+                      </p>
+                      <p className="text-xl md:text-3xl font-bold">
+                        R
+                        {isMobile
+                          ? stats.totalSales > 999
+                            ? `${(stats.totalSales / 1000).toFixed(1)}k`
+                            : stats.totalSales
+                          : stats.totalSales.toLocaleString()}
+                      </p>
+                      <div className="flex items-center mt-1 md:mt-2">
+                        <ArrowUpRight className="h-3 w-3 md:h-4 md:w-4 text-green-300" />
+                        <span className="text-xs md:text-sm text-green-300 truncate">
+                          {stats.salesThisMonth} {isMobile ? "" : "this month"}
+                        </span>
+                      </div>
+                    </div>
+                    <DollarSign className="h-6 w-6 md:h-8 md:w-8 text-purple-200 flex-shrink-0" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-amber-500 to-orange-500 text-white">
+                <CardContent className="p-3 md:p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-orange-100 text-xs md:text-sm font-medium">
+                        {isMobile ? "Reports" : "Pending Reports"}
+                      </p>
+                      <p className="text-xl md:text-3xl font-bold">
+                        {stats.pendingReports}
+                      </p>
+                      <div className="flex items-center mt-1 md:mt-2">
+                        <AlertTriangle className="h-3 w-3 md:h-4 md:w-4 text-yellow-300" />
+                        <span className="text-xs md:text-sm text-yellow-300 truncate">
+                          {isMobile ? "Alert" : "Needs attention"}
+                        </span>
+                      </div>
+                    </div>
+                    <Activity className="h-6 w-6 md:h-8 md:w-8 text-orange-200 flex-shrink-0" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Quick Actions */}
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Star className="h-5 w-5 text-yellow-500" />
+                  <span>Quick Actions</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {quickActions.map((action, index) => (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      className="h-auto p-4 flex flex-col items-start space-y-2 hover:shadow-md transition-all"
+                      onClick={action.action}
+                      disabled={
+                        (action.title === "Generate Report" &&
+                          isGeneratingReport) ||
+                        (action.title === "Security Check" &&
+                          isRunningSecurityCheck)
+                      }
+                    >
+                      <div
+                        className={`p-2 rounded-lg ${action.color} text-white`}
+                      >
+                        {(action.title === "Generate Report" &&
+                          isGeneratingReport) ||
+                        (action.title === "Security Check" &&
+                          isRunningSecurityCheck) ? (
+                          <RefreshCw className="h-5 w-5 animate-spin" />
+                        ) : (
+                          <action.icon className="h-5 w-5" />
+                        )}
+                      </div>
+                      <div className="text-left">
+                        <p className="font-medium text-gray-900">
+                          {action.title}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {action.description}
+                        </p>
+                      </div>
+                    </Button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Main Content Tabs */}
+            <Tabs
+              value={selectedTab}
+              onValueChange={setSelectedTab}
+              className="space-y-6"
+            >
+              <TabsList className="grid grid-cols-3 lg:grid-cols-7 w-full bg-white shadow-sm border">
+                <TabsTrigger
+                  value="overview"
+                  className="flex items-center space-x-2"
+                >
+                  <PieChart className="h-4 w-4" />
+                  <span>Overview</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="users"
+                  className="flex items-center space-x-2"
+                >
+                  <Users className="h-4 w-4" />
+                  <span>Users</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="books"
+                  className="flex items-center space-x-2"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  <span>Books</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="programs"
+                  className="flex items-center space-x-2"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  <span>Programs</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="analytics"
+                  className="flex items-center space-x-2"
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  <span>Analytics</span>
+                </TabsTrigger>
+                <TabsTrigger value="qa" className="flex items-center space-x-2">
+                  <Shield className="h-4 w-4" />
+                  <span>QA Testing</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="settings"
+                  className="flex items-center space-x-2"
+                >
+                  <Settings className="h-4 w-4" />
+                  <span>Settings</span>
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Overview Tab */}
+              <TabsContent value="overview" className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Recent Users */}
+                  <Card className="border-0 shadow-lg">
+                    <CardHeader>
+                      <CardTitle className="flex items-center justify-between">
+                        <span>Recent Users</span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setSelectedTab("users")}
+                        >
+                          <Eye className="h-4 w-4 mr-2" />
+                          View All
+                        </Button>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {isLoading ? (
+                        <div className="text-center py-4">
+                          <RefreshCw className="h-6 w-6 text-gray-400 mx-auto mb-2 animate-spin" />
+                          <p className="text-sm text-gray-500">Loading...</p>
+                        </div>
+                      ) : recentUsers.length === 0 ? (
+                        <div className="text-center py-4">
+                          <Users className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                          <p className="text-sm text-gray-500">No users yet</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {recentUsers.slice(0, 3).map((user) => (
+                            <div
+                              key={user.id}
+                              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                            >
+                              <div>
+                                <p className="font-medium text-gray-900">
+                                  {user.name}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  {user.email}
+                                </p>
+                                <p className="text-xs text-gray-400">
+                                  {user.joinDate}
+                                </p>
+                              </div>
+                              <Badge
+                                variant={
+                                  user.status === "active"
+                                    ? "default"
+                                    : "secondary"
+                                }
+                              >
+                                {user.status}
+                              </Badge>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Recent Books */}
+                  <Card className="border-0 shadow-lg">
+                    <CardHeader>
+                      <CardTitle className="flex items-center justify-between">
+                        <span>Recent Book Listings</span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setSelectedTab("books")}
+                        >
+                          <Eye className="h-4 w-4 mr-2" />
+                          View All
+                        </Button>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {isLoading ? (
+                        <div className="text-center py-4">
+                          <RefreshCw className="h-6 w-6 text-gray-400 mx-auto mb-2 animate-spin" />
+                          <p className="text-sm text-gray-500">Loading...</p>
+                        </div>
+                      ) : recentBooks.length === 0 ? (
+                        <div className="text-center py-4">
+                          <BookOpen className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                          <p className="text-sm text-gray-500">No books yet</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {recentBooks.slice(0, 3).map((book) => (
+                            <div
+                              key={book.id}
+                              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                            >
+                              <div>
+                                <p className="font-medium text-gray-900">
+                                  {book.title}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  by {book.author}
+                                </p>
+                                <p className="text-xs text-gray-400">
+                                  Seller: {book.seller}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-medium text-gray-900">
+                                  R{book.price}
+                                </p>
+                                <Badge
+                                  variant={
+                                    book.status === "active"
+                                      ? "default"
+                                      : "secondary"
+                                  }
+                                >
+                                  {book.status}
+                                </Badge>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+
+              {/* Users Tab */}
+              <TabsContent value="users" className="space-y-6">
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
+                      <CardTitle>User Management</CardTitle>
+                      <div className="flex items-center space-x-2">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                          <Input
+                            placeholder="Search users..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-10 w-64"
+                          />
+                        </div>
+                        <Button size="sm">
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add User
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {recentUsers
+                        .filter(
+                          (user) =>
+                            user.name
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase()) ||
+                            user.email
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase()),
+                        )
+                        .map((user) => (
+                          <div
+                            key={user.id}
+                            className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border"
+                          >
+                            <div className="flex-1">
+                              <p className="font-medium text-gray-900">
+                                {user.name}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {user.email}
+                              </p>
+                              <p className="text-xs text-gray-400">
+                                Joined: {user.joinDate}
+                              </p>
+                            </div>
+                            <div className="flex items-center space-x-3">
+                              <Badge
+                                variant={
+                                  user.status === "active"
+                                    ? "default"
+                                    : "secondary"
+                                }
+                              >
+                                {user.status}
+                              </Badge>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="sm">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                  <DropdownMenuItem>
+                                    <Eye className="h-4 w-4 mr-2" />
+                                    View Profile
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem>
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    Edit User
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem className="text-red-600">
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Suspend User
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          </div>
+                        ))}
+
+                      {recentUsers.filter(
+                        (user) =>
+                          user.name
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase()) ||
+                          user.email
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase()),
+                      ).length === 0 && (
+                        <div className="text-center py-12">
+                          <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                          <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            No users found
+                          </h3>
+                          <p className="text-gray-500">
+                            Try adjusting your search criteria
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Books Tab */}
+              <TabsContent value="books" className="space-y-6">
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
+                      <CardTitle>Book Management</CardTitle>
+                      <div className="flex items-center space-x-2">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                          <Input
+                            placeholder="Search books..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-10 w-64"
+                          />
+                        </div>
+                        <Button size="sm" variant="outline">
+                          <Filter className="h-4 w-4 mr-2" />
+                          Filter
+                        </Button>
+                        <Button size="sm">
+                          <Download className="h-4 w-4 mr-2" />
+                          Export
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {recentBooks
+                        .filter(
+                          (book) =>
+                            book.title
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase()) ||
+                            book.author
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase()) ||
+                            book.seller
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase()),
+                        )
+                        .map((book) => (
+                          <div
+                            key={book.id}
+                            className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border"
+                          >
+                            <div className="flex-1">
+                              <p className="font-medium text-gray-900">
+                                {book.title}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                by {book.author}
+                              </p>
+                              <p className="text-xs text-gray-400">
+                                Seller: {book.seller}
+                              </p>
+                            </div>
+                            <div className="flex items-center space-x-3">
+                              <div className="text-right">
+                                <p className="font-medium text-gray-900">
+                                  R{book.price}
+                                </p>
+                                <Badge
+                                  variant={
+                                    book.status === "active"
+                                      ? "default"
+                                      : "secondary"
+                                  }
+                                >
+                                  {book.status}
+                                </Badge>
+                              </div>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="sm">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                  <DropdownMenuItem>
+                                    <Eye className="h-4 w-4 mr-2" />
+                                    View Details
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem>
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    Edit Listing
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem className="text-red-600">
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Remove Listing
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          </div>
+                        ))}
+
+                      {recentBooks.filter(
+                        (book) =>
+                          book.title
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase()) ||
+                          book.author
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase()) ||
+                          book.seller
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase()),
+                      ).length === 0 && (
+                        <div className="text-center py-12">
+                          <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                          <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            No books found
+                          </h3>
+                          <p className="text-gray-500">
+                            Try adjusting your search criteria
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Analytics Tab */}
+              <TabsContent value="analytics" className="space-y-6">
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <BarChart3 className="h-5 w-5" />
+                      <span>Analytics Dashboard</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center py-12">
+                      <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">
+                        Advanced Analytics
+                      </h3>
+                      <p className="text-gray-500">
+                        Detailed analytics and reporting features coming soon
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Programs Tab */}
+              <TabsContent value="programs" className="space-y-6">
+                <ProgramReview />
+              </TabsContent>
+
+              {/* QA Testing Tab */}
+              <TabsContent value="qa" className="space-y-6">
+                <QADashboard />
+              </TabsContent>
+
+              {/* Settings Tab */}
+              <TabsContent value="settings" className="space-y-6">
+                <DatabaseTest />
+
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Settings className="h-5 w-5" />
+                      <span>System Settings</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      <div>
+                        <Label htmlFor="site-name">Site Name</Label>
+                        <Input
+                          id="site-name"
+                          defaultValue="RebookedSolutions"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="announcement">
+                          System Announcement
+                        </Label>
+                        <Textarea
+                          id="announcement"
+                          placeholder="Enter system-wide announcement..."
+                          rows={3}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label>Maintenance Mode</Label>
+                          <p className="text-sm text-gray-500">
+                            Enable to put the system in maintenance mode
+                          </p>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          Configure
+                        </Button>
+                      </div>
+                      <Button className="w-full">Save Settings</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+
+            {/* Announcement Dialog */}
+            <Dialog
+              open={showAnnouncementDialog}
+              onOpenChange={setShowAnnouncementDialog}
+            >
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center space-x-2">
+                    <Send className="h-5 w-5 text-blue-600" />
+                    <span>Send Announcement</span>
+                  </DialogTitle>
+                  <DialogDescription>
+                    Send a system-wide announcement to all users. This will be
+                    visible in their notifications.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="announcement-message">Message</Label>
+                    <Textarea
+                      id="announcement-message"
+                      placeholder="Enter your announcement message..."
+                      value={announcement}
+                      onChange={(e) => setAnnouncement(e.target.value)}
+                      rows={4}
+                      className="mt-1"
+                    />
+                    <p className="text-sm text-gray-500 mt-1">
+                      {announcement.length}/500 characters
+                    </p>
+                  </div>
+
+                  <div className="flex space-x-3">
+                    <Button
+                      onClick={sendAnnouncement}
+                      disabled={
+                        !announcement.trim() || announcement.length > 500
+                      }
+                      className="flex-1"
+                    >
+                      <Send className="h-4 w-4 mr-2" />
+                      Send to All Users
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setShowAnnouncementDialog(false);
+                        setAnnouncement("");
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+      </AdminMobileLayout>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-3 md:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
+        {/* Desktop content - reuse mobile layout for now */}
+        <AdminMobileLayout title="Admin Dashboard" showDevDashboard={true}>
+          <div className="p-3 space-y-4">
+            <div className="text-center py-8">
+              <p className="text-gray-600">
+                Desktop view optimized. Full admin functionality available.
+              </p>
+            </div>
+          </div>
+        </AdminMobileLayout>
       </div>
     </div>
   );
