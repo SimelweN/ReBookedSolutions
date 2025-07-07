@@ -32,10 +32,12 @@ const NotificationBadge = ({
   // Always call hooks at the top level
   const {
     unreadCount,
-    isLoading: notificationsLoading,
-    hasError,
-    refreshNotifications,
+    loading: notificationsLoading,
+    error,
+    refetch: refreshNotifications,
   } = useNotifications();
+
+  const hasError = !!error;
 
   const handleNotificationClick = (e: React.MouseEvent) => {
     e.preventDefault();
