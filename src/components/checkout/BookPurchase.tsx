@@ -600,19 +600,9 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
           <CardContent className="p-6 text-center">
             <div className="animate-spin w-8 h-8 border-2 border-book-500 border-t-transparent rounded-full mx-auto mb-4"></div>
             <h3 className="text-lg font-semibold mb-2">
-              {sellerInfoLoading && userProfileLoading
-                ? "Loading Delivery Setup"
-                : sellerInfoLoading
-                  ? "Loading Seller Information"
-                  : "Loading Your Saved Address"}
+              Loading Delivery Options
             </h3>
-            <p className="text-gray-600">
-              {sellerInfoLoading && userProfileLoading
-                ? "Setting up delivery calculation and loading your saved address..."
-                : sellerInfoLoading
-                  ? "Getting seller location for delivery calculation..."
-                  : "Loading your saved delivery address..."}
-            </p>
+            <p className="text-gray-600">Setting up delivery calculation...</p>
           </CardContent>
         </Card>
       ) : (
