@@ -113,8 +113,8 @@ const ReceiptDownloader: React.FC<ReceiptDownloaderProps> = (props) => {
 
   return (
     <div className="space-y-4">
-      {/* Hidden receipt for image generation */}
-      <div className="hidden">
+      {/* Off-screen receipt for image generation */}
+      <div className="absolute -left-[9999px] -top-[9999px] opacity-0 pointer-events-none">
         <ReceiptComponent ref={receiptRef} {...props} />
       </div>
 
