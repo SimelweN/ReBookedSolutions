@@ -1,8 +1,11 @@
 import { Book } from "@/types/book";
 import { BookQueryResult } from "./bookTypes";
 
-export const mapBookFromDatabase = (bookData: BookQueryResult): Book => {
-  const profile = bookData.profiles;
+export const mapBookFromDatabase = (
+  bookData: BookQueryResult,
+  sellerProfile?: any,
+): Book => {
+  const profile = bookData.profiles || sellerProfile;
 
   console.log("Mapping book data:", bookData);
   console.log("Profile data:", profile);
@@ -11,6 +14,18 @@ export const mapBookFromDatabase = (bookData: BookQueryResult): Book => {
   if (!bookData.id || !bookData.seller_id) {
     throw new Error("Invalid book data: missing required fields");
   }
+
+  // Determine if seller has address (check for pickup_address in profile)
+  const hasPickupAddress = !!(
+    profile?.pickup_address &&
+    ((typeof profile.pickup_address === "object" &&
+      profile.pickup_address.streetAddress &&
+      profile.pickup_address.city &&
+      profile.pickup_address.province &&
+      profile.pickup_address.postalCode) ||
+      (typeof profile.pickup_address === "string" &&
+        profile.pickup_address.length > 10))
+  );
 
   const mappedBook = {
     id: bookData.id,
