@@ -440,30 +440,50 @@ const AdminDashboard = () => {
 
   const loadRecentBooks = async () => {
     try {
+      // First try to get books with seller info
       const { data: booksData, error: booksError } = await supabase
         .from("books")
-        .select(
-          `
-          id, title, author, price, status, created_at,
-          profiles!books_seller_id_fkey(name)
-        `,
-        )
+        .select("id, title, author, price, status, created_at, seller_id")
         .order("created_at", { ascending: false })
         .limit(5);
 
-      if (!booksError && booksData) {
+      if (booksError) {
+        console.error("Error fetching books:", booksError);
+        return;
+      }
+
+      if (booksData && booksData.length > 0) {
+        // Get seller names separately to avoid relation issues
+        const sellerIds = [
+          ...new Set(booksData.map((book) => book.seller_id).filter(Boolean)),
+        ];
+        const { data: sellersData } = await supabase
+          .from("profiles")
+          .select("id, name")
+          .in("id", sellerIds);
+
+        const sellersMap = new Map();
+        if (sellersData) {
+          sellersData.forEach((seller) => {
+            sellersMap.set(seller.id, seller.name || "Unknown Seller");
+          });
+        }
+
         const formattedBooks = booksData.map((book) => ({
           id: book.id,
           title: book.title || "Untitled Book",
           author: book.author || "Unknown Author",
           price: book.price || 0,
-          seller: book.profiles?.name || "Unknown Seller",
+          seller: sellersMap.get(book.seller_id) || "Unknown Seller",
           status: book.status || "active",
         }));
         setRecentBooks(formattedBooks);
+      } else {
+        setRecentBooks([]);
       }
     } catch (error) {
       console.error("Error loading recent books:", error);
+      setRecentBooks([]);
     }
   };
 
