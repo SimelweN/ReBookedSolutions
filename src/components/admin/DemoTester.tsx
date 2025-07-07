@@ -220,6 +220,11 @@ const DemoTester: React.FC = () => {
               Create Demo Order
             </Button>
 
+            <Button onClick={testAutoExpire} variant="outline" size="sm">
+              <AlertTriangle className="h-4 w-4 mr-2" />
+              Test Auto-Expire
+            </Button>
+
             <Button
               onClick={runComprehensiveTest}
               disabled={testing}
