@@ -119,11 +119,10 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       seller_country: sellerAddress?.country || "South Africa",
     };
 
-    // Store province for future use when database schema is updated
-    if (province) {
-      console.log("📍 Province extracted from user address:", province);
-      console.log("💡 Province will be stored once database schema is updated");
-      // TODO: Add province to book data when 'province' column is available in production
+    // Log seller data inclusion
+    if (sellerAddress) {
+      console.log("📍 Seller address included in book data:", sellerAddress);
+      console.log("💡 Book now contains all seller data needed for checkout");
     }
 
     const { data: book, error } = await supabase
