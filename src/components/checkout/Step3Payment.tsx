@@ -267,6 +267,9 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
 
           console.log("✅ Paystack payment successful:", result);
 
+          // Extract book item data for processing
+          const bookItem = createdOrder.items[0]; // Get the book item
+
           // Update order status to paid
           const { error: updateError } = await supabase
             .from("orders")
@@ -299,7 +302,6 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
           }
 
           // Create order confirmation data using the database order
-          const bookItem = createdOrder.items[0]; // Get the book item
           const orderConfirmation = {
             order_id: createdOrder.id,
             payment_reference: result.reference,
