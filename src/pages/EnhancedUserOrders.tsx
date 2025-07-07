@@ -107,6 +107,17 @@ const EnhancedUserOrders: React.FC = () => {
     }
   };
 
+  const handleCommitToOrder = async (orderId: string) => {
+    try {
+      await commitToOrder(orderId);
+      await loadOrders(); // Reload orders to show updated status
+      toast.success("Successfully committed to the order!");
+    } catch (error) {
+      console.error("Error committing to order:", error);
+      toast.error("Failed to commit to order. Please try again.");
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       pending: {
