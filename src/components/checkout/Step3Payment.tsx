@@ -84,25 +84,30 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
           sellerSubaccount.subaccount_code;
       }
 
+      // Prepare payment request
+      const paymentRequest = {
+        email: userData.user.email,
+        amount: orderSummary.total_price * 100, // Convert to kobo
+        bookId: orderSummary.book.id,
+        sellerId: orderSummary.book.seller_id,
+        sellerSubaccountCode: orderSummary.book.seller_subaccount_code,
+        bookPrice: orderSummary.book_price,
+        deliveryFee: orderSummary.delivery_price,
+        callback_url: `${window.location.origin}/checkout/success`,
+        metadata: {
+          order_data: orderData,
+          book_title: orderSummary.book.title,
+          delivery_method: orderSummary.delivery.service_name,
+          buyer_id: userId,
+        },
+      };
+
+      console.log("Initializing payment with data:", paymentRequest);
+
       // Initialize Paystack payment with correct format
       const { data: paymentData, error: paymentError } =
         await supabase.functions.invoke("initialize-paystack-payment", {
-          body: {
-            email: userData.user.email,
-            amount: orderSummary.total_price * 100, // Convert to kobo
-            bookId: orderSummary.book.id,
-            sellerId: orderSummary.book.seller_id,
-            sellerSubaccountCode: orderSummary.book.seller_subaccount_code,
-            bookPrice: orderSummary.book_price,
-            deliveryFee: orderSummary.delivery_price,
-            callback_url: `${window.location.origin}/checkout/success`,
-            metadata: {
-              order_data: orderData,
-              book_title: orderSummary.book.title,
-              delivery_method: orderSummary.delivery.service_name,
-              buyer_id: userId,
-            },
-          },
+          body: paymentRequest,
         });
 
       if (paymentError) {
