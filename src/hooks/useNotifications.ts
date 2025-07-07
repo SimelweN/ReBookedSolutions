@@ -146,7 +146,18 @@ export const useNotifications = (): UseNotificationsResult => {
       );
     } catch (err) {
       console.error("Error marking notification as read:", err);
-      toast.error("Failed to mark notification as read");
+
+      let errorMessage = "Failed to mark notification as read";
+
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === "string") {
+        errorMessage = err;
+      } else if (err && typeof err === "object") {
+        errorMessage = JSON.stringify(err);
+      }
+
+      toast.error(errorMessage);
     }
   };
 
