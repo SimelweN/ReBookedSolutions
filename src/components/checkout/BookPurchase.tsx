@@ -134,7 +134,7 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         !deliveryAddress.city ||
         !deliveryAddress.postal_code
       ) {
-        console.warn("⚠️ Seller address is incomplete, using fallback");
+        console.warn("⚠�� Seller address is incomplete, using fallback");
         toast.warning(
           "⚠️ Seller's address is incomplete. Delivery costs may be estimated.",
         );
@@ -219,6 +219,9 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         toast.info("Using default location for delivery calculations");
         // Don't block the user with an error, just use fallback
       }
+
+      // Always mark loading as complete, even on error
+      setSellerInfoLoading(false);
     }
   };
 
