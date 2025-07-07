@@ -327,6 +327,9 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
       toast.warning(
         "⚠️ Couldn't load your saved address. You'll need to enter your delivery address manually.",
       );
+
+      // Mark user profile loading as complete even on error
+      setUserProfileLoading(false);
     }
   };
 
