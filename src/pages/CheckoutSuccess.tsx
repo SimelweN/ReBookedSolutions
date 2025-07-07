@@ -202,10 +202,36 @@ const CheckoutSuccess: React.FC = () => {
                 {error || "Failed to load order information"}
               </AlertDescription>
             </Alert>
+
+            <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h3 className="font-semibold text-blue-900 mb-2">
+                Payment Successful but Verification Failed?
+              </h3>
+              <p className="text-sm text-blue-800 mb-4">
+                If your payment was successful, you can check your order status
+                in "My Orders" or try refreshing this page.
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => window.location.reload()}
+                  variant="outline"
+                  className="bg-white"
+                >
+                  Retry Verification
+                </Button>
+                <Button
+                  onClick={() => navigate("/orders")}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  Check My Orders
+                </Button>
+              </div>
+            </div>
+
             <div className="mt-6 text-center space-x-4">
               <Button onClick={() => navigate("/books")}>Browse Books</Button>
-              <Button variant="outline" onClick={() => navigate("/orders")}>
-                View My Orders
+              <Button variant="outline" onClick={() => navigate("/")}>
+                Go Home
               </Button>
             </div>
           </div>
