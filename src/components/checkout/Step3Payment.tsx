@@ -56,16 +56,30 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
         estimated_delivery_days: orderSummary.delivery.estimated_days,
       };
 
-      // Initialize Paystack payment
+      // Get user email first
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
+      if (userError || !userData.user?.email) {
+        throw new Error("User authentication error");
+      }
+
+      // Initialize Paystack payment with correct format
       const { data: paymentData, error: paymentError } =
         await supabase.functions.invoke("initialize-paystack-payment", {
           body: {
+            email: userData.user.email,
             amount: orderSummary.total_price * 100, // Convert to kobo
-            email: "", // Will be filled by the function from user profile
+            bookId: orderSummary.book.id,
+            sellerId: orderSummary.book.seller_id,
+            sellerSubaccountCode: orderSummary.book.seller_subaccount_code,
+            bookPrice: orderSummary.book_price,
+            deliveryFee: orderSummary.delivery_price,
+            callback_url: `${window.location.origin}/checkout/success`,
             metadata: {
               order_data: orderData,
               book_title: orderSummary.book.title,
-              seller_subaccount: orderSummary.book.seller_subaccount_code,
+              delivery_method: orderSummary.delivery.service_name,
+              buyer_id: userId,
             },
           },
         });
