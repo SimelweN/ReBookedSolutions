@@ -164,6 +164,40 @@ const PaymentSuccess = ({
             </div>
           </div>
 
+          {/* Receipt Download */}
+          <div className="bg-green-50 p-4 rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Receipt className="h-4 w-4 text-green-600" />
+                <span className="font-medium text-green-800">
+                  Download Receipt
+                </span>
+              </div>
+              <Button
+                onClick={toggleReceipt}
+                variant="outline"
+                size="sm"
+                className="text-green-700 border-green-300 hover:bg-green-100"
+              >
+                {showReceipt ? "Hide" : "Show"} Receipt
+              </Button>
+            </div>
+
+            {showReceipt && (
+              <ReceiptDownloader
+                reference={reference}
+                amount={amount}
+                items={items}
+                buyer={buyer}
+                seller={seller}
+                deliveryMethod={deliveryMethod}
+                deliveryFee={deliveryFee}
+                deliveryAddress={deliveryAddress}
+                timestamp={new Date().toISOString()}
+              />
+            )}
+          </div>
+
           {/* Action Buttons */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Button
