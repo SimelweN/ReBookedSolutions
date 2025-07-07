@@ -30,6 +30,8 @@ import {
   confirmDelivery,
   type Order,
 } from "@/services/orderManagementService";
+import { commitToOrder } from "@/services/enhancedOrderService";
+import CommitToOrder from "@/components/CommitToOrder";
 import SEO from "@/components/SEO";
 import { toast } from "sonner";
 
