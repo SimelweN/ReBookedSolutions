@@ -159,26 +159,38 @@ Visit https://rebooked.co.za to track your order.
 
           <Separator />
 
-          {/* Book Information */}
+          {/* 📄 Receipt Data as Specified */}
           <div>
-            <h3 className="font-medium mb-2">Book Purchased</h3>
+            <h3 className="font-medium mb-2">📚 Book Details</h3>
             <div className="bg-gray-50 rounded-lg p-3">
               <p className="font-medium">{orderData.book_title}</p>
-              <div className="flex justify-between text-sm text-gray-600 mt-1">
+              <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 mt-2">
                 <span>Book ID: {orderData.book_id}</span>
                 <span>R{orderData.book_price.toFixed(2)}</span>
               </div>
             </div>
           </div>
 
-          {/* Seller Information */}
+          {/* 👤 Seller ID */}
           <div>
-            <h3 className="font-medium mb-2">Seller Information</h3>
+            <h3 className="font-medium mb-2">👤 Seller Information</h3>
             <div className="bg-gray-50 rounded-lg p-3">
-              <p className="text-sm">Seller ID: {orderData.seller_id}</p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm font-mono">
+                Seller ID: {orderData.seller_id}
+              </p>
+              <p className="text-sm text-gray-600 mt-1">
                 The seller has been notified and will prepare your book for
                 shipment.
+              </p>
+            </div>
+          </div>
+
+          {/* 👤 Buyer ID */}
+          <div>
+            <h3 className="font-medium mb-2">👤 Buyer Information</h3>
+            <div className="bg-gray-50 rounded-lg p-3">
+              <p className="text-sm font-mono">
+                Buyer ID: {orderData.buyer_id}
               </p>
             </div>
           </div>
