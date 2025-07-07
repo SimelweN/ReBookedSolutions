@@ -95,14 +95,23 @@ export async function checkDatabaseStatus(): Promise<DatabaseStatus> {
 
         if (!error) {
           status.tablesExist[table as keyof typeof status.tablesExist] = true;
+        } else if (error.message?.includes("Supabase not configured")) {
+          // Skip table checks if Supabase is not configured
+          break;
         } else if (
           error.message?.includes("relation") &&
           error.message?.includes("does not exist")
         ) {
           status.errors.push(`${table} table does not exist`);
         }
-      } catch (error) {
-        status.errors.push(`Error checking ${table} table: ${error}`);
+      } catch (error: any) {
+        if (error.message?.includes("Supabase not configured")) {
+          // Skip remaining table checks if Supabase is not configured
+          break;
+        }
+        status.errors.push(
+          `Error checking ${table} table: ${error.message || error}`,
+        );
       }
     }
   } catch (error) {
