@@ -189,21 +189,28 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
           : (error as any)?.message || JSON.stringify(error) || "Unknown error";
       console.error("Detailed seller info error:", errorMessage);
 
-      // Still set a fallback address even if there's an error
-      setSellerAddress({
+      // Always ensure a fallback address is set
+      const fallbackAddress = {
         street: "University of Cape Town",
         city: "Cape Town",
         province: "Western Cape",
         postal_code: "7700",
         country: "South Africa",
-      });
+      };
+      console.log("Setting fallback seller address:", fallbackAddress);
+      setSellerAddress(fallbackAddress);
 
       // Handle timeout errors differently
       if (errorMessage.includes("timeout")) {
         console.warn("Seller validation timed out, proceeding with fallback");
+        toast.info("Using default location for delivery calculations");
         // Don't set error for timeout - just proceed with fallback
       } else {
-        setError(`Failed to load seller information: ${errorMessage}`);
+        console.warn(
+          `Seller info load failed, using fallback: ${errorMessage}`,
+        );
+        toast.info("Using default location for delivery calculations");
+        // Don't block the user with an error, just use fallback
       }
     }
   };
