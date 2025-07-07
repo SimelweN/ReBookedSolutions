@@ -272,12 +272,65 @@ export const getBookById = async (id: string): Promise<Book | null> => {
       async () => {
         console.log("🔄 [getBookById] Making database query for book:", id);
 
-        // First get book data
-        const { data: bookData, error: bookError } = await supabase
+        // First get book data - try with all fields
+        let { data: bookData, error: bookError } = await supabase
           .from("books")
-          .select("*")
+          .select(
+            `
+            id,
+            title,
+            author,
+            description,
+            price,
+            category,
+            condition,
+            image_url,
+            front_cover,
+            back_cover,
+            inside_pages,
+            sold,
+            availability,
+            created_at,
+            updated_at,
+            grade,
+            university_year,
+            university,
+            province,
+            seller_id,
+            subaccount_code
+          `,
+          )
           .eq("id", id)
           .single();
+
+        // If that fails, try with minimal fields (in case there are missing columns)
+        if (bookError && bookError.code === "42703") {
+          console.log(
+            "⚠️ [getBookById] Some columns missing, trying with basic fields...",
+          );
+          const basicQuery = await supabase
+            .from("books")
+            .select(
+              `
+              id,
+              title,
+              author,
+              description,
+              price,
+              category,
+              condition,
+              image_url,
+              sold,
+              created_at,
+              seller_id
+            `,
+            )
+            .eq("id", id)
+            .single();
+
+          bookData = basicQuery.data;
+          bookError = basicQuery.error;
+        }
 
         console.log("📊 [getBookById] Book query result:", {
           bookData,
