@@ -323,7 +323,8 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         );
       }
 
-      // Mark user profile loading as complete
+      // Mark user profile loading as complete and clear timeout
+      clearTimeout(userTimeoutId);
       setUserProfileLoading(false);
     } catch (error) {
       console.error("❌ Error loading user profile:", error);
