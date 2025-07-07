@@ -259,7 +259,8 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
         // Don't block the user with an error, just use fallback
       }
 
-      // Always mark loading as complete, even on error
+      // Always mark loading as complete, even on error, and clear timeout
+      clearTimeout(timeoutId);
       setSellerInfoLoading(false);
     }
   };
