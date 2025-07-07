@@ -54,12 +54,14 @@ import {
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from "@/hooks/use-mobile";
 import ProgramReview from "@/components/admin/ProgramReview";
 import DatabaseTest from "@/components/admin/DatabaseTest";
 import QADashboard from "@/components/admin/QADashboard";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTab, setSelectedTab] = useState("overview");
   const [isLoading, setIsLoading] = useState(false);
