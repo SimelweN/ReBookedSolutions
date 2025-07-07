@@ -1,8 +1,16 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Package, Clock, Eye, ArrowRight } from "lucide-react";
+import {
+  CheckCircle,
+  Package,
+  Clock,
+  Eye,
+  ArrowRight,
+  Receipt,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import ReceiptDownloader from "@/components/receipt/ReceiptDownloader";
 
 interface PaymentSuccessProps {
   reference: string;
