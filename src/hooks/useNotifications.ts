@@ -199,10 +199,8 @@ export const useNotifications = (): NotificationHookReturn => {
       try {
         // Only show loading on initial load or manual refresh (not on retries)
         if (!isRetry || isInitialLoadRef.current) {
-        setIsLoading(true);
-      }
-
-      try {
+          setIsLoading(true);
+        }
         const userNotifications = await getNotifications(user.id);
 
         // Check if we got valid data
