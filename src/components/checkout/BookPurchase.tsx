@@ -588,13 +588,23 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
 
       {/* Courier Quote System */}
       {sellerAddress && !sellerInfoLoading ? (
-        <CourierQuoteSystem
-          sellerAddress={sellerAddress}
-          onAddressChange={handleAddressChange}
-          onQuoteSelect={handleCourierSelect}
-          selectedQuote={selectedCourierQuote}
-          initialAddress={deliveryAddress}
-        />
+        <div className="space-y-2">
+          {userProfileLoading && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center gap-2">
+              <div className="animate-spin w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+              <span className="text-sm text-blue-700">
+                Loading your saved address...
+              </span>
+            </div>
+          )}
+          <CourierQuoteSystem
+            sellerAddress={sellerAddress}
+            onAddressChange={handleAddressChange}
+            onQuoteSelect={handleCourierSelect}
+            selectedQuote={selectedCourierQuote}
+            initialAddress={deliveryAddress}
+          />
+        </div>
       ) : sellerInfoLoading ? (
         <Card>
           <CardContent className="p-6 text-center">
