@@ -199,8 +199,11 @@ export const useNotifications = (): UseNotificationsResult => {
 
     // Set up real-time subscription for order notifications
     if (user?.id) {
+      // Create a unique channel name to avoid subscription conflicts
+      const channelName = `order-notifications-${user.id}-${Date.now()}`;
+
       const subscription = supabase
-        .channel("order-notifications")
+        .channel(channelName)
         .on(
           "postgres_changes",
           {
