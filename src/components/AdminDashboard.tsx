@@ -55,6 +55,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import ProgramReview from "@/components/admin/ProgramReview";
 import DatabaseTest from "@/components/admin/DatabaseTest";
+import QADashboard from "@/components/admin/QADashboard";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
