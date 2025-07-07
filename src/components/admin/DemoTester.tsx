@@ -180,6 +180,26 @@ const DemoTester: React.FC = () => {
     }
   };
 
+  const testAutoExpire = async () => {
+    try {
+      toast.info("Testing auto-expire functionality...");
+
+      const CommitSystemService = await import(
+        "@/services/commitSystemService"
+      );
+
+      const result = await CommitSystemService.default.triggerAutoExpire();
+
+      if (result.success) {
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      toast.error("Auto-expire test error: " + error);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card>
