@@ -53,6 +53,7 @@ const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
 const PaymentCallback = React.lazy(() => import("./pages/PaymentCallback"));
 const UniversityProfile = React.lazy(() => import("./pages/UniversityProfile"));
 const Receipt = React.lazy(() => import("./pages/Receipt"));
+const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
 
 // Loading component
 const LoadingSpinner = () => (
