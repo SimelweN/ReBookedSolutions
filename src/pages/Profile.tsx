@@ -7,7 +7,6 @@ import DeleteProfileDialog from "@/components/DeleteProfileDialog";
 import ReportIssueDialog from "@/components/ReportIssueDialog";
 import HowItWorksDialog from "@/components/HowItWorksDialog";
 import CommitSystemExplainer from "@/components/CommitSystemExplainer";
-import SimplifiedAddressDialog from "@/components/SimplifiedAddressDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -47,8 +46,6 @@ import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSellerRequirements } from "@/hooks/useSellerRequirements";
 import SellerRequirementsDialog from "@/components/SellerRequirementsDialog";
-import QuickAddressSetup from "@/components/QuickAddressSetup";
-import QuickFixButton from "@/components/QuickFixButton";
 
 const Profile = () => {
   const { profile, user } = useAuth();
@@ -93,7 +90,6 @@ const Profile = () => {
   const [showBecomeSellerGuide, setShowBecomeSellerGuide] = useState(false);
   const [hasAddress, setHasAddress] = useState(false);
   const [hasBankingDetails, setHasBankingDetails] = useState(false);
-  const [showQuickAddressSetup, setShowQuickAddressSetup] = useState(false);
 
   // Address loading is now handled by AddressManager component
   // Keeping this stub for compatibility
@@ -768,52 +764,6 @@ const Profile = () => {
           onClose={closeRequirementsDialog}
           requirements={requirements}
         />
-
-        <QuickAddressSetup
-          isOpen={showQuickAddressSetup}
-          onClose={() => setShowQuickAddressSetup(false)}
-          onSuccess={() => {
-            // Refresh address data after successful save
-            loadUserAddresses();
-            toast.success("Address saved! You can now create listings.");
-          }}
-          title="Add Pickup Address"
-          description="Buyers need to know where to collect books from you."
-        />
-
-        <SimplifiedAddressDialog
-          isOpen={isAddressDialogOpen}
-          onClose={() => setIsAddressDialogOpen(false)}
-          userId={user?.id || ""}
-          initialAddresses={null}
-          onSuccess={async () => {
-            try {
-              console.log(
-                "🔄 Address save success, reloading addresses and listings...",
-              );
-
-              // Reload addresses first
-              await loadUserAddresses();
-              console.log("✅ Addresses reloaded successfully");
-
-              // Reload listings to update availability status
-              await loadActiveListings();
-              console.log("✅ Listings reloaded successfully");
-
-              toast.success(
-                "🎉 Addresses updated! Your listings are now available to buyers.",
-              );
-            } catch (error) {
-              console.error("❌ Error reloading after address save:", error);
-              toast.warning(
-                "⚠️ Addresses saved but display refresh failed. Please refresh the page to see updates.",
-              );
-            }
-          }}
-        />
-
-        {/* Quick Fix Button for easy access */}
-        <QuickFixButton onAddressAdded={loadUserAddresses} />
       </div>
     </Layout>
   );
