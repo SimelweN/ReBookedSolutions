@@ -190,10 +190,37 @@ const CreateListing = () => {
       return;
     }
 
-    // Check if user can list books before validating form
+    // ❗ DISALLOW listing books if seller has no subaccount or address
     if (canListBooks === false) {
       toast.error("❌ Please add a pickup address before listing your book.");
       navigate("/profile");
+      return;
+    }
+
+    // Additional comprehensive validation
+    try {
+      const { validateSellerForListing } = await import(
+        "@/services/checkoutValidationService"
+      );
+      const sellerValidation = await validateSellerForListing(user.id);
+
+      if (!sellerValidation.isValid) {
+        const errorMsg = `Cannot list books: ${sellerValidation.errors.join(", ")}`;
+        toast.error(errorMsg);
+        console.error("❌ Seller validation failed:", sellerValidation);
+
+        if (!sellerValidation.hasSubaccount) {
+          navigate("/profile#banking");
+        } else if (!sellerValidation.hasAddress) {
+          navigate("/profile#address");
+        }
+        return;
+      }
+
+      console.log("✅ Seller validation passed for listing");
+    } catch (validationError) {
+      console.error("❌ Seller validation error:", validationError);
+      toast.error("Failed to validate seller information");
       return;
     }
 

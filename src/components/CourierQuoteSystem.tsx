@@ -62,6 +62,23 @@ const CourierQuoteSystem: React.FC<CourierQuoteSystemProps> = ({
   const [quotesError, setQuotesError] = useState<string | null>(null);
   const [addressComplete, setAddressComplete] = useState(false);
 
+  // Update delivery address when initialAddress prop changes
+  useEffect(() => {
+    if (
+      initialAddress &&
+      (initialAddress.street !== deliveryAddress.street ||
+        initialAddress.city !== deliveryAddress.city ||
+        initialAddress.province !== deliveryAddress.province ||
+        initialAddress.postal_code !== deliveryAddress.postal_code)
+    ) {
+      console.log(
+        "📍 Updating delivery address from initialAddress:",
+        initialAddress,
+      );
+      setDeliveryAddress(initialAddress);
+    }
+  }, [initialAddress]);
+
   // Check if address is complete
   useEffect(() => {
     const isComplete =

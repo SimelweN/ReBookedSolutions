@@ -26,9 +26,6 @@ const Cart = React.lazy(() => import("./pages/Cart"));
 const Checkout = React.lazy(() => import("./pages/Checkout"));
 const NewCheckout = React.lazy(() => import("./pages/NewCheckout"));
 const SellerMarketplace = React.lazy(() => import("./pages/SellerMarketplace"));
-const MultiSellerCheckout = React.lazy(
-  () => import("./pages/MultiSellerCheckout"),
-);
 const Shipping = React.lazy(() => import("./pages/Shipping"));
 const ContactUs = React.lazy(() => import("./pages/ContactUs"));
 const FAQ = React.lazy(() => import("./pages/FAQ"));
@@ -289,16 +286,7 @@ function App() {
                           </Suspense>
                         }
                       />
-                      <Route
-                        path="/checkout/seller/:sellerId"
-                        element={
-                          <ProtectedRoute>
-                            <Suspense fallback={<LoadingSpinner />}>
-                              <MultiSellerCheckout />
-                            </Suspense>
-                          </ProtectedRoute>
-                        }
-                      />
+
                       <Route
                         path="/seller/:sellerId"
                         element={
