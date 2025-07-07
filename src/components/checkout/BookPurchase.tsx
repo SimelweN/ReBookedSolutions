@@ -587,7 +587,7 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
       </Card>
 
       {/* Courier Quote System */}
-      {sellerAddress && !sellerInfoLoading && !userProfileLoading ? (
+      {sellerAddress && !sellerInfoLoading ? (
         <CourierQuoteSystem
           sellerAddress={sellerAddress}
           onAddressChange={handleAddressChange}
@@ -595,7 +595,7 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
           selectedQuote={selectedCourierQuote}
           initialAddress={deliveryAddress}
         />
-      ) : sellerInfoLoading || userProfileLoading ? (
+      ) : sellerInfoLoading ? (
         <Card>
           <CardContent className="p-6 text-center">
             <div className="animate-spin w-8 h-8 border-2 border-book-500 border-t-transparent rounded-full mx-auto mb-4"></div>
