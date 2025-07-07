@@ -27,6 +27,14 @@ export const mapBookFromDatabase = (
         profile.pickup_address.length > 10))
   );
 
+  console.log("🏠 [bookMapper] Address validation:", {
+    sellerId: bookData.seller_id,
+    hasProfilePickupAddress: !!profile?.pickup_address,
+    pickupAddressType: typeof profile?.pickup_address,
+    pickupAddressData: profile?.pickup_address,
+    hasPickupAddress,
+  });
+
   const mappedBook = {
     id: bookData.id,
     title: bookData.title || "Unknown Title",
