@@ -26,6 +26,7 @@ import {
   Activity as ActivityType,
 } from "@/services/activityService";
 import { useUserOrders } from "@/hooks/useUserOrders";
+import PendingCommitsSection from "@/components/profile/PendingCommitsSection";
 
 const ActivityLog: React.FC = () => {
   const navigate = useNavigate();
