@@ -69,48 +69,80 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ book }) => {
     try {
       setCheckoutState((prev) => ({ ...prev, loading: true, error: null }));
 
-      console.log("🚀 POST /api/checkout/start - Validating checkout data...");
+      console.log("🚀 Using book table seller data for checkout...");
 
-      // ✅ GOAL: Validate both seller and buyer before proceeding
-      const validation = await validateCheckoutStart(book.seller_id, user.id);
+      // Get fresh book data with seller information from books table
+      const { data: bookData, error: bookError } = await supabase
+        .from("books")
+        .select(
+          `
+          *,
+          profiles!books_seller_id_fkey(
+            id, name, email
+          )
+        `,
+        )
+        .eq("id", book.id)
+        .single();
 
-      if (!validation.canProceed) {
-        console.error("❌ Checkout validation failed:", validation.errors);
-        setCheckoutState((prev) => ({
-          ...prev,
-          error: `Checkout not possible: ${validation.errors.join(". ")}`,
-          loading: false,
-        }));
-
-        // Show specific error messages
-        validation.errors.forEach((error) => toast.error(error));
-        return;
+      if (bookError || !bookData) {
+        throw new Error("Failed to load book details");
       }
 
-      console.log("✅ Checkout validation passed");
+      // Validate seller data from books table
+      if (!bookData.seller_subaccount_code) {
+        throw new Error(
+          "Seller payment setup is incomplete. The seller needs to set up their banking details.",
+        );
+      }
 
-      // Get validated seller and buyer data
-      const [sellerData, buyerData] = await Promise.all([
-        getSellerCheckoutData(book.seller_id),
-        getBuyerCheckoutData(user.id).catch(() => null), // Buyer address is optional initially
-      ]);
+      if (
+        !bookData.seller_street ||
+        !bookData.seller_city ||
+        !bookData.seller_province ||
+        !bookData.seller_postal_code
+      ) {
+        throw new Error(
+          "Seller address is incomplete. The seller needs to update their pickup address.",
+        );
+      }
 
-      // Update book with seller subaccount
-      const updatedBook = {
-        ...book,
-        seller_subaccount_code: sellerData.subAccountCode,
+      // Create seller address from book table data
+      const sellerAddress = {
+        street: bookData.seller_street,
+        city: bookData.seller_city,
+        province: bookData.seller_province,
+        postal_code: bookData.seller_postal_code,
+        country: bookData.seller_country || "South Africa",
       };
 
-      console.log("📦 Checkout data loaded:", {
-        seller: sellerData,
-        buyer: buyerData,
+      // Update book with complete seller data
+      const updatedBook = {
+        ...book,
+        seller_subaccount_code: bookData.seller_subaccount_code,
+        seller: {
+          id: bookData.profiles?.id || bookData.seller_id,
+          name: bookData.profiles?.name || "Seller",
+          email: bookData.profiles?.email || "",
+          hasAddress: true,
+          hasSubaccount: true,
+          isReadyForOrders: true,
+        },
+      };
+
+      // Get buyer address (optional initially)
+      const buyerData = await getBuyerCheckoutData(user.id).catch(() => null);
+
+      console.log("📦 Checkout data loaded from books table:", {
+        seller_address: sellerAddress,
+        buyer_data: buyerData,
         book: updatedBook,
       });
 
       setCheckoutState((prev) => ({
         ...prev,
         book: updatedBook,
-        seller_address: sellerData.address,
+        seller_address: sellerAddress,
         buyer_address: buyerData?.address || null,
         loading: false,
       }));
