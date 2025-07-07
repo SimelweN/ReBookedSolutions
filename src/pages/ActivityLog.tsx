@@ -249,16 +249,28 @@ const ActivityLog: React.FC = () => {
 
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
-                          <p className="font-medium">{activity.description}</p>
+                          <div>
+                            <p className="font-medium">{activity.title}</p>
+                            <p className="text-sm text-gray-600 mt-1">
+                              {activity.description}
+                            </p>
+                          </div>
                           <div className="flex items-center gap-2 text-sm text-gray-500">
                             <Calendar className="h-3 w-3" />
-                            {formatTimestamp(activity.timestamp)}
+                            {formatTimestamp(activity.created_at)}
                           </div>
                         </div>
 
-                        <Badge variant="outline" className="mt-2">
-                          {activity.type.replace(/_/g, " ")}
-                        </Badge>
+                        <div className="flex items-center gap-2 mt-2">
+                          <Badge variant="outline">
+                            {activity.type.replace(/_/g, " ")}
+                          </Badge>
+                          {activity.metadata?.status && (
+                            <Badge variant="secondary" className="text-xs">
+                              {activity.metadata.status}
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}
