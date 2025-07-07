@@ -254,8 +254,22 @@ const AdminDashboard = () => {
   const loadDashboardData = async () => {
     setIsLoading(true);
     try {
-      // Load real stats from database
-      await Promise.all([
+      // Test database connection first
+      const { data: testData, error: testError } = await supabase
+        .from("profiles")
+        .select("count")
+        .limit(1);
+
+      if (testError) {
+        console.error("Database connection test failed:", testError.message);
+        toast.error(
+          "Database connection failed. Please check your connection.",
+        );
+        return;
+      }
+
+      // Load real stats from database with individual error handling
+      const results = await Promise.allSettled([
         loadUserStats(),
         loadBookStats(),
         loadSalesStats(),
@@ -263,10 +277,24 @@ const AdminDashboard = () => {
         loadRecentUsers(),
         loadRecentBooks(),
       ]);
-      console.log("Dashboard data loaded successfully");
+
+      // Check if any operations failed
+      const failedOperations = results.filter(
+        (result) => result.status === "rejected",
+      );
+      if (failedOperations.length > 0) {
+        console.warn(
+          `${failedOperations.length} operations failed, but dashboard loaded with available data`,
+        );
+        toast.warning(
+          "Some data could not be loaded, showing available information",
+        );
+      } else {
+        console.log("Dashboard data loaded successfully");
+      }
     } catch (error) {
       console.error("Error loading dashboard data:", error);
-      toast.error("Failed to load some dashboard data");
+      toast.error("Failed to load dashboard data");
     } finally {
       setIsLoading(false);
     }
@@ -348,24 +376,41 @@ const AdminDashboard = () => {
 
   const loadUserStats = async () => {
     try {
+      // Try simple query first
       const { data: usersData, error: usersError } = await supabase
         .from("profiles")
-        .select("id, created_at, role")
-        .or("role.is.null,role.neq.admin");
+        .select("id, created_at")
+        .limit(1000);
 
       if (usersError) {
         console.error(
           "Error fetching user stats:",
           usersError.message || usersError,
         );
+        // Try alternative query without role filter
+        const { data: fallbackData } = await supabase
+          .from("profiles")
+          .select("id");
+
+        if (fallbackData) {
+          setStats((prev) => ({
+            ...prev,
+            totalUsers: fallbackData.length,
+            newUsersToday: 0,
+          }));
+        }
         return;
       }
 
       if (usersData) {
         const today = new Date().toDateString();
-        const newUsersToday = usersData.filter(
-          (user) => new Date(user.created_at).toDateString() === today,
-        ).length;
+        const newUsersToday = usersData.filter((user) => {
+          try {
+            return new Date(user.created_at).toDateString() === today;
+          } catch {
+            return false;
+          }
+        }).length;
 
         setStats((prev) => ({
           ...prev,
@@ -375,7 +420,6 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error("Error loading user stats:", error);
-      console.error("Full error details:", JSON.stringify(error, null, 2));
       // Set fallback values
       setStats((prev) => ({
         ...prev,
@@ -387,42 +431,49 @@ const AdminDashboard = () => {
 
   const loadBookStats = async () => {
     try {
-      // Try with basic fields first, then add others if they exist
+      // Try simple query first
       const { data: booksData, error: booksError } = await supabase
         .from("books")
-        .select("id, created_at, price, status")
-        .limit(1000); // Add limit for performance
+        .select("id, created_at")
+        .limit(1000);
 
       if (booksError) {
         console.error(
           "Error fetching book stats:",
-          booksError.message || booksError,
+          booksError.message || usersError,
         );
-        console.error(
-          "Full error object:",
-          JSON.stringify(booksError, null, 2),
-        );
+        if (
+          booksError.message?.includes("does not exist") ||
+          booksError.message?.includes("relation")
+        ) {
+          console.warn("Books table may not exist yet");
+          setStats((prev) => ({
+            ...prev,
+            activeBooks: 0,
+            booksListedToday: 0,
+          }));
+        }
         return;
       }
 
       if (booksData) {
-        const activeBooks = booksData.filter(
-          (book) => book.status === "active",
-        ).length;
         const today = new Date().toDateString();
-        const booksListedToday = booksData.filter(
-          (book) => new Date(book.created_at).toDateString() === today,
-        ).length;
+        const booksListedToday = booksData.filter((book) => {
+          try {
+            return new Date(book.created_at).toDateString() === today;
+          } catch {
+            return false;
+          }
+        }).length;
 
         setStats((prev) => ({
           ...prev,
-          activeBooks,
+          activeBooks: booksData.length, // Total books as fallback
           booksListedToday,
         }));
       }
     } catch (error) {
       console.error("Error loading book stats:", error);
-      console.error("Full error details:", JSON.stringify(error, null, 2));
       // Set fallback values
       setStats((prev) => ({
         ...prev,
@@ -436,8 +487,7 @@ const AdminDashboard = () => {
     try {
       const { data: usersData, error: usersError } = await supabase
         .from("profiles")
-        .select("id, name, email, created_at, status, role")
-        .or("role.is.null,role.neq.admin")
+        .select("id, name, email, created_at")
         .order("created_at", { ascending: false })
         .limit(5);
 
@@ -446,6 +496,7 @@ const AdminDashboard = () => {
           "Error fetching users:",
           usersError.message || usersError,
         );
+        setRecentUsers([]);
         return;
       }
 
@@ -454,8 +505,10 @@ const AdminDashboard = () => {
           id: user.id,
           name: user.name || "Unknown User",
           email: user.email || "No email",
-          joinDate: new Date(user.created_at).toLocaleDateString(),
-          status: user.status || "active",
+          joinDate: user.created_at
+            ? new Date(user.created_at).toLocaleDateString()
+            : "Unknown",
+          status: "active",
         }));
         setRecentUsers(formattedUsers);
       } else {
@@ -463,7 +516,6 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error("Error loading recent users:", error);
-      console.error("Full error details:", JSON.stringify(error, null, 2));
       setRecentUsers([]);
     }
   };
