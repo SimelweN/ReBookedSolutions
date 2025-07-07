@@ -74,6 +74,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import Layout from "@/components/Layout";
 import CommitSystemService from "@/services/commitSystemService";
 
 interface TestResult {
@@ -659,8 +660,9 @@ const DevDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-50 p-3 md:p-6">
-      <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
+    <Layout>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-50 p-3 md:p-6">
+        <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
         {/* Header */}
         <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
           <div>
@@ -670,7 +672,8 @@ const DevDashboard: React.FC = () => {
             <p className="text-gray-600 mt-1 text-sm md:text-base">
               {isMobile
                 ? "Testing suite for system components"
-                : "Comprehensive testing suite for Edge Functions, Database, and System Components"}
+                : "Comprehensive testing suite for Edge Functions, Database, and System Components"
+              }
             </p>
           </div>
           <div className="flex items-center space-x-2 md:space-x-3">
@@ -715,10 +718,9 @@ const DevDashboard: React.FC = () => {
                   <div className="min-w-0 flex-1">
                     <p className="font-medium capitalize text-xs md:text-sm truncate">
                       {isMobile
-                        ? component.charAt(0).toUpperCase() +
-                          component.slice(1, 8) +
-                          (component.length > 8 ? "..." : "")
-                        : component.replace(/([A-Z])/g, " $1")}
+                        ? component.charAt(0).toUpperCase() + component.slice(1, 8) + (component.length > 8 ? '...' : '')
+                        : component.replace(/([A-Z])/g, " $1")
+                      }
                     </p>
                     <p className="text-xs md:text-sm capitalize">{status}</p>
                   </div>
@@ -735,13 +737,11 @@ const DevDashboard: React.FC = () => {
           className="space-y-4 md:space-y-6"
         >
           <div className="overflow-x-auto">
-            <TabsList
-              className={`${
-                isMobile
-                  ? "inline-flex h-9 items-center justify-start rounded-md bg-white shadow-sm border p-1 text-muted-foreground min-w-max"
-                  : "grid grid-cols-7 w-full bg-white shadow-sm border"
-              }`}
-            >
+            <TabsList className={`${
+              isMobile
+                ? "inline-flex h-9 items-center justify-start rounded-md bg-white shadow-sm border p-1 text-muted-foreground min-w-max"
+                : "grid grid-cols-7 w-full bg-white shadow-sm border"
+            }`}>
               <TabsTrigger
                 value="overview"
                 className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
