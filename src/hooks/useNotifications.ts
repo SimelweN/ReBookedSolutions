@@ -146,6 +146,8 @@ export const useNotifications = (): UseNotificationsResult => {
       );
     } catch (err) {
       console.error("Error marking notification as read:", err);
+      console.log("Error type:", typeof err);
+      console.log("Error object:", err);
 
       let errorMessage = "Failed to mark notification as read";
 
