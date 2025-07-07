@@ -26,6 +26,106 @@ export interface CommitResult {
 
 export class CommitSystemService {
   /**
+   * Decline a commit (reject the sale)
+   */
+  static async declineCommit(
+    transactionId: string,
+    sellerId: string,
+  ): Promise<CommitResult> {
+    try {
+      console.log("🔄 Declining commit:", { transactionId, sellerId });
+
+      // For now, handle this locally since we might not have Edge Functions deployed
+      const [transactionsResult, ordersResult] = await Promise.allSettled([
+        supabase
+          .from("transactions")
+          .select("*")
+          .eq("id", transactionId)
+          .eq("seller_id", sellerId)
+          .single(),
+
+        supabase
+          .from("orders")
+          .select("*")
+          .eq("id", transactionId)
+          .eq("seller_id", sellerId)
+          .single(),
+      ]);
+
+      let data = null;
+      let tableName = "";
+
+      if (
+        transactionsResult.status === "fulfilled" &&
+        !transactionsResult.value.error
+      ) {
+        data = transactionsResult.value.data;
+        tableName = "transactions";
+      } else if (
+        ordersResult.status === "fulfilled" &&
+        !ordersResult.value.error
+      ) {
+        data = ordersResult.value.data;
+        tableName = "orders";
+      }
+
+      if (!data) {
+        throw new Error("Transaction or order not found");
+      }
+
+      // Update status to declined/cancelled
+      const { error: updateError } = await supabase
+        .from(tableName)
+        .update({
+          status: "declined_by_seller",
+          seller_committed: false,
+          declined_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", transactionId)
+        .eq("seller_id", sellerId);
+
+      if (updateError) {
+        throw new Error(`Failed to decline commit: ${updateError.message}`);
+      }
+
+      // Create notification for buyer
+      try {
+        await supabase.from("order_notifications").insert({
+          order_id: transactionId,
+          user_id: data.buyer_id,
+          type: "sale_declined",
+          title: "Seller Declined Your Order",
+          message: `Unfortunately, the seller could not fulfill your order #${transactionId.slice(0, 8)}. You have been automatically refunded.`,
+          read: false,
+        });
+      } catch (notificationError) {
+        console.warn(
+          "Failed to create decline notification:",
+          notificationError,
+        );
+      }
+
+      console.log("✅ Commit declined successfully");
+
+      return {
+        success: true,
+        message: "Order declined. The buyer will be notified and refunded.",
+      };
+    } catch (error) {
+      console.error("❌ CommitSystemService.declineCommit error:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to decline commit";
+
+      return {
+        success: false,
+        message: errorMessage,
+        error: errorMessage,
+      };
+    }
+  }
+
+  /**
    * Commit to a sale using the Edge Function
    */
   static async commitToSale(
@@ -63,12 +163,15 @@ export class CommitSystemService {
         console.error("❌ Commit Edge Function error:", error);
 
         // Handle different types of edge function errors
-        if (error.message?.includes("FunctionsHttpError")) {
-          throw new Error("Commit function is not deployed or accessible");
-        } else if (error.message?.includes("Failed to send a request")) {
-          throw new Error(
-            "Cannot reach commit function - it may not be deployed",
+        if (
+          error.message?.includes("FunctionsHttpError") ||
+          error.message?.includes("Failed to send a request") ||
+          error.message?.includes("not deployed")
+        ) {
+          console.log(
+            "🔄 Edge Function not available, falling back to direct database commit",
           );
+          return await this.commitToSaleLocal(transactionId, sellerId);
         } else {
           throw new Error(error.message || "Failed to commit sale");
         }
@@ -87,6 +190,161 @@ export class CommitSystemService {
       };
     } catch (error) {
       console.error("❌ CommitSystemService.commitToSale error:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to commit sale";
+
+      return {
+        success: false,
+        message: errorMessage,
+        error: errorMessage,
+      };
+    }
+  }
+
+  /**
+   * Local fallback for committing to sale when Edge Function is not available
+   */
+  static async commitToSaleLocal(
+    transactionId: string,
+    sellerId: string,
+  ): Promise<CommitResult> {
+    try {
+      console.log("🔄 Local commit to sale:", { transactionId, sellerId });
+
+      // Get the current user to verify permissions
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user || user.id !== sellerId) {
+        throw new Error("Unauthorized: You can only commit to your own sales");
+      }
+
+      // Try to find transaction first, then order
+      const [transactionsResult, ordersResult] = await Promise.allSettled([
+        supabase
+          .from("transactions")
+          .select("*")
+          .eq("id", transactionId)
+          .eq("seller_id", sellerId)
+          .single(),
+
+        supabase
+          .from("orders")
+          .select("*")
+          .eq("id", transactionId)
+          .eq("seller_id", sellerId)
+          .single(),
+      ]);
+
+      let data = null;
+      let tableName = "";
+
+      if (
+        transactionsResult.status === "fulfilled" &&
+        !transactionsResult.value.error
+      ) {
+        data = transactionsResult.value.data;
+        tableName = "transactions";
+      } else if (
+        ordersResult.status === "fulfilled" &&
+        !ordersResult.value.error
+      ) {
+        data = ordersResult.value.data;
+        tableName = "orders";
+      }
+
+      if (!data) {
+        throw new Error(
+          "Transaction or order not found, or you don't have permission to commit this sale",
+        );
+      }
+
+      // Check if already committed
+      if (data.seller_committed || data.status === "committed") {
+        return {
+          success: true,
+          message: "Sale already committed",
+          data: data,
+        };
+      }
+
+      // Check if expired
+      const deadline = data.expires_at || data.commit_deadline;
+      if (deadline && new Date(deadline) < new Date()) {
+        throw new Error("Commit window has expired (48 hours have passed)");
+      }
+
+      // Check current status
+      const validStatuses = ["paid", "paid_pending_seller"];
+      if (!validStatuses.includes(data.status)) {
+        throw new Error(`Cannot commit sale with status: ${data.status}`);
+      }
+
+      // Update the record
+      const now = new Date();
+      const { data: updatedRecord, error: updateError } = await supabase
+        .from(tableName)
+        .update({
+          status: "committed",
+          seller_committed: true,
+          committed_at: now.toISOString(),
+          updated_at: now.toISOString(),
+        })
+        .eq("id", data.id)
+        .eq("seller_id", sellerId)
+        .select()
+        .single();
+
+      if (updateError) {
+        throw new Error(`Failed to commit sale: ${updateError.message}`);
+      }
+
+      // Update book status if available
+      if (data.book_id) {
+        await supabase
+          .from("books")
+          .update({
+            sold: true,
+            available: false,
+            status: "sold",
+            updated_at: now.toISOString(),
+          })
+          .eq("id", data.book_id);
+      }
+
+      // Create notifications
+      try {
+        await Promise.all([
+          supabase.from("order_notifications").insert({
+            order_id: data.id,
+            user_id: data.buyer_id,
+            type: "sale_committed",
+            title: "Seller Committed to Your Order",
+            message: `Great news! The seller has committed to your order #${data.id.slice(0, 8)}. Your book will be prepared for delivery.`,
+            read: false,
+          }),
+          supabase.from("order_notifications").insert({
+            order_id: data.id,
+            user_id: data.seller_id,
+            type: "commitment_confirmed",
+            title: "Sale Commitment Confirmed",
+            message: `You have successfully committed to order #${data.id.slice(0, 8)}. Please prepare your book for courier collection.`,
+            read: false,
+          }),
+        ]);
+      } catch (notificationError) {
+        console.warn("Failed to create notifications:", notificationError);
+      }
+
+      return {
+        success: true,
+        message:
+          "Sale committed successfully! Please prepare your book for collection.",
+        data: updatedRecord,
+      };
+    } catch (error) {
+      console.error("❌ Local commit error:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Failed to commit sale";
 

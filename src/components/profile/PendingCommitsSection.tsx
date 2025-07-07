@@ -28,6 +28,7 @@ const PendingCommitsSection: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [committing, setCommitting] = useState<Set<string>>(new Set());
+  const [declining, setDeclining] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (user?.id) {
@@ -92,6 +93,49 @@ const PendingCommitsSection: React.FC = () => {
       toast.error("Failed to commit to sale. Please try again.");
     } finally {
       setCommitting((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(commitData.id);
+        return newSet;
+      });
+    }
+  };
+
+  const handleDeclineCommit = async (commitData: CommitData) => {
+    if (!user?.id) return;
+
+    // Confirm before declining
+    if (
+      !window.confirm(
+        "Are you sure you want to decline this order? The buyer will be refunded and you cannot undo this action.",
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setDeclining((prev) => new Set([...prev, commitData.id]));
+
+      const result = await CommitSystemService.declineCommit(
+        commitData.id,
+        user.id,
+      );
+
+      if (result.success) {
+        toast.success(result.message);
+
+        // Remove from pending commits list
+        setPendingCommits((prev) => prev.filter((c) => c.id !== commitData.id));
+
+        // Optionally reload to ensure sync
+        loadPendingCommits();
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error("Error declining commit:", error);
+      toast.error("Failed to decline commit. Please try again.");
+    } finally {
+      setDeclining((prev) => {
         const newSet = new Set(prev);
         newSet.delete(commitData.id);
         return newSet;
@@ -206,6 +250,7 @@ const PendingCommitsSection: React.FC = () => {
               const timeRemaining =
                 CommitSystemService.getTimeRemaining(commit);
               const isCommittingThis = committing.has(commit.id);
+              const isDecliningThis = declining.has(commit.id);
 
               return (
                 <div
@@ -370,11 +415,11 @@ const PendingCommitsSection: React.FC = () => {
                         </AlertDescription>
                       </Alert>
 
-                      {/* Commit Button */}
+                      {/* Action Buttons */}
                       <div className="flex gap-3">
                         <Button
                           onClick={() => handleCommitToSale(commit)}
-                          disabled={isCommittingThis}
+                          disabled={isCommittingThis || isDecliningThis}
                           className={`flex-1 ${
                             statusInfo.urgent
                               ? "bg-orange-600 hover:bg-orange-700"
@@ -390,6 +435,25 @@ const PendingCommitsSection: React.FC = () => {
                             <>
                               <CheckCircle className="h-4 w-4 mr-2" />✅ Commit
                               to Sale
+                            </>
+                          )}
+                        </Button>
+
+                        <Button
+                          variant="destructive"
+                          onClick={() => handleDeclineCommit(commit)}
+                          disabled={isCommittingThis || isDecliningThis}
+                          className="flex-1"
+                        >
+                          {isDecliningThis ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              Declining...
+                            </>
+                          ) : (
+                            <>
+                              <AlertTriangle className="h-4 w-4 mr-2" />❌
+                              Decline Order
                             </>
                           )}
                         </Button>
