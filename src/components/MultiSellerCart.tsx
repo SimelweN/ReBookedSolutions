@@ -322,6 +322,12 @@ export const MultiSellerCart: React.FC<MultiSellerCartProps> = ({
           )}
         </div>
       </div>
+
+      {/* Multi-Seller Cart Explainer */}
+      <MultiSellerCartExplainer
+        isOpen={showExplainer}
+        onClose={() => setShowExplainer(false)}
+      />
     </div>
   );
 };
