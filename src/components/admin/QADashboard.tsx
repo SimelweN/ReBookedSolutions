@@ -91,8 +91,10 @@ const QADashboard: React.FC = () => {
         return;
       }
 
-      // Create a demo order with current user as buyer and a different seller
-      const demoSellerId = user.id; // Use current user as seller for testing
+      // Create a demo order with current user as seller for testing
+      // In a real scenario, this would be a different user, but for testing
+      // we use the same user so they can see the commit functionality
+      const demoSellerId = user.id;
       const commitDeadline = new Date();
       commitDeadline.setHours(commitDeadline.getHours() + 48);
 
