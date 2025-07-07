@@ -18,6 +18,13 @@ export interface Book {
   university?: string;
   province?: string;
   subaccountCode?: string; // Direct link to seller's Paystack subaccount
+  // Seller address data for efficient checkout
+  seller_street?: string;
+  seller_city?: string;
+  seller_province?: string;
+  seller_postal_code?: string;
+  seller_country?: string;
+  seller_subaccount_code?: string;
   seller: {
     id: string;
     name: string;
