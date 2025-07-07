@@ -69,13 +69,31 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ book }) => {
     try {
       setCheckoutState((prev) => ({ ...prev, loading: true, error: null }));
 
-      // Load seller address
-      console.log("Loading seller address for:", book.seller_id);
-      const sellerAddr = await getSellerDeliveryAddress(book.seller_id);
+      console.log("🚀 POST /api/checkout/start - Validating checkout data...");
 
-      // Load buyer address
-      console.log("Loading buyer address for:", user.id);
-      const userAddresses = await getSimpleUserAddresses(user.id);
+      // ✅ GOAL: Validate both seller and buyer before proceeding
+      const validation = await validateCheckoutStart(book.seller_id, user.id);
+
+      if (!validation.canProceed) {
+        console.error("❌ Checkout validation failed:", validation.errors);
+        setCheckoutState((prev) => ({
+          ...prev,
+          error: `Checkout not possible: ${validation.errors.join(". ")}`,
+          loading: false,
+        }));
+
+        // Show specific error messages
+        validation.errors.forEach((error) => toast.error(error));
+        return;
+      }
+
+      console.log("✅ Checkout validation passed");
+
+      // Get validated seller and buyer data
+      const [sellerData, buyerData] = await Promise.all([
+        getSellerCheckoutData(book.seller_id),
+        getBuyerCheckoutData(user.id).catch(() => null), // Buyer address is optional initially
+      ]);
 
       let buyerAddr: CheckoutAddress | null = null;
       if (userAddresses.shipping_address) {
