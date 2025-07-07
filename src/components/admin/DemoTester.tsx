@@ -139,6 +139,11 @@ const DemoTester: React.FC = () => {
               Test Commit
             </Button>
 
+            <Button onClick={createDemoOrder} variant="outline" size="sm">
+              <Package className="h-4 w-4 mr-2" />
+              Create Demo Order
+            </Button>
+
             <Button
               onClick={runComprehensiveTest}
               disabled={testing}
