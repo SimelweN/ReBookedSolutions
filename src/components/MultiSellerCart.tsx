@@ -115,6 +115,17 @@ export const MultiSellerCart: React.FC<MultiSellerCartProps> = ({
             <Badge variant="secondary">
               {cartState.totalItems} item{cartState.totalItems !== 1 ? "s" : ""}
             </Badge>
+            {sellerCarts.length > 1 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowExplainer(true)}
+                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                title="Why do I have multiple carts?"
+              >
+                <Info className="h-4 w-4" />
+              </Button>
+            )}
           </div>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-4 w-4" />
