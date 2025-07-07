@@ -278,6 +278,16 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
     }
 
     setUserProfileLoading(true);
+
+    // Set a shorter timeout for user profile loading (3 seconds)
+    const userTimeoutId = setTimeout(() => {
+      console.warn(
+        "⏰ User profile loading timed out, proceeding without saved address",
+      );
+      setUserProfileLoading(false);
+      toast.info("Using manual address entry");
+    }, 3000); // 3 second timeout for user profile
+
     try {
       console.log("🏠 Loading user address data for checkout...");
       // Use simplified address service to get user's shipping address
