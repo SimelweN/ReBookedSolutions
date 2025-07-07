@@ -110,6 +110,12 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
     loadUserProfile();
   }, [book.seller_id, user?.id]);
 
+  // Debug useEffect to monitor seller address changes
+  useEffect(() => {
+    console.log("🔄 Seller address state changed:", sellerAddress);
+    console.log("🔄 Seller info loading state:", sellerInfoLoading);
+  }, [sellerAddress, sellerInfoLoading]);
+
   const loadSellerInfo = async () => {
     setSellerInfoLoading(true);
     try {
