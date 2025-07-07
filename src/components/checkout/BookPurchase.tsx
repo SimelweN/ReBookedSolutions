@@ -132,6 +132,11 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
     console.log("🔄 Seller info loading state:", sellerInfoLoading);
   }, [sellerAddress, sellerInfoLoading]);
 
+  // Debug useEffect to monitor delivery address changes
+  useEffect(() => {
+    console.log("🏠 Delivery address state changed:", deliveryAddress);
+  }, [deliveryAddress]);
+
   const loadSellerInfo = async () => {
     setSellerInfoLoading(true);
 
