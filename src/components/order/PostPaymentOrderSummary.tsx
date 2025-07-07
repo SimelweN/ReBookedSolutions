@@ -71,43 +71,8 @@ const PostPaymentOrderSummary: React.FC<PostPaymentOrderSummaryProps> = ({
     }
   };
 
-  const handleDownloadReceipt = () => {
-    if (!order) return;
-
-    const receiptContent = `
-ReBooked Solutions - Purchase Receipt
-
-Order ID: ${order.id}
-Payment Reference: ${order.paystack_ref}
-Date: ${new Date(order.created_at).toLocaleDateString()}
-
-Items Purchased:
-${order.items.map((item) => `- ${item.title} by ${item.author}: R${(item.price / 100).toFixed(2)}`).join("\n")}
-
-Total Amount: R${(order.amount / 100).toFixed(2)}
-${order.delivery_fee ? `Delivery Fee: R${(order.delivery_fee / 100).toFixed(2)}` : ""}
-
-${
-  order.delivery_address
-    ? `
-Delivery Address:
-${order.delivery_address.street}
-${order.delivery_address.city}, ${order.delivery_address.province}
-${order.delivery_address.postal_code}
-`
-    : "Collection: Buyer to collect from seller"
-}
-
-Thank you for your purchase!
-    `;
-
-    const blob = new Blob([receiptContent], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `receipt-${order.id.slice(0, 8)}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const toggleReceipt = () => {
+    setShowReceipt(!showReceipt);
   };
 
   if (isLoading) {
