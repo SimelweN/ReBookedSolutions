@@ -71,6 +71,19 @@ const BookDetails = () => {
       console.log("BookDetails - Original book data:", book);
       console.log("BookDetails - seller_id:", book.seller_id);
 
+      // ❗ DISALLOW checkout if seller is not ready
+      const { validateSellerForListing } = await import(
+        "@/services/checkoutValidationService"
+      );
+      const sellerValidation = await validateSellerForListing(book.seller_id);
+
+      if (!sellerValidation.isValid) {
+        const errorMsg = `Cannot purchase this book: ${sellerValidation.errors.join(", ")}`;
+        toast.error(errorMsg);
+        console.error("❌ Seller validation failed:", sellerValidation);
+        return;
+      }
+
       const bookForPurchase = {
         id: book.id,
         title: book.title,
@@ -80,9 +93,13 @@ const BookDetails = () => {
         isbn: book.isbn,
         image_url: book.image_url,
         seller_id: book.seller_id,
+        seller_subaccount_code: sellerValidation.subaccountCode,
       };
 
-      console.log("BookDetails - Book data for purchase:", bookForPurchase);
+      console.log(
+        "✅ Seller validation passed, proceeding to checkout:",
+        bookForPurchase,
+      );
 
       // Navigate to new checkout flow with book data
       navigate("/checkout", {
