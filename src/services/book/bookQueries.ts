@@ -92,7 +92,17 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
         const booksPromise = (async () => {
           let query = supabase
             .from("books")
-            .select("*")
+            .select(
+              `
+              *,
+              seller_street,
+              seller_city,
+              seller_province,
+              seller_postal_code,
+              seller_country,
+              seller_subaccount_code
+            `,
+            )
             .eq("sold", false)
             .order("created_at", { ascending: false });
 
