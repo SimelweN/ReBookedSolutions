@@ -306,16 +306,47 @@ const PostPaymentOrderSummary: React.FC<PostPaymentOrderSummaryProps> = ({
         </CardContent>
       </Card>
 
+      {/* Receipt Download */}
+      <Card className="bg-green-50 border-green-200">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Receipt className="h-5 w-5 text-green-600" />
+              <h3 className="font-medium text-green-800">Download Receipt</h3>
+            </div>
+            <Button
+              onClick={toggleReceipt}
+              variant="outline"
+              size="sm"
+              className="text-green-700 border-green-300 hover:bg-green-100"
+            >
+              {showReceipt ? "Hide" : "Show"} Receipt
+            </Button>
+          </div>
+
+          {showReceipt && order && (
+            <ReceiptDownloader
+              reference={order.paystack_ref || paymentReference}
+              amount={order.amount / 100}
+              items={order.items.map((item) => ({
+                id: item.id || item.book_id,
+                title: item.title,
+                author: item.author,
+                price: item.price / 100,
+              }))}
+              buyer={order.buyer_info}
+              seller={order.seller_info}
+              deliveryMethod={order.delivery_method || "Standard Delivery"}
+              deliveryFee={order.delivery_fee ? order.delivery_fee / 100 : 0}
+              deliveryAddress={order.delivery_address || order.shipping_address}
+              timestamp={order.created_at}
+            />
+          )}
+        </CardContent>
+      </Card>
+
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-4">
-        <Button
-          onClick={handleDownloadReceipt}
-          variant="outline"
-          className="flex-1"
-        >
-          <Download className="w-4 h-4 mr-2" />
-          Download Receipt
-        </Button>
         <Button onClick={() => navigate("/my-orders")} className="flex-1">
           View All Orders
         </Button>
