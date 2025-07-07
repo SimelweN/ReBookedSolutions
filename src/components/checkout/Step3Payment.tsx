@@ -198,14 +198,31 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
           .single();
 
         if (orderError) {
-          console.error("Failed to create order - Full error:", orderError);
-          console.error("Error message:", orderError.message);
-          console.error("Error details:", orderError.details);
-          console.error("Error code:", orderError.code);
-          const errorMessage =
-            orderError.message ||
-            orderError.details ||
-            JSON.stringify(orderError);
+          console.error(
+            "❌ Failed to create order - Full error object:",
+            orderError,
+          );
+          console.error("❌ Error message:", orderError.message);
+          console.error("❌ Error details:", orderError.details);
+          console.error("❌ Error code:", orderError.code);
+          console.error("❌ Error hint:", orderError.hint);
+
+          let errorMessage = "Unknown database error";
+          if (orderError.message) {
+            errorMessage = orderError.message;
+          } else if (orderError.details) {
+            errorMessage = orderError.details;
+          }
+
+          // Add more context for common errors
+          if (orderError.code === "23505") {
+            errorMessage = `Duplicate order reference: ${errorMessage}`;
+          } else if (orderError.code === "23502") {
+            errorMessage = `Missing required field: ${errorMessage}`;
+          } else if (orderError.code === "23503") {
+            errorMessage = `Invalid reference (foreign key): ${errorMessage}`;
+          }
+
           throw new Error(`Failed to create order: ${errorMessage}`);
         }
 
