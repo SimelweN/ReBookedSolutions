@@ -270,6 +270,8 @@ export const getBookById = async (id: string): Promise<Book | null> => {
 
     return await retryWithConnection(
       async () => {
+        console.log("🔄 [getBookById] Making database query for book:", id);
+
         // First get book data
         const { data: bookData, error: bookError } = await supabase
           .from("books")
@@ -277,19 +279,29 @@ export const getBookById = async (id: string): Promise<Book | null> => {
           .eq("id", id)
           .single();
 
+        console.log("📊 [getBookById] Book query result:", {
+          bookData,
+          bookError,
+        });
+
         if (bookError) {
           if (bookError.code === "PGRST116") {
             // Not found - not an error, just return null
-            console.log(`Book not found with ID: ${id}`);
+            console.log(`⚠️ [getBookById] Book not found with ID: ${id}`);
             return null;
           }
+          console.error("❌ [getBookById] Book query error:", bookError);
           throw bookError;
         }
 
         if (!bookData) {
-          console.log(`No book found with ID: ${id}`);
+          console.log(`⚠️ [getBookById] No book data returned for ID: ${id}`);
           return null;
         }
+
+        console.log(
+          "✅ [getBookById] Book data fetched successfully, fetching seller profile...",
+        );
 
         // Then get seller profile separately
         const { data: profileData, error: profileError } = await supabase
@@ -298,10 +310,15 @@ export const getBookById = async (id: string): Promise<Book | null> => {
           .eq("id", bookData.seller_id)
           .single();
 
+        console.log("📊 [getBookById] Profile query result:", {
+          profileData,
+          profileError,
+        });
+
         // Profile error is not critical - continue without it
         if (profileError) {
           console.warn(
-            `Could not fetch profile for seller ${bookData.seller_id}:`,
+            `⚠️ [getBookById] Could not fetch profile for seller ${bookData.seller_id}:`,
             profileError,
           );
         }
@@ -316,7 +333,11 @@ export const getBookById = async (id: string): Promise<Book | null> => {
           },
         };
 
-        return mapBookFromDatabase(bookDataWithProfile);
+        console.log("🔄 [getBookById] Mapping book data...");
+        const mappedBook = mapBookFromDatabase(bookDataWithProfile);
+        console.log("✅ [getBookById] Book mapped successfully:", mappedBook);
+
+        return mappedBook;
       },
       1,
       1000,
