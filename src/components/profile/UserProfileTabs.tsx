@@ -31,7 +31,7 @@ import { Book } from "@/types/book";
 import ProfileEditDialog from "@/components/ProfileEditDialog";
 import UnavailableBookCard from "@/components/UnavailableBookCard";
 import ModernBankingSection from "@/components/profile/ModernBankingSection";
-import ModernAddressInput from "@/components/ModernAddressInput";
+import AddressManager from "@/components/profile/AddressManager";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -840,21 +840,7 @@ const UserProfileTabs = ({
             </TabsContent>
 
             <TabsContent value="addresses" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl md:text-2xl flex items-center">
-                    <MapPin className="h-6 w-6 mr-2" />
-                    Addresses
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <AddressSection
-                    addressData={addressData}
-                    onSaveAddresses={onSaveAddresses}
-                    isLoadingAddress={isLoadingAddress}
-                  />
-                </CardContent>
-              </Card>
+              <AddressManager />
             </TabsContent>
 
             <TabsContent value="banking" className="space-y-4">
