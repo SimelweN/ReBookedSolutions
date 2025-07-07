@@ -71,59 +71,11 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
         throw new Error("User authentication error");
       }
 
-      // Check if seller has subaccount
+      // Seller subaccount should already be available from books table
       if (!orderSummary.book.seller_subaccount_code) {
-        // Try to get seller's subaccount from database
-        let { data: sellerSubaccount, error: subaccountError } = await supabase
-          .from("banking_subaccounts")
-          .select("subaccount_code, status")
-          .eq("user_id", orderSummary.book.seller_id)
-          .eq("status", "active")
-          .single();
-
-        // First check all subaccounts for debugging
-        const { data: allSellerSubaccounts } = await supabase
-          .from("banking_subaccounts")
-          .select("*")
-          .eq("user_id", orderSummary.book.seller_id);
-
-        // If no active subaccount, try any subaccount with code
-        if (
-          !sellerSubaccount &&
-          allSellerSubaccounts &&
-          allSellerSubaccounts.length > 0
-        ) {
-          const anySubaccountWithCode = allSellerSubaccounts.find(
-            (sub) => sub.subaccount_code,
-          );
-          if (anySubaccountWithCode) {
-            sellerSubaccount = {
-              subaccount_code: anySubaccountWithCode.subaccount_code,
-              status: anySubaccountWithCode.status,
-            };
-            console.log(
-              "📦 Using non-active subaccount for payment:",
-              sellerSubaccount,
-            );
-          }
-        }
-
-        console.log("🔍 Final seller subaccount decision:", {
-          seller_id: orderSummary.book.seller_id,
-          all_subaccounts: allSellerSubaccounts,
-          chosen_subaccount: sellerSubaccount,
-          original_error: subaccountError,
-        });
-
-        if (!sellerSubaccount?.subaccount_code) {
-          throw new Error(
-            "Seller payment setup is incomplete. The seller needs to set up their banking details before accepting payments.",
-          );
-        }
-
-        // Update the book data with the found subaccount
-        orderSummary.book.seller_subaccount_code =
-          sellerSubaccount.subaccount_code;
+        throw new Error(
+          "Seller payment setup is incomplete. The seller needs to set up their banking details before accepting payments.",
+        );
       }
 
       // Prepare payment request
@@ -165,16 +117,256 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
         throw new Error(paymentData.message || "Payment initialization failed");
       }
 
-      // Redirect to Paystack checkout
-      if (paymentData.data?.authorization_url) {
+      // Use Paystack popup instead of redirect
+      console.log("🔍 Payment data received:", paymentData);
+
+      if (!paymentData.data?.reference) {
+        console.error("❌ No reference in payment data:", paymentData);
+        throw new Error("No payment reference received from Paystack");
+      }
+
+      if (paymentData.data?.access_code && paymentData.data?.reference) {
         console.log(
-          "Redirecting to Paystack:",
-          paymentData.data.authorization_url,
+          "Opening Paystack popup with access code:",
+          paymentData.data.access_code,
         );
-        window.location.href = paymentData.data.authorization_url;
+
+        // Import and use PaystackPop for modal experience
+        const { PaystackPaymentService } = await import(
+          "@/services/paystackPaymentService"
+        );
+
+        // Create order in database first so it appears in purchase history
+        // Validate required data before creating order
+        if (
+          !userData.user.email ||
+          !orderSummary.book.seller_id ||
+          !orderSummary.book.id ||
+          !paymentData.data.reference
+        ) {
+          throw new Error("Missing required order data");
+        }
+
+        console.log("🔄 Creating order with data:", {
+          buyer_id: userId,
+          buyer_email: userData.user.email,
+          seller_id: orderSummary.book.seller_id,
+          book_id: orderSummary.book.id,
+          paystack_ref: paymentData.data.reference,
+          book_price: orderSummary.book_price,
+          delivery_price: orderSummary.delivery_price,
+          total_price: orderSummary.total_price,
+        });
+
+        const { data: createdOrder, error: orderError } = await supabase
+          .from("orders")
+          .insert([
+            {
+              // Required fields matching actual schema
+              buyer_email: userData.user.email,
+              seller_id: orderSummary.book.seller_id,
+              amount: Math.round(orderSummary.total_price * 100), // Total amount in kobo
+              status: "pending",
+              paystack_ref: paymentData.data.reference,
+
+              // Order items as JSONB array
+              items: [
+                {
+                  type: "book",
+                  book_id: orderSummary.book.id,
+                  book_title: orderSummary.book.title,
+                  price: Math.round(orderSummary.book_price * 100), // Book price in kobo
+                  quantity: 1,
+                  condition: orderSummary.book.condition,
+                  seller_id: orderSummary.book.seller_id,
+                  seller_subaccount_code:
+                    orderSummary.book.seller_subaccount_code,
+                },
+              ],
+
+              // Shipping address as JSONB
+              shipping_address: orderSummary.buyer_address,
+
+              // Delivery data as JSONB
+              delivery_data: {
+                delivery_method: orderSummary.delivery.service_name,
+                delivery_price: Math.round(orderSummary.delivery_price * 100), // In kobo
+                courier: orderSummary.delivery.courier,
+                estimated_days: orderSummary.delivery.estimated_days,
+                pickup_address: orderSummary.seller_address,
+                delivery_quote: orderSummary.delivery,
+              },
+
+              // Additional metadata
+              metadata: {
+                buyer_id: userId,
+                order_data: orderData,
+                platform_fee: Math.round(orderSummary.book_price * 0.1 * 100), // 10% platform fee in kobo
+                seller_amount: Math.round(orderSummary.book_price * 0.9 * 100), // 90% to seller in kobo
+                original_total: orderSummary.total_price, // Keep original prices for reference
+                original_book_price: orderSummary.book_price,
+                original_delivery_price: orderSummary.delivery_price,
+              },
+            },
+          ])
+          .select()
+          .single();
+
+        if (orderError) {
+          console.error(
+            "❌ Failed to create order - Full error object:",
+            orderError,
+          );
+          console.error("❌ Error message:", orderError.message);
+          console.error("❌ Error details:", orderError.details);
+          console.error("❌ Error code:", orderError.code);
+          console.error("❌ Error hint:", orderError.hint);
+
+          let errorMessage = "Unknown database error";
+          if (orderError.message) {
+            errorMessage = orderError.message;
+          } else if (orderError.details) {
+            errorMessage = orderError.details;
+          }
+
+          // Add more context for common errors
+          if (orderError.code === "23505") {
+            errorMessage = `Duplicate order reference: ${errorMessage}`;
+          } else if (orderError.code === "23502") {
+            errorMessage = `Missing required field: ${errorMessage}`;
+          } else if (orderError.code === "23503") {
+            errorMessage = `Invalid reference (foreign key): ${errorMessage}`;
+          }
+
+          throw new Error(`Failed to create order: ${errorMessage}`);
+        }
+
+        console.log("✅ Order created in database:", createdOrder);
+
+        try {
+          const result = await PaystackPaymentService.initializePayment({
+            email: userData.user.email,
+            amount: orderSummary.total_price * 100,
+            reference: paymentData.data.reference,
+            subaccount: orderSummary.book.seller_subaccount_code,
+            metadata: {
+              order_id: createdOrder.id,
+              order_data: orderData,
+              book_title: orderSummary.book.title,
+              delivery_method: orderSummary.delivery.service_name,
+              buyer_id: userId,
+            },
+          });
+
+          if (result.cancelled) {
+            console.log("❌ Paystack payment cancelled by user");
+            toast.warning("Payment cancelled");
+            setProcessing(false);
+            return;
+          }
+
+          console.log("✅ Paystack payment successful:", result);
+
+          // Extract book item data for processing
+          const bookItem = createdOrder.items[0]; // Get the book item
+
+          // Update order status to paid
+          const { error: updateError } = await supabase
+            .from("orders")
+            .update({
+              status: "paid",
+              paid_at: new Date().toISOString(),
+              metadata: {
+                ...createdOrder.metadata,
+                paystack_data: result,
+              },
+            })
+            .eq("id", createdOrder.id);
+
+          if (updateError) {
+            console.warn("Failed to update order status:", updateError);
+          }
+
+          // Mark book as sold
+          const { error: bookError } = await supabase
+            .from("books")
+            .update({
+              sold: true,
+              availability: "sold",
+              sold_at: new Date().toISOString(),
+            })
+            .eq("id", bookItem.book_id);
+
+          if (bookError) {
+            console.warn("Failed to mark book as sold:", bookError);
+          }
+
+          // Create order confirmation data using the database order
+          const orderConfirmation = {
+            order_id: createdOrder.id,
+            payment_reference: result.reference,
+            book_id: bookItem.book_id,
+            seller_id: createdOrder.seller_id,
+            buyer_id: createdOrder.metadata.buyer_id,
+            book_title: bookItem.book_title,
+            book_price: bookItem.price / 100, // Convert back from kobo to rands
+            delivery_method: createdOrder.delivery_data.delivery_method,
+            delivery_price: createdOrder.delivery_data.delivery_price / 100, // Convert back from kobo
+            total_paid: createdOrder.amount / 100, // Convert back from kobo
+            created_at: createdOrder.created_at,
+            status: "paid",
+          };
+
+          // Call the success handler to show Step4Confirmation
+          onPaymentSuccess(orderConfirmation);
+          toast.success("Payment completed successfully! 🎉");
+        } catch (paymentError) {
+          console.error("Payment processing error:", paymentError);
+
+          // Clean up pending order if payment failed/cancelled
+          const { error: cleanupError } = await supabase
+            .from("orders")
+            .update({
+              status: "cancelled",
+              metadata: {
+                ...createdOrder.metadata,
+                cancelled_at: new Date().toISOString(),
+                cancellation_reason: "payment_failed",
+                error: paymentError.message,
+              },
+            })
+            .eq("id", createdOrder.id);
+
+          if (cleanupError) {
+            console.warn("Failed to update cancelled order:", cleanupError);
+          }
+
+          let errorMessage = "Payment failed";
+          if (paymentError.message?.includes("cancelled")) {
+            errorMessage = "Payment cancelled";
+            toast.warning(errorMessage);
+          } else if (
+            paymentError.message?.includes("popup") ||
+            paymentError.message?.includes("blocked")
+          ) {
+            errorMessage =
+              "Payment popup was blocked. Please allow popups and try again.";
+            toast.error(errorMessage);
+          } else if (paymentError.message?.includes("library not available")) {
+            errorMessage =
+              "Payment system not available. Please refresh the page and try again.";
+            toast.error(errorMessage);
+          } else {
+            errorMessage = paymentError.message || "Payment failed";
+            toast.error(errorMessage);
+          }
+
+          onPaymentError(errorMessage);
+          setProcessing(false);
+        }
       } else {
         console.error("Payment response:", paymentData);
-        throw new Error("No payment URL received from Paystack");
+        throw new Error("No payment access code received from Paystack");
       }
     } catch (err) {
       console.error("Payment initialization error:", err);

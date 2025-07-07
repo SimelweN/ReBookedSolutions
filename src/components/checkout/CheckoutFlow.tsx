@@ -69,48 +69,99 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ book }) => {
     try {
       setCheckoutState((prev) => ({ ...prev, loading: true, error: null }));
 
-      console.log("🚀 POST /api/checkout/start - Validating checkout data...");
+      console.log("🚀 Using book table seller data for checkout...");
 
-      // ✅ GOAL: Validate both seller and buyer before proceeding
-      const validation = await validateCheckoutStart(book.seller_id, user.id);
+      // Get fresh book data with seller information from books table
+      const { data: bookData, error: bookError } = await supabase
+        .from("books")
+        .select("*")
+        .eq("id", book.id)
+        .single();
 
-      if (!validation.canProceed) {
-        console.error("❌ Checkout validation failed:", validation.errors);
-        setCheckoutState((prev) => ({
-          ...prev,
-          error: `Checkout not possible: ${validation.errors.join(". ")}`,
-          loading: false,
-        }));
-
-        // Show specific error messages
-        validation.errors.forEach((error) => toast.error(error));
-        return;
+      if (bookError || !bookData) {
+        throw new Error("Failed to load book details");
       }
 
-      console.log("✅ Checkout validation passed");
+      // Get seller profile separately
+      const { data: sellerProfile, error: sellerError } = await supabase
+        .from("profiles")
+        .select("id, name, email")
+        .eq("id", bookData.seller_id)
+        .single();
 
-      // Get validated seller and buyer data
-      const [sellerData, buyerData] = await Promise.all([
-        getSellerCheckoutData(book.seller_id),
-        getBuyerCheckoutData(user.id).catch(() => null), // Buyer address is optional initially
-      ]);
+      if (sellerError) {
+        console.warn("Could not fetch seller profile:", sellerError);
+      }
 
-      // Update book with seller subaccount
-      const updatedBook = {
-        ...book,
-        seller_subaccount_code: sellerData.subAccountCode,
+      // Validate seller data from books table
+      if (!bookData.subaccount_code) {
+        throw new Error(
+          "Seller payment setup is incomplete. The seller needs to set up their banking details.",
+        );
+      }
+
+      // Get seller address from profile (since book table columns don't exist yet)
+      const { data: sellerProfileData, error: sellerProfileError } =
+        await supabase
+          .from("profiles")
+          .select("pickup_address")
+          .eq("id", bookData.seller_id)
+          .single();
+
+      if (sellerProfileError || !sellerProfileData?.pickup_address) {
+        throw new Error(
+          "Seller address is incomplete. The seller needs to update their pickup address.",
+        );
+      }
+
+      const pickupAddress = sellerProfileData.pickup_address as any;
+      const sellerAddress = {
+        street: pickupAddress.streetAddress || pickupAddress.street || "",
+        city: pickupAddress.city || "",
+        province: pickupAddress.province || "",
+        postal_code:
+          pickupAddress.postalCode || pickupAddress.postal_code || "",
+        country: "South Africa",
       };
 
-      console.log("📦 Checkout data loaded:", {
-        seller: sellerData,
-        buyer: buyerData,
+      if (
+        !sellerAddress.street ||
+        !sellerAddress.city ||
+        !sellerAddress.province ||
+        !sellerAddress.postal_code
+      ) {
+        throw new Error(
+          "Seller address is incomplete. The seller needs to update their pickup address.",
+        );
+      }
+
+      // Update book with complete seller data
+      const updatedBook = {
+        ...book,
+        seller_subaccount_code: bookData.subaccount_code,
+        seller: {
+          id: sellerProfile?.id || bookData.seller_id,
+          name: sellerProfile?.name || "Seller",
+          email: sellerProfile?.email || "",
+          hasAddress: true,
+          hasSubaccount: true,
+          isReadyForOrders: true,
+        },
+      };
+
+      // Get buyer address (optional initially)
+      const buyerData = await getBuyerCheckoutData(user.id).catch(() => null);
+
+      console.log("📦 Checkout data loaded from books table:", {
+        seller_address: sellerAddress,
+        buyer_data: buyerData,
         book: updatedBook,
       });
 
       setCheckoutState((prev) => ({
         ...prev,
         book: updatedBook,
-        seller_address: sellerData.address,
+        seller_address: sellerAddress,
         buyer_address: buyerData?.address || null,
         loading: false,
       }));

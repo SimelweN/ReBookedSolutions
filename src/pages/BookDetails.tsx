@@ -26,20 +26,34 @@ const BookDetails = () => {
 
   // Validate and debug book ID
   useEffect(() => {
+    console.log("📱 [BookDetails] Component mounted with ID:", id);
     debugBookId(id);
     const validId = extractBookId(id);
 
     if (!validId) {
-      console.error("Invalid or missing book ID in URL:", id);
+      console.error("❌ [BookDetails] Invalid or missing book ID in URL:", id);
       toast.error("Invalid book link - redirecting to browse books");
       // Add a small delay to ensure the user sees the error message
       setTimeout(() => {
         navigate("/books");
       }, 2000);
+    } else {
+      console.log("✅ [BookDetails] Valid book ID extracted:", validId);
     }
   }, [id, navigate]);
 
   const { book, isLoading, error } = useBookDetails(id || "");
+
+  // Debug the hook results
+  useEffect(() => {
+    console.log("📊 [BookDetails] Hook state updated:", {
+      bookId: id,
+      isLoading,
+      hasBook: !!book,
+      error,
+      bookTitle: book?.title,
+    });
+  }, [id, book, isLoading, error]);
 
   const handleBuyNow = async () => {
     if (!user) {
@@ -71,18 +85,8 @@ const BookDetails = () => {
       console.log("BookDetails - Original book data:", book);
       console.log("BookDetails - seller_id:", book.seller_id);
 
-      // ❗ DISALLOW checkout if seller is not ready
-      const { validateSellerForListing } = await import(
-        "@/services/checkoutValidationService"
-      );
-      const sellerValidation = await validateSellerForListing(book.seller_id);
-
-      if (!sellerValidation.isValid) {
-        const errorMsg = `Cannot purchase this book: ${sellerValidation.errors.join(", ")}`;
-        toast.error(errorMsg);
-        console.error("❌ Seller validation failed:", sellerValidation);
-        return;
-      }
+      // ✅ As a buyer, proceed to checkout - checkout flow will handle address collection
+      // Note: We'll validate seller readiness in the checkout flow, not here
 
       const bookForPurchase = {
         id: book.id,
@@ -91,15 +95,13 @@ const BookDetails = () => {
         price: book.price,
         condition: book.condition,
         isbn: book.isbn,
-        image_url: book.image_url,
-        seller_id: book.seller_id,
-        seller_subaccount_code: sellerValidation.subaccountCode,
+        image_url: book.imageUrl,
+        seller_id: book.seller?.id || book.seller_id,
+        seller_subaccount_code:
+          book.seller_subaccount_code || book.subaccountCode,
       };
 
-      console.log(
-        "✅ Seller validation passed, proceeding to checkout:",
-        bookForPurchase,
-      );
+      console.log("✅ Proceeding to checkout with book:", bookForPurchase);
 
       // Navigate to new checkout flow with book data
       navigate("/checkout", {

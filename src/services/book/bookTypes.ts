@@ -36,5 +36,6 @@ export interface BookQueryResult {
   university?: string;
   province?: string;
   seller_id: string;
+  subaccount_code?: string; // Make sure this is included
   profiles?: ProfileData | null;
 }
