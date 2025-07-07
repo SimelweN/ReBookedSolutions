@@ -42,34 +42,20 @@ export const mapBookFromDatabase = (bookData: BookQueryResult): Book => {
     university: bookData.university,
     province: bookData.province || null,
     subaccountCode: bookData.subaccount_code,
-    // Seller address data for efficient checkout
-    seller_street: (bookData as any).seller_street,
-    seller_city: (bookData as any).seller_city,
-    seller_province: (bookData as any).seller_province,
-    seller_postal_code: (bookData as any).seller_postal_code,
-    seller_country: (bookData as any).seller_country,
-    seller_subaccount_code: (bookData as any).seller_subaccount_code,
+    // Seller address data for efficient checkout (will be null until migration is applied)
+    seller_street: undefined,
+    seller_city: undefined,
+    seller_province: undefined,
+    seller_postal_code: undefined,
+    seller_country: undefined,
+    seller_subaccount_code: bookData.subaccount_code, // Use existing field
     seller: {
       id: bookData.seller_id,
       name: profile?.name || `User ${bookData.seller_id.slice(0, 8)}`,
       email: profile?.email || "",
-      hasAddress: !!(
-        (bookData as any).seller_street &&
-        (bookData as any).seller_city &&
-        (bookData as any).seller_province &&
-        (bookData as any).seller_postal_code
-      ),
-      hasSubaccount: !!(
-        (bookData as any).seller_subaccount_code || bookData.subaccount_code
-      ),
-      isReadyForOrders: !!(
-        ((bookData as any).seller_subaccount_code ||
-          bookData.subaccount_code) &&
-        (bookData as any).seller_street &&
-        (bookData as any).seller_city &&
-        (bookData as any).seller_province &&
-        (bookData as any).seller_postal_code
-      ),
+      hasAddress: false, // Will be determined dynamically in checkout
+      hasSubaccount: !!bookData.subaccount_code,
+      isReadyForOrders: !!bookData.subaccount_code, // Basic check for now
     },
   };
 };
