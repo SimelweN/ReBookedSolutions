@@ -206,38 +206,9 @@ const Step2DeliveryOptions: React.FC<Step2DeliveryOptionsProps> = ({
         }
       }
 
-      // Try to get real-time quotes if available
-      try {
-        const { data: quotes, error: quotesError } =
-          await supabase.functions.invoke("get-delivery-quotes", {
-            body: {
-              from_address: sellerAddress,
-              to_address: buyerAddress,
-            },
-          });
-
-        if (!quotesError && quotes?.length > 0) {
-          // Use real quotes if available
-          const realOptions = quotes.map((quote: any) => ({
-            courier: quote.courier,
-            service_name: quote.service_name,
-            price: quote.price,
-            estimated_days: quote.estimated_days,
-            description: quote.description,
-            zone_type: zoneType,
-          }));
-          setDeliveryOptions(realOptions);
-        } else {
-          // Fallback to calculated options
-          setDeliveryOptions(baseOptions);
-        }
-      } catch (apiError) {
-        console.warn(
-          "Failed to get real-time quotes, using calculated pricing:",
-          apiError,
-        );
-        setDeliveryOptions(baseOptions);
-      }
+      // Use the real courier pricing we fetched above
+      console.log("✅ Setting delivery options:", baseOptions);
+      setDeliveryOptions(baseOptions);
     } catch (err) {
       console.error("Error fetching delivery options:", err);
       setError("Failed to load delivery options. Please try again.");
