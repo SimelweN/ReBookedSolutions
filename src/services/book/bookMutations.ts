@@ -93,7 +93,7 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       // Continue without address - it's not critical for book creation
     }
 
-    // Create book data with subaccount_code and seller address for direct linking
+    // Create book data with subaccount_code (only use existing database fields)
     const bookDataWithSubaccount = {
       seller_id: user.id,
       title: bookData.title,
@@ -110,13 +110,6 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       university_year: bookData.universityYear,
       province: province,
       subaccount_code: userSubaccountCode, // Direct link to seller's subaccount
-      seller_subaccount_code: userSubaccountCode, // Redundant for backward compatibility
-      // Include seller address data in book for checkout efficiency
-      seller_street: sellerAddress?.street || null,
-      seller_city: sellerAddress?.city || null,
-      seller_province: sellerAddress?.province || null,
-      seller_postal_code: sellerAddress?.postal_code || null,
-      seller_country: sellerAddress?.country || "South Africa",
     };
 
     // Log seller data inclusion
