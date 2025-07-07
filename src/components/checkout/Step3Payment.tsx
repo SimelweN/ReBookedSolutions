@@ -219,9 +219,11 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
             .from("orders")
             .update({
               status: "paid",
-              payment_status: "paid",
               paid_at: new Date().toISOString(),
-              paystack_data: result,
+              metadata: {
+                ...createdOrder.metadata,
+                paystack_data: result,
+              },
             })
             .eq("id", createdOrder.id);
 
