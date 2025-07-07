@@ -123,8 +123,16 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
       return;
     }
 
+    // Load seller info and user profile in parallel, but don't block on user profile
     loadSellerInfo();
-    loadUserProfile();
+
+    // Load user profile in background - don't wait for it
+    loadUserProfile().catch((error) => {
+      console.warn(
+        "User profile loading failed, proceeding without saved address:",
+        error,
+      );
+    });
   }, [book.seller_id, user?.id]);
 
   // Debug useEffect to monitor seller address changes
