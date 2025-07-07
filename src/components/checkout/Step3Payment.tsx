@@ -226,6 +226,21 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
           toast.success("Payment completed successfully! 🎉");
         } catch (paymentError) {
           console.error("Payment processing error:", paymentError);
+
+          // Clean up pending order if payment failed/cancelled
+          const { error: cleanupError } = await supabase
+            .from("orders")
+            .update({
+              status: "cancelled",
+              payment_status: "cancelled",
+              cancelled_at: new Date().toISOString(),
+            })
+            .eq("id", createdOrder.id);
+
+          if (cleanupError) {
+            console.warn("Failed to update cancelled order:", cleanupError);
+          }
+
           if (paymentError.message?.includes("cancelled")) {
             toast.warning("Payment cancelled");
           } else {
