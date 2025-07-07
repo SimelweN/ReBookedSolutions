@@ -69,9 +69,9 @@ export const mapBookFromDatabase = (
       name:
         profile?.name || `User ${bookData.seller_id?.slice(0, 8) || "Unknown"}`,
       email: profile?.email || "",
-      hasAddress: false, // Will be determined dynamically in checkout
+      hasAddress: hasPickupAddress,
       hasSubaccount: !!bookData.subaccount_code,
-      isReadyForOrders: !!bookData.subaccount_code, // Basic check for now
+      isReadyForOrders: !!(bookData.subaccount_code && hasPickupAddress),
     },
   };
 
