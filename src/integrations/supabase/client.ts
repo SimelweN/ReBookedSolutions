@@ -211,21 +211,53 @@ try {
       return mockQuery;
     };
 
+    const mockError = {
+      message:
+        "Supabase not configured - please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables",
+      code: "SUPABASE_NOT_CONFIGURED",
+    };
+
     supabase = {
       auth: {
-        signUp: () => Promise.reject(new Error("Supabase not configured")),
+        signUp: () =>
+          Promise.resolve({
+            data: { user: null, session: null },
+            error: mockError,
+          }),
         signInWithPassword: () =>
-          Promise.reject(new Error("Supabase not configured")),
-        signOut: () => Promise.reject(new Error("Supabase not configured")),
+          Promise.resolve({
+            data: { user: null, session: null },
+            error: mockError,
+          }),
+        signOut: () => Promise.resolve({ error: mockError }),
         getSession: () =>
           Promise.resolve({ data: { session: null }, error: null }),
         onAuthStateChange: () => ({
           data: { subscription: { unsubscribe: () => {} } },
         }),
+        getUser: () =>
+          Promise.resolve({ data: { user: null }, error: mockError }),
+        refreshSession: () =>
+          Promise.resolve({
+            data: { user: null, session: null },
+            error: mockError,
+          }),
+        updateUser: () =>
+          Promise.resolve({ data: { user: null }, error: mockError }),
+        resetPasswordForEmail: () =>
+          Promise.resolve({ data: {}, error: mockError }),
       },
       from: () => createMockQueryBuilder(),
       functions: {
-        invoke: () => Promise.reject(new Error("Supabase not configured")),
+        invoke: () => Promise.resolve({ data: null, error: mockError }),
+      },
+      storage: {
+        from: () => ({
+          upload: () => Promise.resolve({ data: null, error: mockError }),
+          download: () => Promise.resolve({ data: null, error: mockError }),
+          list: () => Promise.resolve({ data: null, error: mockError }),
+          remove: () => Promise.resolve({ data: null, error: mockError }),
+        }),
       },
     };
   }
