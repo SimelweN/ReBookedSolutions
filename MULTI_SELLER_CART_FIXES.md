@@ -116,6 +116,22 @@ The commit system works as follows:
 4. **Order Processing**: Once committed, order proceeds to fulfillment
 5. **Auto-Cancel**: If seller doesn't commit within 48 hours, order is auto-cancelled
 
+### Where to Find Commit Options
+
+Sellers can find pending commitments in multiple places:
+
+1. **User Profile → Activity Tab**: Shows "Pending Commits" section at the top
+2. **My Activity Page**: Navigate to "My Activity" from the footer or profile menu
+3. **My Orders Page**: Shows all orders including those needing commitment
+4. **Email Notifications**: Sent when payment is received (if configured)
+
+The commit section will show:
+
+- Order details (buyer, amount, items)
+- Time remaining (countdown from 48 hours)
+- "Commit to Sale" button
+- Helpful instructions and explanations
+
 ### Testing Commit System
 
 Use the Demo Tester in admin panel:
