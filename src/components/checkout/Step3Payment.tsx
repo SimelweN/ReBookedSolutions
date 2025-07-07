@@ -34,12 +34,20 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * 💳 API Equivalent: POST /api/payment/initiate
+   * Includes buyer ID, book info, delivery cost, seller's subaccount code
+   * Calculates total and sends to Paystack with subaccount field
+   */
   const initiatePayment = async () => {
     setProcessing(true);
     setError(null);
 
     try {
-      console.log("Initiating payment for order:", orderSummary);
+      console.log(
+        "💳 POST /api/payment/initiate - Initiating payment for order:",
+        orderSummary,
+      );
 
       // Create order data
       const orderData = {
@@ -94,7 +102,7 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
               status: anySubaccountWithCode.status,
             };
             console.log(
-              "���� Using non-active subaccount for payment:",
+              "📦 Using non-active subaccount for payment:",
               sellerSubaccount,
             );
           }
