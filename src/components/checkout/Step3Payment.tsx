@@ -134,20 +134,37 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
           .from("orders")
           .insert([
             {
-              book_id: orderSummary.book.id,
-              seller_id: orderSummary.book.seller_id,
+              // User references (REQUIRED)
               buyer_id: userId,
+              buyer_email: userData.user.email,
+              seller_id: orderSummary.book.seller_id,
+
+              // Order content (REQUIRED)
+              book_id: orderSummary.book.id,
               book_title: orderSummary.book.title,
-              book_price: orderSummary.book_price,
-              delivery_method: orderSummary.delivery.service_name,
-              delivery_price: orderSummary.delivery_price,
-              total_amount: orderSummary.total_price,
-              status: "pending",
-              payment_status: "pending",
+              book_price: Math.round(orderSummary.book_price * 100), // Convert to kobo (cents)
+
+              // Payment info (REQUIRED)
               paystack_ref: paymentData.data.reference,
+              amount: Math.round(orderSummary.total_price * 100), // Total in kobo
+              delivery_fee: Math.round(orderSummary.delivery_price * 100), // Delivery fee in kobo
+              platform_fee: Math.round(orderSummary.book_price * 0.1 * 100), // 10% platform fee in kobo
+              seller_amount: Math.round(orderSummary.book_price * 0.9 * 100), // 90% to seller in kobo
+
+              // Order status
+              status: "pending",
+
+              // Delivery info
+              courier_provider: orderSummary.delivery.courier,
+              courier_service: orderSummary.delivery.service_name,
+
+              // Addresses (as JSONB)
+              shipping_address: orderSummary.buyer_address,
+              pickup_address: orderSummary.seller_address,
+              delivery_quote: orderSummary.delivery,
+
+              // Additional data
               seller_subaccount_code: orderSummary.book.seller_subaccount_code,
-              buyer_address: orderSummary.buyer_address,
-              seller_address: orderSummary.seller_address,
               metadata: {
                 order_data: orderData,
                 book_title: orderSummary.book.title,
