@@ -129,7 +129,7 @@ const NotificationBell: React.FC = () => {
         className="w-80 max-w-sm p-0"
         sideOffset={5}
       >
-        <DropdownMenuHeader className="p-4 border-b">
+        <div className="p-4 border-b">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">Notifications</h3>
             <div className="flex items-center gap-2">
@@ -151,7 +151,7 @@ const NotificationBell: React.FC = () => {
               )}
             </div>
           </div>
-        </DropdownMenuHeader>
+        </div>
 
         <ScrollArea className="max-h-96">
           {notifications.length === 0 ? (
