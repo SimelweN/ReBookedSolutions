@@ -299,17 +299,18 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
           }
 
           // Create order confirmation data using the database order
+          const bookItem = createdOrder.items[0]; // Get the book item
           const orderConfirmation = {
             order_id: createdOrder.id,
             payment_reference: result.reference,
-            book_id: createdOrder.book_id,
+            book_id: bookItem.book_id,
             seller_id: createdOrder.seller_id,
-            buyer_id: createdOrder.buyer_id,
-            book_title: createdOrder.book_title,
-            book_price: createdOrder.book_price,
-            delivery_method: createdOrder.delivery_method,
-            delivery_price: createdOrder.delivery_price,
-            total_paid: createdOrder.total_amount,
+            buyer_id: createdOrder.metadata.buyer_id,
+            book_title: bookItem.book_title,
+            book_price: bookItem.price / 100, // Convert back from kobo to rands
+            delivery_method: createdOrder.delivery_data.delivery_method,
+            delivery_price: createdOrder.delivery_data.delivery_price / 100, // Convert back from kobo
+            total_paid: createdOrder.amount / 100, // Convert back from kobo
             created_at: createdOrder.created_at,
             status: "paid",
           };
