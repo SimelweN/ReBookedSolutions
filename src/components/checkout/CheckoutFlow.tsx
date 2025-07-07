@@ -95,85 +95,31 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ book }) => {
         getBuyerCheckoutData(user.id).catch(() => null), // Buyer address is optional initially
       ]);
 
-      let buyerAddr: CheckoutAddress | null = null;
-      if (userAddresses.shipping_address) {
-        buyerAddr = {
-          street: userAddresses.shipping_address.streetAddress,
-          city: userAddresses.shipping_address.city,
-          province: userAddresses.shipping_address.province,
-          postal_code: userAddresses.shipping_address.postalCode,
-          country: "South Africa",
-        };
-        console.log("✅ Buyer address loaded from profile");
-      } else {
-        console.log("⚠️ No saved buyer address found");
-        toast.info(
-          "Please add your delivery address in your profile for faster checkout next time!",
-        );
-      }
+      // Update book with seller subaccount
+      const updatedBook = {
+        ...book,
+        seller_subaccount_code: sellerData.subAccountCode,
+      };
 
-      // Load seller subaccount if not present
-      let updatedBook = checkoutState.book;
-      if (!book.seller_subaccount_code) {
-        console.log("Loading seller subaccount for:", book.seller_id);
-
-        // First, let's see all subaccounts for this seller
-        const { data: allSubaccounts, error: allError } = await supabase
-          .from("banking_subaccounts")
-          .select("*")
-          .eq("user_id", book.seller_id);
-
-        console.log("🔍 All seller subaccounts:", {
-          allSubaccounts,
-          allError,
-          seller_id: book.seller_id,
-        });
-
-        // Try to get active one, or any available one
-        let { data: sellerSubaccount, error: subaccountError } = await supabase
-          .from("banking_subaccounts")
-          .select("subaccount_code, status")
-          .eq("user_id", book.seller_id)
-          .eq("status", "active")
-          .single();
-
-        // If no active subaccount found, try to get any subaccount with subaccount_code
-        if (!sellerSubaccount && allSubaccounts && allSubaccounts.length > 0) {
-          const anySubaccountWithCode = allSubaccounts.find(
-            (sub) => sub.subaccount_code,
-          );
-          if (anySubaccountWithCode) {
-            sellerSubaccount = {
-              subaccount_code: anySubaccountWithCode.subaccount_code,
-              status: anySubaccountWithCode.status,
-            };
-            console.log("📦 Using non-active subaccount:", sellerSubaccount);
-          }
-        }
-
-        console.log("✅ Active subaccount query result:", {
-          sellerSubaccount,
-          subaccountError,
-        });
-
-        if (sellerSubaccount?.subaccount_code) {
-          updatedBook = {
-            ...book,
-            seller_subaccount_code: sellerSubaccount.subaccount_code,
-          };
-          console.log("✅ Seller subaccount loaded");
-        } else {
-          console.warn("⚠️ Seller has no active subaccount");
-        }
-      }
+      console.log("📦 Checkout data loaded:", {
+        seller: sellerData,
+        buyer: buyerData,
+        book: updatedBook,
+      });
 
       setCheckoutState((prev) => ({
         ...prev,
         book: updatedBook,
-        seller_address: sellerAddr,
-        buyer_address: buyerAddr,
+        seller_address: sellerData.address,
+        buyer_address: buyerData?.address || null,
         loading: false,
       }));
+
+      if (!buyerData) {
+        toast.info(
+          "Please add your delivery address to continue with checkout",
+        );
+      }
     } catch (error) {
       console.error("Checkout initialization error:", error);
       setCheckoutState((prev) => ({
