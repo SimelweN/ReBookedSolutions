@@ -311,9 +311,14 @@ export class CommitSystemService {
     sellerId: string,
     callback: (commits: CommitData[]) => void,
   ) {
+    // Create unique channel names to avoid subscription conflicts
+    const timestamp = Date.now();
+    const transactionsChannelName = `commit-updates-transactions-${sellerId}-${timestamp}`;
+    const ordersChannelName = `commit-updates-orders-${sellerId}-${timestamp}`;
+
     // Subscribe to transactions table changes
     const transactionSubscription = supabase
-      .channel("commit-updates-transactions")
+      .channel(transactionsChannelName)
       .on(
         "postgres_changes",
         {
@@ -331,7 +336,7 @@ export class CommitSystemService {
 
     // Subscribe to orders table changes
     const orderSubscription = supabase
-      .channel("commit-updates-orders")
+      .channel(ordersChannelName)
       .on(
         "postgres_changes",
         {
