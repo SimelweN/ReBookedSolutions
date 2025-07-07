@@ -93,12 +93,18 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ book }) => {
       let updatedBook = checkoutState.book;
       if (!book.seller_subaccount_code) {
         console.log("Loading seller subaccount for:", book.seller_id);
-        const { data: sellerSubaccount } = await supabase
-          .from("banking_subaccounts")
-          .select("subaccount_code")
-          .eq("user_id", book.seller_id)
-          .eq("is_active", true)
-          .single();
+        const { data: sellerSubaccount, error: subaccountError } =
+          await supabase
+            .from("banking_subaccounts")
+            .select("subaccount_code, status")
+            .eq("user_id", book.seller_id)
+            .eq("status", "active")
+            .single();
+
+        console.log("Subaccount query result:", {
+          sellerSubaccount,
+          subaccountError,
+        });
 
         if (sellerSubaccount?.subaccount_code) {
           updatedBook = {
