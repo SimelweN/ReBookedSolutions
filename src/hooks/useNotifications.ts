@@ -188,15 +188,17 @@ export const useNotifications = (): NotificationHookReturn => {
         return;
       }
 
-      // Prevent concurrent refresh calls
+      // Prevent concurrent refresh calls and duplicate notifications
       if (refreshingRef.current) {
+        console.log("⚠️ [Notifications] Refresh already in progress, skipping");
         return;
       }
 
       refreshingRef.current = true;
 
-      // Only show loading on initial load or manual refresh (not on retries)
-      if (!isRetry || isInitialLoadRef.current) {
+      try {
+        // Only show loading on initial load or manual refresh (not on retries)
+        if (!isRetry || isInitialLoadRef.current) {
         setIsLoading(true);
       }
 
