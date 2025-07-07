@@ -244,7 +244,7 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
         console.log("✅ Order created in database:", createdOrder);
 
         try {
-          const result = await PaystackPaymentService.processPayment({
+          await PaystackPaymentService.initializePayment({
             email: userData.user.email,
             amount: orderSummary.total_price * 100,
             reference: paymentData.data.reference,
