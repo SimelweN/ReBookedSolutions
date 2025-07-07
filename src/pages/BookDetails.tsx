@@ -26,20 +26,34 @@ const BookDetails = () => {
 
   // Validate and debug book ID
   useEffect(() => {
+    console.log("📱 [BookDetails] Component mounted with ID:", id);
     debugBookId(id);
     const validId = extractBookId(id);
 
     if (!validId) {
-      console.error("Invalid or missing book ID in URL:", id);
+      console.error("❌ [BookDetails] Invalid or missing book ID in URL:", id);
       toast.error("Invalid book link - redirecting to browse books");
       // Add a small delay to ensure the user sees the error message
       setTimeout(() => {
         navigate("/books");
       }, 2000);
+    } else {
+      console.log("✅ [BookDetails] Valid book ID extracted:", validId);
     }
   }, [id, navigate]);
 
   const { book, isLoading, error } = useBookDetails(id || "");
+
+  // Debug the hook results
+  useEffect(() => {
+    console.log("📊 [BookDetails] Hook state updated:", {
+      bookId: id,
+      isLoading,
+      hasBook: !!book,
+      error,
+      bookTitle: book?.title,
+    });
+  }, [id, book, isLoading, error]);
 
   const handleBuyNow = async () => {
     if (!user) {
