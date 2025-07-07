@@ -25,16 +25,14 @@ const AccountInformation = ({
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: profile.name || "",
-    bio: profile.bio || "",
   });
 
   // Sync formData with profile changes
   useEffect(() => {
     setFormData({
       name: profile.name || "",
-      bio: profile.bio || "",
     });
-  }, [profile.name, profile.bio]);
+  }, [profile.name]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -52,7 +50,6 @@ const AccountInformation = ({
         .from("profiles")
         .update({
           name: formData.name,
-          bio: formData.bio,
           updated_at: new Date().toISOString(),
         })
         .eq("id", user.id)
@@ -65,7 +62,6 @@ const AccountInformation = ({
       const updatedProfile: UserProfile = {
         ...profile,
         name: data.name,
-        bio: data.bio,
         updated_at: data.updated_at,
         pickup_address:
           typeof data.pickup_address === "object" &&
@@ -103,7 +99,6 @@ const AccountInformation = ({
   const handleCancel = () => {
     setFormData({
       name: profile.name || "",
-      bio: profile.bio || "",
     });
     setIsEditing(false);
   };
@@ -128,23 +123,6 @@ const AccountInformation = ({
               ) : (
                 <p className="text-sm text-gray-600 mt-1">
                   {profile.name || "No name set"}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="bio">Bio</Label>
-              {isEditing ? (
-                <textarea
-                  id="bio"
-                  value={formData.bio}
-                  onChange={(e) => handleInputChange("bio", e.target.value)}
-                  placeholder="Tell us about yourself..."
-                  className="min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                />
-              ) : (
-                <p className="text-sm text-gray-600 mt-1">
-                  {profile.bio || "No bio added yet"}
                 </p>
               )}
             </div>
