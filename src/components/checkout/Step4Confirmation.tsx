@@ -195,16 +195,18 @@ Visit https://rebooked.co.za to track your order.
             </div>
           </div>
 
-          {/* Delivery Information */}
+          {/* 🚚 Delivery Method & Price */}
           <div>
             <h3 className="font-medium mb-2 flex items-center gap-2">
               <Truck className="w-4 h-4" />
-              Delivery Information
+              🚚 Delivery Method
             </h3>
             <div className="bg-gray-50 rounded-lg p-3">
               <div className="flex justify-between">
-                <span className="text-sm">{orderData.delivery_method}</span>
                 <span className="text-sm font-medium">
+                  {orderData.delivery_method}
+                </span>
+                <span className="text-sm font-bold">
                   R{orderData.delivery_price.toFixed(2)}
                 </span>
               </div>
@@ -216,16 +218,16 @@ Visit https://rebooked.co.za to track your order.
 
           <Separator />
 
-          {/* Payment Summary */}
+          {/* 💰 Price Breakdown */}
           <div>
-            <h3 className="font-medium mb-2">Payment Summary</h3>
-            <div className="space-y-2 text-sm">
+            <h3 className="font-medium mb-2">💰 Price Breakdown</h3>
+            <div className="space-y-2 text-sm bg-gray-50 rounded-lg p-3">
               <div className="flex justify-between">
                 <span>Book Price</span>
                 <span>R{orderData.book_price.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Delivery Fee</span>
+                <span>Delivery Price</span>
                 <span>R{orderData.delivery_price.toFixed(2)}</span>
               </div>
               <Separator />
@@ -235,6 +237,17 @@ Visit https://rebooked.co.za to track your order.
                   R{orderData.total_paid.toFixed(2)}
                 </span>
               </div>
+            </div>
+          </div>
+
+          {/* ✅ Status */}
+          <div>
+            <h3 className="font-medium mb-2">✅ Status</h3>
+            <div className="bg-green-50 rounded-lg p-3">
+              <p className="text-green-800 font-medium">PAID</p>
+              <p className="text-sm text-gray-600">
+                Payment completed successfully
+              </p>
             </div>
           </div>
         </CardContent>
