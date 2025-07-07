@@ -349,17 +349,7 @@ export const getBooksByUser = async (userId: string): Promise<Book[]> => {
       async () => {
         const { data: booksData, error: booksError } = await supabase
           .from("books")
-          .select(
-            `
-            *,
-            seller_street,
-            seller_city,
-            seller_province,
-            seller_postal_code,
-            seller_country,
-            seller_subaccount_code
-          `,
-          )
+          .select("*")
           .eq("seller_id", userId)
           .order("created_at", { ascending: false });
 
