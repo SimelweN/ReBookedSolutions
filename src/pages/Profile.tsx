@@ -35,7 +35,6 @@ import {
   Eye,
 } from "lucide-react";
 import UserProfileTabs from "@/components/profile/UserProfileTabs";
-import { saveUserAddresses, getUserAddresses } from "@/services/addressService";
 import { getUserBooks } from "@/services/book/bookQueries";
 import { deleteBook } from "@/services/book/bookMutations";
 import { Book } from "@/types/book";
