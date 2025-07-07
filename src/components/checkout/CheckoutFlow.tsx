@@ -99,8 +99,8 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ book }) => {
         .eq("id", bookData.seller_id)
         .single();
 
-      if (bookError || !bookData) {
-        throw new Error("Failed to load book details");
+      if (sellerError) {
+        console.warn("Could not fetch seller profile:", sellerError);
       }
 
       // Validate seller data from books table
