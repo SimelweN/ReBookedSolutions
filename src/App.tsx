@@ -24,6 +24,7 @@ const Profile = React.lazy(() => import("./pages/Profile"));
 const CreateListing = React.lazy(() => import("./pages/CreateListing"));
 const Cart = React.lazy(() => import("./pages/Cart"));
 const Checkout = React.lazy(() => import("./pages/Checkout"));
+const NewCheckout = React.lazy(() => import("./pages/NewCheckout"));
 const SellerMarketplace = React.lazy(() => import("./pages/SellerMarketplace"));
 const Shipping = React.lazy(() => import("./pages/Shipping"));
 const ContactUs = React.lazy(() => import("./pages/ContactUs"));
