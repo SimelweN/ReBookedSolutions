@@ -634,63 +634,72 @@ const AdminDashboard = () => {
           </Card>
 
           <Card className="border-0 shadow-lg bg-gradient-to-br from-emerald-500 to-emerald-600 text-white">
-            <CardContent className="p-6">
+            <CardContent className="p-3 md:p-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-emerald-100 text-sm font-medium">
-                    Active Books
+                <div className="min-w-0 flex-1">
+                  <p className="text-emerald-100 text-xs md:text-sm font-medium">
+                    {isMobile ? "Books" : "Active Books"}
                   </p>
-                  <p className="text-3xl font-bold">{stats.activeBooks}</p>
-                  <div className="flex items-center mt-2">
-                    <ArrowUpRight className="h-4 w-4 text-green-300" />
-                    <span className="text-sm text-green-300">
-                      +{stats.booksListedToday} today
+                  <p className="text-xl md:text-3xl font-bold">
+                    {stats.activeBooks}
+                  </p>
+                  <div className="flex items-center mt-1 md:mt-2">
+                    <ArrowUpRight className="h-3 w-3 md:h-4 md:w-4 text-green-300" />
+                    <span className="text-xs md:text-sm text-green-300 truncate">
+                      +{stats.booksListedToday} {isMobile ? "" : "today"}
                     </span>
                   </div>
                 </div>
-                <BookOpen className="h-8 w-8 text-emerald-200" />
+                <BookOpen className="h-6 w-6 md:h-8 md:w-8 text-emerald-200 flex-shrink-0" />
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-500 to-purple-600 text-white">
-            <CardContent className="p-6">
+            <CardContent className="p-3 md:p-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-purple-100 text-sm font-medium">
-                    Total Sales
+                <div className="min-w-0 flex-1">
+                  <p className="text-purple-100 text-xs md:text-sm font-medium">
+                    {isMobile ? "Sales" : "Total Sales"}
                   </p>
-                  <p className="text-3xl font-bold">
-                    R{stats.totalSales.toLocaleString()}
+                  <p className="text-xl md:text-3xl font-bold">
+                    R
+                    {isMobile
+                      ? stats.totalSales > 999
+                        ? `${(stats.totalSales / 1000).toFixed(1)}k`
+                        : stats.totalSales
+                      : stats.totalSales.toLocaleString()}
                   </p>
-                  <div className="flex items-center mt-2">
-                    <ArrowUpRight className="h-4 w-4 text-green-300" />
-                    <span className="text-sm text-green-300">
-                      {stats.salesThisMonth} this month
+                  <div className="flex items-center mt-1 md:mt-2">
+                    <ArrowUpRight className="h-3 w-3 md:h-4 md:w-4 text-green-300" />
+                    <span className="text-xs md:text-sm text-green-300 truncate">
+                      {stats.salesThisMonth} {isMobile ? "" : "this month"}
                     </span>
                   </div>
                 </div>
-                <DollarSign className="h-8 w-8 text-purple-200" />
+                <DollarSign className="h-6 w-6 md:h-8 md:w-8 text-purple-200 flex-shrink-0" />
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-0 shadow-lg bg-gradient-to-br from-amber-500 to-orange-500 text-white">
-            <CardContent className="p-6">
+            <CardContent className="p-3 md:p-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-orange-100 text-sm font-medium">
-                    Pending Reports
+                <div className="min-w-0 flex-1">
+                  <p className="text-orange-100 text-xs md:text-sm font-medium">
+                    {isMobile ? "Reports" : "Pending Reports"}
                   </p>
-                  <p className="text-3xl font-bold">{stats.pendingReports}</p>
-                  <div className="flex items-center mt-2">
-                    <AlertTriangle className="h-4 w-4 text-yellow-300" />
-                    <span className="text-sm text-yellow-300">
-                      Needs attention
+                  <p className="text-xl md:text-3xl font-bold">
+                    {stats.pendingReports}
+                  </p>
+                  <div className="flex items-center mt-1 md:mt-2">
+                    <AlertTriangle className="h-3 w-3 md:h-4 md:w-4 text-yellow-300" />
+                    <span className="text-xs md:text-sm text-yellow-300 truncate">
+                      {isMobile ? "Alert" : "Needs attention"}
                     </span>
                   </div>
                 </div>
-                <Activity className="h-8 w-8 text-orange-200" />
+                <Activity className="h-6 w-6 md:h-8 md:w-8 text-orange-200 flex-shrink-0" />
               </div>
             </CardContent>
           </Card>
