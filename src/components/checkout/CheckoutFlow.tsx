@@ -20,6 +20,7 @@ import Step1OrderSummary from "./Step1OrderSummary";
 import Step2DeliveryOptions from "./Step2DeliveryOptions";
 import Step3Payment from "./Step3Payment";
 import Step4Confirmation from "./Step4Confirmation";
+import AddressInput from "./AddressInput";
 import { toast } from "sonner";
 
 interface CheckoutFlowProps {
