@@ -89,6 +89,7 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
   const [deliveryFee, setDeliveryFee] = useState(0); // No fee until address + courier selected
   const [sellerInfo, setSellerInfo] = useState<any>(null);
   const [sellerInfoLoading, setSellerInfoLoading] = useState(true);
+  const [userProfileLoading, setUserProfileLoading] = useState(true);
 
   // Load seller information and user profile
   useEffect(() => {
