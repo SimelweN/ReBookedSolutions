@@ -50,6 +50,7 @@ const PaymentSuccess = ({
 }: PaymentSuccessProps) => {
   const navigate = useNavigate();
   const [countdown, setCountdown] = useState(10);
+  const [showReceipt, setShowReceipt] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
