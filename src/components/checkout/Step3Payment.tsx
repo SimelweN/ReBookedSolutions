@@ -105,18 +105,29 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
           },
         });
 
-      if (paymentError || !paymentData) {
-        throw new Error(
-          paymentError?.message || "Failed to initialize payment",
-        );
+      if (paymentError) {
+        console.error("Payment error:", paymentError);
+        throw new Error(paymentError.message || "Failed to initialize payment");
+      }
+
+      if (!paymentData) {
+        throw new Error("No response received from payment service");
+      }
+
+      if (!paymentData.success) {
+        throw new Error(paymentData.message || "Payment initialization failed");
       }
 
       // Redirect to Paystack checkout
-      if (paymentData.authorization_url) {
-        console.log("Redirecting to Paystack:", paymentData.authorization_url);
-        window.location.href = paymentData.authorization_url;
+      if (paymentData.data?.authorization_url) {
+        console.log(
+          "Redirecting to Paystack:",
+          paymentData.data.authorization_url,
+        );
+        window.location.href = paymentData.data.authorization_url;
       } else {
-        throw new Error("No payment URL received");
+        console.error("Payment response:", paymentData);
+        throw new Error("No payment URL received from Paystack");
       }
     } catch (err) {
       console.error("Payment initialization error:", err);
