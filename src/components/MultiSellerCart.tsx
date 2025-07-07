@@ -35,6 +35,7 @@ export const MultiSellerCart: React.FC<MultiSellerCartProps> = ({
     totalValue: 0,
   });
   const [loading, setLoading] = useState(false);
+  const [showExplainer, setShowExplainer] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
