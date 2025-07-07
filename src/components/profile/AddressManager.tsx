@@ -136,24 +136,24 @@ const AddressManager = () => {
     }
   };
 
-  const handlePickupAddressSelect = (address: any) => {
+  const handlePickupAddressSelect = (addressData: any) => {
     const formattedAddress: AddressData = {
-      streetAddress: address.formatted_address || "",
-      city: address.city || "",
-      province: address.province || "",
-      postalCode: address.postal_code || "",
-      instructions: "",
+      streetAddress: addressData.formattedAddress || "",
+      city: addressData.city || "",
+      province: addressData.province || "",
+      postalCode: addressData.postalCode || "",
+      instructions: pickupAddress.instructions, // Keep existing instructions
     };
     setPickupAddress(formattedAddress);
   };
 
-  const handleShippingAddressSelect = (address: any) => {
+  const handleShippingAddressSelect = (addressData: any) => {
     const formattedAddress: AddressData = {
-      streetAddress: address.formatted_address || "",
-      city: address.city || "",
-      province: address.province || "",
-      postalCode: address.postal_code || "",
-      instructions: "",
+      streetAddress: addressData.formattedAddress || "",
+      city: addressData.city || "",
+      province: addressData.province || "",
+      postalCode: addressData.postalCode || "",
+      instructions: shippingAddress.instructions, // Keep existing instructions
     };
     setShippingAddress(formattedAddress);
   };
@@ -364,7 +364,8 @@ const AddressManager = () => {
               <GoogleMapsAddressInput
                 onAddressSelect={handlePickupAddressSelect}
                 placeholder="Search for your pickup address..."
-                initialValue={pickupAddress.streetAddress}
+                defaultValue={pickupAddress.streetAddress}
+                label="Street Address"
               />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -467,7 +468,8 @@ const AddressManager = () => {
                 <GoogleMapsAddressInput
                   onAddressSelect={handleShippingAddressSelect}
                   placeholder="Search for your shipping address..."
-                  initialValue={shippingAddress.streetAddress}
+                  defaultValue={shippingAddress.streetAddress}
+                  label="Street Address"
                 />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
