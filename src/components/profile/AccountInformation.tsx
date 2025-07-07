@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,6 +29,14 @@ const AccountInformation = ({
     name: profile.name || "",
     bio: profile.bio || "",
   });
+
+  // Sync formData with profile changes
+  useEffect(() => {
+    setFormData({
+      name: profile.name || "",
+      bio: profile.bio || "",
+    });
+  }, [profile.name, profile.bio]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
