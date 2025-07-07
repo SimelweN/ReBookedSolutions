@@ -63,11 +63,23 @@ const CheckoutSuccess: React.FC = () => {
         reference,
       );
 
-      // Verify payment with Paystack
-      const { data: verificationResult, error: verificationError } =
-        await supabase.functions.invoke("verify-paystack-payment", {
+      // Verify payment with Paystack (with timeout)
+      const verificationPromise = supabase.functions.invoke(
+        "verify-paystack-payment",
+        {
           body: { reference },
-        });
+        },
+      );
+
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(
+          () => reject(new Error("Payment verification timeout")),
+          30000,
+        ),
+      );
+
+      const { data: verificationResult, error: verificationError } =
+        (await Promise.race([verificationPromise, timeoutPromise])) as any;
 
       console.log(
         "📊 [CheckoutSuccess] Verification result:",
