@@ -21,7 +21,20 @@ const CheckoutSuccess: React.FC = () => {
 
   useEffect(() => {
     processPaymentCallback();
-  }, []);
+
+    // Set a maximum loading time to prevent users from being stuck
+    const loadingTimeout = setTimeout(() => {
+      if (loading) {
+        console.warn("⏰ [CheckoutSuccess] Loading timeout reached");
+        setError(
+          "Payment verification is taking longer than expected. Please check your orders or try again.",
+        );
+        setLoading(false);
+      }
+    }, 45000); // 45 seconds timeout
+
+    return () => clearTimeout(loadingTimeout);
+  }, [loading]);
 
   const processPaymentCallback = async () => {
     try {
