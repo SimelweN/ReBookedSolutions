@@ -785,7 +785,7 @@ const Profile = () => {
           isOpen={isAddressDialogOpen}
           onClose={() => setIsAddressDialogOpen(false)}
           userId={user?.id || ""}
-          initialAddresses={userAddresses}
+          initialAddresses={null}
           onSuccess={async () => {
             try {
               console.log(
