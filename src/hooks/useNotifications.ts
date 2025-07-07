@@ -154,7 +154,21 @@ export const useNotifications = (): UseNotificationsResult => {
       } else if (typeof err === "string") {
         errorMessage = err;
       } else if (err && typeof err === "object") {
-        errorMessage = JSON.stringify(err);
+        // Handle Supabase error objects specifically
+        const errorObj = err as any;
+        if (errorObj.message) {
+          errorMessage = errorObj.message;
+        } else if (errorObj.error_description) {
+          errorMessage = errorObj.error_description;
+        } else if (errorObj.details) {
+          errorMessage = errorObj.details;
+        } else {
+          try {
+            errorMessage = JSON.stringify(err);
+          } catch (stringifyError) {
+            errorMessage = "Unknown error occurred";
+          }
+        }
       }
 
       toast.error(errorMessage);
