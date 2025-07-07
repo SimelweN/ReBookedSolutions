@@ -139,13 +139,7 @@ export const validateBuyerForCheckout = async (
 
     let buyerAddress;
     if (hasAddress) {
-      buyerAddress = {
-        street: addresses.shipping_address!.streetAddress,
-        city: addresses.shipping_address!.city,
-        province: addresses.shipping_address!.province,
-        postal_code: addresses.shipping_address!.postalCode,
-        country: "South Africa",
-      };
+      buyerAddress = normalizeAddress(addresses.shipping_address!);
     } else {
       errors.push("You must add your delivery address before checkout");
     }
