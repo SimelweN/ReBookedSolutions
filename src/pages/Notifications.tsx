@@ -38,11 +38,9 @@ const Notifications = () => {
   const {
     notifications,
     unreadCount,
-    isLoading,
-    hasError,
-    lastError,
-    refreshNotifications,
-    clearError,
+    loading: isLoading,
+    error: hasError,
+    refetch: refreshNotifications,
   } = useNotifications();
 
   const [isProcessing, setIsProcessing] = useState(false);
