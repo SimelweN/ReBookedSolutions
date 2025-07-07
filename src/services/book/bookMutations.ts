@@ -37,8 +37,9 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
     // Get the user's subaccount code for direct linking
     const userSubaccountCode = subaccountValidation.subaccountCode;
 
-    // Fetch province from user's pickup address
+    // Fetch seller address data from user's pickup address
     let province = null;
+    let sellerAddress = null;
     try {
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
@@ -48,22 +49,27 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
 
       if (profileError) {
         if (profileError.code === "PGRST116") {
-          // No profile found - this is okay, continue without province
-          console.log("No profile found for user, continuing without province");
+          // No profile found - this is okay, continue without address
+          console.log("No profile found for user, continuing without address");
         } else {
           console.warn(
-            "Error fetching user profile for province:",
+            "Error fetching user profile for address:",
             profileError,
           );
-          // Continue without province - it's not critical for book creation
+          // Continue without address - it's not critical for book creation
         }
-        return; // Exit the try block early
-      }
-
-      if (profileData?.pickup_address) {
-        // Check if pickup_address has province property
+      } else if (profileData?.pickup_address) {
+        // Extract seller address data for book table
         const pickupAddress = profileData.pickup_address as any;
-        if (pickupAddress?.province) {
+        if (pickupAddress && typeof pickupAddress === "object") {
+          sellerAddress = {
+            street: pickupAddress.streetAddress || pickupAddress.street || "",
+            city: pickupAddress.city || "",
+            province: pickupAddress.province || "",
+            postal_code:
+              pickupAddress.postalCode || pickupAddress.postal_code || "",
+            country: "South Africa",
+          };
           province = pickupAddress.province;
         } else if (typeof pickupAddress === "string") {
           // If pickup_address is a string, try to extract province from it
@@ -83,8 +89,8 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
         }
       }
     } catch (addressError) {
-      console.warn("Could not fetch user address for province:", addressError);
-      // Continue without province - it's not critical for book creation
+      console.warn("Could not fetch user address:", addressError);
+      // Continue without address - it's not critical for book creation
     }
 
     // Create book data with subaccount_code for direct linking
