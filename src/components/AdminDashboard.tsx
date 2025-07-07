@@ -525,7 +525,7 @@ const AdminDashboard = () => {
       // First try to get books with seller info
       const { data: booksData, error: booksError } = await supabase
         .from("books")
-        .select("id, title, author, price, status, created_at, seller_id")
+        .select("id, title, author, price, created_at")
         .order("created_at", { ascending: false })
         .limit(5);
 
@@ -538,29 +538,13 @@ const AdminDashboard = () => {
       }
 
       if (booksData && booksData.length > 0) {
-        // Get seller names separately to avoid relation issues
-        const sellerIds = [
-          ...new Set(booksData.map((book) => book.seller_id).filter(Boolean)),
-        ];
-        const { data: sellersData } = await supabase
-          .from("profiles")
-          .select("id, name")
-          .in("id", sellerIds);
-
-        const sellersMap = new Map();
-        if (sellersData) {
-          sellersData.forEach((seller) => {
-            sellersMap.set(seller.id, seller.name || "Unknown Seller");
-          });
-        }
-
         const formattedBooks = booksData.map((book) => ({
           id: book.id,
           title: book.title || "Untitled Book",
           author: book.author || "Unknown Author",
           price: book.price || 0,
-          seller: sellersMap.get(book.seller_id) || "Unknown Seller",
-          status: book.status || "active",
+          seller: "System User",
+          status: "active",
         }));
         setRecentBooks(formattedBooks);
       } else {
