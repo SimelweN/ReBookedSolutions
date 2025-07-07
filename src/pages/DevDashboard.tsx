@@ -73,6 +73,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 import CommitSystemService from "@/services/commitSystemService";
 
 interface TestResult {
@@ -96,6 +97,7 @@ interface SystemHealth {
 const DevDashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   // State management
   const [activeTab, setActiveTab] = useState("overview");
@@ -657,37 +659,43 @@ const DevDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-50 p-3 md:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
+        <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-              Development Dashboard
+            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+              {isMobile ? "Dev Dashboard" : "Development Dashboard"}
             </h1>
-            <p className="text-gray-600 mt-1">
-              Comprehensive testing suite for Edge Functions, Database, and
-              System Components
+            <p className="text-gray-600 mt-1 text-sm md:text-base">
+              {isMobile
+                ? "Testing suite for system components"
+                : "Comprehensive testing suite for Edge Functions, Database, and System Components"}
             </p>
           </div>
-          <div className="flex items-center space-x-3">
-            <Button onClick={() => navigate(-1)} variant="outline">
+          <div className="flex items-center space-x-2 md:space-x-3">
+            <Button
+              onClick={() => navigate(-1)}
+              variant="outline"
+              size={isMobile ? "sm" : "default"}
+            >
               ← Back
             </Button>
             <Button
               onClick={runAllTests}
               disabled={isRunningTests}
               className="bg-purple-600 hover:bg-purple-700"
+              size={isMobile ? "sm" : "default"}
             >
               {isRunningTests ? (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  Running Tests...
+                  {isMobile ? "Testing..." : "Running Tests..."}
                 </>
               ) : (
                 <>
                   <Play className="h-4 w-4 mr-2" />
-                  Run All Tests
+                  {isMobile ? "Run Tests" : "Run All Tests"}
                 </>
               )}
             </Button>
@@ -695,20 +703,24 @@ const DevDashboard: React.FC = () => {
         </div>
 
         {/* System Health Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
           {Object.entries(systemHealth).map(([component, status]) => (
             <Card
               key={component}
               className={`border ${getHealthColor(status)}`}
             >
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-3">
+              <CardContent className="p-3 md:p-4">
+                <div className="flex items-center space-x-2 md:space-x-3">
                   {getHealthIcon(status)}
-                  <div>
-                    <p className="font-medium capitalize">
-                      {component.replace(/([A-Z])/g, " $1")}
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium capitalize text-xs md:text-sm truncate">
+                      {isMobile
+                        ? component.charAt(0).toUpperCase() +
+                          component.slice(1, 8) +
+                          (component.length > 8 ? "..." : "")
+                        : component.replace(/([A-Z])/g, " $1")}
                     </p>
-                    <p className="text-sm capitalize">{status}</p>
+                    <p className="text-xs md:text-sm capitalize">{status}</p>
                   </div>
                 </div>
               </CardContent>
@@ -720,54 +732,71 @@ const DevDashboard: React.FC = () => {
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
-          className="space-y-6"
+          className="space-y-4 md:space-y-6"
         >
-          <TabsList className="grid grid-cols-7 w-full bg-white shadow-sm border">
-            <TabsTrigger
-              value="overview"
-              className="flex items-center space-x-2"
+          <div className="overflow-x-auto">
+            <TabsList
+              className={`${
+                isMobile
+                  ? "inline-flex h-9 items-center justify-start rounded-md bg-white shadow-sm border p-1 text-muted-foreground min-w-max"
+                  : "grid grid-cols-7 w-full bg-white shadow-sm border"
+              }`}
             >
-              <TestTube className="h-4 w-4" />
-              <span>Overview</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="database"
-              className="flex items-center space-x-2"
-            >
-              <Database className="h-4 w-4" />
-              <span>Database</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="functions"
-              className="flex items-center space-x-2"
-            >
-              <Cloud className="h-4 w-4" />
-              <span>Edge Functions</span>
-            </TabsTrigger>
-            <TabsTrigger value="commit" className="flex items-center space-x-2">
-              <Clock className="h-4 w-4" />
-              <span>Commit System</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="environment"
-              className="flex items-center space-x-2"
-            >
-              <Settings className="h-4 w-4" />
-              <span>Environment</span>
-            </TabsTrigger>
-            <TabsTrigger value="tests" className="flex items-center space-x-2">
-              <Activity className="h-4 w-4" />
-              <span>Test Results</span>
-            </TabsTrigger>
-            <TabsTrigger value="tools" className="flex items-center space-x-2">
-              <Terminal className="h-4 w-4" />
-              <span>Dev Tools</span>
-            </TabsTrigger>
-          </TabsList>
+              <TabsTrigger
+                value="overview"
+                className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+              >
+                <TestTube className="h-3 w-3 md:h-4 md:w-4" />
+                <span>{isMobile ? "Overview" : "Overview"}</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="database"
+                className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+              >
+                <Database className="h-3 w-3 md:h-4 md:w-4" />
+                <span>{isMobile ? "DB" : "Database"}</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="functions"
+                className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+              >
+                <Cloud className="h-3 w-3 md:h-4 md:w-4" />
+                <span>{isMobile ? "Functions" : "Edge Functions"}</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="commit"
+                className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+              >
+                <Clock className="h-3 w-3 md:h-4 md:w-4" />
+                <span>{isMobile ? "Commit" : "Commit System"}</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="environment"
+                className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+              >
+                <Settings className="h-3 w-3 md:h-4 md:w-4" />
+                <span>{isMobile ? "Env" : "Environment"}</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="tests"
+                className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+              >
+                <Activity className="h-3 w-3 md:h-4 md:w-4" />
+                <span>{isMobile ? "Tests" : "Test Results"}</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="tools"
+                className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+              >
+                <Terminal className="h-3 w-3 md:h-4 md:w-4" />
+                <span>{isMobile ? "Tools" : "Dev Tools"}</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <TabsContent value="overview" className="space-y-4 md:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               {/* Quick Tests */}
               <Card>
                 <CardHeader>
