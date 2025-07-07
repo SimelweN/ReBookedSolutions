@@ -272,8 +272,12 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
   };
 
   const loadUserProfile = async () => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      setUserProfileLoading(false);
+      return;
+    }
 
+    setUserProfileLoading(true);
     try {
       console.log("🏠 Loading user address data for checkout...");
       // Use simplified address service to get user's shipping address
