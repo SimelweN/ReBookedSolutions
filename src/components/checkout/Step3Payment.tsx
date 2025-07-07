@@ -66,12 +66,19 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
       // Check if seller has subaccount
       if (!orderSummary.book.seller_subaccount_code) {
         // Try to get seller's subaccount from database
-        const { data: sellerSubaccount } = await supabase
-          .from("banking_subaccounts")
-          .select("subaccount_code")
-          .eq("user_id", orderSummary.book.seller_id)
-          .eq("is_active", true)
-          .single();
+        const { data: sellerSubaccount, error: subaccountError } =
+          await supabase
+            .from("banking_subaccounts")
+            .select("subaccount_code, status")
+            .eq("user_id", orderSummary.book.seller_id)
+            .eq("status", "active")
+            .single();
+
+        console.log("Fetching seller subaccount:", {
+          seller_id: orderSummary.book.seller_id,
+          result: sellerSubaccount,
+          error: subaccountError,
+        });
 
         if (!sellerSubaccount?.subaccount_code) {
           throw new Error(
