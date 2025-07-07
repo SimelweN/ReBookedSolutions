@@ -297,6 +297,11 @@ export const getBookById = async (id: string): Promise<Book | null> => {
           .single();
 
         if (bookError) {
+          if (bookError.code === "PGRST116") {
+            // Not found - not an error, just return null
+            console.log(`Book not found with ID: ${id}`);
+            return null;
+          }
           throw bookError;
         }
 
@@ -307,15 +312,16 @@ export const getBookById = async (id: string): Promise<Book | null> => {
           .eq("id", bookData.seller_id)
           .single();
 
-        if (bookError) {
-          if (bookError.code === "PGRST116") {
-            // Not found - not an error, just return null
-            console.log(`Book not found with ID: ${id}`);
-            return null;
-          }
+        // Profile error is not critical - continue without it
+        if (profileError) {
+          console.warn(`Could not fetch profile for seller ${bookData.seller_id}:`, profileError);
+        }
 
-          const errorMessage = bookError.message || "Unknown database error";
-          const errorCode = bookError.code || "NO_CODE";
+        // Combine book and profile data
+        const bookDataWithProfile = {
+          ...bookData,
+          profiles: profileData || null,
+        };
 
           logDetailedError("Failed to fetch book by ID", {
             bookId: id,
