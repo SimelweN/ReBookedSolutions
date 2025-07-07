@@ -89,18 +89,93 @@ const DemoTester: React.FC = () => {
     try {
       toast.info("Creating demo order for commit testing...");
 
-      // Import required modules
-      const { useAuth } = await import("@/contexts/AuthContext");
       const { supabase } = await import("@/integrations/supabase/client");
 
-      // Note: This is a simplified demo creation that would need proper auth context
-      // In real usage, this would be called from a component with auth context
-      console.log("Demo order functionality available in commit testing");
+      // Get current user to use as buyer
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Please sign in to create a demo order");
+        return;
+      }
 
-      toast.success(
-        "Demo order creation test completed! Check console for details.",
-      );
+      // Create a demo order with current user as buyer and a different seller
+      const demoSellerId = "demo-seller-id"; // We'll use a placeholder
+      const commitDeadline = new Date();
+      commitDeadline.setHours(commitDeadline.getHours() + 48);
+
+      const demoOrder = {
+        buyer_email: user.email,
+        buyer_id: user.id,
+        seller_id: demoSellerId, // This would normally be a real seller's ID
+        amount: 15000, // R150.00 in kobo
+        status: "paid",
+        paystack_ref: `demo_${Date.now()}`,
+        commit_deadline: commitDeadline.toISOString(),
+        paid_at: new Date().toISOString(),
+        items: [
+          {
+            book_id: "demo-book-1",
+            title: "Demo Textbook: Mathematics 101",
+            author: "Dr. Demo Author",
+            price: 150.0,
+            condition: "Good",
+            seller_id: demoSellerId,
+          },
+        ],
+        metadata: {
+          demo_order: true,
+          created_by: "demo_tester",
+        },
+      };
+
+      const { data, error } = await supabase
+        .from("orders")
+        .insert(demoOrder)
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Demo order creation error:", error);
+        toast.error(`Failed to create demo order: ${error.message}`);
+        return;
+      }
+
+      console.log("✅ Demo order created:", data);
+
+      // Try to create a notification for testing
+      try {
+        const { error: notificationError } = await supabase
+          .from("order_notifications")
+          .insert({
+            order_id: data.id,
+            user_id: demoSellerId,
+            type: "commit_required",
+            title: "Demo Payment Received - Commit Required",
+            message: `Demo payment received for order #${data.id.slice(0, 8)}. You have 48 hours to commit to this sale.`,
+            read: false,
+          });
+
+        if (notificationError) {
+          console.warn("Demo notification creation failed:", notificationError);
+        } else {
+          console.log("✅ Demo notification created");
+        }
+      } catch (notifError) {
+        console.warn("Demo notification error:", notifError);
+      }
+
+      toast.success(`Demo order created! Order ID: ${data.id.slice(0, 8)}`);
+      console.log("Demo order details:", {
+        id: data.id,
+        seller_id: data.seller_id,
+        status: data.status,
+        commit_deadline: data.commit_deadline,
+        amount: data.amount,
+      });
     } catch (error) {
+      console.error("Demo order creation error:", error);
       toast.error("Demo order creation error: " + error);
     }
   };
