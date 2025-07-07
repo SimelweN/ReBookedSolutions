@@ -134,6 +134,21 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
 
   const loadSellerInfo = async () => {
     setSellerInfoLoading(true);
+
+    // Set a timeout to prevent hanging indefinitely
+    const timeoutId = setTimeout(() => {
+      console.warn("⏰ Seller info loading timed out, using fallback");
+      setSellerAddress({
+        street: "University of Cape Town",
+        city: "Cape Town",
+        province: "Western Cape",
+        postal_code: "7700",
+        country: "South Africa",
+      });
+      setSellerInfoLoading(false);
+      toast.info("Using default location for delivery calculations");
+    }, 10000); // 10 second timeout
+
     try {
       console.log("Loading seller info for seller_id:", book.seller_id);
 
