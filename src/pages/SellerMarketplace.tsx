@@ -254,7 +254,7 @@ const SellerMarketplace = () => {
 
               <div className="flex-1 text-center md:text-left">
                 <h1 className="text-3xl font-bold text-gray-900">
-                  Seller: {profile.id}
+                  {profile.name}'s ReBooked Mini
                 </h1>
                 {profile.bio && (
                   <p className="text-gray-600 mt-2">{profile.bio}</p>
@@ -446,7 +446,7 @@ const SellerMarketplace = () => {
                     <div className="flex items-center justify-between mb-3">
                       <Badge variant="outline">{book.category}</Badge>
                       <div className="text-xs text-gray-500">
-                        Seller: {profile.id}
+                        Seller: {profile.name}
                       </div>
                     </div>
 
