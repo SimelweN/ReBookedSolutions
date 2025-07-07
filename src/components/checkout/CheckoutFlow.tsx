@@ -74,17 +74,7 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ book }) => {
       // Get fresh book data with seller information from books table
       const { data: bookData, error: bookError } = await supabase
         .from("books")
-        .select(
-          `
-          *,
-          seller_street,
-          seller_city,
-          seller_province,
-          seller_postal_code,
-          seller_country,
-          seller_subaccount_code
-        `,
-        )
+        .select("*")
         .eq("id", book.id)
         .single();
 
