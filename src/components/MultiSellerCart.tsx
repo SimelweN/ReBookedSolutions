@@ -11,11 +11,13 @@ import {
   Package,
   AlertTriangle,
   X,
+  Info,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { MultiSellerCartService } from "@/services/multiSellerCartService";
 import { SellerCart, MultiSellerCartState } from "@/types/multiSellerCart";
+import MultiSellerCartExplainer from "./MultiSellerCartExplainer";
 
 interface MultiSellerCartProps {
   isOpen: boolean;
