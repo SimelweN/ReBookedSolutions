@@ -207,13 +207,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             // Batch state updates to prevent multiple re-renders and glitching
             const fallbackProfile = createUserFallbackProfile(session.user);
 
-            // Use startTransition for smooth state updates
-            startTransition(() => {
-              setSession(session);
-              setUser(session.user);
-              setProfile(fallbackProfile);
-              setIsLoading(false);
-            });
+            // Add small delay to prevent glitching between states
+            setTimeout(() => {
+              // Use startTransition for smooth state updates
+              startTransition(() => {
+                setSession(session);
+                setUser(session.user);
+                setProfile(fallbackProfile);
+                setIsLoading(false);
+              });
+            }, 100); // Small delay to stabilize
 
             console.log(
               "✅ [AuthContext] Auth state updated for user:",
