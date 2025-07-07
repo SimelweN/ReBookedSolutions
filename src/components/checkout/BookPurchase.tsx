@@ -88,6 +88,7 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
     useState<CourierQuote | null>(null);
   const [deliveryFee, setDeliveryFee] = useState(0); // No fee until address + courier selected
   const [sellerInfo, setSellerInfo] = useState<any>(null);
+  const [sellerInfoLoading, setSellerInfoLoading] = useState(true);
 
   // Load seller information and user profile
   useEffect(() => {
@@ -95,11 +96,13 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
 
     if (!book.seller_id) {
       setError("Invalid book data: missing seller information");
+      setSellerInfoLoading(false);
       return;
     }
 
     if (!user?.id) {
       setError("User not authenticated");
+      setSellerInfoLoading(false);
       return;
     }
 
