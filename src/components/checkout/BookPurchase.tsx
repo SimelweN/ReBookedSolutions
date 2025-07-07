@@ -141,8 +141,9 @@ const BookPurchase: React.FC<BookPurchaseProps> = ({
       }
 
       // Ensure we always set a seller address
-      console.log("Setting seller address:", deliveryAddress);
+      console.log("✅ Setting seller address:", deliveryAddress);
       setSellerAddress(deliveryAddress);
+      console.log("✅ Seller address set successfully");
 
       // Get basic seller info from profiles
       const { data: sellerProfile, error: sellerError } = await supabase
