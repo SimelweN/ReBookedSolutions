@@ -85,17 +85,19 @@ const BookDetails = () => {
       console.log("BookDetails - Original book data:", book);
       console.log("BookDetails - seller_id:", book.seller_id);
 
-      // ❗ DISALLOW checkout if seller is not ready
-      const { validateSellerForListing } = await import(
+      // ✅ Check if buyer can proceed to checkout (only need shipping address)
+      const { validateBuyerForCheckout } = await import(
         "@/services/checkoutValidationService"
       );
-      const sellerValidation = await validateSellerForListing(book.seller_id);
+      const buyerValidation = await validateBuyerForCheckout(user.id);
 
-      if (!sellerValidation.isValid) {
-        const errorMsg = `Cannot purchase this book: ${sellerValidation.errors.join(", ")}`;
+      if (!buyerValidation.isValid) {
+        const errorMsg = `${buyerValidation.errors.join(", ")}`;
         toast.error(errorMsg);
-        console.error("❌ Seller validation failed:", sellerValidation);
-        return;
+        console.log(
+          "ℹ️ Buyer needs to add shipping address, but proceeding to checkout",
+        );
+        // Don't return here - let checkout flow handle address collection
       }
 
       const bookForPurchase = {
