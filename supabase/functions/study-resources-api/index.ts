@@ -345,10 +345,7 @@ async function verifyResource(
     .single();
 
   if (!profile?.is_admin) {
-    return new Response(JSON.stringify({ error: "Admin access required" }), {
-      status: 403,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createErrorResponse("Admin access required", 403);
   }
 
   const { data, error } = await supabase
