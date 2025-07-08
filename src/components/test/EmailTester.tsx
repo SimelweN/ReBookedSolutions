@@ -1,488 +1,238 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import {
-  Mail,
-  Send,
-  Clock,
-  CheckCircle,
-  XCircle,
-  RefreshCw,
-} from "lucide-react";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { Loader2, Mail, CheckCircle, XCircle } from "lucide-react";
+import EmailService from "@/services/emailService";
 
-interface EmailTest {
-  id: string;
-  type: string;
-  status: "pending" | "sending" | "sent" | "failed";
-  to: string;
-  template?: string;
-  timestamp: string;
-  message?: string;
-}
-
-const EMAIL_TEMPLATES = {
-  welcome: "Welcome Email",
-  book_sold: "Book Sold Notification",
-  book_purchased: "Book Purchase Confirmation",
-  commit_reminder: "Commit Reminder",
-  sale_expired: "Sale Expired",
-  password_reset: "Password Reset",
-};
-
-const EmailTester = () => {
-  const [tests, setTests] = useState<EmailTest[]>([]);
-  const [customEmail, setCustomEmail] = useState({
-    to: "",
-    subject: "",
-    htmlContent: "",
-    textContent: "",
-  });
-  const [templateEmail, setTemplateEmail] = useState({
-    to: "",
-    templateId: "",
-    variables: "{}",
-  });
+export const EmailTester: React.FC = () => {
+  const [email, setEmail] = useState("test@example.com");
+  const [subject, setSubject] = useState("Test Email from ReBooked Solutions");
+  const [message, setMessage] = useState(
+    "This is a test email to verify the email service is working correctly.",
+  );
   const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<{
+    success: boolean;
+    message: string;
+  } | null>(null);
 
-  const updateTestStatus = (
-    id: string,
-    status: EmailTest["status"],
-    message?: string,
-  ) => {
-    setTests((prev) =>
-      prev.map((test) =>
-        test.id === id ? { ...test, status, message } : test,
-      ),
-    );
-  };
-
-  const sendCustomEmail = async () => {
-    if (!customEmail.to || !customEmail.subject) {
-      toast.error("Please fill in required fields");
-      return;
-    }
-
-    const testId = Date.now().toString();
-    const newTest: EmailTest = {
-      id: testId,
-      type: "Custom Email",
-      status: "sending",
-      to: customEmail.to,
-      timestamp: new Date().toISOString(),
-    };
-
-    setTests((prev) => [newTest, ...prev]);
+  const handleSendTestEmail = async () => {
     setIsLoading(true);
+    setResult(null);
 
     try {
-      const { data, error } = await supabase.functions.invoke(
-        "email-automation",
-        {
-          body: {
-            action: "send",
-            to: customEmail.to,
-            subject: customEmail.subject,
-            htmlContent:
-              customEmail.htmlContent || `<p>${customEmail.textContent}</p>`,
-            textContent: customEmail.textContent,
-          },
-        },
-      );
+      const success = await EmailService.sendWelcomeEmail({
+        name: "Test User",
+        email: email,
+      });
 
-      if (error) throw error;
-
-      updateTestStatus(testId, "sent", "Email sent successfully");
-      toast.success("Custom email sent successfully!");
-
-      // Clear form
-      setCustomEmail({ to: "", subject: "", htmlContent: "", textContent: "" });
-    } catch (error: any) {
-      updateTestStatus(testId, "failed", error.message);
-      toast.error(`Failed to send email: ${error.message}`);
+      setResult({
+        success,
+        message: success
+          ? "Welcome email sent successfully!"
+          : "Email sending failed",
+      });
+    } catch (error) {
+      console.error("Email test error:", error);
+      setResult({
+        success: false,
+        message: `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const sendTemplateEmail = async () => {
-    if (!templateEmail.to || !templateEmail.templateId) {
-      toast.error("Please select template and enter recipient email");
-      return;
-    }
-
-    const testId = Date.now().toString();
-    const newTest: EmailTest = {
-      id: testId,
-      type: "Template Email",
-      status: "sending",
-      to: templateEmail.to,
-      template:
-        EMAIL_TEMPLATES[
-          templateEmail.templateId as keyof typeof EMAIL_TEMPLATES
-        ],
-      timestamp: new Date().toISOString(),
-    };
-
-    setTests((prev) => [newTest, ...prev]);
+  const handleSendCustomEmail = async () => {
     setIsLoading(true);
+    setResult(null);
 
     try {
-      let variables = {};
-      try {
-        variables = JSON.parse(templateEmail.variables);
-      } catch {
-        variables = {};
+      // Create a custom HTML message
+      const htmlContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f9f9f9;">
+          <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <h2 style="color: #1f4e3d; margin-bottom: 20px;">Custom Test Email</h2>
+            <p style="color: #333; line-height: 1.6;">${message}</p>
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; text-align: center; color: #666; font-size: 14px;">
+              <p>© 2024 ReBooked Solutions. All rights reserved.</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Use the private sendEmail method via a workaround
+      const { supabase } = await import("@/integrations/supabase/client");
+
+      const payload = {
+        to: email,
+        subject: subject,
+        html: htmlContent,
+        from: {
+          name: "ReBooked Solutions",
+          email: "noreply@rebookedsolutions.co.za",
+        },
+      };
+
+      const { data, error } = await supabase.functions.invoke(
+        "send-email-notification",
+        {
+          body: payload,
+        },
+      );
+
+      if (error) {
+        throw new Error(error.message || "Edge function error");
       }
 
-      const { data, error } = await supabase.functions.invoke(
-        "email-automation",
-        {
-          body: {
-            action: "send-template",
-            templateId: templateEmail.templateId,
-            to: templateEmail.to,
-            variables,
-          },
-        },
-      );
-
-      if (error) throw error;
-
-      updateTestStatus(testId, "sent", "Template email sent successfully");
-      toast.success("Template email sent successfully!");
-
-      // Clear form
-      setTemplateEmail({ to: "", templateId: "", variables: "{}" });
-    } catch (error: any) {
-      updateTestStatus(testId, "failed", error.message);
-      toast.error(`Failed to send template email: ${error.message}`);
+      setResult({
+        success: data?.success || false,
+        message: data?.success
+          ? "Custom email sent successfully!"
+          : `Email sending failed: ${data?.error || data?.message || "Unknown error"}`,
+      });
+    } catch (error) {
+      console.error("Custom email test error:", error);
+      setResult({
+        success: false,
+        message: `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const testEmailAutomation = async () => {
-    const testEmail = "test@example.com";
-    const testId = Date.now().toString();
-
-    const newTest: EmailTest = {
-      id: testId,
-      type: "Automation Test",
-      status: "sending",
-      to: testEmail,
-      timestamp: new Date().toISOString(),
-    };
-
-    setTests((prev) => [newTest, ...prev]);
-    setIsLoading(true);
-
-    try {
-      const { data, error } = await supabase.functions.invoke(
-        "email-automation",
-        {
-          body: {
-            action: "trigger-automation",
-            trigger: "user_registered",
-            data: {
-              email: testEmail,
-              name: "Test User",
-            },
-          },
-        },
-      );
-
-      if (error) throw error;
-
-      updateTestStatus(testId, "sent", "Automation trigger sent successfully");
-      toast.success("Email automation triggered successfully!");
-    } catch (error: any) {
-      updateTestStatus(testId, "failed", error.message);
-      toast.error(`Failed to trigger automation: ${error.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const getTestVariablesExample = (templateId: string) => {
-    const examples = {
-      welcome: '{"name": "John Doe", "siteUrl": "https://rebooked.co.za"}',
-      book_sold:
-        '{"sellerName": "John", "bookTitle": "Physics 101", "bookAuthor": "Dr. Smith", "buyerName": "Jane", "salePrice": "500", "sellerAmount": "450", "orderReference": "ORD123", "commitUrl": "https://rebooked.co.za/commit/123"}',
-      book_purchased:
-        '{"buyerName": "Jane", "bookTitle": "Physics 101", "bookAuthor": "Dr. Smith", "sellerName": "John", "totalAmount": "500", "orderReference": "ORD123", "orderUrl": "https://rebooked.co.za/orders/123"}',
-      commit_reminder:
-        '{"sellerName": "John", "bookTitle": "Physics 101", "commitUrl": "https://rebooked.co.za/commit/123"}',
-      sale_expired:
-        '{"buyerName": "Jane", "bookTitle": "Physics 101", "refundAmount": "500", "browseUrl": "https://rebooked.co.za/books"}',
-      password_reset:
-        '{"name": "John", "resetUrl": "https://rebooked.co.za/reset-password?token=abc123"}',
-    };
-    return examples[templateId as keyof typeof examples] || "{}";
-  };
-
-  const getStatusIcon = (status: EmailTest["status"]) => {
-    switch (status) {
-      case "pending":
-        return <Clock className="h-4 w-4 text-gray-500" />;
-      case "sending":
-        return <RefreshCw className="h-4 w-4 text-blue-500 animate-spin" />;
-      case "sent":
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case "failed":
-        return <XCircle className="h-4 w-4 text-red-500" />;
-      default:
-        return <Clock className="h-4 w-4 text-gray-500" />;
-    }
-  };
-
-  const getStatusBadge = (status: EmailTest["status"]) => {
-    const variants = {
-      pending: "secondary",
-      sending: "default",
-      sent: "default",
-      failed: "destructive",
-    } as const;
-
-    const colors = {
-      pending: "text-gray-600 bg-gray-100",
-      sending: "text-blue-600 bg-blue-100",
-      sent: "text-green-600 bg-green-100",
-      failed: "text-red-600 bg-red-100",
-    };
-
-    return (
-      <Badge variant={variants[status]} className={colors[status]}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </Badge>
-    );
-  };
+  const testEmailTypes = [
+    {
+      name: "Welcome Email",
+      description: "Test the welcome email template",
+      action: handleSendTestEmail,
+    },
+    {
+      name: "Custom Email",
+      description: "Send a custom email with your own content",
+      action: handleSendCustomEmail,
+    },
+  ];
 
   return (
-    <div className="space-y-6">
-      {/* Custom Email Testing */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Mail className="h-5 w-5" />
-            Custom Email Testing
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="custom-to">To Email</Label>
-              <Input
-                id="custom-to"
-                type="email"
-                placeholder="recipient@example.com"
-                value={customEmail.to}
-                onChange={(e) =>
-                  setCustomEmail((prev) => ({ ...prev, to: e.target.value }))
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="custom-subject">Subject</Label>
-              <Input
-                id="custom-subject"
-                placeholder="Email subject"
-                value={customEmail.subject}
-                onChange={(e) =>
-                  setCustomEmail((prev) => ({
-                    ...prev,
-                    subject: e.target.value,
-                  }))
-                }
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="custom-html">HTML Content (Optional)</Label>
-            <Textarea
-              id="custom-html"
-              placeholder="<h1>Hello World</h1><p>This is a test email</p>"
-              rows={4}
-              value={customEmail.htmlContent}
-              onChange={(e) =>
-                setCustomEmail((prev) => ({
-                  ...prev,
-                  htmlContent: e.target.value,
-                }))
-              }
+    <Card className="w-full max-w-2xl mx-auto">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Mail className="w-5 h-5" />
+          Email Service Tester
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-medium mb-2 block">
+              Test Email Address
+            </label>
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter email to test"
+              disabled={isLoading}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="custom-text">Text Content</Label>
-            <Textarea
-              id="custom-text"
-              placeholder="Plain text version of your email"
-              rows={3}
-              value={customEmail.textContent}
-              onChange={(e) =>
-                setCustomEmail((prev) => ({
-                  ...prev,
-                  textContent: e.target.value,
-                }))
-              }
-            />
-          </div>
-          <Button
-            onClick={sendCustomEmail}
-            disabled={isLoading}
-            className="w-full"
-          >
-            <Send className="h-4 w-4 mr-2" />
-            Send Custom Email
-          </Button>
-        </CardContent>
-      </Card>
 
-      {/* Template Email Testing */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Mail className="h-5 w-5" />
-            Template Email Testing
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="template-to">To Email</Label>
-              <Input
-                id="template-to"
-                type="email"
-                placeholder="recipient@example.com"
-                value={templateEmail.to}
-                onChange={(e) =>
-                  setTemplateEmail((prev) => ({ ...prev, to: e.target.value }))
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="template-select">Email Template</Label>
-              <Select
-                value={templateEmail.templateId}
-                onValueChange={(value) => {
-                  setTemplateEmail((prev) => ({
-                    ...prev,
-                    templateId: value,
-                    variables: getTestVariablesExample(value),
-                  }));
-                }}
+          <div>
+            <label className="text-sm font-medium mb-2 block">
+              Subject (for custom email)
+            </label>
+            <Input
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="Email subject"
+              disabled={isLoading}
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium mb-2 block">
+              Message (for custom email)
+            </label>
+            <Textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Email message content"
+              rows={4}
+              disabled={isLoading}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          {testEmailTypes.map((test) => (
+            <div
+              key={test.name}
+              className="flex items-center justify-between p-3 border rounded-lg"
+            >
+              <div>
+                <h4 className="font-medium">{test.name}</h4>
+                <p className="text-sm text-muted-foreground">
+                  {test.description}
+                </p>
+              </div>
+              <Button
+                onClick={test.action}
+                disabled={isLoading || !email}
+                size="sm"
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a template" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(EMAIL_TEMPLATES).map(([id, name]) => (
-                    <SelectItem key={id} value={id}>
-                      {name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Send Test"
+                )}
+              </Button>
             </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="template-variables">
-              Template Variables (JSON)
-            </Label>
-            <Textarea
-              id="template-variables"
-              placeholder='{"name": "John Doe", "siteUrl": "https://rebooked.co.za"}'
-              rows={4}
-              value={templateEmail.variables}
-              onChange={(e) =>
-                setTemplateEmail((prev) => ({
-                  ...prev,
-                  variables: e.target.value,
-                }))
-              }
-            />
-          </div>
-          <div className="flex gap-2">
-            <Button
-              onClick={sendTemplateEmail}
-              disabled={isLoading}
-              className="flex-1"
-            >
-              <Send className="h-4 w-4 mr-2" />
-              Send Template Email
-            </Button>
-            <Button
-              onClick={testEmailAutomation}
-              disabled={isLoading}
-              variant="outline"
-            >
-              Test Automation
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+          ))}
+        </div>
 
-      {/* Email Test Results */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Email Test Results</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {tests.length === 0 ? (
-            <Alert>
-              <AlertDescription>
-                No email tests run yet. Send an email above to see results here.
+        {result && (
+          <Alert
+            className={
+              result.success
+                ? "border-green-200 bg-green-50"
+                : "border-red-200 bg-red-50"
+            }
+          >
+            <div className="flex items-center gap-2">
+              {result.success ? (
+                <CheckCircle className="w-4 h-4 text-green-600" />
+              ) : (
+                <XCircle className="w-4 h-4 text-red-600" />
+              )}
+              <AlertDescription
+                className={result.success ? "text-green-800" : "text-red-800"}
+              >
+                {result.message}
               </AlertDescription>
-            </Alert>
-          ) : (
-            <div className="space-y-3">
-              {tests.map((test) => (
-                <div
-                  key={test.id}
-                  className="flex items-center justify-between p-3 border rounded-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    {getStatusIcon(test.status)}
-                    <div>
-                      <div className="font-medium">{test.type}</div>
-                      <div className="text-sm text-gray-500">
-                        To: {test.to}{" "}
-                        {test.template && `• Template: ${test.template}`}
-                      </div>
-                      {test.message && (
-                        <div className="text-sm text-gray-600 mt-1">
-                          {test.message}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {getStatusBadge(test.status)}
-                    <div className="text-xs text-gray-500">
-                      {new Date(test.timestamp).toLocaleTimeString()}
-                    </div>
-                  </div>
-                </div>
-              ))}
             </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+          </Alert>
+        )}
+
+        <div className="text-sm text-muted-foreground space-y-2">
+          <p>
+            <strong>Environment Variables Status:</strong>
+          </p>
+          <ul className="space-y-1 ml-4">
+            <li>
+              • VITE_SENDER_API:{" "}
+              {import.meta.env.VITE_SENDER_API ? "✅ Configured" : "❌ Missing"}
+            </li>
+            <li>
+              • Environment:{" "}
+              {import.meta.env.PROD ? "Production" : "Development"}
+            </li>
+          </ul>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
-
-export default EmailTester;
