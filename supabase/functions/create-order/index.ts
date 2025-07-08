@@ -4,12 +4,12 @@ import {
   createErrorResponse,
   createSuccessResponse,
   handleOptionsRequest,
-  createGenericErrorHandler
+  createGenericErrorHandler,
 } from "../_shared/cors.ts";
 import {
   validateAndCreateSupabaseClient,
   validateRequiredEnvVars,
-  createEnvironmentError
+  createEnvironmentError,
 } from "../_shared/environment.ts";
 
 serve(async (req) => {
@@ -21,7 +21,7 @@ serve(async (req) => {
     // Validate environment variables
     const missingEnvVars = validateRequiredEnvVars([
       "SUPABASE_URL",
-      "SUPABASE_SERVICE_ROLE_KEY"
+      "SUPABASE_SERVICE_ROLE_KEY",
     ]);
     if (missingEnvVars.length > 0) {
       return createEnvironmentError(missingEnvVars);
@@ -55,25 +55,26 @@ serve(async (req) => {
       buyer_email,
       seller_id,
       paystack_reference,
-      total_amount
+      total_amount,
     };
     const missingFields = Object.entries(requiredFields)
       .filter(([_, value]) => !value)
       .map(([key, _]) => key);
 
-    if (missingFields.length > 0 || !items || !Array.isArray(items) || items.length === 0) {
+    if (
+      missingFields.length > 0 ||
+      !items ||
+      !Array.isArray(items) ||
+      items.length === 0
+    ) {
       const allMissing = [...missingFields];
       if (!items || !Array.isArray(items) || items.length === 0) {
-        allMissing.push('items (must be non-empty array)');
+        allMissing.push("items (must be non-empty array)");
       }
       return createErrorResponse(
         `Missing required fields: ${allMissing.join(", ")}`,
         400,
-        { missingFields: allMissing }
-      );
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+        { missingFields: allMissing },
       );
     }
 
