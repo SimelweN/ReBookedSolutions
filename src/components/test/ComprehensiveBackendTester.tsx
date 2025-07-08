@@ -455,8 +455,21 @@ const ComprehensiveBackendTester = () => {
 
   return (
     <div className="space-y-6">
-      {/* Test Configuration */}
-      <Card>
+      <Tabs defaultValue="service-tests" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="service-tests" className="flex items-center gap-2">
+            <Zap className="h-4 w-4" />
+            Service Tests
+          </TabsTrigger>
+          <TabsTrigger value="edge-functions" className="flex items-center gap-2">
+            <Activity className="h-4 w-4" />
+            Edge Functions Health Check
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="service-tests" className="space-y-6">
+          {/* Test Configuration */}
+          <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Zap className="h-5 w-5" />
