@@ -829,6 +829,13 @@ const DevDashboard: React.FC = () => {
                   <Settings className="h-3 w-3 lg:h-4 lg:w-4" />
                   <span>Env Fix</span>
                 </TabsTrigger>
+                <TabsTrigger
+                  value="function-testing"
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
+                >
+                  <TestTube className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Fallbacks</span>
+                </TabsTrigger>
               </TabsList>
             </div>
 
