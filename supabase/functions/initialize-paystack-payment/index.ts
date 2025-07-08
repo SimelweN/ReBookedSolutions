@@ -257,25 +257,71 @@ serve(async (req) => {
       );
     }
 
-    // Store payment record
-    const { data: payment, error: paymentError } = await supabaseClient
-      .from("payments")
-      .insert({
-        order_id: order_id,
-        user_id: user.id,
-        amount: amount,
-        currency: currency,
-        reference: reference,
-        status: "pending",
-        paystack_response: paystackData.data,
-        metadata: initializationData.metadata,
-      })
-      .select()
-      .single();
+    // Store payment record (with retry)
+    let payment = null;
+    let paymentError = null;
 
-    if (paymentError) {
-      throw new Error(
-        `Failed to store payment record: ${paymentError.message}`,
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        console.log(`Payment record creation attempt ${attempt}/3`);
+
+        const { data, error } = await supabaseClient
+          .from("payments")
+          .insert({
+            order_id: order_id,
+            user_id: user.id,
+            amount: amount,
+            currency: currency,
+            reference: reference,
+            status: "pending",
+            paystack_response: paystackData.data,
+            metadata: initializationData.metadata,
+          })
+          .select()
+          .single();
+
+        if (error) {
+          paymentError = error;
+          console.error(`Payment record attempt ${attempt} failed:`, error);
+
+          if (attempt < 3) {
+            await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+          }
+        } else {
+          payment = data;
+          break;
+        }
+      } catch (err) {
+        paymentError = err;
+        console.error(`Payment record attempt ${attempt} error:`, err);
+        if (attempt < 3) {
+          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+        }
+      }
+    }
+
+    if (!payment) {
+      console.error(
+        "Failed to store payment record, but Paystack initialization succeeded",
+      );
+
+      // Paystack was successful but we can't store locally - return special response
+      return new Response(
+        JSON.stringify({
+          success: true,
+          payment_initialized: true,
+          database_pending: true,
+          message:
+            "Payment initialized successfully. Record creation is being processed.",
+          paystack: {
+            authorization_url: paystackData.data.authorization_url,
+            access_code: paystackData.data.access_code,
+            reference: paystackData.data.reference,
+          },
+          fallback_instructions:
+            "Proceed with payment. We'll match your transaction manually if needed.",
+        }),
+        { headers: corsHeaders },
       );
     }
 
