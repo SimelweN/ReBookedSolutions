@@ -141,27 +141,7 @@ const BookGrid = ({
                         className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                         loading="lazy"
                         decoding="async"
-                        onError={(e) => {
-                          const target = e.currentTarget;
-                          if (target.src !== "/placeholder.svg") {
-                            target.src = "/placeholder.svg";
-                          } else {
-                            // If placeholder also fails, show a simple colored rectangle
-                            target.style.display = "none";
-                            const parent = target.parentElement;
-                            if (
-                              parent &&
-                              !parent.querySelector(".img-fallback")
-                            ) {
-                              const fallback = document.createElement("div");
-                              fallback.className =
-                                "img-fallback w-full h-full bg-gray-200 flex items-center justify-center";
-                              fallback.innerHTML =
-                                '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="text-gray-400"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>';
-                              parent.appendChild(fallback);
-                            }
-                          }
-                        }}
+                        onError={handleImageError}
                       />
                       {book.sold && (
                         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -241,27 +221,7 @@ const BookGrid = ({
                         className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                         loading="lazy"
                         decoding="async"
-                        onError={(e) => {
-                          const target = e.currentTarget;
-                          if (target.src !== "/placeholder.svg") {
-                            target.src = "/placeholder.svg";
-                          } else {
-                            // If placeholder also fails, show a simple colored rectangle
-                            target.style.display = "none";
-                            const parent = target.parentElement;
-                            if (
-                              parent &&
-                              !parent.querySelector(".img-fallback")
-                            ) {
-                              const fallback = document.createElement("div");
-                              fallback.className =
-                                "img-fallback w-full h-full bg-gray-200 flex items-center justify-center";
-                              fallback.innerHTML =
-                                '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="text-gray-400"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>';
-                              parent.appendChild(fallback);
-                            }
-                          }
-                        }}
+                        onError={handleImageError}
                       />
 
                       {book.sold && (
