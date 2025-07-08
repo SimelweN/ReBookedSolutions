@@ -134,19 +134,13 @@ async function handleFileUpload(supabase: any, req: Request, userId: string) {
   const folder = formData.get("folder") as string;
 
   if (!file) {
-    return new Response(JSON.stringify({ error: "No file provided" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createErrorResponse("No file provided", 400);
   }
 
   // Validate file
   const validation = validateFile(file, fileType);
   if (!validation.valid) {
-    return new Response(JSON.stringify({ error: validation.error }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createErrorResponse(validation.error, 400);
   }
 
   // Generate unique filename
