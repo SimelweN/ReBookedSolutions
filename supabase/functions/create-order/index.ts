@@ -159,19 +159,6 @@ serve(async (req) => {
       },
     );
   } catch (error) {
-    console.error("Error in create-order function:", error);
-    return new Response(
-      JSON.stringify({
-        success: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred",
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    return createGenericErrorHandler("create-order")(error);
   }
 });
