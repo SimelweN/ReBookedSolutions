@@ -23,8 +23,8 @@ export const IS_DEVELOPMENT = ENV.NODE_ENV === "development";
 // Validate required environment variables
 export const validateEnvironment = () => {
   const required = ["VITE_SUPABASE_URL", "VITE_SUPABASE_ANON_KEY"];
+  const critical = ["VITE_PAYSTACK_PUBLIC_KEY"]; // Critical for payments
   const optional = [
-    "VITE_PAYSTACK_PUBLIC_KEY",
     "VITE_COURIER_GUY_API_KEY",
     "VITE_FASTWAY_API_KEY",
     "VITE_GOOGLE_MAPS_API_KEY",
@@ -33,7 +33,22 @@ export const validateEnvironment = () => {
 
   const missing = required.filter((key) => {
     const value = ENV[key as keyof typeof ENV];
-    return !value || value.trim() === "";
+    return (
+      !value ||
+      value.trim() === "" ||
+      value.includes("demo-") ||
+      value.includes("your-")
+    );
+  });
+
+  const missingCritical = critical.filter((key) => {
+    const value = ENV[key as keyof typeof ENV];
+    return (
+      !value ||
+      value.trim() === "" ||
+      value.includes("demo-") ||
+      value.includes("test_")
+    );
   });
 
   // Validate Supabase key format (should be a JWT token starting with eyJ)
