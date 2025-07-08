@@ -56,7 +56,16 @@ interface TestResult {
 interface FunctionTestConfig {
   name: string;
   displayName: string;
-  category: "payment" | "delivery" | "email" | "upload" | "search" | "tracking";
+  category:
+    | "payment"
+    | "delivery"
+    | "email"
+    | "upload"
+    | "search"
+    | "tracking"
+    | "notifications"
+    | "orders"
+    | "automation";
   testPayload: any;
   description: string;
 }
