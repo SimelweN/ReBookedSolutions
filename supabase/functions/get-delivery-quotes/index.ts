@@ -1,247 +1,150 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import {
-  corsHeaders,
-  createErrorResponse,
-  createSuccessResponse,
-  handleOptionsRequest,
-  createGenericErrorHandler,
-} from "../_shared/cors.ts";
 
-interface DeliveryAddress {
-  streetAddress: string;
-  suburb: string;
-  city: string;
-  province: string;
-  postalCode: string;
-}
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
-interface QuoteRequest {
-  fromAddress: DeliveryAddress;
-  toAddress: DeliveryAddress;
-  weight: number;
-}
-
-serve(async (req) => {
+serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return handleOptionsRequest();
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Parse and validate request body
-    let requestBody: QuoteRequest;
-    try {
-      requestBody = await req.json();
-    } catch (error) {
-      return createErrorResponse("Invalid JSON in request body", 400);
-    }
-
-    const { fromAddress, toAddress, weight } = requestBody;
-
-    console.log("Getting quotes for delivery:", {
-      fromAddress,
-      toAddress,
-      weight,
-    });
-
-    const quotes = [];
-
-    // Get Fastway quote
-    try {
-      const fastwayResponse = await getFastwayQuote(
-        fromAddress,
-        toAddress,
-        weight,
-      );
-      if (fastwayResponse) {
-        quotes.push({
-          courier: "fastway",
-          price: fastwayResponse.price,
-          estimatedDays: fastwayResponse.estimatedDays,
-          serviceName: "Fastway Standard",
-        });
-      }
-    } catch (error) {
-      console.error("Fastway API error:", error);
-      // Add fallback quote
-      quotes.push({
-        courier: "fastway",
-        price: 85,
-        estimatedDays: 3,
-        serviceName: "Fastway Standard",
+    if (req.method !== "POST") {
+      return new Response(JSON.stringify({ error: "Method not allowed" }), {
+        status: 405,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Get Courier Guy quote
-    try {
-      const courierGuyResponse = await getCourierGuyQuote(
-        fromAddress,
-        toAddress,
-        weight,
+    const { fromAddress, toAddress, parcel } = await req.json();
+
+    if (!fromAddress || !toAddress) {
+      return new Response(
+        JSON.stringify({ error: "Missing required address information" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
-      if (courierGuyResponse) {
-        quotes.push({
-          courier: "courier-guy",
-          price: courierGuyResponse.price,
-          estimatedDays: courierGuyResponse.estimatedDays,
-          serviceName: "Courier Guy Express",
-        });
-      }
-    } catch (error) {
-      console.error("Courier Guy API error:", error);
-      // Add fallback quote
-      quotes.push({
-        courier: "courier-guy",
-        price: 95,
-        estimatedDays: 2,
-        serviceName: "Courier Guy Express",
-      });
     }
 
-    return new Response(JSON.stringify({ quotes }), {
-      headers: {
-        ...corsHeaders,
-        "Content-Type": "application/json",
-      },
+    const parcelData = {
+      length: parcel?.length || 20,
+      width: parcel?.width || 15,
+      height: parcel?.height || 5,
+      weight: parcel?.weight || 0.5,
+    };
+
+    // Get quotes from multiple providers
+    const quotePromises = [
+      getQuote("courier-guy", fromAddress, toAddress, parcelData),
+      getQuote("fastway", fromAddress, toAddress, parcelData),
+    ];
+
+    const results = await Promise.allSettled(quotePromises);
+
+    const allQuotes: any[] = [];
+    const providers: string[] = [];
+
+    results.forEach((result, index) => {
+      if (result.status === "fulfilled" && result.value.success) {
+        allQuotes.push(...result.value.quotes);
+        providers.push(result.value.provider);
+      }
     });
-  } catch (error) {
-    console.error("Error in get-delivery-quotes:", error);
+
+    // Add self-collection option
+    allQuotes.push({
+      service: "Self Collection",
+      price: 0,
+      currency: "ZAR",
+      estimated_days: "Immediate",
+      service_code: "SELF",
+      provider: "self",
+    });
+
+    // Sort by price
+    allQuotes.sort((a, b) => a.price - b.price);
+
     return new Response(
       JSON.stringify({
-        error: error.message,
+        success: true,
+        quotes: allQuotes,
+        providers: [...providers, "self"],
+        total_quotes: allQuotes.length,
+      }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
+  } catch (error) {
+    console.error("Error in get-delivery-quotes:", error);
+
+    // Return basic fallback quotes
+    return new Response(
+      JSON.stringify({
+        success: true,
         quotes: [
           {
-            courier: "fastway",
-            price: 85,
-            estimatedDays: 3,
-            serviceName: "Fastway Standard",
+            service: "Self Collection",
+            price: 0,
+            currency: "ZAR",
+            estimated_days: "Immediate",
+            service_code: "SELF",
+            provider: "self",
           },
           {
-            courier: "courier-guy",
-            price: 95,
-            estimatedDays: 2,
-            serviceName: "Courier Guy Express",
+            service: "Standard Delivery",
+            price: 75.0,
+            currency: "ZAR",
+            estimated_days: "2-3",
+            service_code: "STD",
+            provider: "fallback",
           },
         ],
+        providers: ["self", "fallback"],
+        fallback: true,
+        error: error.message,
       }),
-      {
-        status: 200,
-        headers: {
-          ...corsHeaders,
-          "Content-Type": "application/json",
-        },
-      },
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
 });
 
-async function getFastwayQuote(
-  fromAddress: DeliveryAddress,
-  toAddress: DeliveryAddress,
-  weight: number,
+async function getQuote(
+  provider: string,
+  fromAddress: any,
+  toAddress: any,
+  parcel: any,
 ) {
-  const apiKey = Deno.env.get("FASTWAY_API_KEY");
-  if (!apiKey) throw new Error("Fastway API key not configured");
+  const functionName =
+    provider === "courier-guy" ? "courier-guy-quote" : "fastway-quote";
 
-  console.log("Calling Fastway API with key:", apiKey.substring(0, 8) + "...");
-
-  const response = await fetch("https://api.fastway.org/v2/quotes", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      from_postcode: fromAddress.postalCode,
-      to_postcode: toAddress.postalCode,
-      weight: weight,
-    }),
-  });
-
-  if (!response.ok) {
-    console.error(
-      "Fastway API response not ok:",
-      response.status,
-      response.statusText,
+  try {
+    const response = await fetch(
+      `${Deno.env.get("SUPABASE_URL")}/functions/v1/${functionName}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fromAddress,
+          toAddress,
+          parcel,
+        }),
+      },
     );
-    throw new Error(`Fastway API error: ${response.status}`);
+
+    if (!response.ok) {
+      throw new Error(`${provider} quote failed`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(`Error getting ${provider} quote:`, error);
+    return { success: false, error: error.message };
   }
-
-  const data = await response.json();
-  console.log("Fastway response:", data);
-
-  if (!data.quotes || data.quotes.length === 0)
-    throw new Error("No quotes returned");
-
-  const quote = data.quotes[0];
-  return {
-    price: quote.price,
-    estimatedDays: quote.estimated_days,
-  };
-}
-
-async function getCourierGuyQuote(
-  fromAddress: DeliveryAddress,
-  toAddress: DeliveryAddress,
-  weight: number,
-) {
-  const apiKey = Deno.env.get("COURIER_GUY_API_KEY");
-  if (!apiKey) {
-    throw new Error("Courier Guy API key not configured");
-  }
-
-  console.log(
-    "Calling Courier Guy API with key:",
-    apiKey.substring(0, 8) + "...",
-  );
-
-  const response = await fetch("https://api.courierguy.co.za/v1/quotes", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      collection_address: {
-        suburb: fromAddress.suburb,
-        city: fromAddress.city,
-        province: fromAddress.province,
-        postal_code: fromAddress.postalCode,
-        street_address: fromAddress.streetAddress,
-      },
-      delivery_address: {
-        suburb: toAddress.suburb,
-        city: toAddress.city,
-        province: toAddress.province,
-        postal_code: toAddress.postalCode,
-        street_address: toAddress.streetAddress,
-      },
-      parcel: {
-        weight: weight,
-      },
-    }),
-  });
-
-  if (!response.ok) {
-    console.error(
-      "Courier Guy API response not ok:",
-      response.status,
-      response.statusText,
-    );
-    throw new Error(`Courier Guy API error: ${response.status}`);
-  }
-
-  const data = await response.json();
-  console.log("Courier Guy response:", data);
-
-  // Assuming the response has a 'quotes' array or similar structure:
-  if (!data.quotes || data.quotes.length === 0) {
-    throw new Error("No quotes returned from Courier Guy");
-  }
-
-  const quote = data.quotes[0]; // Pick first quote or filter as needed
-
-  return {
-    price: quote.price,
-    estimatedDays: quote.estimated_days,
-  };
 }
