@@ -56,6 +56,7 @@ const UniversityProfile = React.lazy(() => import("./pages/UniversityProfile"));
 const Receipt = React.lazy(() => import("./pages/Receipt"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
 const DevDashboard = React.lazy(() => import("./pages/DevDashboard"));
+const EmailTest = React.lazy(() => import("./pages/EmailTest"));
 
 // Loading component
 const LoadingSpinner = () => (
