@@ -27,10 +27,12 @@ import {
   Play,
   Zap,
   BookOpen,
+  Mail,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { BackendOrchestrator } from "@/services/comprehensive/backendOrchestrator";
+import { EmailTester } from "./EmailTester";
 
 interface BackendTest {
   id: string;
