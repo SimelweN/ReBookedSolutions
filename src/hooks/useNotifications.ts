@@ -153,9 +153,9 @@ export const useNotifications = (): UseNotificationsResult => {
         errorMessage = err;
       } else if (err && typeof err === "object") {
         // Handle Supabase error objects specifically
-        if ('message' in err && typeof err.message === 'string') {
+        if ("message" in err && typeof err.message === "string") {
           errorMessage = err.message;
-        } else if ('error' in err && typeof err.error === 'string') {
+        } else if ("error" in err && typeof err.error === "string") {
           errorMessage = err.error;
         } else {
           errorMessage = JSON.stringify(err);
@@ -165,21 +165,6 @@ export const useNotifications = (): UseNotificationsResult => {
       console.error("Error marking notification as read:", errorMessage);
       console.log("Error type:", typeof err);
       console.log("Error details:", err);
-        const errorObj = err as any;
-        if (errorObj.message) {
-          errorMessage = errorObj.message;
-        } else if (errorObj.error_description) {
-          errorMessage = errorObj.error_description;
-        } else if (errorObj.details) {
-          errorMessage = errorObj.details;
-        } else {
-          try {
-            errorMessage = JSON.stringify(err);
-          } catch (stringifyError) {
-            errorMessage = "Unknown error occurred";
-          }
-        }
-      }
 
       toast.error(errorMessage);
     }
