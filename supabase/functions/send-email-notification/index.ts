@@ -45,33 +45,55 @@ serve(async (req) => {
       );
     }
 
-    // Send email via Sender.net API
-    const response = await fetch("https://api.sender.net/api/v1/email/send", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${senderApiKey}`,
-      },
-      body: JSON.stringify({
-        from: {
-          email: from.email,
-          name: from.name,
+    // Try Resend first if available, fallback to Sender.net
+    let response, apiUsed;
+
+    if (resendApiKey) {
+      console.log("📧 Using Resend API");
+      apiUsed = "Resend";
+      response = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${resendApiKey}`,
         },
-        to: [
-          {
-            email: to,
-            name: to.split("@")[0],
+        body: JSON.stringify({
+          from: `${from.name} <${from.email}>`,
+          to: [to],
+          subject,
+          html,
+        }),
+      });
+    } else {
+      console.log("📧 Using Sender.net API");
+      apiUsed = "Sender.net";
+      response = await fetch("https://api.sender.net/api/v1/email/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${senderApiKey}`,
+        },
+        body: JSON.stringify({
+          from: {
+            email: from.email,
+            name: from.name,
           },
-        ],
-        subject,
-        content: [
-          {
-            type: "text/html",
-            value: html,
-          },
-        ],
-      }),
-    });
+          to: [
+            {
+              email: to,
+              name: to.split("@")[0],
+            },
+          ],
+          subject,
+          content: [
+            {
+              type: "text/html",
+              value: html,
+            },
+          ],
+        }),
+      });
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
