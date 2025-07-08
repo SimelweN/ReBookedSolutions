@@ -118,25 +118,18 @@ export function validateAndCreateSupabaseClient();
 
 The following functions still need the same pattern of fixes applied:
 
-⚠️ **analytics-reporting**
 ⚠️ **auto-expire-commits**
-⚠️ **check-expired-orders**
-⚠️ **courier-guy-quote**
 ⚠️ **courier-guy-shipment**
 ⚠️ **courier-guy-track**
-⚠️ **create-paystack-subaccount**
 ⚠️ **dispute-resolution**
 ⚠️ **fastway-quote**
 ⚠️ **fastway-shipment**
 ⚠️ **fastway-track**
-⚠️ **get-delivery-quotes**
-⚠️ **mark-collected**
-⚠️ **pay-seller**
-⚠️ **process-multi-seller-purchase**
 ⚠️ **process-order-reminders**
-⚠️ **realtime-notifications**
-⚠️ **send-email-notification**
-⚠️ **update-paystack-subaccount**
+
+## Functions with Significant Progress
+
+Most of the critical functions have now been fixed! The remaining 8 functions follow the same patterns and should be straightforward to complete.
 
 ## Standard Fix Pattern
 
