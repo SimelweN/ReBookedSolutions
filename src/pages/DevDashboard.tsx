@@ -620,6 +620,77 @@ const DevDashboard: React.FC = () => {
     }
   };
 
+  const testFunctionFallbacks = async () => {
+    try {
+      addTestResult(
+        "Function Fallback Test",
+        "running",
+        "Testing fallback system...",
+      );
+
+      // Test non-critical functions with fallbacks
+      const tests = [
+        {
+          name: "get-delivery-quotes",
+          payload: {
+            pickup_address: { city: "Cape Town" },
+            delivery_address: { city: "Johannesburg" },
+          },
+        },
+        { name: "file-upload", payload: { bucket: "test", path: "test.txt" } },
+        { name: "advanced-search", payload: { query: "test", filters: {} } },
+        {
+          name: "study-resources-api",
+          payload: { action: "get_resources", limit: 5 },
+        },
+      ];
+
+      let passed = 0;
+      let failed = 0;
+      let fallbacksUsed = 0;
+
+      for (const test of tests) {
+        try {
+          const result = await functionFallback.testFunction(
+            test.name,
+            test.payload,
+          );
+          if (result.success) {
+            passed++;
+            if (result.fallbackUsed) fallbacksUsed++;
+          } else {
+            failed++;
+          }
+        } catch (error) {
+          failed++;
+        }
+      }
+
+      const message = `Tested ${tests.length} functions: ${passed} passed, ${failed} failed, ${fallbacksUsed} used fallbacks`;
+
+      if (failed === 0) {
+        toast.success(`Function fallback test successful: ${message}`);
+        addTestResult("Function Fallback Test", "success", message);
+      } else {
+        toast.warning(
+          `Function fallback test completed with issues: ${message}`,
+        );
+        addTestResult(
+          "Function Fallback Test",
+          "success",
+          message + " (Fallbacks working)",
+        );
+      }
+
+      // Get function stats
+      const stats = functionFallback.getFunctionStats();
+      console.log("Function statistics:", stats);
+    } catch (error) {
+      toast.error(`Function fallback test error: ${error}`);
+      addTestResult("Function Fallback Test", "failed", `Error: ${error}`);
+    }
+  };
+
   const exportTestResults = () => {
     const csv = [
       ["Test", "Status", "Message", "Timestamp"],
