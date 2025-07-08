@@ -262,36 +262,85 @@ serve(async (req) => {
       );
     }
 
-    // Update payment as completed
-    const { error: updatePaymentError } = await supabaseClient
-      .from("payments")
-      .update({
-        status: "completed",
-        paystack_response: transaction,
-        verified_at: verifiedAt,
-        updated_at: verifiedAt,
-      })
-      .eq("reference", reference);
+    // Update payment and order status (with retry)
+    let updateSuccess = false;
+    let updateError = null;
 
-    if (updatePaymentError) {
-      throw new Error(
-        `Failed to update payment status: ${updatePaymentError.message}`,
-      );
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        console.log(`Database update attempt ${attempt}/3`);
+
+        // Update payment as completed
+        const { error: updatePaymentError } = await supabaseClient
+          .from("payments")
+          .update({
+            status: "completed",
+            paystack_response: transaction,
+            verified_at: verifiedAt,
+            updated_at: verifiedAt,
+          })
+          .eq("reference", reference);
+
+        if (updatePaymentError) {
+          throw updatePaymentError;
+        }
+
+        // Update order status to paid
+        const { error: updateOrderError } = await supabaseClient
+          .from("orders")
+          .update({
+            status: "paid",
+            paid_at: verifiedAt,
+            updated_at: verifiedAt,
+          })
+          .eq("id", payment.order_id);
+
+        if (updateOrderError) {
+          throw updateOrderError;
+        }
+
+        updateSuccess = true;
+        break;
+      } catch (error) {
+        updateError = error;
+        console.error(`Update attempt ${attempt} failed:`, error);
+
+        if (attempt < 3) {
+          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+        }
+      }
     }
 
-    // Update order status to paid
-    const { error: updateOrderError } = await supabaseClient
-      .from("orders")
-      .update({
-        status: "paid",
-        paid_at: verifiedAt,
-        updated_at: verifiedAt,
-      })
-      .eq("id", payment.order_id);
+    if (!updateSuccess) {
+      console.error("Failed to update database, storing for manual processing");
 
-    if (updateOrderError) {
-      throw new Error(
-        `Failed to update order status: ${updateOrderError.message}`,
+      // Store successful verification for manual database update
+      await supabaseClient.from("pending_payment_updates").insert({
+        payment_reference: reference,
+        order_id: payment.order_id,
+        transaction_data: transaction,
+        verified_at: verifiedAt,
+        error_details: updateError?.message || "Database update failed",
+        requires_manual_processing: true,
+      });
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          payment_verified: true,
+          database_pending: true,
+          message:
+            "Payment verified with Paystack. Database update is being processed manually.",
+          payment: {
+            id: payment.id,
+            reference: reference,
+            status: "verified_pending_update",
+            amount: payment.amount,
+            verified_at: verifiedAt,
+            transaction_id: transaction.id,
+          },
+        }),
+        { headers: corsHeaders },
       );
     }
 
