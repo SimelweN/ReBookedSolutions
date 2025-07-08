@@ -1,3 +1,5 @@
+import { corsHeaders } from "./cors.ts";
+
 export interface EnvironmentConfig {
   supabaseUrl: string;
   supabaseServiceKey: string;
@@ -42,8 +44,6 @@ export function validateRequiredEnvVars(requiredVars: string[]): string[] {
 
   return missing;
 }
-
-import { corsHeaders } from "./cors.ts";
 
 export function createEnvironmentError(missingVars: string[]): Response {
   return new Response(
