@@ -71,18 +71,67 @@ serve(async (req: Request) => {
       );
     }
 
-    // Update order status to committed
-    const { error: updateError } = await supabase
-      .from("orders")
-      .update({
-        status: "committed",
-        committed_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", orderId);
+    // Update order status to committed (with retry)
+    let updateSuccess = false;
+    let updateError = null;
 
-    if (updateError) {
-      throw updateError;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        console.log(`Order commit attempt ${attempt}/3`);
+
+        const { error } = await supabase
+          .from("orders")
+          .update({
+            status: "committed",
+            committed_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", orderId);
+
+        if (error) {
+          updateError = error;
+          console.error(`Commit attempt ${attempt} failed:`, error);
+
+          if (attempt < 3) {
+            await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+          }
+        } else {
+          updateSuccess = true;
+          break;
+        }
+      } catch (err) {
+        updateError = err;
+        console.error(`Commit attempt ${attempt} error:`, err);
+        if (attempt < 3) {
+          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+        }
+      }
+    }
+
+    if (!updateSuccess) {
+      console.error(
+        "Failed to commit order after retries, storing for manual processing",
+      );
+
+      // Fallback: Store commit request for manual processing
+      await supabase.from("pending_commits").insert({
+        order_id: orderId,
+        seller_id: sellerId,
+        requested_at: new Date().toISOString(),
+        error_details: updateError?.message || "Database update failed",
+        status: "pending_manual_processing",
+      });
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          fallback: true,
+          message:
+            "Your commit request has been received and will be processed manually. You'll be notified once complete.",
+          status: "pending_processing",
+        }),
+        { headers: corsHeaders },
+      );
     }
 
     // Mark book as sold
