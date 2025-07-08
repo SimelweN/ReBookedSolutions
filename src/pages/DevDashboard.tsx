@@ -747,86 +747,86 @@ const DevDashboard: React.FC = () => {
               <TabsList
                 className={`${
                   isMobile
-                    ? "inline-flex h-9 items-center justify-start rounded-md bg-white shadow-sm border p-1 text-muted-foreground min-w-max"
-                    : "grid grid-cols-11 w-full bg-white shadow-sm border"
+                    ? "inline-flex h-9 items-center justify-start rounded-md bg-white shadow-sm border p-1 text-muted-foreground min-w-max overflow-x-auto"
+                    : "inline-flex h-12 items-center justify-start rounded-md bg-white shadow-sm border p-1 text-muted-foreground min-w-max overflow-x-auto"
                 }`}
               >
                 <TabsTrigger
                   value="overview"
-                  className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
                 >
-                  <TestTube className="h-3 w-3 md:h-4 md:w-4" />
-                  <span>{isMobile ? "Overview" : "Overview"}</span>
+                  <TestTube className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Overview</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="database"
-                  className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
                 >
-                  <Database className="h-3 w-3 md:h-4 md:w-4" />
-                  <span>{isMobile ? "DB" : "Database"}</span>
+                  <Database className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Database</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="functions"
-                  className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
                 >
-                  <Cloud className="h-3 w-3 md:h-4 md:w-4" />
-                  <span>{isMobile ? "Functions" : "Edge Functions"}</span>
+                  <Cloud className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Functions</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="commit"
-                  className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
                 >
-                  <Clock className="h-3 w-3 md:h-4 md:w-4" />
-                  <span>{isMobile ? "Commit" : "Commit System"}</span>
+                  <Clock className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Commit</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="environment"
-                  className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
                 >
-                  <Settings className="h-3 w-3 md:h-4 md:w-4" />
-                  <span>{isMobile ? "Env" : "Environment"}</span>
+                  <Settings className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Environment</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="tests"
-                  className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
                 >
-                  <Activity className="h-3 w-3 md:h-4 md:w-4" />
-                  <span>{isMobile ? "Tests" : "Test Results"}</span>
+                  <Activity className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Tests</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="tools"
-                  className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
                 >
-                  <Terminal className="h-3 w-3 md:h-4 md:w-4" />
-                  <span>{isMobile ? "Tools" : "Dev Tools"}</span>
+                  <Terminal className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Tools</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="email"
-                  className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
                 >
-                  <Mail className="h-3 w-3 md:h-4 md:w-4" />
-                  <span>{isMobile ? "Email" : "Email Testing"}</span>
+                  <Mail className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Email</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="commit-testing"
-                  className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
                 >
-                  <ShoppingCart className="h-3 w-3 md:h-4 md:w-4" />
-                  <span>{isMobile ? "Commits" : "Commit Testing"}</span>
+                  <ShoppingCart className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Orders</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="backend"
-                  className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
                 >
-                  <Zap className="h-3 w-3 md:h-4 md:w-4" />
-                  <span>{isMobile ? "Backend" : "Backend Testing"}</span>
+                  <Zap className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Backend</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="env-fix"
-                  className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
                 >
-                  <Settings className="h-3 w-3 md:h-4 md:w-4" />
-                  <span>{isMobile ? "Env Fix" : "Environment Fix"}</span>
+                  <Settings className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Env Fix</span>
                 </TabsTrigger>
               </TabsList>
             </div>
