@@ -66,19 +66,23 @@ serve(async (req) => {
     }
 
     // Verify the user making the request
-    const userClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     const {
       data: { user },
       error: authError,
-    } = await userClient.auth.getUser(authHeader.replace("Bearer ", ""));
+    } = await supabase.auth.getUser(authHeader.replace("Bearer ", ""));
 
     if (authError || !user) {
-      throw new Error("Invalid authentication token");
+      return createErrorResponse("Invalid authentication token", 401, {
+        authError: authError?.message,
+      });
     }
 
     // Security: Verify the seller ID matches the authenticated user
     if (user.id !== sellerId) {
-      throw new Error("Unauthorized: You can only decline your own sales");
+      return createErrorResponse(
+        "Unauthorized: You can only decline your own sales",
+        403,
+      );
     }
 
     // Find the order
