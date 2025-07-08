@@ -84,6 +84,7 @@ import CommitTester from "@/components/test/CommitTester";
 import ComprehensiveBackendTester from "@/components/test/ComprehensiveBackendTester";
 import EnvironmentTester from "@/components/test/EnvironmentTester";
 import FunctionTester from "@/components/admin/FunctionTester";
+import { functionFallback } from "@/services/functionFallbackService";
 
 interface TestResult {
   id: string;
