@@ -157,7 +157,7 @@ serve(async (req: Request) => {
     return new Response(
       JSON.stringify({
         success: true,
-        fileName: data.path,
+        fileName: uploadData.path,
         publicUrl: publicUrlData.publicUrl,
         fileSize: file.size,
       }),
