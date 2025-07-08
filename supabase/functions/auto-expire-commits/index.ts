@@ -1,15 +1,16 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
-
-const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+import {
+  corsHeaders,
+  createErrorResponse,
+  createSuccessResponse,
+  handleOptionsRequest,
+  createGenericErrorHandler,
+} from "../_shared/cors.ts";
+import {
+  validateAndCreateSupabaseClient,
+  validateRequiredEnvVars,
+  createEnvironmentError,
+} from "../_shared/environment.ts";
 
 interface ExpiredRecord {
   id: string;
@@ -25,13 +26,22 @@ interface ExpiredRecord {
 serve(async (req) => {
   // Handle CORS
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleOptionsRequest();
   }
 
   try {
     console.log("🔄 Starting auto-expire-commits cron job...");
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    // Validate environment variables
+    const missingEnvVars = validateRequiredEnvVars([
+      "SUPABASE_URL",
+      "SUPABASE_SERVICE_ROLE_KEY",
+    ]);
+    if (missingEnvVars.length > 0) {
+      return createEnvironmentError(missingEnvVars);
+    }
+
+    const supabase = validateAndCreateSupabaseClient();
     const now = new Date().toISOString();
 
     // Find orders that have been paid for more than 7 days (expired)
