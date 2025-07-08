@@ -74,31 +74,36 @@ export class CommitSystemService {
       }
 
       // Update status to declined/cancelled
-      // Try with declined_at first, fallback without it if column doesn't exist
-      let updateData = {
+      // Prepare base update data
+      const baseUpdateData = {
         status: "declined_by_seller",
-        seller_committed: false,
         updated_at: new Date().toISOString(),
       };
 
-      // Try to add declined_at if the column exists
+      // Try to add optional columns if they exist
+      const updateData: any = { ...baseUpdateData };
+
+      // Only add these columns if they likely exist (graceful degradation)
       try {
+        updateData.declined_at = new Date().toISOString();
+        updateData.seller_committed = false;
+
         const { error: updateError } = await supabase
           .from(tableName)
-          .update({
-            ...updateData,
-            declined_at: new Date().toISOString(),
-          })
+          .update(updateData)
           .eq("id", transactionId)
           .eq("seller_id", sellerId);
 
         if (updateError) {
-          // If error mentions declined_at column, try without it
-          if (updateError.message.includes("declined_at")) {
-            console.warn("declined_at column not found, updating without it");
+          // If error is about missing columns, retry with minimal data
+          if (
+            updateError.message.includes("declined_at") ||
+            updateError.message.includes("seller_committed")
+          ) {
+            console.warn("Some commit columns missing, using basic update");
             const { error: fallbackError } = await supabase
               .from(tableName)
-              .update(updateData)
+              .update(baseUpdateData)
               .eq("id", transactionId)
               .eq("seller_id", sellerId);
 
