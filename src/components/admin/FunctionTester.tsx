@@ -471,6 +471,12 @@ const FunctionTester = () => {
         return <Zap className="h-4 w-4" />;
       case "tracking":
         return <Code className="h-4 w-4" />;
+      case "notifications":
+        return <Bell className="h-4 w-4" />;
+      case "orders":
+        return <ShoppingCart className="h-4 w-4" />;
+      case "automation":
+        return <Settings className="h-4 w-4" />;
       default:
         return <TestTube className="h-4 w-4" />;
     }
