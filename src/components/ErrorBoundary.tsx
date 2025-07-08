@@ -58,8 +58,22 @@ class ErrorBoundary extends Component<Props, State> {
   };
 
   private handleGoHome = () => {
-    // Use window.location as fallback since router might be broken in error state
-    window.location.href = "/";
+    try {
+      // Use window.location as fallback since router might be broken in error state
+      window.location.href = "/";
+    } catch (error) {
+      // Ultimate fallback: try to reload the page
+      console.error("Navigation failed:", error);
+      try {
+        window.location.reload();
+      } catch (reloadError) {
+        console.error("Reload also failed:", reloadError);
+        // Show user message as last resort
+        alert(
+          "Navigation failed. Please manually refresh the page or go to the homepage.",
+        );
+      }
+    }
   };
 
   public render() {
