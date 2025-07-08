@@ -14,6 +14,12 @@ serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  // Add overall timeout for function execution
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => reject(new Error("Function execution timeout")), 25000); // 25 second timeout
+  });
+
+  const executionPromise = (async () => {
   try {
     console.log("Initialize payment request:", req.method);
     const supabaseClient = createClient(
@@ -257,7 +263,7 @@ serve(async (req) => {
       );
     }
 
-    // Store payment record (with retry)
+        // Store payment record (with retry)
     let payment = null;
     let paymentError = null;
 
@@ -285,7 +291,7 @@ serve(async (req) => {
           console.error(`Payment record attempt ${attempt} failed:`, error);
 
           if (attempt < 3) {
-            await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+            await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
           }
         } else {
           payment = data;
@@ -295,15 +301,13 @@ serve(async (req) => {
         paymentError = err;
         console.error(`Payment record attempt ${attempt} error:`, err);
         if (attempt < 3) {
-          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
         }
       }
     }
 
     if (!payment) {
-      console.error(
-        "Failed to store payment record, but Paystack initialization succeeded",
-      );
+      console.error("Failed to store payment record, but Paystack initialization succeeded");
 
       // Paystack was successful but we can't store locally - return special response
       return new Response(
@@ -311,15 +315,13 @@ serve(async (req) => {
           success: true,
           payment_initialized: true,
           database_pending: true,
-          message:
-            "Payment initialized successfully. Record creation is being processed.",
+          message: "Payment initialized successfully. Record creation is being processed.",
           paystack: {
             authorization_url: paystackData.data.authorization_url,
             access_code: paystackData.data.access_code,
             reference: paystackData.data.reference,
           },
-          fallback_instructions:
-            "Proceed with payment. We'll match your transaction manually if needed.",
+          fallback_instructions: "Proceed with payment. We'll match your transaction manually if needed.",
         }),
         { headers: corsHeaders },
       );
@@ -334,7 +336,7 @@ serve(async (req) => {
       })
       .eq("id", order_id);
 
-    // Log audit trail (non-blocking)
+        // Log audit trail (non-blocking)
     try {
       await supabaseClient.from("audit_logs").insert({
         action: "payment_initialized",
@@ -354,7 +356,7 @@ serve(async (req) => {
       // Continue execution - audit log is not critical for payment flow
     }
 
-    // Send notification to seller (non-blocking)
+        // Send notification to seller (non-blocking)
     try {
       await supabaseClient.from("notifications").insert({
         user_id: order.seller_id,
