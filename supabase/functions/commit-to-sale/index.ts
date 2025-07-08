@@ -135,7 +135,11 @@ serve(async (req) => {
 
     if (updateError) {
       console.error("Error updating record:", updateError);
-      throw new Error(`Failed to commit sale: ${updateError.message}`);
+      return createErrorResponse(
+        `Failed to commit sale: ${updateError.message}`,
+        500,
+        { updateError },
+      );
     }
 
     console.log("✅ Sale committed successfully:", updatedRecord.id);
@@ -184,31 +188,13 @@ serve(async (req) => {
     // TODO: Trigger courier booking if integrated
     // await triggerCourierBooking(updatedRecord);
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message:
-          "Sale committed successfully! Please prepare your book for collection.",
-        data: updatedRecord,
-        notifications_sent: true,
-      }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    return createSuccessResponse({
+      message:
+        "Sale committed successfully! Please prepare your book for collection.",
+      order: updatedRecord,
+      notifications_sent: true,
+    });
   } catch (error) {
-    console.error("Error in commit-to-sale function:", error);
-
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error: error.message || "Failed to commit sale",
-        details: error instanceof Error ? error.stack : undefined,
-      }),
-      {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    return createGenericErrorHandler("commit-to-sale")(error);
   }
 });
