@@ -7,10 +7,6 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-// Validate required environment variables
-const requiredVars = ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"];
-const missingVars = validateRequiredEnvVars(requiredVars);
-
 interface CommitRequest {
   transactionId?: string;
   orderId?: string;
