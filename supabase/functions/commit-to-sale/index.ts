@@ -1,200 +1,134 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import {
-  corsHeaders,
-  createErrorResponse,
-  createSuccessResponse,
-  handleOptionsRequest,
-  createGenericErrorHandler,
-} from "../_shared/cors.ts";
-import {
-  validateAndCreateSupabaseClient,
-  validateRequiredEnvVars,
-  createEnvironmentError,
-} from "../_shared/environment.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3";
 
-interface CommitRequest {
-  transactionId?: string;
-  orderId?: string;
-  sellerId: string;
-}
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
-serve(async (req) => {
-  // Handle CORS preflight
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL") ?? "",
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+);
+
+serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return handleOptionsRequest();
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Validate environment variables
-    const missingEnvVars = validateRequiredEnvVars([
-      "SUPABASE_URL",
-      "SUPABASE_SERVICE_ROLE_KEY",
-    ]);
-    if (missingEnvVars.length > 0) {
-      return createEnvironmentError(missingEnvVars);
-    }
-
-    // Initialize Supabase client
-    const supabase = validateAndCreateSupabaseClient();
-
-    // Parse and validate request body
-    let requestBody: CommitRequest;
-    try {
-      requestBody = await req.json();
-    } catch (error) {
-      return createErrorResponse("Invalid JSON in request body", 400);
-    }
-
-    const { transactionId, orderId, sellerId } = requestBody;
-
-    if (!sellerId) {
-      return createErrorResponse("Seller ID is required", 400);
-    }
-
-    if (!transactionId && !orderId) {
-      return createErrorResponse(
-        "Either transactionId or orderId is required",
-        400,
-      );
-    }
-
-    // Get JWT token from request for user authentication
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return createErrorResponse("Authorization header is required", 401);
-    }
-
-    // Verify the user making the request
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser(authHeader.replace("Bearer ", ""));
-
-    if (authError || !user) {
-      return createErrorResponse("Invalid authentication token", 401, {
-        authError: authError?.message,
+    if (req.method !== "POST") {
+      return new Response(JSON.stringify({ error: "Method not allowed" }), {
+        status: 405,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Security: Verify the seller ID matches the authenticated user
-    if (user.id !== sellerId) {
-      return createErrorResponse(
-        "Unauthorized: You can only commit to your own sales",
-        403,
+    const { orderId, sellerId } = await req.json();
+
+    if (!orderId || !sellerId) {
+      return new Response(
+        JSON.stringify({ error: "Order ID and Seller ID are required" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
-    // Find the order
-    const orderIdToUse = orderId || transactionId;
+    // Get the order and verify seller ownership
     const { data: order, error: orderError } = await supabase
       .from("orders")
-      .select("*")
-      .eq("id", orderIdToUse)
+      .select(
+        `
+        *,
+        books(id, title, author, seller_id)
+      `,
+      )
+      .eq("id", orderId)
       .eq("seller_id", sellerId)
       .single();
 
     if (orderError || !order) {
-      return createErrorResponse(
-        "Order not found, or you don't have permission to commit this sale",
-        404,
-        { orderError: orderError?.message, orderIdUsed: orderIdToUse },
+      return new Response(
+        JSON.stringify({ error: "Order not found or unauthorized" }),
+        {
+          status: 404,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
-    console.log(`Processing commit for order:`, order.id);
-
-    // Check if already ready for payout (committed)
-    if (order.status === "ready_for_payout") {
-      return createSuccessResponse({
-        message: "Sale already committed",
-        order: order,
-      });
-    }
-
-    // Check current status - should be 'paid'
     if (order.status !== "paid") {
-      return createErrorResponse(
-        `Cannot commit sale with status: ${order.status}`,
-        400,
+      return new Response(
+        JSON.stringify({ error: "Order is not in paid status" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
-    const now = new Date();
-
-    // Update the order to ready_for_payout status
-    const { data: updatedRecord, error: updateError } = await supabase
+    // Update order status to committed
+    const { error: updateError } = await supabase
       .from("orders")
       .update({
-        status: "ready_for_payout",
-        updated_at: now.toISOString(),
+        status: "committed",
+        committed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       })
-      .eq("id", order.id)
-      .eq("seller_id", sellerId)
-      .select()
-      .single();
+      .eq("id", orderId);
 
     if (updateError) {
-      console.error("Error updating record:", updateError);
-      return createErrorResponse(
-        `Failed to commit sale: ${updateError.message}`,
-        500,
-        { updateError },
-      );
+      throw updateError;
     }
 
-    console.log("✅ Sale committed successfully:", updatedRecord.id);
-
-    // Update book statuses to sold for all items
-    if (order.items && Array.isArray(order.items)) {
-      for (const item of order.items) {
-        if (item.book_id) {
-          const { error: bookUpdateError } = await supabase
-            .from("books")
-            .update({
-              sold: true,
-              available: false,
-              status: "sold",
-              updated_at: now.toISOString(),
-            })
-            .eq("id", item.book_id);
-
-          if (bookUpdateError) {
-            console.warn("Could not update book status:", bookUpdateError);
-          } else {
-            console.log("✅ Book marked as sold:", item.book_id);
-          }
-        }
-      }
+    // Mark book as sold
+    if (order.book_id) {
+      await supabase
+        .from("books")
+        .update({ sold: true })
+        .eq("id", order.book_id);
     }
 
-    // Create notification for seller (buyer notification would need buyer_id which is not in current schema)
-    try {
-      // Notification for seller
-      await supabase.from("order_notifications").insert({
-        order_id: order.id,
-        user_id: order.seller_id,
-        type: "commitment_confirmed",
-        title: "Sale Commitment Confirmed",
-        message: `You have successfully committed to order #${order.id.slice(0, 8)}. Your books are ready for payout processing.`,
-        read: false,
-      });
-
-      console.log("✅ Seller notification created for sale commitment");
-    } catch (notificationError) {
-      console.warn("Failed to create notifications:", notificationError);
-      // Don't fail the commit for notification issues
-    }
-
-    // TODO: Trigger courier booking if integrated
-    // await triggerCourierBooking(updatedRecord);
-
-    return createSuccessResponse({
-      message:
-        "Sale committed successfully! Please prepare your book for collection.",
-      order: updatedRecord,
-      notifications_sent: true,
+    // Send notification to buyer
+    await supabase.from("notifications").insert({
+      user_id: order.buyer_id,
+      type: "order_committed",
+      title: "Order Confirmed!",
+      message: `Great news! The seller has confirmed your order for "${order.books?.title}". Collection details will be sent to you soon.`,
     });
+
+    // Log the commitment
+    await supabase.from("audit_logs").insert({
+      action: "seller_committed",
+      table_name: "orders",
+      record_id: orderId,
+      user_id: sellerId,
+      new_values: {
+        committed_at: new Date().toISOString(),
+        book_title: order.books?.title,
+      },
+    });
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: "Successfully committed to sale",
+        order: {
+          id: order.id,
+          status: "committed",
+          committed_at: new Date().toISOString(),
+        },
+      }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
   } catch (error) {
-    return createGenericErrorHandler("commit-to-sale")(error);
+    console.error("Error in commit-to-sale:", error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
