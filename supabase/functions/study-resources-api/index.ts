@@ -83,76 +83,80 @@ serve(async (req) => {
 
       case "POST":
         if (!user) {
-          return new Response(
-            JSON.stringify({
-              error: "Authentication required for write operations",
-            }),
-            {
-              status: 401,
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            },
+          return createErrorResponse(
+            "Authentication required for write operations",
+            401,
           );
         }
         if (path === "resources") {
-          const body = await req.json();
+          let body: any;
+          try {
+            body = await req.json();
+          } catch (error) {
+            return createErrorResponse("Invalid JSON in request body", 400);
+          }
           return await createResource(supabase, body, user.id);
         } else if (path === "verify") {
-          const body = await req.json();
+          let body: any;
+          try {
+            body = await req.json();
+          } catch (error) {
+            return createErrorResponse("Invalid JSON in request body", 400);
+          }
           return await verifyResource(supabase, body, user.id);
         } else if (path === "rate") {
-          const body = await req.json();
+          let body: any;
+          try {
+            body = await req.json();
+          } catch (error) {
+            return createErrorResponse("Invalid JSON in request body", 400);
+          }
           return await rateResource(supabase, body, user.id);
         }
         break;
 
       case "PUT":
         if (!user) {
-          return new Response(
-            JSON.stringify({
-              error: "Authentication required for write operations",
-            }),
-            {
-              status: 401,
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            },
+          return createErrorResponse(
+            "Authentication required for write operations",
+            401,
           );
         }
         if (url.pathname.includes("resources/")) {
           const id = url.pathname.split("/").pop();
-          const body = await req.json();
-          return await updateResource(supabase, id!, body, user.id);
+          if (!id) {
+            return createErrorResponse("Resource ID is required", 400);
+          }
+          let body: any;
+          try {
+            body = await req.json();
+          } catch (error) {
+            return createErrorResponse("Invalid JSON in request body", 400);
+          }
+          return await updateResource(supabase, id, body, user.id);
         }
         break;
 
       case "DELETE":
         if (!user) {
-          return new Response(
-            JSON.stringify({
-              error: "Authentication required for write operations",
-            }),
-            {
-              status: 401,
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            },
+          return createErrorResponse(
+            "Authentication required for write operations",
+            401,
           );
         }
         if (url.pathname.includes("resources/")) {
           const id = url.pathname.split("/").pop();
-          return await deleteResource(supabase, id!, user.id);
+          if (!id) {
+            return createErrorResponse("Resource ID is required", 400);
+          }
+          return await deleteResource(supabase, id, user.id);
         }
         break;
     }
 
-    return new Response(JSON.stringify({ error: "Not found" }), {
-      status: 404,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createErrorResponse("Endpoint not found", 404);
   } catch (error) {
-    console.error("Error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createGenericErrorHandler("study-resources-api")(error);
   }
 });
 
