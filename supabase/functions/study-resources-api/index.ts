@@ -225,7 +225,40 @@ async function getResources(
   const { data: resources, error } = await query;
 
   if (error) {
-    throw new Error(`Failed to fetch resources: ${error.message}`);
+    console.error("Database error fetching resources:", error);
+
+    // Fallback: Return static demo resources
+    return new Response(
+      JSON.stringify({
+        success: true,
+        data: [
+          {
+            id: "demo-1",
+            title: "Study Resources Temporarily Unavailable",
+            description:
+              "Our database is experiencing issues. Please try again later.",
+            resource_type: "announcement",
+            subject: "System Notice",
+            academic_level: "all",
+            created_at: new Date().toISOString(),
+            is_active: true,
+            creator: { full_name: "System" },
+            downloads_count: 0,
+          },
+        ],
+        pagination: {
+          page: 1,
+          limit: 20,
+          total: 1,
+          total_pages: 1,
+        },
+        fallback: true,
+        error: "Database temporarily unavailable",
+      }),
+      {
+        headers: corsHeaders,
+      },
+    );
   }
 
   // Get total count for pagination
