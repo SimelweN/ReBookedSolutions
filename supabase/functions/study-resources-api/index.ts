@@ -315,10 +315,7 @@ async function updateResource(
     .single();
 
   if (resource.created_by !== userId && !profile?.is_admin) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 403,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createErrorResponse("Unauthorized", 403);
   }
 
   const { data, error } = await supabase
