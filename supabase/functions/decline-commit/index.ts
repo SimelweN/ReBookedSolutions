@@ -29,6 +29,18 @@ serve(async (req) => {
   }
 
   try {
+    // Check environment variables first
+    if (missingVars.length > 0) {
+      return createEnvironmentError(missingVars);
+    }
+
+    const config = getEnvironmentConfig();
+    const PAYSTACK_SECRET_KEY = config.paystackSecretKey!;
+    const supabase = createClient(
+      config.supabaseUrl,
+      config.supabaseServiceKey,
+    );
+
     const { transactionId, orderId, sellerId, reason }: DeclineRequest =
       await req.json();
 
