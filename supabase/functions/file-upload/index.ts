@@ -205,10 +205,7 @@ async function handleMultipleFileUpload(
   const folder = formData.get("folder") as string;
 
   if (!files.length) {
-    return new Response(JSON.stringify({ error: "No files provided" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createErrorResponse("No files provided", 400);
   }
 
   const results = [];
