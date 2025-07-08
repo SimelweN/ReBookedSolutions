@@ -36,27 +36,27 @@ serve(async (req) => {
       case "POST":
         if (action === "query") {
           const analyticsQuery: AnalyticsQuery = await req.json();
-          return await executeAnalyticsQuery(supabaseClient, analyticsQuery);
+          return await executeAnalyticsQuery(supabase, analyticsQuery);
         } else if (action === "custom-report") {
           const reportConfig = await req.json();
-          return await generateCustomReport(supabaseClient, reportConfig);
+          return await generateCustomReport(supabase, reportConfig);
         }
         break;
 
       case "GET":
         if (action === "dashboard") {
-          return await getDashboardMetrics(supabaseClient);
+          return await getDashboardMetrics(supabase);
         } else if (action === "revenue") {
           const period = url.searchParams.get("period") || "30d";
-          return await getRevenueAnalytics(supabaseClient, period);
+          return await getRevenueAnalytics(supabase, period);
         } else if (action === "users") {
           const period = url.searchParams.get("period") || "30d";
-          return await getUserAnalytics(supabaseClient, period);
+          return await getUserAnalytics(supabase, period);
         } else if (action === "books") {
           const period = url.searchParams.get("period") || "30d";
-          return await getBookAnalytics(supabaseClient, period);
+          return await getBookAnalytics(supabase, period);
         } else if (action === "performance") {
-          return await getPerformanceMetrics(supabaseClient);
+          return await getPerformanceMetrics(supabase);
         } else if (action === "export") {
           const reportType = url.searchParams.get("type") || "sales";
           const format = url.searchParams.get("format") || "csv";
