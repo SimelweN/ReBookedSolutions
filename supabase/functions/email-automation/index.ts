@@ -273,8 +273,10 @@ async function sendEmail(supabase: any, emailData: any) {
   }
 
   // Check if API key is configured
-  if (!senderApiKey) {
-    console.log("⚠️ SENDER_API_KEY not configured - simulating email send");
+  if (!resendApiKey) {
+    console.log(
+      "⚠️ VITE_RESEND_API_KEY not configured - simulating email send",
+    );
 
     // Log email sent for simulation
     await supabase.from("email_logs").insert({
@@ -297,38 +299,22 @@ async function sendEmail(supabase: any, emailData: any) {
     );
   }
 
-  // Send via Sender.net API
+  // Send via Resend API
   const emailPayload = {
-    from: {
-      email: fromEmail,
-      name: "ReBooked Solutions",
-    },
-    to: [
-      {
-        email: to,
-        name: to.split("@")[0],
-      },
-    ],
+    from: `ReBooked Solutions <${fromEmail}>`,
+    to: [to],
     subject: finalSubject,
-    content: [
-      {
-        type: "text/html",
-        value: finalHtmlContent,
-      },
-    ],
+    html: finalHtmlContent,
   };
 
   if (textContent) {
-    emailPayload.content.push({
-      type: "text/plain",
-      value: textContent,
-    });
+    emailPayload.text = textContent;
   }
 
-  const response = await fetch("https://api.sender.net/api/v1/email/send", {
+  const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${senderApiKey}`,
+      Authorization: `Bearer ${resendApiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(emailPayload),
@@ -338,7 +324,7 @@ async function sendEmail(supabase: any, emailData: any) {
 
   if (!response.ok) {
     throw new Error(
-      `Sender.net error: ${response.status} ${response.statusText} - ${JSON.stringify(responseData)}`,
+      `Resend error: ${response.status} ${response.statusText} - ${JSON.stringify(responseData)}`,
     );
   }
 
