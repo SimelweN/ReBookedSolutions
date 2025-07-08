@@ -4,7 +4,7 @@ import { corsHeaders } from "../_shared/cors.ts";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const senderApiKey = Deno.env.get("SENDER_API_KEY");
+const resendApiKey = Deno.env.get("VITE_RESEND_API_KEY");
 const fromEmail = Deno.env.get("FROM_EMAIL") || "notifications@rebooked.co.za";
 
 interface EmailTemplate {
