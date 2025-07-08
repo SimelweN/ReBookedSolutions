@@ -65,19 +65,23 @@ serve(async (req) => {
     }
 
     // Verify the user making the request
-    const userClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     const {
       data: { user },
       error: authError,
-    } = await userClient.auth.getUser(authHeader.replace("Bearer ", ""));
+    } = await supabase.auth.getUser(authHeader.replace("Bearer ", ""));
 
     if (authError || !user) {
-      throw new Error("Invalid authentication token");
+      return createErrorResponse("Invalid authentication token", 401, {
+        authError: authError?.message,
+      });
     }
 
     // Security: Verify the seller ID matches the authenticated user
     if (user.id !== sellerId) {
-      throw new Error("Unauthorized: You can only commit to your own sales");
+      return createErrorResponse(
+        "Unauthorized: You can only commit to your own sales",
+        403,
+      );
     }
 
     // Find the order
@@ -90,8 +94,10 @@ serve(async (req) => {
       .single();
 
     if (orderError || !order) {
-      throw new Error(
+      return createErrorResponse(
         "Order not found, or you don't have permission to commit this sale",
+        404,
+        { orderError: orderError?.message, orderIdUsed: orderIdToUse },
       );
     }
 
@@ -99,21 +105,18 @@ serve(async (req) => {
 
     // Check if already ready for payout (committed)
     if (order.status === "ready_for_payout") {
-      return new Response(
-        JSON.stringify({
-          success: true,
-          message: "Sale already committed",
-          data: order,
-        }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
+      return createSuccessResponse({
+        message: "Sale already committed",
+        order: order,
+      });
     }
 
     // Check current status - should be 'paid'
     if (order.status !== "paid") {
-      throw new Error(`Cannot commit sale with status: ${order.status}`);
+      return createErrorResponse(
+        `Cannot commit sale with status: ${order.status}`,
+        400,
+      );
     }
 
     const now = new Date();
