@@ -1,106 +1,122 @@
-import React, { useEffect, useState } from "react";
-import { Loader2, AlertCircle, Database } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface LoadingFallbackProps {
-  timeout?: number;
-  onTimeout?: () => void;
+  type?: "page" | "card" | "list" | "table" | "compact" | "fullscreen";
+  message?: string;
+  showMessage?: boolean;
+  count?: number;
 }
 
-export const LoadingFallback: React.FC<LoadingFallbackProps> = ({
-  timeout = 5000,
-  onTimeout,
+const LoadingFallback: React.FC<LoadingFallbackProps> = ({
+  type = "page",
+  message = "Loading...",
+  showMessage = true,
+  count = 3,
 }) => {
-  const [showTimeout, setShowTimeout] = useState(false);
-  const [elapsed, setElapsed] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setElapsed((prev) => prev + 100);
-    }, 100);
-
-    const timeoutTimer = setTimeout(() => {
-      setShowTimeout(true);
-      onTimeout?.();
-    }, timeout);
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timeoutTimer);
-    };
-  }, [timeout, onTimeout]);
-
-  const progress = Math.min((elapsed / timeout) * 100, 100);
-
-  if (showTimeout) {
+  if (type === "fullscreen") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-        <div className="max-w-md mx-auto text-center space-y-6">
-          <div className="flex justify-center">
-            <AlertCircle className="h-16 w-16 text-amber-500" />
-          </div>
-
-          <div className="space-y-2">
-            <h2 className="text-xl font-bold text-gray-900">
-              Taking longer than expected...
-            </h2>
-            <p className="text-gray-600">
-              The app might be experiencing connectivity issues.
-            </p>
-          </div>
-
-          <Alert>
-            <Database className="h-4 w-4" />
-            <AlertDescription>
-              This is often caused by missing database tables. If this is a new
-              deployment, run the database setup script.
-            </AlertDescription>
-          </Alert>
-
-          <div className="flex gap-3 justify-center">
-            <Button onClick={() => window.location.reload()} variant="default">
-              Refresh Page
-            </Button>
-
-            <Button onClick={() => setShowTimeout(false)} variant="outline">
-              Continue Waiting
-            </Button>
-          </div>
-
-          {import.meta.env.DEV && (
-            <div className="mt-4 p-3 bg-blue-50 rounded text-xs text-blue-700">
-              Try: <code>checkDatabaseStatus()</code> in console
-            </div>
+      <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-book-600 mx-auto mb-4"></div>
+          {showMessage && (
+            <p className="text-gray-600 font-medium">{message}</p>
           )}
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center space-y-4">
-        <div className="relative">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-xs font-medium text-blue-600">
-              {Math.round(progress)}%
+  if (type === "compact") {
+    return (
+      <div className="flex items-center justify-center p-4">
+        <div className="flex items-center space-x-2">
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-book-600"></div>
+          {showMessage && (
+            <span className="text-sm text-gray-600">{message}</span>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (type === "card") {
+    return (
+      <Card className="w-full">
+        <CardContent className="p-6">
+          <div className="space-y-4">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-4 w-5/6" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (type === "list") {
+    return (
+      <div className="space-y-3">
+        {Array.from({ length: count }).map((_, i) => (
+          <div
+            key={i}
+            className="flex items-center space-x-4 p-3 border rounded-lg"
+          >
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2 flex-1">
+              <Skeleton className="h-4 w-1/3" />
+              <Skeleton className="h-3 w-2/3" />
             </div>
           </div>
-        </div>
+        ))}
+      </div>
+    );
+  }
 
-        <div className="space-y-2">
-          <h3 className="text-lg font-medium text-gray-900">Loading...</h3>
-          <p className="text-sm text-gray-500">Setting up your account</p>
-        </div>
+  if (type === "table") {
+    return (
+      <div className="w-full">
+        <div className="border rounded-lg overflow-hidden">
+          {/* Table header */}
+          <div className="bg-gray-50 p-4 border-b">
+            <div className="flex space-x-4">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-16" />
+            </div>
+          </div>
 
-        <div className="w-48 mx-auto bg-gray-200 rounded-full h-1">
-          <div
-            className="bg-blue-600 h-1 rounded-full transition-all duration-100"
-            style={{ width: `${progress}%` }}
-          />
+          {/* Table rows */}
+          {Array.from({ length: count }).map((_, i) => (
+            <div key={i} className="p-4 border-b last:border-b-0">
+              <div className="flex space-x-4">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-4 w-16" />
+              </div>
+            </div>
+          ))}
         </div>
+      </div>
+    );
+  }
+
+  // Default 'page' type
+  return (
+    <div className="flex items-center justify-center min-h-[400px]">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-book-600 mx-auto mb-6"></div>
+        {showMessage && (
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold text-gray-900">{message}</h3>
+            <p className="text-gray-600">
+              Please wait while we load your content
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
