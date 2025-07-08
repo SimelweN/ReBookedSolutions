@@ -111,15 +111,21 @@ const BroadcastManager = () => {
     if (isAuthenticated && user) {
       await dismissBroadcast(user.id, currentBroadcast.id);
     } else {
-      // For guests, store in localStorage
-      const viewedBroadcasts = JSON.parse(
-        localStorage.getItem("viewedBroadcasts") || "[]",
-      );
-      viewedBroadcasts.push(currentBroadcast.id);
-      localStorage.setItem(
-        "viewedBroadcasts",
-        JSON.stringify(viewedBroadcasts),
-      );
+      // For guests, store in localStorage (with fallback)
+      try {
+        const stored = localStorage.getItem("viewedBroadcasts");
+        const viewedBroadcasts = stored ? JSON.parse(stored) : [];
+        viewedBroadcasts.push(currentBroadcast.id);
+        localStorage.setItem(
+          "viewedBroadcasts",
+          JSON.stringify(viewedBroadcasts),
+        );
+      } catch (error) {
+        console.warn(
+          "Failed to store dismissed broadcast, broadcast may reappear",
+        );
+        // Broadcast dismissal will work for this session but not persist
+      }
     }
 
     setShowBroadcast(false);
