@@ -5,6 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
+  "Content-Type": "application/json",
 };
 
 serve(async (req) => {
@@ -13,6 +14,7 @@ serve(async (req) => {
   }
 
   try {
+    console.log("Verify payment request:", req.method);
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
@@ -349,11 +351,12 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({
-        error: error.message || "Failed to verify payment",
+        error: "Internal Server Error",
+        details: error?.message || "Failed to verify payment",
       }),
       {
         status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       },
     );
   }
