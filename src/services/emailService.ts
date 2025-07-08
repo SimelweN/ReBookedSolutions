@@ -51,7 +51,7 @@ class EmailService {
       `📧 Attempting to send email to ${options.to}: ${options.subject}`,
     );
 
-    // Try using fallback service for non-critical email functions
+    // Try using fallback service for critical email functions
     const result = await functionFallback.callFunction('send-email-notification', {
       to: options.to,
       subject: options.subject,
@@ -66,7 +66,7 @@ class EmailService {
       console.warn("⚠️ Email function failed, using fallback simulation");
       console.log(`📧 [FALLBACK] Simulated email to ${options.to}: ${options.subject}`);
 
-      // In development, just log and return success
+      // In development, just log and return success for demo purposes
       if (!this.IS_PRODUCTION) {
         return true;
       }
@@ -75,78 +75,7 @@ class EmailService {
       console.error("❌ Email service failed in production:", result.error);
       return false;
     }
-      const { supabase } = await import("@/integrations/supabase/client");
-
-      const payload = {
-        to: options.to,
-        subject: options.subject,
-        html: options.html,
-        from: options.from || this.FROM_EMAIL,
-      };
-
-      console.log(
-        "📦 Edge Function payload:",
-        JSON.stringify(payload, null, 2),
-      );
-
-      const { data, error } = await supabase.functions.invoke(
-        "send-email-notification",
-        {
-          body: payload,
-        },
-      );
-
-      console.log("📡 Edge Function response:", { data, error });
-
-      if (!error && data?.success) {
-        console.log(
-          `✅ Email sent via Edge Function to ${options.to}: ${options.subject}`,
-        );
-        return true;
-      }
-
-      if (error) {
-        console.error("❌ Edge Function error:", error);
-        throw new Error(
-          `Edge Function failed: ${error.message || JSON.stringify(error)}`,
-        );
-      }
-
-      if (data && !data.success) {
-        console.error("❌ Edge Function returned unsuccessful response:", data);
-        throw new Error(
-          `Email sending failed: ${data.error || data.message || "Unknown error"}`,
-        );
-      }
-
-      throw new Error("Unexpected edge function response format");
-    } catch (edgeFunctionError) {
-      console.error("❌ Edge Function failed:", edgeFunctionError);
-
-      // In production, re-throw the error; in development, continue to fallback
-      if (this.IS_PRODUCTION) {
-        throw edgeFunctionError;
-      }
-
-      console.warn("⚠️ Falling back to direct API call (development only)...");
-    }
-
-    // Fallback to direct API call (only in development, will likely hit CORS)
-    if (!this.IS_PRODUCTION) {
-      try {
-        console.log("🔄 Attempting direct API call as fallback...");
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-        const response = await fetch(this.API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${this.API_KEY}`,
-          },
-          signal: controller.signal,
-          body: JSON.stringify({
-            from: {
+  }
               email: (options.from || this.FROM_EMAIL).email,
               name: (options.from || this.FROM_EMAIL).name,
             },
