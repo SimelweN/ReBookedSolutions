@@ -89,7 +89,16 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   };
 
   const handleError = () => {
-    setHasError(true);
+    if (!fallbackUsed) {
+      setFallbackUsed(true);
+      // Try to load placeholder image first
+      const img = new Image();
+      img.onload = () => setIsLoaded(true);
+      img.onerror = () => setHasError(true);
+      img.src = "/placeholder.svg";
+    } else {
+      setHasError(true);
+    }
     onError?.();
   };
 
