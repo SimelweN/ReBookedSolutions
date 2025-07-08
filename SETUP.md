@@ -1,325 +1,339 @@
-# ReBooked Solutions - Complete Setup Guide
+# ReBooked Platform Setup Guide
 
-This guide will help you set up ReBooked Solutions from scratch with all required services.
+This guide will help you set up the ReBooked platform from scratch with all required services and configurations.
 
-## 🚀 Quick Setup (Recommended)
+## Quick Start
 
-### Option 1: Automated Setup
+### Option 1: Interactive Setup (Recommended)
 
 ```bash
-# Clone the repository
-git clone [your-repo-url]
-cd rebooked-solutions
-
-# Install dependencies
-npm install
-
-# Run automated setup check
-npm run check-setup
-
-# Run interactive setup
 npm run setup
 ```
 
-### Option 2: Manual Setup
-
-Follow the sections below for manual configuration.
-
-## 📋 Prerequisites
-
-- Node.js 18+ and npm
-- Supabase account (free tier available)
-- Paystack account (South African payment gateway)
-- Google Cloud account (for Maps API)
-
-## 🗄️ Database Setup (Supabase)
-
-### 1. Create Supabase Project
-
-1. Go to [supabase.com/dashboard](https://supabase.com/dashboard)
-2. Click "New Project"
-3. Fill in project details
-4. Wait for project to be created
-
-### 2. Get Database Credentials
-
-1. In your project dashboard, go to **Settings > API**
-2. Copy the following:
-   - Project URL
-   - Anon/Public key
-
-### 3. Set Up Database Tables
-
-1. Go to **SQL Editor** in your Supabase dashboard
-2. Copy the entire content from `scripts/setup-database.sql`
-3. Paste and execute the script
-4. Verify tables are created in **Table Editor**
-
-## 💳 Payment Setup (Paystack)
-
-### 1. Create Paystack Account
-
-1. Go to [dashboard.paystack.com](https://dashboard.paystack.com)
-2. Sign up with South African business details
-3. Complete email verification
-
-### 2. Get API Keys
-
-1. Go to **Settings > API Keys & Webhooks**
-2. Copy your **Test Public Key** (starts with `pk_test_`)
-3. For production, complete verification and use Live keys
-
-### 3. Test Cards (Development)
-
-- **Successful payment**: 4084084084084081
-- **Insufficient funds**: 4000000000000002
-- **Declined**: 4000000000000069
-
-## 🗺️ Google Maps Setup (Optional)
-
-### 1. Create Google Cloud Project
-
-1. Go to [console.cloud.google.com](https://console.cloud.google.com)
-2. Create new project or select existing
-3. Enable billing (required for Maps API)
-
-### 2. Enable APIs
-
-Enable these APIs in **APIs & Services > Library**:
-
-- Maps JavaScript API
-- Places API
-- Geocoding API
-
-### 3. Create API Key
-
-1. Go to **APIs & Services > Credentials**
-2. Click **Create Credentials > API Key**
-3. **Important**: Restrict the key:
-   - Application restrictions: HTTP referrers
-   - Add: `http://localhost:*` and `https://yourdomain.com/*`
-   - API restrictions: Select only the 3 APIs above
-
-## 📧 Email Service Setup (Optional)
-
-### Option 1: Sender.net
-
-1. Sign up at [sender.net](https://sender.net)
-2. Get API key from account settings
-3. Verify domain for production
-
-### Option 2: Resend
-
-1. Sign up at [resend.com](https://resend.com)
-2. Get API key from dashboard
-3. Add domain for production
-
-## 🚚 Shipping Setup (Optional)
-
-### Courier Guy
-
-1. Contact Courier Guy for API access
-2. Get API credentials
-3. Configure in environment
-
-### Fastway
-
-1. Contact Fastway for API access
-2. Get API credentials
-3. Configure in environment
-
-## ⚙️ Environment Configuration
-
-### 1. Create Environment File
-
-```bash
-cp .env.example .env
-```
-
-### 2. Fill in Required Variables
-
-```bash
-# Database & Authentication (REQUIRED)
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...
-
-# Payment Processing (REQUIRED)
-VITE_PAYSTACK_PUBLIC_KEY=pk_test_37c77bb59dc7a6b3a3b836a74ebc3b9f59e25de7
-
-# Google Maps (Optional)
-VITE_GOOGLE_MAPS_API_KEY=AIzaSyBNLrJhOMz6idD05pzfn5lhA-TAw-mAZCU
-
-# Email Service (Optional)
-VITE_SENDER_API=your-sender-api-key
-
-# Shipping Services (Optional)
-VITE_COURIER_GUY_API_KEY=your-courier-guy-key
-VITE_FASTWAY_API_KEY=your-fastway-key
-
-# App Configuration
-VITE_APP_URL=http://localhost:5173
-NODE_ENV=development
-```
-
-## 🔍 Verification
-
-### 1. Check Configuration
+### Option 2: Check Current Setup
 
 ```bash
 npm run check-setup
 ```
 
-### 2. Test Application
+### Option 3: Manual Setup
+
+Follow the detailed instructions below.
+
+## Prerequisites
+
+- Node.js 18+ installed
+- A Supabase account
+- A Paystack account (for payments)
+- A Google Cloud account (for Maps API)
+- An email service provider account
+
+## Environment Variables Setup
+
+Copy the demo environment file and configure it:
 
 ```bash
-npm run dev
+cp .env.demo .env
 ```
 
-### 3. Verify Features
+### Required Environment Variables
 
-- [ ] User registration/login works
-- [ ] Database operations work
-- [ ] Payment system loads (test mode)
-- [ ] Address autocomplete works (if Maps configured)
-- [ ] Email notifications work (if email configured)
+#### Database (Supabase) - **CRITICAL**
 
-## 🚀 Deployment
+```
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+```
 
-### Vercel
+**How to get these:**
 
-1. Push code to GitHub
-2. Connect to Vercel
-3. Add environment variables in Vercel dashboard
-4. Deploy
+1. Go to [supabase.com](https://supabase.com)
+2. Create a new project
+3. Go to Settings → API
+4. Copy the URL and anon key
+5. Copy the service_role key (keep this secret!)
 
-### Netlify
+#### Payment Processing (Paystack) - **CRITICAL**
 
-1. Push code to GitHub
-2. Connect to Netlify
-3. Add environment variables in site settings
-4. Deploy
+```
+VITE_PAYSTACK_PUBLIC_KEY=pk_test_your_test_key
+PAYSTACK_SECRET_KEY=sk_test_your_secret_key
+```
 
-### Custom Server
+**How to get these:**
 
-1. Build application: `npm run build`
-2. Serve static files from `dist/` folder
-3. Configure environment variables on server
+1. Go to [paystack.com](https://paystack.com)
+2. Create an account and verify your business
+3. Go to Settings → API Keys & Webhooks
+4. Copy your test keys (use live keys for production)
 
-## 🔧 Production Configuration
+#### Google Maps API - **HIGH PRIORITY**
+
+```
+VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+```
+
+**How to get this:**
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com)
+2. Enable the Maps JavaScript API and Places API
+3. Create credentials → API Key
+4. Restrict the key to your domains
+
+#### Email Service - **MEDIUM PRIORITY**
+
+```
+EMAIL_SERVICE_API_KEY=your_email_service_key
+VITE_EMAIL_SENDER=your_sender_email
+```
+
+#### Shipping Providers - **MEDIUM PRIORITY**
+
+```
+COURIER_GUY_API_KEY=your_courier_guy_key
+FASTWAY_API_KEY=your_fastway_key
+```
+
+## Database Setup
+
+### Automatic Setup
+
+```bash
+npm run setup-db
+```
+
+### Manual Setup
+
+1. Open your Supabase project dashboard
+2. Go to SQL Editor
+3. Run the script from `scripts/setup-database.sql`
+
+This will create:
+
+- All required tables with proper relationships
+- Row Level Security (RLS) policies
+- Database functions and triggers
+- Indexes for performance
+- Initial admin user setup
+
+## Service Configuration
+
+### 1. Supabase Configuration
+
+After setting up your database:
+
+1. **Enable Authentication Providers:**
+   - Go to Authentication → Providers
+   - Configure email/password authentication
+   - Optionally enable Google, GitHub, etc.
+
+2. **Configure Email Templates:**
+   - Go to Authentication → Email Templates
+   - Customize confirmation and recovery emails
+
+3. **Set up Storage:**
+   - Go to Storage
+   - Create buckets for: `book-images`, `profile-pictures`, `study-resources`
+   - Set appropriate policies
+
+### 2. Paystack Configuration
+
+1. **Webhook Setup:**
+   - Go to Settings → API Keys & Webhooks
+   - Add webhook URL: `https://your-supabase-project.supabase.co/functions/v1/paystack-webhook`
+   - Select events: `charge.success`, `transfer.success`, `transfer.failed`
+
+2. **Subaccount Setup:**
+   - Enable split payments if using multi-seller functionality
+   - Configure settlement preferences
+
+### 3. Google Maps Setup
+
+1. **Enable Required APIs:**
+   - Maps JavaScript API
+   - Places API
+   - Geocoding API
+
+2. **Configure API Key Restrictions:**
+   - Application restrictions: HTTP referrers
+   - Add your domain(s)
+   - API restrictions: Select only the APIs you need
+
+### 4. Email Service Setup
+
+The platform supports multiple email providers. Configure your preferred one:
+
+#### SendGrid
+
+```
+EMAIL_SERVICE_API_KEY=your_sendgrid_api_key
+EMAIL_SERVICE_PROVIDER=sendgrid
+```
+
+#### Mailgun
+
+```
+EMAIL_SERVICE_API_KEY=your_mailgun_api_key
+EMAIL_SERVICE_PROVIDER=mailgun
+```
+
+### 5. Shipping Provider Setup
+
+#### Courier Guy
+
+1. Register at courierguy.co.za
+2. Get API credentials
+3. Configure pickup locations
+
+#### Fastway
+
+1. Register at fastway.co.za
+2. Get API credentials
+3. Set up franchise preferences
+
+## Verification
+
+### Automated Health Check
+
+```bash
+npm run validate
+```
+
+This will check:
+
+- ✅ Environment variables are set
+- ✅ Database connection works
+- ✅ Payment provider is configured
+- ✅ Maps API is accessible
+- ✅ Email service is working
+- ✅ Shipping providers are configured
+
+### Manual Verification
+
+1. **Start the application:**
+
+   ```bash
+   npm run dev
+   ```
+
+2. **Check the startup screen:**
+   - The app should show a setup checker if services aren't configured
+   - Green checkmarks indicate working services
+   - Red X marks show configuration issues
+
+3. **Test core functionality:**
+   - User registration/login
+   - Book listing and search
+   - Payment processing (test mode)
+   - Location autocomplete
+   - Email notifications
+
+## Production Deployment
+
+### Environment Variables for Production
+
+1. **Switch to production keys:**
+
+   ```
+   VITE_PAYSTACK_PUBLIC_KEY=pk_live_your_live_key
+   PAYSTACK_SECRET_KEY=sk_live_your_live_key
+   ```
+
+2. **Configure production URLs:**
+
+   ```
+   VITE_APP_URL=https://yourdomain.com
+   VITE_SUPABASE_URL=your_production_supabase_url
+   ```
+
+3. **Set up monitoring:**
+   ```
+   SENTRY_DSN=your_sentry_dsn
+   LOG_LEVEL=error
+   ```
 
 ### Security Checklist
 
-- [ ] Use production Supabase instance
-- [ ] Use live Paystack keys (after verification)
-- [ ] Restrict Google Maps API key to production domains
-- [ ] Enable RLS policies in Supabase
-- [ ] Configure proper CORS settings
-- [ ] Set up monitoring and error tracking
+- [ ] All API keys are properly restricted
+- [ ] Database RLS policies are enabled
+- [ ] CORS is configured correctly
+- [ ] SSL certificates are installed
+- [ ] Environment variables are secure
+- [ ] Webhook endpoints are secured
+- [ ] File upload size limits are set
+- [ ] Rate limiting is configured
 
-### Performance Optimization
-
-- [ ] Enable Supabase connection pooling
-- [ ] Configure CDN for static assets
-- [ ] Set up database indexes
-- [ ] Enable gzip compression
-- [ ] Configure caching headers
-
-## 🆘 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
-#### Database Connection Failed
+#### "Database connection failed"
 
-```
-Check:
-- Supabase URL format: https://xxx.supabase.co
-- Anon key starts with: eyJ
-- RLS policies are properly set
-```
+- Check your Supabase URL and keys
+- Ensure your database is running
+- Verify RLS policies allow access
 
-#### Payment Issues
+#### "Payment initialization failed"
 
-```
-Check:
-- Paystack key starts with: pk_test_ or pk_live_
-- Key is not truncated
-- Test with valid test card numbers
-```
+- Verify Paystack keys are correct
+- Check if webhook URL is accessible
+- Ensure test mode is properly configured
 
-#### Maps Not Working
+#### "Maps not loading"
 
-```
-Check:
-- API key starts with: AIza
-- Required APIs are enabled
-- Billing is enabled in Google Cloud
-- Key restrictions are properly set
-```
+- Check if Google Maps API key is valid
+- Verify required APIs are enabled
+- Check browser console for specific errors
+
+#### "Email delivery failed"
+
+- Verify email service credentials
+- Check spam folders
+- Ensure sender domain is verified
 
 ### Getting Help
 
-1. **Check System Status**: Run `npm run check-setup`
-2. **View Logs**: Check browser console for errors
-3. **Verify Environment**: Ensure all required variables are set
-4. **Test Individual Services**: Use browser dev tools to test API calls
+1. **Check the startup checker** - It provides specific guidance for each service
+2. **Review browser console** - Look for specific error messages
+3. **Check service status pages** - Verify if external services are down
+4. **Review logs** - Check application and service logs for details
 
-### Support Resources
+### Support
 
-- [Supabase Documentation](https://supabase.com/docs)
-- [Paystack Documentation](https://paystack.com/docs)
-- [Google Maps Documentation](https://developers.google.com/maps/documentation)
+- Create an issue in the project repository
+- Include relevant error messages
+- Specify which services are failing
+- Provide environment details (without sensitive information)
 
-## 📝 Development Notes
+## Development Tips
 
-### Project Structure
+### Local Development
 
-```
-src/
-├── components/     # React components
-├── pages/         # Page components
-├── services/      # API services
-├── utils/         # Utility functions
-├── config/        # Configuration files
-└── hooks/         # Custom React hooks
+- Use test/sandbox keys for all external services
+- Enable verbose logging: `LOG_LEVEL=debug`
+- Use mock data when services are unavailable
 
-supabase/
-├── migrations/    # Database migrations
-└── functions/     # Edge functions
-
-scripts/
-├── setup-database.sql  # Database setup
-└── auto-setup.js      # Setup checker
-```
-
-### Key Files
-
-- `src/config/environment.ts` - Environment configuration
-- `src/integrations/supabase/client.ts` - Database client
-- `src/contexts/AuthContext.tsx` - Authentication
-- `src/utils/databaseSetup.ts` - Database utilities
-
-### Development Commands
+### Testing
 
 ```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run lint         # Check code quality
-npm run check-setup  # Verify configuration
-npm run setup        # Interactive setup
+# Run all tests
+npm test
+
+# Test specific components
+npm test -- --grep "payment"
+
+# Run integration tests
+npm run test:integration
 ```
+
+### Debugging
+
+- Enable React DevTools
+- Use Supabase dashboard for database debugging
+- Check service provider dashboards for API call logs
+- Monitor network requests in browser DevTools
 
 ---
 
-## 🎉 You're Ready!
-
-Once you've completed the setup, your ReBooked Solutions platform should be fully functional with:
-
-- ✅ User authentication and profiles
-- ✅ Book listing and marketplace
-- ✅ Payment processing
-- ✅ Order management
-- ✅ Address autocomplete (if Maps configured)
-- ✅ Email notifications (if email configured)
-- ✅ Shipping calculations (if shipping configured)
-
-Happy selling! 📚
+**Note:** This setup guide assumes you're using the latest version of the ReBooked platform. Some steps may vary depending on your specific configuration needs.
