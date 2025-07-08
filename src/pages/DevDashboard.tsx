@@ -307,6 +307,7 @@ const DevDashboard: React.FC = () => {
       testCommitSystem,
       testNotifications,
       testEnvironmentConfig,
+      testFunctionFallbacks,
     ];
 
     for (const test of tests) {
