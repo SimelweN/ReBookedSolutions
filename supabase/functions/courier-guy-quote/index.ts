@@ -1,52 +1,58 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  corsHeaders,
+  createErrorResponse,
+  createSuccessResponse,
+  handleOptionsRequest,
+  createGenericErrorHandler,
+} from "../_shared/cors.ts";
+import {
+  validateRequiredEnvVars,
+  createEnvironmentError,
+} from "../_shared/environment.ts";
 
 const COURIER_GUY_API_URL = "https://api.courierguy.co.za";
-const COURIER_GUY_API_KEY = Deno.env.get("COURIER_GUY_API_KEY");
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleOptionsRequest();
   }
 
   try {
+    const COURIER_GUY_API_KEY = Deno.env.get("COURIER_GUY_API_KEY");
+
     if (!COURIER_GUY_API_KEY) {
-      console.warn("COURIER_GUY_API_KEY not configured");
+      console.warn("COURIER_GUY_API_KEY not configured - returning mock data");
       // Return mock data for development
-      return new Response(
-        JSON.stringify({
-          success: true,
-          quotes: [
-            {
-              service_type: "Standard",
-              price: 85,
-              estimated_days: "3-5",
-              description: "Standard delivery service",
-              service_code: "STD",
-            },
-            {
-              service_type: "Express",
-              price: 120,
-              estimated_days: "1-2",
-              description: "Express delivery service",
-              service_code: "EXP",
-            },
-          ],
-        }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
+      return createSuccessResponse({
+        quotes: [
+          {
+            service_type: "Standard",
+            price: 85,
+            estimated_days: "3-5",
+            description: "Standard delivery service",
+            service_code: "STD",
+          },
+          {
+            service_type: "Express",
+            price: 120,
+            estimated_days: "1-2",
+            description: "Express delivery service",
+            service_code: "EXP",
+          },
+        ],
+      });
     }
 
-    const { pickup_address, delivery_address, parcel_details } =
-      await req.json();
+    // Parse and validate request body
+    let requestBody: any;
+    try {
+      requestBody = await req.json();
+    } catch (error) {
+      return createErrorResponse("Invalid JSON in request body", 400);
+    }
+
+    const { pickup_address, delivery_address, parcel_details } = requestBody;
 
     // Validate required fields
     if (!pickup_address || !delivery_address || !parcel_details) {
