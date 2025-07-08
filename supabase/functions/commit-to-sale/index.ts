@@ -24,15 +24,10 @@ serve(async (req) => {
   }
 
   try {
-    // Check environment variables first
-    if (missingVars.length > 0) {
-      return createEnvironmentError(missingVars);
-    }
-
-    const config = getEnvironmentConfig();
+    // Initialize Supabase client with service role for admin operations
     const supabase = createClient(
-      config.supabaseUrl,
-      config.supabaseServiceKey,
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
     const { transactionId, orderId, sellerId }: CommitRequest =
