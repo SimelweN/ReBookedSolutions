@@ -88,7 +88,7 @@ for func in "${FUNCTIONS[@]}"; do
     echo ""
     echo -e "${BLUE}🚀 Deploying: ${func}${NC}"
     echo "----------------------------"
-    
+
     if npx supabase functions deploy $func; then
         echo -e "${GREEN}✅ Successfully deployed: ${func}${NC}"
         ((DEPLOYED++))
@@ -122,7 +122,8 @@ fi
 echo ""
 echo "🌐 Environment Variables to set in Supabase Dashboard:"
 echo "======================================================"
-echo "SENDER_API_KEY=your_sender_api_key"
+echo "VITE_RESEND_API_KEY=re_MZmby9ES_49kBCotYLoaEv6mQNTJvVRRW"
+echo "SENDER_API_KEY=your_sender_api_key_if_needed"
 echo "FROM_EMAIL=noreply@rebookedsolutions.co.za"
 echo "SUPABASE_SERVICE_ROLE_KEY=your_service_role_key"
 echo ""
