@@ -1539,7 +1539,9 @@ const DevDashboard: React.FC = () => {
 
             {/* Email Testing Tab */}
             <TabsContent value="email" className="space-y-6">
-              <EmailTester />
+              <div className="flex justify-center">
+                <SimpleEmailTest />
+              </div>
             </TabsContent>
 
             {/* Commit Testing Tab */}
