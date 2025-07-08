@@ -51,7 +51,6 @@ import {
   ShoppingCart,
   Zap,
   Activity,
-  Zap,
   Code,
   Eye,
   Edit,
