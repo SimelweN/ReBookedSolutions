@@ -22,9 +22,13 @@ serve(async (req) => {
   }
 
   try {
-    if (!PAYSTACK_SECRET_KEY) {
-      throw new Error("Paystack secret key not configured");
+    // Check environment variables first
+    if (missingVars.length > 0) {
+      return createEnvironmentError(missingVars);
     }
+
+    const config = getEnvironmentConfig();
+    const PAYSTACK_SECRET_KEY = config.paystackSecretKey!;
 
     const { amount, recipient, reason, reference } = await req.json();
 
