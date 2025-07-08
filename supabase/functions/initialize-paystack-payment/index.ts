@@ -334,20 +334,25 @@ serve(async (req) => {
       })
       .eq("id", order_id);
 
-    // Log audit trail
-    await supabaseClient.from("audit_logs").insert({
-      action: "payment_initialized",
-      table_name: "payments",
-      record_id: payment.id,
-      user_id: user.id,
-      details: {
-        order_id,
-        reference,
-        amount,
-        currency,
-        paystack_access_code: paystackData.data.access_code,
-      },
-    });
+    // Log audit trail (non-blocking)
+    try {
+      await supabaseClient.from("audit_logs").insert({
+        action: "payment_initialized",
+        table_name: "payments",
+        record_id: payment.id,
+        user_id: user.id,
+        details: {
+          order_id,
+          reference,
+          amount,
+          currency,
+          paystack_access_code: paystackData.data.access_code,
+        },
+      });
+    } catch (auditError) {
+      console.error("Failed to create audit log:", auditError);
+      // Continue execution - audit log is not critical for payment flow
+    }
 
     // Send notification to seller (non-blocking)
     try {
