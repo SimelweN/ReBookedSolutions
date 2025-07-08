@@ -31,17 +31,13 @@ interface UserDetails {
 
 class EmailService {
   private static readonly API_KEY = import.meta.env.VITE_SENDER_API;
-  private static readonly API_URL = "https://api.sender.net/api/v1/email/send";
   private static readonly FROM_EMAIL = {
     name: "ReBooked Solutions",
     email: "noreply@rebookedsolutions.co.za",
   };
 
-  // Check if running in production or has API key configured
+  // Check if running in production
   private static readonly IS_PRODUCTION = import.meta.env.PROD;
-  private static readonly HAS_API_KEY = Boolean(
-    this.API_KEY && this.API_KEY.trim() !== "",
-  );
 
   /**
    * Send email using Supabase Edge Function with automatic fallback
@@ -52,19 +48,24 @@ class EmailService {
     );
 
     // Try using fallback service for critical email functions
-    const result = await functionFallback.callFunction('send-email-notification', {
-      to: options.to,
-      subject: options.subject,
-      html: options.html,
-      from: options.from || this.FROM_EMAIL
-    });
+    const result = await functionFallback.callFunction(
+      "send-email-notification",
+      {
+        to: options.to,
+        subject: options.subject,
+        html: options.html,
+        from: options.from || this.FROM_EMAIL,
+      },
+    );
 
     if (result.success) {
       console.log("✅ Email sent successfully");
       return true;
     } else {
       console.warn("⚠️ Email function failed, using fallback simulation");
-      console.log(`📧 [FALLBACK] Simulated email to ${options.to}: ${options.subject}`);
+      console.log(
+        `📧 [FALLBACK] Simulated email to ${options.to}: ${options.subject}`,
+      );
 
       // In development, just log and return success for demo purposes
       if (!this.IS_PRODUCTION) {
@@ -75,63 +76,6 @@ class EmailService {
       console.error("❌ Email service failed in production:", result.error);
       return false;
     }
-  }
-              email: (options.from || this.FROM_EMAIL).email,
-              name: (options.from || this.FROM_EMAIL).name,
-            },
-            to: [
-              {
-                email: options.to,
-                name: options.to.split("@")[0],
-              },
-            ],
-            subject: options.subject,
-            content: [
-              {
-                type: "text/html",
-                value: options.html,
-              },
-            ],
-          }),
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(
-            `Direct API call failed: ${response.status} ${errorText}`,
-          );
-        }
-
-        console.log(
-          `✅ Email sent via direct API to ${options.to}: ${options.subject}`,
-        );
-        return true;
-      } catch (directApiError) {
-        // Handle CORS/network errors gracefully in development
-        let errorType = "Network";
-        if (
-          directApiError instanceof DOMException &&
-          directApiError.name === "AbortError"
-        ) {
-          errorType = "Timeout";
-        } else if (directApiError instanceof TypeError) {
-          errorType = "CORS/Network";
-        }
-
-        console.warn(
-          `⚠️ Direct API ${errorType} error - this is expected in browser environments`,
-        );
-        console.log(
-          `📧 [FALLBACK] Simulated email send to ${options.to}: ${options.subject}`,
-        );
-        return true; // Return success for demo purposes in development
-      }
-    }
-
-    // If we reach here, all methods failed
-    throw new Error("All email sending methods failed");
   }
 
   /**
@@ -236,7 +180,7 @@ class EmailService {
       <h3>What you can do now:</h3>
       <ul>
         <li>📖 <strong>Browse books</strong> - Find affordable textbooks from students across the country</li>
-        <li>��� <strong>Sell your books</strong> - Turn your old textbooks into cash</li>
+        <li>💰 <strong>Sell your books</strong> - Turn your old textbooks into cash</li>
         <li>🏫 <strong>Connect with your campus</strong> - Find books specific to your university</li>
         <li>🚚 <strong>Safe delivery</strong> - Secure payment and delivery system</li>
       </ul>
@@ -428,7 +372,7 @@ class EmailService {
     user: UserDetails,
   ): Promise<boolean> {
     const content = `
-      <h2>Bank Details Successfully Added! ���✅</h2>
+      <h2>Bank Details Successfully Added! 🏦✅</h2>
       <p>Hi <strong>${user.name}</strong>,</p>
       <p>Great news! Your bank details have been successfully added to your ReBooked Solutions account.</p>
 
@@ -526,7 +470,7 @@ class EmailService {
       }),
       this.sendEmail({
         to: buyer.email,
-        subject: "�� Your book is on the way!",
+        subject: "📦 Your book is on the way!",
         html: this.getEmailTemplate(buyerContent),
       }),
     ]);
