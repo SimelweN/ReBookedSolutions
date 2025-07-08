@@ -4,7 +4,7 @@ import { corsHeaders } from "../_shared/cors.ts";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const sendgridApiKey = Deno.env.get("SENDGRID_API_KEY")!;
+const resendApiKey = Deno.env.get("VITE_RESEND_API_KEY")!;
 const fromEmail = Deno.env.get("FROM_EMAIL") || "notifications@rebooked.co.za";
 
 interface EmailTemplate {
@@ -272,34 +272,32 @@ async function sendEmail(supabase: any, emailData: any) {
     finalSubject = processTemplate(template.subject, variables || {});
   }
 
-  // Send via SendGrid
+  // Send via Resend
   const emailPayload = {
-    personalizations: [
-      {
-        to: [{ email: to }],
-        subject: finalSubject,
-      },
-    ],
-    from: { email: fromEmail, name: "ReBooked Solutions" },
-    content: [{ type: "text/html", value: finalHtmlContent }],
+    from: `ReBooked Solutions <${fromEmail}>`,
+    to: [to],
+    subject: finalSubject,
+    html: finalHtmlContent,
   };
 
   if (textContent) {
-    emailPayload.content.unshift({ type: "text/plain", value: textContent });
+    emailPayload.text = textContent;
   }
 
-  const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
+  const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${sendgridApiKey}`,
+      Authorization: `Bearer ${resendApiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(emailPayload),
   });
 
+  const responseData = await response.json();
+
   if (!response.ok) {
     throw new Error(
-      `SendGrid error: ${response.status} ${response.statusText}`,
+      `Resend error: ${response.status} ${response.statusText} - ${JSON.stringify(responseData)}`,
     );
   }
 
@@ -315,7 +313,7 @@ async function sendEmail(supabase: any, emailData: any) {
   return new Response(
     JSON.stringify({
       success: true,
-      messageId: response.headers.get("x-message-id"),
+      messageId: responseData.id,
     }),
     {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
