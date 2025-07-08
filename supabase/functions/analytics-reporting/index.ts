@@ -1,545 +1,287 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import {
-  corsHeaders,
-  createErrorResponse,
-  createSuccessResponse,
-  handleOptionsRequest,
-  createGenericErrorHandler,
-} from "../_shared/cors.ts";
-import {
-  validateAndCreateSupabaseClient,
-  validateRequiredEnvVars,
-  createEnvironmentError,
-} from "../_shared/environment.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3";
 
-interface AnalyticsQuery {
-  metric: string;
-  dateRange: { start: string; end: string };
-  groupBy?: "day" | "week" | "month";
-  filters?: Record<string, any>;
-  limit?: number;
-}
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
-serve(async (req) => {
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL") ?? "",
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+);
+
+serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return handleOptionsRequest();
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Validate environment variables
-    const missingEnvVars = validateRequiredEnvVars([
-      "SUPABASE_URL",
-      "SUPABASE_SERVICE_ROLE_KEY",
-    ]);
-    if (missingEnvVars.length > 0) {
-      return createEnvironmentError(missingEnvVars);
-    }
-
-    const supabase = validateAndCreateSupabaseClient();
-
-    // For demo purposes, allow access (can be restricted later)
-    console.log("Analytics request received");
-
     const url = new URL(req.url);
-    const action = url.searchParams.get("action");
+    const path = url.pathname.split("/").pop();
 
-    switch (req.method) {
-      case "POST":
-        if (action === "query") {
-          const analyticsQuery: AnalyticsQuery = await req.json();
-          return await executeAnalyticsQuery(supabase, analyticsQuery);
-        } else if (action === "custom-report") {
-          const reportConfig = await req.json();
-          return await generateCustomReport(supabase, reportConfig);
-        }
-        break;
-
-      case "GET":
-        if (action === "dashboard") {
-          return await getDashboardMetrics(supabase);
-        } else if (action === "revenue") {
-          const period = url.searchParams.get("period") || "30d";
-          return await getRevenueAnalytics(supabase, period);
-        } else if (action === "users") {
-          const period = url.searchParams.get("period") || "30d";
-          return await getUserAnalytics(supabase, period);
-        } else if (action === "books") {
-          const period = url.searchParams.get("period") || "30d";
-          return await getBookAnalytics(supabase, period);
-        } else if (action === "performance") {
-          return await getPerformanceMetrics(supabase);
-        } else if (action === "export") {
-          const reportType = url.searchParams.get("type") || "sales";
-          const format = url.searchParams.get("format") || "csv";
-          return await exportReport(supabase, reportType, format);
-        }
-        break;
+    switch (path) {
+      case "dashboard":
+        return await handleDashboardAnalytics(req);
+      case "sales":
+        return await handleSalesAnalytics(req);
+      case "books":
+        return await handleBooksAnalytics(req);
+      case "users":
+        return await handleUsersAnalytics(req);
+      default:
+        return new Response(JSON.stringify({ error: "Invalid endpoint" }), {
+          status: 404,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
     }
-
-    return createErrorResponse("Invalid action", 400);
   } catch (error) {
-    return createGenericErrorHandler("analytics-reporting")(error);
+    console.error("Error in analytics-reporting:", error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
 
-async function getDashboardMetrics(supabase: any) {
-  const now = new Date();
-  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+async function handleDashboardAnalytics(req: Request) {
+  const url = new URL(req.url);
+  const period = url.searchParams.get("period") || "30d";
 
-  // Execute all queries in parallel
-  const [
-    totalUsers,
-    newUsersToday,
-    totalBooks,
-    activeBooksToday,
-    totalRevenue,
-    revenueToday,
-    totalOrders,
-    ordersToday,
-    pendingCommits,
-    topCategories,
-    topUniversities,
-    recentActivity,
-  ] = await Promise.all([
-    // Total users
-    supabase.from("profiles").select("*", { count: "exact", head: true }),
-
-    // New users today
-    supabase
-      .from("profiles")
-      .select("*", { count: "exact", head: true })
-      .gte("created_at", yesterday.toISOString()),
-
-    // Total books
-    supabase.from("books").select("*", { count: "exact", head: true }),
-
-    // Active books today
-    supabase
-      .from("books")
-      .select("*", { count: "exact", head: true })
-      .eq("sold", false)
-      .gte("created_at", yesterday.toISOString()),
-
-    // Total revenue
-    supabase.from("orders").select("amount").eq("status", "completed"),
-
-    // Revenue today
-    supabase
-      .from("orders")
-      .select("amount")
-      .eq("status", "completed")
-      .gte("created_at", yesterday.toISOString()),
-
-    // Total orders
-    supabase.from("orders").select("*", { count: "exact", head: true }),
-
-    // Orders today
-    supabase
-      .from("orders")
-      .select("*", { count: "exact", head: true })
-      .gte("created_at", yesterday.toISOString()),
-
-    // Pending commits
-    supabase
-      .from("orders")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "paid")
-      .is("seller_committed", null),
-
-    // Top categories
-    supabase.from("books").select("category").eq("sold", false),
-
-    // Top universities
-    supabase.from("books").select("university").eq("sold", false),
-
-    // Recent activity (last 10 orders)
-    supabase
-      .from("orders")
-      .select(
-        `
-        *,
-        profiles:buyer_id(name),
-        books(title, author)
-      `,
-      )
-      .order("created_at", { ascending: false })
-      .limit(10),
-  ]);
-
-  // Calculate revenue totals
-  const totalRevenueAmount =
-    totalRevenue.data?.reduce((sum, order) => sum + order.amount, 0) || 0;
-  const todayRevenueAmount =
-    revenueToday.data?.reduce((sum, order) => sum + order.amount, 0) || 0;
-
-  // Process category data
-  const categoryStats = topCategories.data?.reduce((acc: any, book: any) => {
-    acc[book.category] = (acc[book.category] || 0) + 1;
-    return acc;
-  }, {});
-  const topCategoriesData = Object.entries(categoryStats || {})
-    .sort(([, a], [, b]) => (b as number) - (a as number))
-    .slice(0, 5)
-    .map(([name, count]) => ({ name, count }));
-
-  // Process university data
-  const universityStats = topUniversities.data?.reduce(
-    (acc: any, book: any) => {
-      if (book.university) {
-        acc[book.university] = (acc[book.university] || 0) + 1;
-      }
-      return acc;
-    },
-    {},
-  );
-  const topUniversitiesData = Object.entries(universityStats || {})
-    .sort(([, a], [, b]) => (b as number) - (a as number))
-    .slice(0, 5)
-    .map(([name, count]) => ({ name, count }));
-
-  const metrics = {
-    overview: {
-      totalUsers: totalUsers.count || 0,
-      newUsersToday: newUsersToday.count || 0,
-      totalBooks: totalBooks.count || 0,
-      activeBooksToday: activeBooksToday.count || 0,
-      totalRevenue: totalRevenueAmount,
-      revenueToday: todayRevenueAmount,
-      totalOrders: totalOrders.count || 0,
-      ordersToday: ordersToday.count || 0,
-      pendingCommits: pendingCommits.count || 0,
-    },
-    topCategories: topCategoriesData,
-    topUniversities: topUniversitiesData,
-    recentActivity: recentActivity.data || [],
-  };
-
-  return new Response(JSON.stringify({ metrics }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-
-async function getRevenueAnalytics(supabase: any, period: string) {
-  const now = new Date();
-  let startDate: Date;
-  let groupBy: string;
+  const endDate = new Date();
+  const startDate = new Date();
 
   switch (period) {
     case "7d":
-      startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      groupBy = "day";
+      startDate.setDate(endDate.getDate() - 7);
       break;
     case "30d":
-      startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      groupBy = "day";
+      startDate.setDate(endDate.getDate() - 30);
       break;
     case "90d":
-      startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-      groupBy = "week";
-      break;
-    case "1y":
-      startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
-      groupBy = "month";
+      startDate.setDate(endDate.getDate() - 90);
       break;
     default:
-      startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      groupBy = "day";
+      startDate.setDate(endDate.getDate() - 30);
   }
 
-  // Get revenue data
-  const { data: orders } = await supabase
-    .from("orders")
-    .select("amount, platform_fee, seller_amount, created_at, status")
-    .gte("created_at", startDate.toISOString())
-    .in("status", ["completed", "paid"]);
-
-  // Group by time period
-  const revenueByPeriod: Record<string, any> = {};
-
-  orders?.forEach((order: any) => {
-    const orderDate = new Date(order.created_at);
-    let periodKey: string;
-
-    if (groupBy === "day") {
-      periodKey = orderDate.toISOString().split("T")[0];
-    } else if (groupBy === "week") {
-      const weekStart = new Date(orderDate);
-      weekStart.setDate(orderDate.getDate() - orderDate.getDay());
-      periodKey = weekStart.toISOString().split("T")[0];
-    } else {
-      periodKey = `${orderDate.getFullYear()}-${String(orderDate.getMonth() + 1).padStart(2, "0")}`;
-    }
-
-    if (!revenueByPeriod[periodKey]) {
-      revenueByPeriod[periodKey] = {
-        period: periodKey,
-        totalRevenue: 0,
-        platformRevenue: 0,
-        sellerRevenue: 0,
-        orderCount: 0,
-      };
-    }
-
-    revenueByPeriod[periodKey].totalRevenue += order.amount;
-    revenueByPeriod[periodKey].platformRevenue += order.platform_fee;
-    revenueByPeriod[periodKey].sellerRevenue += order.seller_amount;
-    revenueByPeriod[periodKey].orderCount += 1;
-  });
-
-  const revenueData = Object.values(revenueByPeriod).sort(
-    (a: any, b: any) =>
-      new Date(a.period).getTime() - new Date(b.period).getTime(),
-  );
-
-  // Calculate totals
-  const totals = {
-    totalRevenue: orders?.reduce((sum, order) => sum + order.amount, 0) || 0,
-    platformRevenue:
-      orders?.reduce((sum, order) => sum + order.platform_fee, 0) || 0,
-    sellerRevenue:
-      orders?.reduce((sum, order) => sum + order.seller_amount, 0) || 0,
-    orderCount: orders?.length || 0,
-  };
-
-  return new Response(
-    JSON.stringify({
-      revenueData,
-      totals,
-      period,
-      groupBy,
-    }),
-    {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    },
-  );
-}
-
-async function getUserAnalytics(supabase: any, period: string) {
-  const now = new Date();
-  const startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-
-  const [userGrowth, usersByUniversity, userActivity, topSellers] =
-    await Promise.all([
-      // User growth over time
-      supabase
-        .from("profiles")
-        .select("created_at")
-        .gte("created_at", startDate.toISOString()),
-
-      // Users by university
-      supabase.from("profiles").select("id").not("university", "is", null),
-
-      // User activity (books listed, orders placed)
-      supabase
-        .from("books")
-        .select("seller_id, created_at")
-        .gte("created_at", startDate.toISOString()),
-
-      // Top sellers by revenue
-      supabase
-        .from("orders")
-        .select(
-          `
-        seller_id,
-        seller_amount,
-        profiles:seller_id(name)
-      `,
-        )
-        .eq("status", "completed")
-        .gte("created_at", startDate.toISOString()),
-    ]);
-
-  // Process user growth data
-  const growthByDay: Record<string, number> = {};
-  userGrowth.data?.forEach((user: any) => {
-    const day = new Date(user.created_at).toISOString().split("T")[0];
-    growthByDay[day] = (growthByDay[day] || 0) + 1;
-  });
-
-  // Process top sellers
-  const sellerRevenue: Record<string, any> = {};
-  topSellers.data?.forEach((order: any) => {
-    if (!sellerRevenue[order.seller_id]) {
-      sellerRevenue[order.seller_id] = {
-        seller_id: order.seller_id,
-        name: order.profiles?.name || "Unknown",
-        revenue: 0,
-        orders: 0,
-      };
-    }
-    sellerRevenue[order.seller_id].revenue += order.seller_amount;
-    sellerRevenue[order.seller_id].orders += 1;
-  });
-
-  const topSellersData = Object.values(sellerRevenue)
-    .sort((a: any, b: any) => b.revenue - a.revenue)
-    .slice(0, 10);
-
-  return new Response(
-    JSON.stringify({
-      userGrowth: Object.entries(growthByDay).map(([date, count]) => ({
-        date,
-        count,
-      })),
-      topSellers: topSellersData,
-      totalUsers: userGrowth.data?.length || 0,
-    }),
-    {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    },
-  );
-}
-
-async function getBookAnalytics(supabase: any, period: string) {
-  const now = new Date();
-  const startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-
   const [
-    booksByCategory,
-    booksByUniversity,
-    booksByCondition,
-    salesData,
-    inventoryTurnover,
+    { count: totalUsers },
+    { count: totalBooks },
+    { count: totalOrders },
+    { data: revenueData },
   ] = await Promise.all([
-    // Books by category
+    supabase.from("profiles").select("*", { count: "exact", head: true }),
+    supabase.from("books").select("*", { count: "exact", head: true }),
+    supabase.from("orders").select("*", { count: "exact", head: true }),
     supabase
-      .from("books")
-      .select("category")
-      .gte("created_at", startDate.toISOString()),
-
-    // Books by university
-    supabase
-      .from("books")
-      .select("university")
+      .from("orders")
+      .select("amount")
+      .eq("payment_status", "paid")
       .gte("created_at", startDate.toISOString())
-      .not("university", "is", null),
-
-    // Books by condition
-    supabase
-      .from("books")
-      .select("condition")
-      .gte("created_at", startDate.toISOString()),
-
-    // Sales conversion data
-    supabase
-      .from("books")
-      .select("id, sold, created_at, price")
-      .gte("created_at", startDate.toISOString()),
-
-    // Average time to sell
-    supabase
-      .from("books")
-      .select("created_at, updated_at")
-      .eq("sold", true)
-      .gte("created_at", startDate.toISOString()),
+      .lte("created_at", endDate.toISOString()),
   ]);
 
-  // Process category distribution
-  const categoryStats = booksByCategory.data?.reduce((acc: any, book: any) => {
-    acc[book.category] = (acc[book.category] || 0) + 1;
-    return acc;
-  }, {});
+  const totalRevenue =
+    revenueData?.reduce((sum, order) => sum + order.amount, 0) || 0;
 
-  // Process university distribution
-  const universityStats = booksByUniversity.data?.reduce(
-    (acc: any, book: any) => {
-      acc[book.university] = (acc[book.university] || 0) + 1;
-      return acc;
-    },
-    {},
-  );
-
-  // Process condition distribution
-  const conditionStats = booksByCondition.data?.reduce(
-    (acc: any, book: any) => {
-      acc[book.condition] = (acc[book.condition] || 0) + 1;
-      return acc;
-    },
-    {},
-  );
-
-  // Calculate sales metrics
-  const totalBooks = salesData.data?.length || 0;
-  const soldBooks =
-    salesData.data?.filter((book: any) => book.sold).length || 0;
-  const conversionRate = totalBooks > 0 ? (soldBooks / totalBooks) * 100 : 0;
-
-  // Calculate average time to sell
-  const avgTimeToSell =
-    inventoryTurnover.data?.reduce((acc: number, book: any) => {
-      const timeToSell =
-        new Date(book.updated_at).getTime() -
-        new Date(book.created_at).getTime();
-      return acc + timeToSell;
-    }, 0) / (inventoryTurnover.data?.length || 1);
-
-  const avgDaysToSell = Math.round(avgTimeToSell / (1000 * 60 * 60 * 24));
+  const { data: recentOrders } = await supabase
+    .from("orders")
+    .select(
+      `
+      id,
+      amount,
+      status,
+      created_at,
+      buyer_email
+    `,
+    )
+    .order("created_at", { ascending: false })
+    .limit(10);
 
   return new Response(
     JSON.stringify({
-      categoryDistribution: Object.entries(categoryStats || {}).map(
-        ([name, count]) => ({ name, count }),
-      ),
-      universityDistribution: Object.entries(universityStats || {}).map(
-        ([name, count]) => ({ name, count }),
-      ),
-      conditionDistribution: Object.entries(conditionStats || {}).map(
-        ([name, count]) => ({ name, count }),
-      ),
-      salesMetrics: {
+      summary: {
+        totalUsers,
         totalBooks,
-        soldBooks,
-        conversionRate: Math.round(conversionRate * 100) / 100,
-        avgDaysToSell,
+        totalOrders,
+        totalRevenue,
+        period,
       },
+      recentOrders,
     }),
-    {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    },
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );
 }
 
-async function getPerformanceMetrics(supabase: any) {
-  // This would include system performance metrics
-  // For now, return mock data
-  const metrics = {
-    apiResponseTime: 150,
-    databaseConnections: 12,
-    activeUsers: 45,
-    systemHealth: "healthy",
-    uptime: "99.9%",
-  };
+async function handleSalesAnalytics(req: Request) {
+  const url = new URL(req.url);
+  const period = url.searchParams.get("period") || "30d";
 
-  return new Response(JSON.stringify({ performance: metrics }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
+  const endDate = new Date();
+  const startDate = new Date();
+  startDate.setDate(endDate.getDate() - parseInt(period.replace("d", "")));
 
-async function executeAnalyticsQuery(supabase: any, query: AnalyticsQuery) {
-  // Custom analytics query executor
-  // This would handle complex analytical queries
+  const { data: salesData } = await supabase
+    .from("orders")
+    .select("amount, created_at, status")
+    .eq("payment_status", "paid")
+    .gte("created_at", startDate.toISOString())
+    .lte("created_at", endDate.toISOString())
+    .order("created_at", { ascending: true });
+
+  const salesByDate =
+    salesData?.reduce(
+      (acc, order) => {
+        const date = order.created_at.split("T")[0];
+        if (!acc[date]) {
+          acc[date] = { date, revenue: 0, orders: 0 };
+        }
+        acc[date].revenue += order.amount;
+        acc[date].orders += 1;
+        return acc;
+      },
+      {} as Record<string, any>,
+    ) || {};
+
+  const { data: topBooks } = await supabase
+    .from("orders")
+    .select(
+      `
+      book_id,
+      amount,
+      books(title, author, category)
+    `,
+    )
+    .eq("payment_status", "paid")
+    .gte("created_at", startDate.toISOString())
+    .lte("created_at", endDate.toISOString());
+
+  const bookStats =
+    topBooks?.reduce(
+      (acc, order) => {
+        const bookId = order.book_id;
+        if (!acc[bookId]) {
+          acc[bookId] = {
+            bookId,
+            title: order.books?.title,
+            author: order.books?.author,
+            category: order.books?.category,
+            revenue: 0,
+            sales: 0,
+          };
+        }
+        acc[bookId].revenue += order.amount;
+        acc[bookId].sales += 1;
+        return acc;
+      },
+      {} as Record<string, any>,
+    ) || {};
+
   return new Response(
-    JSON.stringify({ message: "Custom analytics query executed" }),
-    {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    },
+    JSON.stringify({
+      salesByDate: Object.values(salesByDate),
+      topBooks: Object.values(bookStats)
+        .sort((a: any, b: any) => b.revenue - a.revenue)
+        .slice(0, 10),
+    }),
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );
 }
 
-async function generateCustomReport(supabase: any, reportConfig: any) {
-  // Custom report generator
-  return new Response(JSON.stringify({ message: "Custom report generated" }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
+async function handleBooksAnalytics(req: Request) {
+  const { data: booksByCategory } = await supabase
+    .from("books")
+    .select("category")
+    .eq("sold", false);
+
+  const categoryStats =
+    booksByCategory?.reduce(
+      (acc, book) => {
+        acc[book.category] = (acc[book.category] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    ) || {};
+
+  const { data: booksByCondition } = await supabase
+    .from("books")
+    .select("condition")
+    .eq("sold", false);
+
+  const conditionStats =
+    booksByCondition?.reduce(
+      (acc, book) => {
+        acc[book.condition] = (acc[book.condition] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    ) || {};
+
+  const { data: priceData } = await supabase
+    .from("books")
+    .select("category, price")
+    .eq("sold", false);
+
+  const priceByCategory =
+    priceData?.reduce(
+      (acc, book) => {
+        if (!acc[book.category]) {
+          acc[book.category] = { total: 0, count: 0 };
+        }
+        acc[book.category].total += book.price;
+        acc[book.category].count += 1;
+        return acc;
+      },
+      {} as Record<string, any>,
+    ) || {};
+
+  const avgPriceByCategory = Object.keys(priceByCategory).map((category) => ({
+    category,
+    averagePrice:
+      priceByCategory[category].total / priceByCategory[category].count,
+  }));
+
+  return new Response(
+    JSON.stringify({
+      categoryStats,
+      conditionStats,
+      avgPriceByCategory,
+    }),
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+  );
 }
 
-async function exportReport(supabase: any, reportType: string, format: string) {
-  // Export functionality for reports
+async function handleUsersAnalytics(req: Request) {
+  const { data: userRegistrations } = await supabase
+    .from("profiles")
+    .select("created_at")
+    .order("created_at", { ascending: true });
+
+  const registrationsByDate =
+    userRegistrations?.reduce(
+      (acc, user) => {
+        const date = user.created_at.split("T")[0];
+        acc[date] = (acc[date] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    ) || {};
+
+  const { data: activeSellers } = await supabase.from("profiles").select(`
+      id,
+      full_name,
+      created_at,
+      books(count)
+    `);
+
   return new Response(
-    JSON.stringify({ message: `${reportType} report exported as ${format}` }),
-    {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    },
+    JSON.stringify({
+      registrationsByDate,
+      activeSellers:
+        activeSellers?.filter((seller) => seller.books?.[0]?.count > 0) || [],
+    }),
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );
 }
