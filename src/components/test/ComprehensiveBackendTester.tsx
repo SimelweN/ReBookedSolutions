@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -28,10 +29,12 @@ import {
   Zap,
   BookOpen,
   Mail,
+  Activity,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { BackendOrchestrator } from "@/services/comprehensive/backendOrchestrator";
+import EdgeFunctionsTester from "./EdgeFunctionsTester";
 
 interface BackendTest {
   id: string;
@@ -452,322 +455,352 @@ const ComprehensiveBackendTester = () => {
 
   return (
     <div className="space-y-6">
-      {/* Test Configuration */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5" />
-            Backend Testing Configuration
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="search-query">Search Query</Label>
-              <Input
-                id="search-query"
-                placeholder="Enter search query"
-                value={testData.searchQuery}
-                onChange={(e) =>
-                  setTestData((prev) => ({
-                    ...prev,
-                    searchQuery: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="university">University</Label>
-              <Input
-                id="university"
-                placeholder="Enter university name"
-                value={testData.university}
-                onChange={(e) =>
-                  setTestData((prev) => ({
-                    ...prev,
-                    university: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="course">Course Code</Label>
-              <Input
-                id="course"
-                placeholder="Enter course code"
-                value={testData.course}
-                onChange={(e) =>
-                  setTestData((prev) => ({ ...prev, course: e.target.value }))
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="report-period">Report Period</Label>
-              <Select
-                value={testData.reportPeriod}
-                onValueChange={(value) =>
-                  setTestData((prev) => ({ ...prev, reportPeriod: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="7d">Last 7 days</SelectItem>
-                  <SelectItem value="30d">Last 30 days</SelectItem>
-                  <SelectItem value="90d">Last 90 days</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+      <Tabs defaultValue="service-tests" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger
+            value="service-tests"
+            className="flex items-center gap-2"
+          >
+            <Zap className="h-4 w-4" />
+            Service Tests
+          </TabsTrigger>
+          <TabsTrigger
+            value="edge-functions"
+            className="flex items-center gap-2"
+          >
+            <Activity className="h-4 w-4" />
+            Edge Functions Health Check
+          </TabsTrigger>
+        </TabsList>
 
-          <div className="space-y-2">
-            <Label htmlFor="notification-message">Notification Message</Label>
-            <Textarea
-              id="notification-message"
-              placeholder="Enter notification message"
-              value={testData.notificationMessage}
-              onChange={(e) =>
-                setTestData((prev) => ({
-                  ...prev,
-                  notificationMessage: e.target.value,
-                }))
-              }
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Individual Service Tests */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <BookOpen className="h-4 w-4" />
-              Study Resources
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Button
-              onClick={testStudyResourcesSearch}
-              disabled={isLoading}
-              size="sm"
-              className="w-full"
-            >
-              <Search className="h-4 w-4 mr-2" />
-              Test Search
-            </Button>
-            <Button
-              onClick={testCreateStudyResource}
-              disabled={isLoading}
-              size="sm"
-              variant="outline"
-              className="w-full"
-            >
-              Test Create
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Search className="h-4 w-4" />
-              Advanced Search
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Button
-              onClick={testAdvancedSearch}
-              disabled={isLoading}
-              size="sm"
-              className="w-full"
-            >
-              Test Full-text Search
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Upload className="h-4 w-4" />
-              File Upload
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Button
-              onClick={testFileUpload}
-              disabled={isLoading}
-              size="sm"
-              className="w-full"
-            >
-              Test Upload
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Bell className="h-4 w-4" />
-              Notifications
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Button
-              onClick={testRealTimeNotification}
-              disabled={isLoading}
-              size="sm"
-              className="w-full"
-            >
-              Test Real-time
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <BarChart3 className="h-4 w-4" />
-              Analytics
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Button
-              onClick={testAnalytics}
-              disabled={isLoading}
-              size="sm"
-              className="w-full"
-            >
-              Test Dashboard
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Gavel className="h-4 w-4" />
-              Disputes
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Button
-              onClick={testDisputeResolution}
-              disabled={isLoading}
-              size="sm"
-              className="w-full"
-            >
-              Test Creation
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Mail className="h-4 w-4" />
-              Email Service
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Button
-              onClick={() => {
-                // Navigate to the email tab in dev dashboard
-                window.location.hash = "email";
-                window.scrollTo(0, 0);
-              }}
-              disabled={isLoading}
-              size="sm"
-              className="w-full"
-            >
-              Go to Email Tab
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Bulk Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Bulk Testing Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-2">
-            <Button
-              onClick={runHealthCheck}
-              disabled={isLoading}
-              className="flex-1"
-            >
-              <Play className="h-4 w-4 mr-2" />
-              Run Full Health Check
-            </Button>
-            <Button onClick={() => setTests([])} variant="outline">
-              Clear Results
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Test Results */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Backend Test Results</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {tests.length === 0 ? (
-            <Alert>
-              <AlertDescription>
-                No backend tests run yet. Use the controls above to test backend
-                services.
-              </AlertDescription>
-            </Alert>
-          ) : (
-            <div className="space-y-3">
-              {tests.map((test) => (
-                <div
-                  key={test.id}
-                  className="flex items-center justify-between p-3 border rounded-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    {getStatusIcon(test.status)}
-                    <div>
-                      <div className="font-medium">
-                        {test.service} - {test.operation}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        {test.message}
-                      </div>
-                      {test.duration && (
-                        <div className="text-xs text-gray-500">
-                          Duration: {test.duration}ms
-                        </div>
-                      )}
-                      {test.details && (
-                        <details className="text-xs text-gray-500 mt-1">
-                          <summary className="cursor-pointer">
-                            View Response
-                          </summary>
-                          <pre className="mt-1 p-2 bg-gray-50 rounded text-xs overflow-auto max-h-32">
-                            {JSON.stringify(test.details, null, 2)}
-                          </pre>
-                        </details>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {getStatusBadge(test.status)}
-                    <div className="text-xs text-gray-500">
-                      {new Date(test.timestamp).toLocaleTimeString()}
-                    </div>
-                  </div>
+        <TabsContent value="service-tests" className="space-y-6">
+          {/* Test Configuration */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5" />
+                Backend Testing Configuration
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="search-query">Search Query</Label>
+                  <Input
+                    id="search-query"
+                    placeholder="Enter search query"
+                    value={testData.searchQuery}
+                    onChange={(e) =>
+                      setTestData((prev) => ({
+                        ...prev,
+                        searchQuery: e.target.value,
+                      }))
+                    }
+                  />
                 </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                <div className="space-y-2">
+                  <Label htmlFor="university">University</Label>
+                  <Input
+                    id="university"
+                    placeholder="Enter university name"
+                    value={testData.university}
+                    onChange={(e) =>
+                      setTestData((prev) => ({
+                        ...prev,
+                        university: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="course">Course Code</Label>
+                  <Input
+                    id="course"
+                    placeholder="Enter course code"
+                    value={testData.course}
+                    onChange={(e) =>
+                      setTestData((prev) => ({
+                        ...prev,
+                        course: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="report-period">Report Period</Label>
+                  <Select
+                    value={testData.reportPeriod}
+                    onValueChange={(value) =>
+                      setTestData((prev) => ({ ...prev, reportPeriod: value }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="7d">Last 7 days</SelectItem>
+                      <SelectItem value="30d">Last 30 days</SelectItem>
+                      <SelectItem value="90d">Last 90 days</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="notification-message">
+                  Notification Message
+                </Label>
+                <Textarea
+                  id="notification-message"
+                  placeholder="Enter notification message"
+                  value={testData.notificationMessage}
+                  onChange={(e) =>
+                    setTestData((prev) => ({
+                      ...prev,
+                      notificationMessage: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Individual Service Tests */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <BookOpen className="h-4 w-4" />
+                  Study Resources
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button
+                  onClick={testStudyResourcesSearch}
+                  disabled={isLoading}
+                  size="sm"
+                  className="w-full"
+                >
+                  <Search className="h-4 w-4 mr-2" />
+                  Test Search
+                </Button>
+                <Button
+                  onClick={testCreateStudyResource}
+                  disabled={isLoading}
+                  size="sm"
+                  variant="outline"
+                  className="w-full"
+                >
+                  Test Create
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <Search className="h-4 w-4" />
+                  Advanced Search
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button
+                  onClick={testAdvancedSearch}
+                  disabled={isLoading}
+                  size="sm"
+                  className="w-full"
+                >
+                  Test Full-text Search
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <Upload className="h-4 w-4" />
+                  File Upload
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button
+                  onClick={testFileUpload}
+                  disabled={isLoading}
+                  size="sm"
+                  className="w-full"
+                >
+                  Test Upload
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <Bell className="h-4 w-4" />
+                  Notifications
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button
+                  onClick={testRealTimeNotification}
+                  disabled={isLoading}
+                  size="sm"
+                  className="w-full"
+                >
+                  Test Real-time
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <BarChart3 className="h-4 w-4" />
+                  Analytics
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button
+                  onClick={testAnalytics}
+                  disabled={isLoading}
+                  size="sm"
+                  className="w-full"
+                >
+                  Test Dashboard
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <Gavel className="h-4 w-4" />
+                  Disputes
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button
+                  onClick={testDisputeResolution}
+                  disabled={isLoading}
+                  size="sm"
+                  className="w-full"
+                >
+                  Test Creation
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <Mail className="h-4 w-4" />
+                  Email Service
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button
+                  onClick={() => {
+                    // Navigate to the email tab in dev dashboard
+                    window.location.hash = "email";
+                    window.scrollTo(0, 0);
+                  }}
+                  disabled={isLoading}
+                  size="sm"
+                  className="w-full"
+                >
+                  Go to Email Tab
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Bulk Actions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Bulk Testing Actions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-2">
+                <Button
+                  onClick={runHealthCheck}
+                  disabled={isLoading}
+                  className="flex-1"
+                >
+                  <Play className="h-4 w-4 mr-2" />
+                  Run Full Health Check
+                </Button>
+                <Button onClick={() => setTests([])} variant="outline">
+                  Clear Results
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Test Results */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Backend Test Results</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {tests.length === 0 ? (
+                <Alert>
+                  <AlertDescription>
+                    No backend tests run yet. Use the controls above to test
+                    backend services.
+                  </AlertDescription>
+                </Alert>
+              ) : (
+                <div className="space-y-3">
+                  {tests.map((test) => (
+                    <div
+                      key={test.id}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
+                      <div className="flex items-center gap-3">
+                        {getStatusIcon(test.status)}
+                        <div>
+                          <div className="font-medium">
+                            {test.service} - {test.operation}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {test.message}
+                          </div>
+                          {test.duration && (
+                            <div className="text-xs text-gray-500">
+                              Duration: {test.duration}ms
+                            </div>
+                          )}
+                          {test.details && (
+                            <details className="text-xs text-gray-500 mt-1">
+                              <summary className="cursor-pointer">
+                                View Response
+                              </summary>
+                              <pre className="mt-1 p-2 bg-gray-50 rounded text-xs overflow-auto max-h-32">
+                                {JSON.stringify(test.details, null, 2)}
+                              </pre>
+                            </details>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {getStatusBadge(test.status)}
+                        <div className="text-xs text-gray-500">
+                          {new Date(test.timestamp).toLocaleTimeString()}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="edge-functions">
+          <EdgeFunctionsTester />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

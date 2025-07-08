@@ -115,8 +115,10 @@ const Notifications = () => {
       // Refresh notifications to show updated state
       await refreshNotifications();
     } catch (error) {
-      console.error("Error marking notification as read:", error);
-      toast.error("Failed to mark notification as read");
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error("Error marking notification as read:", errorMessage);
+      toast.error(`Failed to mark notification as read: ${errorMessage}`);
     }
   };
 

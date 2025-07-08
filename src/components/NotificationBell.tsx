@@ -72,7 +72,9 @@ const NotificationBell: React.FC = () => {
       try {
         await markAsRead(notification.id);
       } catch (error) {
-        console.error("Error marking notification as read:", error);
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        console.error("Error marking notification as read:", errorMessage);
         // Don't prevent navigation even if marking as read fails
       }
     }

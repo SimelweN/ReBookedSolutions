@@ -118,10 +118,23 @@ export const useNotifications = (): UseNotificationsResult => {
       if (!notification) return;
 
       // Try order_notifications table first
+      // Try with updated_at first, fallback without it if column doesn't exist
       let { error } = await supabase
         .from("order_notifications")
         .update({ read: true, updated_at: new Date().toISOString() })
         .eq("id", notificationId);
+
+      // If error is about updated_at column, retry without it
+      if (error && error.message?.includes("updated_at")) {
+        console.warn(
+          "updated_at column not found in order_notifications, retrying without it",
+        );
+        const { error: retryError } = await supabase
+          .from("order_notifications")
+          .update({ read: true })
+          .eq("id", notificationId);
+        error = retryError;
+      }
 
       // If that fails, try regular notifications table
       if (
@@ -145,10 +158,6 @@ export const useNotifications = (): UseNotificationsResult => {
         prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n)),
       );
     } catch (err) {
-      console.error("Error marking notification as read:", err);
-      console.log("Error type:", typeof err);
-      console.log("Error object:", err);
-
       let errorMessage = "Failed to mark notification as read";
 
       if (err instanceof Error) {
@@ -157,21 +166,18 @@ export const useNotifications = (): UseNotificationsResult => {
         errorMessage = err;
       } else if (err && typeof err === "object") {
         // Handle Supabase error objects specifically
-        const errorObj = err as any;
-        if (errorObj.message) {
-          errorMessage = errorObj.message;
-        } else if (errorObj.error_description) {
-          errorMessage = errorObj.error_description;
-        } else if (errorObj.details) {
-          errorMessage = errorObj.details;
+        if ("message" in err && typeof err.message === "string") {
+          errorMessage = err.message;
+        } else if ("error" in err && typeof err.error === "string") {
+          errorMessage = err.error;
         } else {
-          try {
-            errorMessage = JSON.stringify(err);
-          } catch (stringifyError) {
-            errorMessage = "Unknown error occurred";
-          }
+          errorMessage = JSON.stringify(err);
         }
       }
+
+      console.error("Error marking notification as read:", errorMessage);
+      console.log("Error type:", typeof err);
+      console.log("Error details:", err);
 
       toast.error(errorMessage);
     }
