@@ -748,7 +748,7 @@ const DevDashboard: React.FC = () => {
                 className={`${
                   isMobile
                     ? "inline-flex h-9 items-center justify-start rounded-md bg-white shadow-sm border p-1 text-muted-foreground min-w-max"
-                    : "grid grid-cols-7 w-full bg-white shadow-sm border"
+                    : "grid grid-cols-10 w-full bg-white shadow-sm border"
                 }`}
               >
                 <TabsTrigger
@@ -799,6 +799,27 @@ const DevDashboard: React.FC = () => {
                 >
                   <Terminal className="h-3 w-3 md:h-4 md:w-4" />
                   <span>{isMobile ? "Tools" : "Dev Tools"}</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="email"
+                  className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+                >
+                  <Mail className="h-3 w-3 md:h-4 md:w-4" />
+                  <span>{isMobile ? "Email" : "Email Testing"}</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="commit-testing"
+                  className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+                >
+                  <ShoppingCart className="h-3 w-3 md:h-4 md:w-4" />
+                  <span>{isMobile ? "Commits" : "Commit Testing"}</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="backend"
+                  className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+                >
+                  <Zap className="h-3 w-3 md:h-4 md:w-4" />
+                  <span>{isMobile ? "Backend" : "Backend Testing"}</span>
                 </TabsTrigger>
               </TabsList>
             </div>
