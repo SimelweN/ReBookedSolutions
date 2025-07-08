@@ -15,15 +15,19 @@ serve(async (req) => {
   try {
     console.log("=== Paystack Webhook Received ===");
 
-    const config = getEnvironmentConfig();
+    const paystackSecretKey = Deno.env.get("PAYSTACK_SECRET_KEY");
+
+    if (!paystackSecretKey) {
+      return new Response("Paystack secret key not configured", {
+        status: 500,
+      });
+    }
+
     const body = await req.text();
     const signature = req.headers.get("x-paystack-signature");
 
     console.log("Webhook signature:", signature);
     console.log("Webhook body length:", body.length);
-
-    // Verify webhook signature
-    const paystackSecretKey = config.paystackSecretKey!;
 
     // Create hash to verify signature using Web Crypto API
     const encoder = new TextEncoder();
