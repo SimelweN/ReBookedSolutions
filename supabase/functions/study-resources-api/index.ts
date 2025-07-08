@@ -27,12 +27,11 @@ interface StudyResource {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    // Initialize Supabase client with service role for admin operations
-    const supabaseClient = createClient(
+    const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
@@ -46,7 +45,7 @@ serve(async (req) => {
     const authHeader = req.headers.get("Authorization");
     if (authHeader && method !== "GET") {
       const token = authHeader.replace("Bearer ", "");
-      const authResult = await supabaseClient.auth.getUser(token);
+      const authResult = await supabase.auth.getUser(token);
       user = authResult.data?.user || null;
     }
 
