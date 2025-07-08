@@ -141,8 +141,25 @@ const BookGrid = ({
                         loading="lazy"
                         decoding="async"
                         onError={(e) => {
-                          e.currentTarget.src =
-                            "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&h=300&fit=crop&auto=format&q=80";
+                          const target = e.currentTarget;
+                          if (target.src !== "/placeholder.svg") {
+                            target.src = "/placeholder.svg";
+                          } else {
+                            // If placeholder also fails, show a simple colored rectangle
+                            target.style.display = "none";
+                            const parent = target.parentElement;
+                            if (
+                              parent &&
+                              !parent.querySelector(".img-fallback")
+                            ) {
+                              const fallback = document.createElement("div");
+                              fallback.className =
+                                "img-fallback w-full h-full bg-gray-200 flex items-center justify-center";
+                              fallback.innerHTML =
+                                '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="text-gray-400"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>';
+                              parent.appendChild(fallback);
+                            }
+                          }
                         }}
                       />
                       {book.sold && (
@@ -224,8 +241,25 @@ const BookGrid = ({
                         loading="lazy"
                         decoding="async"
                         onError={(e) => {
-                          e.currentTarget.src =
-                            "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&h=300&fit=crop&auto=format&q=80";
+                          const target = e.currentTarget;
+                          if (target.src !== "/placeholder.svg") {
+                            target.src = "/placeholder.svg";
+                          } else {
+                            // If placeholder also fails, show a simple colored rectangle
+                            target.style.display = "none";
+                            const parent = target.parentElement;
+                            if (
+                              parent &&
+                              !parent.querySelector(".img-fallback")
+                            ) {
+                              const fallback = document.createElement("div");
+                              fallback.className =
+                                "img-fallback w-full h-full bg-gray-200 flex items-center justify-center";
+                              fallback.innerHTML =
+                                '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="text-gray-400"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>';
+                              parent.appendChild(fallback);
+                            }
+                          }
                         }}
                       />
 
