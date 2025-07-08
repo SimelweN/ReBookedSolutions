@@ -7,14 +7,6 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-// Validate required environment variables
-const requiredVars = [
-  "SUPABASE_URL",
-  "SUPABASE_SERVICE_ROLE_KEY",
-  "PAYSTACK_SECRET_KEY",
-];
-const missingVars = validateRequiredEnvVars(requiredVars);
-
 // Bank codes mapping for Paystack
 const PAYSTACK_BANK_CODES: Record<string, string> = {
   "Absa Bank": "632005",
