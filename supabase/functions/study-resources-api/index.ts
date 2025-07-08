@@ -54,12 +54,12 @@ serve(async (req) => {
     switch (method) {
       case "GET":
         if (action === "search" || path === "search") {
-          return await handleSearch(supabaseClient, url);
+          return await handleSearch(supabase, url);
         } else if (action === "resources" || path === "resources") {
-          return await getResources(supabaseClient, url);
+          return await getResources(supabase, url);
         } else if (url.pathname.includes("resources/")) {
           const id = url.pathname.split("/").pop();
-          return await getResource(supabaseClient, id!);
+          return await getResource(supabase, id!);
         }
         break;
 
@@ -77,13 +77,13 @@ serve(async (req) => {
         }
         if (path === "resources") {
           const body = await req.json();
-          return await createResource(supabaseClient, body, user.id);
+          return await createResource(supabase, body, user.id);
         } else if (path === "verify") {
           const body = await req.json();
-          return await verifyResource(supabaseClient, body, user.id);
+          return await verifyResource(supabase, body, user.id);
         } else if (path === "rate") {
           const body = await req.json();
-          return await rateResource(supabaseClient, body, user.id);
+          return await rateResource(supabase, body, user.id);
         }
         break;
 
@@ -102,7 +102,7 @@ serve(async (req) => {
         if (url.pathname.includes("resources/")) {
           const id = url.pathname.split("/").pop();
           const body = await req.json();
-          return await updateResource(supabaseClient, id!, body, user.id);
+          return await updateResource(supabase, id!, body, user.id);
         }
         break;
 
@@ -120,7 +120,7 @@ serve(async (req) => {
         }
         if (url.pathname.includes("resources/")) {
           const id = url.pathname.split("/").pop();
-          return await deleteResource(supabaseClient, id!, user.id);
+          return await deleteResource(supabase, id!, user.id);
         }
         break;
     }
