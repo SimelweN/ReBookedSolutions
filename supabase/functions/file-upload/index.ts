@@ -7,10 +7,6 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-// Validate environment on startup
-const requiredVars = ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"];
-const missingVars = validateRequiredEnvVars(requiredVars);
-
 // File type configurations
 const FILE_CONFIGS = {
   images: {
