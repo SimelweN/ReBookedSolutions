@@ -24,6 +24,17 @@ serve(async (req) => {
   }
 
   try {
+    // Check environment variables first
+    if (missingVars.length > 0) {
+      return createEnvironmentError(missingVars);
+    }
+
+    const config = getEnvironmentConfig();
+    const supabase = createClient(
+      config.supabaseUrl,
+      config.supabaseServiceKey,
+    );
+
     const { transactionId, orderId, sellerId }: CommitRequest =
       await req.json();
 
