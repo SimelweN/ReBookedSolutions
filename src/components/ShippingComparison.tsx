@@ -321,7 +321,7 @@ const ShippingComparison = () => {
       <Button onClick={handleGetQuotes} disabled={loading}>
         {loading ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
             Getting Quotes...
           </>
         ) : (
