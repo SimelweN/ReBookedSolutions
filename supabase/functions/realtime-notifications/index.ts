@@ -1,359 +1,221 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import {
-  corsHeaders,
-  createErrorResponse,
-  createSuccessResponse,
-  handleOptionsRequest,
-  createGenericErrorHandler,
-} from "../_shared/cors.ts";
-import {
-  validateAndCreateSupabaseClient,
-  validateRequiredEnvVars,
-  createEnvironmentError,
-} from "../_shared/environment.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3";
 
-interface NotificationPayload {
-  user_id: string;
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
+
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL") ?? "",
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+);
+
+interface NotificationRequest {
+  userId: string;
   type: string;
   title: string;
   message: string;
-  data?: any;
-  priority?: "low" | "normal" | "high" | "urgent";
+  data?: Record<string, any>;
   channels?: ("in_app" | "email" | "push")[];
 }
 
-serve(async (req) => {
+serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return handleOptionsRequest();
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Validate environment variables
-    const missingEnvVars = validateRequiredEnvVars([
-      "SUPABASE_URL",
-      "SUPABASE_SERVICE_ROLE_KEY",
-    ]);
-    if (missingEnvVars.length > 0) {
-      return createEnvironmentError(missingEnvVars);
-    }
-
-    const supabase = validateAndCreateSupabaseClient();
     const url = new URL(req.url);
-    const path = url.pathname.split("/").pop();
+    const action = url.pathname.split("/").pop();
 
-    switch (req.method) {
-      case "POST":
-        if (path === "send") {
-          const payload: NotificationPayload = await req.json();
-          return await sendNotification(supabase, payload);
-        } else if (path === "broadcast") {
-          const payload = await req.json();
-          return await broadcastNotification(supabase, payload);
-        } else if (path === "mark-read") {
-          const { notificationIds, userId } = await req.json();
-          return await markNotificationsRead(supabase, notificationIds, userId);
-        }
-        break;
-
-      case "GET":
-        if (path === "notifications") {
-          const userId = url.searchParams.get("user_id");
-          const limit = parseInt(url.searchParams.get("limit") || "50");
-          const offset = parseInt(url.searchParams.get("offset") || "0");
-          return await getUserNotifications(supabase, userId!, limit, offset);
-        } else if (path === "unread-count") {
-          const userId = url.searchParams.get("user_id");
-          return await getUnreadCount(supabase, userId!);
-        }
-        break;
-
-      case "DELETE":
-        if (path === "notifications") {
-          const { notificationIds, userId } = await req.json();
-          return await deleteNotifications(supabase, notificationIds, userId);
-        }
-        break;
+    switch (action) {
+      case "send":
+        return await handleSendNotification(req);
+      case "get":
+        return await handleGetNotifications(req);
+      case "mark-read":
+        return await handleMarkAsRead(req);
+      case "get-unread-count":
+        return await handleGetUnreadCount(req);
+      default:
+        return new Response(JSON.stringify({ error: "Invalid action" }), {
+          status: 404,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
     }
-
-    return createErrorResponse("Endpoint not found", 404);
   } catch (error) {
-    return createGenericErrorHandler("realtime-notifications")(error);
+    console.error("Error in realtime-notifications:", error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
 
-async function sendNotification(supabase: any, payload: NotificationPayload) {
+async function handleSendNotification(req: Request) {
+  const notificationData: NotificationRequest = await req.json();
   const {
-    user_id,
+    userId,
     type,
     title,
     message,
-    data = {},
-    priority = "normal",
+    data,
     channels = ["in_app"],
-  } = payload;
+  } = notificationData;
 
   // Create in-app notification
   if (channels.includes("in_app")) {
     const { data: notification, error } = await supabase
       .from("notifications")
       .insert({
-        user_id,
+        user_id: userId,
         type,
         title,
         message,
-        data,
-        priority,
         read: false,
       })
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
-    // Trigger real-time event
-    await supabase.channel("notifications").send({
-      type: "broadcast",
-      event: "new_notification",
-      payload: {
-        ...notification,
-        user_id,
-      },
-    });
+    console.log("In-app notification created:", notification.id);
   }
 
   // Send email notification
   if (channels.includes("email")) {
-    await sendEmailNotification(supabase, user_id, title, message, data);
+    try {
+      const { data: user } = await supabase
+        .from("profiles")
+        .select("email, full_name")
+        .eq("id", userId)
+        .single();
+
+      if (user?.email) {
+        await supabase.functions.invoke("email-automation", {
+          body: {
+            to: user.email,
+            subject: title,
+            template: "notification",
+            data: {
+              name: user.full_name,
+              message: message,
+            },
+          },
+        });
+      }
+    } catch (emailError) {
+      console.error("Failed to send email notification:", emailError);
+    }
   }
 
-  // Send push notification (if implemented)
-  if (channels.includes("push")) {
-    await sendPushNotification(supabase, user_id, title, message, data);
-  }
-
-  return new Response(JSON.stringify({ success: true }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-
-async function broadcastNotification(supabase: any, payload: any) {
-  const {
-    target_audience = "all",
-    type,
-    title,
-    message,
-    data = {},
-    priority = "normal",
-  } = payload;
-
-  let userQuery = supabase.from("profiles").select("id");
-
-  if (target_audience === "admin") {
-    userQuery = userQuery.eq("is_admin", true);
-  } else if (target_audience === "users") {
-    userQuery = userQuery.eq("is_admin", false);
-  }
-
-  const { data: users, error: userError } = await userQuery;
-
-  if (userError) throw userError;
-
-  // Create broadcast record
-  const { data: broadcast, error: broadcastError } = await supabase
-    .from("broadcasts")
-    .insert({
+  // Log the notification
+  await supabase.from("audit_logs").insert({
+    action: "notification_sent",
+    table_name: "notifications",
+    user_id: userId,
+    new_values: {
       type,
       title,
-      message,
-      target_audience,
-      priority,
-      active: true,
-    })
-    .select()
-    .single();
-
-  if (broadcastError) throw broadcastError;
-
-  // Create individual notifications for each user
-  const notifications = users.map((user: any) => ({
-    user_id: user.id,
-    type: `broadcast_${type}`,
-    title,
-    message,
-    data: { ...data, broadcast_id: broadcast.id },
-    priority,
-    read: false,
-  }));
-
-  const { error: notifError } = await supabase
-    .from("notifications")
-    .insert(notifications);
-
-  if (notifError) throw notifError;
-
-  // Trigger real-time broadcast
-  await supabase.channel("notifications").send({
-    type: "broadcast",
-    event: "broadcast_notification",
-    payload: broadcast,
+      channels,
+      success: true,
+    },
   });
 
   return new Response(
-    JSON.stringify({ success: true, broadcast_id: broadcast.id }),
-    {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    },
+    JSON.stringify({
+      success: true,
+      message: "Notification sent successfully",
+    }),
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );
 }
 
-async function getUserNotifications(
-  supabase: any,
-  userId: string,
-  limit: number,
-  offset: number,
-) {
-  const { data, error } = await supabase
+async function handleGetNotifications(req: Request) {
+  const url = new URL(req.url);
+  const userId = url.searchParams.get("userId");
+  const limit = parseInt(url.searchParams.get("limit") || "20");
+  const offset = parseInt(url.searchParams.get("offset") || "0");
+
+  if (!userId) {
+    return new Response(JSON.stringify({ error: "User ID is required" }), {
+      status: 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const { data: notifications, error } = await supabase
     .from("notifications")
     .select("*")
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
 
-  return new Response(JSON.stringify({ data }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
+  return new Response(
+    JSON.stringify({
+      success: true,
+      notifications,
+    }),
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+  );
 }
 
-async function getUnreadCount(supabase: any, userId: string) {
+async function handleMarkAsRead(req: Request) {
+  const { notificationId, userId } = await req.json();
+
+  const { error } = await supabase
+    .from("notifications")
+    .update({ read: true })
+    .eq("id", notificationId)
+    .eq("user_id", userId);
+
+  if (error) {
+    throw error;
+  }
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      message: "Notification marked as read",
+    }),
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+  );
+}
+
+async function handleGetUnreadCount(req: Request) {
+  const url = new URL(req.url);
+  const userId = url.searchParams.get("userId");
+
+  if (!userId) {
+    return new Response(JSON.stringify({ error: "User ID is required" }), {
+      status: 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   const { count, error } = await supabase
     .from("notifications")
     .select("*", { count: "exact", head: true })
     .eq("user_id", userId)
     .eq("read", false);
 
-  if (error) throw error;
-
-  return new Response(JSON.stringify({ count }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-
-async function markNotificationsRead(
-  supabase: any,
-  notificationIds: string[],
-  userId: string,
-) {
-  const { data, error } = await supabase
-    .from("notifications")
-    .update({ read: true, read_at: new Date().toISOString() })
-    .in("id", notificationIds)
-    .eq("user_id", userId)
-    .select();
-
-  if (error) throw error;
-
-  return new Response(JSON.stringify({ data }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-
-async function deleteNotifications(
-  supabase: any,
-  notificationIds: string[],
-  userId: string,
-) {
-  const { error } = await supabase
-    .from("notifications")
-    .delete()
-    .in("id", notificationIds)
-    .eq("user_id", userId);
-
-  if (error) throw error;
-
-  return new Response(JSON.stringify({ success: true }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-
-async function sendEmailNotification(
-  supabase: any,
-  userId: string,
-  title: string,
-  message: string,
-  data: any,
-) {
-  // Get user email preferences
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("email, email_preferences")
-    .eq("id", userId)
-    .single();
-
-  if (!profile?.email || !profile?.email_preferences?.notifications) {
-    return; // User has disabled email notifications
+  if (error) {
+    throw error;
   }
 
-  // Queue email for sending
-  await supabase.from("email_queue").insert({
-    to_email: profile.email,
-    subject: title,
-    html_content: generateEmailTemplate(title, message, data),
-    scheduled_for: new Date().toISOString(),
-    status: "pending",
-  });
-}
-
-async function sendPushNotification(
-  supabase: any,
-  userId: string,
-  title: string,
-  message: string,
-  data: any,
-) {
-  // Implementation for push notifications
-  // This would integrate with services like Firebase Cloud Messaging
-  console.log("Push notification would be sent here:", {
-    userId,
-    title,
-    message,
-  });
-}
-
-function generateEmailTemplate(
-  title: string,
-  message: string,
-  data: any,
-): string {
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <title>${title}</title>
-    </head>
-    <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <div style="background: #44ab83; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-        <h1 style="margin: 0; font-size: 24px;">${title}</h1>
-      </div>
-
-      <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-        <p style="margin: 0; font-size: 16px; line-height: 1.5;">${message}</p>
-      </div>
-
-      <div style="text-align: center; padding: 20px;">
-        <a href="${Deno.env.get("SITE_URL") || "https://rebooked.co.za"}"
-           style="background: #44ab83; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
-          View on ReBooked
-        </a>
-      </div>
-
-      <div style="text-align: center; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px;">
-        <p>You received this because you have notifications enabled.</p>
-        <p><a href="${Deno.env.get("SITE_URL")}/profile" style="color: #44ab83;">Manage notification preferences</a></p>
-      </div>
-    </body>
-    </html>
-  `;
+  return new Response(
+    JSON.stringify({
+      success: true,
+      unreadCount: count || 0,
+    }),
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+  );
 }
