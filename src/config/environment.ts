@@ -77,10 +77,20 @@ export const validateEnvironment = () => {
 
   const missingOptional = optional.filter((key) => {
     const value = ENV[key as keyof typeof ENV];
-    return !value || value.trim() === "";
+    return !value || value.trim() === "" || value.includes("demo-");
   });
 
-  if (missing.length > 0) {
+  // Check for demo/placeholder values
+  const hasPlaceholders = Object.entries(ENV).some(
+    ([key, value]) =>
+      typeof value === "string" &&
+      (value.includes("demo-") ||
+        value.includes("your-") ||
+        value.includes("placeholder") ||
+        (key.includes("API_KEY") && value.length < 10)),
+  );
+
+  if (missing.length > 0 || hasPlaceholders) {
     const errorMessage = `
 🚨 MISSING ENVIRONMENT VARIABLES 🚨
 
