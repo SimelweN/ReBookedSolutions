@@ -4,12 +4,12 @@ import {
   createErrorResponse,
   createSuccessResponse,
   handleOptionsRequest,
-  createGenericErrorHandler
+  createGenericErrorHandler,
 } from "../_shared/cors.ts";
 import {
   validateAndCreateSupabaseClient,
   validateRequiredEnvVars,
-  createEnvironmentError
+  createEnvironmentError,
 } from "../_shared/environment.ts";
 
 // Helper function to get user from request
@@ -45,7 +45,7 @@ serve(async (req) => {
     // Validate environment variables
     const missingEnvVars = validateRequiredEnvVars([
       "SUPABASE_URL",
-      "SUPABASE_SERVICE_ROLE_KEY"
+      "SUPABASE_SERVICE_ROLE_KEY",
     ]);
     if (missingEnvVars.length > 0) {
       return createEnvironmentError(missingEnvVars);
@@ -57,11 +57,6 @@ serve(async (req) => {
     const user = await getUserFromRequest(req, supabase);
     if (!user) {
       return createErrorResponse("Unauthorized - please login first", 401);
-        {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
     }
 
     console.log("Authenticated buyer:", user.id, user.email);
