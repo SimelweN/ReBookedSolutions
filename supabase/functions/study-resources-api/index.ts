@@ -62,40 +62,73 @@ serve(async (req) => {
     switch (method) {
       case "GET":
         if (action === "search" || path === "search") {
-          return await handleSearch(supabase, url);
+          return await handleSearch(supabaseClient, url);
         } else if (action === "resources" || path === "resources") {
-          return await getResources(supabase, url);
+          return await getResources(supabaseClient, url);
         } else if (url.pathname.includes("resources/")) {
           const id = url.pathname.split("/").pop();
-          return await getResource(supabase, id!);
+          return await getResource(supabaseClient, id!);
         }
         break;
 
       case "POST":
+        if (!user) {
+          return new Response(
+            JSON.stringify({
+              error: "Authentication required for write operations",
+            }),
+            {
+              status: 401,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            },
+          );
+        }
         if (path === "resources") {
           const body = await req.json();
-          return await createResource(supabase, body, user.id);
+          return await createResource(supabaseClient, body, user.id);
         } else if (path === "verify") {
           const body = await req.json();
-          return await verifyResource(supabase, body, user.id);
+          return await verifyResource(supabaseClient, body, user.id);
         } else if (path === "rate") {
           const body = await req.json();
-          return await rateResource(supabase, body, user.id);
+          return await rateResource(supabaseClient, body, user.id);
         }
         break;
 
       case "PUT":
+        if (!user) {
+          return new Response(
+            JSON.stringify({
+              error: "Authentication required for write operations",
+            }),
+            {
+              status: 401,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            },
+          );
+        }
         if (url.pathname.includes("resources/")) {
           const id = url.pathname.split("/").pop();
           const body = await req.json();
-          return await updateResource(supabase, id!, body, user.id);
+          return await updateResource(supabaseClient, id!, body, user.id);
         }
         break;
 
       case "DELETE":
+        if (!user) {
+          return new Response(
+            JSON.stringify({
+              error: "Authentication required for write operations",
+            }),
+            {
+              status: 401,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            },
+          );
+        }
         if (url.pathname.includes("resources/")) {
           const id = url.pathname.split("/").pop();
-          return await deleteResource(supabase, id!, user.id);
+          return await deleteResource(supabaseClient, id!, user.id);
         }
         break;
     }
