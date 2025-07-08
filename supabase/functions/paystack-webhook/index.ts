@@ -1,5 +1,5 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -7,273 +7,231 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const supabase = createClient(
-  Deno.env.get("SUPABASE_URL") ?? "",
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-);
-
-const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
-
-serve(async (req: Request) => {
+serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    if (req.method !== "POST") {
-      return new Response("Method not allowed", { status: 405 });
-    }
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      {
+        global: {
+          headers: { Authorization: req.headers.get("Authorization")! },
+        },
+      },
+    );
 
-    const body = await req.text();
     const signature = req.headers.get("x-paystack-signature");
+    const body = await req.text();
 
     // Verify webhook signature
-    if (!verifySignature(body, signature)) {
-      console.error("Invalid webhook signature");
-      return new Response("Invalid signature", { status: 400 });
+    const secret = Deno.env.get("PAYSTACK_SECRET_KEY");
+    if (!secret) {
+      throw new Error("Paystack secret key not configured");
+    }
+
+    const hash = await crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(secret),
+      { name: "HMAC", hash: "SHA-512" },
+      false,
+      ["sign"],
+    );
+
+    const expectedSignature = Array.from(
+      new Uint8Array(
+        await crypto.subtle.sign("HMAC", hash, new TextEncoder().encode(body)),
+      ),
+    )
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+
+    if (signature !== expectedSignature) {
+      console.log("Invalid webhook signature");
+      return new Response(JSON.stringify({ error: "Invalid signature" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const event = JSON.parse(body);
-    console.log("Received webhook event:", event.event);
+    console.log("Webhook event:", event.event);
 
-    // Log the webhook event
-    await supabase.from("audit_logs").insert({
+    // Log webhook event
+    await supabaseClient.from("audit_logs").insert({
       action: "webhook_received",
       table_name: "paystack_webhooks",
-      new_values: {
-        event: event.event,
-        reference: event.data?.reference,
-      },
+      details: { event: event.event, reference: event.data?.reference },
     });
 
     switch (event.event) {
       case "charge.success":
-        await handleChargeSuccess(event.data);
+        await handleChargeSuccess(supabaseClient, event.data);
         break;
-
       case "transfer.success":
-        await handleTransferSuccess(event.data);
+        await handleTransferSuccess(supabaseClient, event.data);
         break;
-
       case "transfer.failed":
-        await handleTransferFailed(event.data);
+        await handleTransferFailed(supabaseClient, event.data);
         break;
-
+      case "subaccount.updated":
+        await handleSubaccountUpdated(supabaseClient, event.data);
+        break;
       default:
-        console.log("Unhandled webhook event:", event.event);
+        console.log(`Unhandled event type: ${event.event}`);
     }
 
-    return new Response("OK", { status: 200 });
+    return new Response(JSON.stringify({ success: true }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (error) {
-    console.error("Error in paystack-webhook:", error);
-    return new Response("Internal server error", { status: 500 });
+    console.error("Webhook error:", error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
 
-function verifySignature(body: string, signature: string | null): boolean {
-  if (!signature || !PAYSTACK_SECRET_KEY) {
-    console.log(
-      "Missing signature or secret key, skipping verification for development",
-    );
-    return true; // Allow for development/testing
+async function handleChargeSuccess(supabaseClient: any, data: any) {
+  const { reference, amount, customer } = data;
+
+  // Update payment record
+  const { error: paymentError } = await supabaseClient
+    .from("payments")
+    .update({
+      status: "completed",
+      paystack_response: data,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("reference", reference);
+
+  if (paymentError) {
+    console.error("Error updating payment:", paymentError);
+    return;
   }
 
-  try {
-    // Create HMAC hash using the secret key
-    const encoder = new TextEncoder();
-    const keyData = encoder.encode(PAYSTACK_SECRET_KEY);
-    const bodyData = encoder.encode(body);
+  // Get order details
+  const { data: payment } = await supabaseClient
+    .from("payments")
+    .select("order_id, orders(*)")
+    .eq("reference", reference)
+    .single();
 
-    // For now, we'll skip detailed crypto verification in development
-    // In production, implement proper HMAC-SHA512 verification
-    return true;
-  } catch (error) {
-    console.error("Error verifying signature:", error);
-    return false;
-  }
-}
-
-async function handleChargeSuccess(data: any) {
-  console.log("Processing successful charge:", data.reference);
-
-  try {
-    const metadata = data.metadata || {};
-
-    // Check if this is a multi-seller purchase
-    if (metadata.cart_items) {
-      await handleMultiSellerPurchase(data);
-      return;
-    }
-
-    if (!metadata.book_id) {
-      console.error("No book_id in metadata");
-      return;
-    }
-
-    // Create order in database
-    const response = await fetch(
-      `${Deno.env.get("SUPABASE_URL")}/functions/v1/create-order`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          bookId: metadata.book_id,
-          buyerId: metadata.buyer_id,
-          buyerEmail: data.customer.email,
-          sellerId: metadata.seller_id,
-          amount: data.amount / 100, // Convert from kobo
-          deliveryOption: metadata.delivery_option,
-          shippingAddress: metadata.shipping_address,
-          deliveryData: metadata.delivery_data,
-          paystackReference: data.reference,
-          paystackSubaccount: data.subaccount?.subaccount_code,
-        }),
-      },
-    );
-
-    if (!response.ok) {
-      const error = await response.json();
-      console.error("Failed to create order:", error);
-    } else {
-      console.log("Order created successfully for reference:", data.reference);
-    }
-  } catch (error) {
-    console.error("Error handling charge success:", error);
-  }
-}
-
-async function handleMultiSellerPurchase(data: any) {
-  console.log("Processing multi-seller purchase:", data.reference);
-
-  try {
-    const metadata = data.metadata;
-    const cartItems = metadata.cart_items || [];
-
-    // Create multiple orders for each book
-    for (const item of cartItems) {
-      try {
-        const response = await fetch(
-          `${Deno.env.get("SUPABASE_URL")}/functions/v1/create-order`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              bookId: item.bookId,
-              buyerId: metadata.buyer_id,
-              buyerEmail: data.customer.email,
-              sellerId: item.sellerId,
-              amount: item.price,
-              deliveryOption: metadata.delivery_options?.find(
-                (opt: any) => opt.bookId === item.bookId,
-              ),
-              shippingAddress: metadata.shipping_address,
-              paystackReference: data.reference,
-            }),
-          },
-        );
-
-        if (!response.ok) {
-          const error = await response.json();
-          console.error(
-            `Failed to create order for book ${item.bookId}:`,
-            error,
-          );
-        }
-      } catch (error) {
-        console.error(`Error creating order for book ${item.bookId}:`, error);
-      }
-    }
-  } catch (error) {
-    console.error("Error handling multi-seller purchase:", error);
-  }
-}
-
-async function handleTransferSuccess(data: any) {
-  console.log("Processing successful transfer:", data.reference);
-
-  try {
-    // Update payout log status
-    const { error } = await supabase
-      .from("payout_logs")
+  if (payment?.order_id) {
+    // Update order status
+    await supabaseClient
+      .from("orders")
       .update({
-        status: "success",
-        paystack_response: data,
+        status: "paid",
         updated_at: new Date().toISOString(),
       })
-      .eq("reference", data.reference);
+      .eq("id", payment.order_id);
 
-    if (error) {
-      console.error("Error updating payout log:", error);
-    }
-
-    // Find and update related order
-    const { data: payoutLog } = await supabase
-      .from("payout_logs")
-      .select("order_id, seller_id")
-      .eq("reference", data.reference)
-      .single();
-
-    if (payoutLog) {
-      // Update order status
-      await supabase
-        .from("orders")
-        .update({ status: "completed" })
-        .eq("id", payoutLog.order_id);
-
-      // Send notification to seller
-      await supabase.from("notifications").insert({
-        user_id: payoutLog.seller_id,
-        type: "payout_completed",
-        title: "Payout Completed",
-        message: `Your payout of R${(data.amount / 100).toFixed(2)} has been successfully transferred to your account.`,
-      });
-    }
-  } catch (error) {
-    console.error("Error handling transfer success:", error);
+    // Send notification to seller
+    await supabaseClient.from("notifications").insert({
+      user_id: payment.orders.seller_id,
+      title: "Payment Received",
+      message: `Payment of R${(amount / 100).toFixed(2)} received for your book`,
+      type: "payment",
+    });
   }
+
+  console.log(`Charge success processed for reference: ${reference}`);
 }
 
-async function handleTransferFailed(data: any) {
-  console.log("Processing failed transfer:", data.reference);
+async function handleTransferSuccess(supabaseClient: any, data: any) {
+  const { reference, amount, recipient } = data;
 
-  try {
-    // Update payout log status
-    const { error } = await supabase
-      .from("payout_logs")
-      .update({
-        status: "failed",
-        error_message: data.message || "Transfer failed",
-        paystack_response: data,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("reference", data.reference);
+  // Update payout record
+  const { error } = await supabaseClient
+    .from("seller_payouts")
+    .update({
+      status: "completed",
+      paystack_response: data,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("reference", reference);
 
-    if (error) {
-      console.error("Error updating payout log:", error);
-    }
-
-    // Find and notify seller
-    const { data: payoutLog } = await supabase
-      .from("payout_logs")
-      .select("seller_id")
-      .eq("reference", data.reference)
-      .single();
-
-    if (payoutLog) {
-      await supabase.from("notifications").insert({
-        user_id: payoutLog.seller_id,
-        type: "payout_failed",
-        title: "Payout Failed",
-        message: `Your payout failed. Please check your banking details and contact support if the issue persists.`,
-      });
-    }
-  } catch (error) {
-    console.error("Error handling transfer failed:", error);
+  if (error) {
+    console.error("Error updating payout:", error);
+    return;
   }
+
+  // Get seller details and send notification
+  const { data: payout } = await supabaseClient
+    .from("seller_payouts")
+    .select("seller_id, amount")
+    .eq("reference", reference)
+    .single();
+
+  if (payout) {
+    await supabaseClient.from("notifications").insert({
+      user_id: payout.seller_id,
+      title: "Payout Completed",
+      message: `Your payout of R${(payout.amount / 100).toFixed(2)} has been processed`,
+      type: "payout",
+    });
+  }
+
+  console.log(`Transfer success processed for reference: ${reference}`);
+}
+
+async function handleTransferFailed(supabaseClient: any, data: any) {
+  const { reference, amount } = data;
+
+  // Update payout record
+  const { error } = await supabaseClient
+    .from("seller_payouts")
+    .update({
+      status: "failed",
+      paystack_response: data,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("reference", reference);
+
+  if (error) {
+    console.error("Error updating failed payout:", error);
+    return;
+  }
+
+  // Get seller details and send notification
+  const { data: payout } = await supabaseClient
+    .from("seller_payouts")
+    .select("seller_id, amount")
+    .eq("reference", reference)
+    .single();
+
+  if (payout) {
+    await supabaseClient.from("notifications").insert({
+      user_id: payout.seller_id,
+      title: "Payout Failed",
+      message: `Your payout of R${(payout.amount / 100).toFixed(2)} failed. Please contact support.`,
+      type: "error",
+    });
+  }
+
+  console.log(`Transfer failed processed for reference: ${reference}`);
+}
+
+async function handleSubaccountUpdated(supabaseClient: any, data: any) {
+  const { subaccount_code, business_name, settlement_bank } = data;
+
+  // Update seller subaccount
+  const { error } = await supabaseClient
+    .from("seller_profiles")
+    .update({
+      paystack_subaccount_data: data,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("paystack_subaccount_code", subaccount_code);
+
+  if (error) {
+    console.error("Error updating subaccount:", error);
+    return;
+  }
+
+  console.log(`Subaccount updated: ${subaccount_code}`);
 }
