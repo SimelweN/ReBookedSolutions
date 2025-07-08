@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS study_resources (
   rating DECIMAL(3,2) DEFAULT 0.0 CHECK (rating >= 0 AND rating <= 5),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  
+
   -- Indexes for performance
   CONSTRAINT study_resources_rating_check CHECK (rating >= 0 AND rating <= 5)
 );
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS study_resource_ratings (
   rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
   review TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  
+
   UNIQUE(resource_id, user_id)
 );
 
@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS email_logs (
 -- =============================================
 
 -- Enhance notifications table with more fields
-ALTER TABLE notifications 
+ALTER TABLE notifications
 ADD COLUMN IF NOT EXISTS priority TEXT DEFAULT 'normal' CHECK (priority IN ('low', 'normal', 'high', 'urgent')),
 ADD COLUMN IF NOT EXISTS data JSONB DEFAULT '{}',
 ADD COLUMN IF NOT EXISTS read_at TIMESTAMPTZ,
@@ -134,7 +134,7 @@ CREATE TABLE IF NOT EXISTS notification_channels (
   settings JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  
+
   UNIQUE(user_id, channel_type)
 );
 
@@ -143,22 +143,36 @@ CREATE TABLE IF NOT EXISTS notification_channels (
 -- =============================================
 
 -- Add more fields to profiles table
-ALTER TABLE profiles 
+ALTER TABLE profiles
 ADD COLUMN IF NOT EXISTS university TEXT,
 ADD COLUMN IF NOT EXISTS student_number TEXT,
 ADD COLUMN IF NOT EXISTS phone_number TEXT,
-ADD COLUMN IF NOT EXISTS verification_status TEXT DEFAULT 'unverified' CHECK (verification_status IN ('unverified', 'pending', 'verified')),
+ADD COLUMN IF NOT EXISTS verification_status TEXT DEFAULT 'unverified',
 ADD COLUMN IF NOT EXISTS email_preferences JSONB DEFAULT '{"notifications": true, "marketing": false, "reminders": true}',
 ADD COLUMN IF NOT EXISTS privacy_settings JSONB DEFAULT '{"profile_visibility": "public", "contact_visibility": "verified_only"}',
 ADD COLUMN IF NOT EXISTS last_active TIMESTAMPTZ DEFAULT NOW(),
-ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'user' CHECK (role IN ('user', 'admin', 'moderator'));
+ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'user';
+
+-- Add constraints separately to avoid conflicts
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'profiles_verification_status_check') THEN
+    ALTER TABLE profiles ADD CONSTRAINT profiles_verification_status_check
+    CHECK (verification_status IN ('unverified', 'pending', 'verified'));
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'profiles_role_check') THEN
+    ALTER TABLE profiles ADD CONSTRAINT profiles_role_check
+    CHECK (role IN ('user', 'admin', 'moderator'));
+  END IF;
+END $$;
 
 -- =============================================
 -- ENHANCED ORDERS AND TRANSACTIONS
 -- =============================================
 
 -- Add commit system fields to orders (if not exists)
-ALTER TABLE orders 
+ALTER TABLE orders
 ADD COLUMN IF NOT EXISTS commit_deadline TIMESTAMPTZ,
 ADD COLUMN IF NOT EXISTS expires_at TIMESTAMPTZ,
 ADD COLUMN IF NOT EXISTS seller_committed BOOLEAN DEFAULT FALSE,
@@ -205,7 +219,7 @@ CREATE TABLE IF NOT EXISTS courses (
   is_active BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  
+
   UNIQUE(university_id, code)
 );
 
@@ -310,8 +324,8 @@ CREATE POLICY "Users can update own study resources" ON study_resources
 CREATE POLICY "Admin can manage all study resources" ON study_resources
   FOR ALL USING (
     EXISTS (
-      SELECT 1 FROM profiles 
-      WHERE id = auth.uid() 
+      SELECT 1 FROM profiles
+      WHERE id = auth.uid()
       AND is_admin = true
     )
   );
@@ -334,8 +348,8 @@ ALTER TABLE email_queue ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admin can manage email queue" ON email_queue
   FOR ALL USING (
     EXISTS (
-      SELECT 1 FROM profiles 
-      WHERE id = auth.uid() 
+      SELECT 1 FROM profiles
+      WHERE id = auth.uid()
       AND is_admin = true
     )
   );
@@ -356,8 +370,8 @@ CREATE POLICY "Universities are publicly readable" ON universities
 CREATE POLICY "Admin can manage universities" ON universities
   FOR ALL USING (
     EXISTS (
-      SELECT 1 FROM profiles 
-      WHERE id = auth.uid() 
+      SELECT 1 FROM profiles
+      WHERE id = auth.uid()
       AND is_admin = true
     )
   );
@@ -371,8 +385,8 @@ CREATE POLICY "Courses are publicly readable" ON courses
 CREATE POLICY "Admin can manage courses" ON courses
   FOR ALL USING (
     EXISTS (
-      SELECT 1 FROM profiles 
-      WHERE id = auth.uid() 
+      SELECT 1 FROM profiles
+      WHERE id = auth.uid()
       AND is_admin = true
     )
   );
@@ -386,14 +400,14 @@ CREATE OR REPLACE FUNCTION update_study_resource_rating()
 RETURNS TRIGGER AS $$
 BEGIN
   -- Recalculate average rating
-  UPDATE study_resources 
+  UPDATE study_resources
   SET rating = (
     SELECT COALESCE(AVG(rating), 0)
-    FROM study_resource_ratings 
+    FROM study_resource_ratings
     WHERE resource_id = COALESCE(NEW.resource_id, OLD.resource_id)
   )
   WHERE id = COALESCE(NEW.resource_id, OLD.resource_id);
-  
+
   RETURN COALESCE(NEW, OLD);
 END;
 $$ LANGUAGE plpgsql;
@@ -414,7 +428,7 @@ BEGIN
     NEW.commit_deadline = NOW() + INTERVAL '48 hours';
     NEW.expires_at = NEW.commit_deadline;
   END IF;
-  
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -466,7 +480,7 @@ CREATE TRIGGER update_courses_updated_at
 
 -- Insert default notification channels for existing users
 INSERT INTO notification_channels (user_id, channel_type, enabled, settings)
-SELECT 
+SELECT
   id,
   'in_app',
   true,
@@ -490,7 +504,7 @@ ON CONFLICT (code) DO NOTHING;
 
 -- Create view for study resource analytics
 CREATE OR REPLACE VIEW study_resource_analytics AS
-SELECT 
+SELECT
   sr.university_id,
   sr.resource_type,
   COUNT(*) as total_resources,
@@ -502,7 +516,7 @@ GROUP BY sr.university_id, sr.resource_type;
 
 -- Create view for user activity analytics
 CREATE OR REPLACE VIEW user_activity_analytics AS
-SELECT 
+SELECT
   p.id,
   p.name,
   p.university,

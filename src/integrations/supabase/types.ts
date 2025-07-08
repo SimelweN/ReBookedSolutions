@@ -633,6 +633,130 @@ export type Database = {
         };
         Relationships: [];
       };
+      study_resources: {
+        Row: {
+          id: string;
+          title: string;
+          description: string;
+          content: string | null;
+          resource_type: string;
+          university_id: string;
+          course_code: string;
+          year_level: number;
+          semester: string | null;
+          tags: string[];
+          file_url: string | null;
+          file_size: number | null;
+          file_type: string | null;
+          created_by: string;
+          is_verified: boolean;
+          download_count: number;
+          rating: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description: string;
+          content?: string | null;
+          resource_type: string;
+          university_id: string;
+          course_code: string;
+          year_level: number;
+          semester?: string | null;
+          tags?: string[];
+          file_url?: string | null;
+          file_size?: number | null;
+          file_type?: string | null;
+          created_by: string;
+          is_verified?: boolean;
+          download_count?: number;
+          rating?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          description?: string;
+          content?: string | null;
+          resource_type?: string;
+          university_id?: string;
+          course_code?: string;
+          year_level?: number;
+          semester?: string | null;
+          tags?: string[];
+          file_url?: string | null;
+          file_size?: number | null;
+          file_type?: string | null;
+          created_by?: string;
+          is_verified?: boolean;
+          download_count?: number;
+          rating?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "study_resources_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      file_uploads: {
+        Row: {
+          id: string;
+          user_id: string;
+          file_name: string;
+          file_path: string;
+          file_type: string;
+          file_size: number;
+          public_url: string;
+          folder: string;
+          metadata: Record<string, any>;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          file_name: string;
+          file_path: string;
+          file_type: string;
+          file_size: number;
+          public_url: string;
+          folder: string;
+          metadata?: Record<string, any>;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          file_name?: string;
+          file_path?: string;
+          file_type?: string;
+          file_size?: number;
+          public_url?: string;
+          folder?: string;
+          metadata?: Record<string, any>;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "file_uploads_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
