@@ -213,15 +213,24 @@ const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleOptionsRequest();
   }
 
   try {
-    // Initialize Supabase client with service role for admin operations
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    );
+    // Validate environment variables
+    const missingEnvVars = validateRequiredEnvVars([
+      "SUPABASE_URL",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "SMTP_HOST",
+      "SMTP_USER",
+      "SMTP_PASS",
+    ]);
+    if (missingEnvVars.length > 0) {
+      return createEnvironmentError(missingEnvVars);
+    }
+
+    // Initialize Supabase client
+    const supabase = validateAndCreateSupabaseClient();
     const url = new URL(req.url);
     const action = url.searchParams.get("action");
 
