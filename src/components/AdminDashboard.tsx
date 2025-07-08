@@ -59,6 +59,7 @@ import AdminMobileLayout from "@/components/admin/AdminMobileLayout";
 import ProgramReview from "@/components/admin/ProgramReview";
 import DatabaseTest from "@/components/admin/DatabaseTest";
 import QADashboard from "@/components/admin/QADashboard";
+import FunctionTester from "@/components/admin/FunctionTester";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
