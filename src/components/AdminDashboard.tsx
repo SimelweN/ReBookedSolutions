@@ -1197,6 +1197,11 @@ const AdminDashboard = () => {
             <ProgramReview />
           </TabsContent>
 
+          {/* Functions Tab */}
+          <TabsContent value="functions" className="space-y-6">
+            <FunctionTester />
+          </TabsContent>
+
           {/* QA Testing Tab */}
           <TabsContent value="qa" className="space-y-6">
             <QADashboard />
