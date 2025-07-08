@@ -39,12 +39,26 @@ serve(async (req) => {
     // Verify webhook signature
     const paystackSecretKey = config.paystackSecretKey!;
 
-    // Create hash to verify signature
-    const crypto = await import("node:crypto");
-    const hash = crypto
-      .createHmac("sha512", paystackSecretKey)
-      .update(body)
-      .digest("hex");
+    // Create hash to verify signature using Web Crypto API
+    const encoder = new TextEncoder();
+    const keyData = encoder.encode(paystackSecretKey);
+    const bodyData = encoder.encode(body);
+
+    const cryptoKey = await crypto.subtle.importKey(
+      "raw",
+      keyData,
+      { name: "HMAC", hash: "SHA-512" },
+      false,
+      ["sign"],
+    );
+
+    const signatureBuffer = await crypto.subtle.sign(
+      "HMAC",
+      cryptoKey,
+      bodyData,
+    );
+    const hashArray = Array.from(new Uint8Array(signatureBuffer));
+    const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 
     if (hash !== signature) {
       console.error("Invalid webhook signature");
