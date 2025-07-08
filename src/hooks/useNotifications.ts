@@ -120,7 +120,7 @@ export const useNotifications = (): UseNotificationsResult => {
       // Try order_notifications table first
       let { error } = await supabase
         .from("order_notifications")
-        .update({ read: true, updated_at: new Date().toISOString() })
+        .update({ read: true })
         .eq("id", notificationId);
 
       // If that fails, try regular notifications table
