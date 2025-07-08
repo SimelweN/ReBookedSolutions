@@ -17,6 +17,18 @@ serve(async (req) => {
   }
 
   try {
+    // Check environment variables first
+    if (missingVars.length > 0) {
+      return createEnvironmentError(missingVars);
+    }
+
+    const config = getEnvironmentConfig();
+    const supabase = createClient(
+      config.supabaseUrl,
+      config.supabaseServiceKey,
+    );
+    const PAYSTACK_SECRET_KEY = config.paystackSecretKey;
+
     console.log("Starting expired orders check...");
 
     // Find orders that have passed their collection deadline
