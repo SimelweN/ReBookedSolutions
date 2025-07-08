@@ -83,6 +83,7 @@ import CommitSystemService from "@/services/commitSystemService";
 import EmailTester from "@/components/test/EmailTester";
 import CommitTester from "@/components/test/CommitTester";
 import ComprehensiveBackendTester from "@/components/test/ComprehensiveBackendTester";
+import EnvironmentTester from "@/components/test/EnvironmentTester";
 
 interface TestResult {
   id: string;
@@ -748,7 +749,7 @@ const DevDashboard: React.FC = () => {
                 className={`${
                   isMobile
                     ? "inline-flex h-9 items-center justify-start rounded-md bg-white shadow-sm border p-1 text-muted-foreground min-w-max"
-                    : "grid grid-cols-10 w-full bg-white shadow-sm border"
+                    : "grid grid-cols-11 w-full bg-white shadow-sm border"
                 }`}
               >
                 <TabsTrigger
@@ -820,6 +821,13 @@ const DevDashboard: React.FC = () => {
                 >
                   <Zap className="h-3 w-3 md:h-4 md:w-4" />
                   <span>{isMobile ? "Backend" : "Backend Testing"}</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="env-fix"
+                  className={`flex items-center ${isMobile ? "space-x-1 px-2 text-xs" : "space-x-2"}`}
+                >
+                  <Settings className="h-3 w-3 md:h-4 md:w-4" />
+                  <span>{isMobile ? "Env Fix" : "Environment Fix"}</span>
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -1541,6 +1549,11 @@ const DevDashboard: React.FC = () => {
             {/* Backend Testing Tab */}
             <TabsContent value="backend" className="space-y-6">
               <ComprehensiveBackendTester />
+            </TabsContent>
+
+            {/* Environment Fix Tab */}
+            <TabsContent value="env-fix" className="space-y-6">
+              <EnvironmentTester />
             </TabsContent>
           </Tabs>
         </div>
