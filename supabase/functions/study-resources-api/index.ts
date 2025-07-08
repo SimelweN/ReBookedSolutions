@@ -441,10 +441,7 @@ async function deleteResource(supabase: any, id: string, userId: string) {
     .single();
 
   if (resource.created_by !== userId && !profile?.is_admin) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 403,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createErrorResponse("Unauthorized", 403);
   }
 
   const { error } = await supabase
