@@ -145,10 +145,6 @@ export const useNotifications = (): UseNotificationsResult => {
         prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n)),
       );
     } catch (err) {
-      console.error("Error marking notification as read:", err);
-      console.log("Error type:", typeof err);
-      console.log("Error object:", err);
-
       let errorMessage = "Failed to mark notification as read";
 
       if (err instanceof Error) {
@@ -157,6 +153,18 @@ export const useNotifications = (): UseNotificationsResult => {
         errorMessage = err;
       } else if (err && typeof err === "object") {
         // Handle Supabase error objects specifically
+        if ('message' in err && typeof err.message === 'string') {
+          errorMessage = err.message;
+        } else if ('error' in err && typeof err.error === 'string') {
+          errorMessage = err.error;
+        } else {
+          errorMessage = JSON.stringify(err);
+        }
+      }
+
+      console.error("Error marking notification as read:", errorMessage);
+      console.log("Error type:", typeof err);
+      console.log("Error details:", err);
         const errorObj = err as any;
         if (errorObj.message) {
           errorMessage = errorObj.message;
