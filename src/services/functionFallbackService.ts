@@ -30,8 +30,44 @@ const FUNCTION_CONFIGS: Record<string, FunctionConfig> = {
     fallbackStrategy: "retry",
     retryAttempts: 2,
   },
+  "process-multi-seller-purchase": {
+    name: "process-multi-seller-purchase",
+    critical: true,
+    fallbackStrategy: "retry",
+    retryAttempts: 2,
+  },
   "send-email-notification": {
     name: "send-email-notification",
+    critical: true,
+    fallbackStrategy: "retry",
+    retryAttempts: 2,
+  },
+  "initialize-paystack-payment": {
+    name: "initialize-paystack-payment",
+    critical: true,
+    fallbackStrategy: "retry",
+    retryAttempts: 2,
+  },
+  "verify-paystack-payment": {
+    name: "verify-paystack-payment",
+    critical: true,
+    fallbackStrategy: "retry",
+    retryAttempts: 2,
+  },
+  "commit-to-sale": {
+    name: "commit-to-sale",
+    critical: true,
+    fallbackStrategy: "retry",
+    retryAttempts: 2,
+  },
+  "decline-commit": {
+    name: "decline-commit",
+    critical: true,
+    fallbackStrategy: "retry",
+    retryAttempts: 2,
+  },
+  "create-order": {
+    name: "create-order",
     critical: true,
     fallbackStrategy: "retry",
     retryAttempts: 2,
@@ -56,17 +92,23 @@ const FUNCTION_CONFIGS: Record<string, FunctionConfig> = {
     fallbackStrategy: "client",
     timeout: 8000,
   },
+  "courier-guy-shipment": {
+    name: "courier-guy-shipment",
+    critical: false,
+    fallbackStrategy: "client",
+    timeout: 10000,
+  },
+  "fastway-shipment": {
+    name: "fastway-shipment",
+    critical: false,
+    fallbackStrategy: "client",
+    timeout: 10000,
+  },
   "file-upload": {
     name: "file-upload",
     critical: false,
     fallbackStrategy: "client",
     timeout: 10000,
-  },
-  "analytics-reporting": {
-    name: "analytics-reporting",
-    critical: false,
-    fallbackStrategy: "skip",
-    timeout: 5000,
   },
   "study-resources-api": {
     name: "study-resources-api",
@@ -79,6 +121,36 @@ const FUNCTION_CONFIGS: Record<string, FunctionConfig> = {
     critical: false,
     fallbackStrategy: "client",
     timeout: 5000,
+  },
+  "realtime-notifications": {
+    name: "realtime-notifications",
+    critical: false,
+    fallbackStrategy: "client",
+    timeout: 5000,
+  },
+  "email-automation": {
+    name: "email-automation",
+    critical: false,
+    fallbackStrategy: "skip",
+    timeout: 5000,
+  },
+  "dispute-resolution": {
+    name: "dispute-resolution",
+    critical: false,
+    fallbackStrategy: "client",
+    timeout: 8000,
+  },
+  "create-paystack-subaccount": {
+    name: "create-paystack-subaccount",
+    critical: false,
+    fallbackStrategy: "skip",
+    timeout: 10000,
+  },
+  "update-paystack-subaccount": {
+    name: "update-paystack-subaccount",
+    critical: false,
+    fallbackStrategy: "skip",
+    timeout: 10000,
   },
 
   // Tracking - can use client fallbacks
@@ -93,6 +165,44 @@ const FUNCTION_CONFIGS: Record<string, FunctionConfig> = {
     critical: false,
     fallbackStrategy: "client",
     timeout: 8000,
+  },
+
+  // Analytics and reporting - can be skipped gracefully
+  "analytics-reporting": {
+    name: "analytics-reporting",
+    critical: false,
+    fallbackStrategy: "skip",
+    timeout: 5000,
+  },
+  "process-order-reminders": {
+    name: "process-order-reminders",
+    critical: false,
+    fallbackStrategy: "skip",
+    timeout: 5000,
+  },
+  "auto-expire-commits": {
+    name: "auto-expire-commits",
+    critical: false,
+    fallbackStrategy: "skip",
+    timeout: 5000,
+  },
+  "check-expired-orders": {
+    name: "check-expired-orders",
+    critical: false,
+    fallbackStrategy: "skip",
+    timeout: 5000,
+  },
+  "mark-collected": {
+    name: "mark-collected",
+    critical: false,
+    fallbackStrategy: "client",
+    timeout: 8000,
+  },
+  "pay-seller": {
+    name: "pay-seller",
+    critical: false,
+    fallbackStrategy: "skip",
+    timeout: 10000,
   },
 };
 
