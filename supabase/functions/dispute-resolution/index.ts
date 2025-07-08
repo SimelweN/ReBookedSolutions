@@ -1,15 +1,16 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
-
-const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const paystackSecretKey = Deno.env.get("PAYSTACK_SECRET_KEY")!;
+import {
+  corsHeaders,
+  createErrorResponse,
+  createSuccessResponse,
+  handleOptionsRequest,
+  createGenericErrorHandler,
+} from "../_shared/cors.ts";
+import {
+  validateAndCreateSupabaseClient,
+  validateRequiredEnvVars,
+  createEnvironmentError,
+} from "../_shared/environment.ts";
 
 interface DisputeRequest {
   order_id: string;
@@ -39,11 +40,21 @@ interface DisputeResolution {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleOptionsRequest();
   }
 
   try {
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    // Validate environment variables
+    const missingEnvVars = validateRequiredEnvVars([
+      "SUPABASE_URL",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "PAYSTACK_SECRET_KEY",
+    ]);
+    if (missingEnvVars.length > 0) {
+      return createEnvironmentError(missingEnvVars);
+    }
+
+    const supabase = validateAndCreateSupabaseClient();
 
     // Get auth user
     const authHeader = req.headers.get("Authorization")!;
