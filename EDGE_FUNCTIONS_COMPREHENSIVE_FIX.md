@@ -93,14 +93,25 @@ export function validateAndCreateSupabaseClient();
 ✅ **initialize-paystack-payment** - Fixed environment validation, Paystack API error handling
 ✅ **study-resources-api** - Fixed authentication, error responses, input validation
 ✅ **advanced-search** - Fixed error handling, input validation, response format
-✅ **file-upload** - Fixed authentication, environment validation (partially)
-✅ **verify-paystack-payment** - Fixed environment validation (partially)
+✅ **create-paystack-subaccount** - Fixed header, environment validation, error handling
+✅ **update-paystack-subaccount** - Fixed header, environment validation, syntax errors
+✅ **pay-seller** - Fixed header, environment validation, request parsing
+✅ **mark-collected** - Fixed header, environment validation, error responses
+✅ **process-multi-seller-purchase** - Fixed header, environment validation, syntax errors
+✅ **courier-guy-quote** - Fixed header, fallback for missing API keys
+✅ **get-delivery-quotes** - Fixed header, request validation
+✅ **send-email-notification** - Fixed header, request validation
+✅ **realtime-notifications** - Fixed header, environment validation
+✅ **analytics-reporting** - Fixed header, environment validation
+✅ **check-expired-orders** - Fixed header, environment validation
 
 ## Functions Partially Fixed
 
-🔄 **create-order** - Fixed header, validation, some syntax errors remain
+🔄 **create-order** - Fixed header, validation, syntax errors resolved
 🔄 **process-book-purchase** - Fixed header, authentication, syntax errors fixed
 🔄 **email-automation** - Fixed header, environment validation
+🔄 **file-upload** - Fixed authentication, environment validation (partially)
+🔄 **verify-paystack-payment** - Fixed environment validation (partially)
 🔄 **decline-commit** - Fixed header, validation (needs completion)
 
 ## Functions Requiring Manual Review
