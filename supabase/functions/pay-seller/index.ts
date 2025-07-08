@@ -6,8 +6,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
 };
-];
-const missingVars = validateRequiredEnvVars(requiredVars);
 
 serve(async (req) => {
   // Handle CORS
