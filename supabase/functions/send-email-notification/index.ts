@@ -26,11 +26,12 @@ serve(async (req) => {
   try {
     const { to, subject, html, from }: EmailRequest = await req.json();
 
-    // Get Sender.net API key from environment
+    // Get API keys from environment (try Resend first, then Sender)
+    const resendApiKey = Deno.env.get("VITE_RESEND_API_KEY");
     const senderApiKey = Deno.env.get("SENDER_API_KEY");
 
-    if (!senderApiKey) {
-      console.log("⚠️ SENDER_API_KEY not configured - simulating email send");
+    if (!resendApiKey && !senderApiKey) {
+      console.log("⚠️ No email API key configured - simulating email send");
       return new Response(
         JSON.stringify({
           success: true,
