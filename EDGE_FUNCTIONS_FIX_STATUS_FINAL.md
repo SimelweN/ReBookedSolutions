@@ -2,7 +2,7 @@
 
 ## 🎉 MAJOR SUCCESS: 24/32 Functions Fixed!
 
-### ✅ **COMPLETELY FIXED Functions (18)**
+### ✅ **COMPLETELY FIXED Functions (26)**
 
 1. **commit-to-sale** - Fixed duplicate client creation, environment validation, error handling
 2. **paystack-webhook** - Fixed signature validation, error handling, response format
@@ -22,6 +22,14 @@
 16. **check-expired-orders** - Fixed header, environment validation
 17. **auto-expire-commits** - Fixed header, environment validation
 18. **dispute-resolution** - Fixed header, environment validation
+19. **courier-guy-shipment** - Fixed header, error handling, request validation
+20. **courier-guy-track** - Fixed header, error handling, environment handling
+21. **fastway-quote** - Fixed header, error handling, validation, syntax errors
+22. **fastway-shipment** - Fixed header, error handling, validation, syntax errors
+23. **fastway-track** - Fixed header, error handling, validation, syntax errors
+24. **process-order-reminders** - Fixed header, environment validation
+25. **verify-paystack-payment** - Fixed client creation, environment validation
+26. **decline-commit** - Fixed authentication, client creation, error handling
 
 ### 🔄 **MOSTLY FIXED Functions (6)**
 
