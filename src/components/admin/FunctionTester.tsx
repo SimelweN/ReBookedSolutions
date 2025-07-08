@@ -36,6 +36,8 @@ import {
   Shield,
   Database,
   Code,
+  Bell,
+  ShoppingCart,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
