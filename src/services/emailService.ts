@@ -1,10 +1,11 @@
 /**
- * Email Service using Sender.net API
+ * Email Service using Sender.net API with Fallback Support
  * Handles all transactional emails for ReBooked Solutions
  *
- * Note: In browser environments, this service runs in demo mode
- * due to CORS restrictions. Real email sending should be done server-side.
+ * Features automatic fallback to alternative methods when functions fail
  */
+
+import { functionFallback } from "./functionFallbackService";
 
 interface EmailOptions {
   to: string;
