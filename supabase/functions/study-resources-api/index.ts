@@ -55,9 +55,16 @@ serve(async (req) => {
     let user = null;
     const authHeader = req.headers.get("Authorization");
     if (authHeader && method !== "GET") {
-      const token = authHeader.replace("Bearer ", "");
-      const authResult = await supabase.auth.getUser(token);
-      user = authResult.data?.user || null;
+      try {
+        const token = authHeader.replace("Bearer ", "");
+        const authResult = await supabase.auth.getUser(token);
+        if (authResult.error) {
+          console.warn("Auth error:", authResult.error.message);
+        }
+        user = authResult.data?.user || null;
+      } catch (authError) {
+        console.warn("Failed to authenticate user:", authError);
+      }
     }
 
     const action = url.searchParams.get("action");
