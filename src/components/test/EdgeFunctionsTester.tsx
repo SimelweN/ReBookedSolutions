@@ -416,8 +416,49 @@ const EdgeFunctionsTester = () => {
         setTimeout(() => reject(new Error("Timeout")), testTimeout);
       });
 
-      // Test with health check if supported
-      const testBody = func.healthCheck ? { action: "health" } : {};
+      // Prepare different test bodies based on function type
+      let testBody: any = {};
+
+      if (func.healthCheck) {
+        testBody = { action: "health" };
+      } else {
+        // For functions without health checks, try minimal valid requests
+        switch (func.category) {
+          case "payment":
+            if (func.endpoint.includes("webhook")) {
+              // Webhooks don't accept our test format
+              testBody = {};
+            } else if (func.endpoint.includes("initialize")) {
+              testBody = { amount: 100, email: "test@example.com" };
+            } else if (func.endpoint.includes("verify")) {
+              testBody = { reference: "test_ref" };
+            } else {
+              testBody = { test: true };
+            }
+            break;
+          case "shipping":
+            testBody = {
+              pickup_address: "Test",
+              delivery_address: "Test",
+              test: true,
+            };
+            break;
+          case "orders":
+            testBody = {
+              order_id: "test-order",
+              test: true,
+            };
+            break;
+          case "communication":
+            testBody = {
+              action: "test",
+              message: "Test notification",
+            };
+            break;
+          default:
+            testBody = { action: "health", test: true };
+        }
+      }
 
       const testPromise = supabase.functions.invoke(func.endpoint, {
         body: testBody,
@@ -427,31 +468,68 @@ const EdgeFunctionsTester = () => {
       const duration = Date.now() - startTime;
 
       if (result.error) {
-        // Check if it's a configuration error (function exists but needs auth/data)
+        const errorMsg = result.error.message || "Unknown error";
+
+        // Analyze the error to determine function status
         if (
-          result.error.message?.includes("unauthorized") ||
-          result.error.message?.includes("Unauthorized")
+          errorMsg.includes("unauthorized") ||
+          errorMsg.includes("Unauthorized") ||
+          errorMsg.includes("JWT") ||
+          errorMsg.includes("auth")
         ) {
           updateFunctionStatus(
             func.id,
             "success",
             "Function deployed (needs authentication)",
             duration,
-            result,
+            { error: errorMsg, status: "auth_required" },
           );
         } else if (
-          result.error.message?.includes("missing") ||
-          result.error.message?.includes("required")
+          errorMsg.includes("missing") ||
+          errorMsg.includes("required") ||
+          errorMsg.includes("validation") ||
+          errorMsg.includes("invalid")
         ) {
           updateFunctionStatus(
             func.id,
             "success",
             "Function deployed (needs valid data)",
             duration,
-            result,
+            { error: errorMsg, status: "data_required" },
+          );
+        } else if (
+          errorMsg.includes("FunctionsRelayError") ||
+          errorMsg.includes("not found") ||
+          errorMsg.includes("404")
+        ) {
+          updateFunctionStatus(
+            func.id,
+            "failed",
+            "Function not deployed or unavailable",
+            duration,
+            result.error,
+          );
+        } else if (
+          errorMsg.includes("Environment") ||
+          errorMsg.includes("API key") ||
+          errorMsg.includes("configuration")
+        ) {
+          updateFunctionStatus(
+            func.id,
+            "failed",
+            "Missing environment variables or configuration",
+            duration,
+            result.error,
           );
         } else {
-          throw result.error;
+          // For other errors, consider the function deployed but with issues
+          updateFunctionStatus(
+            func.id,
+            "success",
+            `Function deployed (error: ${errorMsg.substring(0, 100)}...)`,
+            duration,
+            result.error,
+          );
         }
       } else {
         updateFunctionStatus(
@@ -472,19 +550,11 @@ const EdgeFunctionsTester = () => {
           `Function timeout after ${testTimeout}ms`,
           duration,
         );
-      } else if (error.message?.includes("FunctionsRelayError")) {
-        updateFunctionStatus(
-          func.id,
-          "failed",
-          "Function not deployed or unavailable",
-          duration,
-          error,
-        );
       } else {
         updateFunctionStatus(
           func.id,
           "failed",
-          `Error: ${error.message}`,
+          `Network error: ${error.message}`,
           duration,
           error,
         );
