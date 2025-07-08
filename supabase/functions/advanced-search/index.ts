@@ -34,6 +34,8 @@ serve(async (req: Request) => {
   }
 
   try {
+    console.log("Advanced search request:", req.method);
+
     if (req.method !== "POST") {
       return new Response(
         JSON.stringify({ error: "Method not allowed. Use POST." }),
@@ -52,10 +54,16 @@ serve(async (req: Request) => {
     });
   } catch (error) {
     console.error("Error in advanced-search:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({
+        error: "Internal Server Error",
+        details: error?.message || "Unknown error",
+      }),
+      {
+        status: 500,
+        headers: corsHeaders,
+      },
+    );
   }
 });
 

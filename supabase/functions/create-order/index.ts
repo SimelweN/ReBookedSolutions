@@ -19,6 +19,8 @@ serve(async (req: Request) => {
   }
 
   try {
+    console.log("Create order request:", req.method);
+
     if (req.method !== "POST") {
       return new Response(JSON.stringify({ error: "Method not allowed" }), {
         status: 405,
@@ -158,9 +160,15 @@ serve(async (req: Request) => {
     );
   } catch (error) {
     console.error("Error in create-order:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({
+        error: "Internal Server Error",
+        details: error?.message || "Unknown error",
+      }),
+      {
+        status: 500,
+        headers: corsHeaders,
+      },
+    );
   }
 });
