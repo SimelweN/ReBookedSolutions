@@ -1,29 +1,30 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  corsHeaders,
+  createErrorResponse,
+  createSuccessResponse,
+  handleOptionsRequest,
+  createGenericErrorHandler,
+} from "../_shared/cors.ts";
 
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleOptionsRequest();
   }
 
   try {
     const COURIER_GUY_API_KEY = Deno.env.get("COURIER_GUY_API_KEY");
 
     if (!COURIER_GUY_API_KEY) {
-      throw new Error("Courier Guy API key not configured");
+      return createErrorResponse("Courier Guy API key not configured", 500);
     }
 
     const url = new URL(req.url);
     const trackingId = url.pathname.split("/").pop();
 
     if (!trackingId) {
-      throw new Error("Tracking ID is required");
+      return createErrorResponse("Tracking ID is required", 400);
     }
 
     console.log("Tracking shipment:", trackingId);
