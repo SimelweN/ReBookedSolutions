@@ -4,7 +4,7 @@ import {
   createErrorResponse,
   createSuccessResponse,
   handleOptionsRequest,
-  createGenericErrorHandler
+  createGenericErrorHandler,
 } from "../_shared/cors.ts";
 
 interface FastwayAddress {
@@ -49,6 +49,8 @@ serve(async (req) => {
   }
 
   try {
+    console.log("Fastway Shipment API called");
+
     // Parse and validate request body
     let requestData: FastwayShipmentRequest;
     try {
@@ -57,10 +59,6 @@ serve(async (req) => {
       return createErrorResponse("Invalid JSON in request body", 400);
     }
 
-  try {
-    console.log("Fastway Shipment API called");
-
-    const requestData: FastwayShipmentRequest = await req.json();
     console.log("Shipment request:", requestData);
 
     // Validate required fields
@@ -69,14 +67,9 @@ serve(async (req) => {
       !requestData.delivery ||
       !requestData.parcels?.length
     ) {
-      return new Response(
-        JSON.stringify({
-          error: "Missing required fields: collection, delivery, parcels",
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+      return createErrorResponse(
+        "Missing required fields: collection, delivery, parcels",
+        400,
       );
     }
 
@@ -199,7 +192,6 @@ serve(async (req) => {
     };
 
     return createSuccessResponse({ shipment });
-
   } catch (error) {
     return createGenericErrorHandler("fastway-shipment")(error);
   }
