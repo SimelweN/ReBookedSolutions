@@ -174,24 +174,86 @@ serve(async (req) => {
       };
     }
 
-    // Initialize payment with Paystack
-    const paystackResponse = await fetch(
-      "https://api.paystack.co/transaction/initialize",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${paystackSecret}`,
-          "Content-Type": "application/json",
+    // Initialize payment with Paystack (with retries)
+    let paystackData;
+    let lastError;
+
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        console.log(`Payment initialization attempt ${attempt}/3`);
+
+        const paystackResponse = await fetch(
+          "https://api.paystack.co/transaction/initialize",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${paystackSecret}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(initializationData),
+          },
+        );
+
+        if (!paystackResponse.ok) {
+          throw new Error(
+            `HTTP ${paystackResponse.status}: ${paystackResponse.statusText}`,
+          );
+        }
+
+        paystackData = await paystackResponse.json();
+
+        if (!paystackData.status) {
+          throw new Error(`Paystack error: ${paystackData.message}`);
+        }
+
+        // Success - break out of retry loop
+        break;
+      } catch (error) {
+        lastError = error;
+        console.error(`Payment attempt ${attempt} failed:`, error);
+
+        if (attempt < 3) {
+          // Wait before retry (exponential backoff)
+          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+        }
+      }
+    }
+
+    if (!paystackData?.status) {
+      // Ultimate fallback: Store order and allow manual payment processing
+      console.error(
+        "All Paystack attempts failed, storing for manual processing",
+      );
+
+      // Store failed payment for manual handling
+      await supabaseClient.from("payments").insert({
+        order_id: order_id,
+        user_id: user.id,
+        amount: amount,
+        currency: currency,
+        reference: reference,
+        status: "manual_processing_required",
+        metadata: {
+          ...initializationData.metadata,
+          error: lastError?.message,
+          failed_attempts: 3,
         },
-        body: JSON.stringify(initializationData),
-      },
-    );
+      });
 
-    const paystackData = await paystackResponse.json();
-
-    if (!paystackData.status) {
-      throw new Error(
-        `Paystack initialization failed: ${paystackData.message}`,
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Payment gateway temporarily unavailable",
+          fallback: true,
+          details:
+            "Your order has been saved. We'll contact you with payment instructions within 24 hours.",
+          order_id: order_id,
+          reference: reference,
+        }),
+        {
+          status: 503,
+          headers: corsHeaders,
+        },
       );
     }
 
