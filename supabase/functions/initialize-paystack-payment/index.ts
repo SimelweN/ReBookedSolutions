@@ -349,14 +349,19 @@ serve(async (req) => {
       },
     });
 
-    // Send notification to seller
-    await supabaseClient.from("notifications").insert({
-      user_id: order.seller_id,
-      title: "Payment Initiated",
-      message: `A buyer has initiated payment for "${order.book.title}"`,
-      type: "payment",
-      metadata: { order_id, reference },
-    });
+    // Send notification to seller (non-blocking)
+    try {
+      await supabaseClient.from("notifications").insert({
+        user_id: order.seller_id,
+        title: "Payment Initiated",
+        message: `A buyer has initiated payment for "${order.book.title}"`,
+        type: "payment",
+        metadata: { order_id, reference },
+      });
+    } catch (notificationError) {
+      console.error("Failed to create notification:", notificationError);
+      // Continue execution - notification is not critical for payment flow
+    }
 
     return new Response(
       JSON.stringify({
