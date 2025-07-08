@@ -47,6 +47,9 @@ import {
   BookOpen,
   DollarSign,
   Bell,
+  Mail,
+  ShoppingCart,
+  Zap,
   Activity,
   Zap,
   Code,
@@ -77,6 +80,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import Layout from "@/components/Layout";
 import AdminMobileLayout from "@/components/admin/AdminMobileLayout";
 import CommitSystemService from "@/services/commitSystemService";
+import EmailTester from "@/components/test/EmailTester";
+import CommitTester from "@/components/test/CommitTester";
+import ComprehensiveBackendTester from "@/components/test/ComprehensiveBackendTester";
 
 interface TestResult {
   id: string;
