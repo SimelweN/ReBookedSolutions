@@ -115,23 +115,108 @@ serve(async (req) => {
       throw new Error("Paystack secret key not configured");
     }
 
-    // Verify payment with Paystack
-    const verificationResponse = await fetch(
-      `https://api.paystack.co/transaction/verify/${reference}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${paystackSecret}`,
-          "Content-Type": "application/json",
+    // Verify payment with Paystack (with timeout and retry)
+    let verificationData = null;
+    let verificationError = null;
+
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        console.log(`Paystack verification attempt ${attempt}/3`);
+
+        // Create AbortController for timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+        const verificationResponse = await fetch(
+          `https://api.paystack.co/transaction/verify/${reference}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${paystackSecret}`,
+              "Content-Type": "application/json",
+            },
+            signal: controller.signal,
+          },
+        );
+
+        clearTimeout(timeoutId);
+
+        if (!verificationResponse.ok) {
+          throw new Error(
+            `HTTP ${verificationResponse.status}: ${verificationResponse.statusText}`,
+          );
+        }
+
+        const data = await verificationResponse.json();
+
+        if (!data.status) {
+          throw new Error(`Paystack error: ${data.message}`);
+        }
+
+        verificationData = data;
+        break;
+      } catch (error) {
+        verificationError = error;
+        console.error(`Verification attempt ${attempt} failed:`, error);
+
+        if (attempt < 3) {
+          await new Promise((resolve) => setTimeout(resolve, 2000 * attempt));
+        }
+      }
+    }
+
+    if (!verificationData) {
+      console.error(
+        "All verification attempts failed, checking local payment status",
+      );
+
+      // Fallback: Check if payment was already processed via webhook
+      const { data: recentPayment } = await supabaseClient
+        .from("payments")
+        .select("*")
+        .eq("reference", reference)
+        .single();
+
+      if (recentPayment?.status === "completed") {
+        console.log("Payment was already verified via webhook");
+        return new Response(
+          JSON.stringify({
+            success: true,
+            payment: {
+              id: recentPayment.id,
+              reference: recentPayment.reference,
+              status: recentPayment.status,
+              amount: recentPayment.amount,
+              verified_at: recentPayment.verified_at,
+            },
+            fallback: true,
+            message: "Payment was already verified",
+          }),
+          { headers: corsHeaders },
+        );
+      }
+
+      // Store verification attempt for manual processing
+      await supabaseClient.from("failed_verifications").insert({
+        payment_reference: reference,
+        user_id: user.id,
+        error_details: verificationError?.message || "Paystack API unavailable",
+        attempted_at: new Date().toISOString(),
+      });
+
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Payment verification temporarily unavailable",
+          fallback: true,
+          details:
+            "We'll verify your payment manually within 1 hour and notify you.",
+          reference: reference,
+        }),
+        {
+          status: 503,
+          headers: corsHeaders,
         },
-      },
-    );
-
-    const verificationData = await verificationResponse.json();
-
-    if (!verificationData.status) {
-      throw new Error(
-        `Paystack verification failed: ${verificationData.message}`,
       );
     }
 
