@@ -4,12 +4,12 @@ import {
   createErrorResponse,
   createSuccessResponse,
   handleOptionsRequest,
-  createGenericErrorHandler
+  createGenericErrorHandler,
 } from "../_shared/cors.ts";
 import {
   validateAndCreateSupabaseClient,
   validateRequiredEnvVars,
-  createEnvironmentError
+  createEnvironmentError,
 } from "../_shared/environment.ts";
 
 interface CheckoutData {
@@ -59,19 +59,13 @@ serve(async (req) => {
     // Validate environment variables
     const missingEnvVars = validateRequiredEnvVars([
       "SUPABASE_URL",
-      "SUPABASE_SERVICE_ROLE_KEY"
+      "SUPABASE_SERVICE_ROLE_KEY",
     ]);
     if (missingEnvVars.length > 0) {
       return createEnvironmentError(missingEnvVars);
     }
-    return new Response("ok", { headers: corsHeaders });
-  }
 
-  try {
-    const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    );
+    const supabaseClient = validateAndCreateSupabaseClient();
 
     // Get the authorization header
     const authHeader = req.headers.get("authorization")!;
