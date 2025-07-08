@@ -1,10 +1,19 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { corsHeaders } from "../_shared/cors.ts";
+import { corsHeaders, createErrorResponse } from "../_shared/cors.ts";
+import {
+  getEnvironmentConfig,
+  validateRequiredEnvVars,
+  createEnvironmentError,
+} from "../_shared/environment.ts";
 
-const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+// Validate required environment variables
+const requiredVars = [
+  "SUPABASE_URL",
+  "SUPABASE_SERVICE_ROLE_KEY",
+  "PAYSTACK_SECRET_KEY",
+];
+const missingVars = validateRequiredEnvVars(requiredVars);
 
 serve(async (req) => {
   // Handle CORS
