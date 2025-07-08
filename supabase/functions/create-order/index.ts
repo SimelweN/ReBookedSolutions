@@ -1,15 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { corsHeaders, createErrorResponse } from "../_shared/cors.ts";
-import {
-  getEnvironmentConfig,
-  validateRequiredEnvVars,
-  createEnvironmentError,
-} from "../_shared/environment.ts";
 
-// Validate environment on startup
-const requiredVars = ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"];
-const missingVars = validateRequiredEnvVars(requiredVars);
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
