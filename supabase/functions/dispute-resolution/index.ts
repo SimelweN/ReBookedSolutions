@@ -65,9 +65,8 @@ serve(async (req) => {
     } = await supabase.auth.getUser(token);
 
     if (authError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      return createErrorResponse("Unauthorized", 401, {
+        authError: authError?.message,
       });
     }
 
