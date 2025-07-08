@@ -68,12 +68,26 @@ serve(async (req) => {
     switch (req.method) {
       case "POST":
         if (action === "search") {
-          const filters: SearchFilters = await req.json();
+          let filters: SearchFilters;
+          try {
+            filters = await req.json();
+          } catch (error) {
+            return createErrorResponse("Invalid JSON in request body", 400);
+          }
           return await performAdvancedSearch(supabase, filters);
         } else if (action === "index") {
           return await rebuildSearchIndex(supabase);
         } else if (action === "suggestions") {
-          const { query } = await req.json();
+          let requestBody: any;
+          try {
+            requestBody = await req.json();
+          } catch (error) {
+            return createErrorResponse("Invalid JSON in request body", 400);
+          }
+          const { query } = requestBody;
+          if (!query) {
+            return createErrorResponse("Query parameter is required", 400);
+          }
           return await getSearchSuggestions(supabase, query);
         }
         break;
@@ -91,16 +105,12 @@ serve(async (req) => {
         break;
     }
 
-    return new Response(JSON.stringify({ error: "Invalid action" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    return createErrorResponse("Invalid action or method", 400, {
+      method: req.method,
+      action,
     });
   } catch (error) {
-    console.error("Search error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createGenericErrorHandler("advanced-search")(error);
   }
 });
 
