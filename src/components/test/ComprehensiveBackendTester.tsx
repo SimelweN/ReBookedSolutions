@@ -674,19 +674,15 @@ const ComprehensiveBackendTester = () => {
           <CardContent className="space-y-2">
             <Button
               onClick={() => {
-                // This will scroll to the email tester section below
-                const emailSection = document.getElementById(
-                  "email-tester-section",
-                );
-                if (emailSection) {
-                  emailSection.scrollIntoView({ behavior: "smooth" });
-                }
+                // Navigate to the email tab in dev dashboard
+                window.location.hash = "email";
+                window.scrollTo(0, 0);
               }}
               disabled={isLoading}
               size="sm"
               className="w-full"
             >
-              Test Email System
+              Go to Email Tab
             </Button>
           </CardContent>
         </Card>
