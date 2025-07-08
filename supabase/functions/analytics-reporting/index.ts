@@ -26,28 +26,8 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
-    // For admin functions, optionally check auth if header is provided
-    let isAdmin = false;
-    const authHeader = req.headers.get("Authorization");
-    if (authHeader) {
-      const token = authHeader.replace("Bearer ", "");
-      const {
-        data: { user },
-        error: authError,
-      } = await supabaseClient.auth.getUser(token);
-
-      if (!authError && user) {
-        const { data: profile } = await supabaseClient
-          .from("profiles")
-          .select("is_admin")
-          .eq("id", user.id)
-          .single();
-        isAdmin = profile?.is_admin || false;
-      }
-    }
-
-    // For demo purposes, allow access even without admin (can be restricted later)
-    console.log("Analytics request received, admin status:", isAdmin);
+    // For demo purposes, allow access (can be restricted later)
+    console.log("Analytics request received");
 
     const url = new URL(req.url);
     const action = url.searchParams.get("action");
