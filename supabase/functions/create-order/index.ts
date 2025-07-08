@@ -13,7 +13,6 @@ serve(async (req) => {
   }
 
   try {
-    // Initialize Supabase client with service role for admin operations
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
