@@ -4,12 +4,12 @@ import {
   createErrorResponse,
   createSuccessResponse,
   handleOptionsRequest,
-  createGenericErrorHandler
+  createGenericErrorHandler,
 } from "../_shared/cors.ts";
 import {
   validateAndCreateSupabaseClient,
   validateRequiredEnvVars,
-  createEnvironmentError
+  createEnvironmentError,
 } from "../_shared/environment.ts";
 
 // Bank codes mapping for Paystack
@@ -51,22 +51,13 @@ serve(async (req) => {
     const missingEnvVars = validateRequiredEnvVars([
       "PAYSTACK_SECRET_KEY",
       "SUPABASE_URL",
-      "SUPABASE_SERVICE_ROLE_KEY"
+      "SUPABASE_SERVICE_ROLE_KEY",
     ]);
     if (missingEnvVars.length > 0) {
       return createEnvironmentError(missingEnvVars);
     }
 
-    const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY")!
-          message: "Payment service is not configured. Please contact support.",
-          error_code: "MISSING_SECRET_KEY",
-        }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
-    }
+    const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY")!;
 
     let requestBody;
     try {
