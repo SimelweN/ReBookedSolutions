@@ -441,6 +441,18 @@ function App() {
                         }
                       />
 
+                      {/* Email Test - Admin only */}
+                      <Route
+                        path="/email-test"
+                        element={
+                          <AdminProtectedRoute>
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <EmailTest />
+                            </Suspense>
+                          </AdminProtectedRoute>
+                        }
+                      />
+
                       {/* 404 Route */}
                       <Route
                         path="*"
