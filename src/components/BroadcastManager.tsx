@@ -28,9 +28,14 @@ const BroadcastManager = () => {
     if (BROADCASTS_DISABLED) {
       return;
     }
-    // Check if broadcasts are disabled for this session
-    if (localStorage.getItem("broadcasts_disabled") === "true") {
-      return;
+    // Check if broadcasts are disabled for this session (with fallback)
+    try {
+      if (localStorage.getItem("broadcasts_disabled") === "true") {
+        return;
+      }
+    } catch (error) {
+      // If localStorage fails, continue to show broadcasts (better UX)
+      console.warn("localStorage not accessible, continuing with broadcasts");
     }
 
     // Prevent rapid successive calls (debounce with 5 second minimum interval)
