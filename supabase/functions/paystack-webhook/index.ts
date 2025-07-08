@@ -107,18 +107,52 @@ serve(async (req) => {
 async function handleChargeSuccess(supabaseClient: any, data: any) {
   const { reference, amount, customer } = data;
 
-  // Update payment record
-  const { error: paymentError } = await supabaseClient
-    .from("payments")
-    .update({
-      status: "completed",
-      paystack_response: data,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("reference", reference);
+  // Update payment record with retry mechanism
+  let paymentUpdateSuccess = false;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const { error: paymentError } = await supabaseClient
+        .from("payments")
+        .update({
+          status: "completed",
+          paystack_response: data,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("reference", reference);
 
-  if (paymentError) {
-    console.error("Error updating payment:", paymentError);
+      if (!paymentError) {
+        paymentUpdateSuccess = true;
+        break;
+      } else {
+        console.error(
+          `Payment update attempt ${attempt} failed:`,
+          paymentError,
+        );
+        if (attempt < 3) {
+          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+        }
+      }
+    } catch (error) {
+      console.error(`Payment update attempt ${attempt} error:`, error);
+      if (attempt < 3) {
+        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+      }
+    }
+  }
+
+  if (!paymentUpdateSuccess) {
+    // Fallback: Store webhook event for manual processing
+    console.error(
+      "Failed to update payment, storing webhook for manual processing",
+    );
+    await supabaseClient.from("failed_webhooks").insert({
+      event_type: "charge.success",
+      reference: reference,
+      payload: data,
+      error: "Failed to update payment record",
+      retry_count: 3,
+      created_at: new Date().toISOString(),
+    });
     return;
   }
 
