@@ -143,3 +143,5 @@ export const SimpleEmailTest: React.FC = () => {
     </Card>
   );
 };
+
+export { SimpleEmailTest };
