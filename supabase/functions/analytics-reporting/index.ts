@@ -76,16 +76,9 @@ serve(async (req) => {
         break;
     }
 
-    return new Response(JSON.stringify({ error: "Invalid action" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createErrorResponse("Invalid action", 400);
   } catch (error) {
-    console.error("Analytics error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createGenericErrorHandler("analytics-reporting")(error);
   }
 });
 
