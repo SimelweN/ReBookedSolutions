@@ -77,6 +77,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { SimpleEmailTest } from "@/components/test/SimpleEmailTest";
 import Layout from "@/components/Layout";
 import AdminMobileLayout from "@/components/admin/AdminMobileLayout";
 import CommitSystemService from "@/services/commitSystemService";
