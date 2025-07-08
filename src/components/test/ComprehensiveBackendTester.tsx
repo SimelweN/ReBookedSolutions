@@ -664,6 +664,33 @@ const ComprehensiveBackendTester = () => {
             </Button>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <Mail className="h-4 w-4" />
+              Email Service
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Button
+              onClick={() => {
+                // This will scroll to the email tester section below
+                const emailSection = document.getElementById(
+                  "email-tester-section",
+                );
+                if (emailSection) {
+                  emailSection.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+              disabled={isLoading}
+              size="sm"
+              className="w-full"
+            >
+              Test Email System
+            </Button>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Bulk Actions */}
