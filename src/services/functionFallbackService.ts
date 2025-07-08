@@ -463,33 +463,78 @@ export class FunctionFallbackService {
 
   // Client fallback implementations
   private async getDeliveryQuotesFallback(payload: any) {
-    // Simplified delivery quotes using fixed rates
-    const { pickup_address, delivery_address } = payload;
+    // Realistic delivery quotes using South African postal zones and distances
+    const { pickup_address, delivery_address, weight = 1 } = payload;
 
-    const baseDistance = this.calculateDistance(
-      pickup_address,
-      delivery_address,
-    );
-    const courierGuyRate = Math.max(50, baseDistance * 0.8);
-    const fastwayRate = Math.max(45, baseDistance * 0.75);
+    const distance = this.calculateDistance(pickup_address, delivery_address);
+    const weightMultiplier = Math.max(1, weight * 0.2); // Additional cost per kg
+
+    // Base rates for different distance ranges (in ZAR)
+    let courierGuyBase, fastwayBase, estimatedDays;
+
+    if (distance <= 50) {
+      // Same city
+      courierGuyBase = 65;
+      fastwayBase = 55;
+      estimatedDays = { courierGuy: 1, fastway: 2 };
+    } else if (distance <= 200) {
+      // Regional
+      courierGuyBase = 85;
+      fastwayBase = 75;
+      estimatedDays = { courierGuy: 2, fastway: 3 };
+    } else if (distance <= 500) {
+      // Inter-provincial
+      courierGuyBase = 120;
+      fastwayBase = 95;
+      estimatedDays = { courierGuy: 2, fastway: 4 };
+    } else {
+      // Long distance
+      courierGuyBase = 160;
+      fastwayBase = 120;
+      estimatedDays = { courierGuy: 3, fastway: 5 };
+    }
+
+    const courierGuyRate =
+      Math.round(
+        (courierGuyBase + distance * 0.5 + weightMultiplier * 15) * 100,
+      ) / 100;
+    const fastwayRate =
+      Math.round((fastwayBase + distance * 0.4 + weightMultiplier * 12) * 100) /
+      100;
 
     return {
+      success: true,
       quotes: [
         {
           courier: "courier-guy",
           service: "standard",
           rate: courierGuyRate,
-          estimated_days: 2,
+          estimated_days: estimatedDays.courierGuy,
+          description: "Courier Guy Standard Service",
+          collection_time: "09:00-17:00",
+          delivery_time: "09:00-17:00",
+          insurance_included: true,
+          tracking_included: true,
           fallback: true,
         },
         {
           courier: "fastway",
           service: "economy",
           rate: fastwayRate,
-          estimated_days: 3,
+          estimated_days: estimatedDays.fastway,
+          description: "Fastway Economy Service",
+          collection_time: "08:00-16:00",
+          delivery_time: "08:00-16:00",
+          insurance_included: false,
+          tracking_included: true,
           fallback: true,
         },
       ],
+      pickup_address: pickup_address,
+      delivery_address: delivery_address,
+      weight: weight,
+      calculated_distance: distance,
+      note: "Rates calculated using offline estimation",
     };
   }
 
