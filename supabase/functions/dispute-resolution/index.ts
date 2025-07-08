@@ -167,10 +167,7 @@ async function createDispute(
     .single();
 
   if (orderError || !order) {
-    return new Response(JSON.stringify({ error: "Order not found" }), {
-      status: 404,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createErrorResponse("Order not found", 404);
   }
 
   if (order.buyer_id !== userId && order.seller_id !== userId) {
