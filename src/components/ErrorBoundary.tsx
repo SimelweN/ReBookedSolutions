@@ -54,7 +54,20 @@ class ErrorBoundary extends Component<Props, State> {
   };
 
   private handleReload = () => {
-    window.location.reload();
+    try {
+      window.location.reload();
+    } catch (error) {
+      console.error("Page reload failed:", error);
+      // Fallback: try navigation to homepage
+      try {
+        window.location.href = "/";
+      } catch (navError) {
+        console.error("Navigation fallback also failed:", navError);
+        alert(
+          "Unable to reload the page. Please manually refresh your browser.",
+        );
+      }
+    }
   };
 
   private handleGoHome = () => {
