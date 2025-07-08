@@ -22,13 +22,20 @@ serve(async (req) => {
   }
 
   try {
-    // Check environment variables first
-    if (missingVars.length > 0) {
-      return createEnvironmentError(missingVars);
-    }
+    const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
 
-    const config = getEnvironmentConfig();
-    const PAYSTACK_SECRET_KEY = config.paystackSecretKey!;
+    if (!PAYSTACK_SECRET_KEY) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "Paystack configuration not available",
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
 
     const { reference } = await req.json();
 
