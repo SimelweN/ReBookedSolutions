@@ -104,31 +104,41 @@ serve(async (req) => {
     const supabase = validateAndCreateSupabaseClient();
 
     // Handle different event types
-    switch (event.event) {
-      case "charge.success":
-        await handleSuccessfulPayment(supabase, event.data);
-        break;
+    try {
+      switch (event.event) {
+        case "charge.success":
+          await handleSuccessfulPayment(supabase, event.data);
+          break;
 
-      case "charge.failed":
-        await handleFailedPayment(supabase, event.data);
-        break;
+        case "charge.failed":
+          await handleFailedPayment(supabase, event.data);
+          break;
 
-      case "transfer.success":
-        console.log("Transfer successful:", event.data.reference);
-        await handleSuccessfulTransfer(supabase, event.data);
-        break;
+        case "transfer.success":
+          console.log("Transfer successful:", event.data.reference);
+          await handleSuccessfulTransfer(supabase, event.data);
+          break;
 
-      case "transfer.failed":
-        console.log(
-          "Transfer failed:",
-          event.data.reference,
-          event.data.failure_reason,
-        );
-        await handleFailedTransfer(supabase, event.data);
-        break;
+        case "transfer.failed":
+          console.log(
+            "Transfer failed:",
+            event.data.reference,
+            event.data.failure_reason,
+          );
+          await handleFailedTransfer(supabase, event.data);
+          break;
 
-      default:
-        console.log("Unhandled webhook event:", event.event);
+        default:
+          console.log("Unhandled webhook event:", event.event);
+        // Still return success for unhandled events to prevent retries
+      }
+    } catch (handlerError) {
+      console.error(`Error handling ${event.event}:`, handlerError);
+      return createErrorResponse(
+        `Failed to process ${event.event} event`,
+        500,
+        { event: event.event, error: handlerError.message },
+      );
     }
 
     return new Response("OK", {
@@ -136,11 +146,7 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "text/plain" },
     });
   } catch (error) {
-    console.error("Webhook processing error:", error);
-    return new Response("Internal server error", {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "text/plain" },
-    });
+    return createGenericErrorHandler("paystack-webhook")(error);
   }
 });
 
