@@ -1527,6 +1527,21 @@ const DevDashboard: React.FC = () => {
                 </Card>
               </div>
             </TabsContent>
+
+            {/* Email Testing Tab */}
+            <TabsContent value="email" className="space-y-6">
+              <EmailTester />
+            </TabsContent>
+
+            {/* Commit Testing Tab */}
+            <TabsContent value="commit-testing" className="space-y-6">
+              <CommitTester />
+            </TabsContent>
+
+            {/* Backend Testing Tab */}
+            <TabsContent value="backend" className="space-y-6">
+              <ComprehensiveBackendTester />
+            </TabsContent>
           </Tabs>
         </div>
       </div>
