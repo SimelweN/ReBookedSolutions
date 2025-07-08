@@ -1,11 +1,16 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  corsHeaders,
+  createErrorResponse,
+  createSuccessResponse,
+  handleOptionsRequest,
+  createGenericErrorHandler,
+} from "../_shared/cors.ts";
+import {
+  validateAndCreateSupabaseClient,
+  validateRequiredEnvVars,
+  createEnvironmentError,
+} from "../_shared/environment.ts";
 
 interface StudyResource {
   id?: string;
@@ -27,14 +32,20 @@ interface StudyResource {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleOptionsRequest();
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    );
+    // Validate environment variables
+    const missingEnvVars = validateRequiredEnvVars([
+      "SUPABASE_URL",
+      "SUPABASE_SERVICE_ROLE_KEY",
+    ]);
+    if (missingEnvVars.length > 0) {
+      return createEnvironmentError(missingEnvVars);
+    }
+
+    const supabase = validateAndCreateSupabaseClient();
 
     const url = new URL(req.url);
     const path = url.pathname.split("/").pop();
@@ -44,9 +55,16 @@ serve(async (req) => {
     let user = null;
     const authHeader = req.headers.get("Authorization");
     if (authHeader && method !== "GET") {
-      const token = authHeader.replace("Bearer ", "");
-      const authResult = await supabase.auth.getUser(token);
-      user = authResult.data?.user || null;
+      try {
+        const token = authHeader.replace("Bearer ", "");
+        const authResult = await supabase.auth.getUser(token);
+        if (authResult.error) {
+          console.warn("Auth error:", authResult.error.message);
+        }
+        user = authResult.data?.user || null;
+      } catch (authError) {
+        console.warn("Failed to authenticate user:", authError);
+      }
     }
 
     const action = url.searchParams.get("action");
@@ -65,76 +83,80 @@ serve(async (req) => {
 
       case "POST":
         if (!user) {
-          return new Response(
-            JSON.stringify({
-              error: "Authentication required for write operations",
-            }),
-            {
-              status: 401,
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            },
+          return createErrorResponse(
+            "Authentication required for write operations",
+            401,
           );
         }
         if (path === "resources") {
-          const body = await req.json();
+          let body: any;
+          try {
+            body = await req.json();
+          } catch (error) {
+            return createErrorResponse("Invalid JSON in request body", 400);
+          }
           return await createResource(supabase, body, user.id);
         } else if (path === "verify") {
-          const body = await req.json();
+          let body: any;
+          try {
+            body = await req.json();
+          } catch (error) {
+            return createErrorResponse("Invalid JSON in request body", 400);
+          }
           return await verifyResource(supabase, body, user.id);
         } else if (path === "rate") {
-          const body = await req.json();
+          let body: any;
+          try {
+            body = await req.json();
+          } catch (error) {
+            return createErrorResponse("Invalid JSON in request body", 400);
+          }
           return await rateResource(supabase, body, user.id);
         }
         break;
 
       case "PUT":
         if (!user) {
-          return new Response(
-            JSON.stringify({
-              error: "Authentication required for write operations",
-            }),
-            {
-              status: 401,
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            },
+          return createErrorResponse(
+            "Authentication required for write operations",
+            401,
           );
         }
         if (url.pathname.includes("resources/")) {
           const id = url.pathname.split("/").pop();
-          const body = await req.json();
-          return await updateResource(supabase, id!, body, user.id);
+          if (!id) {
+            return createErrorResponse("Resource ID is required", 400);
+          }
+          let body: any;
+          try {
+            body = await req.json();
+          } catch (error) {
+            return createErrorResponse("Invalid JSON in request body", 400);
+          }
+          return await updateResource(supabase, id, body, user.id);
         }
         break;
 
       case "DELETE":
         if (!user) {
-          return new Response(
-            JSON.stringify({
-              error: "Authentication required for write operations",
-            }),
-            {
-              status: 401,
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            },
+          return createErrorResponse(
+            "Authentication required for write operations",
+            401,
           );
         }
         if (url.pathname.includes("resources/")) {
           const id = url.pathname.split("/").pop();
-          return await deleteResource(supabase, id!, user.id);
+          if (!id) {
+            return createErrorResponse("Resource ID is required", 400);
+          }
+          return await deleteResource(supabase, id, user.id);
         }
         break;
     }
 
-    return new Response(JSON.stringify({ error: "Not found" }), {
-      status: 404,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createErrorResponse("Endpoint not found", 404);
   } catch (error) {
-    console.error("Error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createGenericErrorHandler("study-resources-api")(error);
   }
 });
 
@@ -293,10 +315,7 @@ async function updateResource(
     .single();
 
   if (resource.created_by !== userId && !profile?.is_admin) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 403,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createErrorResponse("Unauthorized", 403);
   }
 
   const { data, error } = await supabase
@@ -326,10 +345,7 @@ async function verifyResource(
     .single();
 
   if (!profile?.is_admin) {
-    return new Response(JSON.stringify({ error: "Admin access required" }), {
-      status: 403,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createErrorResponse("Admin access required", 403);
   }
 
   const { data, error } = await supabase
@@ -422,10 +438,7 @@ async function deleteResource(supabase: any, id: string, userId: string) {
     .single();
 
   if (resource.created_by !== userId && !profile?.is_admin) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 403,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createErrorResponse("Unauthorized", 403);
   }
 
   const { error } = await supabase

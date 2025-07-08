@@ -1,47 +1,58 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  corsHeaders,
+  createErrorResponse,
+  createSuccessResponse,
+  handleOptionsRequest,
+  createGenericErrorHandler,
+} from "../_shared/cors.ts";
+import {
+  validateAndCreateSupabaseClient,
+  validateRequiredEnvVars,
+  createEnvironmentError,
+  getEnvironmentConfig,
+} from "../_shared/environment.ts";
 
 serve(async (req) => {
   // Handle CORS
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleOptionsRequest();
   }
 
   try {
-    const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
-
-    if (!PAYSTACK_SECRET_KEY) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "Paystack configuration not available",
-        }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
+    // Validate required environment variables
+    const missingEnvVars = validateRequiredEnvVars([
+      "PAYSTACK_SECRET_KEY",
+      "SUPABASE_URL",
+      "SUPABASE_SERVICE_ROLE_KEY",
+    ]);
+    if (missingEnvVars.length > 0) {
+      return createEnvironmentError(missingEnvVars);
     }
 
-    const { amount, recipient, reason, reference } = await req.json();
+    const config = getEnvironmentConfig();
+    const PAYSTACK_SECRET_KEY = config.paystackSecretKey!;
+
+    // Parse and validate request body
+    let requestBody: any;
+    try {
+      requestBody = await req.json();
+    } catch (error) {
+      return createErrorResponse("Invalid JSON in request body", 400);
+    }
+
+    const { amount, recipient, reason, reference } = requestBody;
 
     if (!amount || !recipient || !reason || !reference) {
-      throw new Error(
+      return createErrorResponse(
         "Missing required parameters: amount, recipient, reason, reference",
+        400,
+        { required: ["amount", "recipient", "reason", "reference"] },
       );
     }
 
     // Initialize Supabase client
-    const supabase = createClient(
-      config.supabaseUrl,
-      config.supabaseServiceKey,
-    );
+    const supabase = validateAndCreateSupabaseClient();
 
     // Initiate transfer with Paystack
     const transferResponse = await fetch("https://api.paystack.co/transfer", {

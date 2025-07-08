@@ -1,11 +1,16 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  corsHeaders,
+  createErrorResponse,
+  createSuccessResponse,
+  handleOptionsRequest,
+  createGenericErrorHandler,
+} from "../_shared/cors.ts";
+import {
+  validateAndCreateSupabaseClient,
+  validateRequiredEnvVars,
+  createEnvironmentError,
+} from "../_shared/environment.ts";
 
 interface SearchFilters {
   query?: string;
@@ -43,26 +48,46 @@ interface SearchResult {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleOptionsRequest();
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    );
+    // Validate environment variables
+    const missingEnvVars = validateRequiredEnvVars([
+      "SUPABASE_URL",
+      "SUPABASE_SERVICE_ROLE_KEY",
+    ]);
+    if (missingEnvVars.length > 0) {
+      return createEnvironmentError(missingEnvVars);
+    }
+
+    const supabase = validateAndCreateSupabaseClient();
     const url = new URL(req.url);
     const action = url.searchParams.get("action");
 
     switch (req.method) {
       case "POST":
         if (action === "search") {
-          const filters: SearchFilters = await req.json();
+          let filters: SearchFilters;
+          try {
+            filters = await req.json();
+          } catch (error) {
+            return createErrorResponse("Invalid JSON in request body", 400);
+          }
           return await performAdvancedSearch(supabase, filters);
         } else if (action === "index") {
           return await rebuildSearchIndex(supabase);
         } else if (action === "suggestions") {
-          const { query } = await req.json();
+          let requestBody: any;
+          try {
+            requestBody = await req.json();
+          } catch (error) {
+            return createErrorResponse("Invalid JSON in request body", 400);
+          }
+          const { query } = requestBody;
+          if (!query) {
+            return createErrorResponse("Query parameter is required", 400);
+          }
           return await getSearchSuggestions(supabase, query);
         }
         break;
@@ -80,16 +105,12 @@ serve(async (req) => {
         break;
     }
 
-    return new Response(JSON.stringify({ error: "Invalid action" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    return createErrorResponse("Invalid action or method", 400, {
+      method: req.method,
+      action,
     });
   } catch (error) {
-    console.error("Search error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createGenericErrorHandler("advanced-search")(error);
   }
 });
 

@@ -1,11 +1,16 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  corsHeaders,
+  createErrorResponse,
+  createSuccessResponse,
+  handleOptionsRequest,
+  createGenericErrorHandler,
+} from "../_shared/cors.ts";
+import {
+  validateAndCreateSupabaseClient,
+  validateRequiredEnvVars,
+  createEnvironmentError,
+} from "../_shared/environment.ts";
 
 interface CommitRequest {
   transactionId?: string;
@@ -14,52 +19,69 @@ interface CommitRequest {
 }
 
 serve(async (req) => {
-  // Handle CORS
+  // Handle CORS preflight
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleOptionsRequest();
   }
 
   try {
-    // Initialize Supabase client with service role for admin operations
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    );
+    // Validate environment variables
+    const missingEnvVars = validateRequiredEnvVars([
+      "SUPABASE_URL",
+      "SUPABASE_SERVICE_ROLE_KEY",
+    ]);
+    if (missingEnvVars.length > 0) {
+      return createEnvironmentError(missingEnvVars);
+    }
 
-    const { transactionId, orderId, sellerId }: CommitRequest =
-      await req.json();
+    // Initialize Supabase client
+    const supabase = validateAndCreateSupabaseClient();
+
+    // Parse and validate request body
+    let requestBody: CommitRequest;
+    try {
+      requestBody = await req.json();
+    } catch (error) {
+      return createErrorResponse("Invalid JSON in request body", 400);
+    }
+
+    const { transactionId, orderId, sellerId } = requestBody;
 
     if (!sellerId) {
-      throw new Error("Seller ID is required");
+      return createErrorResponse("Seller ID is required", 400);
     }
 
     if (!transactionId && !orderId) {
-      throw new Error("Either transactionId or orderId is required");
+      return createErrorResponse(
+        "Either transactionId or orderId is required",
+        400,
+      );
     }
-
-    // Initialize Supabase client with service role key for admin operations
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     // Get JWT token from request for user authentication
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      throw new Error("Authorization header is required");
+      return createErrorResponse("Authorization header is required", 401);
     }
 
     // Verify the user making the request
-    const userClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     const {
       data: { user },
       error: authError,
-    } = await userClient.auth.getUser(authHeader.replace("Bearer ", ""));
+    } = await supabase.auth.getUser(authHeader.replace("Bearer ", ""));
 
     if (authError || !user) {
-      throw new Error("Invalid authentication token");
+      return createErrorResponse("Invalid authentication token", 401, {
+        authError: authError?.message,
+      });
     }
 
     // Security: Verify the seller ID matches the authenticated user
     if (user.id !== sellerId) {
-      throw new Error("Unauthorized: You can only commit to your own sales");
+      return createErrorResponse(
+        "Unauthorized: You can only commit to your own sales",
+        403,
+      );
     }
 
     // Find the order
@@ -72,8 +94,10 @@ serve(async (req) => {
       .single();
 
     if (orderError || !order) {
-      throw new Error(
+      return createErrorResponse(
         "Order not found, or you don't have permission to commit this sale",
+        404,
+        { orderError: orderError?.message, orderIdUsed: orderIdToUse },
       );
     }
 
@@ -81,21 +105,18 @@ serve(async (req) => {
 
     // Check if already ready for payout (committed)
     if (order.status === "ready_for_payout") {
-      return new Response(
-        JSON.stringify({
-          success: true,
-          message: "Sale already committed",
-          data: order,
-        }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
+      return createSuccessResponse({
+        message: "Sale already committed",
+        order: order,
+      });
     }
 
     // Check current status - should be 'paid'
     if (order.status !== "paid") {
-      throw new Error(`Cannot commit sale with status: ${order.status}`);
+      return createErrorResponse(
+        `Cannot commit sale with status: ${order.status}`,
+        400,
+      );
     }
 
     const now = new Date();
@@ -114,7 +135,11 @@ serve(async (req) => {
 
     if (updateError) {
       console.error("Error updating record:", updateError);
-      throw new Error(`Failed to commit sale: ${updateError.message}`);
+      return createErrorResponse(
+        `Failed to commit sale: ${updateError.message}`,
+        500,
+        { updateError },
+      );
     }
 
     console.log("✅ Sale committed successfully:", updatedRecord.id);
@@ -163,31 +188,13 @@ serve(async (req) => {
     // TODO: Trigger courier booking if integrated
     // await triggerCourierBooking(updatedRecord);
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message:
-          "Sale committed successfully! Please prepare your book for collection.",
-        data: updatedRecord,
-        notifications_sent: true,
-      }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    return createSuccessResponse({
+      message:
+        "Sale committed successfully! Please prepare your book for collection.",
+      order: updatedRecord,
+      notifications_sent: true,
+    });
   } catch (error) {
-    console.error("Error in commit-to-sale function:", error);
-
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error: error.message || "Failed to commit sale",
-        details: error instanceof Error ? error.stack : undefined,
-      }),
-      {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    return createGenericErrorHandler("commit-to-sale")(error);
   }
 });

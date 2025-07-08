@@ -1,11 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  corsHeaders,
+  createErrorResponse,
+  createSuccessResponse,
+  handleOptionsRequest,
+  createGenericErrorHandler,
+} from "../_shared/cors.ts";
 
 interface FastwayQuoteRequest {
   collection_postcode: string;
@@ -31,13 +31,20 @@ interface FastwayQuoteResponse {
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleOptionsRequest();
   }
 
   try {
     console.log("Fastway Quote API called");
 
-    const requestData: FastwayQuoteRequest = await req.json();
+    // Parse and validate request body
+    let requestData: FastwayQuoteRequest;
+    try {
+      requestData = await req.json();
+    } catch (error) {
+      return createErrorResponse("Invalid JSON in request body", 400);
+    }
+
     console.log("Quote request:", requestData);
 
     // Validate required fields
@@ -46,15 +53,9 @@ serve(async (req) => {
       !requestData.delivery_postcode ||
       !requestData.weight
     ) {
-      return new Response(
-        JSON.stringify({
-          error:
-            "Missing required fields: collection_postcode, delivery_postcode, weight",
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+      return createErrorResponse(
+        "Missing required fields: collection_postcode, delivery_postcode, weight",
+        400,
       );
     }
 
@@ -159,18 +160,7 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error in fastway-quote function:", error);
-
-    return new Response(
-      JSON.stringify({
-        error: "Internal server error",
-        quotes: generateFallbackQuotes(1), // Default weight
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    return createGenericErrorHandler("fastway-quote")(error);
   }
 });
 

@@ -1,22 +1,41 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  corsHeaders,
+  createErrorResponse,
+  createSuccessResponse,
+  handleOptionsRequest,
+  createGenericErrorHandler,
+} from "../_shared/cors.ts";
+import {
+  validateAndCreateSupabaseClient,
+  validateRequiredEnvVars,
+  createEnvironmentError,
+} from "../_shared/environment.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleOptionsRequest();
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    );
+    // Validate environment variables
+    const missingEnvVars = validateRequiredEnvVars([
+      "SUPABASE_URL",
+      "SUPABASE_SERVICE_ROLE_KEY",
+    ]);
+    if (missingEnvVars.length > 0) {
+      return createEnvironmentError(missingEnvVars);
+    }
+
+    const supabase = validateAndCreateSupabaseClient();
+    // Parse and validate request body
+    let requestBody: any;
+    try {
+      requestBody = await req.json();
+    } catch (error) {
+      return createErrorResponse("Invalid JSON in request body", 400);
+    }
+
     const {
       buyer_email,
       seller_id,
@@ -29,27 +48,33 @@ serve(async (req) => {
       shipping_address,
       seller_subaccount_code,
       metadata = {},
-    } = await req.json();
+    } = requestBody;
 
     // Validate required fields
+    const requiredFields = {
+      buyer_email,
+      seller_id,
+      paystack_reference,
+      total_amount,
+    };
+    const missingFields = Object.entries(requiredFields)
+      .filter(([_, value]) => !value)
+      .map(([key, _]) => key);
+
     if (
-      !buyer_email ||
-      !seller_id ||
+      missingFields.length > 0 ||
       !items ||
       !Array.isArray(items) ||
-      items.length === 0 ||
-      !paystack_reference ||
-      !total_amount
+      items.length === 0
     ) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "Missing required fields",
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+      const allMissing = [...missingFields];
+      if (!items || !Array.isArray(items) || items.length === 0) {
+        allMissing.push("items (must be non-empty array)");
+      }
+      return createErrorResponse(
+        `Missing required fields: ${allMissing.join(", ")}`,
+        400,
+        { missingFields: allMissing },
       );
     }
 
@@ -134,19 +159,6 @@ serve(async (req) => {
       },
     );
   } catch (error) {
-    console.error("Error in create-order function:", error);
-    return new Response(
-      JSON.stringify({
-        success: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred",
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    return createGenericErrorHandler("create-order")(error);
   }
 });

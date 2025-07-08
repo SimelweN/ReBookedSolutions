@@ -1,10 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  corsHeaders,
+  createErrorResponse,
+  createSuccessResponse,
+  handleOptionsRequest,
+  createGenericErrorHandler,
+} from "../_shared/cors.ts";
 
 interface FastwayAddress {
   company?: string;
@@ -44,13 +45,20 @@ interface FastwayShipmentRequest {
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleOptionsRequest();
   }
 
   try {
     console.log("Fastway Shipment API called");
 
-    const requestData: FastwayShipmentRequest = await req.json();
+    // Parse and validate request body
+    let requestData: FastwayShipmentRequest;
+    try {
+      requestData = await req.json();
+    } catch (error) {
+      return createErrorResponse("Invalid JSON in request body", 400);
+    }
+
     console.log("Shipment request:", requestData);
 
     // Validate required fields
@@ -59,14 +67,9 @@ serve(async (req) => {
       !requestData.delivery ||
       !requestData.parcels?.length
     ) {
-      return new Response(
-        JSON.stringify({
-          error: "Missing required fields: collection, delivery, parcels",
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+      return createErrorResponse(
+        "Missing required fields: collection, delivery, parcels",
+        400,
       );
     }
 
@@ -188,17 +191,9 @@ serve(async (req) => {
       reference: requestData.reference,
     };
 
-    return new Response(JSON.stringify({ shipment }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createSuccessResponse({ shipment });
   } catch (error) {
-    console.error("Error in fastway-shipment function:", error);
-
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createGenericErrorHandler("fastway-shipment")(error);
   }
 });
 

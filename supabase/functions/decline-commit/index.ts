@@ -1,11 +1,16 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  corsHeaders,
+  createErrorResponse,
+  createSuccessResponse,
+  handleOptionsRequest,
+  createGenericErrorHandler,
+} from "../_shared/cors.ts";
+import {
+  validateAndCreateSupabaseClient,
+  validateRequiredEnvVars,
+  createEnvironmentError,
+} from "../_shared/environment.ts";
 
 interface DeclineRequest {
   transactionId?: string;
@@ -15,53 +20,69 @@ interface DeclineRequest {
 }
 
 serve(async (req) => {
-  // Handle CORS
+  // Handle CORS preflight
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleOptionsRequest();
   }
 
   try {
-    // Initialize Supabase client with service role for admin operations
-    const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    );
+    // Validate required environment variables
+    const missingEnvVars = validateRequiredEnvVars([
+      "SUPABASE_URL",
+      "SUPABASE_SERVICE_ROLE_KEY",
+    ]);
+    if (missingEnvVars.length > 0) {
+      return createEnvironmentError(missingEnvVars);
+    }
 
-    const { transactionId, orderId, sellerId, reason }: DeclineRequest =
-      await req.json();
+    // Initialize Supabase client
+    const supabase = validateAndCreateSupabaseClient();
+
+    // Parse and validate request body
+    let requestBody: DeclineRequest;
+    try {
+      requestBody = await req.json();
+    } catch (error) {
+      return createErrorResponse("Invalid JSON in request body", 400);
+    }
+
+    const { transactionId, orderId, sellerId, reason } = requestBody;
 
     if (!sellerId) {
-      throw new Error("Seller ID is required");
+      return createErrorResponse("Seller ID is required", 400);
     }
 
     if (!transactionId && !orderId) {
-      throw new Error("Either transactionId or orderId is required");
+      return createErrorResponse(
+        "Either transactionId or orderId is required",
+        400,
+      );
     }
-
-    // Initialize Supabase client with service role key for admin operations
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     // Get JWT token from request for user authentication
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      throw new Error("Authorization header is required");
+      return createErrorResponse("Authorization header is required", 401);
     }
 
     // Verify the user making the request
-    const userClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     const {
       data: { user },
       error: authError,
-    } = await userClient.auth.getUser(authHeader.replace("Bearer ", ""));
+    } = await supabase.auth.getUser(authHeader.replace("Bearer ", ""));
 
     if (authError || !user) {
-      throw new Error("Invalid authentication token");
+      return createErrorResponse("Invalid authentication token", 401, {
+        authError: authError?.message,
+      });
     }
 
     // Security: Verify the seller ID matches the authenticated user
     if (user.id !== sellerId) {
-      throw new Error("Unauthorized: You can only decline your own sales");
+      return createErrorResponse(
+        "Unauthorized: You can only decline your own sales",
+        403,
+      );
     }
 
     // Find the order

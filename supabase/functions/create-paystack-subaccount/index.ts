@@ -1,11 +1,16 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  corsHeaders,
+  createErrorResponse,
+  createSuccessResponse,
+  handleOptionsRequest,
+  createGenericErrorHandler,
+} from "../_shared/cors.ts";
+import {
+  validateAndCreateSupabaseClient,
+  validateRequiredEnvVars,
+  createEnvironmentError,
+} from "../_shared/environment.ts";
 
 // Bank codes mapping for Paystack
 const PAYSTACK_BANK_CODES: Record<string, string> = {
@@ -36,17 +41,23 @@ function getBankCode(bankName: string): string {
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleOptionsRequest();
   }
 
   try {
     console.log("Starting subaccount creation process...");
-    console.log("Request method:", req.method);
-    console.log("Request URL:", req.url);
 
-    // Debug environment variables
-    console.log("Environment check:");
-    console.log("- PAYSTACK_SECRET_KEY present:", !!PAYSTACK_SECRET_KEY);
+    // Validate required environment variables
+    const missingEnvVars = validateRequiredEnvVars([
+      "PAYSTACK_SECRET_KEY",
+      "SUPABASE_URL",
+      "SUPABASE_SERVICE_ROLE_KEY",
+    ]);
+    if (missingEnvVars.length > 0) {
+      return createEnvironmentError(missingEnvVars);
+    }
+
+    const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY")!;
     console.log("- SUPABASE_URL present:", !!Deno.env.get("SUPABASE_URL"));
     console.log(
       "- SUPABASE_SERVICE_ROLE_KEY present:",
@@ -272,19 +283,6 @@ serve(async (req) => {
       },
     );
   } catch (error) {
-    console.error("Error in create-paystack-subaccount function:", error);
-    return new Response(
-      JSON.stringify({
-        success: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred",
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    return createGenericErrorHandler("create-paystack-subaccount")(error);
   }
 });

@@ -1,10 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  corsHeaders,
+  createErrorResponse,
+  createSuccessResponse,
+  handleOptionsRequest,
+  createGenericErrorHandler,
+} from "../_shared/cors.ts";
 
 interface DeliveryAddress {
   streetAddress: string;
@@ -22,11 +23,19 @@ interface QuoteRequest {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleOptionsRequest();
   }
 
   try {
-    const { fromAddress, toAddress, weight }: QuoteRequest = await req.json();
+    // Parse and validate request body
+    let requestBody: QuoteRequest;
+    try {
+      requestBody = await req.json();
+    } catch (error) {
+      return createErrorResponse("Invalid JSON in request body", 400);
+    }
+
+    const { fromAddress, toAddress, weight } = requestBody;
 
     console.log("Getting quotes for delivery:", {
       fromAddress,

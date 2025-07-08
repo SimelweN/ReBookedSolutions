@@ -10,6 +10,7 @@ export function createErrorResponse(
   status: number = 500,
   details?: any,
 ): Response {
+  console.error(`[ERROR ${status}] ${message}`, details);
   return new Response(
     JSON.stringify({
       success: false,
@@ -24,7 +25,10 @@ export function createErrorResponse(
   );
 }
 
-export function createSuccessResponse(data: any): Response {
+export function createSuccessResponse(
+  data: any,
+  status: number = 200,
+): Response {
   return new Response(
     JSON.stringify({
       success: true,
@@ -32,7 +36,23 @@ export function createSuccessResponse(data: any): Response {
       timestamp: new Date().toISOString(),
     }),
     {
+      status,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     },
   );
+}
+
+export function handleOptionsRequest(): Response {
+  return new Response("ok", { headers: corsHeaders });
+}
+
+export function createGenericErrorHandler(functionName: string) {
+  return (error: any): Response => {
+    console.error(`[${functionName}] Unhandled error:`, error);
+    return createErrorResponse(
+      error instanceof Error ? error.message : "An unexpected error occurred",
+      500,
+      { function: functionName, stack: error?.stack },
+    );
+  };
 }

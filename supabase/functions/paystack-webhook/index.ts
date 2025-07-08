@@ -1,95 +1,144 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  corsHeaders,
+  createErrorResponse,
+  handleOptionsRequest,
+  createGenericErrorHandler,
+} from "../_shared/cors.ts";
+import {
+  validateAndCreateSupabaseClient,
+  validateRequiredEnvVars,
+  createEnvironmentError,
+} from "../_shared/environment.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleOptionsRequest();
   }
 
   try {
     console.log("=== Paystack Webhook Received ===");
 
-    const paystackSecretKey = Deno.env.get("PAYSTACK_SECRET_KEY");
+    // Validate required environment variables
+    const missingEnvVars = validateRequiredEnvVars([
+      "PAYSTACK_SECRET_KEY",
+      "SUPABASE_URL",
+      "SUPABASE_SERVICE_ROLE_KEY",
+    ]);
+    if (missingEnvVars.length > 0) {
+      return createEnvironmentError(missingEnvVars);
+    }
 
-    if (!paystackSecretKey) {
-      return new Response("Paystack secret key not configured", {
-        status: 500,
+    const paystackSecretKey = Deno.env.get("PAYSTACK_SECRET_KEY")!;
+
+    // Parse request body
+    let body: string;
+    try {
+      body = await req.text();
+    } catch (error) {
+      return createErrorResponse("Failed to read request body", 400, {
+        error: error.message,
       });
     }
 
-    const body = await req.text();
     const signature = req.headers.get("x-paystack-signature");
+
+    if (!signature) {
+      return createErrorResponse("Missing Paystack signature header", 400);
+    }
 
     console.log("Webhook signature:", signature);
     console.log("Webhook body length:", body.length);
 
     // Create hash to verify signature using Web Crypto API
-    const encoder = new TextEncoder();
-    const keyData = encoder.encode(paystackSecretKey);
-    const bodyData = encoder.encode(body);
+    try {
+      const encoder = new TextEncoder();
+      const keyData = encoder.encode(paystackSecretKey);
+      const bodyData = encoder.encode(body);
 
-    const cryptoKey = await crypto.subtle.importKey(
-      "raw",
-      keyData,
-      { name: "HMAC", hash: "SHA-512" },
-      false,
-      ["sign"],
-    );
+      const cryptoKey = await crypto.subtle.importKey(
+        "raw",
+        keyData,
+        { name: "HMAC", hash: "SHA-512" },
+        false,
+        ["sign"],
+      );
 
-    const signatureBuffer = await crypto.subtle.sign(
-      "HMAC",
-      cryptoKey,
-      bodyData,
-    );
-    const hashArray = Array.from(new Uint8Array(signatureBuffer));
-    const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+      const signatureBuffer = await crypto.subtle.sign(
+        "HMAC",
+        cryptoKey,
+        bodyData,
+      );
+      const hashArray = Array.from(new Uint8Array(signatureBuffer));
+      const hash = hashArray
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
 
-    if (hash !== signature) {
-      console.error("Invalid webhook signature");
-      return new Response("Invalid signature", { status: 400 });
+      if (hash !== signature) {
+        console.error("Invalid webhook signature");
+        return createErrorResponse("Invalid signature", 401);
+      }
+    } catch (error) {
+      return createErrorResponse("Failed to verify signature", 500, {
+        error: error.message,
+      });
     }
 
-    const event = JSON.parse(body);
+    // Parse event data
+    let event: any;
+    try {
+      event = JSON.parse(body);
+    } catch (error) {
+      return createErrorResponse("Invalid JSON in webhook body", 400, {
+        error: error.message,
+      });
+    }
+
+    if (!event.event || !event.data) {
+      return createErrorResponse("Invalid webhook event structure", 400);
+    }
+
     console.log("Webhook event:", event.event, event.data?.reference);
 
     // Initialize Supabase client
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    );
+    const supabase = validateAndCreateSupabaseClient();
 
     // Handle different event types
-    switch (event.event) {
-      case "charge.success":
-        await handleSuccessfulPayment(supabase, event.data);
-        break;
+    try {
+      switch (event.event) {
+        case "charge.success":
+          await handleSuccessfulPayment(supabase, event.data);
+          break;
 
-      case "charge.failed":
-        await handleFailedPayment(supabase, event.data);
-        break;
+        case "charge.failed":
+          await handleFailedPayment(supabase, event.data);
+          break;
 
-      case "transfer.success":
-        console.log("Transfer successful:", event.data.reference);
-        await handleSuccessfulTransfer(supabase, event.data);
-        break;
+        case "transfer.success":
+          console.log("Transfer successful:", event.data.reference);
+          await handleSuccessfulTransfer(supabase, event.data);
+          break;
 
-      case "transfer.failed":
-        console.log(
-          "Transfer failed:",
-          event.data.reference,
-          event.data.failure_reason,
-        );
-        await handleFailedTransfer(supabase, event.data);
-        break;
+        case "transfer.failed":
+          console.log(
+            "Transfer failed:",
+            event.data.reference,
+            event.data.failure_reason,
+          );
+          await handleFailedTransfer(supabase, event.data);
+          break;
 
-      default:
-        console.log("Unhandled webhook event:", event.event);
+        default:
+          console.log("Unhandled webhook event:", event.event);
+        // Still return success for unhandled events to prevent retries
+      }
+    } catch (handlerError) {
+      console.error(`Error handling ${event.event}:`, handlerError);
+      return createErrorResponse(
+        `Failed to process ${event.event} event`,
+        500,
+        { event: event.event, error: handlerError.message },
+      );
     }
 
     return new Response("OK", {
@@ -97,11 +146,7 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "text/plain" },
     });
   } catch (error) {
-    console.error("Webhook processing error:", error);
-    return new Response("Internal server error", {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "text/plain" },
-    });
+    return createGenericErrorHandler("paystack-webhook")(error);
   }
 });
 

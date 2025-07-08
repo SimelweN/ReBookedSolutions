@@ -1,10 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  corsHeaders,
+  createErrorResponse,
+  createSuccessResponse,
+  handleOptionsRequest,
+  createGenericErrorHandler,
+} from "../_shared/cors.ts";
 
 interface FastwayTrackingEvent {
   timestamp: string;
@@ -34,23 +35,24 @@ interface FastwayTrackingResponse {
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleOptionsRequest();
   }
 
   try {
     console.log("Fastway Tracking API called");
 
-    const requestData = await req.json();
+    // Parse and validate request body
+    let requestData: any;
+    try {
+      requestData = await req.json();
+    } catch (error) {
+      return createErrorResponse("Invalid JSON in request body", 400);
+    }
+
     const trackingNumber = requestData.tracking_number;
 
     if (!trackingNumber) {
-      return new Response(
-        JSON.stringify({ error: "Missing tracking_number" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
+      return createErrorResponse("Missing tracking_number", 400);
     }
 
     console.log("Tracking request for:", trackingNumber);
@@ -136,10 +138,7 @@ serve(async (req) => {
   } catch (error) {
     console.error("Error in fastway-track function:", error);
 
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createGenericErrorHandler("fastway-track")(error);
   }
 });
 
