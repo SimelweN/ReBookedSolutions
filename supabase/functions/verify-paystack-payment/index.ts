@@ -1,10 +1,19 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { corsHeaders } from "../_shared/cors.ts";
+import { corsHeaders, createErrorResponse } from "../_shared/cors.ts";
+import {
+  getEnvironmentConfig,
+  validateRequiredEnvVars,
+  createEnvironmentError,
+} from "../_shared/environment.ts";
 
-const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+// Validate required environment variables
+const requiredVars = [
+  "SUPABASE_URL",
+  "SUPABASE_SERVICE_ROLE_KEY",
+  "PAYSTACK_SECRET_KEY",
+];
+const missingVars = validateRequiredEnvVars(requiredVars);
 
 serve(async (req) => {
   // Handle CORS
@@ -13,9 +22,13 @@ serve(async (req) => {
   }
 
   try {
-    if (!PAYSTACK_SECRET_KEY) {
-      throw new Error("Paystack secret key not configured");
+    // Check environment variables first
+    if (missingVars.length > 0) {
+      return createEnvironmentError(missingVars);
     }
+
+    const config = getEnvironmentConfig();
+    const PAYSTACK_SECRET_KEY = config.paystackSecretKey!;
 
     const { reference } = await req.json();
 
@@ -43,7 +56,10 @@ serve(async (req) => {
     const { data } = paymentData;
 
     // Initialize Supabase client
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const supabase = createClient(
+      config.supabaseUrl,
+      config.supabaseServiceKey,
+    );
 
     if (data.status === "success") {
       // Get the order first to ensure we have seller_id

@@ -1,7 +1,13 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { corsHeaders } from "../_shared/cors.ts";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { corsHeaders, createErrorResponse } from "../_shared/cors.ts";
+import {
+  validateRequiredEnvVars,
+  createEnvironmentError,
+} from "../_shared/environment.ts";
 
-const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
+// Validate required environment variables
+const requiredVars = ["PAYSTACK_SECRET_KEY"];
+const missingVars = validateRequiredEnvVars(requiredVars);
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -10,19 +16,12 @@ serve(async (req) => {
   }
 
   try {
-    if (!PAYSTACK_SECRET_KEY) {
-      console.error("PAYSTACK_SECRET_KEY environment variable is not set");
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "Payment service configuration error",
-        }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
+    // Check environment variables first
+    if (missingVars.length > 0) {
+      return createEnvironmentError(missingVars);
     }
+
+    const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY")!;
 
     const {
       email,

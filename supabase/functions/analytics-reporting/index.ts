@@ -1,9 +1,15 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { corsHeaders } from "../_shared/cors.ts";
+import { corsHeaders, createErrorResponse } from "../_shared/cors.ts";
+import {
+  getEnvironmentConfig,
+  validateRequiredEnvVars,
+  createEnvironmentError,
+} from "../_shared/environment.ts";
 
-const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+// Validate required environment variables
+const requiredVars = ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"];
+const missingVars = validateRequiredEnvVars(requiredVars);
 
 interface AnalyticsQuery {
   metric: string;
@@ -19,7 +25,16 @@ serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    // Check environment variables first
+    if (missingVars.length > 0) {
+      return createEnvironmentError(missingVars);
+    }
+
+    const config = getEnvironmentConfig();
+    const supabase = createClient(
+      config.supabaseUrl,
+      config.supabaseServiceKey,
+    );
 
     // Get auth user and verify admin access
     const authHeader = req.headers.get("Authorization")!;
