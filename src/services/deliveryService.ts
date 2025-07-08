@@ -29,27 +29,36 @@ export const getDeliveryQuotes = async (
       weight,
     });
 
-    const { data, error } = await supabase.functions.invoke(
-      "get-delivery-quotes",
-      {
-        body: {
-          fromAddress,
-          toAddress,
-          weight,
+    const result = await functionFallback.callFunction("get-delivery-quotes", {
+      pickup_address: fromAddress,
+      delivery_address: toAddress,
+      weight,
+    });
+
+    if (result.success) {
+      console.log("Delivery quotes received:", result.data);
+      return result.data?.quotes || [];
+    } else {
+      console.error("Error getting delivery quotes:", result.error);
+      // Return basic fallback quotes
+      return [
+        {
+          courier: "fastway",
+          price: 85,
+          estimatedDays: 3,
+          serviceName: "Fastway Standard",
         },
-      },
-    );
-
-    if (error) {
-      console.error("Error getting delivery quotes:", error);
-      throw error;
+        {
+          courier: "courier-guy",
+          price: 95,
+          estimatedDays: 2,
+          serviceName: "Courier Guy Express",
+        },
+      ];
     }
-
-    console.log("Delivery quotes received:", data);
-    return data.quotes || [];
   } catch (error) {
     console.error("Error in getDeliveryQuotes:", error);
-    // Return fallback quotes if API fails
+    // Return fallback quotes if everything fails
     return [
       {
         courier: "fastway",
