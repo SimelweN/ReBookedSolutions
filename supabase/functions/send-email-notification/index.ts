@@ -97,14 +97,15 @@ serve(async (req) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Sender.net API error:", errorText);
+      console.error(`${apiUsed} API error:`, errorText);
 
       // Return success anyway for demo purposes
       return new Response(
         JSON.stringify({
           success: true,
-          message: "Email sending failed, but simulated for demo",
+          message: `Email sending failed via ${apiUsed}, but simulated for demo`,
           error: errorText,
+          api: apiUsed,
           details: { to, subject, from },
         }),
         {
@@ -115,13 +116,14 @@ serve(async (req) => {
     }
 
     const result = await response.json();
-    console.log("✅ Email sent successfully via Sender.net:", { to, subject });
+    console.log(`✅ Email sent successfully via ${apiUsed}:`, { to, subject });
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Email sent successfully",
+        message: `Email sent successfully via ${apiUsed}`,
         data: result,
+        api: apiUsed,
         details: { to, subject, from },
       }),
       {
