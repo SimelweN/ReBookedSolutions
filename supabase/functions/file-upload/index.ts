@@ -1,11 +1,16 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  corsHeaders,
+  createErrorResponse,
+  createSuccessResponse,
+  handleOptionsRequest,
+  createGenericErrorHandler,
+} from "../_shared/cors.ts";
+import {
+  validateAndCreateSupabaseClient,
+  validateRequiredEnvVars,
+  createEnvironmentError,
+} from "../_shared/environment.ts";
 
 // File type configurations
 const FILE_CONFIGS = {
@@ -49,18 +54,28 @@ const FILE_CONFIGS = {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleOptionsRequest();
   }
 
   try {
-    // Initialize Supabase client with service role for admin operations
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    );
+    // Validate environment variables
+    const missingEnvVars = validateRequiredEnvVars([
+      "SUPABASE_URL",
+      "SUPABASE_SERVICE_ROLE_KEY",
+    ]);
+    if (missingEnvVars.length > 0) {
+      return createEnvironmentError(missingEnvVars);
+    }
+
+    // Initialize Supabase client
+    const supabase = validateAndCreateSupabaseClient();
 
     // Get auth user
-    const authHeader = req.headers.get("Authorization")!;
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return createErrorResponse("Authorization header is required", 401);
+    }
+
     const token = authHeader.replace("Bearer ", "");
     const {
       data: { user },
@@ -68,9 +83,8 @@ serve(async (req) => {
     } = await supabase.auth.getUser(token);
 
     if (authError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      return createErrorResponse("Unauthorized", 401, {
+        authError: authError?.message,
       });
     }
 
