@@ -31,46 +31,77 @@ serve(async (req) => {
 
     const paystackSecretKey = Deno.env.get("PAYSTACK_SECRET_KEY")!;
 
-    const body = await req.text();
+    // Parse request body
+    let body: string;
+    try {
+      body = await req.text();
+    } catch (error) {
+      return createErrorResponse("Failed to read request body", 400, {
+        error: error.message,
+      });
+    }
+
     const signature = req.headers.get("x-paystack-signature");
+
+    if (!signature) {
+      return createErrorResponse("Missing Paystack signature header", 400);
+    }
 
     console.log("Webhook signature:", signature);
     console.log("Webhook body length:", body.length);
 
     // Create hash to verify signature using Web Crypto API
-    const encoder = new TextEncoder();
-    const keyData = encoder.encode(paystackSecretKey);
-    const bodyData = encoder.encode(body);
+    try {
+      const encoder = new TextEncoder();
+      const keyData = encoder.encode(paystackSecretKey);
+      const bodyData = encoder.encode(body);
 
-    const cryptoKey = await crypto.subtle.importKey(
-      "raw",
-      keyData,
-      { name: "HMAC", hash: "SHA-512" },
-      false,
-      ["sign"],
-    );
+      const cryptoKey = await crypto.subtle.importKey(
+        "raw",
+        keyData,
+        { name: "HMAC", hash: "SHA-512" },
+        false,
+        ["sign"],
+      );
 
-    const signatureBuffer = await crypto.subtle.sign(
-      "HMAC",
-      cryptoKey,
-      bodyData,
-    );
-    const hashArray = Array.from(new Uint8Array(signatureBuffer));
-    const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+      const signatureBuffer = await crypto.subtle.sign(
+        "HMAC",
+        cryptoKey,
+        bodyData,
+      );
+      const hashArray = Array.from(new Uint8Array(signatureBuffer));
+      const hash = hashArray
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
 
-    if (hash !== signature) {
-      console.error("Invalid webhook signature");
-      return new Response("Invalid signature", { status: 400 });
+      if (hash !== signature) {
+        console.error("Invalid webhook signature");
+        return createErrorResponse("Invalid signature", 401);
+      }
+    } catch (error) {
+      return createErrorResponse("Failed to verify signature", 500, {
+        error: error.message,
+      });
     }
 
-    const event = JSON.parse(body);
+    // Parse event data
+    let event: any;
+    try {
+      event = JSON.parse(body);
+    } catch (error) {
+      return createErrorResponse("Invalid JSON in webhook body", 400, {
+        error: error.message,
+      });
+    }
+
+    if (!event.event || !event.data) {
+      return createErrorResponse("Invalid webhook event structure", 400);
+    }
+
     console.log("Webhook event:", event.event, event.data?.reference);
 
     // Initialize Supabase client
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    );
+    const supabase = validateAndCreateSupabaseClient();
 
     // Handle different event types
     switch (event.event) {
