@@ -65,9 +65,33 @@ const DevDashboard = React.lazy(() => import("./pages/DevDashboard"));
 const LoadingSpinner = () => <LoadingFallback type="compact" />;
 
 function App() {
+  const [systemReady, setSystemReady] = React.useState(false);
+  const [showStartupChecker, setShowStartupChecker] = React.useState(false);
+
+  React.useEffect(() => {
+    // Check if system needs setup
+    const envValid = validateEnvironment();
+
+    // In development, always show startup checker if env is not valid
+    // In production, only show if critical services are missing
+    if (!envValid && import.meta.env.DEV) {
+      setShowStartupChecker(true);
+    } else {
+      setSystemReady(true);
+    }
+  }, []);
+
+  const handleStartupComplete = () => {
+    setShowStartupChecker(false);
+    setSystemReady(true);
+  };
+
   return (
     <>
       <NoScriptFallback />
+      {showStartupChecker && (
+        <StartupChecker onComplete={handleStartupComplete} />
+      )}
       <ErrorBoundary level="app">
         <ThemeProvider attribute="class" defaultTheme="light">
           <GoogleMapsProvider>
