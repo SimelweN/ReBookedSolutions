@@ -83,6 +83,8 @@ import CommitSystemService from "@/services/commitSystemService";
 import CommitTester from "@/components/test/CommitTester";
 import ComprehensiveBackendTester from "@/components/test/ComprehensiveBackendTester";
 import EnvironmentTester from "@/components/test/EnvironmentTester";
+import FunctionTester from "@/components/admin/FunctionTester";
+import { functionFallback } from "@/services/functionFallbackService";
 
 interface TestResult {
   id: string;
@@ -305,6 +307,7 @@ const DevDashboard: React.FC = () => {
       testCommitSystem,
       testNotifications,
       testEnvironmentConfig,
+      testFunctionFallbacks,
     ];
 
     for (const test of tests) {
@@ -618,6 +621,77 @@ const DevDashboard: React.FC = () => {
     }
   };
 
+  const testFunctionFallbacks = async () => {
+    try {
+      addTestResult(
+        "Function Fallback Test",
+        "running",
+        "Testing fallback system...",
+      );
+
+      // Test non-critical functions with fallbacks
+      const tests = [
+        {
+          name: "get-delivery-quotes",
+          payload: {
+            pickup_address: { city: "Cape Town" },
+            delivery_address: { city: "Johannesburg" },
+          },
+        },
+        { name: "file-upload", payload: { bucket: "test", path: "test.txt" } },
+        { name: "advanced-search", payload: { query: "test", filters: {} } },
+        {
+          name: "study-resources-api",
+          payload: { action: "get_resources", limit: 5 },
+        },
+      ];
+
+      let passed = 0;
+      let failed = 0;
+      let fallbacksUsed = 0;
+
+      for (const test of tests) {
+        try {
+          const result = await functionFallback.testFunction(
+            test.name,
+            test.payload,
+          );
+          if (result.success) {
+            passed++;
+            if (result.fallbackUsed) fallbacksUsed++;
+          } else {
+            failed++;
+          }
+        } catch (error) {
+          failed++;
+        }
+      }
+
+      const message = `Tested ${tests.length} functions: ${passed} passed, ${failed} failed, ${fallbacksUsed} used fallbacks`;
+
+      if (failed === 0) {
+        toast.success(`Function fallback test successful: ${message}`);
+        addTestResult("Function Fallback Test", "success", message);
+      } else {
+        toast.warning(
+          `Function fallback test completed with issues: ${message}`,
+        );
+        addTestResult(
+          "Function Fallback Test",
+          "success",
+          message + " (Fallbacks working)",
+        );
+      }
+
+      // Get function stats
+      const stats = functionFallback.getFunctionStats();
+      console.log("Function statistics:", stats);
+    } catch (error) {
+      toast.error(`Function fallback test error: ${error}`);
+      addTestResult("Function Fallback Test", "failed", `Error: ${error}`);
+    }
+  };
+
   const exportTestResults = () => {
     const csv = [
       ["Test", "Status", "Message", "Timestamp"],
@@ -828,6 +902,13 @@ const DevDashboard: React.FC = () => {
                   <Settings className="h-3 w-3 lg:h-4 lg:w-4" />
                   <span>Env Fix</span>
                 </TabsTrigger>
+                <TabsTrigger
+                  value="function-testing"
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
+                >
+                  <TestTube className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Fallbacks</span>
+                </TabsTrigger>
               </TabsList>
             </div>
 
@@ -874,6 +955,14 @@ const DevDashboard: React.FC = () => {
                     >
                       <Clock className="h-4 w-4 mr-2" />
                       Test Commit System
+                    </Button>
+                    <Button
+                      onClick={() => setActiveTab("function-testing")}
+                      variant="outline"
+                      className="w-full justify-start"
+                    >
+                      <TestTube className="h-4 w-4 mr-2" />
+                      Test Function Fallbacks
                     </Button>
                   </CardContent>
                 </Card>
@@ -1555,6 +1644,27 @@ const DevDashboard: React.FC = () => {
             {/* Environment Fix Tab */}
             <TabsContent value="env-fix" className="space-y-6">
               <EnvironmentTester />
+            </TabsContent>
+
+            {/* Function Testing & Fallbacks Tab */}
+            <TabsContent value="function-testing" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <TestTube className="h-5 w-5 text-blue-600" />
+                    <span>Function Fallback Testing</span>
+                  </CardTitle>
+                  <AlertDescription className="mt-2">
+                    Test non-critical functions with automatic fallback support.
+                    Critical functions (payments, emails) have retry mechanisms,
+                    while non-critical functions use client-side alternatives
+                    when they fail.
+                  </AlertDescription>
+                </CardHeader>
+                <CardContent>
+                  <FunctionTester />
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
         </div>

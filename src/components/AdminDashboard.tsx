@@ -59,6 +59,7 @@ import AdminMobileLayout from "@/components/admin/AdminMobileLayout";
 import ProgramReview from "@/components/admin/ProgramReview";
 import DatabaseTest from "@/components/admin/DatabaseTest";
 import QADashboard from "@/components/admin/QADashboard";
+import FunctionTester from "@/components/admin/FunctionTester";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -757,7 +758,7 @@ const AdminDashboard = () => {
           onValueChange={setSelectedTab}
           className="space-y-6"
         >
-          <TabsList className="grid grid-cols-3 lg:grid-cols-7 w-full bg-white shadow-sm border">
+          <TabsList className="grid grid-cols-3 lg:grid-cols-8 w-full bg-white shadow-sm border">
             <TabsTrigger
               value="overview"
               className="flex items-center space-x-2"
@@ -786,6 +787,13 @@ const AdminDashboard = () => {
             >
               <BarChart3 className="h-4 w-4" />
               <span>Analytics</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="functions"
+              className="flex items-center space-x-2"
+            >
+              <TestTube className="h-4 w-4" />
+              <span>Functions</span>
             </TabsTrigger>
             <TabsTrigger value="qa" className="flex items-center space-x-2">
               <Shield className="h-4 w-4" />
@@ -1187,6 +1195,11 @@ const AdminDashboard = () => {
           {/* Programs Tab */}
           <TabsContent value="programs" className="space-y-6">
             <ProgramReview />
+          </TabsContent>
+
+          {/* Functions Tab */}
+          <TabsContent value="functions" className="space-y-6">
+            <FunctionTester />
           </TabsContent>
 
           {/* QA Testing Tab */}
