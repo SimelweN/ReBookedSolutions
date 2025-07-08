@@ -81,7 +81,6 @@ import { SimpleEmailTest } from "@/components/test/SimpleEmailTest";
 import Layout from "@/components/Layout";
 import AdminMobileLayout from "@/components/admin/AdminMobileLayout";
 import CommitSystemService from "@/services/commitSystemService";
-import EmailTester from "@/components/test/EmailTester";
 import CommitTester from "@/components/test/CommitTester";
 import ComprehensiveBackendTester from "@/components/test/ComprehensiveBackendTester";
 import EnvironmentTester from "@/components/test/EnvironmentTester";
