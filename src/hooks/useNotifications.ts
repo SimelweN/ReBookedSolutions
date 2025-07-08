@@ -118,10 +118,23 @@ export const useNotifications = (): UseNotificationsResult => {
       if (!notification) return;
 
       // Try order_notifications table first
+      // Try with updated_at first, fallback without it if column doesn't exist
       let { error } = await supabase
         .from("order_notifications")
-        .update({ read: true })
+        .update({ read: true, updated_at: new Date().toISOString() })
         .eq("id", notificationId);
+
+      // If error is about updated_at column, retry without it
+      if (error && error.message?.includes("updated_at")) {
+        console.warn(
+          "updated_at column not found in order_notifications, retrying without it",
+        );
+        const { error: retryError } = await supabase
+          .from("order_notifications")
+          .update({ read: true })
+          .eq("id", notificationId);
+        error = retryError;
+      }
 
       // If that fails, try regular notifications table
       if (
