@@ -397,6 +397,14 @@ export class FunctionFallbackService {
           fallbackResult = await this.getDeliveryQuotesFallback(payload);
           break;
 
+        case "courier-guy-shipment":
+        case "fastway-shipment":
+          fallbackResult = await this.createShipmentFallback(
+            functionName,
+            payload,
+          );
+          break;
+
         case "file-upload":
           fallbackResult = await this.fileUploadFallback(payload);
           break;
@@ -412,6 +420,18 @@ export class FunctionFallbackService {
         case "courier-guy-track":
         case "fastway-track":
           fallbackResult = await this.trackingFallback(functionName, payload);
+          break;
+
+        case "realtime-notifications":
+          fallbackResult = await this.notificationsFallback(payload);
+          break;
+
+        case "dispute-resolution":
+          fallbackResult = await this.disputeResolutionFallback(payload);
+          break;
+
+        case "mark-collected":
+          fallbackResult = await this.markCollectedFallback(payload);
           break;
 
         default:
