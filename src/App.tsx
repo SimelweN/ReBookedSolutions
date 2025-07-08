@@ -64,13 +64,15 @@ const LoadingSpinner = () => <LoadingFallback type="compact" />;
 
 function App() {
   return (
-    <ErrorBoundary level="app">
-      <ThemeProvider attribute="class" defaultTheme="light">
-        <GoogleMapsProvider>
-          <AuthProvider>
-            <CartProvider>
-              <Router>
-                <div className="min-h-screen bg-white">
+    <>
+      <NoScriptFallback />
+      <ErrorBoundary level="app">
+        <ThemeProvider attribute="class" defaultTheme="light">
+          <GoogleMapsProvider>
+            <AuthProvider>
+              <CartProvider>
+                <Router>
+                  <div className="min-h-screen bg-white">
                   <Suspense fallback={<LoadingSpinner />}>
                     <Routes>
                       {/* Home route */}
