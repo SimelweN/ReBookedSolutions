@@ -883,6 +883,14 @@ const DevDashboard: React.FC = () => {
                       <Clock className="h-4 w-4 mr-2" />
                       Test Commit System
                     </Button>
+                    <Button
+                      onClick={() => setActiveTab("function-testing")}
+                      variant="outline"
+                      className="w-full justify-start"
+                    >
+                      <TestTube className="h-4 w-4 mr-2" />
+                      Test Function Fallbacks
+                    </Button>
                   </CardContent>
                 </Card>
 
