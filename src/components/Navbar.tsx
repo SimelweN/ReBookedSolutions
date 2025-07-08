@@ -19,6 +19,7 @@ import CartButton from "./CartButton";
 import NotificationBell from "./NotificationBell";
 import { toast } from "sonner";
 import { preloadOnHover } from "@/utils/routePreloader";
+import { handleProfileImageError } from "@/utils/fallbackHelpers";
 
 const Navbar = () => {
   const { user, logout, isAuthenticated, profile } = useAuth();
