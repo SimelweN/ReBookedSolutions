@@ -201,7 +201,7 @@ const FUNCTION_TESTS: FunctionTestConfig[] = [
     category: "tracking",
     description: "Test Courier Guy tracking",
     testPayload: {
-      tracking_number: "TEST123456789",
+      tracking_number: "CG12345678",
     },
   },
   {
@@ -210,7 +210,96 @@ const FUNCTION_TESTS: FunctionTestConfig[] = [
     category: "tracking",
     description: "Test Fastway tracking",
     testPayload: {
-      tracking_number: "FW123456789",
+      tracking_number: "FW12345678",
+    },
+  },
+
+  // Shipment functions
+  {
+    name: "courier-guy-shipment",
+    displayName: "Courier Guy Shipment",
+    category: "delivery",
+    description: "Test Courier Guy shipment creation",
+    testPayload: {
+      pickup_address: { city: "Cape Town", province: "Western Cape" },
+      delivery_address: { city: "Johannesburg", province: "Gauteng" },
+      rate: 85,
+      weight: 1.5,
+    },
+  },
+  {
+    name: "fastway-shipment",
+    displayName: "Fastway Shipment",
+    category: "delivery",
+    description: "Test Fastway shipment creation",
+    testPayload: {
+      pickup_address: { city: "Durban", province: "KwaZulu-Natal" },
+      delivery_address: { city: "Cape Town", province: "Western Cape" },
+      rate: 75,
+      weight: 2.0,
+    },
+  },
+
+  // Notification functions
+  {
+    name: "realtime-notifications",
+    displayName: "Real-time Notifications",
+    category: "notifications",
+    description: "Test notification system",
+    testPayload: {
+      action: "create",
+      user_id: "test-user",
+      title: "Test Notification",
+      message: "This is a test notification from fallback system",
+      type: "info",
+    },
+  },
+
+  // Order management
+  {
+    name: "mark-collected",
+    displayName: "Mark Collected",
+    category: "orders",
+    description: "Test marking order as collected",
+    testPayload: {
+      order_id: "order_123",
+      tracking_number: "TRK123456789",
+    },
+  },
+  {
+    name: "dispute-resolution",
+    displayName: "Dispute Resolution",
+    category: "orders",
+    description: "Test dispute creation and handling",
+    testPayload: {
+      action: "create",
+      order_id: "order_123",
+      user_id: "user_123",
+      type: "item_not_received",
+      description: "Test dispute for fallback system",
+    },
+  },
+
+  // Automation functions
+  {
+    name: "email-automation",
+    displayName: "Email Automation",
+    category: "automation",
+    description: "Test automated email workflows",
+    testPayload: {
+      trigger: "order_status_change",
+      user_id: "test-user",
+      order_id: "order_123",
+    },
+  },
+  {
+    name: "analytics-reporting",
+    displayName: "Analytics Reporting",
+    category: "automation",
+    description: "Test analytics data collection",
+    testPayload: {
+      report_type: "daily_summary",
+      date_range: "7d",
     },
   },
 ];
