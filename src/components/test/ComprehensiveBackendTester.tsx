@@ -32,7 +32,6 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { BackendOrchestrator } from "@/services/comprehensive/backendOrchestrator";
-import { EmailTester } from "./EmailTester";
 
 interface BackendTest {
   id: string;
@@ -773,21 +772,6 @@ const ComprehensiveBackendTester = () => {
           )}
         </CardContent>
       </Card>
-
-      {/* Email Service Testing */}
-      <div id="email-tester-section">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Mail className="h-5 w-5" />
-              Email Service Testing
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <EmailTester />
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 };
