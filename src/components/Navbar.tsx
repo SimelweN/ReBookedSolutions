@@ -63,7 +63,7 @@ const Navbar = () => {
               </div>
               <span className="text-lg sm:text-xl font-bold text-book-600 truncate">
                 <span className="hidden sm:inline">ReBooked Solutions</span>
-                <span className="sm:hidden">ReBooked Solutions</span>
+                <span className="sm:hidden">ReBooked</span>
               </span>
             </Link>
           </div>
