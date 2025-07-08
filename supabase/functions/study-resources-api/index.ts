@@ -38,33 +38,23 @@ serve(async (req) => {
   }
 
   try {
-    // Check environment variables first
-    if (missingVars.length > 0) {
-      return createEnvironmentError(missingVars);
-    }
-
-    const config = getEnvironmentConfig();
-    const supabase = createClient(
-      config.supabaseUrl,
-      config.supabaseServiceKey,
+    // Initialize Supabase client with service role for admin operations
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
+
     const url = new URL(req.url);
     const path = url.pathname.split("/").pop();
     const method = req.method;
 
-    // Get auth user
-    const authHeader = req.headers.get("Authorization")!;
-    const token = authHeader.replace("Bearer ", "");
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser(token);
-
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    // For write operations, get auth user if authorization header is provided
+    let user = null;
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader && method !== "GET") {
+      const token = authHeader.replace("Bearer ", "");
+      const authResult = await supabaseClient.auth.getUser(token);
+      user = authResult.data?.user || null;
     }
 
     const action = url.searchParams.get("action");
