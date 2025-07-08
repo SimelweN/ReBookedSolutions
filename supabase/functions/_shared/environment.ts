@@ -1,4 +1,5 @@
-import { corsHeaders } from "./cors.ts";
+import { corsHeaders, createErrorResponse } from "./cors.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 export interface EnvironmentConfig {
   supabaseUrl: string;
@@ -46,16 +47,29 @@ export function validateRequiredEnvVars(requiredVars: string[]): string[] {
 }
 
 export function createEnvironmentError(missingVars: string[]): Response {
-  return new Response(
-    JSON.stringify({
-      success: false,
-      error: "Environment configuration error",
-      message: `Missing required environment variables: ${missingVars.join(", ")}`,
-      missingVariables: missingVars,
-    }),
-    {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    },
+  return createErrorResponse(
+    `Missing required environment variables: ${missingVars.join(", ")}`,
+    500,
+    { missingVariables: missingVars },
   );
+}
+
+export function createSupabaseClient() {
+  try {
+    const config = getEnvironmentConfig();
+    return createClient(config.supabaseUrl, config.supabaseServiceKey);
+  } catch (error) {
+    throw new Error(`Failed to create Supabase client: ${error.message}`);
+  }
+}
+
+export function validateAndCreateSupabaseClient() {
+  const missing = validateRequiredEnvVars([
+    "SUPABASE_URL",
+    "SUPABASE_SERVICE_ROLE_KEY",
+  ]);
+  if (missing.length > 0) {
+    throw new Error(`Missing environment variables: ${missing.join(", ")}`);
+  }
+  return createSupabaseClient();
 }
