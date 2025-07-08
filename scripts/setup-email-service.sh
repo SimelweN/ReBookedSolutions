@@ -31,7 +31,7 @@ update_env_var() {
     local var_name=$1
     local var_value=$2
     local env_file=${3:-.env}
-    
+
     if grep -q "^${var_name}=" "$env_file"; then
         # Variable exists, update it
         if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -124,7 +124,12 @@ echo "   - Use the 'Email Service Testing' section"
 echo ""
 echo "3. 🌐 For production deployment:"
 echo "   - Add SENDER_API_KEY to your Supabase project environment variables"
+echo "   - Add FROM_EMAIL to your Supabase project environment variables"
 echo "   - Redeploy your edge functions"
+echo ""
+echo "   Supabase Environment Variables:"
+echo "   SENDER_API_KEY=your_actual_sender_api_key"
+echo "   FROM_EMAIL=noreply@rebookedsolutions.co.za"
 echo ""
 echo "📖 For detailed setup instructions, see EMAIL_SETUP_GUIDE.md"
 echo ""
