@@ -7,6 +7,7 @@ import {
 } from "../_shared/environment.ts";
 
 const COURIER_GUY_API_URL = "https://api.courierguy.co.za";
+const COURIER_GUY_API_KEY = Deno.env.get("COURIER_GUY_API_KEY");
 
 // Validate required environment variables (API key is optional)
 const requiredVars = ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"];
