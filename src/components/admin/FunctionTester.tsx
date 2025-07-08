@@ -413,6 +413,9 @@ const FunctionTester = () => {
       "upload",
       "search",
       "tracking",
+      "notifications",
+      "orders",
+      "automation",
     ];
     return categories.map((category) => {
       const categoryFunctions = FUNCTION_TESTS.filter(
