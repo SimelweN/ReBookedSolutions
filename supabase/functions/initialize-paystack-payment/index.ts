@@ -117,31 +117,48 @@ serve(async (req) => {
       sellerSubaccountCode,
     });
 
-    const response = await fetch(
-      "https://api.paystack.co/transaction/initialize",
-      {
+    // Make request to Paystack API
+    let response: Response;
+    let data: any;
+
+    try {
+      response = await fetch("https://api.paystack.co/transaction/initialize", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
-      },
-    );
+      });
 
-    const data = await response.json();
+      data = await response.json();
+    } catch (fetchError) {
+      console.error("Failed to communicate with Paystack:", fetchError);
+      return createErrorResponse(
+        "Failed to communicate with payment provider",
+        503,
+        { error: fetchError.message },
+      );
+    }
 
     if (!response.ok || !data.status) {
       console.error("Paystack payment initialization failed:", data);
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: data.message || `HTTP error! status: ${response.status}`,
-        }),
-        {
-          status: response.status,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+      return createErrorResponse(
+        data.message || `Payment initialization failed (${response.status})`,
+        response.status >= 500 ? 502 : 400,
+        { paystack_error: data },
+      );
+    }
+
+    if (
+      !data.data?.authorization_url ||
+      !data.data?.access_code ||
+      !data.data?.reference
+    ) {
+      return createErrorResponse(
+        "Invalid response from payment provider",
+        502,
+        { paystack_response: data },
       );
     }
 
@@ -150,34 +167,12 @@ serve(async (req) => {
       data.data.reference,
     );
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        data: {
-          authorization_url: data.data.authorization_url,
-          access_code: data.data.access_code,
-          reference: data.data.reference,
-        },
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    return createSuccessResponse({
+      authorization_url: data.data.authorization_url,
+      access_code: data.data.access_code,
+      reference: data.data.reference,
+    });
   } catch (error) {
-    console.error("Error in initialize-paystack-payment function:", error);
-    return new Response(
-      JSON.stringify({
-        success: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred",
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    return createGenericErrorHandler("initialize-paystack-payment")(error);
   }
 });
