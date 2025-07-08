@@ -1,11 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  corsHeaders,
+  createErrorResponse,
+  createSuccessResponse,
+  handleOptionsRequest,
+  createGenericErrorHandler,
+} from "../_shared/cors.ts";
 
 interface EmailRequest {
   to: string;
@@ -20,11 +20,27 @@ interface EmailRequest {
 serve(async (req) => {
   // Handle CORS
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return handleOptionsRequest();
   }
 
   try {
-    const { to, subject, html, from }: EmailRequest = await req.json();
+    // Parse and validate request body
+    let requestBody: EmailRequest;
+    try {
+      requestBody = await req.json();
+    } catch (error) {
+      return createErrorResponse("Invalid JSON in request body", 400);
+    }
+
+    const { to, subject, html, from } = requestBody;
+
+    // Validate required fields
+    if (!to || !subject || !html) {
+      return createErrorResponse(
+        "Missing required fields: to, subject, html",
+        400,
+      );
+    }
 
     // Get API keys from environment (try Resend first, then Sender)
     const resendApiKey = Deno.env.get("VITE_RESEND_API_KEY");
