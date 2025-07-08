@@ -48,7 +48,6 @@ import {
   DollarSign,
   Bell,
   Mail,
-  Mail,
   ShoppingCart,
   Zap,
   Activity,
