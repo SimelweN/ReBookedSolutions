@@ -6,8 +6,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
 };
-];
-const missingVars = validateRequiredEnvVars(requiredVars);
 
 // Bank codes mapping for Paystack
 const PAYSTACK_BANK_CODES: Record<string, string> = {
