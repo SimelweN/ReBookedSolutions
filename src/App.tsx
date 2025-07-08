@@ -59,12 +59,8 @@ const Receipt = React.lazy(() => import("./pages/Receipt"));
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
 const DevDashboard = React.lazy(() => import("./pages/DevDashboard"));
 
-// Loading component
-const LoadingSpinner = () => (
-  <div className="flex items-center justify-center h-24">
-    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-  </div>
-);
+// Loading component with fallback
+const LoadingSpinner = () => <LoadingFallback type="compact" />;
 
 function App() {
   return (
