@@ -10,6 +10,8 @@ import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import { Toaster } from "@/components/ui/sonner";
 import NoScriptFallback from "./components/NoScriptFallback";
 import LoadingFallback from "./components/LoadingFallback";
+import StartupChecker from "./components/StartupChecker";
+import { validateEnvironment } from "./config/environment";
 import "./App.css";
 
 // Import critical pages directly
