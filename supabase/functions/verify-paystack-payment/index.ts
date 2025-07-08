@@ -66,10 +66,7 @@ serve(async (req) => {
     const { data } = paymentData;
 
     // Initialize Supabase client
-    const supabase = createClient(
-      config.supabaseUrl,
-      config.supabaseServiceKey,
-    );
+    const supabase = validateAndCreateSupabaseClient();
 
     if (data.status === "success") {
       // Get the order first to ensure we have seller_id
