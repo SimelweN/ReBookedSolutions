@@ -1,192 +1,170 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import {
-  corsHeaders,
-  createErrorResponse,
-  createSuccessResponse,
-  handleOptionsRequest,
-  createGenericErrorHandler,
-} from "../_shared/cors.ts";
 
-interface FastwayQuoteRequest {
-  collection_postcode: string;
-  delivery_postcode: string;
-  weight: number;
-  length?: number;
-  width?: number;
-  height?: number;
-  service_type?: string;
-}
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
-interface FastwayQuoteResponse {
-  service_code: string;
-  service_name: string;
-  cost: number;
-  cost_ex_gst: number;
-  gst: number;
-  transit_days: number;
-  collection_cutoff?: string;
-  delivery_guarantee?: string;
-}
+const FASTWAY_API_KEY = Deno.env.get("FASTWAY_API_KEY");
 
-serve(async (req) => {
-  // Handle CORS preflight requests
+serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return handleOptionsRequest();
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log("Fastway Quote API called");
-
-    // Parse and validate request body
-    let requestData: FastwayQuoteRequest;
-    try {
-      requestData = await req.json();
-    } catch (error) {
-      return createErrorResponse("Invalid JSON in request body", 400);
+    if (req.method !== "POST") {
+      return new Response(JSON.stringify({ error: "Method not allowed" }), {
+        status: 405,
+        headers: corsHeaders,
+      });
     }
 
-    console.log("Quote request:", requestData);
+    const { fromAddress, toAddress, parcel } = await req.json();
 
-    // Validate required fields
-    if (
-      !requestData.collection_postcode ||
-      !requestData.delivery_postcode ||
-      !requestData.weight
-    ) {
-      return createErrorResponse(
-        "Missing required fields: collection_postcode, delivery_postcode, weight",
-        400,
-      );
-    }
-
-    // Get Fastway API credentials from environment
-    const fastwayApiKey = Deno.env.get("FASTWAY_API_KEY");
-    const fastwayApiUrl =
-      Deno.env.get("FASTWAY_API_URL") || "https://api.fastway.org/v2";
-
-    if (!fastwayApiKey) {
-      console.error("Fastway API key not configured");
-      // Return fallback quotes for development
+    if (!fromAddress || !toAddress || !parcel) {
       return new Response(
         JSON.stringify({
-          quotes: generateFallbackQuotes(requestData.weight),
+          error: "Missing required address or parcel information",
         }),
         {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 400,
+          headers: corsHeaders,
         },
       );
     }
 
-    // Prepare Fastway API request
-    const fastwayRequest = {
-      pickup_postcode: requestData.collection_postcode,
-      destination_postcode: requestData.delivery_postcode,
-      weight_kg: requestData.weight,
-      length_cm: requestData.length || 20,
-      width_cm: requestData.width || 20,
-      height_cm: requestData.height || 20,
+    // Fallback quote for development/testing
+    if (!FASTWAY_API_KEY) {
+      console.log("Using fallback Fastway quote");
+      return new Response(
+        JSON.stringify({
+          success: true,
+          quotes: [
+            {
+              service: "Local Parcel",
+              price: 55.0,
+              currency: "ZAR",
+              estimated_days: "1-2",
+              service_code: "LP",
+            },
+            {
+              service: "Road Freight",
+              price: 85.0,
+              currency: "ZAR",
+              estimated_days: "2-4",
+              service_code: "RF",
+            },
+          ],
+          provider: "fastway",
+        }),
+        { headers: corsHeaders },
+      );
+    }
+
+    // Real Fastway API integration would go here
+    const quoteData = {
+      PickupAddress: {
+        Street: fromAddress.streetAddress,
+        Suburb: fromAddress.suburb,
+        City: fromAddress.city,
+        PostalCode: fromAddress.postalCode,
+        Province: fromAddress.province,
+      },
+      DestinationAddress: {
+        Street: toAddress.streetAddress,
+        Suburb: toAddress.suburb,
+        City: toAddress.city,
+        PostalCode: toAddress.postalCode,
+        Province: toAddress.province,
+      },
+      Parcel: {
+        Length: parcel.length || 20,
+        Width: parcel.width || 15,
+        Height: parcel.height || 5,
+        Weight: parcel.weight || 0.5,
+      },
     };
 
-    console.log("Calling Fastway API:", fastwayRequest);
+    // Simulate API call (replace with actual Fastway API endpoint)
+    try {
+      const response = await fetch("https://api.fastway.co.za/v1/quote", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${FASTWAY_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(quoteData),
+      });
 
-    // Call Fastway API
-    const fastwayResponse = await fetch(`${fastwayApiUrl}/quotes`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${fastwayApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(fastwayRequest),
-    });
+      if (!response.ok) {
+        throw new Error("Fastway API error");
+      }
 
-    if (!fastwayResponse.ok) {
-      console.error(
-        "Fastway API error:",
-        fastwayResponse.status,
-        await fastwayResponse.text(),
-      );
+      const data = await response.json();
 
-      // Return fallback quotes on API error
+      // Transform API response to standard format
+      const quotes =
+        data.quotes?.map((quote: any) => ({
+          service: quote.service_name,
+          price: parseFloat(quote.price),
+          currency: "ZAR",
+          estimated_days: quote.delivery_time,
+          service_code: quote.service_code,
+        })) || [];
+
       return new Response(
         JSON.stringify({
-          quotes: generateFallbackQuotes(requestData.weight),
-          fallback: true,
-          error: `Fastway API error: ${fastwayResponse.status}`,
+          success: true,
+          quotes,
+          provider: "fastway",
         }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+        { headers: corsHeaders },
       );
-    }
+    } catch (apiError) {
+      console.error("Fastway API error:", apiError);
 
-    const fastwayData = await fastwayResponse.json();
-    console.log("Fastway API response:", fastwayData);
-
-    // Transform Fastway response to our format
-    const quotes: FastwayQuoteResponse[] = (fastwayData.quotes || []).map(
-      (quote: any) => ({
-        service_code: quote.service_code || "STANDARD",
-        service_name: quote.service_name || "Fastway Standard",
-        cost: parseFloat(quote.total_cost_incl_gst || quote.cost || "50"),
-        cost_ex_gst: parseFloat(
-          quote.total_cost_excl_gst || quote.cost_ex_gst || "43.48",
-        ),
-        gst: parseFloat(quote.gst || "6.52"),
-        transit_days: parseInt(quote.transit_days || "3"),
-        collection_cutoff: quote.collection_cutoff || "16:00",
-        delivery_guarantee: quote.guarantee,
-      }),
-    );
-
-    // If no quotes returned, provide fallback
-    if (quotes.length === 0) {
-      console.log("No quotes from Fastway API, using fallback");
+      // Return fallback quote on API error
       return new Response(
         JSON.stringify({
-          quotes: generateFallbackQuotes(requestData.weight),
+          success: true,
+          quotes: [
+            {
+              service: "Local Parcel",
+              price: 55.0,
+              currency: "ZAR",
+              estimated_days: "1-2",
+              service_code: "LP",
+            },
+          ],
+          provider: "fastway",
           fallback: true,
         }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+        { headers: corsHeaders },
       );
     }
-
-    return new Response(JSON.stringify({ quotes }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
   } catch (error) {
-    return createGenericErrorHandler("fastway-quote")(error);
+    console.error("Error in fastway-quote:", error);
+
+    // Return fallback quote on any error
+    return new Response(
+      JSON.stringify({
+        success: true,
+        quotes: [
+          {
+            service: "Local Parcel",
+            price: 55.0,
+            currency: "ZAR",
+            estimated_days: "1-2",
+            service_code: "LP",
+          },
+        ],
+        provider: "fastway",
+        fallback: true,
+        error: error.message,
+      }),
+      { headers: corsHeaders },
+    );
   }
 });
-
-function generateFallbackQuotes(weight: number): FastwayQuoteResponse[] {
-  const basePrice = Math.max(45, weight * 12);
-  const gst = Math.round(basePrice * 0.15 * 100) / 100;
-
-  return [
-    {
-      service_code: "STANDARD",
-      service_name: "Fastway Standard",
-      cost: Math.round((basePrice + gst) * 100) / 100,
-      cost_ex_gst: basePrice,
-      gst: gst,
-      transit_days: 3,
-      collection_cutoff: "16:00",
-    },
-    {
-      service_code: "EXPRESS",
-      service_name: "Fastway Express",
-      cost: Math.round((basePrice * 1.4 + gst * 1.4) * 100) / 100,
-      cost_ex_gst: Math.round(basePrice * 1.4 * 100) / 100,
-      gst: Math.round(gst * 1.4 * 100) / 100,
-      transit_days: 1,
-      collection_cutoff: "14:00",
-      delivery_guarantee: "Next business day",
-    },
-  ];
-}

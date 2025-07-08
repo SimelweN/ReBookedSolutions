@@ -1,70 +1,155 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import {
-  corsHeaders,
-  createErrorResponse,
-  createSuccessResponse,
-  handleOptionsRequest,
-  createGenericErrorHandler,
-} from "../_shared/cors.ts";
-import {
-  validateAndCreateSupabaseClient,
-  validateRequiredEnvVars,
-  createEnvironmentError,
-  getEnvironmentConfig,
-} from "../_shared/environment.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+  "Content-Type": "application/json",
+};
 
 serve(async (req) => {
-  // Handle CORS
+  // Handle preflight requests
   if (req.method === "OPTIONS") {
-    return handleOptionsRequest();
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    // Validate required environment variables
-    const missingEnvVars = validateRequiredEnvVars([
-      "PAYSTACK_SECRET_KEY",
-      "SUPABASE_URL",
-      "SUPABASE_SERVICE_ROLE_KEY",
-    ]);
-    if (missingEnvVars.length > 0) {
-      return createEnvironmentError(missingEnvVars);
-    }
+    console.log("Pay seller request:", req.method);
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      {
+        global: {
+          headers: { Authorization: req.headers.get("Authorization")! },
+        },
+      },
+    );
 
-    const config = getEnvironmentConfig();
-    const PAYSTACK_SECRET_KEY = config.paystackSecretKey!;
+    const {
+      order_id,
+      seller_id,
+      amount,
+      reason = "Book sale payout",
+    } = await req.json();
 
-    // Parse and validate request body
-    let requestBody: any;
-    try {
-      requestBody = await req.json();
-    } catch (error) {
-      return createErrorResponse("Invalid JSON in request body", 400);
-    }
-
-    const { amount, recipient, reason, reference } = requestBody;
-
-    if (!amount || !recipient || !reason || !reference) {
-      return createErrorResponse(
-        "Missing required parameters: amount, recipient, reason, reference",
-        400,
-        { required: ["amount", "recipient", "reason", "reference"] },
+    if (!order_id || !seller_id || !amount) {
+      return new Response(
+        JSON.stringify({ error: "Missing required fields" }),
+        {
+          status: 400,
+          headers: corsHeaders,
+        },
       );
     }
 
-    // Initialize Supabase client
-    const supabase = validateAndCreateSupabaseClient();
+    // Get seller profile and subaccount
+    const { data: seller, error: sellerError } = await supabaseClient
+      .from("seller_profiles")
+      .select("*")
+      .eq("user_id", seller_id)
+      .single();
 
-    // Initiate transfer with Paystack
+    if (sellerError || !seller) {
+      throw new Error("Seller profile not found");
+    }
+
+    if (!seller.paystack_subaccount_code) {
+      throw new Error("Seller does not have a Paystack subaccount");
+    }
+
+    // Verify order exists and is eligible for payout
+    const { data: order, error: orderError } = await supabaseClient
+      .from("orders")
+      .select("*")
+      .eq("id", order_id)
+      .eq("seller_id", seller_id)
+      .eq("status", "delivered")
+      .single();
+
+    if (orderError || !order) {
+      throw new Error("Order not found or not eligible for payout");
+    }
+
+    // Check if payout already exists
+    const { data: existingPayout } = await supabaseClient
+      .from("seller_payouts")
+      .select("id")
+      .eq("order_id", order_id)
+      .single();
+
+    if (existingPayout) {
+      return new Response(
+        JSON.stringify({ error: "Payout already processed for this order" }),
+        {
+          status: 400,
+          headers: corsHeaders,
+        },
+      );
+    }
+
+    const reference = `payout_${order_id}_${Date.now()}`;
+    const paystackSecret = Deno.env.get("PAYSTACK_SECRET_KEY");
+
+    if (!paystackSecret) {
+      throw new Error("Paystack secret key not configured");
+    }
+
+    // Calculate platform fee (e.g., 5%)
+    const platformFeeRate = 0.05;
+    const platformFee = Math.round(amount * platformFeeRate);
+    const sellerAmount = amount - platformFee;
+
+    // Create transfer recipient if not exists
+    let recipientCode = seller.paystack_recipient_code;
+
+    if (!recipientCode) {
+      const recipientResponse = await fetch(
+        "https://api.paystack.co/transferrecipient",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${paystackSecret}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            type: "nuban",
+            name:
+              seller.business_name ||
+              `${seller.first_name} ${seller.last_name}`,
+            account_number: seller.bank_account_number,
+            bank_code: seller.bank_code,
+            currency: "ZAR",
+          }),
+        },
+      );
+
+      const recipientData = await recipientResponse.json();
+
+      if (!recipientData.status) {
+        throw new Error(`Failed to create recipient: ${recipientData.message}`);
+      }
+
+      recipientCode = recipientData.data.recipient_code;
+
+      // Update seller profile with recipient code
+      await supabaseClient
+        .from("seller_profiles")
+        .update({ paystack_recipient_code: recipientCode })
+        .eq("user_id", seller_id);
+    }
+
+    // Initiate transfer
     const transferResponse = await fetch("https://api.paystack.co/transfer", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+        Authorization: `Bearer ${paystackSecret}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         source: "balance",
-        amount: amount,
-        recipient: recipient,
+        amount: sellerAmount,
+        recipient: recipientCode,
         reason: reason,
         reference: reference,
         currency: "ZAR",
@@ -73,88 +158,75 @@ serve(async (req) => {
 
     const transferData = await transferResponse.json();
 
-    if (!transferResponse.ok) {
+    if (!transferData.status) {
       throw new Error(`Transfer failed: ${transferData.message}`);
     }
 
-    const { data } = transferData;
+    // Record payout in database
+    const { data: payout, error: payoutError } = await supabaseClient
+      .from("seller_payouts")
+      .insert({
+        seller_id: seller_id,
+        order_id: order_id,
+        amount: sellerAmount,
+        platform_fee: platformFee,
+        reference: reference,
+        paystack_transfer_code: transferData.data.transfer_code,
+        status: "pending",
+        paystack_response: transferData.data,
+      })
+      .select()
+      .single();
 
-    // Log the payout attempt
-    const { error: logError } = await supabase.from("payout_logs").insert({
-      order_id: reference.split("_")[1], // Extract order ID from reference
-      seller_id: req.headers.get("x-seller-id"), // Should be passed from calling function
-      amount: amount,
-      transfer_code: data.transfer_code,
-      recipient_code: recipient,
-      status: data.status,
-      reference: reference,
-      paystack_response: data,
-      created_at: new Date().toISOString(),
+    if (payoutError) {
+      throw new Error(`Failed to record payout: ${payoutError.message}`);
+    }
+
+    // Log audit trail
+    await supabaseClient.from("audit_logs").insert({
+      action: "seller_payout_initiated",
+      table_name: "seller_payouts",
+      record_id: payout.id,
+      details: {
+        seller_id,
+        order_id,
+        amount: sellerAmount,
+        platform_fee: platformFee,
+        reference,
+      },
     });
 
-    if (logError) {
-      console.warn("Failed to log payout:", logError);
-      // Don't fail the transfer for logging issues
-    }
-
-    // Send notification email to seller
-    try {
-      await supabase.functions.invoke("send-email-notification", {
-        body: {
-          type: "payout_initiated",
-          seller_id: req.headers.get("x-seller-id"),
-          data: {
-            amount: (amount / 100).toFixed(2),
-            reference: reference,
-            transfer_code: data.transfer_code,
-          },
-        },
-      });
-    } catch (emailError) {
-      console.warn("Payout email notification failed:", emailError);
-      // Don't fail the transfer for email issues
-    }
+    // Send notification to seller
+    await supabaseClient.from("notifications").insert({
+      user_id: seller_id,
+      title: "Payout Initiated",
+      message: `Your payout of R${(sellerAmount / 100).toFixed(2)} is being processed`,
+      type: "payout",
+    });
 
     return new Response(
       JSON.stringify({
-        transfer_code: data.transfer_code,
-        amount: data.amount,
-        recipient: data.recipient.recipient_code,
-        status: data.status,
-        reference: data.reference,
-        currency: data.currency,
-        created_at: data.createdAt,
+        success: true,
+        payout_id: payout.id,
+        amount: sellerAmount,
+        reference: reference,
+        transfer_code: transferData.data.transfer_code,
       }),
       {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       },
     );
   } catch (error) {
-    console.error("Seller payout error:", error);
-
-    // Log failed payout attempt
-    try {
-      const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-      await supabase.from("payout_logs").insert({
-        order_id: req.json?.reference?.split("_")[1] || "unknown",
-        seller_id: req.headers.get("x-seller-id") || "unknown",
-        amount: req.json?.amount || 0,
-        status: "failed",
-        error_message: error.message,
-        created_at: new Date().toISOString(),
-      });
-    } catch (logError) {
-      console.warn("Failed to log payout error:", logError);
-    }
+    console.error("Payout error:", error);
 
     return new Response(
       JSON.stringify({
-        error: error.message,
-        status: "failed",
+        error: "Internal Server Error",
+        details: error?.message || "Unknown error",
       }),
       {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500,
+        headers: corsHeaders,
       },
     );
   }

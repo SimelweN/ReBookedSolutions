@@ -1,282 +1,237 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import {
-  corsHeaders,
-  createErrorResponse,
-  createSuccessResponse,
-  handleOptionsRequest,
-  createGenericErrorHandler,
-} from "../_shared/cors.ts";
-import {
-  validateAndCreateSupabaseClient,
-  validateRequiredEnvVars,
-  createEnvironmentError,
-} from "../_shared/environment.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3";
 
-interface CheckoutData {
-  sellerId: string;
-  sellerName: string;
-  subaccountCode: string;
-  items: Array<{
-    id: string;
-    bookId: string;
-    title: string;
-    author: string;
-    price: number;
-    quantity: number;
-  }>;
-  subtotal: number;
-  courierFee: number;
-  total: number;
-  courierQuote: {
-    courier: string;
-    serviceName: string;
-    price: number;
-    estimatedDays: number;
-  };
-  buyerAddress: {
-    street: string;
-    city: string;
-    province: string;
-    postal_code: string;
-    country: string;
-  };
-  sellerAddress: {
-    street: string;
-    city: string;
-    province: string;
-    postal_code: string;
-    country: string;
-  };
-}
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
-serve(async (req) => {
-  // Handle CORS preflight requests
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL") ?? "",
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+);
+
+const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
+
+serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return handleOptionsRequest();
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Validate environment variables
-    const missingEnvVars = validateRequiredEnvVars([
-      "SUPABASE_URL",
-      "SUPABASE_SERVICE_ROLE_KEY",
-    ]);
-    if (missingEnvVars.length > 0) {
-      return createEnvironmentError(missingEnvVars);
-    }
-
-    const supabaseClient = validateAndCreateSupabaseClient();
-
-    // Get the authorization header
-    const authHeader = req.headers.get("authorization")!;
-    const token = authHeader.replace("Bearer ", "");
-
-    // Verify the user
-    const {
-      data: { user },
-      error: authError,
-    } = await supabaseClient.auth.getUser(token);
-    if (authError || !user) {
-      return createErrorResponse("Unauthorized", 401, {
-        authError: authError?.message,
+    if (req.method !== "POST") {
+      return new Response(JSON.stringify({ error: "Method not allowed" }), {
+        status: 405,
+        headers: corsHeaders,
       });
     }
 
-    const { checkout, books } = await req.json();
-    const checkoutData = checkout as CheckoutData;
+    const {
+      cartItems,
+      buyerId,
+      buyerEmail,
+      deliveryOptions,
+      shippingAddress,
+      callbackUrl,
+    } = await req.json();
 
-    console.log("Processing multi-seller purchase:", {
-      userId: user.id,
-      sellerId: checkoutData.sellerId,
-      total: checkoutData.total,
-      itemCount: checkoutData.items.length,
-    });
+    if (
+      !cartItems ||
+      !buyerEmail ||
+      !Array.isArray(cartItems) ||
+      cartItems.length === 0
+    ) {
+      return new Response(
+        JSON.stringify({ error: "Missing required fields or empty cart" }),
+        {
+          status: 400,
+          headers: corsHeaders,
+        },
+      );
+    }
 
-    // Validate that all books exist and are available
-    const bookIds = checkoutData.items.map((item) => item.bookId);
-    const { data: bookRecords, error: bookError } = await supabaseClient
+    if (!PAYSTACK_SECRET_KEY) {
+      return new Response(
+        JSON.stringify({ error: "Paystack configuration missing" }),
+        {
+          status: 500,
+          headers: corsHeaders,
+        },
+      );
+    }
+
+    // Get book details and validate availability
+    const bookIds = cartItems.map((item: any) => item.bookId);
+    const { data: books, error: booksError } = await supabase
       .from("books")
-      .select("id, title, price, sold, seller_id")
-      .in("id", bookIds);
+      .select(
+        `
+        *,
+        profiles!books_seller_id_fkey(id, full_name, email, subaccount_code)
+      `,
+      )
+      .in("id", bookIds)
+      .eq("sold", false);
 
-    if (bookError) {
-      console.error("Error fetching books:", bookError);
+    if (booksError || !books) {
+      return new Response(JSON.stringify({ error: "Failed to fetch books" }), {
+        status: 400,
+        headers: corsHeaders,
+      });
+    }
+
+    // Check if all books are available
+    const unavailableBooks = cartItems.filter(
+      (item: any) => !books.find((book) => book.id === item.bookId),
+    );
+
+    if (unavailableBooks.length > 0) {
       return new Response(
-        JSON.stringify({ error: "Failed to validate books" }),
+        JSON.stringify({
+          error: "Some books are no longer available",
+          unavailableBooks: unavailableBooks.map((item: any) => item.bookId),
+        }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
 
-    // Validate books
-    for (const book of bookRecords || []) {
-      if (book.sold) {
-        return new Response(
-          JSON.stringify({
-            error: `Book "${book.title}" has already been sold`,
-          }),
-          {
-            status: 400,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          },
-        );
-      }
-
-      if (book.seller_id !== checkoutData.sellerId) {
-        return new Response(
-          JSON.stringify({ error: "All books must be from the same seller" }),
-          {
-            status: 400,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          },
-        );
-      }
-    }
-
-    // Verify seller has valid subaccount
-    if (!checkoutData.subaccountCode) {
+    // Prevent self-purchase
+    const selfPurchases = books.filter((book) => book.seller_id === buyerId);
+    if (selfPurchases.length > 0) {
       return new Response(
-        JSON.stringify({ error: "Seller has not completed banking setup" }),
+        JSON.stringify({ error: "Cannot purchase your own books" }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
 
-    // Create order record
-    const orderData = {
-      buyer_id: user.id,
-      buyer_email: user.email,
-      seller_id: checkoutData.sellerId,
-      amount: Math.round(checkoutData.total * 100), // Convert to kobo/cents
-      status: "pending",
-      paystack_ref: `MS_${Date.now()}_${user.id.slice(-6)}`,
-      items: checkoutData.items,
-      shipping_address: checkoutData.buyerAddress,
+    // Calculate totals
+    let totalAmount = 0;
+    let totalDeliveryFee = 0;
+    const sellerSubaccounts: any[] = [];
+
+    for (const book of books) {
+      totalAmount += book.price;
+
+      // Add delivery fees if applicable
+      const deliveryOption = deliveryOptions?.find(
+        (opt: any) => opt.bookId === book.id,
+      );
+      if (deliveryOption && deliveryOption.price > 0) {
+        totalDeliveryFee += deliveryOption.price;
+      }
+
+      // Collect subaccount information
+      if (book.profiles?.subaccount_code) {
+        const sellerAmount = book.price * 0.9; // 90% to seller
+        sellerSubaccounts.push({
+          subaccount: book.profiles.subaccount_code,
+          share: Math.round(sellerAmount * 100), // Convert to kobo
+        });
+      }
+    }
+
+    const grandTotal = totalAmount + totalDeliveryFee;
+
+    // Generate unique reference
+    const reference = `RS_MULTI_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+    // Prepare payment data
+    const paymentData: any = {
+      email: buyerEmail,
+      amount: grandTotal * 100, // Convert to kobo
+      reference,
+      callback_url: callbackUrl,
       metadata: {
-        seller_name: checkoutData.sellerName,
-        subaccount_code: checkoutData.subaccountCode,
-        courier_info: checkoutData.courierQuote,
-        courier_fee: checkoutData.courierFee,
-        subtotal: checkoutData.subtotal,
-        platform_commission: checkoutData.subtotal * 0.1,
-        seller_receives: checkoutData.subtotal * 0.9,
-        seller_address: checkoutData.sellerAddress,
+        cart_items: cartItems,
+        buyer_id: buyerId,
+        delivery_options: deliveryOptions,
+        shipping_address: shippingAddress,
+        total_books: books.length,
+        total_amount: totalAmount,
+        delivery_fee: totalDeliveryFee,
       },
-      payment_data: {},
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
     };
 
-    const { data: order, error: orderError } = await supabaseClient
-      .from("orders")
-      .insert([orderData])
-      .select()
-      .single();
-
-    if (orderError) {
-      console.error("Error creating order:", orderError);
-      return createErrorResponse("Failed to create order", 500, { orderError });
-    }
-
-    console.log("Order created successfully:", order.id);
-
-    // Initialize Paystack payment with split payment
-    const paystackData = {
-      email: user.email,
-      amount: Math.round(checkoutData.total * 100), // Amount in kobo
-      reference: order.paystack_ref,
-      callback_url: `${Deno.env.get("FRONTEND_URL") || "http://localhost:3000"}/payment-callback`,
-      metadata: {
-        order_id: order.id,
-        buyer_id: user.id,
-        seller_id: checkoutData.sellerId,
-        split_type: "multi_seller",
-      },
-      split: {
+    // Add split payment configuration if there are subaccounts
+    if (sellerSubaccounts.length > 0) {
+      paymentData.split = {
         type: "percentage",
-        bearer_type: "account",
-        subaccounts: [
-          {
-            subaccount: checkoutData.subaccountCode,
-            share: 90, // 90% to seller
-          },
-        ],
-      },
-    };
+        bearer_type: "subaccount",
+        subaccounts: sellerSubaccounts,
+      };
+    }
 
-    // Call Paystack API to initialize transaction
+    // Initialize payment with Paystack
     const paystackResponse = await fetch(
       "https://api.paystack.co/transaction/initialize",
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${Deno.env.get("PAYSTACK_SECRET_KEY")}`,
+          Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(paystackData),
+        body: JSON.stringify(paymentData),
       },
     );
 
-    const paystackResult = await paystackResponse.json();
+    const paystackData = await paystackResponse.json();
 
-    if (!paystackResponse.ok || !paystackResult.status) {
-      console.error("Paystack initialization failed:", paystackResult);
+    if (!paystackResponse.ok) {
+      console.error("Paystack error:", paystackData);
       return new Response(
-        JSON.stringify({ error: "Payment initialization failed" }),
+        JSON.stringify({
+          error: "Failed to initialize payment",
+          details: paystackData.message || "Unknown error",
+        }),
         {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 400,
+          headers: corsHeaders,
         },
       );
     }
 
-    // Update order with Paystack data
-    await supabaseClient
-      .from("orders")
-      .update({
-        payment_data: paystackResult.data,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", order.id);
-
-    // Mark books as temporarily unavailable
-    await supabaseClient
-      .from("books")
-      .update({
-        availability: "unavailable",
-        updated_at: new Date().toISOString(),
-      })
-      .in("id", bookIds);
-
-    console.log(
-      "Payment initialized successfully:",
-      paystackResult.data.reference,
-    );
+    // Log the payment initialization
+    await supabase.from("audit_logs").insert({
+      action: "multi_purchase_initialized",
+      table_name: "transactions",
+      user_id: buyerId,
+      new_values: {
+        reference,
+        book_count: books.length,
+        total_amount: grandTotal,
+        email: buyerEmail,
+      },
+    });
 
     return new Response(
       JSON.stringify({
         success: true,
-        order_id: order.id,
-        payment_url: paystackResult.data.authorization_url,
-        reference: paystackResult.data.reference,
+        data: {
+          authorization_url: paystackData.data.authorization_url,
+          access_code: paystackData.data.access_code,
+          reference: paystackData.data.reference,
+        },
+        summary: {
+          book_count: books.length,
+          total_amount: totalAmount,
+          delivery_fee: totalDeliveryFee,
+          grand_total: grandTotal,
+        },
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      { headers: corsHeaders },
     );
   } catch (error) {
-    console.error("Unexpected error:", error);
-    return new Response(
-      JSON.stringify({
-        error: "Internal server error",
-        details: error.message,
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    console.error("Error in process-multi-seller-purchase:", error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: corsHeaders,
+    });
   }
 });

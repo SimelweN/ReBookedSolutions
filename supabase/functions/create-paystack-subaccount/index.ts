@@ -1,288 +1,188 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import {
-  corsHeaders,
-  createErrorResponse,
-  createSuccessResponse,
-  handleOptionsRequest,
-  createGenericErrorHandler,
-} from "../_shared/cors.ts";
-import {
-  validateAndCreateSupabaseClient,
-  validateRequiredEnvVars,
-  createEnvironmentError,
-} from "../_shared/environment.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3";
 
-// Bank codes mapping for Paystack
-const PAYSTACK_BANK_CODES: Record<string, string> = {
-  "Absa Bank": "632005",
-  "Capitec Bank": "470010",
-  "First National Bank (FNB)": "250655",
-  "Investec Bank": "580105",
-  Nedbank: "198765",
-  "Standard Bank": "051001",
-  "African Bank": "430000",
-  "Mercantile Bank": "450905",
-  TymeBank: "678910",
-  "Bidvest Bank": "679000",
-  "Sasfin Bank": "683000",
-  "Bank of Athens": "410506",
-  "RMB Private Bank": "222026",
-  "South African Post Bank (Post Office)": "460005",
-  "Hollard Bank": "585001",
-  "Discovery Bank": "679000",
-  "Standard Chartered Bank": "730020",
-  "Barclays Bank": "590000",
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
-function getBankCode(bankName: string): string {
-  return PAYSTACK_BANK_CODES[bankName] || "";
-}
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL") ?? "",
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+);
 
-serve(async (req) => {
-  // Handle CORS preflight requests
+const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
+
+serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return handleOptionsRequest();
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log("Starting subaccount creation process...");
-
-    // Validate required environment variables
-    const missingEnvVars = validateRequiredEnvVars([
-      "PAYSTACK_SECRET_KEY",
-      "SUPABASE_URL",
-      "SUPABASE_SERVICE_ROLE_KEY",
-    ]);
-    if (missingEnvVars.length > 0) {
-      return createEnvironmentError(missingEnvVars);
-    }
-
-    const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY")!;
-    console.log("- SUPABASE_URL present:", !!Deno.env.get("SUPABASE_URL"));
-    console.log(
-      "- SUPABASE_SERVICE_ROLE_KEY present:",
-      !!Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),
-    );
-
-    if (!PAYSTACK_SECRET_KEY) {
-      console.error("PAYSTACK_SECRET_KEY environment variable is not set");
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "Payment service is not configured. Please contact support.",
-          error_code: "MISSING_SECRET_KEY",
-        }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
-    }
-
-    console.log("Environment variables validated, proceeding with request...");
-
-    let requestBody;
-    try {
-      const bodyText = await req.text();
-      console.log("Raw request body:", bodyText);
-
-      if (!bodyText || bodyText.trim() === "") {
-        throw new Error("Empty request body");
-      }
-
-      requestBody = JSON.parse(bodyText);
-      console.log("Parsed request body:", JSON.stringify(requestBody, null, 2));
-    } catch (parseError) {
-      console.error("Failed to parse request body:", parseError);
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "Invalid request format: " + parseError.message,
-          error_code: "INVALID_JSON",
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
+    if (req.method !== "POST") {
+      return new Response(JSON.stringify({ error: "Method not allowed" }), {
+        status: 405,
+        headers: corsHeaders,
+      });
     }
 
     const {
-      business_name,
-      bank_name,
-      account_number,
-      primary_contact_email,
-      primary_contact_name,
-      metadata,
-    } = requestBody;
-
-    console.log("Received request:", {
-      business_name,
-      bank_name,
-      primary_contact_email,
-    });
-
-    if (!business_name || !bank_name || !account_number) {
-      const missingFields = [];
-      if (!business_name) missingFields.push("business_name");
-      if (!bank_name) missingFields.push("bank_name");
-      if (!account_number) missingFields.push("account_number");
-
-      console.error("Missing required fields:", missingFields);
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: `Missing required fields: ${missingFields.join(", ")}`,
-          error_code: "MISSING_FIELDS",
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
-    }
-
-    const bankCode = getBankCode(bank_name);
-    if (!bankCode) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: `Unsupported bank: ${bank_name}`,
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
-    }
-
-    const payload = {
-      business_name,
-      settlement_bank: bankCode,
-      account_number,
-      percentage_charge: 0,
-      primary_contact_email,
-      primary_contact_name,
-      metadata,
-    };
-
-    console.log("Creating Paystack subaccount:", {
-      business_name,
-      bank_name,
+      userId,
+      businessName,
       bankCode,
-    });
+      accountNumber,
+      percentageCharge = 0.0,
+    } = await req.json();
 
-    const response = await fetch("https://api.paystack.co/subaccount", {
+    if (!userId || !businessName || !bankCode || !accountNumber) {
+      return new Response(
+        JSON.stringify({ error: "Missing required fields" }),
+        {
+          status: 400,
+          headers: corsHeaders,
+        },
+      );
+    }
+
+    if (!PAYSTACK_SECRET_KEY) {
+      return new Response(
+        JSON.stringify({ error: "Paystack configuration missing" }),
+        {
+          status: 500,
+          headers: corsHeaders,
+        },
+      );
+    }
+
+    // Check if subaccount already exists
+    const { data: existingSubaccount } = await supabase
+      .from("paystack_subaccounts")
+      .select("*")
+      .eq("user_id", userId)
+      .single();
+
+    if (existingSubaccount) {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          subaccount: existingSubaccount,
+          message: "Subaccount already exists",
+        }),
+        { headers: corsHeaders },
+      );
+    }
+
+    // Create subaccount with Paystack
+    const paystackResponse = await fetch("https://api.paystack.co/subaccount", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        business_name: businessName,
+        bank_code: bankCode,
+        account_number: accountNumber,
+        percentage_charge: percentageCharge,
+        description: `Subaccount for ${businessName}`,
+        primary_contact_email: null,
+        primary_contact_name: null,
+        primary_contact_phone: null,
+        metadata: {
+          user_id: userId,
+        },
+      }),
     });
 
-    const data = await response.json();
+    const paystackData = await paystackResponse.json();
 
-    if (!response.ok || !data.status) {
-      console.error("Paystack subaccount creation failed:", {
-        status: response.status,
-        statusText: response.statusText,
-        data,
-        payload,
-      });
-
-      let errorMessage = "Failed to create payment account";
-      if (data.message) {
-        errorMessage = data.message;
-      } else if (response.status === 401) {
-        errorMessage = "Payment service authentication failed";
-      } else if (response.status === 400) {
-        errorMessage = "Invalid banking details provided";
-      }
-
+    if (!paystackResponse.ok) {
+      console.error("Paystack error:", paystackData);
       return new Response(
         JSON.stringify({
-          success: false,
-          message: errorMessage,
-          error_code: `PAYSTACK_${response.status}`,
-          details: data,
+          error: "Failed to create Paystack subaccount",
+          details: paystackData.message || "Unknown error",
         }),
         {
-          status: response.status,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 400,
+          headers: corsHeaders,
         },
       );
     }
 
-    console.log(
-      "Paystack subaccount created successfully:",
-      data.data.subaccount_code,
-    );
+    // Get bank name from bank code
+    const bankName = await getBankName(bankCode);
 
-    // Now save to our database
-    try {
-      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-      const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-      const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    // Save subaccount to database
+    const { data: subaccount, error: dbError } = await supabase
+      .from("paystack_subaccounts")
+      .insert({
+        user_id: userId,
+        business_name: businessName,
+        settlement_bank: bankName || bankCode,
+        account_number: accountNumber,
+        subaccount_code: paystackData.data.subaccount_code,
+        percentage_charge: percentageCharge,
+        status: "active",
+        paystack_response: paystackData.data,
+      })
+      .select()
+      .single();
 
-      // Get user_id from JWT token
-      const authHeader = req.headers.get("authorization");
-      if (!authHeader) {
-        throw new Error("No authorization header");
-      }
-
-      const token = authHeader.replace("Bearer ", "");
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser(token);
-
-      if (authError || !user) {
-        throw new Error("Failed to get user from token");
-      }
-
-      console.log("Saving subaccount to database for user:", user.id);
-
-      const { error: dbError } = await supabase
-        .from("banking_subaccounts")
-        .insert({
-          user_id: user.id,
-          business_name: business_name,
-          email: primary_contact_email,
-          bank_name: bank_name,
-          bank_code: bankCode,
-          account_number: account_number,
-          subaccount_code: data.data.subaccount_code,
-          paystack_response: data.data,
-          status: "active",
-        });
-
-      if (dbError) {
-        console.error("Failed to save to database:", dbError);
-        // Don't fail the entire request if DB save fails
-        // The Paystack subaccount was created successfully
-      } else {
-        console.log("Successfully saved subaccount to database");
-      }
-    } catch (dbError) {
-      console.error("Database save error:", dbError);
-      // Don't fail the entire request if DB save fails
+    if (dbError) {
+      console.error("Database error:", dbError);
+      throw dbError;
     }
+
+    // Update user profile with subaccount code
+    await supabase
+      .from("profiles")
+      .update({ subaccount_code: paystackData.data.subaccount_code })
+      .eq("id", userId);
+
+    // Log the creation
+    await supabase.from("audit_logs").insert({
+      action: "subaccount_created",
+      table_name: "paystack_subaccounts",
+      record_id: subaccount.id,
+      user_id: userId,
+      new_values: {
+        subaccount_code: paystackData.data.subaccount_code,
+        business_name: businessName,
+      },
+    });
 
     return new Response(
       JSON.stringify({
         success: true,
-        data: {
-          subaccount_code: data.data.subaccount_code,
-          id: data.data.id,
-        },
+        subaccount: subaccount,
+        message: "Subaccount created successfully",
       }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
+      { headers: corsHeaders },
     );
   } catch (error) {
-    return createGenericErrorHandler("create-paystack-subaccount")(error);
+    console.error("Error in create-paystack-subaccount:", error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: corsHeaders,
+    });
   }
 });
+
+async function getBankName(bankCode: string): Promise<string | null> {
+  try {
+    const response = await fetch("https://api.paystack.co/bank", {
+      headers: {
+        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+      },
+    });
+
+    const data = await response.json();
+    const bank = data.data?.find((b: any) => b.code === bankCode);
+    return bank?.name || null;
+  } catch (error) {
+    console.error("Error fetching bank name:", error);
+    return null;
+  }
+}

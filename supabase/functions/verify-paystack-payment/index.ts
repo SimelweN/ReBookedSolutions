@@ -1,175 +1,362 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import {
-  corsHeaders,
-  createErrorResponse,
-  createSuccessResponse,
-  handleOptionsRequest,
-  createGenericErrorHandler,
-} from "../_shared/cors.ts";
-import {
-  validateAndCreateSupabaseClient,
-  validateRequiredEnvVars,
-  createEnvironmentError,
-  getEnvironmentConfig,
-} from "../_shared/environment.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+  "Content-Type": "application/json",
+};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return handleOptionsRequest();
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    // Validate required environment variables
-    const missingEnvVars = validateRequiredEnvVars([
-      "PAYSTACK_SECRET_KEY",
-      "SUPABASE_URL",
-      "SUPABASE_SERVICE_ROLE_KEY",
-    ]);
-    if (missingEnvVars.length > 0) {
-      return createEnvironmentError(missingEnvVars);
-    }
+    console.log("Verify payment request:", req.method);
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      {
+        global: {
+          headers: { Authorization: req.headers.get("Authorization")! },
+        },
+      },
+    );
 
-    const config = getEnvironmentConfig();
-    const PAYSTACK_SECRET_KEY = config.paystackSecretKey!;
-
-    // Parse and validate request body
-    let requestBody: any;
-    try {
-      requestBody = await req.json();
-    } catch (error) {
-      return createErrorResponse("Invalid JSON in request body", 400);
-    }
-
-    const { reference } = requestBody;
+    const { reference } = await req.json();
 
     if (!reference) {
-      return createErrorResponse("Payment reference is required", 400);
+      return new Response(
+        JSON.stringify({ error: "Payment reference is required" }),
+        {
+          status: 400,
+          headers: corsHeaders,
+        },
+      );
+    }
+
+    // Get current user
+    const {
+      data: { user },
+      error: userError,
+    } = await supabaseClient.auth.getUser();
+    if (userError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: corsHeaders,
+      });
+    }
+
+    // Get payment record
+    const { data: payment, error: paymentError } = await supabaseClient
+      .from("payments")
+      .select(
+        `
+        *,
+        order:order_id(
+          *,
+          buyer:buyer_id(id, email, full_name),
+          seller:seller_id(id, email, full_name),
+          book:book_id(title, author, price)
+        )
+      `,
+      )
+      .eq("reference", reference)
+      .single();
+
+    if (paymentError || !payment) {
+      return new Response(
+        JSON.stringify({ error: "Payment record not found" }),
+        {
+          status: 404,
+          headers: corsHeaders,
+        },
+      );
+    }
+
+    // Verify user has access to this payment
+    if (user.id !== payment.user_id && user.id !== payment.order.seller_id) {
+      return new Response(
+        JSON.stringify({ error: "Not authorized to verify this payment" }),
+        {
+          status: 403,
+          headers: corsHeaders,
+        },
+      );
+    }
+
+    // If payment is already verified, return existing status
+    if (payment.status === "completed") {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          payment: {
+            id: payment.id,
+            reference: payment.reference,
+            status: payment.status,
+            amount: payment.amount,
+            verified_at: payment.verified_at,
+          },
+          order: {
+            id: payment.order.id,
+            status: payment.order.status,
+          },
+        }),
+        {
+          headers: corsHeaders,
+        },
+      );
+    }
+
+    const paystackSecret = Deno.env.get("PAYSTACK_SECRET_KEY");
+    if (!paystackSecret) {
+      throw new Error("Paystack secret key not configured");
     }
 
     // Verify payment with Paystack
-    const response = await fetch(
+    const verificationResponse = await fetch(
       `https://api.paystack.co/transaction/verify/${reference}`,
       {
+        method: "GET",
         headers: {
-          Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+          Authorization: `Bearer ${paystackSecret}`,
           "Content-Type": "application/json",
         },
       },
     );
 
-    const paymentData = await response.json();
+    const verificationData = await verificationResponse.json();
 
-    if (!response.ok) {
-      throw new Error(`Paystack verification failed: ${paymentData.message}`);
+    if (!verificationData.status) {
+      throw new Error(
+        `Paystack verification failed: ${verificationData.message}`,
+      );
     }
 
-    const { data } = paymentData;
+    const transaction = verificationData.data;
+    const verifiedAt = new Date().toISOString();
 
-    // Initialize Supabase client
-    const supabase = validateAndCreateSupabaseClient();
-
-    if (data.status === "success") {
-      // Get the order first to ensure we have seller_id
-      const { data: existingOrder, error: fetchError } = await supabase
-        .from("orders")
-        .select("*")
-        .eq("paystack_ref", reference)
-        .single();
-
-      if (fetchError || !existingOrder) {
-        console.error("Order not found for reference:", reference, fetchError);
-        throw new Error("Order not found for payment verification");
-      }
-
-      const paidAt = new Date(data.paid_at);
-
-      // Update order status to "paid"
-      const { error: orderError } = await supabase
-        .from("orders")
+    // Check if payment was successful
+    if (transaction.status !== "success") {
+      // Update payment as failed
+      await supabaseClient
+        .from("payments")
         .update({
-          status: "paid",
-          payment_data: data,
-          paid_at: paidAt.toISOString(),
-          updated_at: new Date().toISOString(),
+          status: "failed",
+          paystack_response: transaction,
+          verified_at: verifiedAt,
+          updated_at: verifiedAt,
         })
-        .eq("paystack_ref", reference);
+        .eq("reference", reference);
 
-      if (orderError) {
-        console.error("Error updating order:", orderError);
-        // Don't throw - payment was successful, log the issue
-      } else {
-        console.log("✅ Order updated successfully");
-      }
-
-      // Create notification for seller
-      try {
-        const { error: notificationError } = await supabase
-          .from("order_notifications")
-          .insert({
-            order_id: existingOrder.id,
-            user_id: existingOrder.seller_id,
-            type: "payment_received",
-            title: "Payment Received",
-            message: `Payment received for your book order #${existingOrder.id.slice(0, 8)}. Please prepare for delivery.`,
-            read: false,
-            created_at: new Date().toISOString(),
-          });
-
-        if (notificationError) {
-          console.warn(
-            "Failed to create seller notification:",
-            notificationError,
-          );
-        } else {
-          console.log("✅ Seller notification created");
-        }
-      } catch (notifError) {
-        console.warn("Notification creation failed:", notifError);
-      }
-
-      // Send success notification email (optional)
-      try {
-        await supabase.functions.invoke("send-email-notification", {
-          body: {
-            to: data.customer.email,
-            type: "payment_success",
-            data: {
-              reference: reference,
-              amount: (data.amount / 100).toFixed(2),
-            },
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "Payment was not successful",
+          payment: {
+            id: payment.id,
+            reference: reference,
+            status: "failed",
+            paystack_status: transaction.status,
           },
-        });
-      } catch (emailError) {
-        console.warn("Email notification failed:", emailError);
-        // Don't fail the verification for email issues
-      }
+        }),
+        {
+          status: 400,
+          headers: corsHeaders,
+        },
+      );
+    }
+
+    // Verify amount matches
+    const expectedAmount = Math.round(payment.amount * 100); // Convert to kobo
+    if (transaction.amount !== expectedAmount) {
+      throw new Error(
+        `Amount mismatch. Expected: ${expectedAmount}, Received: ${transaction.amount}`,
+      );
+    }
+
+    // Update payment as completed
+    const { error: updatePaymentError } = await supabaseClient
+      .from("payments")
+      .update({
+        status: "completed",
+        paystack_response: transaction,
+        verified_at: verifiedAt,
+        updated_at: verifiedAt,
+      })
+      .eq("reference", reference);
+
+    if (updatePaymentError) {
+      throw new Error(
+        `Failed to update payment status: ${updatePaymentError.message}`,
+      );
+    }
+
+    // Update order status to paid
+    const { error: updateOrderError } = await supabaseClient
+      .from("orders")
+      .update({
+        status: "paid",
+        paid_at: verifiedAt,
+        updated_at: verifiedAt,
+      })
+      .eq("id", payment.order_id);
+
+    if (updateOrderError) {
+      throw new Error(
+        `Failed to update order status: ${updateOrderError.message}`,
+      );
+    }
+
+    // Log audit trail
+    await supabaseClient.from("audit_logs").insert({
+      action: "payment_verified",
+      table_name: "payments",
+      record_id: payment.id,
+      user_id: user.id,
+      details: {
+        reference,
+        order_id: payment.order_id,
+        amount: payment.amount,
+        paystack_status: transaction.status,
+        transaction_id: transaction.id,
+      },
+    });
+
+    // Send notifications
+    const notifications = [
+      {
+        user_id: payment.order.buyer_id,
+        title: "Payment Confirmed",
+        message: `Your payment for "${payment.order.book.title}" has been confirmed`,
+        type: "payment",
+        metadata: {
+          order_id: payment.order_id,
+          reference,
+          amount: payment.amount,
+        },
+      },
+      {
+        user_id: payment.order.seller_id,
+        title: "Payment Received",
+        message: `Payment received for "${payment.order.book.title}"`,
+        type: "payment",
+        metadata: {
+          order_id: payment.order_id,
+          reference,
+          amount: payment.amount,
+        },
+      },
+    ];
+
+    await supabaseClient.from("notifications").insert(notifications);
+
+    // Send email notifications
+    try {
+      // Notify buyer
+      await fetch(
+        `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-email-notification`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: req.headers.get("Authorization")!,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            to: payment.order.buyer.email,
+            template: "payment_confirmed",
+            data: {
+              recipient_name: payment.order.buyer.full_name,
+              book_title: payment.order.book.title,
+              amount: payment.amount,
+              order_id: payment.order_id,
+              reference,
+            },
+          }),
+        },
+      );
+
+      // Notify seller
+      await fetch(
+        `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-email-notification`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: req.headers.get("Authorization")!,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            to: payment.order.seller.email,
+            template: "payment_received",
+            data: {
+              recipient_name: payment.order.seller.full_name,
+              book_title: payment.order.book.title,
+              amount: payment.amount,
+              order_id: payment.order_id,
+              buyer_name: payment.order.buyer.full_name,
+            },
+          }),
+        },
+      );
+    } catch (emailError) {
+      console.error("Failed to send email notifications:", emailError);
+    }
+
+    // Trigger order reminder system for seller commitment
+    try {
+      await fetch(
+        `${Deno.env.get("SUPABASE_URL")}/functions/v1/process-order-reminders`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: req.headers.get("Authorization")!,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            order_id: payment.order_id,
+            reminder_type: "seller_commitment",
+          }),
+        },
+      );
+    } catch (reminderError) {
+      console.error("Failed to trigger reminder system:", reminderError);
     }
 
     return new Response(
       JSON.stringify({
-        status: data.status,
-        reference: data.reference,
-        amount: data.amount,
-        gateway_response: data.gateway_response,
-        paid_at: data.paid_at,
-        channel: data.channel,
-        currency: data.currency,
-        customer: data.customer,
+        success: true,
+        message: "Payment verified successfully",
+        payment: {
+          id: payment.id,
+          reference: reference,
+          status: "completed",
+          amount: payment.amount,
+          verified_at: verifiedAt,
+          transaction_id: transaction.id,
+        },
+        order: {
+          id: payment.order_id,
+          status: "paid",
+          paid_at: verifiedAt,
+        },
       }),
       {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       },
     );
   } catch (error) {
     console.error("Payment verification error:", error);
+
     return new Response(
       JSON.stringify({
-        error: error.message,
-        status: "failed",
+        error: "Internal Server Error",
+        details: error?.message || "Failed to verify payment",
       }),
       {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500,
+        headers: corsHeaders,
       },
     );
   }
