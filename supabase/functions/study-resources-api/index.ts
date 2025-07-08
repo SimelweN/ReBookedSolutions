@@ -49,11 +49,13 @@ serve(async (req) => {
       });
     }
 
+    const action = url.searchParams.get("action");
+
     switch (method) {
       case "GET":
-        if (path === "search") {
+        if (action === "search" || path === "search") {
           return await handleSearch(supabase, url);
-        } else if (path === "resources") {
+        } else if (action === "resources" || path === "resources") {
           return await getResources(supabase, url);
         } else if (url.pathname.includes("resources/")) {
           const id = url.pathname.split("/").pop();

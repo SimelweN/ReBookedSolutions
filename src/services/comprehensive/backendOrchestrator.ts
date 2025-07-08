@@ -20,12 +20,16 @@ export class StudyResourcesService {
     offset?: number;
   }) {
     try {
+      const searchParams = new URLSearchParams();
+      searchParams.set("action", "search");
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.set(key, String(value));
+        }
+      });
+
       const { data, error } = await supabase.functions.invoke(
-        "study-resources-api",
-        {
-          method: "GET",
-          body: { action: "search", ...params },
-        },
+        `study-resources-api?${searchParams.toString()}`,
       );
 
       if (error) throw error;
@@ -52,8 +56,7 @@ export class StudyResourcesService {
       const { data, error } = await supabase.functions.invoke(
         "study-resources-api",
         {
-          method: "POST",
-          body: { action: "create", ...resource },
+          body: resource,
         },
       );
 
