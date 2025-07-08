@@ -286,13 +286,20 @@ export class OrderNotificationService {
         .eq("read", false);
 
       if (error) {
-        console.error("Error marking all notifications as read:", error);
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        console.error("Error marking all notifications as read:", errorMessage);
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error("Exception marking all notifications as read:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error(
+        "Exception marking all notifications as read:",
+        errorMessage,
+      );
       return false;
     }
   }
