@@ -76,10 +76,17 @@ const BroadcastManager = () => {
           }
         }
       } else {
-        // For guests, use localStorage
-        const viewedBroadcasts = JSON.parse(
-          localStorage.getItem("viewedBroadcasts") || "[]",
-        );
+        // For guests, use localStorage (with fallback)
+        let viewedBroadcasts: string[] = [];
+        try {
+          const stored = localStorage.getItem("viewedBroadcasts");
+          viewedBroadcasts = stored ? JSON.parse(stored) : [];
+        } catch (error) {
+          console.warn(
+            "Failed to parse viewed broadcasts from localStorage, using empty array",
+          );
+          viewedBroadcasts = [];
+        }
 
         if (!viewedBroadcasts.includes(latestBroadcast.id)) {
           setCurrentBroadcast(latestBroadcast);
