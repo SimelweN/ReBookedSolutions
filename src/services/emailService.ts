@@ -36,28 +36,44 @@ class EmailService {
     email: "noreply@rebookedsolutions.co.za",
   };
 
+  // Check if running in production or has API key configured
+  private static readonly IS_PRODUCTION = import.meta.env.PROD;
+  private static readonly HAS_API_KEY = Boolean(
+    this.API_KEY && this.API_KEY.trim() !== "",
+  );
+
   /**
-   * Send email using Sender.net API via Supabase Edge Function
-   * Falls back to direct API call if Edge Function is not available
+   * Send email using Supabase Edge Function (recommended approach)
+   * Falls back to simulation in development if API key not configured
    */
   private static async sendEmail(options: EmailOptions): Promise<boolean> {
-    if (!this.API_KEY) {
+    console.log(
+      `📧 Attempting to send email to ${options.to}: ${options.subject}`,
+    );
+    console.log("🔑 API Key configured:", this.HAS_API_KEY);
+    console.log(
+      "🏗️ Environment:",
+      this.IS_PRODUCTION ? "production" : "development",
+    );
+
+    if (!this.HAS_API_KEY && !this.IS_PRODUCTION) {
       console.warn(
-        "⚠️ VITE_SENDER_API not configured - email sending disabled",
+        "⚠️ VITE_SENDER_API not configured - email sending disabled in development",
       );
       console.log(
         `📧 [DEMO] Would send email to ${options.to}: ${options.subject}`,
       );
-      return true; // Return true for demo purposes
+      return true; // Return true for demo purposes in development
     }
 
-    console.log(
-      `📧 Attempting to send email to ${options.to}: ${options.subject}`,
-    );
-    console.log("🔑 API Key configured:", !!this.API_KEY);
-    console.log("🔑 API Key length:", this.API_KEY?.length || 0);
+    if (!this.HAS_API_KEY && this.IS_PRODUCTION) {
+      console.error(
+        "❌ VITE_SENDER_API not configured - email sending failed in production",
+      );
+      throw new Error("Email service not configured - missing API key");
+    }
 
-    // First try using Supabase Edge Function (recommended for production)
+    // Try using Supabase Edge Function (recommended approach)
     try {
       console.log("📡 Calling Supabase Edge Function...");
       const { supabase } = await import("@/integrations/supabase/client");
@@ -69,7 +85,10 @@ class EmailService {
         from: options.from || this.FROM_EMAIL,
       };
 
-      console.log("📦 Edge Function payload:", payload);
+      console.log(
+        "📦 Edge Function payload:",
+        JSON.stringify(payload, null, 2),
+      );
 
       const { data, error } = await supabase.functions.invoke(
         "send-email-notification",
@@ -84,90 +103,107 @@ class EmailService {
         console.log(
           `✅ Email sent via Edge Function to ${options.to}: ${options.subject}`,
         );
-        console.log("📧 Edge Function response details:", data);
         return true;
       }
 
-      console.warn("⚠️ Edge Function failed, trying direct API call:", {
-        error,
-        data,
-      });
+      if (error) {
+        console.error("❌ Edge Function error:", error);
+        throw new Error(
+          `Edge Function failed: ${error.message || JSON.stringify(error)}`,
+        );
+      }
+
+      if (data && !data.success) {
+        console.error("❌ Edge Function returned unsuccessful response:", data);
+        throw new Error(
+          `Email sending failed: ${data.error || data.message || "Unknown error"}`,
+        );
+      }
+
+      throw new Error("Unexpected edge function response format");
     } catch (edgeFunctionError) {
-      console.warn(
-        "⚠️ Edge Function not available, trying direct API call:",
-        edgeFunctionError,
-      );
+      console.error("❌ Edge Function failed:", edgeFunctionError);
+
+      // In production, re-throw the error; in development, continue to fallback
+      if (this.IS_PRODUCTION) {
+        throw edgeFunctionError;
+      }
+
+      console.warn("⚠️ Falling back to direct API call (development only)...");
     }
 
-    // Fallback to direct API call (may hit CORS in browser)
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    // Fallback to direct API call (only in development, will likely hit CORS)
+    if (!this.IS_PRODUCTION) {
+      try {
+        console.log("🔄 Attempting direct API call as fallback...");
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-      const response = await fetch(this.API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.API_KEY}`,
-        },
-        signal: controller.signal,
-        body: JSON.stringify({
-          from: {
-            email: (options.from || this.FROM_EMAIL).email,
-            name: (options.from || this.FROM_EMAIL).name,
+        const response = await fetch(this.API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.API_KEY}`,
           },
-          to: [
-            {
-              email: options.to,
-              name: options.to.split("@")[0],
+          signal: controller.signal,
+          body: JSON.stringify({
+            from: {
+              email: (options.from || this.FROM_EMAIL).email,
+              name: (options.from || this.FROM_EMAIL).name,
             },
-          ],
-          subject: options.subject,
-          content: [
-            {
-              type: "text/html",
-              value: options.html,
-            },
-          ],
-        }),
-      });
+            to: [
+              {
+                email: options.to,
+                name: options.to.split("@")[0],
+              },
+            ],
+            subject: options.subject,
+            content: [
+              {
+                type: "text/html",
+                value: options.html,
+              },
+            ],
+          }),
+        });
 
-      clearTimeout(timeoutId);
+        clearTimeout(timeoutId);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Direct API call failed:", errorText);
-        // Still return true for demo purposes
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(
+            `Direct API call failed: ${response.status} ${errorText}`,
+          );
+        }
+
+        console.log(
+          `✅ Email sent via direct API to ${options.to}: ${options.subject}`,
+        );
+        return true;
+      } catch (directApiError) {
+        // Handle CORS/network errors gracefully in development
+        let errorType = "Network";
+        if (
+          directApiError instanceof DOMException &&
+          directApiError.name === "AbortError"
+        ) {
+          errorType = "Timeout";
+        } else if (directApiError instanceof TypeError) {
+          errorType = "CORS/Network";
+        }
+
+        console.warn(
+          `⚠️ Direct API ${errorType} error - this is expected in browser environments`,
+        );
         console.log(
           `📧 [FALLBACK] Simulated email send to ${options.to}: ${options.subject}`,
         );
-        return true;
+        return true; // Return success for demo purposes in development
       }
-
-      console.log(
-        `✅ Email sent via direct API to ${options.to}: ${options.subject}`,
-      );
-      return true;
-    } catch (directApiError) {
-      // Handle CORS/network errors gracefully
-      let errorType = "Network";
-      if (
-        directApiError instanceof DOMException &&
-        directApiError.name === "AbortError"
-      ) {
-        errorType = "Timeout";
-      } else if (directApiError instanceof TypeError) {
-        errorType = "CORS/Network";
-      }
-
-      console.warn(
-        `⚠️ Direct API ${errorType} error - this is expected in browser environments`,
-      );
-      console.log(
-        `📧 [FALLBACK] Simulated email send to ${options.to}: ${options.subject}`,
-      );
-      return true; // Always return success for demo purposes
     }
+
+    // If we reach here, all methods failed
+    throw new Error("All email sending methods failed");
   }
 
   /**

@@ -76,10 +76,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { SimpleEmailTest } from "@/components/test/SimpleEmailTest";
 import Layout from "@/components/Layout";
 import AdminMobileLayout from "@/components/admin/AdminMobileLayout";
 import CommitSystemService from "@/services/commitSystemService";
-import EmailTester from "@/components/test/EmailTester";
 import CommitTester from "@/components/test/CommitTester";
 import ComprehensiveBackendTester from "@/components/test/ComprehensiveBackendTester";
 import EnvironmentTester from "@/components/test/EnvironmentTester";
@@ -1537,7 +1537,9 @@ const DevDashboard: React.FC = () => {
 
             {/* Email Testing Tab */}
             <TabsContent value="email" className="space-y-6">
-              <EmailTester />
+              <div className="flex justify-center">
+                <SimpleEmailTest />
+              </div>
             </TabsContent>
 
             {/* Commit Testing Tab */}

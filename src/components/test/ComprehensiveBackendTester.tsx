@@ -27,6 +27,7 @@ import {
   Play,
   Zap,
   BookOpen,
+  Mail,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -659,6 +660,29 @@ const ComprehensiveBackendTester = () => {
               className="w-full"
             >
               Test Creation
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <Mail className="h-4 w-4" />
+              Email Service
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Button
+              onClick={() => {
+                // Navigate to the email tab in dev dashboard
+                window.location.hash = "email";
+                window.scrollTo(0, 0);
+              }}
+              disabled={isLoading}
+              size="sm"
+              className="w-full"
+            >
+              Go to Email Tab
             </Button>
           </CardContent>
         </Card>

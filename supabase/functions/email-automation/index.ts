@@ -4,7 +4,7 @@ import { corsHeaders } from "../_shared/cors.ts";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const resendApiKey = Deno.env.get("VITE_RESEND_API_KEY")!;
+const resendApiKey = Deno.env.get("VITE_RESEND_API_KEY");
 const fromEmail = Deno.env.get("FROM_EMAIL") || "notifications@rebooked.co.za";
 
 interface EmailTemplate {
@@ -272,7 +272,34 @@ async function sendEmail(supabase: any, emailData: any) {
     finalSubject = processTemplate(template.subject, variables || {});
   }
 
-  // Send via Resend
+  // Check if API key is configured
+  if (!resendApiKey) {
+    console.log(
+      "⚠️ VITE_RESEND_API_KEY not configured - simulating email send",
+    );
+
+    // Log email sent for simulation
+    await supabase.from("email_logs").insert({
+      to_email: to,
+      subject: finalSubject,
+      template_id: templateId,
+      status: "simulated",
+      sent_at: new Date().toISOString(),
+    });
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        messageId: "simulated_" + Date.now(),
+        message: "Email simulated (no API key configured)",
+      }),
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
+  }
+
+  // Send via Resend API
   const emailPayload = {
     from: `ReBooked Solutions <${fromEmail}>`,
     to: [to],
@@ -313,7 +340,8 @@ async function sendEmail(supabase: any, emailData: any) {
   return new Response(
     JSON.stringify({
       success: true,
-      messageId: responseData.id,
+      messageId: responseData.id || responseData.message_id,
+      data: responseData,
     }),
     {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

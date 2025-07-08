@@ -26,11 +26,12 @@ serve(async (req) => {
   try {
     const { to, subject, html, from }: EmailRequest = await req.json();
 
-    // Get Sender.net API key from environment
+    // Get API keys from environment (try Resend first, then Sender)
+    const resendApiKey = Deno.env.get("VITE_RESEND_API_KEY");
     const senderApiKey = Deno.env.get("SENDER_API_KEY");
 
-    if (!senderApiKey) {
-      console.log("⚠️ SENDER_API_KEY not configured - simulating email send");
+    if (!resendApiKey && !senderApiKey) {
+      console.log("⚠️ No email API key configured - simulating email send");
       return new Response(
         JSON.stringify({
           success: true,
@@ -44,44 +45,67 @@ serve(async (req) => {
       );
     }
 
-    // Send email via Sender.net API
-    const response = await fetch("https://api.sender.net/api/v1/email/send", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${senderApiKey}`,
-      },
-      body: JSON.stringify({
-        from: {
-          email: from.email,
-          name: from.name,
+    // Try Resend first if available, fallback to Sender.net
+    let response, apiUsed;
+
+    if (resendApiKey) {
+      console.log("📧 Using Resend API");
+      apiUsed = "Resend";
+      response = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${resendApiKey}`,
         },
-        to: [
-          {
-            email: to,
-            name: to.split("@")[0],
+        body: JSON.stringify({
+          from: `${from.name} <${from.email}>`,
+          to: [to],
+          subject,
+          html,
+        }),
+      });
+    } else {
+      console.log("📧 Using Sender.net API");
+      apiUsed = "Sender.net";
+      response = await fetch("https://api.sender.net/api/v1/email/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${senderApiKey}`,
+        },
+        body: JSON.stringify({
+          from: {
+            email: from.email,
+            name: from.name,
           },
-        ],
-        subject,
-        content: [
-          {
-            type: "text/html",
-            value: html,
-          },
-        ],
-      }),
-    });
+          to: [
+            {
+              email: to,
+              name: to.split("@")[0],
+            },
+          ],
+          subject,
+          content: [
+            {
+              type: "text/html",
+              value: html,
+            },
+          ],
+        }),
+      });
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Sender.net API error:", errorText);
+      console.error(`${apiUsed} API error:`, errorText);
 
       // Return success anyway for demo purposes
       return new Response(
         JSON.stringify({
           success: true,
-          message: "Email sending failed, but simulated for demo",
+          message: `Email sending failed via ${apiUsed}, but simulated for demo`,
           error: errorText,
+          api: apiUsed,
           details: { to, subject, from },
         }),
         {
@@ -92,13 +116,14 @@ serve(async (req) => {
     }
 
     const result = await response.json();
-    console.log("✅ Email sent successfully via Sender.net:", { to, subject });
+    console.log(`✅ Email sent successfully via ${apiUsed}:`, { to, subject });
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Email sent successfully",
+        message: `Email sent successfully via ${apiUsed}`,
         data: result,
+        api: apiUsed,
         details: { to, subject, from },
       }),
       {
