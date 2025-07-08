@@ -4,7 +4,7 @@ import {
   createErrorResponse,
   createSuccessResponse,
   handleOptionsRequest,
-  createGenericErrorHandler
+  createGenericErrorHandler,
 } from "../_shared/cors.ts";
 
 interface FastwayTrackingEvent {
@@ -53,10 +53,6 @@ serve(async (req) => {
 
     if (!trackingNumber) {
       return createErrorResponse("Missing tracking_number", 400);
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
     }
 
     console.log("Tracking request for:", trackingNumber);
