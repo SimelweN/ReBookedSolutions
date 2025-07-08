@@ -5,8 +5,12 @@
  * Detects missing configuration and guides through setup
  */
 
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 function detectEnvironmentIssues() {
   const issues = [];
@@ -146,9 +150,7 @@ function generateSetupReport() {
   console.log("\n📋 NEXT STEPS:");
   if (issues.length > 0) {
     console.log("1. Fix the critical issues above");
-    console.log(
-      "2. Run this script again to verify: node scripts/auto-setup.js",
-    );
+    console.log("2. Run this script again to verify: npm run check-setup");
     console.log("3. Start the application: npm run dev");
   } else {
     console.log("1. Optional: Configure the services listed in warnings");
@@ -156,8 +158,8 @@ function generateSetupReport() {
   }
 
   console.log("\n💡 QUICK SETUP:");
-  console.log("- Run interactive setup: node setup-environment.js");
-  console.log("- View documentation: Check README.md or setup guides");
+  console.log("- Run interactive setup: npm run setup");
+  console.log("- View documentation: Check SETUP.md");
 }
 
 function createSampleEnv() {
@@ -202,8 +204,9 @@ function main() {
   generateSetupReport();
 }
 
-if (require.main === module) {
+// Run if this is the main module
+if (import.meta.url === `file://${process.argv[1]}`) {
   main();
 }
 
-module.exports = { detectEnvironmentIssues, generateSetupReport };
+export { detectEnvironmentIssues, generateSetupReport };
