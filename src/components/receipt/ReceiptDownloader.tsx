@@ -81,31 +81,79 @@ const ReceiptDownloader: React.FC<ReceiptDownloaderProps> = (props) => {
       });
 
       // Convert data URL to blob
-      const response = await fetch(dataUrl);
-      const blob = await response.blob();
+      let blob: Blob;
+      try {
+        const response = await fetch(dataUrl);
+        if (!response.ok) throw new Error("Failed to convert image");
+        blob = await response.blob();
+      } catch (fetchError) {
+        // Fallback: create blob from data URL manually
+        const base64 = dataUrl.split(",")[1];
+        const binaryString = atob(base64);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        blob = new Blob([bytes], { type: "image/png" });
+      }
+
       const file = new File([blob], `receipt-${props.reference}.png`, {
         type: "image/png",
       });
 
-      if (navigator.share && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          title: "Payment Receipt",
-          text: `Receipt for payment reference: ${props.reference}`,
-          files: [file],
-        });
-        toast.success("Receipt shared successfully");
-      } else {
-        // Fallback: copy to clipboard
-        await navigator.clipboard.write([
-          new ClipboardItem({
-            "image/png": blob,
-          }),
-        ]);
-        toast.success("Receipt copied to clipboard");
+      // Try native sharing first
+      if (
+        navigator.share &&
+        navigator.canShare &&
+        navigator.canShare({ files: [file] })
+      ) {
+        try {
+          await navigator.share({
+            title: "Payment Receipt",
+            text: `Receipt for payment reference: ${props.reference}`,
+            files: [file],
+          });
+          toast.success("Receipt shared successfully");
+          return;
+        } catch (shareError) {
+          console.warn("Native sharing failed, trying clipboard");
+        }
+      }
+
+      // Fallback: try clipboard API
+      try {
+        if (navigator.clipboard && navigator.clipboard.write) {
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              "image/png": blob,
+            }),
+          ]);
+          toast.success("Receipt copied to clipboard");
+          return;
+        }
+      } catch (clipboardError) {
+        console.warn("Clipboard API failed, trying download");
+      }
+
+      // Final fallback: download the file
+      try {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `receipt-${props.reference}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        toast.success("Receipt downloaded to your device");
+      } catch (downloadError) {
+        throw new Error("All sharing methods failed");
       }
     } catch (error) {
       console.error("Error sharing receipt:", error);
-      toast.error("Failed to share receipt");
+      toast.error(
+        "Failed to share receipt. Please try taking a screenshot instead.",
+      );
     } finally {
       setIsGenerating(false);
     }
