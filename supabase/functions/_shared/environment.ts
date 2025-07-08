@@ -43,6 +43,8 @@ export function validateRequiredEnvVars(requiredVars: string[]): string[] {
   return missing;
 }
 
+import { corsHeaders } from "./cors.ts";
+
 export function createEnvironmentError(missingVars: string[]): Response {
   return new Response(
     JSON.stringify({
@@ -53,7 +55,7 @@ export function createEnvironmentError(missingVars: string[]): Response {
     }),
     {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     },
   );
 }
