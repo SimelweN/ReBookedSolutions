@@ -126,15 +126,20 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
       {/* Main image with modern format support */}
       {shouldLoad && !hasError && (
         <picture>
-          {/* AVIF for maximum compression (supported by modern browsers) */}
-          <source srcSet={avifSrc} type="image/avif" />
+          {/* Only use modern formats if not using fallback */}
+          {!fallbackUsed && (
+            <>
+              {/* AVIF for maximum compression (supported by modern browsers) */}
+              <source srcSet={avifSrc} type="image/avif" />
 
-          {/* WebP for good compression (widely supported) */}
-          <source srcSet={webpSrc} type="image/webp" />
+              {/* WebP for good compression (widely supported) */}
+              <source srcSet={webpSrc} type="image/webp" />
+            </>
+          )}
 
-          {/* Fallback to original format */}
+          {/* Fallback to original format or placeholder */}
           <img
-            src={optimizedSrc}
+            src={fallbackUsed ? "/placeholder.svg" : optimizedSrc}
             alt={alt}
             width={width}
             height={height}
