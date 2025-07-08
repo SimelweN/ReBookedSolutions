@@ -25,7 +25,16 @@ serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    // Check environment variables first
+    if (missingVars.length > 0) {
+      return createEnvironmentError(missingVars);
+    }
+
+    const config = getEnvironmentConfig();
+    const supabase = createClient(
+      config.supabaseUrl,
+      config.supabaseServiceKey,
+    );
 
     // Get auth user and verify admin access
     const authHeader = req.headers.get("Authorization")!;
