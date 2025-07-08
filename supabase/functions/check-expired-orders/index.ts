@@ -105,13 +105,13 @@ serve(async (req: Request) => {
         failed,
         total: expiredOrders?.length || 0,
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      { headers: corsHeaders },
     );
   } catch (error) {
     console.error("Error in check-expired-orders:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 });

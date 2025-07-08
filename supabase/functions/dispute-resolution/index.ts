@@ -44,14 +44,14 @@ serve(async (req: Request) => {
       default:
         return new Response(JSON.stringify({ error: "Invalid action" }), {
           status: 404,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         });
     }
   } catch (error) {
     console.error("Error in dispute-resolution:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 });
@@ -75,7 +75,7 @@ async function handleCreateDispute(req: Request) {
   if (orderError || !order) {
     return new Response(JSON.stringify({ error: "Order not found" }), {
       status: 404,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 
@@ -88,7 +88,7 @@ async function handleCreateDispute(req: Request) {
   if (userError || !reportedUser) {
     return new Response(JSON.stringify({ error: "Reported user not found" }), {
       status: 404,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 
@@ -138,7 +138,7 @@ async function handleCreateDispute(req: Request) {
       disputeId: report.id,
       message: "Dispute created successfully and will be reviewed by our team.",
     }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    { headers: corsHeaders },
   );
 }
 
@@ -176,7 +176,7 @@ async function handleUpdateDisputeStatus(req: Request) {
       message: "Dispute status updated successfully",
       report,
     }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    { headers: corsHeaders },
   );
 }
 
@@ -210,7 +210,7 @@ async function handleGetDisputes(req: Request) {
       success: true,
       disputes,
     }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    { headers: corsHeaders },
   );
 }
 
@@ -251,7 +251,7 @@ async function handleResolveDispute(req: Request) {
       success: true,
       message: "Dispute resolved successfully",
     }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    { headers: corsHeaders },
   );
 }
 
@@ -287,6 +287,6 @@ async function handleEscalateDispute(req: Request) {
       success: true,
       message: "Dispute escalated successfully",
     }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    { headers: corsHeaders },
   );
 }

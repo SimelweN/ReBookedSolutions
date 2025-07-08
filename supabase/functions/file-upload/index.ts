@@ -24,7 +24,7 @@ serve(async (req: Request) => {
     if (req.method !== "POST") {
       return new Response(JSON.stringify({ error: "Method not allowed" }), {
         status: 405,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       });
     }
 
@@ -36,7 +36,7 @@ serve(async (req: Request) => {
     if (!file) {
       return new Response(JSON.stringify({ error: "No file provided" }), {
         status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       });
     }
 
@@ -49,7 +49,7 @@ serve(async (req: Request) => {
         }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -61,7 +61,7 @@ serve(async (req: Request) => {
         JSON.stringify({ error: "File too large. Maximum size is 5MB." }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -86,7 +86,7 @@ serve(async (req: Request) => {
       console.error("Storage upload error:", error);
       return new Response(JSON.stringify({ error: "Failed to upload file" }), {
         status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       });
     }
 
@@ -115,7 +115,7 @@ serve(async (req: Request) => {
         publicUrl: publicUrlData.publicUrl,
         fileSize: file.size,
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      { headers: corsHeaders },
     );
   } catch (error) {
     console.error("Error in file-upload:", error);

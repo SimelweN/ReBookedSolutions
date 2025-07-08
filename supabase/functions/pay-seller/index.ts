@@ -38,7 +38,7 @@ serve(async (req) => {
         JSON.stringify({ error: "Missing required fields" }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -83,7 +83,7 @@ serve(async (req) => {
         JSON.stringify({ error: "Payout already processed for this order" }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -213,7 +213,7 @@ serve(async (req) => {
         transfer_code: transferData.data.transfer_code,
       }),
       {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       },
     );
   } catch (error) {

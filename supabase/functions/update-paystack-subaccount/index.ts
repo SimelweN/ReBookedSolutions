@@ -37,7 +37,7 @@ serve(async (req) => {
     if (!seller_id) {
       return new Response(JSON.stringify({ error: "Seller ID is required" }), {
         status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       });
     }
 
@@ -49,7 +49,7 @@ serve(async (req) => {
     if (userError || !user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       });
     }
 
@@ -65,7 +65,7 @@ serve(async (req) => {
         JSON.stringify({ error: "Seller profile not found" }),
         {
           status: 404,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -84,7 +84,7 @@ serve(async (req) => {
         }),
         {
           status: 403,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -94,7 +94,7 @@ serve(async (req) => {
         JSON.stringify({ error: "Seller does not have a Paystack subaccount" }),
         {
           status: 404,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -120,7 +120,7 @@ serve(async (req) => {
         JSON.stringify({ error: "No update data provided" }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -253,7 +253,7 @@ serve(async (req) => {
         },
       }),
       {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       },
     );
   } catch (error) {

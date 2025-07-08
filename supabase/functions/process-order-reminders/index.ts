@@ -192,13 +192,13 @@ serve(async (req: Request) => {
         collectionRemindersFailed,
         totalProcessed: remindersSent + collectionRemindersSent,
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      { headers: corsHeaders },
     );
   } catch (error) {
     console.error("Error in process-order-reminders:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 });

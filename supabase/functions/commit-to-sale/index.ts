@@ -21,7 +21,7 @@ serve(async (req: Request) => {
     if (req.method !== "POST") {
       return new Response(JSON.stringify({ error: "Method not allowed" }), {
         status: 405,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       });
     }
 
@@ -32,7 +32,7 @@ serve(async (req: Request) => {
         JSON.stringify({ error: "Order ID and Seller ID are required" }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -55,7 +55,7 @@ serve(async (req: Request) => {
         JSON.stringify({ error: "Order not found or unauthorized" }),
         {
           status: 404,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -65,7 +65,7 @@ serve(async (req: Request) => {
         JSON.stringify({ error: "Order is not in paid status" }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -122,13 +122,13 @@ serve(async (req: Request) => {
           committed_at: new Date().toISOString(),
         },
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      { headers: corsHeaders },
     );
   } catch (error) {
     console.error("Error in commit-to-sale:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 });

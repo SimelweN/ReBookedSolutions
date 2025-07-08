@@ -17,7 +17,7 @@ serve(async (req: Request) => {
     if (req.method !== "GET") {
       return new Response(JSON.stringify({ error: "Method not allowed" }), {
         status: 405,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       });
     }
 
@@ -29,7 +29,7 @@ serve(async (req: Request) => {
         JSON.stringify({ error: "Tracking number is required" }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -67,7 +67,7 @@ serve(async (req: Request) => {
           },
           fallback: true,
         }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        { headers: corsHeaders },
       );
     }
 
@@ -98,7 +98,7 @@ serve(async (req: Request) => {
             events: data.events || [],
           },
         }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        { headers: corsHeaders },
       );
     } catch (apiError) {
       console.error("Fastway tracking API error:", apiError);
@@ -121,7 +121,7 @@ serve(async (req: Request) => {
           fallback: true,
           error: "API error",
         }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        { headers: corsHeaders },
       );
     }
   } catch (error) {
@@ -147,7 +147,7 @@ serve(async (req: Request) => {
         fallback: true,
         error: error.message,
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      { headers: corsHeaders },
     );
   }
 });

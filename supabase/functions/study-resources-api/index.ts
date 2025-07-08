@@ -50,7 +50,7 @@ serve(async (req) => {
       default:
         return new Response(JSON.stringify({ error: "Method not allowed" }), {
           status: 405,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         });
     }
   } catch (error) {
@@ -92,7 +92,7 @@ async function handleGet(
       }
       return new Response(JSON.stringify({ error: "Endpoint not found" }), {
         status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       });
   }
 }
@@ -106,7 +106,7 @@ async function handlePost(
   if (!user) {
     return new Response(JSON.stringify({ error: "Authentication required" }), {
       status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 
@@ -123,7 +123,7 @@ async function handlePost(
     default:
       return new Response(JSON.stringify({ error: "Endpoint not found" }), {
         status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       });
   }
 }
@@ -137,7 +137,7 @@ async function handlePut(
   if (!user) {
     return new Response(JSON.stringify({ error: "Authentication required" }), {
       status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 
@@ -150,7 +150,7 @@ async function handlePut(
 
   return new Response(JSON.stringify({ error: "Endpoint not found" }), {
     status: 404,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    headers: corsHeaders,
   });
 }
 
@@ -158,7 +158,7 @@ async function handleDelete(supabaseClient: any, path: string, user: any) {
   if (!user) {
     return new Response(JSON.stringify({ error: "Authentication required" }), {
       status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 
@@ -169,7 +169,7 @@ async function handleDelete(supabaseClient: any, path: string, user: any) {
 
   return new Response(JSON.stringify({ error: "Endpoint not found" }), {
     status: 404,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    headers: corsHeaders,
   });
 }
 
@@ -246,7 +246,7 @@ async function getResources(
       },
     }),
     {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     },
   );
 }
@@ -270,7 +270,7 @@ async function getResource(supabaseClient: any, resourceId: string, user: any) {
   if (error || !resource) {
     return new Response(JSON.stringify({ error: "Resource not found" }), {
       status: 404,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 
@@ -280,7 +280,7 @@ async function getResource(supabaseClient: any, resourceId: string, user: any) {
       data: resource,
     }),
     {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     },
   );
 }
@@ -293,7 +293,7 @@ async function getMyResources(
   if (!user) {
     return new Response(JSON.stringify({ error: "Authentication required" }), {
       status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 
@@ -329,7 +329,7 @@ async function getMyResources(
       data: resources,
     }),
     {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     },
   );
 }
@@ -357,7 +357,7 @@ async function createResource(supabaseClient: any, body: any, user: any) {
       }),
       {
         status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       },
     );
   }
@@ -402,7 +402,7 @@ async function createResource(supabaseClient: any, body: any, user: any) {
       message: "Resource created successfully",
     }),
     {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     },
   );
 }
@@ -423,7 +423,7 @@ async function updateResource(
   if (checkError || !existingResource) {
     return new Response(JSON.stringify({ error: "Resource not found" }), {
       status: 404,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 
@@ -432,7 +432,7 @@ async function updateResource(
       JSON.stringify({ error: "Not authorized to update this resource" }),
       {
         status: 403,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       },
     );
   }
@@ -469,7 +469,7 @@ async function updateResource(
       message: "Resource updated successfully",
     }),
     {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     },
   );
 }
@@ -489,7 +489,7 @@ async function deleteResource(
   if (checkError || !existingResource) {
     return new Response(JSON.stringify({ error: "Resource not found" }), {
       status: 404,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 
@@ -498,7 +498,7 @@ async function deleteResource(
       JSON.stringify({ error: "Not authorized to delete this resource" }),
       {
         status: 403,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       },
     );
   }
@@ -531,7 +531,7 @@ async function deleteResource(
       message: "Resource deleted successfully",
     }),
     {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     },
   );
 }
@@ -542,7 +542,7 @@ async function recordDownload(supabaseClient: any, body: any, user: any) {
   if (!resource_id) {
     return new Response(JSON.stringify({ error: "Resource ID is required" }), {
       status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 
@@ -565,7 +565,7 @@ async function recordDownload(supabaseClient: any, body: any, user: any) {
       message: "Download recorded",
     }),
     {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     },
   );
 }
@@ -587,7 +587,7 @@ async function getCategories(supabaseClient: any) {
       data: categories,
     }),
     {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     },
   );
 }
@@ -600,7 +600,7 @@ async function createCategory(supabaseClient: any, body: any, user: any) {
       JSON.stringify({ error: "Category name is required" }),
       {
         status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       },
     );
   }
@@ -627,7 +627,7 @@ async function createCategory(supabaseClient: any, body: any, user: any) {
       message: "Category created successfully",
     }),
     {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     },
   );
 }
@@ -649,7 +649,7 @@ async function getInstitutions(supabaseClient: any) {
       data: institutions,
     }),
     {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     },
   );
 }

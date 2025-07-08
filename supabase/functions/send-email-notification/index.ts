@@ -33,7 +33,7 @@ serve(async (req: Request) => {
     if (req.method !== "POST") {
       return new Response(JSON.stringify({ error: "Method not allowed" }), {
         status: 405,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       });
     }
 
@@ -53,7 +53,7 @@ serve(async (req: Request) => {
         JSON.stringify({ error: "Missing required fields: to, subject" }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -123,7 +123,7 @@ serve(async (req: Request) => {
       }),
       {
         status: result.success ? 200 : 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       },
     );
   } catch (error) {

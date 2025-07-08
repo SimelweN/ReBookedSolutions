@@ -42,14 +42,14 @@ serve(async (req: Request) => {
       default:
         return new Response(JSON.stringify({ error: "Invalid action" }), {
           status: 404,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         });
     }
   } catch (error) {
     console.error("Error in realtime-notifications:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 });
@@ -131,7 +131,7 @@ async function handleSendNotification(req: Request) {
       success: true,
       message: "Notification sent successfully",
     }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    { headers: corsHeaders },
   );
 }
 
@@ -144,7 +144,7 @@ async function handleGetNotifications(req: Request) {
   if (!userId) {
     return new Response(JSON.stringify({ error: "User ID is required" }), {
       status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 
@@ -164,7 +164,7 @@ async function handleGetNotifications(req: Request) {
       success: true,
       notifications,
     }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    { headers: corsHeaders },
   );
 }
 
@@ -186,7 +186,7 @@ async function handleMarkAsRead(req: Request) {
       success: true,
       message: "Notification marked as read",
     }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    { headers: corsHeaders },
   );
 }
 
@@ -197,7 +197,7 @@ async function handleGetUnreadCount(req: Request) {
   if (!userId) {
     return new Response(JSON.stringify({ error: "User ID is required" }), {
       status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 
@@ -216,6 +216,6 @@ async function handleGetUnreadCount(req: Request) {
       success: true,
       unreadCount: count || 0,
     }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    { headers: corsHeaders },
   );
 }

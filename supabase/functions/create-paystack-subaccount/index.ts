@@ -23,7 +23,7 @@ serve(async (req: Request) => {
     if (req.method !== "POST") {
       return new Response(JSON.stringify({ error: "Method not allowed" }), {
         status: 405,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       });
     }
 
@@ -40,7 +40,7 @@ serve(async (req: Request) => {
         JSON.stringify({ error: "Missing required fields" }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -50,7 +50,7 @@ serve(async (req: Request) => {
         JSON.stringify({ error: "Paystack configuration missing" }),
         {
           status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -69,7 +69,7 @@ serve(async (req: Request) => {
           subaccount: existingSubaccount,
           message: "Subaccount already exists",
         }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        { headers: corsHeaders },
       );
     }
 
@@ -106,7 +106,7 @@ serve(async (req: Request) => {
         }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -159,13 +159,13 @@ serve(async (req: Request) => {
         subaccount: subaccount,
         message: "Subaccount created successfully",
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      { headers: corsHeaders },
     );
   } catch (error) {
     console.error("Error in create-paystack-subaccount:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 });

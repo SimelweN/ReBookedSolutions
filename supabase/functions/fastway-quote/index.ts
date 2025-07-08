@@ -17,7 +17,7 @@ serve(async (req: Request) => {
     if (req.method !== "POST") {
       return new Response(JSON.stringify({ error: "Method not allowed" }), {
         status: 405,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       });
     }
 
@@ -30,7 +30,7 @@ serve(async (req: Request) => {
         }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -59,7 +59,7 @@ serve(async (req: Request) => {
           ],
           provider: "fastway",
         }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        { headers: corsHeaders },
       );
     }
 
@@ -120,7 +120,7 @@ serve(async (req: Request) => {
           quotes,
           provider: "fastway",
         }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        { headers: corsHeaders },
       );
     } catch (apiError) {
       console.error("Fastway API error:", apiError);
@@ -141,7 +141,7 @@ serve(async (req: Request) => {
           provider: "fastway",
           fallback: true,
         }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        { headers: corsHeaders },
       );
     }
   } catch (error) {
@@ -164,7 +164,7 @@ serve(async (req: Request) => {
         fallback: true,
         error: error.message,
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      { headers: corsHeaders },
     );
   }
 });

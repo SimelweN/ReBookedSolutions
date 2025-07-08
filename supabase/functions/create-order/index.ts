@@ -24,7 +24,7 @@ serve(async (req: Request) => {
     if (req.method !== "POST") {
       return new Response(JSON.stringify({ error: "Method not allowed" }), {
         status: 405,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       });
     }
 
@@ -47,7 +47,7 @@ serve(async (req: Request) => {
         JSON.stringify({ error: "Missing required fields" }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -62,7 +62,7 @@ serve(async (req: Request) => {
     if (bookError || !book) {
       return new Response(JSON.stringify({ error: "Book not found" }), {
         status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: corsHeaders,
       });
     }
 
@@ -71,7 +71,7 @@ serve(async (req: Request) => {
         JSON.stringify({ error: "Book is no longer available" }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -156,7 +156,7 @@ serve(async (req: Request) => {
         order: order,
         message: "Order created successfully",
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      { headers: corsHeaders },
     );
   } catch (error) {
     console.error("Error in create-order:", error);

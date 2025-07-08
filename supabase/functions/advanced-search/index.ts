@@ -41,7 +41,7 @@ serve(async (req: Request) => {
         JSON.stringify({ error: "Method not allowed. Use POST." }),
         {
           status: 405,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: corsHeaders,
         },
       );
     }
@@ -50,7 +50,7 @@ serve(async (req: Request) => {
     const results = await performAdvancedSearch(filters);
 
     return new Response(JSON.stringify(results), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   } catch (error) {
     console.error("Error in advanced-search:", error);
