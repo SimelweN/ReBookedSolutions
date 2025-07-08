@@ -44,39 +44,37 @@ class EmailService {
   );
 
   /**
-   * Send email using Supabase Edge Function (recommended approach)
-   * Falls back to simulation in development if API key not configured
+   * Send email using Supabase Edge Function with automatic fallback
    */
   private static async sendEmail(options: EmailOptions): Promise<boolean> {
     console.log(
       `📧 Attempting to send email to ${options.to}: ${options.subject}`,
     );
-    console.log("🔑 API Key configured:", this.HAS_API_KEY);
-    console.log(
-      "🏗️ Environment:",
-      this.IS_PRODUCTION ? "production" : "development",
-    );
 
-    if (!this.HAS_API_KEY && !this.IS_PRODUCTION) {
-      console.warn(
-        "⚠️ VITE_SENDER_API not configured - email sending disabled in development",
-      );
-      console.log(
-        `📧 [DEMO] Would send email to ${options.to}: ${options.subject}`,
-      );
-      return true; // Return true for demo purposes in development
+    // Try using fallback service for non-critical email functions
+    const result = await functionFallback.callFunction('send-email-notification', {
+      to: options.to,
+      subject: options.subject,
+      html: options.html,
+      from: options.from || this.FROM_EMAIL
+    });
+
+    if (result.success) {
+      console.log("✅ Email sent successfully");
+      return true;
+    } else {
+      console.warn("⚠️ Email function failed, using fallback simulation");
+      console.log(`📧 [FALLBACK] Simulated email to ${options.to}: ${options.subject}`);
+
+      // In development, just log and return success
+      if (!this.IS_PRODUCTION) {
+        return true;
+      }
+
+      // In production, we should still try to handle this gracefully
+      console.error("❌ Email service failed in production:", result.error);
+      return false;
     }
-
-    if (!this.HAS_API_KEY && this.IS_PRODUCTION) {
-      console.error(
-        "❌ VITE_SENDER_API not configured - email sending failed in production",
-      );
-      throw new Error("Email service not configured - missing API key");
-    }
-
-    // Try using Supabase Edge Function (recommended approach)
-    try {
-      console.log("📡 Calling Supabase Edge Function...");
       const { supabase } = await import("@/integrations/supabase/client");
 
       const payload = {
