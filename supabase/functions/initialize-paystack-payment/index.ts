@@ -1,7 +1,13 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { corsHeaders } from "../_shared/cors.ts";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { corsHeaders, createErrorResponse } from "../_shared/cors.ts";
+import {
+  validateRequiredEnvVars,
+  createEnvironmentError,
+} from "../_shared/environment.ts";
 
-const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
+// Validate required environment variables
+const requiredVars = ["PAYSTACK_SECRET_KEY"];
+const missingVars = validateRequiredEnvVars(requiredVars);
 
 serve(async (req) => {
   // Handle CORS preflight requests
