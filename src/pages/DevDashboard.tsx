@@ -1564,6 +1564,27 @@ const DevDashboard: React.FC = () => {
             <TabsContent value="env-fix" className="space-y-6">
               <EnvironmentTester />
             </TabsContent>
+
+            {/* Function Testing & Fallbacks Tab */}
+            <TabsContent value="function-testing" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <TestTube className="h-5 w-5 text-blue-600" />
+                    <span>Function Fallback Testing</span>
+                  </CardTitle>
+                  <AlertDescription className="mt-2">
+                    Test non-critical functions with automatic fallback support.
+                    Critical functions (payments, emails) have retry mechanisms,
+                    while non-critical functions use client-side alternatives
+                    when they fail.
+                  </AlertDescription>
+                </CardHeader>
+                <CardContent>
+                  <FunctionTester />
+                </CardContent>
+              </Card>
+            </TabsContent>
           </Tabs>
         </div>
       </div>
