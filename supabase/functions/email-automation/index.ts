@@ -366,10 +366,7 @@ async function sendTemplateEmail(supabase: any, templateData: any) {
   const { templateId, to, variables } = templateData;
 
   if (!EMAIL_TEMPLATES[templateId]) {
-    return new Response(JSON.stringify({ error: "Template not found" }), {
-      status: 404,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createErrorResponse("Template not found", 404);
   }
 
   return await sendEmail(supabase, { to, templateId, variables });
