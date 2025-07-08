@@ -179,10 +179,7 @@ serve(async (req) => {
 
     if (orderError) {
       console.error("Error creating order:", orderError);
-      return new Response(JSON.stringify({ error: "Failed to create order" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return createErrorResponse("Failed to create order", 500, { orderError });
     }
 
     console.log("Order created successfully:", order.id);
