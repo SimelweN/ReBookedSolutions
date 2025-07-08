@@ -667,6 +667,13 @@ const FunctionTester = () => {
                         <SelectItem value="tracking">
                           Tracking Functions
                         </SelectItem>
+                        <SelectItem value="notifications">
+                          Notification Functions
+                        </SelectItem>
+                        <SelectItem value="orders">Order Management</SelectItem>
+                        <SelectItem value="automation">
+                          Automation Functions
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
