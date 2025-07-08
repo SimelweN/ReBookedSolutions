@@ -370,10 +370,7 @@ async function deleteFile(supabase: any, filePath: string, userId: string) {
     .single();
 
   if (fileRecord?.user_id !== userId) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 403,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return createErrorResponse("Unauthorized", 403);
   }
 
   // Delete from storage
