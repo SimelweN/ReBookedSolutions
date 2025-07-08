@@ -74,19 +74,45 @@ export class CommitSystemService {
       }
 
       // Update status to declined/cancelled
-      const { error: updateError } = await supabase
-        .from(tableName)
-        .update({
-          status: "declined_by_seller",
-          seller_committed: false,
-          declined_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", transactionId)
-        .eq("seller_id", sellerId);
+      // Try with declined_at first, fallback without it if column doesn't exist
+      let updateData = {
+        status: "declined_by_seller",
+        seller_committed: false,
+        updated_at: new Date().toISOString(),
+      };
 
-      if (updateError) {
-        throw new Error(`Failed to decline commit: ${updateError.message}`);
+      // Try to add declined_at if the column exists
+      try {
+        const { error: updateError } = await supabase
+          .from(tableName)
+          .update({
+            ...updateData,
+            declined_at: new Date().toISOString(),
+          })
+          .eq("id", transactionId)
+          .eq("seller_id", sellerId);
+
+        if (updateError) {
+          // If error mentions declined_at column, try without it
+          if (updateError.message.includes("declined_at")) {
+            console.warn("declined_at column not found, updating without it");
+            const { error: fallbackError } = await supabase
+              .from(tableName)
+              .update(updateData)
+              .eq("id", transactionId)
+              .eq("seller_id", sellerId);
+
+            if (fallbackError) {
+              throw new Error(
+                `Failed to decline commit: ${fallbackError.message}`,
+              );
+            }
+          } else {
+            throw new Error(`Failed to decline commit: ${updateError.message}`);
+          }
+        }
+      } catch (error) {
+        throw error;
       }
 
       // Create notification for buyer
