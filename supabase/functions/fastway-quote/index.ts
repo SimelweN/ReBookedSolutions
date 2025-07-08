@@ -4,7 +4,7 @@ import {
   createErrorResponse,
   createSuccessResponse,
   handleOptionsRequest,
-  createGenericErrorHandler
+  createGenericErrorHandler,
 } from "../_shared/cors.ts";
 
 interface FastwayQuoteRequest {
@@ -55,16 +55,7 @@ serve(async (req) => {
     ) {
       return createErrorResponse(
         "Missing required fields: collection_postcode, delivery_postcode, weight",
-        400
-      );
-        JSON.stringify({
-          error:
-            "Missing required fields: collection_postcode, delivery_postcode, weight",
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+        400,
       );
     }
 
