@@ -83,6 +83,7 @@ import CommitSystemService from "@/services/commitSystemService";
 import CommitTester from "@/components/test/CommitTester";
 import ComprehensiveBackendTester from "@/components/test/ComprehensiveBackendTester";
 import EnvironmentTester from "@/components/test/EnvironmentTester";
+import FunctionTester from "@/components/admin/FunctionTester";
 
 interface TestResult {
   id: string;
