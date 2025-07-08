@@ -1,3 +1,5 @@
+import { corsHeaders } from "./cors.ts";
+
 export interface EnvironmentConfig {
   supabaseUrl: string;
   supabaseServiceKey: string;
@@ -53,7 +55,7 @@ export function createEnvironmentError(missingVars: string[]): Response {
     }),
     {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     },
   );
 }

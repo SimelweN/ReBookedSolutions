@@ -1,19 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { corsHeaders, createErrorResponse } from "../_shared/cors.ts";
-import {
-  getEnvironmentConfig,
-  validateRequiredEnvVars,
-  createEnvironmentError,
-} from "../_shared/environment.ts";
 
-// Validate required environment variables
-const requiredVars = [
-  "SUPABASE_URL",
-  "SUPABASE_SERVICE_ROLE_KEY",
-  "PAYSTACK_SECRET_KEY",
-];
-const missingVars = validateRequiredEnvVars(requiredVars);
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
 serve(async (req) => {
   // Handle CORS
@@ -22,13 +14,20 @@ serve(async (req) => {
   }
 
   try {
-    // Check environment variables first
-    if (missingVars.length > 0) {
-      return createEnvironmentError(missingVars);
-    }
+    const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
 
-    const config = getEnvironmentConfig();
-    const PAYSTACK_SECRET_KEY = config.paystackSecretKey!;
+    if (!PAYSTACK_SECRET_KEY) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "Paystack configuration not available",
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
 
     const { amount, recipient, reason, reference } = await req.json();
 

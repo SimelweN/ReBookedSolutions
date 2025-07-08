@@ -1,27 +1,31 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { corsHeaders, createErrorResponse } from "../_shared/cors.ts";
-import {
-  validateRequiredEnvVars,
-  createEnvironmentError,
-} from "../_shared/environment.ts";
 
-// Validate required environment variables
-const requiredVars = ["PAYSTACK_SECRET_KEY"];
-const missingVars = validateRequiredEnvVars(requiredVars);
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    // Check environment variables first
-    if (missingVars.length > 0) {
-      return createEnvironmentError(missingVars);
-    }
+    const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
 
-    const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY")!;
+    if (!PAYSTACK_SECRET_KEY) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "Paystack configuration not available",
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
 
     const {
       email,

@@ -76,7 +76,7 @@ export class CommitSystemService {
       // Update status to declined/cancelled
       // Prepare base update data
       const baseUpdateData = {
-        status: "declined_by_seller",
+        status: "cancelled",
         updated_at: new Date().toISOString(),
       };
 

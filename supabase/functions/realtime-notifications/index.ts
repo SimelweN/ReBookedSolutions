@@ -1,6 +1,11 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { corsHeaders } from "../_shared/cors.ts";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -17,7 +22,7 @@ interface NotificationPayload {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
@@ -328,18 +333,18 @@ function generateEmailTemplate(
       <div style="background: #44ab83; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
         <h1 style="margin: 0; font-size: 24px;">${title}</h1>
       </div>
-      
+
       <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
         <p style="margin: 0; font-size: 16px; line-height: 1.5;">${message}</p>
       </div>
-      
+
       <div style="text-align: center; padding: 20px;">
-        <a href="${Deno.env.get("SITE_URL") || "https://rebooked.co.za"}" 
+        <a href="${Deno.env.get("SITE_URL") || "https://rebooked.co.za"}"
            style="background: #44ab83; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
           View on ReBooked
         </a>
       </div>
-      
+
       <div style="text-align: center; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px;">
         <p>You received this because you have notifications enabled.</p>
         <p><a href="${Deno.env.get("SITE_URL")}/profile" style="color: #44ab83;">Manage notification preferences</a></p>

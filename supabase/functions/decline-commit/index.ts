@@ -1,19 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { corsHeaders, createErrorResponse } from "../_shared/cors.ts";
-import {
-  getEnvironmentConfig,
-  validateRequiredEnvVars,
-  createEnvironmentError,
-} from "../_shared/environment.ts";
 
-// Validate required environment variables
-const requiredVars = [
-  "SUPABASE_URL",
-  "SUPABASE_SERVICE_ROLE_KEY",
-  "PAYSTACK_SECRET_KEY",
-];
-const missingVars = validateRequiredEnvVars(requiredVars);
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
 interface DeclineRequest {
   transactionId?: string;
@@ -29,16 +21,11 @@ serve(async (req) => {
   }
 
   try {
-    // Check environment variables first
-    if (missingVars.length > 0) {
-      return createEnvironmentError(missingVars);
-    }
-
-    const config = getEnvironmentConfig();
-    const PAYSTACK_SECRET_KEY = config.paystackSecretKey!;
+    // Initialize Supabase client with service role for admin operations
+    const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
     const supabase = createClient(
-      config.supabaseUrl,
-      config.supabaseServiceKey,
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
     const { transactionId, orderId, sellerId, reason }: DeclineRequest =

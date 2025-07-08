@@ -1,16 +1,13 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { corsHeaders, createErrorResponse } from "../_shared/cors.ts";
-import {
-  getEnvironmentConfig,
-  validateRequiredEnvVars,
-  createEnvironmentError,
-} from "../_shared/environment.ts";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
 const COURIER_GUY_API_URL = "https://api.courierguy.co.za";
-
-// Validate required environment variables (API key is optional)
-const requiredVars = ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"];
-const missingVars = validateRequiredEnvVars(requiredVars);
+const COURIER_GUY_API_KEY = Deno.env.get("COURIER_GUY_API_KEY");
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
