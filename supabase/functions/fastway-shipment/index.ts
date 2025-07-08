@@ -198,17 +198,10 @@ serve(async (req) => {
       reference: requestData.reference,
     };
 
-    return new Response(JSON.stringify({ shipment }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  } catch (error) {
-    console.error("Error in fastway-shipment function:", error);
+    return createSuccessResponse({ shipment });
 
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  } catch (error) {
+    return createGenericErrorHandler("fastway-shipment")(error);
   }
 });
 
