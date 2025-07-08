@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Book } from "@/types/book";
 import { toast } from "sonner";
+import { handleImageError } from "@/utils/fallbackHelpers";
 
 interface BookGridProps {
   books: Book[];
