@@ -359,7 +359,7 @@ serve(async (req) => {
       },
     });
 
-    // Send notifications
+    // Send notifications (quick operation)
     const notifications = [
       {
         user_id: payment.order.buyer_id,
@@ -385,77 +385,66 @@ serve(async (req) => {
       },
     ];
 
-    await supabaseClient.from("notifications").insert(notifications);
-
-    // Send email notifications
     try {
-      // Notify buyer
-      await fetch(
-        `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-email-notification`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: req.headers.get("Authorization")!,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            to: payment.order.buyer.email,
-            template: "payment_confirmed",
-            data: {
-              recipient_name: payment.order.buyer.full_name,
-              book_title: payment.order.book.title,
-              amount: payment.amount,
-              order_id: payment.order_id,
-              reference,
-            },
-          }),
-        },
-      );
-
-      // Notify seller
-      await fetch(
-        `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-email-notification`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: req.headers.get("Authorization")!,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            to: payment.order.seller.email,
-            template: "payment_received",
-            data: {
-              recipient_name: payment.order.seller.full_name,
-              book_title: payment.order.book.title,
-              amount: payment.amount,
-              order_id: payment.order_id,
-              buyer_name: payment.order.buyer.full_name,
-            },
-          }),
-        },
-      );
-    } catch (emailError) {
-      console.error("Failed to send email notifications:", emailError);
+      await supabaseClient.from("notifications").insert(notifications);
+    } catch (notificationError) {
+      console.error("Failed to create notifications:", notificationError);
     }
 
-    // Trigger order reminder system for seller commitment
-    try {
-      await fetch(
-        `${Deno.env.get("SUPABASE_URL")}/functions/v1/process-order-reminders`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: req.headers.get("Authorization")!,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            order_id: payment.order_id,
-            reminder_type: "seller_commitment",
-          }),
+    // Queue email notifications and reminders (non-blocking)
+    const emailData = {
+      buyer_email: {
+        to: payment.order.buyer.email,
+        template: "payment_confirmed",
+        data: {
+          recipient_name: payment.order.buyer.full_name,
+          book_title: payment.order.book.title,
+          amount: payment.amount,
+          order_id: payment.order_id,
+          reference,
         },
-      );
-    } catch (reminderError) {
-      console.error("Failed to trigger reminder system:", reminderError);
+      },
+      seller_email: {
+        to: payment.order.seller.email,
+        template: "payment_received",
+        data: {
+          recipient_name: payment.order.seller.full_name,
+          book_title: payment.order.book.title,
+          amount: payment.amount,
+          order_id: payment.order_id,
+          buyer_name: payment.order.buyer.full_name,
+        },
+      },
+    };
+
+    // Store for background processing instead of blocking
+    try {
+      await supabaseClient.from("email_queue").insert([
+        {
+          type: "payment_confirmed",
+          recipient: emailData.buyer_email.to,
+          data: emailData.buyer_email,
+          priority: "high",
+          scheduled_for: new Date().toISOString(),
+        },
+        {
+          type: "payment_received",
+          recipient: emailData.seller_email.to,
+          data: emailData.seller_email,
+          priority: "high",
+          scheduled_for: new Date().toISOString(),
+        },
+      ]);
+
+      // Queue reminder processing
+      await supabaseClient.from("reminder_queue").insert({
+        order_id: payment.order_id,
+        reminder_type: "seller_commitment",
+        scheduled_for: new Date().toISOString(),
+      });
+    } catch (queueError) {
+      console.error("Failed to queue background tasks:", queueError);
+      // Continue execution - these are non-critical
     }
 
     return new Response(
