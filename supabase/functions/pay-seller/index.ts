@@ -39,7 +39,10 @@ serve(async (req) => {
     }
 
     // Initialize Supabase client
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const supabase = createClient(
+      config.supabaseUrl,
+      config.supabaseServiceKey,
+    );
 
     // Initiate transfer with Paystack
     const transferResponse = await fetch("https://api.paystack.co/transfer", {
