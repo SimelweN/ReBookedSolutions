@@ -780,10 +780,10 @@ export class FunctionFallbackService {
   }
 
   private calculateDistance(address1: any, address2: any): number {
-    // Simple distance calculation fallback
+    // Enhanced distance calculation for South African locations
     if (!address1 || !address2) return 50;
 
-    // If we have lat/lng, use Haversine formula (simplified)
+    // If we have lat/lng, use Haversine formula
     if (address1.lat && address1.lng && address2.lat && address2.lng) {
       const R = 6371; // Earth's radius in km
       const dLat = ((address2.lat - address1.lat) * Math.PI) / 180;
@@ -795,13 +795,114 @@ export class FunctionFallbackService {
           Math.sin(dLon / 2) *
           Math.sin(dLon / 2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c;
+      return Math.round(R * c);
     }
 
-    // Otherwise estimate based on city/province
-    if (address1.city === address2.city) return 10;
-    if (address1.province === address2.province) return 150;
-    return 500;
+    // South African city distance matrix (approximate distances in km)
+    const cityDistances: Record<string, Record<string, number>> = {
+      "cape town": {
+        johannesburg: 1400,
+        durban: 1600,
+        pretoria: 1450,
+        "port elizabeth": 700,
+        bloemfontein: 1000,
+      },
+      johannesburg: {
+        "cape town": 1400,
+        durban: 600,
+        pretoria: 60,
+        "port elizabeth": 1000,
+        bloemfontein: 400,
+      },
+      durban: {
+        "cape town": 1600,
+        johannesburg: 600,
+        pretoria: 650,
+        "port elizabeth": 1200,
+        bloemfontein: 700,
+      },
+      pretoria: {
+        "cape town": 1450,
+        johannesburg: 60,
+        durban: 650,
+        "port elizabeth": 1050,
+        bloemfontein: 450,
+      },
+      "port elizabeth": {
+        "cape town": 700,
+        johannesburg: 1000,
+        durban: 1200,
+        pretoria: 1050,
+        bloemfontein: 600,
+      },
+      bloemfontein: {
+        "cape town": 1000,
+        johannesburg: 400,
+        durban: 700,
+        pretoria: 450,
+        "port elizabeth": 600,
+      },
+    };
+
+    const city1 = (address1.city || "").toLowerCase().trim();
+    const city2 = (address2.city || "").toLowerCase().trim();
+
+    // Check exact city match
+    if (city1 === city2 && city1) return 15; // Same city
+
+    // Check city distance matrix
+    if (cityDistances[city1] && cityDistances[city1][city2]) {
+      return cityDistances[city1][city2];
+    }
+
+    // Province-based estimation
+    const province1 = (address1.province || "").toLowerCase().trim();
+    const province2 = (address2.province || "").toLowerCase().trim();
+
+    if (province1 === province2) {
+      // Same province distances
+      const provinceDistances: Record<string, number> = {
+        "western cape": 200,
+        gauteng: 100,
+        "kwazulu-natal": 300,
+        "eastern cape": 250,
+        "free state": 200,
+        limpopo: 250,
+        mpumalanga: 200,
+        "north west": 200,
+        "northern cape": 400,
+      };
+      return provinceDistances[province1] || 200;
+    }
+
+    // Different provinces - estimate based on known inter-provincial distances
+    const interProvincialDistances: Record<string, Record<string, number>> = {
+      "western cape": {
+        gauteng: 1400,
+        "kwazulu-natal": 1600,
+        "eastern cape": 500,
+      },
+      gauteng: {
+        "western cape": 1400,
+        "kwazulu-natal": 600,
+        "free state": 400,
+      },
+      "kwazulu-natal": {
+        "western cape": 1600,
+        gauteng: 600,
+        "eastern cape": 1000,
+      },
+    };
+
+    if (
+      interProvincialDistances[province1] &&
+      interProvincialDistances[province1][province2]
+    ) {
+      return interProvincialDistances[province1][province2];
+    }
+
+    // Default fallback
+    return 800;
   }
 
   private async callFunctionDirect<T>(
