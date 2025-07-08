@@ -25,6 +25,14 @@ serve(async (req) => {
 
     const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY")!;
 
+    // Parse and validate request body
+    let requestBody: any;
+    try {
+      requestBody = await req.json();
+    } catch (error) {
+      return createErrorResponse("Invalid JSON in request body", 400);
+    }
+
     const {
       email,
       amount,
@@ -36,18 +44,19 @@ serve(async (req) => {
       callback_url,
       metadata,
       splitAmounts,
-    } = await req.json();
+    } = requestBody;
 
-    if (!email || !amount || !bookId || !sellerSubaccountCode) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "Missing required fields",
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+    // Validate required fields
+    const requiredFields = { email, amount, bookId, sellerSubaccountCode };
+    const missingFields = Object.entries(requiredFields)
+      .filter(([_, value]) => !value)
+      .map(([key, _]) => key);
+
+    if (missingFields.length > 0) {
+      return createErrorResponse(
+        `Missing required fields: ${missingFields.join(", ")}`,
+        400,
+        { missingFields },
       );
     }
 
