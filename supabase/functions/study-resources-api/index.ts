@@ -1,386 +1,357 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import {
-  corsHeaders,
-  createErrorResponse,
-  createSuccessResponse,
-  handleOptionsRequest,
-  createGenericErrorHandler,
-} from "../_shared/cors.ts";
-import {
-  validateAndCreateSupabaseClient,
-  validateRequiredEnvVars,
-  createEnvironmentError,
-} from "../_shared/environment.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-interface StudyResource {
-  id?: string;
-  title: string;
-  description: string;
-  content: string;
-  resource_type: "note" | "summary" | "past_paper" | "tutorial" | "guide";
-  university_id: string;
-  course_code: string;
-  year_level: number;
-  semester: string;
-  tags: string[];
-  file_url?: string;
-  created_by: string;
-  is_verified: boolean;
-  download_count: number;
-  rating: number;
-}
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return handleOptionsRequest();
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    // Validate environment variables
-    const missingEnvVars = validateRequiredEnvVars([
-      "SUPABASE_URL",
-      "SUPABASE_SERVICE_ROLE_KEY",
-    ]);
-    if (missingEnvVars.length > 0) {
-      return createEnvironmentError(missingEnvVars);
-    }
-
-    const supabase = validateAndCreateSupabaseClient();
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      {
+        global: {
+          headers: { Authorization: req.headers.get("Authorization")! },
+        },
+      },
+    );
 
     const url = new URL(req.url);
-    const path = url.pathname.split("/").pop();
     const method = req.method;
+    const pathSegments = url.pathname.split("/").filter(Boolean);
 
-    // For write operations, get auth user if authorization header is provided
-    let user = null;
-    const authHeader = req.headers.get("Authorization");
-    if (authHeader && method !== "GET") {
-      try {
-        const token = authHeader.replace("Bearer ", "");
-        const authResult = await supabase.auth.getUser(token);
-        if (authResult.error) {
-          console.warn("Auth error:", authResult.error.message);
-        }
-        user = authResult.data?.user || null;
-      } catch (authError) {
-        console.warn("Failed to authenticate user:", authError);
-      }
-    }
+    // Remove 'functions', 'v1', 'study-resources-api' from path
+    const apiPath = pathSegments.slice(3).join("/");
 
-    const action = url.searchParams.get("action");
+    // Get current user for protected endpoints
+    const {
+      data: { user },
+      error: userError,
+    } = await supabaseClient.auth.getUser();
 
     switch (method) {
       case "GET":
-        if (action === "search" || path === "search") {
-          return await handleSearch(supabase, url);
-        } else if (action === "resources" || path === "resources") {
-          return await getResources(supabase, url);
-        } else if (url.pathname.includes("resources/")) {
-          const id = url.pathname.split("/").pop();
-          return await getResource(supabase, id!);
-        }
-        break;
-
+        return await handleGet(supabaseClient, apiPath, url.searchParams, user);
       case "POST":
-        if (!user) {
-          return createErrorResponse(
-            "Authentication required for write operations",
-            401,
-          );
-        }
-        if (path === "resources") {
-          let body: any;
-          try {
-            body = await req.json();
-          } catch (error) {
-            return createErrorResponse("Invalid JSON in request body", 400);
-          }
-          return await createResource(supabase, body, user.id);
-        } else if (path === "verify") {
-          let body: any;
-          try {
-            body = await req.json();
-          } catch (error) {
-            return createErrorResponse("Invalid JSON in request body", 400);
-          }
-          return await verifyResource(supabase, body, user.id);
-        } else if (path === "rate") {
-          let body: any;
-          try {
-            body = await req.json();
-          } catch (error) {
-            return createErrorResponse("Invalid JSON in request body", 400);
-          }
-          return await rateResource(supabase, body, user.id);
-        }
-        break;
-
+        return await handlePost(supabaseClient, apiPath, req, user);
       case "PUT":
-        if (!user) {
-          return createErrorResponse(
-            "Authentication required for write operations",
-            401,
-          );
-        }
-        if (url.pathname.includes("resources/")) {
-          const id = url.pathname.split("/").pop();
-          if (!id) {
-            return createErrorResponse("Resource ID is required", 400);
-          }
-          let body: any;
-          try {
-            body = await req.json();
-          } catch (error) {
-            return createErrorResponse("Invalid JSON in request body", 400);
-          }
-          return await updateResource(supabase, id, body, user.id);
-        }
-        break;
-
+        return await handlePut(supabaseClient, apiPath, req, user);
       case "DELETE":
-        if (!user) {
-          return createErrorResponse(
-            "Authentication required for write operations",
-            401,
-          );
-        }
-        if (url.pathname.includes("resources/")) {
-          const id = url.pathname.split("/").pop();
-          if (!id) {
-            return createErrorResponse("Resource ID is required", 400);
-          }
-          return await deleteResource(supabase, id, user.id);
-        }
-        break;
+        return await handleDelete(supabaseClient, apiPath, user);
+      default:
+        return new Response(JSON.stringify({ error: "Method not allowed" }), {
+          status: 405,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
     }
-
-    return createErrorResponse("Endpoint not found", 404);
   } catch (error) {
-    return createGenericErrorHandler("study-resources-api")(error);
+    console.error("Study resources API error:", error);
+
+    return new Response(
+      JSON.stringify({
+        error: error.message || "Internal server error",
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
 });
 
-async function handleSearch(supabase: any, url: URL) {
-  const query = url.searchParams.get("q") || "";
-  const university = url.searchParams.get("university");
-  const course = url.searchParams.get("course");
-  const type = url.searchParams.get("type");
-  const year = url.searchParams.get("year");
-  const limit = parseInt(url.searchParams.get("limit") || "20");
-  const offset = parseInt(url.searchParams.get("offset") || "0");
+async function handleGet(
+  supabaseClient: any,
+  path: string,
+  params: URLSearchParams,
+  user: any,
+) {
+  switch (path) {
+    case "resources":
+    case "":
+      return await getResources(supabaseClient, params, user);
+    case "categories":
+      return await getCategories(supabaseClient);
+    case "institutions":
+      return await getInstitutions(supabaseClient);
+    case "my-resources":
+      return await getMyResources(supabaseClient, user, params);
+    default:
+      // Check if it's a resource ID
+      if (path.match(/^[0-9a-f-]{36}$/)) {
+        return await getResource(supabaseClient, path, user);
+      }
+      return new Response(JSON.stringify({ error: "Endpoint not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+  }
+}
 
-  let queryBuilder = supabase
+async function handlePost(
+  supabaseClient: any,
+  path: string,
+  req: Request,
+  user: any,
+) {
+  if (!user) {
+    return new Response(JSON.stringify({ error: "Authentication required" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const body = await req.json();
+
+  switch (path) {
+    case "resources":
+    case "":
+      return await createResource(supabaseClient, body, user);
+    case "categories":
+      return await createCategory(supabaseClient, body, user);
+    case "download":
+      return await recordDownload(supabaseClient, body, user);
+    default:
+      return new Response(JSON.stringify({ error: "Endpoint not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+  }
+}
+
+async function handlePut(
+  supabaseClient: any,
+  path: string,
+  req: Request,
+  user: any,
+) {
+  if (!user) {
+    return new Response(JSON.stringify({ error: "Authentication required" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const body = await req.json();
+
+  // Check if it's a resource ID
+  if (path.match(/^[0-9a-f-]{36}$/)) {
+    return await updateResource(supabaseClient, path, body, user);
+  }
+
+  return new Response(JSON.stringify({ error: "Endpoint not found" }), {
+    status: 404,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
+async function handleDelete(supabaseClient: any, path: string, user: any) {
+  if (!user) {
+    return new Response(JSON.stringify({ error: "Authentication required" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  // Check if it's a resource ID
+  if (path.match(/^[0-9a-f-]{36}$/)) {
+    return await deleteResource(supabaseClient, path, user);
+  }
+
+  return new Response(JSON.stringify({ error: "Endpoint not found" }), {
+    status: 404,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
+async function getResources(
+  supabaseClient: any,
+  params: URLSearchParams,
+  user: any,
+) {
+  let query = supabaseClient
     .from("study_resources")
     .select(
       `
       *,
-      profiles:created_by(name, profile_picture_url),
-      universities:university_id(name, logo_url)
+      creator:created_by(id, full_name),
+      category:category_id(name, description),
+      institution:institution_id(name, abbreviation),
+      downloads_count:study_resource_downloads(count)
     `,
     )
-    .eq("is_verified", true)
-    .order("created_at", { ascending: false })
-    .range(offset, offset + limit - 1);
+    .eq("is_active", true);
 
-  if (query) {
-    queryBuilder = queryBuilder.or(
-      `title.ilike.%${query}%,description.ilike.%${query}%,tags.cs.{${query}}`,
+  // Apply filters
+  const category = params.get("category");
+  const institution = params.get("institution");
+  const search = params.get("search");
+  const resource_type = params.get("type");
+  const subject = params.get("subject");
+  const level = params.get("level");
+
+  if (category) query = query.eq("category_id", category);
+  if (institution) query = query.eq("institution_id", institution);
+  if (resource_type) query = query.eq("resource_type", resource_type);
+  if (subject) query = query.ilike("subject", `%${subject}%`);
+  if (level) query = query.eq("academic_level", level);
+  if (search) {
+    query = query.or(
+      `title.ilike.%${search}%,description.ilike.%${search}%,subject.ilike.%${search}%`,
     );
   }
 
-  if (university) queryBuilder = queryBuilder.eq("university_id", university);
-  if (course) queryBuilder = queryBuilder.ilike("course_code", `%${course}%`);
-  if (type) queryBuilder = queryBuilder.eq("resource_type", type);
-  if (year) queryBuilder = queryBuilder.eq("year_level", year);
+  // Sorting
+  const sort = params.get("sort") || "created_at";
+  const order = params.get("order") || "desc";
+  query = query.order(sort, { ascending: order === "asc" });
 
-  const { data, error } = await queryBuilder;
+  // Pagination
+  const page = parseInt(params.get("page") || "1");
+  const limit = parseInt(params.get("limit") || "20");
+  const offset = (page - 1) * limit;
 
-  if (error) throw error;
+  query = query.range(offset, offset + limit - 1);
 
-  return new Response(JSON.stringify({ data, count: data?.length || 0 }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
+  const { data: resources, error } = await query;
+
+  if (error) {
+    throw new Error(`Failed to fetch resources: ${error.message}`);
+  }
+
+  // Get total count for pagination
+  const { count, error: countError } = await supabaseClient
+    .from("study_resources")
+    .select("*", { count: "exact", head: true })
+    .eq("is_active", true);
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      data: resources,
+      pagination: {
+        page,
+        limit,
+        total: count || 0,
+        total_pages: Math.ceil((count || 0) / limit),
+      },
+    }),
+    {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    },
+  );
 }
 
-async function getResources(supabase: any, url: URL) {
-  const university = url.searchParams.get("university");
-  const course = url.searchParams.get("course");
-  const type = url.searchParams.get("type");
-  const limit = parseInt(url.searchParams.get("limit") || "20");
-  const offset = parseInt(url.searchParams.get("offset") || "0");
-
-  let queryBuilder = supabase
+async function getResource(supabaseClient: any, resourceId: string, user: any) {
+  const { data: resource, error } = await supabaseClient
     .from("study_resources")
     .select(
       `
       *,
-      profiles:created_by(name, profile_picture_url),
-      universities:university_id(name, logo_url)
+      creator:created_by(id, full_name),
+      category:category_id(name, description),
+      institution:institution_id(name, abbreviation),
+      downloads_count:study_resource_downloads(count)
     `,
     )
-    .eq("is_verified", true)
-    .order("download_count", { ascending: false })
-    .range(offset, offset + limit - 1);
-
-  if (university) queryBuilder = queryBuilder.eq("university_id", university);
-  if (course) queryBuilder = queryBuilder.eq("course_code", course);
-  if (type) queryBuilder = queryBuilder.eq("resource_type", type);
-
-  const { data, error } = await queryBuilder;
-
-  if (error) throw error;
-
-  return new Response(JSON.stringify({ data }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-
-async function getResource(supabase: any, id: string) {
-  const { data, error } = await supabase
-    .from("study_resources")
-    .select(
-      `
-      *,
-      profiles:created_by(name, profile_picture_url, bio),
-      universities:university_id(name, logo_url),
-      study_resource_ratings(rating, user_id)
-    `,
-    )
-    .eq("id", id)
-    .single();
-
-  if (error) throw error;
-
-  // Increment download count
-  await supabase
-    .from("study_resources")
-    .update({ download_count: data.download_count + 1 })
-    .eq("id", id);
-
-  return new Response(JSON.stringify({ data }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-
-async function createResource(
-  supabase: any,
-  resource: StudyResource,
-  userId: string,
-) {
-  const { data, error } = await supabase
-    .from("study_resources")
-    .insert({
-      ...resource,
-      created_by: userId,
-      is_verified: false,
-      download_count: 0,
-      rating: 0,
-    })
-    .select()
-    .single();
-
-  if (error) throw error;
-
-  // Create notification for admins
-  await supabase.from("notifications").insert({
-    type: "new_study_resource",
-    title: "New Study Resource Submitted",
-    message: `A new study resource "${resource.title}" has been submitted for review.`,
-    user_id: "admin", // Will be handled by admin notification system
-    metadata: { resource_id: data.id, created_by: userId },
-  });
-
-  return new Response(JSON.stringify({ data }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-
-async function updateResource(
-  supabase: any,
-  id: string,
-  updates: Partial<StudyResource>,
-  userId: string,
-) {
-  // Check if user owns the resource or is admin
-  const { data: resource } = await supabase
-    .from("study_resources")
-    .select("created_by")
-    .eq("id", id)
-    .single();
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("is_admin")
-    .eq("id", userId)
-    .single();
-
-  if (resource.created_by !== userId && !profile?.is_admin) {
-    return createErrorResponse("Unauthorized", 403);
-  }
-
-  const { data, error } = await supabase
-    .from("study_resources")
-    .update(updates)
-    .eq("id", id)
-    .select()
-    .single();
-
-  if (error) throw error;
-
-  return new Response(JSON.stringify({ data }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-
-async function verifyResource(
-  supabase: any,
-  { resourceId, verified }: { resourceId: string; verified: boolean },
-  userId: string,
-) {
-  // Check if user is admin
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("is_admin")
-    .eq("id", userId)
-    .single();
-
-  if (!profile?.is_admin) {
-    return createErrorResponse("Admin access required", 403);
-  }
-
-  const { data, error } = await supabase
-    .from("study_resources")
-    .update({ is_verified: verified })
     .eq("id", resourceId)
-    .select()
+    .eq("is_active", true)
     .single();
 
-  if (error) throw error;
+  if (error || !resource) {
+    return new Response(JSON.stringify({ error: "Resource not found" }), {
+      status: 404,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
 
-  // Notify the creator
-  await supabase.from("notifications").insert({
-    type: verified ? "resource_approved" : "resource_rejected",
-    title: verified ? "Study Resource Approved" : "Study Resource Rejected",
-    message: verified
-      ? `Your study resource "${data.title}" has been approved and is now live.`
-      : `Your study resource "${data.title}" has been rejected. Please review and resubmit.`,
-    user_id: data.created_by,
-    metadata: { resource_id: resourceId },
-  });
-
-  return new Response(JSON.stringify({ data }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
+  return new Response(
+    JSON.stringify({
+      success: true,
+      data: resource,
+    }),
+    {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    },
+  );
 }
 
-async function rateResource(
-  supabase: any,
-  { resourceId, rating }: { resourceId: string; rating: number },
-  userId: string,
+async function getMyResources(
+  supabaseClient: any,
+  user: any,
+  params: URLSearchParams,
 ) {
-  if (rating < 1 || rating > 5) {
+  if (!user) {
+    return new Response(JSON.stringify({ error: "Authentication required" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  let query = supabaseClient
+    .from("study_resources")
+    .select(
+      `
+      *,
+      category:category_id(name, description),
+      institution:institution_id(name, abbreviation),
+      downloads_count:study_resource_downloads(count)
+    `,
+    )
+    .eq("created_by", user.id);
+
+  // Pagination
+  const page = parseInt(params.get("page") || "1");
+  const limit = parseInt(params.get("limit") || "20");
+  const offset = (page - 1) * limit;
+
+  query = query.range(offset, offset + limit - 1);
+  query = query.order("created_at", { ascending: false });
+
+  const { data: resources, error } = await query;
+
+  if (error) {
+    throw new Error(`Failed to fetch user resources: ${error.message}`);
+  }
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      data: resources,
+    }),
+    {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    },
+  );
+}
+
+async function createResource(supabaseClient: any, body: any, user: any) {
+  const {
+    title,
+    description,
+    resource_type,
+    subject,
+    academic_level,
+    category_id,
+    institution_id,
+    file_url,
+    file_size,
+    file_type,
+    tags = [],
+  } = body;
+
+  if (!title || !description || !resource_type || !file_url) {
     return new Response(
-      JSON.stringify({ error: "Rating must be between 1 and 5" }),
+      JSON.stringify({
+        error:
+          "Missing required fields: title, description, resource_type, file_url",
+      }),
       {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -388,67 +359,294 @@ async function rateResource(
     );
   }
 
-  // Insert or update rating
-  const { error: ratingError } = await supabase
-    .from("study_resource_ratings")
-    .upsert({
-      resource_id: resourceId,
-      user_id: userId,
-      rating,
-    });
-
-  if (ratingError) throw ratingError;
-
-  // Calculate new average rating
-  const { data: ratings } = await supabase
-    .from("study_resource_ratings")
-    .select("rating")
-    .eq("resource_id", resourceId);
-
-  const avgRating =
-    ratings.reduce((sum: number, r: any) => sum + r.rating, 0) / ratings.length;
-
-  // Update resource with new average
-  const { data, error } = await supabase
+  const { data: resource, error } = await supabaseClient
     .from("study_resources")
-    .update({ rating: Math.round(avgRating * 10) / 10 })
+    .insert({
+      title,
+      description,
+      resource_type,
+      subject,
+      academic_level,
+      category_id,
+      institution_id,
+      file_url,
+      file_size,
+      file_type,
+      tags,
+      created_by: user.id,
+      is_active: true,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to create resource: ${error.message}`);
+  }
+
+  // Log audit trail
+  await supabaseClient.from("audit_logs").insert({
+    action: "study_resource_created",
+    table_name: "study_resources",
+    record_id: resource.id,
+    user_id: user.id,
+    details: { title, resource_type, subject },
+  });
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      data: resource,
+      message: "Resource created successfully",
+    }),
+    {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    },
+  );
+}
+
+async function updateResource(
+  supabaseClient: any,
+  resourceId: string,
+  body: any,
+  user: any,
+) {
+  // Check if user owns the resource
+  const { data: existingResource, error: checkError } = await supabaseClient
+    .from("study_resources")
+    .select("created_by")
+    .eq("id", resourceId)
+    .single();
+
+  if (checkError || !existingResource) {
+    return new Response(JSON.stringify({ error: "Resource not found" }), {
+      status: 404,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  if (existingResource.created_by !== user.id) {
+    return new Response(
+      JSON.stringify({ error: "Not authorized to update this resource" }),
+      {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
+  }
+
+  const updateData = { ...body, updated_at: new Date().toISOString() };
+  delete updateData.id;
+  delete updateData.created_by;
+  delete updateData.created_at;
+
+  const { data: resource, error } = await supabaseClient
+    .from("study_resources")
+    .update(updateData)
     .eq("id", resourceId)
     .select()
     .single();
 
-  if (error) throw error;
-
-  return new Response(JSON.stringify({ data }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-
-async function deleteResource(supabase: any, id: string, userId: string) {
-  // Check permissions
-  const { data: resource } = await supabase
-    .from("study_resources")
-    .select("created_by")
-    .eq("id", id)
-    .single();
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("is_admin")
-    .eq("id", userId)
-    .single();
-
-  if (resource.created_by !== userId && !profile?.is_admin) {
-    return createErrorResponse("Unauthorized", 403);
+  if (error) {
+    throw new Error(`Failed to update resource: ${error.message}`);
   }
 
-  const { error } = await supabase
-    .from("study_resources")
-    .delete()
-    .eq("id", id);
-
-  if (error) throw error;
-
-  return new Response(JSON.stringify({ success: true }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  // Log audit trail
+  await supabaseClient.from("audit_logs").insert({
+    action: "study_resource_updated",
+    table_name: "study_resources",
+    record_id: resourceId,
+    user_id: user.id,
+    details: { updated_fields: Object.keys(updateData) },
   });
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      data: resource,
+      message: "Resource updated successfully",
+    }),
+    {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    },
+  );
+}
+
+async function deleteResource(
+  supabaseClient: any,
+  resourceId: string,
+  user: any,
+) {
+  // Check if user owns the resource
+  const { data: existingResource, error: checkError } = await supabaseClient
+    .from("study_resources")
+    .select("created_by, title")
+    .eq("id", resourceId)
+    .single();
+
+  if (checkError || !existingResource) {
+    return new Response(JSON.stringify({ error: "Resource not found" }), {
+      status: 404,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  if (existingResource.created_by !== user.id) {
+    return new Response(
+      JSON.stringify({ error: "Not authorized to delete this resource" }),
+      {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
+  }
+
+  // Soft delete by marking as inactive
+  const { error } = await supabaseClient
+    .from("study_resources")
+    .update({
+      is_active: false,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", resourceId);
+
+  if (error) {
+    throw new Error(`Failed to delete resource: ${error.message}`);
+  }
+
+  // Log audit trail
+  await supabaseClient.from("audit_logs").insert({
+    action: "study_resource_deleted",
+    table_name: "study_resources",
+    record_id: resourceId,
+    user_id: user.id,
+    details: { title: existingResource.title },
+  });
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      message: "Resource deleted successfully",
+    }),
+    {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    },
+  );
+}
+
+async function recordDownload(supabaseClient: any, body: any, user: any) {
+  const { resource_id } = body;
+
+  if (!resource_id) {
+    return new Response(JSON.stringify({ error: "Resource ID is required" }), {
+      status: 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  // Record download
+  const { error } = await supabaseClient
+    .from("study_resource_downloads")
+    .insert({
+      resource_id,
+      user_id: user.id,
+      downloaded_at: new Date().toISOString(),
+    });
+
+  if (error && !error.message.includes("duplicate")) {
+    throw new Error(`Failed to record download: ${error.message}`);
+  }
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      message: "Download recorded",
+    }),
+    {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    },
+  );
+}
+
+async function getCategories(supabaseClient: any) {
+  const { data: categories, error } = await supabaseClient
+    .from("study_resource_categories")
+    .select("*")
+    .eq("is_active", true)
+    .order("name");
+
+  if (error) {
+    throw new Error(`Failed to fetch categories: ${error.message}`);
+  }
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      data: categories,
+    }),
+    {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    },
+  );
+}
+
+async function createCategory(supabaseClient: any, body: any, user: any) {
+  const { name, description } = body;
+
+  if (!name) {
+    return new Response(
+      JSON.stringify({ error: "Category name is required" }),
+      {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
+  }
+
+  const { data: category, error } = await supabaseClient
+    .from("study_resource_categories")
+    .insert({
+      name,
+      description,
+      created_by: user.id,
+      is_active: true,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to create category: ${error.message}`);
+  }
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      data: category,
+      message: "Category created successfully",
+    }),
+    {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    },
+  );
+}
+
+async function getInstitutions(supabaseClient: any) {
+  const { data: institutions, error } = await supabaseClient
+    .from("institutions")
+    .select("*")
+    .eq("is_active", true)
+    .order("name");
+
+  if (error) {
+    throw new Error(`Failed to fetch institutions: ${error.message}`);
+  }
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      data: institutions,
+    }),
+    {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    },
+  );
 }

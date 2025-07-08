@@ -1,274 +1,265 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import {
-  corsHeaders,
-  createErrorResponse,
-  createSuccessResponse,
-  handleOptionsRequest,
-  createGenericErrorHandler,
-} from "../_shared/cors.ts";
-import {
-  validateAndCreateSupabaseClient,
-  validateRequiredEnvVars,
-  createEnvironmentError,
-} from "../_shared/environment.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// Bank codes mapping for Paystack
-const PAYSTACK_BANK_CODES: Record<string, string> = {
-  "Absa Bank": "632005",
-  "Capitec Bank": "470010",
-  "First National Bank (FNB)": "250655",
-  "Investec Bank": "580105",
-  Nedbank: "198765",
-  "Standard Bank": "051001",
-  "African Bank": "430000",
-  "Mercantile Bank": "450905",
-  TymeBank: "678910",
-  "Bidvest Bank": "679000",
-  "Sasfin Bank": "683000",
-  "Bank of Athens": "410506",
-  "RMB Private Bank": "222026",
-  "South African Post Bank (Post Office)": "460005",
-  "Hollard Bank": "585001",
-  "Discovery Bank": "679000",
-  "Standard Chartered Bank": "730020",
-  "Barclays Bank": "590000",
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
-function getBankCode(bankName: string): string {
-  return PAYSTACK_BANK_CODES[bankName] || "";
-}
-
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return handleOptionsRequest();
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    console.log("Starting subaccount update process...");
-
-    // Validate required environment variables
-    const missingEnvVars = validateRequiredEnvVars([
-      "PAYSTACK_SECRET_KEY",
-      "SUPABASE_URL",
-      "SUPABASE_SERVICE_ROLE_KEY",
-    ]);
-    if (missingEnvVars.length > 0) {
-      return createEnvironmentError(missingEnvVars);
-    }
-
-    const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY")!;
-
-    let requestBody;
-    try {
-      requestBody = await req.json();
-    } catch (parseError) {
-      console.error("Failed to parse request body:", parseError);
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "Invalid request format",
-          error_code: "INVALID_JSON",
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
-    }
-
-    const {
-      subaccount_code,
-      business_name,
-      bank_name,
-      account_number,
-      primary_contact_email,
-      metadata,
-    } = requestBody;
-
-    console.log("Received update request:", {
-      subaccount_code,
-      business_name,
-      bank_name,
-      primary_contact_email,
-    });
-
-    if (!subaccount_code || !business_name || !bank_name || !account_number) {
-      const missingFields = [];
-      if (!subaccount_code) missingFields.push("subaccount_code");
-      if (!business_name) missingFields.push("business_name");
-      if (!bank_name) missingFields.push("bank_name");
-      if (!account_number) missingFields.push("account_number");
-
-      console.error("Missing required fields:", missingFields);
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: `Missing required fields: ${missingFields.join(", ")}`,
-          error_code: "MISSING_FIELDS",
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
-    }
-
-    const bankCode = getBankCode(bank_name);
-    if (!bankCode) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: `Unsupported bank: ${bank_name}`,
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
-    }
-
-    const payload = {
-      business_name,
-      settlement_bank: bankCode,
-      account_number,
-      primary_contact_email,
-      metadata,
-    };
-
-    console.log("Updating Paystack subaccount:", {
-      subaccount_code,
-      business_name,
-      bank_name,
-      bankCode,
-    });
-
-    const response = await fetch(
-      `https://api.paystack.co/subaccount/${subaccount_code}`,
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
       {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-          "Content-Type": "application/json",
+        global: {
+          headers: { Authorization: req.headers.get("Authorization")! },
         },
-        body: JSON.stringify(payload),
       },
     );
 
-    const data = await response.json();
+    const {
+      seller_id,
+      business_name,
+      settlement_bank,
+      account_number,
+      percentage_charge,
+      description,
+    } = await req.json();
 
-    if (!response.ok || !data.status) {
-      console.error("Paystack subaccount update failed:", {
-        status: response.status,
-        statusText: response.statusText,
-        data,
-        payload,
+    if (!seller_id) {
+      return new Response(JSON.stringify({ error: "Seller ID is required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
 
-      let errorMessage = "Failed to update payment account";
-      if (data.message) {
-        errorMessage = data.message;
-      } else if (response.status === 401) {
-        errorMessage = "Payment service authentication failed";
-      } else if (response.status === 400) {
-        errorMessage = "Invalid banking details provided";
-      } else if (response.status === 404) {
-        errorMessage = "Payment account not found";
-      }
+    // Get current user
+    const {
+      data: { user },
+      error: userError,
+    } = await supabaseClient.auth.getUser();
+    if (userError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
+    // Get seller profile
+    const { data: sellerProfile, error: sellerError } = await supabaseClient
+      .from("seller_profiles")
+      .select("*")
+      .eq("user_id", seller_id)
+      .single();
+
+    if (sellerError || !sellerProfile) {
       return new Response(
-        JSON.stringify({
-          success: false,
-          message: errorMessage,
-          error_code: `PAYSTACK_${response.status}`,
-          details: data,
-        }),
+        JSON.stringify({ error: "Seller profile not found" }),
         {
-          status: response.status,
+          status: 404,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         },
       );
     }
 
-    console.log(
-      "Paystack subaccount updated successfully:",
-      data.data.subaccount_code,
+    // Check authorization (seller can update their own profile, or admin)
+    const { data: userProfile } = await supabaseClient
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (user.id !== seller_id && userProfile?.role !== "admin") {
+      return new Response(
+        JSON.stringify({
+          error: "Not authorized to update this seller profile",
+        }),
+        {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    if (!sellerProfile.paystack_subaccount_code) {
+      return new Response(
+        JSON.stringify({ error: "Seller does not have a Paystack subaccount" }),
+        {
+          status: 404,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    const paystackSecret = Deno.env.get("PAYSTACK_SECRET_KEY");
+    if (!paystackSecret) {
+      throw new Error("Paystack secret key not configured");
+    }
+
+    // Prepare update data
+    const updateData: any = {};
+
+    if (business_name) updateData.business_name = business_name;
+    if (settlement_bank) updateData.settlement_bank = settlement_bank;
+    if (account_number) updateData.account_number = account_number;
+    if (percentage_charge !== undefined)
+      updateData.percentage_charge = percentage_charge;
+    if (description) updateData.description = description;
+
+    // If no update data provided, return error
+    if (Object.keys(updateData).length === 0) {
+      return new Response(
+        JSON.stringify({ error: "No update data provided" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    // Update subaccount with Paystack
+    const paystackResponse = await fetch(
+      `https://api.paystack.co/subaccount/${sellerProfile.paystack_subaccount_code}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${paystackSecret}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updateData),
+      },
     );
 
-    // Update our database record
+    const paystackData = await paystackResponse.json();
+
+    if (!paystackData.status) {
+      throw new Error(
+        `Paystack subaccount update failed: ${paystackData.message}`,
+      );
+    }
+
+    // Update seller profile in database
+    const dbUpdateData: any = {
+      updated_at: new Date().toISOString(),
+    };
+
+    if (business_name) {
+      dbUpdateData.business_name = business_name;
+    }
+    if (settlement_bank) {
+      dbUpdateData.bank_code = settlement_bank;
+    }
+    if (account_number) {
+      dbUpdateData.bank_account_number = account_number;
+    }
+
+    // Store updated Paystack response
+    dbUpdateData.paystack_subaccount_data = paystackData.data;
+
+    const { error: updateError } = await supabaseClient
+      .from("seller_profiles")
+      .update(dbUpdateData)
+      .eq("user_id", seller_id);
+
+    if (updateError) {
+      throw new Error(
+        `Failed to update seller profile: ${updateError.message}`,
+      );
+    }
+
+    // Log audit trail
+    await supabaseClient.from("audit_logs").insert({
+      action: "paystack_subaccount_updated",
+      table_name: "seller_profiles",
+      record_id: sellerProfile.id,
+      user_id: user.id,
+      details: {
+        seller_id,
+        subaccount_code: sellerProfile.paystack_subaccount_code,
+        updated_fields: Object.keys(updateData),
+        changes: updateData,
+      },
+    });
+
+    // Send notification to seller
+    if (user.id !== seller_id) {
+      await supabaseClient.from("notifications").insert({
+        user_id: seller_id,
+        title: "Subaccount Updated",
+        message: "Your Paystack subaccount has been updated",
+        type: "account_update",
+        metadata: {
+          subaccount_code: sellerProfile.paystack_subaccount_code,
+          updated_by: user.id,
+        },
+      });
+    }
+
+    // Send email notification
     try {
-      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-      const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-      const supabase = createClient(supabaseUrl, supabaseServiceKey);
+      const { data: sellerUser } = await supabaseClient
+        .from("profiles")
+        .select("email, full_name")
+        .eq("id", seller_id)
+        .single();
 
-      // Get user_id from JWT token
-      const authHeader = req.headers.get("authorization");
-      if (!authHeader) {
-        throw new Error("No authorization header");
+      if (sellerUser) {
+        await fetch(
+          `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-email-notification`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: req.headers.get("Authorization")!,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              to: sellerUser.email,
+              template: "subaccount_updated",
+              data: {
+                recipient_name: sellerUser.full_name,
+                business_name: business_name || sellerProfile.business_name,
+                subaccount_code: sellerProfile.paystack_subaccount_code,
+                updated_fields: Object.keys(updateData),
+                updated_by: user.id === seller_id ? "yourself" : "admin",
+              },
+            }),
+          },
+        );
       }
-
-      const token = authHeader.replace("Bearer ", "");
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser(token);
-
-      if (authError || !user) {
-        throw new Error("Failed to get user from token");
-      }
-
-      console.log("Updating subaccount in database for user:", user.id);
-
-      const { error: dbError } = await supabase
-        .from("banking_subaccounts")
-        .update({
-          business_name: business_name,
-          email: primary_contact_email,
-          bank_name: bank_name,
-          bank_code: bankCode,
-          account_number: account_number,
-          paystack_response: data.data,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("user_id", user.id)
-        .eq("subaccount_code", subaccount_code);
-
-      if (dbError) {
-        console.error("Failed to update database:", dbError);
-        // Don't fail the entire request if DB update fails
-        // The Paystack subaccount was updated successfully
-      } else {
-        console.log("Successfully updated subaccount in database");
-      }
-    } catch (dbError) {
-      console.error("Database update error:", dbError);
-      // Don't fail the entire request if DB update fails
+    } catch (emailError) {
+      console.error("Failed to send email notification:", emailError);
     }
 
     return new Response(
       JSON.stringify({
         success: true,
         message: "Subaccount updated successfully",
-        subaccount_code: data.data.subaccount_code,
-        data: {
-          subaccount_code: data.data.subaccount_code,
-          id: data.data.id,
+        subaccount: {
+          code: sellerProfile.paystack_subaccount_code,
+          business_name: paystackData.data.business_name,
+          settlement_bank: paystackData.data.settlement_bank,
+          account_number: paystackData.data.account_number,
+          percentage_charge: paystackData.data.percentage_charge,
+          is_verified: paystackData.data.is_verified,
+          updated_at: new Date().toISOString(),
         },
       }),
       {
-        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       },
     );
   } catch (error) {
-    console.error("Error in update-paystack-subaccount function:", error);
+    console.error("Subaccount update error:", error);
+
     return new Response(
       JSON.stringify({
-        success: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred",
+        error: error.message || "Failed to update subaccount",
       }),
       {
         status: 500,
