@@ -185,8 +185,21 @@ serve(async (req) => {
 
     await supabaseClient.from("notifications").insert(notifications);
 
-    // If collected by buyer and seller has bank details, initiate payout
+    // Critical: Only release payment if collected by buyer AND order is confirmed delivered
     if (isCollectedByBuyer) {
+      // Double-check that order status was successfully updated to delivered
+      const { data: verifyOrder } = await supabaseClient
+        .from("orders")
+        .select("status, payment_held")
+        .eq("id", order_id)
+        .single();
+
+      if (verifyOrder?.status !== "delivered") {
+        console.error(
+          "Order status verification failed - payment NOT released",
+        );
+        throw new Error("Collection verification failed");
+      }
       const { data: sellerProfile } = await supabaseClient
         .from("seller_profiles")
         .select("bank_account_number, paystack_subaccount_code")
