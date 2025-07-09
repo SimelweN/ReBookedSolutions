@@ -22,6 +22,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import LoadingFallback from "@/components/LoadingFallback";
+import EdgeFunctionTester from "@/components/debug/EdgeFunctionTester";
 
 interface DashboardStats {
   totalListings: number;
@@ -241,10 +242,11 @@ const Dashboard = () => {
         onValueChange={setActiveTab}
         className="space-y-4"
       >
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="activity">Recent Activity</TabsTrigger>
           <TabsTrigger value="quick-actions">Quick Actions</TabsTrigger>
+          <TabsTrigger value="debug">Debug</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
@@ -462,6 +464,10 @@ const Dashboard = () => {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="debug" className="space-y-4">
+          <EdgeFunctionTester />
         </TabsContent>
       </Tabs>
     </div>
