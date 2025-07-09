@@ -41,7 +41,7 @@ export const validateEnvironment = () => {
     );
   });
 
-    const missingCritical = critical.filter((key) => {
+  const missingCritical = critical.filter((key) => {
     const value = ENV[key as keyof typeof ENV];
     return (
       !value ||
@@ -79,17 +79,19 @@ export const validateEnvironment = () => {
     return !value || value.trim() === "" || value.includes("demo-");
   });
 
-    // Check for demo/placeholder values (only warn in production)
-  const hasPlaceholders = IS_PRODUCTION && Object.entries(ENV).some(
-    ([key, value]) =>
-      typeof value === "string" &&
-      (value.includes("demo-") ||
-        value.includes("your-") ||
-        value.includes("placeholder") ||
-        (key.includes("API_KEY") && value.length < 10)),
-  );
+  // Check for demo/placeholder values (only warn in production)
+  const hasPlaceholders =
+    IS_PRODUCTION &&
+    Object.entries(ENV).some(
+      ([key, value]) =>
+        typeof value === "string" &&
+        (value.includes("demo-") ||
+          value.includes("your-") ||
+          value.includes("placeholder") ||
+          (key.includes("API_KEY") && value.length < 10)),
+    );
 
-    if ((missing.length > 0 && IS_PRODUCTION) || hasPlaceholders) {
+  if ((missing.length > 0 && IS_PRODUCTION) || hasPlaceholders) {
     const errorMessage = `
 🚨 CONFIGURATION REQUIRED 🚨
 
@@ -135,7 +137,7 @@ OPTION 2: Manual setup
 🔍 Current status: ${ENV.NODE_ENV} environment
     `;
 
-        console.error(errorMessage);
+    console.error(errorMessage);
 
     if (IS_PRODUCTION) {
       console.error(
@@ -146,9 +148,12 @@ OPTION 2: Manual setup
       );
     }
   } else if (missing.length > 0 && IS_DEVELOPMENT) {
-    console.warn("ℹ️ Development mode: Some environment variables are using demo values");
-    console.warn("📋 To set up real credentials, run: node setup-environment.js");
-  }
+    console.warn(
+      "ℹ️ Development mode: Some environment variables are using demo values",
+    );
+    console.warn(
+      "📋 To set up real credentials, run: node setup-environment.js",
+    );
   }
 
   if (missing.length === 0) {
