@@ -8,6 +8,7 @@ import {
 import { getFunctionPolicy } from "@/config/functionPolicyRegistry";
 import { fallbackStorage } from "./fallbackStorage";
 import { healthTracker } from "./healthTracker";
+import { aiMonitoringService } from "./aiMonitoringService";
 import { supabase } from "@/integrations/supabase/client";
 
 class AIFunctionExecutor {
@@ -55,6 +56,11 @@ class AIFunctionExecutor {
         if (result.success) {
           healthTracker.recordSuccess("supabase");
           healthTracker.recordPerformance("supabase", Date.now() - startTime);
+          aiMonitoringService.logFunctionExecution(
+            functionName,
+            result,
+            Date.now() - startTime,
+          );
           return result;
         }
         throw new Error(result.error || "Supabase function failed");
@@ -77,6 +83,11 @@ class AIFunctionExecutor {
         if (result.success) {
           healthTracker.recordSuccess("vercel");
           healthTracker.recordPerformance("vercel", Date.now() - startTime);
+          aiMonitoringService.logFunctionExecution(
+            functionName,
+            result,
+            Date.now() - startTime,
+          );
           return result;
         }
         throw new Error(result.error || "Vercel function failed");
@@ -95,12 +106,23 @@ class AIFunctionExecutor {
       console.log(
         `🔄 Using fallback mechanism for ${functionName}: ${policy.fallbackType}`,
       );
-      return this.callFallbackMechanism<T>(
+      aiMonitoringService.logFallbackUsage(
+        functionName,
+        policy.fallbackType,
+        "All primary layers failed",
+      );
+      const result = await this.callFallbackMechanism<T>(
         functionName,
         payload,
         fullContext,
         policy.fallbackType,
       );
+      aiMonitoringService.logFunctionExecution(
+        functionName,
+        result,
+        Date.now() - startTime,
+      );
+      return result;
     }
 
     // No fallback allowed or available
@@ -349,6 +371,10 @@ class AIFunctionExecutor {
     };
 
     await fallbackStorage.enqueue(queueItem);
+    aiMonitoringService.logQueueEvent("enqueue", functionName, {
+      queueId: queueItem.id,
+      priority: context.priority,
+    });
 
     return {
       success: true,
