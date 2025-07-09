@@ -33,6 +33,16 @@ serve(async (req: Request) => {
         return await handleMarkAsRead(req, supabase);
       case "get-unread-count":
         return await handleGetUnreadCount(req, supabase);
+      case "health":
+        return new Response(
+          JSON.stringify({
+            success: true,
+            message: "Realtime notifications function is healthy",
+            timestamp: new Date().toISOString(),
+            version: "1.0.0",
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
       default:
         return new Response(
           JSON.stringify({
