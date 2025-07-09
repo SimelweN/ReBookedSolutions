@@ -217,193 +217,249 @@ const UniversityProfile: React.FC = () => {
           </div>
         </div>
 
-        {/* Content tabs */}
-        <div className="bg-white">
-          <div className="container mx-auto px-4">
-            <Tabs
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="w-full"
-            >
-              <TabsList className="bg-transparent border-b border-gray-200 rounded-none h-auto p-0 w-full justify-start">
+        {/* Main Content */}
+        <div className="container mx-auto px-6 py-8">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
+            {/* Modern Tab Navigation */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
+              <TabsList className="bg-transparent p-1 h-auto w-full grid grid-cols-4 rounded-xl">
                 <TabsTrigger
                   value="programs"
-                  className="bg-transparent border-b-2 border-transparent data-[state=active]:border-book-600 rounded-none py-4 px-6 text-gray-600 data-[state=active]:text-book-600"
+                  className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
                 >
-                  <BookOpen className="h-4 w-4 mr-2" />
-                  Programs
+                  <GraduationCap className="h-5 w-5 mr-2" />
+                  <span className="hidden sm:inline">Academic Programs</span>
+                  <span className="sm:hidden">Programs</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="admissions"
-                  className="bg-transparent border-b-2 border-transparent data-[state=active]:border-book-600 rounded-none py-4 px-6 text-gray-600 data-[state=active]:text-book-600"
+                  className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
                 >
-                  <GraduationCap className="h-4 w-4 mr-2" />
-                  Admissions
+                  <Calendar className="h-5 w-5 mr-2" />
+                  <span className="hidden sm:inline">Admissions</span>
+                  <span className="sm:hidden">Apply</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="student-life"
-                  className="bg-transparent border-b-2 border-transparent data-[state=active]:border-book-600 rounded-none py-4 px-6 text-gray-600 data-[state=active]:text-book-600"
+                  className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
                 >
-                  <Users className="h-4 w-4 mr-2" />
-                  Student Life
+                  <Heart className="h-5 w-5 mr-2" />
+                  <span className="hidden sm:inline">Campus Life</span>
+                  <span className="sm:hidden">Life</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="resources"
-                  className="bg-transparent border-b-2 border-transparent data-[state=active]:border-book-600 rounded-none py-4 px-6 text-gray-600 data-[state=active]:text-book-600"
+                  className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
                 >
-                  <Building className="h-4 w-4 mr-2" />
-                  Resources
+                  <Info className="h-5 w-5 mr-2" />
+                  <span className="hidden sm:inline">Resources</span>
+                  <span className="sm:hidden">Info</span>
                 </TabsTrigger>
               </TabsList>
+            </div>
 
-              <div className="py-8">
-                <TabsContent value="programs" className="mt-0">
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-2xl font-bold text-gray-900">
-                        Academic Programs
-                      </h2>
-                      <Button className="bg-book-600 hover:bg-book-700 text-white">
-                        <Calculator className="h-4 w-4 mr-2" />
-                        Calculate Your APS
-                      </Button>
-                    </div>
+            {/* Tab Content */}
+            <TabsContent value="programs" className="mt-0">
+              <div className="space-y-8">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div>
+                    <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                      Academic Programs
+                    </h2>
+                    <p className="text-gray-600">
+                      Explore {totalPrograms} programs across{" "}
+                      {university.faculties?.length || 0} faculties
+                    </p>
+                  </div>
+                  <Button className="bg-book-600 hover:bg-book-700 text-white shadow-lg">
+                    <Calculator className="h-5 w-5 mr-2" />
+                    Calculate Your APS
+                  </Button>
+                </div>
 
-                    {university.faculties && university.faculties.length > 0 ? (
-                      <div className="grid gap-6">
-                        {university.faculties.map((faculty, index) => (
-                          <div
-                            key={index}
-                            className="bg-gray-50 rounded-lg p-6"
-                          >
-                            <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                              {faculty.name}
-                            </h3>
-                            {faculty.description && (
-                              <p className="text-gray-600 mb-4">
-                                {faculty.description}
-                              </p>
-                            )}
+                {university.faculties && university.faculties.length > 0 ? (
+                  <div className="grid gap-8">
+                    {university.faculties.map((faculty, index) => (
+                      <Card key={index} className="border-0 shadow-lg">
+                        <CardHeader className="bg-gradient-to-r from-gray-50 to-white">
+                          <CardTitle className="text-xl flex items-center text-gray-900">
+                            <Building2 className="h-6 w-6 mr-3 text-book-500" />
+                            {faculty.name}
+                          </CardTitle>
+                          {faculty.description && (
+                            <p className="text-gray-600 mt-2">
+                              {faculty.description}
+                            </p>
+                          )}
+                        </CardHeader>
 
-                            {faculty.degrees && faculty.degrees.length > 0 && (
-                              <div className="space-y-3">
-                                <h4 className="font-medium text-gray-800">
-                                  Available Programs:
-                                </h4>
-                                <div className="grid gap-2">
-                                  {faculty.degrees
-                                    .slice(0, 3)
-                                    .map((degree, degreeIndex) => (
-                                      <div
-                                        key={degreeIndex}
-                                        className="bg-white rounded p-3 border border-gray-200"
-                                      >
-                                        <div className="flex justify-between items-start">
-                                          <div>
-                                            <h5 className="font-medium text-gray-900">
-                                              {degree.name}
-                                            </h5>
-                                            {degree.description && (
-                                              <p className="text-sm text-gray-600 mt-1">
-                                                {degree.description}
-                                              </p>
-                                            )}
+                        {faculty.degrees && faculty.degrees.length > 0 && (
+                          <CardContent className="pt-6">
+                            <div className="grid gap-4">
+                              {faculty.degrees
+                                .slice(0, 3)
+                                .map((degree, degreeIndex) => (
+                                  <div
+                                    key={degreeIndex}
+                                    className="group bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md hover:border-book-200 transition-all duration-200"
+                                  >
+                                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                                      <div className="flex-1">
+                                        <h5 className="font-semibold text-gray-900 mb-2 group-hover:text-book-700 transition-colors">
+                                          {degree.name}
+                                        </h5>
+                                        {degree.description && (
+                                          <p className="text-gray-600 text-sm leading-relaxed mb-3">
+                                            {degree.description}
+                                          </p>
+                                        )}
+                                        {degree.duration && (
+                                          <div className="flex items-center text-sm text-gray-500">
+                                            <Calendar className="h-4 w-4 mr-1" />
+                                            {degree.duration}
                                           </div>
-                                          <Badge
-                                            variant="outline"
-                                            className="ml-4"
-                                          >
-                                            APS: {degree.apsRequirement}
-                                          </Badge>
-                                        </div>
+                                        )}
                                       </div>
-                                    ))}
-                                  {faculty.degrees.length > 3 && (
-                                    <div className="text-center py-2">
-                                      <Button variant="outline" size="sm">
-                                        View {faculty.degrees.length - 3} more
-                                        programs
-                                      </Button>
+                                      <Badge className="bg-book-100 text-book-700 border-book-200 shrink-0">
+                                        APS: {degree.apsRequirement}
+                                      </Badge>
                                     </div>
-                                  )}
+                                  </div>
+                                ))}
+                              {faculty.degrees.length > 3 && (
+                                <div className="text-center py-4">
+                                  <Button
+                                    variant="outline"
+                                    className="border-book-200 text-book-600 hover:bg-book-50"
+                                  >
+                                    <TrendingUp className="h-4 w-4 mr-2" />
+                                    View {faculty.degrees.length - 3} more
+                                    programs
+                                  </Button>
                                 </div>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-12">
-                        <BookOpen className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-                        <h3 className="text-lg font-medium text-gray-600 mb-2">
-                          No Programs Available
-                        </h3>
-                        <p className="text-gray-500">
-                          Program information for this university is not yet
-                          available.
-                        </p>
-                      </div>
-                    )}
+                              )}
+                            </div>
+                          </CardContent>
+                        )}
+                      </Card>
+                    ))}
                   </div>
-                </TabsContent>
-
-                <TabsContent value="admissions" className="mt-0">
-                  <div className="space-y-6">
-                    <h2 className="text-2xl font-bold text-gray-900">
-                      Admissions Information
-                    </h2>
-                    <div className="bg-gray-50 rounded-lg p-6">
-                      <p className="text-gray-600">
-                        Admissions information is coming soon. Please visit the
-                        university website for current application details.
+                ) : (
+                  <Card className="border-0 shadow-lg">
+                    <CardContent className="text-center py-16">
+                      <GraduationCap className="h-20 w-20 mx-auto text-gray-300 mb-6" />
+                      <h3 className="text-xl font-semibold text-gray-700 mb-3">
+                        No Programs Available
+                      </h3>
+                      <p className="text-gray-500 max-w-md mx-auto">
+                        Program information for this university is not yet
+                        available. Please check back later or contact the
+                        university directly.
                       </p>
-                      {university.website && (
-                        <Button
-                          className="mt-4 bg-book-600 hover:bg-book-700 text-white"
-                          asChild
-                        >
-                          <a
-                            href={university.website}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <ExternalLink className="h-4 w-4 mr-2" />
-                            Visit University Website
-                          </a>
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="student-life" className="mt-0">
-                  <div className="space-y-6">
-                    <h2 className="text-2xl font-bold text-gray-900">
-                      Student Life
-                    </h2>
-                    <div className="bg-gray-50 rounded-lg p-6">
-                      <p className="text-gray-600">
-                        Student life information is coming soon.
-                      </p>
-                    </div>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="resources" className="mt-0">
-                  <div className="space-y-6">
-                    <h2 className="text-2xl font-bold text-gray-900">
-                      Resources
-                    </h2>
-                    <div className="bg-gray-50 rounded-lg p-6">
-                      <p className="text-gray-600">
-                        University resources information is coming soon.
-                      </p>
-                    </div>
-                  </div>
-                </TabsContent>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
-            </Tabs>
-          </div>
+            </TabsContent>
+
+            <TabsContent value="admissions" className="mt-0">
+              <div className="space-y-8">
+                <div>
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                    Admissions Information
+                  </h2>
+                  <p className="text-gray-600">
+                    Everything you need to know about applying
+                  </p>
+                </div>
+
+                <Card className="border-0 shadow-lg">
+                  <CardContent className="p-8 text-center">
+                    <Calendar className="h-16 w-16 mx-auto text-book-500 mb-6" />
+                    <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                      Admissions Information Coming Soon
+                    </h3>
+                    <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                      We're working on bringing you comprehensive admissions
+                      information. For now, please visit the official university
+                      website.
+                    </p>
+                    {university.website && (
+                      <Button
+                        className="bg-book-600 hover:bg-book-700 text-white"
+                        asChild
+                      >
+                        <a
+                          href={university.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <ExternalLink className="h-5 w-5 mr-2" />
+                          Visit University Website
+                        </a>
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="student-life" className="mt-0">
+              <div className="space-y-8">
+                <div>
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                    Campus Life
+                  </h2>
+                  <p className="text-gray-600">
+                    Discover what makes campus life special
+                  </p>
+                </div>
+
+                <Card className="border-0 shadow-lg">
+                  <CardContent className="p-8 text-center">
+                    <Heart className="h-16 w-16 mx-auto text-book-500 mb-6" />
+                    <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                      Campus Life Information Coming Soon
+                    </h3>
+                    <p className="text-gray-600 max-w-md mx-auto">
+                      We're preparing detailed information about student life,
+                      campus facilities, and extracurricular activities.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="resources" className="mt-0">
+              <div className="space-y-8">
+                <div>
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                    University Resources
+                  </h2>
+                  <p className="text-gray-600">
+                    Essential resources and facilities
+                  </p>
+                </div>
+
+                <Card className="border-0 shadow-lg">
+                  <CardContent className="p-8 text-center">
+                    <Info className="h-16 w-16 mx-auto text-book-500 mb-6" />
+                    <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                      Resources Information Coming Soon
+                    </h3>
+                    <p className="text-gray-600 max-w-md mx-auto">
+                      We're compiling comprehensive information about university
+                      resources, facilities, and support services.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </Layout>
