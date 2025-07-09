@@ -43,7 +43,20 @@ serve(async (req: Request) => {
       );
     }
 
-    const { reference } = requestBody;
+    const { action, reference } = requestBody;
+
+    // Handle health check
+    if (action === "health") {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Verify Paystack payment function is healthy",
+          timestamp: new Date().toISOString(),
+          version: "1.0.0",
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     if (!reference) {
       return new Response(
