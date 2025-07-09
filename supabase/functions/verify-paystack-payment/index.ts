@@ -344,6 +344,26 @@ serve(async (req) => {
       );
     }
 
+    // Generate receipt for the order
+    let receiptId = null;
+    try {
+      console.log("Generating receipt for order:", payment.order_id);
+      const { data: receiptData, error: receiptError } =
+        await supabaseClient.rpc("generate_receipt_for_order", {
+          order_id: payment.order_id,
+        });
+
+      if (receiptError) {
+        console.error("Receipt generation failed:", receiptError);
+      } else {
+        receiptId = receiptData;
+        console.log("Receipt generated successfully:", receiptId);
+      }
+    } catch (receiptError) {
+      console.error("Receipt generation error:", receiptError);
+      // Continue with payment - receipt can be regenerated later
+    }
+
     // Log audit trail
     await supabaseClient.from("audit_logs").insert({
       action: "payment_verified",
@@ -356,6 +376,7 @@ serve(async (req) => {
         amount: payment.amount,
         paystack_status: transaction.status,
         transaction_id: transaction.id,
+        receipt_id: receiptId,
       },
     });
 
