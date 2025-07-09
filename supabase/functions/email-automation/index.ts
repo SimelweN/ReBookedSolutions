@@ -25,7 +25,27 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { to, subject, template, data }: EmailRequest = await req.json();
+    const requestBody = await req.json();
+    const {
+      action,
+      to,
+      subject,
+      template,
+      data,
+    }: EmailRequest & { action?: string } = requestBody;
+
+    // Handle health check
+    if (action === "health") {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Email automation function is healthy",
+          timestamp: new Date().toISOString(),
+          version: "1.0.0",
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     console.log(`Sending email to: ${to}, template: ${template}`);
 
