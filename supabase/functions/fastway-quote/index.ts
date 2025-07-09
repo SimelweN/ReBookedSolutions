@@ -143,7 +143,11 @@ serve(async (req: Request) => {
         { headers: corsHeaders },
       );
     } catch (apiError) {
-      console.error("Fastway API error:", apiError);
+      if (apiError.name === "AbortError") {
+        console.error("Fastway API timeout after 10 seconds");
+      } else {
+        console.error("Fastway API error:", apiError);
+      }
 
       // Return fallback quote on API error
       return new Response(
