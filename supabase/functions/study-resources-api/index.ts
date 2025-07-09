@@ -22,6 +22,19 @@ serve(async (req: Request) => {
       const body = await req.json();
       const { action } = body;
 
+      // Handle health check
+      if (action === "health") {
+        return new Response(
+          JSON.stringify({
+            success: true,
+            message: "Study resources API function is healthy",
+            timestamp: new Date().toISOString(),
+            version: "1.0.0",
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+
       switch (action) {
         case "search":
           return await handleSearchFromBody(body);
