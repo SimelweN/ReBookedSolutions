@@ -155,7 +155,11 @@ serve(async (req: Request) => {
       { headers: corsHeaders },
     );
   } catch (error) {
-    console.error("Error in courier-guy-quote:", error);
+    if (error.name === "AbortError") {
+      console.error("Courier Guy API timeout after 10 seconds");
+    } else {
+      console.error("Error in courier-guy-quote:", error);
+    }
 
     // Return fallback quote on any error
     return new Response(
