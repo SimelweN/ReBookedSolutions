@@ -10,7 +10,9 @@ export interface NetworkStatus {
 }
 
 export const getNetworkStatus = (): NetworkStatus => {
-  const nav = navigator as any;
+  const nav = navigator as unknown as {
+    connection?: { effectiveType?: string; downlink?: number; rtt?: number };
+  };
 
   return {
     isOnline: navigator.onLine,
@@ -81,7 +83,7 @@ export const retryWithBackoff = async <T>(
 
       // Check if we're still online
       if (!navigator.onLine) {
-        console.log("Device is offline, waiting for connection...");
+        // Device is offline, waiting for connection
         await waitForOnline();
       }
 
@@ -94,9 +96,7 @@ export const retryWithBackoff = async <T>(
         );
       }
 
-      console.log(
-        `Network error on attempt ${attempt}/${opts.maxRetries + 1}, retrying in ${delay}ms...`,
-      );
+      // Network error, retrying
 
       if (opts.onRetry) {
         opts.onRetry(attempt, error);
