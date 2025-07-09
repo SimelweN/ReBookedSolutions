@@ -17,7 +17,7 @@ serve(async (req: Request) => {
     if (req.method !== "GET") {
       return new Response(JSON.stringify({ error: "Method not allowed" }), {
         status: 405,
-        headers: corsHeaders,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -29,7 +29,7 @@ serve(async (req: Request) => {
         JSON.stringify({ error: "Tracking number is required" }),
         {
           status: 400,
-          headers: corsHeaders,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         },
       );
     }
@@ -60,7 +60,7 @@ serve(async (req: Request) => {
           },
           fallback: true,
         }),
-        { headers: corsHeaders },
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
@@ -97,7 +97,7 @@ serve(async (req: Request) => {
           fallback: true,
           error: data.message || "API error",
         }),
-        { headers: corsHeaders },
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
@@ -110,7 +110,7 @@ serve(async (req: Request) => {
           events: data.events || [],
         },
       }),
-      { headers: corsHeaders },
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (error) {
     console.error("Error in courier-guy-track:", error);
@@ -135,7 +135,7 @@ serve(async (req: Request) => {
         fallback: true,
         error: error.message,
       }),
-      { headers: corsHeaders },
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
 });
