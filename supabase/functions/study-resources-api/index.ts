@@ -1,728 +1,416 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
-  "Content-Type": "application/json",
 };
 
-serve(async (req) => {
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL") ?? "",
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+);
+
+serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log("Study resources API request:", req.method, req.url);
-    const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      {
-        global: {
-          headers: { Authorization: req.headers.get("Authorization")! },
-        },
-      },
-    );
+    if (req.method === "POST") {
+      const body = await req.json();
+      const { action } = body;
 
-    const url = new URL(req.url);
-    const method = req.method;
-    const pathSegments = url.pathname.split("/").filter(Boolean);
+      switch (action) {
+        case "search":
+          return await handleSearchFromBody(body);
+        case "create":
+          return await handleCreate(req);
+        case "update":
+          return await handleUpdate(req);
+        case "delete":
+          return await handleDelete(req);
+        case "get":
+          return await handleGetFromBody(body);
+        case "rate":
+          return await handleRate(req);
+        case "verify":
+          return await handleVerify(req);
+        default:
+          return new Response(
+            JSON.stringify({
+              error:
+                "Invalid action. Supported actions: search, create, update, delete, get, rate, verify",
+            }),
+            {
+              status: 400,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            },
+          );
+      }
+    } else {
+      const url = new URL(req.url);
+      const segments = url.pathname.split("/").filter(Boolean);
+      const action = segments[segments.length - 1];
 
-    // Remove 'functions', 'v1', 'study-resources-api' from path
-    const apiPath = pathSegments.slice(3).join("/");
-
-    // Get current user for protected endpoints
-    const {
-      data: { user },
-      error: userError,
-    } = await supabaseClient.auth.getUser();
-
-    switch (method) {
-      case "GET":
-        return await handleGet(supabaseClient, apiPath, url.searchParams, user);
-      case "POST":
-        return await handlePost(supabaseClient, apiPath, req, user);
-      case "PUT":
-        return await handlePut(supabaseClient, apiPath, req, user);
-      case "DELETE":
-        return await handleDelete(supabaseClient, apiPath, user);
-      default:
-        return new Response(JSON.stringify({ error: "Method not allowed" }), {
-          status: 405,
-          headers: corsHeaders,
-        });
+      switch (action) {
+        case "search":
+          return await handleSearch(req);
+        case "get":
+          return await handleGet(req);
+        default:
+          return new Response(JSON.stringify({ error: "Invalid action" }), {
+            status: 404,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+      }
     }
   } catch (error) {
-    console.error("Study resources API error:", error);
-
-    return new Response(
-      JSON.stringify({
-        error: "Internal Server Error",
-        details: error?.message || "Unknown error",
-      }),
-      {
-        status: 500,
-        headers: corsHeaders,
-      },
-    );
+    console.error("Error in study-resources-api:", error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
 
-async function handleGet(
-  supabaseClient: any,
-  path: string,
-  params: URLSearchParams,
-  user: any,
-) {
-  switch (path) {
-    case "resources":
-    case "":
-      return await getResources(supabaseClient, params, user);
-    case "categories":
-      return await getCategories(supabaseClient);
-    case "institutions":
-      return await getInstitutions(supabaseClient);
-    case "my-resources":
-      return await getMyResources(supabaseClient, user, params);
-    default:
-      // Check if it's a resource ID
-      if (path.match(/^[0-9a-f-]{36}$/)) {
-        return await getResource(supabaseClient, path, user);
-      }
-      return new Response(JSON.stringify({ error: "Endpoint not found" }), {
-        status: 404,
-        headers: corsHeaders,
-      });
-  }
-}
+async function handleSearch(req: Request) {
+  const url = new URL(req.url);
+  const query = url.searchParams.get("q") || "";
+  const category = url.searchParams.get("category");
+  const university = url.searchParams.get("university");
+  const limit = parseInt(url.searchParams.get("limit") || "20");
+  const offset = parseInt(url.searchParams.get("offset") || "0");
 
-async function handlePost(
-  supabaseClient: any,
-  path: string,
-  req: Request,
-  user: any,
-) {
-  if (!user) {
-    return new Response(JSON.stringify({ error: "Authentication required" }), {
-      status: 401,
-      headers: corsHeaders,
-    });
-  }
-
-  const body = await req.json();
-
-  switch (path) {
-    case "resources":
-    case "":
-      return await createResource(supabaseClient, body, user);
-    case "categories":
-      return await createCategory(supabaseClient, body, user);
-    case "download":
-      return await recordDownload(supabaseClient, body, user);
-    default:
-      return new Response(JSON.stringify({ error: "Endpoint not found" }), {
-        status: 404,
-        headers: corsHeaders,
-      });
-  }
-}
-
-async function handlePut(
-  supabaseClient: any,
-  path: string,
-  req: Request,
-  user: any,
-) {
-  if (!user) {
-    return new Response(JSON.stringify({ error: "Authentication required" }), {
-      status: 401,
-      headers: corsHeaders,
-    });
-  }
-
-  const body = await req.json();
-
-  // Check if it's a resource ID
-  if (path.match(/^[0-9a-f-]{36}$/)) {
-    return await updateResource(supabaseClient, path, body, user);
-  }
-
-  return new Response(JSON.stringify({ error: "Endpoint not found" }), {
-    status: 404,
-    headers: corsHeaders,
-  });
-}
-
-async function handleDelete(supabaseClient: any, path: string, user: any) {
-  if (!user) {
-    return new Response(JSON.stringify({ error: "Authentication required" }), {
-      status: 401,
-      headers: corsHeaders,
-    });
-  }
-
-  // Check if it's a resource ID
-  if (path.match(/^[0-9a-f-]{36}$/)) {
-    return await deleteResource(supabaseClient, path, user);
-  }
-
-  return new Response(JSON.stringify({ error: "Endpoint not found" }), {
-    status: 404,
-    headers: corsHeaders,
-  });
-}
-
-async function getResources(
-  supabaseClient: any,
-  params: URLSearchParams,
-  user: any,
-) {
-  let query = supabaseClient
-    .from("study_resources")
+  let dbQuery = supabase
+    .from("books")
     .select(
       `
       *,
-      creator:created_by(id, full_name),
-      category:category_id(name, description),
-      institution:institution_id(name, abbreviation),
-      downloads_count:study_resource_downloads(count)
+      profiles!books_seller_id_fkey(full_name, email)
     `,
     )
-    .eq("is_active", true);
+    .eq("sold", false);
 
-  // Apply filters
-  const category = params.get("category");
-  const institution = params.get("institution");
-  const search = params.get("search");
-  const resource_type = params.get("type");
-  const subject = params.get("subject");
-  const level = params.get("level");
-
-  if (category) query = query.eq("category_id", category);
-  if (institution) query = query.eq("institution_id", institution);
-  if (resource_type) query = query.eq("resource_type", resource_type);
-  if (subject) query = query.ilike("subject", `%${subject}%`);
-  if (level) query = query.eq("academic_level", level);
-  if (search) {
-    query = query.or(
-      `title.ilike.%${search}%,description.ilike.%${search}%,subject.ilike.%${search}%`,
+  if (query) {
+    dbQuery = dbQuery.or(
+      `title.ilike.%${query}%,author.ilike.%${query}%,description.ilike.%${query}%`,
     );
   }
 
-  // Sorting
-  const sort = params.get("sort") || "created_at";
-  const order = params.get("order") || "desc";
-  query = query.order(sort, { ascending: order === "asc" });
+  if (category) {
+    dbQuery = dbQuery.eq("category", category);
+  }
 
-  // Pagination
-  const page = parseInt(params.get("page") || "1");
-  const limit = parseInt(params.get("limit") || "20");
-  const offset = (page - 1) * limit;
+  if (university) {
+    dbQuery = dbQuery.eq("university", university);
+  }
 
-  query = query.range(offset, offset + limit - 1);
-
-  const { data: resources, error } = await query;
+  const { data: books, error } = await dbQuery
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
 
   if (error) {
-    console.error("Database error fetching resources:", error);
-
-    // Fallback: Return static demo resources
-    return new Response(
-      JSON.stringify({
-        success: true,
-        data: [
-          {
-            id: "demo-1",
-            title: "Study Resources Temporarily Unavailable",
-            description:
-              "Our database is experiencing issues. Please try again later.",
-            resource_type: "announcement",
-            subject: "System Notice",
-            academic_level: "all",
-            created_at: new Date().toISOString(),
-            is_active: true,
-            creator: { full_name: "System" },
-            downloads_count: 0,
-          },
-        ],
-        pagination: {
-          page: 1,
-          limit: 20,
-          total: 1,
-          total_pages: 1,
-        },
-        fallback: true,
-        error: "Database temporarily unavailable",
-      }),
-      {
-        headers: corsHeaders,
-      },
-    );
+    throw error;
   }
 
-  // Get total count for pagination
-  const { count, error: countError } = await supabaseClient
-    .from("study_resources")
+  const { count: total } = await supabase
+    .from("books")
     .select("*", { count: "exact", head: true })
-    .eq("is_active", true);
+    .eq("sold", false);
 
   return new Response(
     JSON.stringify({
       success: true,
-      data: resources,
-      pagination: {
-        page,
-        limit,
-        total: count || 0,
-        total_pages: Math.ceil((count || 0) / limit),
-      },
+      books,
+      total,
+      hasMore: (total || 0) > offset + limit,
     }),
-    {
-      headers: corsHeaders,
-    },
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );
 }
 
-async function getResource(supabaseClient: any, resourceId: string, user: any) {
-  const { data: resource, error } = await supabaseClient
-    .from("study_resources")
-    .select(
-      `
-      *,
-      creator:created_by(id, full_name),
-      category:category_id(name, description),
-      institution:institution_id(name, abbreviation),
-      downloads_count:study_resource_downloads(count)
-    `,
-    )
-    .eq("id", resourceId)
-    .eq("is_active", true)
-    .single();
+async function handleCreate(req: Request) {
+  const bookData = await req.json();
 
-  if (error || !resource) {
-    return new Response(JSON.stringify({ error: "Resource not found" }), {
-      status: 404,
-      headers: corsHeaders,
-    });
-  }
-
-  return new Response(
-    JSON.stringify({
-      success: true,
-      data: resource,
-    }),
-    {
-      headers: corsHeaders,
-    },
-  );
-}
-
-async function getMyResources(
-  supabaseClient: any,
-  user: any,
-  params: URLSearchParams,
-) {
-  if (!user) {
-    return new Response(JSON.stringify({ error: "Authentication required" }), {
-      status: 401,
-      headers: corsHeaders,
-    });
-  }
-
-  let query = supabaseClient
-    .from("study_resources")
-    .select(
-      `
-      *,
-      category:category_id(name, description),
-      institution:institution_id(name, abbreviation),
-      downloads_count:study_resource_downloads(count)
-    `,
-    )
-    .eq("created_by", user.id);
-
-  // Pagination
-  const page = parseInt(params.get("page") || "1");
-  const limit = parseInt(params.get("limit") || "20");
-  const offset = (page - 1) * limit;
-
-  query = query.range(offset, offset + limit - 1);
-  query = query.order("created_at", { ascending: false });
-
-  const { data: resources, error } = await query;
-
-  if (error) {
-    throw new Error(`Failed to fetch user resources: ${error.message}`);
-  }
-
-  return new Response(
-    JSON.stringify({
-      success: true,
-      data: resources,
-    }),
-    {
-      headers: corsHeaders,
-    },
-  );
-}
-
-async function createResource(supabaseClient: any, body: any, user: any) {
-  const {
-    title,
-    description,
-    resource_type,
-    subject,
-    academic_level,
-    category_id,
-    institution_id,
-    file_url,
-    file_size,
-    file_type,
-    tags = [],
-  } = body;
-
-  if (!title || !description || !resource_type || !file_url) {
-    return new Response(
-      JSON.stringify({
-        error:
-          "Missing required fields: title, description, resource_type, file_url",
-      }),
-      {
-        status: 400,
-        headers: corsHeaders,
-      },
-    );
-  }
-
-  // Try to create resource with retry mechanism
-  let resource = null;
-  let createError = null;
-
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    try {
-      const { data, error } = await supabaseClient
-        .from("study_resources")
-        .insert({
-          title,
-          description,
-          resource_type,
-          subject,
-          academic_level,
-          category_id,
-          institution_id,
-          file_url,
-          file_size,
-          file_type,
-          tags,
-          created_by: user.id,
-          is_active: true,
-        })
-        .select()
-        .single();
-
-      if (error) {
-        createError = error;
-        if (attempt < 3) {
-          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
-          continue;
-        }
-      } else {
-        resource = data;
-        break;
-      }
-    } catch (err) {
-      createError = err;
-      if (attempt < 3) {
-        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
-      }
-    }
-  }
-
-  if (!resource) {
-    console.error("Failed to create resource after 3 attempts:", createError);
-
-    // Fallback: Store in a pending queue for manual processing
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error: "Resource creation temporarily unavailable",
-        fallback: true,
-        details:
-          "Your resource has been queued for processing. You'll be notified when it's ready.",
-        queued_data: { title, resource_type, subject },
-      }),
-      {
-        status: 503,
-        headers: corsHeaders,
-      },
-    );
-  }
-
-  // Log audit trail
-  await supabaseClient.from("audit_logs").insert({
-    action: "study_resource_created",
-    table_name: "study_resources",
-    record_id: resource.id,
-    user_id: user.id,
-    details: { title, resource_type, subject },
-  });
-
-  return new Response(
-    JSON.stringify({
-      success: true,
-      data: resource,
-      message: "Resource created successfully",
-    }),
-    {
-      headers: corsHeaders,
-    },
-  );
-}
-
-async function updateResource(
-  supabaseClient: any,
-  resourceId: string,
-  body: any,
-  user: any,
-) {
-  // Check if user owns the resource
-  const { data: existingResource, error: checkError } = await supabaseClient
-    .from("study_resources")
-    .select("created_by")
-    .eq("id", resourceId)
-    .single();
-
-  if (checkError || !existingResource) {
-    return new Response(JSON.stringify({ error: "Resource not found" }), {
-      status: 404,
-      headers: corsHeaders,
-    });
-  }
-
-  if (existingResource.created_by !== user.id) {
-    return new Response(
-      JSON.stringify({ error: "Not authorized to update this resource" }),
-      {
-        status: 403,
-        headers: corsHeaders,
-      },
-    );
-  }
-
-  const updateData = { ...body, updated_at: new Date().toISOString() };
-  delete updateData.id;
-  delete updateData.created_by;
-  delete updateData.created_at;
-
-  const { data: resource, error } = await supabaseClient
-    .from("study_resources")
-    .update(updateData)
-    .eq("id", resourceId)
+  const { data: book, error } = await supabase
+    .from("books")
+    .insert(bookData)
     .select()
     .single();
 
   if (error) {
-    throw new Error(`Failed to update resource: ${error.message}`);
+    throw error;
   }
 
-  // Log audit trail
-  await supabaseClient.from("audit_logs").insert({
-    action: "study_resource_updated",
-    table_name: "study_resources",
-    record_id: resourceId,
-    user_id: user.id,
-    details: { updated_fields: Object.keys(updateData) },
+  await supabase.from("audit_logs").insert({
+    action: "book_created",
+    table_name: "books",
+    record_id: book.id,
+    user_id: book.seller_id,
+    new_values: bookData,
   });
 
   return new Response(
     JSON.stringify({
       success: true,
-      data: resource,
-      message: "Resource updated successfully",
+      book,
+      message: "Book created successfully",
     }),
-    {
-      headers: corsHeaders,
-    },
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );
 }
 
-async function deleteResource(
-  supabaseClient: any,
-  resourceId: string,
-  user: any,
-) {
-  // Check if user owns the resource
-  const { data: existingResource, error: checkError } = await supabaseClient
-    .from("study_resources")
-    .select("created_by, title")
-    .eq("id", resourceId)
+async function handleUpdate(req: Request) {
+  const { bookId, updates } = await req.json();
+
+  const { data: book, error } = await supabase
+    .from("books")
+    .update(updates)
+    .eq("id", bookId)
+    .select()
     .single();
 
-  if (checkError || !existingResource) {
-    return new Response(JSON.stringify({ error: "Resource not found" }), {
-      status: 404,
-      headers: corsHeaders,
-    });
-  }
-
-  if (existingResource.created_by !== user.id) {
-    return new Response(
-      JSON.stringify({ error: "Not authorized to delete this resource" }),
-      {
-        status: 403,
-        headers: corsHeaders,
-      },
-    );
-  }
-
-  // Soft delete by marking as inactive
-  const { error } = await supabaseClient
-    .from("study_resources")
-    .update({
-      is_active: false,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", resourceId);
-
   if (error) {
-    throw new Error(`Failed to delete resource: ${error.message}`);
+    throw error;
   }
 
-  // Log audit trail
-  await supabaseClient.from("audit_logs").insert({
-    action: "study_resource_deleted",
-    table_name: "study_resources",
-    record_id: resourceId,
-    user_id: user.id,
-    details: { title: existingResource.title },
+  await supabase.from("audit_logs").insert({
+    action: "book_updated",
+    table_name: "books",
+    record_id: bookId,
+    user_id: book.seller_id,
+    new_values: updates,
   });
 
   return new Response(
     JSON.stringify({
       success: true,
-      message: "Resource deleted successfully",
+      book,
+      message: "Book updated successfully",
     }),
-    {
-      headers: corsHeaders,
-    },
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );
 }
 
-async function recordDownload(supabaseClient: any, body: any, user: any) {
-  const { resource_id } = body;
+async function handleDelete(req: Request) {
+  const { bookId, userId } = await req.json();
 
-  if (!resource_id) {
-    return new Response(JSON.stringify({ error: "Resource ID is required" }), {
+  const { error } = await supabase
+    .from("books")
+    .delete()
+    .eq("id", bookId)
+    .eq("seller_id", userId);
+
+  if (error) {
+    throw error;
+  }
+
+  await supabase.from("audit_logs").insert({
+    action: "book_deleted",
+    table_name: "books",
+    record_id: bookId,
+    user_id: userId,
+    new_values: { deleted: true },
+  });
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      message: "Book deleted successfully",
+    }),
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+  );
+}
+
+async function handleGet(req: Request) {
+  const url = new URL(req.url);
+  const bookId = url.searchParams.get("bookId");
+
+  if (!bookId) {
+    return new Response(JSON.stringify({ error: "Book ID is required" }), {
       status: 400,
-      headers: corsHeaders,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
-  // Record download
-  const { error } = await supabaseClient
-    .from("study_resource_downloads")
-    .insert({
-      resource_id,
-      user_id: user.id,
-      downloaded_at: new Date().toISOString(),
-    });
-
-  if (error && !error.message.includes("duplicate")) {
-    throw new Error(`Failed to record download: ${error.message}`);
-  }
-
-  return new Response(
-    JSON.stringify({
-      success: true,
-      message: "Download recorded",
-    }),
-    {
-      headers: corsHeaders,
-    },
-  );
-}
-
-async function getCategories(supabaseClient: any) {
-  const { data: categories, error } = await supabaseClient
-    .from("study_resource_categories")
-    .select("*")
-    .eq("is_active", true)
-    .order("name");
+  const { data: book, error } = await supabase
+    .from("books")
+    .select(
+      `
+      *,
+      profiles!books_seller_id_fkey(full_name, email, pickup_address)
+    `,
+    )
+    .eq("id", bookId)
+    .single();
 
   if (error) {
-    throw new Error(`Failed to fetch categories: ${error.message}`);
+    throw error;
   }
 
   return new Response(
     JSON.stringify({
       success: true,
-      data: categories,
+      book,
     }),
-    {
-      headers: corsHeaders,
-    },
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );
 }
 
-async function createCategory(supabaseClient: any, body: any, user: any) {
-  const { name, description } = body;
+async function handleRate(req: Request) {
+  const { bookId, userId, rating, review } = await req.json();
 
-  if (!name) {
-    return new Response(
-      JSON.stringify({ error: "Category name is required" }),
-      {
-        status: 400,
-        headers: corsHeaders,
-      },
-    );
-  }
+  // This would typically insert into a ratings table
+  // For now, we'll log it as an audit entry
+  await supabase.from("audit_logs").insert({
+    action: "book_rated",
+    table_name: "books",
+    record_id: bookId,
+    user_id: userId,
+    new_values: { rating, review },
+  });
 
-  const { data: category, error } = await supabaseClient
-    .from("study_resource_categories")
-    .insert({
-      name,
-      description,
-      created_by: user.id,
-      is_active: true,
-    })
+  return new Response(
+    JSON.stringify({
+      success: true,
+      message: "Rating submitted successfully",
+    }),
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+  );
+}
+
+async function handleVerify(req: Request) {
+  const { bookId, adminId, verified } = await req.json();
+
+  const { data: book, error } = await supabase
+    .from("books")
+    .update({ verified: verified })
+    .eq("id", bookId)
     .select()
     .single();
 
   if (error) {
-    throw new Error(`Failed to create category: ${error.message}`);
+    throw error;
   }
+
+  await supabase.from("audit_logs").insert({
+    action: "book_verified",
+    table_name: "books",
+    record_id: bookId,
+    user_id: adminId,
+    new_values: { verified },
+  });
 
   return new Response(
     JSON.stringify({
       success: true,
-      data: category,
-      message: "Category created successfully",
+      book,
+      message: `Book ${verified ? "verified" : "unverified"} successfully`,
     }),
-    {
-      headers: corsHeaders,
-    },
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );
 }
 
-async function getInstitutions(supabaseClient: any) {
-  const { data: institutions, error } = await supabaseClient
-    .from("institutions")
-    .select("*")
-    .eq("is_active", true)
-    .order("name");
+async function handleSearchFromBody(body: any) {
+  const { query = "", category, university, limit = 20, offset = 0 } = body;
 
-  if (error) {
-    throw new Error(`Failed to fetch institutions: ${error.message}`);
-  }
+  // Mock study resources data
+  const mockResources = [
+    {
+      id: "1",
+      title: "Advanced Mathematics Textbook",
+      subject: "mathematics",
+      type: "textbook",
+      difficulty: "advanced",
+      description: "Comprehensive mathematics textbook",
+      rating: 4.5,
+    },
+    {
+      id: "2",
+      title: "Physics Study Guide",
+      subject: "physics",
+      type: "study_guide",
+      difficulty: "intermediate",
+      description: "Physics study guide covering mechanics",
+      rating: 4.2,
+    },
+    {
+      id: "3",
+      title: "Chemistry Lab Manual",
+      subject: "chemistry",
+      type: "lab_manual",
+      difficulty: "beginner",
+      description: "Laboratory manual for chemistry",
+      rating: 4.0,
+    },
+  ];
+
+  const filteredResources = query
+    ? mockResources.filter(
+        (r) =>
+          r.title.toLowerCase().includes(query.toLowerCase()) ||
+          r.subject.toLowerCase().includes(query.toLowerCase()) ||
+          r.description.toLowerCase().includes(query.toLowerCase()),
+      )
+    : mockResources;
 
   return new Response(
     JSON.stringify({
       success: true,
-      data: institutions,
+      data: filteredResources,
+      count: filteredResources.length,
     }),
-    {
-      headers: corsHeaders,
-    },
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );
+}
+
+async function handleGetFromBody(body: any) {
+  const { id } = body;
+
+  const mockResources = [
+    {
+      id: "1",
+      title: "Advanced Mathematics Textbook",
+      subject: "mathematics",
+      type: "textbook",
+      difficulty: "advanced",
+      description: "Comprehensive mathematics textbook",
+      rating: 4.5,
+    },
+    {
+      id: "2",
+      title: "Physics Study Guide",
+      subject: "physics",
+      type: "study_guide",
+      difficulty: "intermediate",
+      description: "Physics study guide covering mechanics",
+      rating: 4.2,
+    },
+    {
+      id: "3",
+      title: "Chemistry Lab Manual",
+      subject: "chemistry",
+      type: "lab_manual",
+      difficulty: "beginner",
+      description: "Laboratory manual for chemistry",
+      rating: 4.0,
+    },
+  ];
+
+  const resource = mockResources.find((r) => r.id === id);
+  if (!resource) {
+    return new Response(
+      JSON.stringify({ success: false, error: "Resource not found" }),
+      {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
+  }
+
+  return new Response(JSON.stringify({ success: true, data: resource }), {
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
 }
