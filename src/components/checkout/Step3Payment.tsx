@@ -49,6 +49,54 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
         orderSummary,
       );
 
+      // Verify user authentication first
+      const { data: authCheck, error: authError } =
+        await supabase.auth.getSession();
+      if (authError || !authCheck.session) {
+        throw new Error("User authentication failed. Please log in again.");
+      }
+
+      console.log("User authenticated:", {
+        userId: userId,
+        email: authCheck.session.user?.email,
+        authenticated: !!authCheck.session,
+      });
+
+      // Debug mode: Test payment initialization with simplified data
+      const debugMode = import.meta.env.DEV && false; // Set to true for debugging
+
+      if (debugMode) {
+        console.log("🔍 DEBUG MODE: Testing payment initialization directly");
+
+        const simplePaymentRequest = {
+          order_id: "test-order-" + Date.now(),
+          email: authCheck.session.user?.email,
+          amount: orderSummary.total_price,
+          currency: "ZAR",
+          callback_url: `${window.location.origin}/checkout/success`,
+          metadata: {
+            debug: true,
+            book_title: orderSummary.book.title,
+            buyer_id: userId,
+          },
+        };
+
+        console.log("🔍 DEBUG: Testing payment with:", simplePaymentRequest);
+
+        const { data: testData, error: testError } =
+          await supabase.functions.invoke("initialize-paystack-payment", {
+            body: simplePaymentRequest,
+          });
+
+        console.log("🔍 DEBUG: Payment test result:", { testData, testError });
+
+        if (testError) {
+          throw new Error(`DEBUG: Payment test failed - ${testError.message}`);
+        }
+
+        return; // Exit early in debug mode
+      }
+
       // Create order data
       const orderData = {
         book_id: orderSummary.book.id,
@@ -78,15 +126,72 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
         );
       }
 
-      // Prepare payment request
-      const paymentRequest = {
-        email: userData.user.email,
-        amount: orderSummary.total_price * 100, // Convert to kobo
+      // Step 1: Create order first
+      const createOrderRequest = {
         bookId: orderSummary.book.id,
+        buyerId: userId,
+        buyerEmail: userData.user.email,
         sellerId: orderSummary.book.seller_id,
-        sellerSubaccountCode: orderSummary.book.seller_subaccount_code,
-        bookPrice: orderSummary.book_price,
-        deliveryFee: orderSummary.delivery_price,
+        amount: orderSummary.total_price,
+        deliveryOption: orderSummary.delivery.service_name,
+        shippingAddress: orderSummary.buyer_address,
+        deliveryData: {
+          courier: orderSummary.delivery.courier,
+          service_name: orderSummary.delivery.service_name,
+          estimated_days: orderSummary.delivery.estimated_days,
+          price: orderSummary.delivery_price,
+        },
+        paystackReference: `order_${Date.now()}_${userId}`, // Temporary reference
+        paystackSubaccount: orderSummary.book.seller_subaccount_code,
+      };
+
+      console.log("Creating order with data:", createOrderRequest);
+
+      // Create the order first
+      console.log("📦 Calling create-order function...");
+
+      let orderInvokeResult;
+      try {
+        orderInvokeResult = await supabase.functions.invoke("create-order", {
+          body: createOrderRequest,
+        });
+        console.log("📎 Raw create-order response:", orderInvokeResult);
+      } catch (invokeError) {
+        console.error("🚫 Function invoke failed:", invokeError);
+        throw new Error(`Function call failed: ${invokeError.message}`);
+      }
+
+      const { data: orderData, error: orderError } = orderInvokeResult;
+
+      if (orderError) {
+        console.error("Order creation error details:", {
+          error: orderError,
+          request: createOrderRequest,
+          userId: userId,
+        });
+
+        // Extract more specific error information
+        const errorMessage =
+          orderError.message ||
+          (typeof orderError === "string"
+            ? orderError
+            : "Failed to create order");
+
+        throw new Error(`Order creation failed: ${errorMessage}`);
+      }
+
+      if (!orderData?.success || !orderData?.order?.id) {
+        throw new Error("Failed to create order - no order ID returned");
+      }
+
+      console.log("Order created successfully:", orderData);
+
+      // Step 2: Initialize payment with the created order_id
+      const paymentRequest = {
+        order_id: orderData.order.id,
+        email: userData.user.email,
+        amount: orderSummary.total_price,
+        currency: "ZAR",
         callback_url: `${window.location.origin}/checkout/success`,
         metadata: {
           order_data: orderData,
@@ -99,14 +204,42 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
       console.log("Initializing payment with data:", paymentRequest);
 
       // Initialize Paystack payment with correct format
-      const { data: paymentData, error: paymentError } =
-        await supabase.functions.invoke("initialize-paystack-payment", {
-          body: paymentRequest,
-        });
+      console.log("📦 Calling initialize-paystack-payment function...");
+
+      let paymentInvokeResult;
+      try {
+        paymentInvokeResult = await supabase.functions.invoke(
+          "initialize-paystack-payment",
+          {
+            body: paymentRequest,
+          },
+        );
+        console.log(
+          "📎 Raw payment initialization response:",
+          paymentInvokeResult,
+        );
+      } catch (invokeError) {
+        console.error("🚫 Payment function invoke failed:", invokeError);
+        throw new Error(`Payment function call failed: ${invokeError.message}`);
+      }
+
+      const { data: paymentData, error: paymentError } = paymentInvokeResult;
 
       if (paymentError) {
-        console.error("Payment error:", paymentError);
-        throw new Error(paymentError.message || "Failed to initialize payment");
+        console.error("Payment initialization error details:", {
+          error: paymentError,
+          request: paymentRequest,
+          orderData: orderData,
+        });
+
+        // Extract more specific error information
+        const errorMessage =
+          paymentError.message ||
+          (typeof paymentError === "string"
+            ? paymentError
+            : "Failed to initialize payment");
+
+        throw new Error(`Payment initialization failed: ${errorMessage}`);
       }
 
       if (!paymentData) {

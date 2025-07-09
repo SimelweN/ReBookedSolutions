@@ -95,7 +95,7 @@ serve(async (req) => {
 
     const collectionTime = new Date().toISOString();
 
-    // Update order status
+    // Update order status and release payment hold
     const { error: updateError } = await supabaseClient
       .from("orders")
       .update({
@@ -104,6 +104,7 @@ serve(async (req) => {
         collection_notes: notes,
         collection_location: location_coords,
         collected_at: collectionTime,
+        payment_held: false, // Release payment hold - seller can now be paid
         updated_at: collectionTime,
       })
       .eq("id", order_id);
@@ -185,8 +186,21 @@ serve(async (req) => {
 
     await supabaseClient.from("notifications").insert(notifications);
 
-    // If collected by buyer and seller has bank details, initiate payout
+    // Critical: Only release payment if collected by buyer AND order is confirmed delivered
     if (isCollectedByBuyer) {
+      // Double-check that order status was successfully updated to delivered
+      const { data: verifyOrder } = await supabaseClient
+        .from("orders")
+        .select("status, payment_held")
+        .eq("id", order_id)
+        .single();
+
+      if (verifyOrder?.status !== "delivered") {
+        console.error(
+          "Order status verification failed - payment NOT released",
+        );
+        throw new Error("Collection verification failed");
+      }
       const { data: sellerProfile } = await supabaseClient
         .from("seller_profiles")
         .select("bank_account_number, paystack_subaccount_code")
@@ -196,7 +210,9 @@ serve(async (req) => {
       if (sellerProfile?.bank_account_number) {
         // Call pay-seller function
         try {
-          const paystackAmount = Math.round(order.total_price * 100); // Convert to kobo
+          // Calculate book price only (exclude delivery fee for seller payout)
+          const bookPrice = order.book_price || order.total_price; // Use book_price if available, fallback to total
+          const paystackAmount = Math.round(bookPrice * 100); // Convert to kobo
 
           await fetch(
             `${Deno.env.get("SUPABASE_URL")}/functions/v1/pay-seller`,

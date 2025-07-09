@@ -73,41 +73,96 @@ serve(async (req: Request) => {
       );
     }
 
-    // Create subaccount with Paystack
-    const paystackResponse = await fetch("https://api.paystack.co/subaccount", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        business_name: businessName,
-        bank_code: bankCode,
-        account_number: accountNumber,
-        percentage_charge: percentageCharge,
-        description: `Subaccount for ${businessName}`,
-        primary_contact_email: null,
-        primary_contact_name: null,
-        primary_contact_phone: null,
-        metadata: {
+    // Create subaccount with Paystack (with retry and fallback)
+    let paystackData = null;
+    let paystackError = null;
+
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        console.log(`Paystack subaccount creation attempt ${attempt}/3`);
+
+        const paystackResponse = await fetch(
+          "https://api.paystack.co/subaccount",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              business_name: businessName,
+              bank_code: bankCode,
+              account_number: accountNumber,
+              percentage_charge: percentageCharge,
+              description: `Subaccount for ${businessName}`,
+              primary_contact_email: null,
+              primary_contact_name: null,
+              primary_contact_phone: null,
+              metadata: {
+                user_id: userId,
+              },
+            }),
+          },
+        );
+
+        const data = await paystackResponse.json();
+
+        if (!paystackResponse.ok) {
+          paystackError = data;
+          console.error(`Paystack attempt ${attempt} failed:`, data);
+
+          if (attempt < 3) {
+            await new Promise((resolve) => setTimeout(resolve, 2000 * attempt));
+          }
+        } else {
+          paystackData = data;
+          break;
+        }
+      } catch (err) {
+        paystackError = err;
+        console.error(`Paystack attempt ${attempt} error:`, err);
+        if (attempt < 3) {
+          await new Promise((resolve) => setTimeout(resolve, 2000 * attempt));
+        }
+      }
+    }
+
+    if (!paystackData) {
+      console.error("All Paystack attempts failed, using fallback");
+
+      // Fallback: Create pending subaccount for manual processing
+      const fallbackSubaccountCode = `PENDING_${userId}_${Date.now()}`;
+
+      const { data: pendingSubaccount, error: dbError } = await supabase
+        .from("paystack_subaccounts")
+        .insert({
           user_id: userId,
-        },
-      }),
-    });
+          business_name: businessName,
+          settlement_bank: (await getBankName(bankCode)) || bankCode,
+          account_number: accountNumber,
+          subaccount_code: fallbackSubaccountCode,
+          percentage_charge: percentageCharge,
+          status: "pending_creation",
+          paystack_response: null,
+          creation_error: paystackError?.message || "Paystack API unavailable",
+        })
+        .select()
+        .single();
 
-    const paystackData = await paystackResponse.json();
+      if (dbError) {
+        throw new Error("Failed to create fallback subaccount record");
+      }
 
-    if (!paystackResponse.ok) {
-      console.error("Paystack error:", paystackData);
       return new Response(
         JSON.stringify({
-          error: "Failed to create Paystack subaccount",
-          details: paystackData.message || "Unknown error",
+          success: true,
+          subaccount: pendingSubaccount,
+          fallback: true,
+          message:
+            "Subaccount queued for creation. We'll process it manually and notify you within 24 hours.",
+          status: "pending_creation",
         }),
-        {
-          status: 400,
-          headers: corsHeaders,
-        },
+        { headers: corsHeaders },
       );
     }
 

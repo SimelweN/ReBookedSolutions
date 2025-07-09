@@ -38,8 +38,10 @@ const BankingRequirementGate = ({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <Loader2 className="w-6 h-6 animate-spin mr-2" />
-        <span>Checking seller requirements...</span>
+        <div className="flex items-center space-x-2">
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-book-600"></div>
+          <span className="text-gray-600">Checking seller requirements...</span>
+        </div>
       </div>
     );
   }

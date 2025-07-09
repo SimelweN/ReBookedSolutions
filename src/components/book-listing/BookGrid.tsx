@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Book } from "@/types/book";
 import { toast } from "sonner";
+import { handleImageError } from "@/utils/fallbackHelpers";
 
 interface BookGridProps {
   books: Book[];
@@ -140,10 +141,7 @@ const BookGrid = ({
                         className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                         loading="lazy"
                         decoding="async"
-                        onError={(e) => {
-                          e.currentTarget.src =
-                            "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&h=300&fit=crop&auto=format&q=80";
-                        }}
+                        onError={handleImageError}
                       />
                       {book.sold && (
                         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -223,10 +221,7 @@ const BookGrid = ({
                         className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                         loading="lazy"
                         decoding="async"
-                        onError={(e) => {
-                          e.currentTarget.src =
-                            "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&h=300&fit=crop&auto=format&q=80";
-                        }}
+                        onError={handleImageError}
                       />
 
                       {book.sold && (

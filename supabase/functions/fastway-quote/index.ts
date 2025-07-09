@@ -87,19 +87,39 @@ serve(async (req: Request) => {
       },
     };
 
-    // Simulate API call (replace with actual Fastway API endpoint)
+    // Call real Fastway API with timeout and proper error handling
     try {
-      const response = await fetch("https://api.fastway.co.za/v1/quote", {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+      const response = await fetch("https://sa.api.fastway.org/v3/quote", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${FASTWAY_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(quoteData),
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
-        throw new Error("Fastway API error");
+        const errorData = await response.text();
+        console.error(`Fastway API error ${response.status}:`, errorData);
+
+        if (response.status === 429) {
+          console.warn("Fastway rate limit exceeded, using fallback");
+          throw new Error("Rate limit exceeded");
+        } else if (response.status === 401) {
+          console.error("Fastway authentication failed - check API key");
+          throw new Error("Authentication failed");
+        } else if (response.status >= 500) {
+          console.error("Fastway server error - temporary issue");
+          throw new Error("Server error");
+        }
+
+        throw new Error(`Fastway API error: ${response.status}`);
       }
 
       const data = await response.json();
@@ -123,7 +143,11 @@ serve(async (req: Request) => {
         { headers: corsHeaders },
       );
     } catch (apiError) {
-      console.error("Fastway API error:", apiError);
+      if (apiError.name === "AbortError") {
+        console.error("Fastway API timeout after 10 seconds");
+      } else {
+        console.error("Fastway API error:", apiError);
+      }
 
       // Return fallback quote on API error
       return new Response(

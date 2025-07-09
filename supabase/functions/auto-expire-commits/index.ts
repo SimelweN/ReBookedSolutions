@@ -51,28 +51,64 @@ serve(async (req: Request) => {
 
     for (const order of expiredOrders || []) {
       try {
-        // Cancel the order
-        const { error: updateError } = await supabase
-          .from("orders")
-          .update({
-            status: "cancelled",
-            cancelled_at: new Date().toISOString(),
-            cancellation_reason: "Seller failed to commit within 7 days",
-          })
-          .eq("id", order.id);
+        // Process automatic refund for expired commit
+        try {
+          const refundResponse = await fetch(
+            `${Deno.env.get("SUPABASE_URL")}/functions/v1/process-refund`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                order_id: order.id,
+                reason: "Seller failed to commit within 48 hours",
+                merchant_note: "Automatic refund due to seller inactivity",
+              }),
+            },
+          );
 
-        if (updateError) {
-          console.error(`Failed to update order ${order.id}:`, updateError);
+          if (!refundResponse.ok) {
+            console.error(
+              `Refund failed for order ${order.id}:`,
+              await refundResponse.text(),
+            );
+
+            // Fallback: Mark as cancelled without refund (for manual processing)
+            const { error: updateError } = await supabase
+              .from("orders")
+              .update({
+                status: "cancelled",
+                cancelled_at: new Date().toISOString(),
+                cancellation_reason:
+                  "Seller failed to commit within 48 hours - refund pending",
+              })
+              .eq("id", order.id);
+
+            if (updateError) {
+              console.error(`Failed to update order ${order.id}:`, updateError);
+              failed++;
+              continue;
+            }
+
+            // Mark book as available again
+            if (order.book_id) {
+              await supabase
+                .from("books")
+                .update({ sold: false })
+                .eq("id", order.book_id);
+            }
+          } else {
+            console.log(`Refund processed successfully for order ${order.id}`);
+          }
+        } catch (refundError) {
+          console.error(
+            `Error processing refund for order ${order.id}:`,
+            refundError,
+          );
           failed++;
           continue;
-        }
-
-        // Mark book as available again
-        if (order.book_id) {
-          await supabase
-            .from("books")
-            .update({ sold: false })
-            .eq("id", order.book_id);
         }
 
         // Send notifications
@@ -87,7 +123,7 @@ serve(async (req: Request) => {
             user_id: order.seller_id,
             type: "order_expired",
             title: "Order Auto-Cancelled",
-            message: `Your order for "${order.books?.title}" was automatically cancelled for not committing within 7 days.`,
+            message: `Your order for "${order.books?.title}" was automatically cancelled because the seller didn't commit within 48 hours.`,
           },
         ];
 

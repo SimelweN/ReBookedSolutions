@@ -115,23 +115,108 @@ serve(async (req) => {
       throw new Error("Paystack secret key not configured");
     }
 
-    // Verify payment with Paystack
-    const verificationResponse = await fetch(
-      `https://api.paystack.co/transaction/verify/${reference}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${paystackSecret}`,
-          "Content-Type": "application/json",
+    // Verify payment with Paystack (with timeout and retry)
+    let verificationData = null;
+    let verificationError = null;
+
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        console.log(`Paystack verification attempt ${attempt}/3`);
+
+        // Create AbortController for timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+        const verificationResponse = await fetch(
+          `https://api.paystack.co/transaction/verify/${reference}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${paystackSecret}`,
+              "Content-Type": "application/json",
+            },
+            signal: controller.signal,
+          },
+        );
+
+        clearTimeout(timeoutId);
+
+        if (!verificationResponse.ok) {
+          throw new Error(
+            `HTTP ${verificationResponse.status}: ${verificationResponse.statusText}`,
+          );
+        }
+
+        const data = await verificationResponse.json();
+
+        if (!data.status) {
+          throw new Error(`Paystack error: ${data.message}`);
+        }
+
+        verificationData = data;
+        break;
+      } catch (error) {
+        verificationError = error;
+        console.error(`Verification attempt ${attempt} failed:`, error);
+
+        if (attempt < 3) {
+          await new Promise((resolve) => setTimeout(resolve, 2000 * attempt));
+        }
+      }
+    }
+
+    if (!verificationData) {
+      console.error(
+        "All verification attempts failed, checking local payment status",
+      );
+
+      // Fallback: Check if payment was already processed via webhook
+      const { data: recentPayment } = await supabaseClient
+        .from("payments")
+        .select("*")
+        .eq("reference", reference)
+        .single();
+
+      if (recentPayment?.status === "completed") {
+        console.log("Payment was already verified via webhook");
+        return new Response(
+          JSON.stringify({
+            success: true,
+            payment: {
+              id: recentPayment.id,
+              reference: recentPayment.reference,
+              status: recentPayment.status,
+              amount: recentPayment.amount,
+              verified_at: recentPayment.verified_at,
+            },
+            fallback: true,
+            message: "Payment was already verified",
+          }),
+          { headers: corsHeaders },
+        );
+      }
+
+      // Store verification attempt for manual processing
+      await supabaseClient.from("failed_verifications").insert({
+        payment_reference: reference,
+        user_id: user.id,
+        error_details: verificationError?.message || "Paystack API unavailable",
+        attempted_at: new Date().toISOString(),
+      });
+
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Payment verification temporarily unavailable",
+          fallback: true,
+          details:
+            "We'll verify your payment manually within 1 hour and notify you.",
+          reference: reference,
+        }),
+        {
+          status: 503,
+          headers: corsHeaders,
         },
-      },
-    );
-
-    const verificationData = await verificationResponse.json();
-
-    if (!verificationData.status) {
-      throw new Error(
-        `Paystack verification failed: ${verificationData.message}`,
       );
     }
 
@@ -177,37 +262,107 @@ serve(async (req) => {
       );
     }
 
-    // Update payment as completed
-    const { error: updatePaymentError } = await supabaseClient
-      .from("payments")
-      .update({
-        status: "completed",
-        paystack_response: transaction,
-        verified_at: verifiedAt,
-        updated_at: verifiedAt,
-      })
-      .eq("reference", reference);
+    // Update payment and order status (with retry)
+    let updateSuccess = false;
+    let updateError = null;
 
-    if (updatePaymentError) {
-      throw new Error(
-        `Failed to update payment status: ${updatePaymentError.message}`,
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        console.log(`Database update attempt ${attempt}/3`);
+
+        // Update payment as completed
+        const { error: updatePaymentError } = await supabaseClient
+          .from("payments")
+          .update({
+            status: "completed",
+            paystack_response: transaction,
+            verified_at: verifiedAt,
+            updated_at: verifiedAt,
+          })
+          .eq("reference", reference);
+
+        if (updatePaymentError) {
+          throw updatePaymentError;
+        }
+
+        // Update order status to paid WITH payment holding until collection
+        const { error: updateOrderError } = await supabaseClient
+          .from("orders")
+          .update({
+            status: "paid",
+            paid_at: verifiedAt,
+            payment_held: true, // CRITICAL: Hold payment until book collection
+            updated_at: verifiedAt,
+          })
+          .eq("id", payment.order_id);
+
+        if (updateOrderError) {
+          throw updateOrderError;
+        }
+
+        updateSuccess = true;
+        break;
+      } catch (error) {
+        updateError = error;
+        console.error(`Update attempt ${attempt} failed:`, error);
+
+        if (attempt < 3) {
+          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+        }
+      }
+    }
+
+    if (!updateSuccess) {
+      console.error("Failed to update database, storing for manual processing");
+
+      // Store successful verification for manual database update
+      await supabaseClient.from("pending_payment_updates").insert({
+        payment_reference: reference,
+        order_id: payment.order_id,
+        transaction_data: transaction,
+        verified_at: verifiedAt,
+        error_details: updateError?.message || "Database update failed",
+        requires_manual_processing: true,
+      });
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          payment_verified: true,
+          database_pending: true,
+          message:
+            "Payment verified with Paystack. Database update is being processed manually.",
+          payment: {
+            id: payment.id,
+            reference: reference,
+            status: "verified_pending_update",
+            amount: payment.amount,
+            verified_at: verifiedAt,
+            transaction_id: transaction.id,
+          },
+        }),
+        { headers: corsHeaders },
       );
     }
 
-    // Update order status to paid
-    const { error: updateOrderError } = await supabaseClient
-      .from("orders")
-      .update({
-        status: "paid",
-        paid_at: verifiedAt,
-        updated_at: verifiedAt,
-      })
-      .eq("id", payment.order_id);
+    // Generate receipt for the order
+    let receiptId = null;
+    try {
+      console.log("Generating receipt for order:", payment.order_id);
+      const { data: receiptData, error: receiptError } =
+        await supabaseClient.rpc("generate_receipt_for_order", {
+          order_id: payment.order_id,
+        });
 
-    if (updateOrderError) {
-      throw new Error(
-        `Failed to update order status: ${updateOrderError.message}`,
-      );
+      if (receiptError) {
+        console.error("Receipt generation failed:", receiptError);
+      } else {
+        receiptId = receiptData;
+        console.log("Receipt generated successfully:", receiptId);
+      }
+    } catch (receiptError) {
+      console.error("Receipt generation error:", receiptError);
+      // Continue with payment - receipt can be regenerated later
     }
 
     // Log audit trail
@@ -222,10 +377,11 @@ serve(async (req) => {
         amount: payment.amount,
         paystack_status: transaction.status,
         transaction_id: transaction.id,
+        receipt_id: receiptId,
       },
     });
 
-    // Send notifications
+    // Send notifications (quick operation)
     const notifications = [
       {
         user_id: payment.order.buyer_id,
@@ -251,77 +407,72 @@ serve(async (req) => {
       },
     ];
 
-    await supabaseClient.from("notifications").insert(notifications);
-
-    // Send email notifications
     try {
-      // Notify buyer
-      await fetch(
-        `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-email-notification`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: req.headers.get("Authorization")!,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            to: payment.order.buyer.email,
-            template: "payment_confirmed",
-            data: {
-              recipient_name: payment.order.buyer.full_name,
-              book_title: payment.order.book.title,
-              amount: payment.amount,
-              order_id: payment.order_id,
-              reference,
-            },
-          }),
-        },
-      );
-
-      // Notify seller
-      await fetch(
-        `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-email-notification`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: req.headers.get("Authorization")!,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            to: payment.order.seller.email,
-            template: "payment_received",
-            data: {
-              recipient_name: payment.order.seller.full_name,
-              book_title: payment.order.book.title,
-              amount: payment.amount,
-              order_id: payment.order_id,
-              buyer_name: payment.order.buyer.full_name,
-            },
-          }),
-        },
-      );
-    } catch (emailError) {
-      console.error("Failed to send email notifications:", emailError);
+      await supabaseClient.from("notifications").insert(notifications);
+    } catch (notificationError) {
+      console.error("Failed to create notifications:", notificationError);
     }
 
-    // Trigger order reminder system for seller commitment
-    try {
-      await fetch(
-        `${Deno.env.get("SUPABASE_URL")}/functions/v1/process-order-reminders`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: req.headers.get("Authorization")!,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            order_id: payment.order_id,
-            reminder_type: "seller_commitment",
-          }),
+    // Queue email notifications and reminders (non-blocking)
+    const emailData = {
+      buyer_email: {
+        to: payment.order.buyer.email,
+        template: "payment_confirmed_with_receipt",
+        data: {
+          recipient_name: payment.order.buyer.full_name,
+          book_title: payment.order.book.title,
+          amount: payment.amount,
+          order_id: payment.order_id,
+          reference,
+          receipt_id: receiptId,
+          receipt_url: receiptId
+            ? `${Deno.env.get("SUPABASE_URL")}/functions/v1/generate-receipt-pdf?receipt_id=${receiptId}`
+            : null,
+          transaction_id: transaction.id,
         },
-      );
-    } catch (reminderError) {
-      console.error("Failed to trigger reminder system:", reminderError);
+      },
+      seller_email: {
+        to: payment.order.seller.email,
+        template: "payment_received",
+        data: {
+          recipient_name: payment.order.seller.full_name,
+          book_title: payment.order.book.title,
+          amount: payment.amount,
+          order_id: payment.order_id,
+          buyer_name: payment.order.buyer.full_name,
+          receipt_id: receiptId,
+        },
+      },
+    };
+
+    // Store for background processing instead of blocking
+    try {
+      await supabaseClient.from("email_queue").insert([
+        {
+          type: "payment_confirmed_with_receipt",
+          recipient: emailData.buyer_email.to,
+          data: emailData.buyer_email,
+          priority: "high",
+          scheduled_for: new Date().toISOString(),
+        },
+        {
+          type: "payment_received",
+          recipient: emailData.seller_email.to,
+          data: emailData.seller_email,
+          priority: "high",
+          scheduled_for: new Date().toISOString(),
+        },
+      ]);
+
+      // Queue reminder processing
+      await supabaseClient.from("reminder_queue").insert({
+        order_id: payment.order_id,
+        reminder_type: "seller_commitment",
+        scheduled_for: new Date().toISOString(),
+      });
+    } catch (queueError) {
+      console.error("Failed to queue background tasks:", queueError);
+      // Continue execution - these are non-critical
     }
 
     return new Response(

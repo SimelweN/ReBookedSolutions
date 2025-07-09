@@ -19,6 +19,7 @@ import CartButton from "./CartButton";
 import NotificationBell from "./NotificationBell";
 import { toast } from "sonner";
 import { preloadOnHover } from "@/utils/routePreloader";
+import { handleProfileImageError } from "@/utils/fallbackHelpers";
 
 const Navbar = () => {
   const { user, logout, isAuthenticated, profile } = useAuth();
@@ -63,7 +64,7 @@ const Navbar = () => {
               </div>
               <span className="text-lg sm:text-xl font-bold text-book-600 truncate">
                 <span className="hidden sm:inline">ReBooked Solutions</span>
-                <span className="sm:hidden">ReBooked Solutions</span>
+                <span className="sm:hidden">ReBooked</span>
               </span>
             </Link>
           </div>
@@ -126,6 +127,7 @@ const Navbar = () => {
                           src={profile.profile_picture_url}
                           alt={profile?.name || "Profile"}
                           className="w-6 h-6 rounded-full object-cover"
+                          onError={(e) => handleProfileImageError(e, "w-5 h-5")}
                         />
                       ) : (
                         <User className="w-5 h-5" />
@@ -237,6 +239,9 @@ const Navbar = () => {
                           src={profile.profile_picture_url}
                           alt="Profile"
                           className="w-6 h-6 rounded-full object-cover mr-3"
+                          onError={(e) =>
+                            handleProfileImageError(e, "w-5 h-5 mr-3")
+                          }
                         />
                       ) : (
                         <User className="w-5 h-5 mr-3" />

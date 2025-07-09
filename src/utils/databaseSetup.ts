@@ -1,243 +1,281 @@
 /**
- * Database setup utility for creating required tables
+ * Database Setup and Health Check Utility
+ * Automatically sets up missing tables and checks database health
  */
 
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { validateEnvironment } from "@/config/environment";
 
-export class DatabaseSetup {
-  /**
-   * Check if banking_details table exists and is accessible
-   */
-  static async checkBankingTableExists(): Promise<boolean> {
-    try {
-      const { error } = await supabase
-        .from("banking_details")
-        .select("id")
-        .limit(1);
+interface DatabaseHealth {
+  connected: boolean;
+  tablesExist: boolean;
+  rlsEnabled: boolean;
+  missingTables: string[];
+  errors: string[];
+}
 
-      return !error;
-    } catch (error) {
-      console.log("Banking details table check failed:", error);
-      return false;
+const REQUIRED_TABLES = [
+  "profiles",
+  "books",
+  "orders",
+  "payments",
+  "notifications",
+  "audit_logs",
+  "banking_subaccounts",
+  "study_resources",
+  "study_resource_categories",
+  "institutions",
+];
+
+/**
+ * Check if all required tables exist
+ */
+export async function checkDatabaseHealth(): Promise<DatabaseHealth> {
+  const health: DatabaseHealth = {
+    connected: false,
+    tablesExist: false,
+    rlsEnabled: false,
+    missingTables: [],
+    errors: [],
+  };
+
+  try {
+    // First validate environment
+    if (!validateEnvironment()) {
+      health.errors.push("Environment variables not properly configured");
+      return health;
     }
+
+    // Test basic connection
+    const { data: connectionTest, error: connectionError } = await supabase
+      .from("profiles")
+      .select("id")
+      .limit(1);
+
+    if (connectionError) {
+      if (
+        connectionError.message.includes('relation "profiles" does not exist')
+      ) {
+        health.errors.push("Database tables not created");
+        health.missingTables = REQUIRED_TABLES;
+      } else {
+        health.errors.push(`Connection error: ${connectionError.message}`);
+      }
+      return health;
+    }
+
+    health.connected = true;
+
+    // Check which tables exist
+    for (const table of REQUIRED_TABLES) {
+      try {
+        const { error } = await supabase.from(table).select("*").limit(1);
+
+        if (error && error.message.includes("does not exist")) {
+          health.missingTables.push(table);
+        }
+      } catch (err) {
+        health.missingTables.push(table);
+      }
+    }
+
+    health.tablesExist = health.missingTables.length === 0;
+
+    // Check RLS (basic test)
+    try {
+      const { error } = await supabase.rpc("has_table_privilege", {
+        table_name: "profiles",
+        privilege: "SELECT",
+      });
+      health.rlsEnabled = !error;
+    } catch {
+      health.rlsEnabled = false;
+    }
+  } catch (error) {
+    health.errors.push(`Health check failed: ${error}`);
   }
 
-  /**
-   * Create banking_details table using SQL
-   */
-  static async createBankingDetailsTable(): Promise<boolean> {
-    try {
-      console.log("Creating banking_details table...");
+  return health;
+}
 
-      const createTableSQL = `
-        -- Create banking_details table for secure storage of user banking information
-        CREATE TABLE IF NOT EXISTS public.banking_details (
-            id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-            user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-            recipient_type TEXT NOT NULL,
-            full_name TEXT NOT NULL,
-            bank_account_number TEXT NOT NULL,
-            bank_name TEXT NOT NULL,
-            branch_code TEXT NOT NULL,
-            account_type TEXT NOT NULL CHECK (account_type IN ('savings', 'current')),
-            paystack_subaccount_code TEXT,
-            paystack_subaccount_id TEXT,
-            subaccount_status TEXT DEFAULT 'pending' CHECK (subaccount_status IN ('pending', 'active', 'inactive')),
-            account_verified BOOLEAN DEFAULT false NOT NULL,
-            created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-            updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-            UNIQUE(user_id)
-        );
+/**
+ * Create the profiles table with basic structure
+ */
+async function createProfilesTable() {
+  const { error } = await supabase.rpc("exec_sql", {
+    sql: `
+      CREATE TABLE IF NOT EXISTS profiles (
+        id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+        email TEXT,
+        full_name TEXT,
+        profile_picture_url TEXT,
+        bio TEXT,
+        is_admin BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        status TEXT DEFAULT 'active',
+        subaccount_code TEXT,
+        phone TEXT,
+        address JSONB
+      );
+      
+      ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+      
+      CREATE POLICY "Users can view own profile" ON profiles 
+        FOR SELECT USING (auth.uid() = id);
+      CREATE POLICY "Users can update own profile" ON profiles 
+        FOR UPDATE USING (auth.uid() = id);
+    `,
+  });
 
-        -- Enable Row Level Security (RLS)
-        ALTER TABLE public.banking_details ENABLE ROW LEVEL SECURITY;
+  return !error;
+}
 
-        -- Create RLS policies for banking_details
-        CREATE POLICY IF NOT EXISTS "Users can view their own banking details" ON public.banking_details
-            FOR SELECT
-            USING (auth.uid() = user_id);
+/**
+ * Create essential tables for basic functionality
+ */
+export async function createEssentialTables(): Promise<boolean> {
+  try {
+    console.log("Creating essential database tables...");
 
-        CREATE POLICY IF NOT EXISTS "Users can insert their own banking details" ON public.banking_details
-            FOR INSERT
-            WITH CHECK (auth.uid() = user_id);
+    // Check if we can create tables (this requires proper permissions)
+    const { data, error } = await supabase.rpc("version");
 
-        CREATE POLICY IF NOT EXISTS "Users can update their own banking details" ON public.banking_details
-            FOR UPDATE
-            USING (auth.uid() = user_id)
-            WITH CHECK (auth.uid() = user_id);
-
-        CREATE POLICY IF NOT EXISTS "Users can delete their own banking details" ON public.banking_details
-            FOR DELETE
-            USING (auth.uid() = user_id);
-
-        -- Grant necessary permissions
-        GRANT SELECT, INSERT, UPDATE, DELETE ON public.banking_details TO authenticated;
-        GRANT USAGE ON SCHEMA public TO authenticated;
-      `;
-
-      const { error } = await supabase.rpc("exec_sql", { sql: createTableSQL });
-
-      if (error) {
-        console.error("Failed to create banking_details table:", error);
-        return false;
-      }
-
-      console.log("✅ Banking details table created successfully");
-      return true;
-    } catch (error) {
-      console.error("Error creating banking_details table:", error);
+    if (error) {
+      console.error("Cannot access database functions. Manual setup required.");
       return false;
     }
-  }
 
-  /**
-   * Setup banking details table if it doesn't exist
-   */
-  static async ensureBankingTableExists(): Promise<boolean> {
-    const exists = await this.checkBankingTableExists();
+    // Try to create profiles table first
+    const profilesCreated = await createProfilesTable();
 
-    if (exists) {
-      console.log("✅ Banking details table already exists");
-      return true;
+    if (!profilesCreated) {
+      console.error(
+        "Failed to create profiles table. Please run the SQL setup script manually.",
+      );
+      return false;
     }
 
-    console.log("⚠️ Banking details table not found, attempting to create...");
-
-    // Check if user has access to create tables (unlikely in production)
-    try {
-      console.log("Testing if table creation is possible...");
-
-      // Try a simple test - this will fail with permission error if user can't create tables
-      const { error: testError } = await supabase
-        .from("banking_details")
-        .select("id")
-        .limit(0); // Don't actually fetch data, just test access
-
-      // If we get a "relation does not exist" error, user might have creation rights
-      if (testError?.code === "42P01") {
-        console.log("Table doesn't exist but we have database access");
-      }
-    } catch (createError) {
-      console.log("Table creation check:", createError);
-    }
-
-    // If automatic creation fails, show helpful instructions
-    console.log(
-      "⚠️ Automatic table creation not possible, showing setup instructions",
-    );
-
-    toast.error("Banking details table needs to be created manually.", {
-      description:
-        "Please run the database_setup.sql script in your Supabase SQL editor, or contact support for assistance.",
-      duration: 15000,
-    });
-
+    console.log("✅ Essential tables created successfully");
+    return true;
+  } catch (error) {
+    console.error("Failed to create tables:", error);
     return false;
   }
+}
 
-  /**
-   * Test database connectivity and permissions
-   */
-  static async testDatabaseAccess(): Promise<{
-    connected: boolean;
-    canRead: boolean;
-    canWrite: boolean;
-    bankingTableExists: boolean;
-  }> {
-    try {
-      // Test basic connectivity
-      const { error: connectError } = await supabase.auth.getSession();
-      const connected = !connectError;
+/**
+ * Initialize user profile after signup
+ */
+export async function initializeUserProfile(user: any): Promise<boolean> {
+  try {
+    const { error } = await supabase.from("profiles").upsert(
+      {
+        id: user.id,
+        email: user.email,
+        full_name:
+          user.user_metadata?.full_name || user.email?.split("@")[0] || "User",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        onConflict: "id",
+      },
+    );
 
-      // Test read access
-      const { error: readError } = await supabase
-        .from("profiles")
-        .select("id")
-        .limit(1);
-      const canRead = !readError;
-
-      // Test banking table access
-      const bankingTableExists = await this.checkBankingTableExists();
-
-      // Test write access (try to query banking table if it exists)
-      let canWrite = false;
-      if (bankingTableExists) {
-        const { error: writeError } = await supabase
-          .from("banking_details")
-          .select("id")
-          .limit(1);
-        canWrite = !writeError;
-      }
-
-      return {
-        connected,
-        canRead,
-        canWrite,
-        bankingTableExists,
-      };
-    } catch (error) {
-      console.error("Database access test failed:", error);
-      return {
-        connected: false,
-        canRead: false,
-        canWrite: false,
-        bankingTableExists: false,
-      };
-    }
-  }
-
-  /**
-   * Show user-friendly setup instructions
-   */
-  static async showSetupInstructions(): Promise<void> {
-    const status = await this.testDatabaseAccess();
-
-    console.log("📊 Database Status:", status);
-
-    if (!status.connected) {
-      toast.error(
-        "Database connection failed. Please check your internet connection.",
-      );
-      return;
+    if (error) {
+      console.error("Failed to initialize user profile:", error);
+      return false;
     }
 
-    if (!status.canRead) {
-      toast.error(
-        "Database read access denied. Please check your authentication.",
-      );
-      return;
-    }
-
-    if (!status.bankingTableExists) {
-      toast.info(
-        "Banking details feature is being set up. Please contact support if this persists.",
-        {
-          description:
-            "The banking_details table needs to be created by a database administrator.",
-          duration: 8000,
-        },
-      );
-      return;
-    }
-
-    if (!status.canWrite) {
-      toast.error(
-        "Database write access denied. Please check your permissions.",
-      );
-      return;
-    }
-
-    toast.success("Database is properly configured for banking details!");
+    return true;
+  } catch (error) {
+    console.error("Profile initialization error:", error);
+    return false;
   }
 }
 
-// Make available globally in dev mode
-if (import.meta.env.DEV && typeof window !== "undefined") {
-  (window as any).DatabaseSetup = DatabaseSetup;
-  console.log(
-    "🛠️ Database setup utility available: DatabaseSetup.showSetupInstructions()",
-  );
+/**
+ * Get database setup instructions
+ */
+export function getDatabaseSetupInstructions(): string {
+  return `
+🗄️ DATABASE SETUP REQUIRED
+
+Your database needs to be set up. Please follow these steps:
+
+1. Go to your Supabase project dashboard
+2. Navigate to SQL Editor
+3. Copy and paste the content from 'scripts/setup-database.sql'
+4. Execute the script
+5. Refresh this page
+
+OR
+
+1. Use the Supabase CLI:
+   supabase db reset
+   supabase db push
+
+For more help, visit: https://supabase.com/docs/guides/database
+  `;
 }
 
-export default DatabaseSetup;
+/**
+ * Auto-setup database if possible
+ */
+export async function autoSetupDatabase(): Promise<{
+  success: boolean;
+  message: string;
+}> {
+  try {
+    const health = await checkDatabaseHealth();
+
+    if (health.connected && health.tablesExist) {
+      return { success: true, message: "Database is properly configured" };
+    }
+
+    if (!health.connected) {
+      return {
+        success: false,
+        message: "Cannot connect to database. Check your Supabase credentials.",
+      };
+    }
+
+    // Try to create essential tables
+    const created = await createEssentialTables();
+
+    if (created) {
+      return {
+        success: true,
+        message: "Database tables created successfully",
+      };
+    } else {
+      return {
+        success: false,
+        message: getDatabaseSetupInstructions(),
+      };
+    }
+  } catch (error) {
+    return {
+      success: false,
+      message: `Database setup failed: ${error}`,
+    };
+  }
+}
+
+/**
+ * Create admin user (should be run once)
+ */
+export async function createAdminUser(userId: string): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from("profiles")
+      .update({ is_admin: true })
+      .eq("id", userId);
+
+    return !error;
+  } catch (error) {
+    console.error("Failed to create admin user:", error);
+    return false;
+  }
+}

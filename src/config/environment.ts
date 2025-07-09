@@ -23,8 +23,8 @@ export const IS_DEVELOPMENT = ENV.NODE_ENV === "development";
 // Validate required environment variables
 export const validateEnvironment = () => {
   const required = ["VITE_SUPABASE_URL", "VITE_SUPABASE_ANON_KEY"];
+  const critical = ["VITE_PAYSTACK_PUBLIC_KEY"]; // Critical for payments
   const optional = [
-    "VITE_PAYSTACK_PUBLIC_KEY",
     "VITE_COURIER_GUY_API_KEY",
     "VITE_FASTWAY_API_KEY",
     "VITE_GOOGLE_MAPS_API_KEY",
@@ -33,7 +33,22 @@ export const validateEnvironment = () => {
 
   const missing = required.filter((key) => {
     const value = ENV[key as keyof typeof ENV];
-    return !value || value.trim() === "";
+    return (
+      !value ||
+      value.trim() === "" ||
+      value.includes("demo-") ||
+      value.includes("your-")
+    );
+  });
+
+  const missingCritical = critical.filter((key) => {
+    const value = ENV[key as keyof typeof ENV];
+    return (
+      !value ||
+      value.trim() === "" ||
+      value.includes("demo-") ||
+      value.includes("test_")
+    );
   });
 
   // Validate Supabase key format (should be a JWT token starting with eyJ)
@@ -62,42 +77,63 @@ export const validateEnvironment = () => {
 
   const missingOptional = optional.filter((key) => {
     const value = ENV[key as keyof typeof ENV];
-    return !value || value.trim() === "";
+    return !value || value.trim() === "" || value.includes("demo-");
   });
 
-  if (missing.length > 0) {
+  // Check for demo/placeholder values
+  const hasPlaceholders = Object.entries(ENV).some(
+    ([key, value]) =>
+      typeof value === "string" &&
+      (value.includes("demo-") ||
+        value.includes("your-") ||
+        value.includes("placeholder") ||
+        (key.includes("API_KEY") && value.length < 10)),
+  );
+
+  if (missing.length > 0 || hasPlaceholders) {
     const errorMessage = `
-🚨 MISSING ENVIRONMENT VARIABLES 🚨
+🚨 CONFIGURATION REQUIRED 🚨
 
-The following required environment variables are not set:
-${missing.map((key) => `  - ${key}`).join("\n")}
+${missing.length > 0 ? `Missing required variables: ${missing.join(", ")}` : ""}
+${hasPlaceholders ? "⚠️ Demo/placeholder values detected" : ""}
+${missingCritical.length > 0 ? `⚠️ Critical for payments: ${missingCritical.join(", ")}` : ""}
 
-To fix this issue:
+🔧 QUICK SETUP OPTIONS:
 
-1. For local development, create a .env file in the project root:
-   VITE_SUPABASE_URL=your_supabase_project_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-   VITE_PAYSTACK_PUBLIC_KEY=your_paystack_public_key
-   VITE_SENDER_API=your_sender_api_key
+OPTION 1: Run the setup script
+   node setup-environment.js
 
-2. For production deployment, set these environment variables in your hosting platform:
+OPTION 2: Manual setup
+   1. Create .env file with real credentials:
 
-   VERCEL:
-   - Go to your project settings in Vercel dashboard
-   - Add environment variables in the "Environment Variables" section
+   # Required (Database & Auth)
+   VITE_SUPABASE_URL=https://your-project.supabase.co
+   VITE_SUPABASE_ANON_KEY=eyJ... (from Supabase Dashboard > Settings > API)
 
-   NETLIFY:
-   - Go to your site settings in Netlify dashboard
-   - Add environment variables in "Environment variables" section
+   # Critical (Payments)
+   VITE_PAYSTACK_PUBLIC_KEY=pk_test_... (from Paystack Dashboard)
 
-3. Get your Supabase credentials from:
-   - https://supabase.com/dashboard
-   - Go to your project > Settings > API
+   # Optional (Enhanced Features)
+   VITE_GOOGLE_MAPS_API_KEY=AIza... (Google Cloud Console)
+   VITE_SENDER_API=... (Email service)
+   VITE_COURIER_GUY_API_KEY=... (Shipping)
 
-4. Get your Paystack credentials from:
-   - https://dashboard.paystack.com/#/settings/developer
+📋 SERVICE SETUP CHECKLIST:
 
-Current environment: ${ENV.NODE_ENV}
+✅ Supabase Project: https://supabase.com/dashboard
+   - Create new project
+   - Copy URL and anon key
+   - Run database setup script
+
+✅ Paystack Account: https://dashboard.paystack.com
+   - Get test keys for development
+   - Get live keys for production
+
+✅ Google Maps API: https://console.developers.google.com
+   - Enable Places API, Geocoding API, Maps JavaScript API
+   - Create API key with restrictions
+
+🔍 Current status: ${ENV.NODE_ENV} environment
     `;
 
     console.error(errorMessage);

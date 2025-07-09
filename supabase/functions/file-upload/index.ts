@@ -73,21 +73,67 @@ serve(async (req: Request) => {
     // Convert file to buffer
     const fileBuffer = await file.arrayBuffer();
 
-    // Upload to Supabase Storage
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(fileName, fileBuffer, {
-        contentType: file.type,
-        cacheControl: "3600",
-        upsert: false,
-      });
+    // Upload to Supabase Storage with retry mechanism
+    let uploadData = null;
+    let uploadError = null;
 
-    if (error) {
-      console.error("Storage upload error:", error);
-      return new Response(JSON.stringify({ error: "Failed to upload file" }), {
-        status: 500,
-        headers: corsHeaders,
-      });
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        console.log(`File upload attempt ${attempt}/3`);
+
+        const { data, error } = await supabase.storage
+          .from(bucket)
+          .upload(fileName, fileBuffer, {
+            contentType: file.type,
+            cacheControl: "3600",
+            upsert: false,
+          });
+
+        if (error) {
+          uploadError = error;
+          console.error(`Upload attempt ${attempt} failed:`, error);
+
+          if (attempt < 3) {
+            // Wait before retry
+            await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+          }
+        } else {
+          uploadData = data;
+          break;
+        }
+      } catch (err) {
+        uploadError = err;
+        console.error(`Upload attempt ${attempt} error:`, err);
+        if (attempt < 3) {
+          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+        }
+      }
+    }
+
+    if (!uploadData) {
+      console.error("All upload attempts failed:", uploadError);
+
+      // Fallback: Store file info for manual processing
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "File upload temporarily unavailable",
+          fallback: true,
+          details:
+            "File upload service is experiencing issues. Please try again later or contact support.",
+          file_info: {
+            name: file.name,
+            size: file.size,
+            type: file.type,
+          },
+          retry_instructions:
+            "Your file was not uploaded. Please save it and try uploading again in a few minutes.",
+        }),
+        {
+          status: 503,
+          headers: corsHeaders,
+        },
+      );
     }
 
     // Get public URL
@@ -111,7 +157,7 @@ serve(async (req: Request) => {
     return new Response(
       JSON.stringify({
         success: true,
-        fileName: data.path,
+        fileName: uploadData.path,
         publicUrl: publicUrlData.publicUrl,
         fileSize: file.size,
       }),

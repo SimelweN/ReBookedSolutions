@@ -121,9 +121,26 @@ const FUNCTION_TESTS: FunctionTestConfig[] = [
     category: "delivery",
     description: "Test Courier Guy quote API",
     testPayload: {
-      pickup_address: { city: "Cape Town", province: "Western Cape" },
-      delivery_address: { city: "Durban", province: "KwaZulu-Natal" },
-      weight: 2.0,
+      fromAddress: {
+        streetAddress: "123 Test Street",
+        suburb: "City Bowl",
+        city: "Cape Town",
+        province: "Western Cape",
+        postalCode: "8001",
+      },
+      toAddress: {
+        streetAddress: "456 Test Avenue",
+        suburb: "Berea",
+        city: "Durban",
+        province: "KwaZulu-Natal",
+        postalCode: "4001",
+      },
+      parcel: {
+        length: 25,
+        width: 20,
+        height: 10,
+        weight: 2.0,
+      },
     },
   },
   {
@@ -132,9 +149,26 @@ const FUNCTION_TESTS: FunctionTestConfig[] = [
     category: "delivery",
     description: "Test Fastway quote API",
     testPayload: {
-      pickup_address: { city: "Pretoria", province: "Gauteng" },
-      delivery_address: { city: "Port Elizabeth", province: "Eastern Cape" },
-      weight: 1.0,
+      fromAddress: {
+        streetAddress: "123 Test Street",
+        suburb: "City Center",
+        city: "Pretoria",
+        province: "Gauteng",
+        postalCode: "0001",
+      },
+      toAddress: {
+        streetAddress: "456 Test Avenue",
+        suburb: "Downtown",
+        city: "Port Elizabeth",
+        province: "Eastern Cape",
+        postalCode: "6001",
+      },
+      parcel: {
+        length: 20,
+        width: 15,
+        height: 5,
+        weight: 1.0,
+      },
     },
   },
 
@@ -146,8 +180,9 @@ const FUNCTION_TESTS: FunctionTestConfig[] = [
     description: "Test email notification sending",
     testPayload: {
       to: "test@example.com",
-      template: "test",
-      data: { message: "Test email from function tester" },
+      subject: "Test Email from Function Tester",
+      template: "welcome",
+      data: { name: "Test User", message: "Test email from function tester" },
     },
   },
   {
@@ -166,11 +201,11 @@ const FUNCTION_TESTS: FunctionTestConfig[] = [
     name: "file-upload",
     displayName: "File Upload",
     category: "upload",
-    description: "Test file upload functionality",
+    description:
+      "Test file upload functionality (requires FormData - not testable via JSON)",
     testPayload: {
-      bucket: "test",
-      path: "test/test-file.txt",
-      content_type: "text/plain",
+      error:
+        "This function requires FormData with a file and cannot be tested with JSON payload",
     },
   },
 

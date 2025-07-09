@@ -157,7 +157,17 @@ const CourierSelection: React.FC<CourierSelectionProps> = ({
 
       return [];
     } catch (error) {
-      return [];
+      console.warn("Courier Guy API failed, using fallback options");
+      // Return fallback courier options
+      return [
+        {
+          courier: "courier-guy",
+          service_name: "Standard Service (Estimate)",
+          cost: 65,
+          estimated_delivery: "3-5 business days",
+          isEstimate: true,
+        },
+      ];
     }
   };
 
@@ -195,7 +205,17 @@ const CourierSelection: React.FC<CourierSelectionProps> = ({
 
       return [];
     } catch (error) {
-      return [];
+      console.warn("Fastway API failed, using fallback options");
+      // Return fallback courier options
+      return [
+        {
+          courier: "fastway",
+          service_name: "Express Service (Estimate)",
+          cost: 85,
+          estimated_delivery: "2-4 business days",
+          isEstimate: true,
+        },
+      ];
     }
   };
 

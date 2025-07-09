@@ -65,10 +65,14 @@ serve(async (req) => {
       .eq("id", order_id)
       .eq("seller_id", seller_id)
       .eq("status", "delivered")
+      .eq("payment_held", false) // CRITICAL: Only pay when hold is released
       .single();
 
     if (orderError || !order) {
-      throw new Error("Order not found or not eligible for payout");
+      console.error("Order verification failed:", orderError);
+      throw new Error(
+        "Order not found, not delivered, or payment still held (collection not confirmed)",
+      );
     }
 
     // Check if payout already exists
@@ -95,8 +99,8 @@ serve(async (req) => {
       throw new Error("Paystack secret key not configured");
     }
 
-    // Calculate platform fee (e.g., 5%)
-    const platformFeeRate = 0.05;
+    // Calculate platform fee (10% as per business requirements)
+    const platformFeeRate = 0.1;
     const platformFee = Math.round(amount * platformFeeRate);
     const sellerAmount = amount - platformFee;
 

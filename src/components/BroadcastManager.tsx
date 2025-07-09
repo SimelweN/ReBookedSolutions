@@ -28,9 +28,14 @@ const BroadcastManager = () => {
     if (BROADCASTS_DISABLED) {
       return;
     }
-    // Check if broadcasts are disabled for this session
-    if (localStorage.getItem("broadcasts_disabled") === "true") {
-      return;
+    // Check if broadcasts are disabled for this session (with fallback)
+    try {
+      if (localStorage.getItem("broadcasts_disabled") === "true") {
+        return;
+      }
+    } catch (error) {
+      // If localStorage fails, continue to show broadcasts (better UX)
+      console.warn("localStorage not accessible, continuing with broadcasts");
     }
 
     // Prevent rapid successive calls (debounce with 5 second minimum interval)
@@ -71,10 +76,17 @@ const BroadcastManager = () => {
           }
         }
       } else {
-        // For guests, use localStorage
-        const viewedBroadcasts = JSON.parse(
-          localStorage.getItem("viewedBroadcasts") || "[]",
-        );
+        // For guests, use localStorage (with fallback)
+        let viewedBroadcasts: string[] = [];
+        try {
+          const stored = localStorage.getItem("viewedBroadcasts");
+          viewedBroadcasts = stored ? JSON.parse(stored) : [];
+        } catch (error) {
+          console.warn(
+            "Failed to parse viewed broadcasts from localStorage, using empty array",
+          );
+          viewedBroadcasts = [];
+        }
 
         if (!viewedBroadcasts.includes(latestBroadcast.id)) {
           setCurrentBroadcast(latestBroadcast);
@@ -99,15 +111,21 @@ const BroadcastManager = () => {
     if (isAuthenticated && user) {
       await dismissBroadcast(user.id, currentBroadcast.id);
     } else {
-      // For guests, store in localStorage
-      const viewedBroadcasts = JSON.parse(
-        localStorage.getItem("viewedBroadcasts") || "[]",
-      );
-      viewedBroadcasts.push(currentBroadcast.id);
-      localStorage.setItem(
-        "viewedBroadcasts",
-        JSON.stringify(viewedBroadcasts),
-      );
+      // For guests, store in localStorage (with fallback)
+      try {
+        const stored = localStorage.getItem("viewedBroadcasts");
+        const viewedBroadcasts = stored ? JSON.parse(stored) : [];
+        viewedBroadcasts.push(currentBroadcast.id);
+        localStorage.setItem(
+          "viewedBroadcasts",
+          JSON.stringify(viewedBroadcasts),
+        );
+      } catch (error) {
+        console.warn(
+          "Failed to store dismissed broadcast, broadcast may reappear",
+        );
+        // Broadcast dismissal will work for this session but not persist
+      }
     }
 
     setShowBroadcast(false);
