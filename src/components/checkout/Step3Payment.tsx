@@ -204,10 +204,26 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
       console.log("Initializing payment with data:", paymentRequest);
 
       // Initialize Paystack payment with correct format
-      const { data: paymentData, error: paymentError } =
-        await supabase.functions.invoke("initialize-paystack-payment", {
-          body: paymentRequest,
-        });
+      console.log("📦 Calling initialize-paystack-payment function...");
+
+      let paymentInvokeResult;
+      try {
+        paymentInvokeResult = await supabase.functions.invoke(
+          "initialize-paystack-payment",
+          {
+            body: paymentRequest,
+          },
+        );
+        console.log(
+          "📎 Raw payment initialization response:",
+          paymentInvokeResult,
+        );
+      } catch (invokeError) {
+        console.error("🚫 Payment function invoke failed:", invokeError);
+        throw new Error(`Payment function call failed: ${invokeError.message}`);
+      }
+
+      const { data: paymentData, error: paymentError } = paymentInvokeResult;
 
       if (paymentError) {
         console.error("Payment initialization error details:", {
