@@ -1,40 +1,30 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   CheckCircle,
   XCircle,
   Clock,
   RefreshCw,
   Play,
-  AlertTriangle,
   Activity,
   Database,
   Server,
   Zap,
-  CreditCard,
-  Mail,
-  Upload,
-  Package,
-  Search,
+  Shield,
+  ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { executeFunction } from "@/services/functionExecutor";
-import {
-  aiPaymentService,
-  aiEmailService,
-  aiFileService,
-  aiShippingService,
-  aiOrderService,
-  aiSearchService,
-  aiAnalyticsService,
-} from "@/services/aiIntegratedServices";
+import { healthTracker } from "@/services/healthTracker";
+
+interface LayerStatus {
+  supabase: "success" | "failed" | "skipped" | "disabled" | "not-tried";
+  vercel: "success" | "failed" | "skipped" | "disabled" | "not-tried";
+  fallback: "success" | "failed" | "not-reached" | "not-tried";
+}
 
 interface TestResult {
   id: string;
@@ -47,18 +37,16 @@ interface TestResult {
   cached?: boolean;
   fallbackUsed?: boolean;
   data?: any;
+  layerStatus?: LayerStatus;
+  executionPath?: string[];
+  errorDetails?: {
+    supabaseError?: string;
+    vercelError?: string;
+    fallbackError?: string;
+  };
 }
 
 const AIFallbackSystemTester = () => {
-  // Legacy component - redirecting to EnhancedAIFallbackTester
-  return <EnhancedAIFallbackTester />;
-};
-
-// Import the enhanced version
-import EnhancedAIFallbackTester from "./EnhancedAIFallbackTester";
-
-// Keep original component for backward compatibility
-const OriginalAIFallbackSystemTester = () => {
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -71,14 +59,19 @@ const OriginalAIFallbackSystemTester = () => {
         id: "payment-init",
         name: "Initialize Payment",
         test: () =>
-          aiPaymentService.initializePayment("test@example.com", 100, {
-            test: true,
+          testWithDetailedStatus("initialize-paystack-payment", {
+            email: "test@example.com",
+            amount: 100,
+            metadata: { test: true },
           }),
       },
       {
         id: "payment-verify",
         name: "Verify Payment",
-        test: () => aiPaymentService.verifyPayment("test_reference_123"),
+        test: () =>
+          testWithDetailedStatus("verify-paystack-payment", {
+            reference: "test_reference_123",
+          }),
       },
     ],
     email: [
@@ -86,22 +79,11 @@ const OriginalAIFallbackSystemTester = () => {
         id: "email-send",
         name: "Send Email Notification",
         test: () =>
-          aiEmailService.sendNotification(
-            "test@example.com",
-            "Test Email",
-            "welcome",
-            { name: "Test User" },
-          ),
-      },
-      {
-        id: "email-order",
-        name: "Send Order Confirmation",
-        test: () =>
-          aiEmailService.sendOrderConfirmation("buyer@example.com", {
-            orderId: "TEST123",
-            bookTitle: "Test Book",
-            price: 150,
-            sellerName: "Test Seller",
+          testWithDetailedStatus("send-email-notification", {
+            to: "test@example.com",
+            subject: "Test Email",
+            template: "welcome",
+            data: { name: "Test User" },
           }),
       },
     ],
@@ -110,16 +92,11 @@ const OriginalAIFallbackSystemTester = () => {
         id: "shipping-quotes",
         name: "Get Delivery Quotes",
         test: () =>
-          aiShippingService.getDeliveryQuotes(
-            { city: "Cape Town", province: "Western Cape" },
-            { city: "Johannesburg", province: "Gauteng" },
-            { weight: 1, value: 500 },
-          ),
-      },
-      {
-        id: "shipping-track",
-        name: "Track Package",
-        test: () => aiShippingService.trackPackage("courier-guy", "TEST123456"),
+          testWithDetailedStatus("get-delivery-quotes", {
+            pickup_address: { city: "Cape Town", province: "Western Cape" },
+            delivery_address: { city: "Johannesburg", province: "Gauteng" },
+            package_details: { weight: 1, value: 500 },
+          }),
       },
     ],
     orders: [
@@ -127,7 +104,7 @@ const OriginalAIFallbackSystemTester = () => {
         id: "order-create",
         name: "Create Order",
         test: () =>
-          aiOrderService.createOrder({
+          testWithDetailedStatus("create-order", {
             bookId: "book123",
             buyerId: "buyer123",
             sellerId: "seller123",
@@ -135,53 +112,257 @@ const OriginalAIFallbackSystemTester = () => {
             shippingAddress: { city: "Cape Town", province: "Western Cape" },
           }),
       },
-      {
-        id: "order-commit",
-        name: "Commit to Sale",
-        test: () => aiOrderService.commitToSale("order123", "seller123", true),
-      },
     ],
     search: [
       {
         id: "search-advanced",
         name: "Advanced Search",
         test: () =>
-          aiSearchService.advancedSearch("mathematics", {
-            university: "UCT",
-            priceRange: { min: 100, max: 500 },
+          testWithDetailedStatus("advanced-search", {
+            query: "mathematics",
+            filters: { university: "UCT" },
           }),
       },
+    ],
+    health: [
       {
-        id: "search-resources",
-        name: "Study Resources",
-        test: () =>
-          aiSearchService.getStudyResources("UCT", "Computer Science"),
+        id: "health-check",
+        name: "Service Health Check",
+        test: () => testServiceHealth(),
       },
     ],
-    analytics: [
-      {
-        id: "analytics-track",
-        name: "Track Event",
-        test: () =>
-          aiAnalyticsService.trackEvent(
-            "test_event",
-            { test: true },
-            "user123",
-          ),
+  };
+
+  // Enhanced test function with detailed status tracking
+  const testWithDetailedStatus = async (functionName: string, payload: any) => {
+    const healthStatus = healthTracker.getAllServiceStatuses();
+    const supabaseHealthy =
+      healthStatus.find((s) => s.service === "supabase")?.healthy &&
+      !healthStatus.find((s) => s.service === "supabase")?.disabled;
+    const vercelHealthy =
+      healthStatus.find((s) => s.service === "vercel")?.healthy &&
+      !healthStatus.find((s) => s.service === "vercel")?.disabled;
+
+    const layerStatus: LayerStatus = {
+      supabase: supabaseHealthy ? "not-tried" : "disabled",
+      vercel: vercelHealthy ? "not-tried" : "disabled",
+      fallback: "not-tried",
+    };
+
+    const executionPath: string[] = [];
+    const errorDetails: any = {};
+
+    try {
+      // Layer 1: Test Supabase
+      if (supabaseHealthy) {
+        executionPath.push("Supabase");
+        try {
+          const { supabase } = await import("@/integrations/supabase/client");
+          const { data, error } = await supabase.functions.invoke(
+            functionName,
+            {
+              body: payload,
+            },
+          );
+
+          if (!error && data) {
+            layerStatus.supabase = "success";
+            return {
+              success: true,
+              data,
+              source: "supabase",
+              timestamp: Date.now(),
+              layerStatus,
+              executionPath,
+              errorDetails,
+            };
+          } else {
+            throw new Error(error?.message || "Supabase function failed");
+          }
+        } catch (error) {
+          layerStatus.supabase = "failed";
+          errorDetails.supabaseError = String(error);
+
+          // Try Layer 2: Vercel
+          if (vercelHealthy) {
+            executionPath.push("Vercel");
+            try {
+              const response = await fetch(`/api/${functionName}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+              });
+
+              if (response.ok) {
+                const data = await response.json();
+                layerStatus.vercel = "success";
+                return {
+                  success: true,
+                  data,
+                  source: "vercel",
+                  timestamp: Date.now(),
+                  layerStatus,
+                  executionPath,
+                  errorDetails,
+                };
+              } else {
+                throw new Error(
+                  `HTTP ${response.status}: ${await response.text()}`,
+                );
+              }
+            } catch (vercelError) {
+              layerStatus.vercel = "failed";
+              errorDetails.vercelError = String(vercelError);
+            }
+          } else {
+            layerStatus.vercel = "skipped";
+          }
+
+          // Try Layer 3: Fallback
+          executionPath.push("Fallback");
+          try {
+            layerStatus.fallback = "success";
+            return {
+              success: true,
+              data: {
+                fallback: true,
+                message: "Using fallback mechanism",
+                originalPayload: payload,
+                reason: "Primary services failed",
+              },
+              source: "fallback",
+              timestamp: Date.now(),
+              fallbackUsed: true,
+              layerStatus,
+              executionPath,
+              errorDetails,
+            };
+          } catch (fallbackError) {
+            layerStatus.fallback = "failed";
+            errorDetails.fallbackError = String(fallbackError);
+            throw new Error("All layers failed");
+          }
+        }
+      } else {
+        layerStatus.supabase = "skipped";
+        executionPath.push("Vercel (Supabase disabled)");
+
+        // Try Vercel directly
+        if (vercelHealthy) {
+          try {
+            const response = await fetch(`/api/${functionName}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              layerStatus.vercel = "success";
+              return {
+                success: true,
+                data,
+                source: "vercel",
+                timestamp: Date.now(),
+                layerStatus,
+                executionPath,
+                errorDetails,
+              };
+            } else {
+              throw new Error(`HTTP ${response.status}`);
+            }
+          } catch (vercelError) {
+            layerStatus.vercel = "failed";
+            errorDetails.vercelError = String(vercelError);
+          }
+        } else {
+          layerStatus.vercel = "skipped";
+        }
+
+        // Use fallback
+        executionPath.push("Fallback");
+        layerStatus.fallback = "success";
+        return {
+          success: true,
+          data: {
+            fallback: true,
+            message: "All primary services unavailable",
+            originalPayload: payload,
+          },
+          source: "fallback",
+          timestamp: Date.now(),
+          fallbackUsed: true,
+          layerStatus,
+          executionPath,
+          errorDetails,
+        };
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: String(error),
+        source: "none",
+        timestamp: Date.now(),
+        layerStatus,
+        executionPath,
+        errorDetails,
+      };
+    }
+  };
+
+  const testServiceHealth = async () => {
+    const healthStatus = healthTracker.getAllServiceStatuses();
+
+    return {
+      success: true,
+      data: {
+        services: healthStatus,
+        overall: healthTracker.getHealthSummary(),
       },
-      {
-        id: "analytics-page",
-        name: "Track Page View",
-        test: () => aiAnalyticsService.trackPageView("/test", "user123"),
-      },
-    ],
-    direct: [
-      {
-        id: "direct-function",
-        name: "Direct Function Call",
-        test: () => executeFunction("study-resources-api", { test: true }),
-      },
-    ],
+      source: "health-check",
+      timestamp: Date.now(),
+    };
+  };
+
+  const generateDetailedMessage = (result: any): string => {
+    if (!result.layerStatus) {
+      return result.success ? "Success" : result.error || "Failed";
+    }
+
+    const { layerStatus, source } = result;
+    const parts: string[] = [];
+
+    // Build status chain
+    if (layerStatus.supabase === "success") {
+      parts.push("✅ Supabase: SUCCESS");
+    } else if (layerStatus.supabase === "failed") {
+      parts.push("❌ Supabase: FAILED");
+    } else if (layerStatus.supabase === "disabled") {
+      parts.push("⏸️ Supabase: DISABLED");
+    } else if (layerStatus.supabase === "skipped") {
+      parts.push("⏭️ Supabase: SKIPPED");
+    }
+
+    if (layerStatus.vercel === "success") {
+      parts.push("✅ Vercel: SUCCESS");
+    } else if (layerStatus.vercel === "failed") {
+      parts.push("❌ Vercel: FAILED");
+    } else if (layerStatus.vercel === "disabled") {
+      parts.push("⏸️ Vercel: DISABLED");
+    } else if (layerStatus.vercel === "skipped") {
+      parts.push("⏭️ Vercel: SKIPPED");
+    }
+
+    if (layerStatus.fallback === "success") {
+      parts.push("✅ Fallback: SUCCESS");
+    } else if (layerStatus.fallback === "failed") {
+      parts.push("❌ Fallback: FAILED");
+    }
+
+    const statusText = parts.join(" → ");
+    const sourceText = source ? ` (Final: ${source.toUpperCase()})` : "";
+
+    return `${statusText}${sourceText}`;
   };
 
   const runTests = async () => {
@@ -202,7 +383,6 @@ const OriginalAIFallbackSystemTester = () => {
     for (let i = 0; i < allTests.length; i++) {
       const test = allTests[i];
 
-      // Update test status to running
       setTestResults((prev) => [
         ...prev.filter((r) => r.id !== test.id),
         {
@@ -210,7 +390,7 @@ const OriginalAIFallbackSystemTester = () => {
           name: test.name,
           service: test.service,
           status: "running",
-          message: "Testing...",
+          message: "Testing layers...",
         },
       ]);
 
@@ -228,14 +408,15 @@ const OriginalAIFallbackSystemTester = () => {
             : result.fallbackUsed
               ? "fallback"
               : "failed",
-          message: result.success
-            ? `Success from ${result.source}`
-            : result.error || "Test failed",
+          message: generateDetailedMessage(result),
           duration,
           source: result.source,
           cached: result.cached,
           fallbackUsed: result.fallbackUsed,
           data: result.data,
+          layerStatus: result.layerStatus,
+          executionPath: result.executionPath,
+          errorDetails: result.errorDetails,
         };
 
         setTestResults((prev) => [
@@ -250,15 +431,13 @@ const OriginalAIFallbackSystemTester = () => {
             name: test.name,
             service: test.service,
             status: "failed",
-            message: `Error: ${error}`,
+            message: `Test Error: ${error}`,
           },
         ]);
       }
 
       setProgress(((i + 1) / allTests.length) * 100);
-
-      // Small delay to show progress
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 200));
     }
 
     setIsRunning(false);
@@ -269,75 +448,14 @@ const OriginalAIFallbackSystemTester = () => {
     );
   };
 
-  const runSingleTest = async (testId: string, service: string) => {
-    const test = testSuites[service as keyof typeof testSuites]?.find(
-      (t) => t.id === testId,
-    );
-    if (!test) return;
-
-    setTestResults((prev) => [
-      ...prev.filter((r) => r.id !== testId),
-      {
-        id: testId,
-        name: test.name,
-        service,
-        status: "running",
-        message: "Testing...",
-      },
-    ]);
-
-    try {
-      const startTime = Date.now();
-      const result = await test.test();
-      const duration = Date.now() - startTime;
-
-      const testResult: TestResult = {
-        id: testId,
-        name: test.name,
-        service,
-        status: result.success
-          ? "success"
-          : result.fallbackUsed
-            ? "fallback"
-            : "failed",
-        message: result.success
-          ? `Success from ${result.source}`
-          : result.error || "Test failed",
-        duration,
-        source: result.source,
-        cached: result.cached,
-        fallbackUsed: result.fallbackUsed,
-        data: result.data,
-      };
-
-      setTestResults((prev) => [
-        ...prev.filter((r) => r.id !== testId),
-        testResult,
-      ]);
-    } catch (error) {
-      setTestResults((prev) => [
-        ...prev.filter((r) => r.id !== testId),
-        {
-          id: testId,
-          name: test.name,
-          service,
-          status: "failed",
-          message: `Error: ${error}`,
-        },
-      ]);
-    }
-  };
-
   const getTestSummary = () => {
     const total = testResults.length;
     const passed = testResults.filter(
       (r) => r.status === "success" || r.status === "fallback",
     ).length;
     const failed = testResults.filter((r) => r.status === "failed").length;
-    const running = testResults.filter((r) => r.status === "running").length;
-    const fallback = testResults.filter((r) => r.status === "fallback").length;
 
-    return { total, passed, failed, running, fallback };
+    return { total, passed, failed };
   };
 
   const getStatusIcon = (status: string) => {
@@ -355,43 +473,55 @@ const OriginalAIFallbackSystemTester = () => {
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    const variants = {
-      success: "default",
-      failed: "destructive",
-      fallback: "secondary",
-      running: "outline",
-      idle: "outline",
-    } as const;
-
-    return (
-      <Badge variant={variants[status as keyof typeof variants] || "outline"}>
-        {status}
-      </Badge>
-    );
+  const getLayerIcon = (layer: string) => {
+    switch (layer) {
+      case "supabase":
+        return <Database className="h-3 w-3" />;
+      case "vercel":
+        return <Server className="h-3 w-3" />;
+      case "fallback":
+        return <Shield className="h-3 w-3" />;
+      default:
+        return <Activity className="h-3 w-3" />;
+    }
   };
 
-  const getServiceIcon = (service: string) => {
-    switch (service) {
-      case "payment":
-        return <CreditCard className="h-4 w-4" />;
-      case "email":
-        return <Mail className="h-4 w-4" />;
-      case "file":
-        return <Upload className="h-4 w-4" />;
-      case "shipping":
-        return <Package className="h-4 w-4" />;
-      case "orders":
-        return <Database className="h-4 w-4" />;
-      case "search":
-        return <Search className="h-4 w-4" />;
-      case "analytics":
-        return <Activity className="h-4 w-4" />;
-      case "direct":
-        return <Server className="h-4 w-4" />;
-      default:
-        return <Activity className="h-4 w-4" />;
-    }
+  const getLayerStatusBadge = (status: string) => {
+    const config = {
+      success: {
+        variant: "default" as const,
+        text: "✅",
+        className: "text-green-700 bg-green-100",
+      },
+      failed: {
+        variant: "destructive" as const,
+        text: "❌",
+        className: "text-red-700 bg-red-100",
+      },
+      disabled: {
+        variant: "secondary" as const,
+        text: "⏸️",
+        className: "text-gray-700 bg-gray-100",
+      },
+      skipped: {
+        variant: "outline" as const,
+        text: "⏭️",
+        className: "text-yellow-700 bg-yellow-100",
+      },
+      "not-tried": {
+        variant: "outline" as const,
+        text: "⏸",
+        className: "text-gray-500 bg-gray-50",
+      },
+    };
+
+    const conf = config[status as keyof typeof config] || config["not-tried"];
+
+    return (
+      <Badge variant={conf.variant} className={`text-xs ${conf.className}`}>
+        {conf.text}
+      </Badge>
+    );
   };
 
   const services = Object.keys(testSuites);
@@ -404,6 +534,7 @@ const OriginalAIFallbackSystemTester = () => {
           <CardTitle className="flex items-center gap-2">
             <Activity className="h-5 w-5" />
             AI Fallback System Tester
+            <Badge variant="secondary">Layer Status Details</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -411,7 +542,7 @@ const OriginalAIFallbackSystemTester = () => {
             <div className="space-y-2">
               <div className="text-sm text-muted-foreground">
                 {summary.total} tests • {summary.passed} passed •{" "}
-                {summary.failed} failed • {summary.fallback} fallback
+                {summary.failed} failed
               </div>
               {isRunning && <Progress value={progress} className="w-64" />}
             </div>
@@ -439,138 +570,124 @@ const OriginalAIFallbackSystemTester = () => {
                 ) : (
                   <Play className="h-4 w-4" />
                 )}
-                {isRunning ? "Running..." : "Run Tests"}
+                {isRunning ? "Testing..." : "Run Tests"}
               </Button>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="results" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="results">Test Results</TabsTrigger>
-          <TabsTrigger value="services">By Service</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="results" className="space-y-4">
-          {testResults.length > 0 ? (
-            <div className="grid gap-4">
-              {testResults.map((result) => (
-                <Card key={result.id}>
-                  <CardContent className="pt-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        {getServiceIcon(result.service)}
-                        <div>
-                          <div className="font-medium">{result.name}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {result.message}
-                            {result.duration && ` (${result.duration}ms)`}
-                            {result.source && ` • Source: ${result.source}`}
-                            {result.cached && " • Cached"}
-                            {result.fallbackUsed && " • Fallback Used"}
-                          </div>
+      <div className="grid gap-4">
+        {testResults.length > 0 ? (
+          testResults.map((result) => (
+            <Card key={result.id} className="overflow-hidden">
+              <CardContent className="pt-4">
+                <div className="space-y-3">
+                  {/* Main test result */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      {getStatusIcon(result.status)}
+                      <div>
+                        <div className="font-medium">{result.name}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {result.service} • {result.duration}ms
+                          {result.source && ` • Source: ${result.source}`}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        {getStatusIcon(result.status)}
-                        {getStatusBadge(result.status)}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            runSingleTest(result.id, result.service)
-                          }
-                          disabled={isRunning}
-                        >
-                          Retry
-                        </Button>
+                    </div>
+                    <Badge
+                      variant={
+                        result.status === "success"
+                          ? "default"
+                          : result.status === "fallback"
+                            ? "secondary"
+                            : "destructive"
+                      }
+                    >
+                      {result.status.toUpperCase()}
+                    </Badge>
+                  </div>
+
+                  {/* Layer status breakdown */}
+                  {result.layerStatus && (
+                    <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+                      <div className="text-sm font-medium text-muted-foreground">
+                        Layer Execution Status:
+                      </div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {Object.entries(result.layerStatus).map(
+                          ([layer, status], index) => (
+                            <div
+                              key={layer}
+                              className="flex items-center gap-1"
+                            >
+                              {index > 0 && (
+                                <ArrowRight className="h-3 w-3 text-muted-foreground" />
+                              )}
+                              <div className="flex items-center gap-1 bg-background rounded px-2 py-1 border">
+                                {getLayerIcon(layer)}
+                                <span className="text-xs font-medium">
+                                  {layer.charAt(0).toUpperCase() +
+                                    layer.slice(1)}
+                                </span>
+                                {getLayerStatusBadge(status)}
+                              </div>
+                            </div>
+                          ),
+                        )}
                       </div>
                     </div>
-                    {result.data && (
-                      <div className="mt-2 p-2 bg-muted rounded text-xs font-mono">
-                        <pre>{JSON.stringify(result.data, null, 2)}</pre>
+                  )}
+
+                  {/* Detailed message */}
+                  <div className="text-sm bg-muted/30 rounded p-2 font-mono">
+                    {result.message}
+                  </div>
+
+                  {/* Error details */}
+                  {result.errorDetails &&
+                    Object.keys(result.errorDetails).length > 0 && (
+                      <div className="bg-red-50 border border-red-200 rounded p-2 space-y-1">
+                        <div className="text-xs font-medium text-red-800">
+                          Error Details:
+                        </div>
+                        {Object.entries(result.errorDetails).map(
+                          ([layer, error]) => (
+                            <div key={layer} className="text-xs text-red-700">
+                              <span className="font-medium">{layer}:</span>{" "}
+                              {error}
+                            </div>
+                          ),
+                        )}
                       </div>
                     )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center text-muted-foreground">
-                  No test results yet. Click "Run Tests" to start testing.
+
+                  {/* Data preview */}
+                  {result.data && (
+                    <details className="text-xs">
+                      <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
+                        View Response Data
+                      </summary>
+                      <pre className="mt-2 p-2 bg-muted rounded overflow-x-auto">
+                        {JSON.stringify(result.data, null, 2)}
+                      </pre>
+                    </details>
+                  )}
                 </div>
               </CardContent>
             </Card>
-          )}
-        </TabsContent>
-
-        <TabsContent value="services" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {services.map((service) => {
-              const serviceTests = testResults.filter(
-                (r) => r.service === service,
-              );
-              const servicePassed = serviceTests.filter(
-                (r) => r.status === "success" || r.status === "fallback",
-              ).length;
-              const serviceTotal =
-                testSuites[service as keyof typeof testSuites].length;
-
-              return (
-                <Card key={service}>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium flex items-center gap-2">
-                      {getServiceIcon(service)}
-                      {service.charAt(0).toUpperCase() + service.slice(1)}
-                    </CardTitle>
-                    <Badge variant="outline">
-                      {servicePassed}/{serviceTotal}
-                    </Badge>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {testSuites[service as keyof typeof testSuites].map(
-                        (test) => {
-                          const result = serviceTests.find(
-                            (r) => r.id === test.id,
-                          );
-                          return (
-                            <div
-                              key={test.id}
-                              className="flex items-center justify-between text-sm"
-                            >
-                              <span>{test.name}</span>
-                              <div className="flex items-center gap-1">
-                                {result
-                                  ? getStatusIcon(result.status)
-                                  : getStatusIcon("idle")}
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() =>
-                                    runSingleTest(test.id, service)
-                                  }
-                                  disabled={isRunning}
-                                  className="h-6 px-2"
-                                >
-                                  Test
-                                </Button>
-                              </div>
-                            </div>
-                          );
-                        },
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </TabsContent>
-      </Tabs>
+          ))
+        ) : (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center text-muted-foreground">
+                No test results yet. Click "Run Tests" to see detailed layer
+                status analysis.
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 };
