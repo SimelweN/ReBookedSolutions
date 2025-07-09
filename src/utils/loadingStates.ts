@@ -188,7 +188,7 @@ export const useMultipleAsyncOperations = <T extends Record<string, unknown>>(
 
 // Utility for creating loading states with Supabase
 export const createSupabaseLoader = <T>(
-  query: () => Promise<{ data: T | null; error: any }>,
+  query: () => Promise<{ data: T | null; error: unknown }>,
 ) => {
   return async (): Promise<T> => {
     const { data, error } = await query();
