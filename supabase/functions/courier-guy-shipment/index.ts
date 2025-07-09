@@ -17,7 +17,7 @@ serve(async (req: Request) => {
     if (req.method !== "POST") {
       return new Response(JSON.stringify({ error: "Method not allowed" }), {
         status: 405,
-        headers: corsHeaders,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -29,7 +29,7 @@ serve(async (req: Request) => {
         JSON.stringify({ error: "Missing required shipment information" }),
         {
           status: 400,
-          headers: corsHeaders,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         },
       );
     }
@@ -50,7 +50,7 @@ serve(async (req: Request) => {
           },
           fallback: true,
         }),
-        { headers: corsHeaders },
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
@@ -110,7 +110,7 @@ serve(async (req: Request) => {
           fallback: true,
           error: data.message || "API error",
         }),
-        { headers: corsHeaders },
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
@@ -124,7 +124,7 @@ serve(async (req: Request) => {
           estimated_delivery: data.estimated_delivery,
         },
       }),
-      { headers: corsHeaders },
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (error) {
     console.error("Error in courier-guy-shipment:", error);
@@ -143,7 +143,7 @@ serve(async (req: Request) => {
         fallback: true,
         error: error.message,
       }),
-      { headers: corsHeaders },
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
 });
