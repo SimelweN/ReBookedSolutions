@@ -448,7 +448,7 @@ serve(async (req) => {
     try {
       await supabaseClient.from("email_queue").insert([
         {
-          type: "payment_confirmed",
+          type: "payment_confirmed_with_receipt",
           recipient: emailData.buyer_email.to,
           data: emailData.buyer_email,
           priority: "high",
