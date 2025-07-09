@@ -21,7 +21,7 @@ export interface HandledError {
 // Error classification
 export const classifyError = (
   error: unknown,
-  context?: ErrorContext,
+  _context?: ErrorContext,
 ): HandledError => {
   // Handle different error types
   if (error instanceof Error) {
