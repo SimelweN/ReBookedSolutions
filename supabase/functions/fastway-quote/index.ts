@@ -17,7 +17,7 @@ serve(async (req: Request) => {
     if (req.method !== "POST") {
       return new Response(JSON.stringify({ error: "Method not allowed" }), {
         status: 405,
-        headers: corsHeaders,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -30,7 +30,7 @@ serve(async (req: Request) => {
         }),
         {
           status: 400,
-          headers: corsHeaders,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         },
       );
     }
@@ -59,7 +59,7 @@ serve(async (req: Request) => {
           ],
           provider: "fastway",
         }),
-        { headers: corsHeaders },
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
@@ -87,39 +87,19 @@ serve(async (req: Request) => {
       },
     };
 
-    // Call real Fastway API with timeout and proper error handling
+    // Simulate API call (replace with actual Fastway API endpoint)
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-      const response = await fetch("https://sa.api.fastway.org/v3/quote", {
+      const response = await fetch("https://api.fastway.co.za/v1/quote", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${FASTWAY_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(quoteData),
-        signal: controller.signal,
       });
 
-      clearTimeout(timeoutId);
-
       if (!response.ok) {
-        const errorData = await response.text();
-        console.error(`Fastway API error ${response.status}:`, errorData);
-
-        if (response.status === 429) {
-          console.warn("Fastway rate limit exceeded, using fallback");
-          throw new Error("Rate limit exceeded");
-        } else if (response.status === 401) {
-          console.error("Fastway authentication failed - check API key");
-          throw new Error("Authentication failed");
-        } else if (response.status >= 500) {
-          console.error("Fastway server error - temporary issue");
-          throw new Error("Server error");
-        }
-
-        throw new Error(`Fastway API error: ${response.status}`);
+        throw new Error("Fastway API error");
       }
 
       const data = await response.json();
@@ -140,14 +120,10 @@ serve(async (req: Request) => {
           quotes,
           provider: "fastway",
         }),
-        { headers: corsHeaders },
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     } catch (apiError) {
-      if (apiError.name === "AbortError") {
-        console.error("Fastway API timeout after 10 seconds");
-      } else {
-        console.error("Fastway API error:", apiError);
-      }
+      console.error("Fastway API error:", apiError);
 
       // Return fallback quote on API error
       return new Response(
@@ -165,7 +141,7 @@ serve(async (req: Request) => {
           provider: "fastway",
           fallback: true,
         }),
-        { headers: corsHeaders },
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
   } catch (error) {
@@ -188,7 +164,7 @@ serve(async (req: Request) => {
         fallback: true,
         error: error.message,
       }),
-      { headers: corsHeaders },
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
 });
