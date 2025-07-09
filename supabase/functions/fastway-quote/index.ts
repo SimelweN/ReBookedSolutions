@@ -1,170 +1,183 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import {
+  createRobustFunction,
+  createHealthResponse,
+  validateRequired,
+  callExternalAPI,
+  sanitizeInput,
+  createFallbackResponse,
+} from "../_shared/utilities.ts";
+import { createSuccessResponse, createErrorResponse } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+const FUNCTION_NAME = "fastway-quote";
 
-const FASTWAY_API_KEY = Deno.env.get("FASTWAY_API_KEY");
+serve(
+  createRobustFunction(FUNCTION_NAME, async (req, supabase) => {
+    const body = await req.json();
+    console.log(`[${FUNCTION_NAME}] Received request:`, {
+      ...body,
+      timestamp: new Date().toISOString(),
+    });
 
-serve(async (req: Request) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  try {
-    if (req.method !== "POST") {
-      return new Response(JSON.stringify({ error: "Method not allowed" }), {
-        status: 405,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    // Handle health check
+    if (body.action === "health") {
+      return createHealthResponse(FUNCTION_NAME);
     }
 
-    const { fromAddress, toAddress, parcel } = await req.json();
+    // Sanitize input data
+    const sanitizedBody = sanitizeInput(body);
 
-    if (!fromAddress || !toAddress || !parcel) {
-      return new Response(
-        JSON.stringify({
-          error: "Missing required address or parcel information",
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+    // Validate required fields
+    const requiredFields = ["fromAddress", "toAddress", "parcel"];
+    const validation = validateRequired(sanitizedBody, requiredFields);
+
+    if (!validation.isValid) {
+      return createErrorResponse(
+        `Missing required fields: ${validation.missing.join(", ")}`,
+        400,
+        { missingFields: validation.missing },
+        FUNCTION_NAME,
       );
     }
 
-    // Fallback quote for development/testing
-    if (!FASTWAY_API_KEY) {
-      console.log("Using fallback Fastway quote");
-      return new Response(
-        JSON.stringify({
-          success: true,
-          quotes: [
-            {
-              service: "Local Parcel",
-              price: 55.0,
-              currency: "ZAR",
-              estimated_days: "1-2",
-              service_code: "LP",
-            },
-            {
-              service: "Road Freight",
-              price: 85.0,
-              currency: "ZAR",
-              estimated_days: "2-4",
-              service_code: "RF",
-            },
-          ],
-          provider: "fastway",
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
-    }
+    const { fromAddress, toAddress, parcel } = sanitizedBody;
 
-    // Real Fastway API integration would go here
-    const quoteData = {
-      PickupAddress: {
-        Street: fromAddress.streetAddress,
-        Suburb: fromAddress.suburb,
-        City: fromAddress.city,
-        PostalCode: fromAddress.postalCode,
-        Province: fromAddress.province,
-      },
-      DestinationAddress: {
-        Street: toAddress.streetAddress,
-        Suburb: toAddress.suburb,
-        City: toAddress.city,
-        PostalCode: toAddress.postalCode,
-        Province: toAddress.province,
-      },
-      Parcel: {
-        Length: parcel.length || 20,
-        Width: parcel.width || 15,
-        Height: parcel.height || 5,
-        Weight: parcel.weight || 0.5,
-      },
-    };
-
-    // Simulate API call (replace with actual Fastway API endpoint)
     try {
-      const response = await fetch("https://api.fastway.co.za/v1/quote", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${FASTWAY_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(quoteData),
-      });
+      // Get API key - use environment variable
+      const apiKey = Deno.env.get("VITE_FASTWAY_API_KEY");
 
-      if (!response.ok) {
-        throw new Error("Fastway API error");
+      if (!apiKey) {
+        console.log(
+          `[${FUNCTION_NAME}] Using fallback quotes - API key not configured`,
+        );
+        return createFallbackQuotes(
+          fromAddress,
+          toAddress,
+          parcel,
+          "API key not configured",
+        );
       }
 
-      const data = await response.json();
+      // Prepare quote data with proper format
+      const quoteData = {
+        PickupAddress: {
+          Street: fromAddress.streetAddress || fromAddress.street || "",
+          Suburb: fromAddress.suburb || "",
+          City: fromAddress.city || "",
+          PostalCode: fromAddress.postalCode || fromAddress.postcode || "",
+          Province: fromAddress.province || fromAddress.state || "",
+        },
+        DestinationAddress: {
+          Street: toAddress.streetAddress || toAddress.street || "",
+          Suburb: toAddress.suburb || "",
+          City: toAddress.city || "",
+          PostalCode: toAddress.postalCode || toAddress.postcode || "",
+          Province: toAddress.province || toAddress.state || "",
+        },
+        Parcel: {
+          Length: Number(parcel.length) || 20,
+          Width: Number(parcel.width) || 15,
+          Height: Number(parcel.height) || 5,
+          Weight: Number(parcel.weight) || 0.5,
+        },
+      };
 
-      // Transform API response to standard format
-      const quotes =
-        data.quotes?.map((quote: any) => ({
-          service: quote.service_name,
-          price: parseFloat(quote.price),
+      // Call external API with proper timeout and retry
+      const result = await callExternalAPI(
+        "https://api.fastway.co.za/v1/quote",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(quoteData),
+        },
+        8000, // 8 second timeout
+        2, // 2 retries
+      );
+
+      if (result.success && result.data?.quotes) {
+        // Transform API response to standard format
+        const quotes = result.data.quotes.map((quote: any) => ({
+          service: quote.service_name || quote.service || "Unknown Service",
+          price: parseFloat(quote.price) || parseFloat(quote.rate) || 0,
           currency: "ZAR",
-          estimated_days: quote.delivery_time,
-          service_code: quote.service_code,
-        })) || [];
+          estimated_days: quote.delivery_time || quote.estimated_days || "2-3",
+          service_code: quote.service_code || "STD",
+          provider: "fastway",
+        }));
 
-      return new Response(
-        JSON.stringify({
-          success: true,
+        console.log(
+          `[${FUNCTION_NAME}] Successfully retrieved ${quotes.length} quotes from API`,
+        );
+
+        return createSuccessResponse({
           quotes,
           provider: "fastway",
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
-    } catch (apiError) {
-      console.error("Fastway API error:", apiError);
+          source: "api",
+          message: "Fastway quotes retrieved successfully",
+        });
+      }
 
-      // Return fallback quote on API error
-      return new Response(
-        JSON.stringify({
-          success: true,
-          quotes: [
-            {
-              service: "Local Parcel",
-              price: 55.0,
-              currency: "ZAR",
-              estimated_days: "1-2",
-              service_code: "LP",
-            },
-          ],
-          provider: "fastway",
-          fallback: true,
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      // API failed, return fallback
+      console.warn(
+        `[${FUNCTION_NAME}] Fastway API failed, using fallback quotes:`,
+        result.error,
       );
+      return createFallbackQuotes(fromAddress, toAddress, parcel, result.error);
+    } catch (error) {
+      console.error(`[${FUNCTION_NAME}] Unexpected error:`, error);
+      return createFallbackQuotes(fromAddress, toAddress, parcel, error);
     }
-  } catch (error) {
-    console.error("Error in fastway-quote:", error);
+  }),
+);
 
-    // Return fallback quote on any error
-    return new Response(
-      JSON.stringify({
-        success: true,
-        quotes: [
-          {
-            service: "Local Parcel",
-            price: 55.0,
-            currency: "ZAR",
-            estimated_days: "1-2",
-            service_code: "LP",
-          },
-        ],
-        provider: "fastway",
-        fallback: true,
-        error: error.message,
-      }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
-  }
-});
+// Fallback quotes function with guaranteed success response
+function createFallbackQuotes(
+  fromAddress: any,
+  toAddress: any,
+  parcel: any,
+  originalError: any,
+): Response {
+  const fallbackQuotes = [
+    {
+      service: "Local Parcel",
+      price: 55.0,
+      currency: "ZAR",
+      estimated_days: "1-2",
+      service_code: "LP",
+      provider: "fastway",
+      fallback: true,
+    },
+    {
+      service: "Road Freight",
+      price: 85.0,
+      currency: "ZAR",
+      estimated_days: "2-4",
+      service_code: "RF",
+      provider: "fastway",
+      fallback: true,
+    },
+    {
+      service: "Express Delivery",
+      price: 120.0,
+      currency: "ZAR",
+      estimated_days: "1",
+      service_code: "EXP",
+      provider: "fastway",
+      fallback: true,
+    },
+  ];
+
+  return createFallbackResponse(
+    originalError,
+    {
+      quotes: fallbackQuotes,
+      provider: "fastway",
+      source: "fallback",
+      message: "Fastway quotes retrieved with fallback data",
+    },
+    "Fastway service is temporarily unavailable. Showing standard rates.",
+  );
+}
