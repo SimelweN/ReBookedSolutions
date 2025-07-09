@@ -121,9 +121,26 @@ const FUNCTION_TESTS: FunctionTestConfig[] = [
     category: "delivery",
     description: "Test Courier Guy quote API",
     testPayload: {
-      pickup_address: { city: "Cape Town", province: "Western Cape" },
-      delivery_address: { city: "Durban", province: "KwaZulu-Natal" },
-      weight: 2.0,
+      fromAddress: {
+        streetAddress: "123 Test Street",
+        suburb: "City Bowl",
+        city: "Cape Town",
+        province: "Western Cape",
+        postalCode: "8001",
+      },
+      toAddress: {
+        streetAddress: "456 Test Avenue",
+        suburb: "Berea",
+        city: "Durban",
+        province: "KwaZulu-Natal",
+        postalCode: "4001",
+      },
+      parcel: {
+        length: 25,
+        width: 20,
+        height: 10,
+        weight: 2.0,
+      },
     },
   },
   {
