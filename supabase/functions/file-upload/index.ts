@@ -26,6 +26,27 @@ serve(async (req: Request) => {
       });
     }
 
+    // Check for health check first
+    const contentType = req.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      try {
+        const body = await req.json();
+        if (body.action === "health") {
+          return new Response(
+            JSON.stringify({
+              success: true,
+              message: "File upload function is healthy",
+              timestamp: new Date().toISOString(),
+              version: "1.0.0",
+            }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          );
+        }
+      } catch {
+        // Not JSON, continue with form data handling
+      }
+    }
+
     const formData = await req.formData();
     const file = formData.get("file") as File;
     const bucket = (formData.get("bucket") as string) || "book-images";
