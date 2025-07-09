@@ -467,40 +467,16 @@ const EdgeFunctionsTester = () => {
       const result = await Promise.race([testPromise, timeoutPromise]);
       const duration = Date.now() - startTime;
 
-      if (result.error) {
+            if (result.error) {
         const errorMsg = result.error.message || "Unknown error";
 
-        // Analyze the error to determine function status
+        // Only treat deployment/not found errors as deployment failures
+        // All other errors should be treated as function failures
         if (
-          errorMsg.includes("unauthorized") ||
-          errorMsg.includes("Unauthorized") ||
-          errorMsg.includes("JWT") ||
-          errorMsg.includes("auth")
-        ) {
-          updateFunctionStatus(
-            func.id,
-            "success",
-            "Function deployed (needs authentication)",
-            duration,
-            { error: errorMsg, status: "auth_required" },
-          );
-        } else if (
-          errorMsg.includes("missing") ||
-          errorMsg.includes("required") ||
-          errorMsg.includes("validation") ||
-          errorMsg.includes("invalid")
-        ) {
-          updateFunctionStatus(
-            func.id,
-            "success",
-            "Function deployed (needs valid data)",
-            duration,
-            { error: errorMsg, status: "data_required" },
-          );
-        } else if (
           errorMsg.includes("FunctionsRelayError") ||
           errorMsg.includes("not found") ||
-          errorMsg.includes("404")
+          errorMsg.includes("404") ||
+          errorMsg.includes("Function not found")
         ) {
           updateFunctionStatus(
             func.id,
@@ -509,29 +485,49 @@ const EdgeFunctionsTester = () => {
             duration,
             result.error,
           );
-        } else if (
-          errorMsg.includes("Environment") ||
-          errorMsg.includes("API key") ||
-          errorMsg.includes("configuration")
-        ) {
+        } else {
+          // All other errors indicate the function is deployed but failed
           updateFunctionStatus(
             func.id,
             "failed",
-            "Missing environment variables or configuration",
-            duration,
-            result.error,
-          );
-        } else {
-          // For other errors, consider the function deployed but with issues
-          updateFunctionStatus(
-            func.id,
-            "success",
-            `Function deployed (error: ${errorMsg.substring(0, 100)}...)`,
+            `Function error: ${errorMsg.substring(0, 100)}${errorMsg.length > 100 ? '...' : ''}`,
             duration,
             result.error,
           );
         }
-      } else {
+      } else if (result.data) {
+        // Check if the response data indicates success or failure
+        const responseData = result.data;
+
+        if (responseData && typeof responseData === 'object') {
+          // Check for explicit success/error indicators in response
+          if (responseData.success === false || responseData.error) {
+            updateFunctionStatus(
+              func.id,
+              "failed",
+              `Function returned error: ${responseData.error || responseData.message || 'Unknown error'}`,
+              duration,
+              responseData,
+            );
+          } else if (responseData.success === true || responseData.message || responseData.data) {
+            updateFunctionStatus(
+              func.id,
+              "success",
+              "Function healthy and responsive",
+              duration,
+              responseData,
+            );
+          } else {
+            // Response exists but unclear status
+            updateFunctionStatus(
+              func.id,
+              "success",
+              "Function responsive (check response details)",
+              duration,
+              responseData,
+            );
+          }
+        } else {
         updateFunctionStatus(
           func.id,
           "success",
