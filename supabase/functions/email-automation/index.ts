@@ -41,13 +41,13 @@ serve(async (req: Request) => {
 
     return new Response(
       JSON.stringify({ success: response.success, message: response.message }),
-      { headers: corsHeaders },
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (error) {
     console.error("Error in email-automation:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
-      headers: corsHeaders,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
