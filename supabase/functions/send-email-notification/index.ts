@@ -35,8 +35,10 @@ serve(async (req: Request) => {
       });
     }
 
-    const emailRequest: EmailNotificationRequest = await req.json();
+    const emailRequest: EmailNotificationRequest & { action?: string } =
+      await req.json();
     const {
+      action,
       to,
       subject,
       template,
@@ -45,6 +47,19 @@ serve(async (req: Request) => {
       textContent,
       priority = "normal",
     } = emailRequest;
+
+    // Handle health check
+    if (action === "health") {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Send email notification function is healthy",
+          timestamp: new Date().toISOString(),
+          version: "1.0.0",
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     if (!to || !subject) {
       return new Response(
