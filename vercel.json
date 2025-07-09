@@ -1,9 +1,14 @@
 {
+  "version": 2,
   "functions": {
     "api/**/*.ts": {
-      "runtime": "@vercel/node"
+      "runtime": "@vercel/node@20.x",
+      "maxDuration": 30
     }
   },
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
   "rewrites": [
     {
       "source": "/api/(.*)",
