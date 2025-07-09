@@ -87,7 +87,7 @@ serve(async (req: Request) => {
             user_id: order.seller_id,
             type: "order_expired",
             title: "Order Auto-Cancelled",
-            message: `Your order for "${order.books?.title}" was automatically cancelled for not committing within 7 days.`,
+            message: `Your order for "${order.books?.title}" was automatically cancelled because the seller didn't commit within 48 hours.`,
           },
         ];
 
