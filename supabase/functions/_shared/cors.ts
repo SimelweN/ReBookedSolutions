@@ -9,14 +9,30 @@ export function createErrorResponse(
   message: string,
   status: number = 500,
   details?: any,
+  functionName?: string,
 ): Response {
-  console.error(`[ERROR ${status}] ${message}`, details);
+  const errorId = crypto.randomUUID();
+  const errorContext = {
+    errorId,
+    function: functionName,
+    timestamp: new Date().toISOString(),
+    message,
+    details,
+    stack: details?.stack,
+  };
+
+  console.error(
+    `[ERROR ${status}] ${functionName || "Unknown"}: ${message}`,
+    errorContext,
+  );
+
   return new Response(
     JSON.stringify({
       success: false,
       error: message,
-      details,
+      errorId,
       timestamp: new Date().toISOString(),
+      ...(process.env.NODE_ENV === "development" && { details }),
     }),
     {
       status,
@@ -48,11 +64,35 @@ export function handleOptionsRequest(): Response {
 
 export function createGenericErrorHandler(functionName: string) {
   return (error: any): Response => {
-    console.error(`[${functionName}] Unhandled error:`, error);
+    const isNetworkError =
+      error.name === "TypeError" && error.message.includes("fetch");
+    const isTimeoutError =
+      error.name === "AbortError" || error.message.includes("timeout");
+
+    let statusCode = 500;
+    let userMessage = "An unexpected error occurred";
+
+    if (isNetworkError) {
+      statusCode = 503;
+      userMessage = "External service temporarily unavailable";
+    } else if (isTimeoutError) {
+      statusCode = 504;
+      userMessage = "Request timeout - please try again";
+    } else if (error instanceof Error) {
+      userMessage = error.message;
+    }
+
     return createErrorResponse(
-      error instanceof Error ? error.message : "An unexpected error occurred",
-      500,
-      { function: functionName, stack: error?.stack },
+      userMessage,
+      statusCode,
+      {
+        function: functionName,
+        stack: error?.stack,
+        type: error?.name,
+        isNetworkError,
+        isTimeoutError,
+      },
+      functionName,
     );
   };
 }
