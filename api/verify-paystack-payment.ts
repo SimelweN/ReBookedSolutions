@@ -1,11 +1,5 @@
-// Vercel API Route - Fallback for verify-paystack-payment edge function
-import { NextRequest, NextResponse } from "next/server";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
 
 interface PaystackTransaction {
   reference: string;
@@ -19,54 +13,52 @@ interface PaystackTransaction {
   paid_at?: string;
 }
 
-export default async function handler(req: NextRequest) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS headers
-  const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-  };
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
-    return new NextResponse(null, { status: 200, headers: corsHeaders });
+    return res.status(200).end();
   }
 
   if (req.method !== "POST") {
-    return NextResponse.json(
-      { success: false, error: "Method not allowed" },
-      { status: 405, headers: corsHeaders },
-    );
+    return res
+      .status(405)
+      .json({ success: false, error: "Method not allowed" });
   }
 
   try {
-    const body = await req.json();
-    const { reference, orderId } = body;
+    const supabase = createClient(
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    );
+
+    const { reference, orderId } = req.body;
 
     if (!reference) {
-      return NextResponse.json(
-        { success: false, error: "Payment reference is required" },
-        { status: 400, headers: corsHeaders },
-      );
+      return res.status(400).json({
+        success: false,
+        error: "Payment reference is required",
+      });
     }
 
     // Check if payment was already verified
-    const { data: existingPayment, error: paymentCheckError } = await supabase
+    const { data: existingPayment } = await supabase
       .from("payments")
       .select("*")
       .eq("reference", reference)
       .single();
 
     if (existingPayment?.status === "verified") {
-      return NextResponse.json(
-        {
-          success: true,
-          verified: true,
-          alreadyVerified: true,
-          transaction: existingPayment.paystack_response,
-          payment: existingPayment,
-        },
-        { headers: corsHeaders },
-      );
+      return res.status(200).json({
+        success: true,
+        verified: true,
+        alreadyVerified: true,
+        transaction: existingPayment.paystack_response,
+        payment: existingPayment,
+      });
     }
 
     const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
@@ -83,15 +75,29 @@ export default async function handler(req: NextRequest) {
         paid_at: new Date().toISOString(),
       };
 
-      return NextResponse.json(
-        {
-          success: true,
-          verified: true,
-          testMode: true,
-          transaction: mockTransaction,
-        },
-        { headers: corsHeaders },
-      );
+      // Save mock payment record
+      const mockPayment = {
+        reference,
+        status: "verified",
+        amount: mockTransaction.amount / 100,
+        currency: mockTransaction.currency,
+        paystack_response: mockTransaction,
+        metadata: mockTransaction.metadata,
+        verified_at: new Date().toISOString(),
+        user_id: mockTransaction.metadata?.buyer_id,
+      };
+
+      await supabase
+        .from("payments")
+        .upsert(mockPayment, { onConflict: "reference" });
+
+      return res.status(200).json({
+        success: true,
+        verified: true,
+        testMode: true,
+        transaction: mockTransaction,
+        payment: mockPayment,
+      });
     }
 
     // Verify with Paystack
@@ -106,27 +112,21 @@ export default async function handler(req: NextRequest) {
     );
 
     if (!paystackResponse.ok) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Payment verification failed with Paystack API",
-        },
-        { status: 400, headers: corsHeaders },
-      );
+      return res.status(400).json({
+        success: false,
+        error: "Payment verification failed with Paystack API",
+      });
     }
 
     const paystackData = await paystackResponse.json();
     const transaction = paystackData.data;
 
     if (!transaction || transaction.status !== "success") {
-      return NextResponse.json(
-        {
-          success: false,
-          status: transaction?.status || "unknown",
-          message: "Payment was not successful",
-        },
-        { headers: corsHeaders },
-      );
+      return res.status(400).json({
+        success: false,
+        status: transaction?.status || "unknown",
+        message: "Payment was not successful",
+      });
     }
 
     // Save payment record
@@ -162,26 +162,20 @@ export default async function handler(req: NextRequest) {
         .eq("id", orderId);
     }
 
-    return NextResponse.json(
-      {
-        success: true,
-        verified: true,
-        transaction,
-        payment: paymentRecord,
-        amount: transaction.amount / 100,
-        currency: transaction.currency,
-      },
-      { headers: corsHeaders },
-    );
+    return res.status(200).json({
+      success: true,
+      verified: true,
+      transaction,
+      payment: paymentRecord,
+      amount: transaction.amount / 100,
+      currency: transaction.currency,
+    });
   } catch (error: any) {
     console.error("Error in payment verification:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Payment verification failed",
-        details: error.message,
-      },
-      { status: 500, headers: corsHeaders },
-    );
+    return res.status(500).json({
+      success: false,
+      error: "Payment verification failed",
+      details: error.message,
+    });
   }
 }
