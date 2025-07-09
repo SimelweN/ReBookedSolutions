@@ -27,7 +27,9 @@ serve(async (req: Request) => {
       });
     }
 
+    const requestBody = await req.json();
     const {
+      action,
       email,
       amount,
       bookId,
@@ -35,7 +37,20 @@ serve(async (req: Request) => {
       deliveryOption,
       shippingAddress,
       callbackUrl,
-    } = await req.json();
+    } = requestBody;
+
+    // Handle health check
+    if (action === "health") {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Initialize payment function is healthy",
+          timestamp: new Date().toISOString(),
+          version: "1.0.0",
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     if (!email || !amount || !bookId || !sellerId) {
       return new Response(
