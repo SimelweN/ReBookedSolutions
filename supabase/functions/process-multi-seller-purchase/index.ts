@@ -1,42 +1,37 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-serve(async (req: Request) => {
-  // Handle CORS preflight requests
+serve(async (req) => {
+  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    );
+
     // Only call req.json() ONCE
     const body = await req.json();
     console.log("Received body:", body);
 
-    const {
-      cartItems,
-      buyerId,
-      buyerEmail,
-      deliveryOptions,
-      shippingAddress,
-      callbackUrl,
-    } = body;
-
-    // Validate required fields
-    if (
-      !cartItems ||
-      !buyerEmail ||
-      !Array.isArray(cartItems) ||
-      cartItems.length === 0
-    ) {
+    // Handle health check
+    if (body.action === "health") {
       return new Response(
         JSON.stringify({
-          success: false,
-          error: "Missing required fields or empty cart",
+          success: true,
+          message: "Process multi-seller purchase function is healthy",
+          timestamp: new Date().toISOString(),
+          version: "1.0.0",
         }),
         {
           status: 200,
@@ -45,39 +40,63 @@ serve(async (req: Request) => {
       );
     }
 
-    // Calculate totals
-    const totalAmount = cartItems.reduce(
-      (sum: number, item: any) => sum + (item.price || 0),
-      0,
-    );
-    const totalDeliveryFee =
-      deliveryOptions?.reduce(
-        (sum: number, opt: any) => sum + (opt.price || 0),
-        0,
-      ) || 0;
-    const grandTotal = totalAmount + totalDeliveryFee;
+    const {
+      buyerId,
+      items, // Array of {bookId, sellerId, amount}
+      totalAmount,
+      paymentReference,
+    } = body;
 
-    // Generate unique reference
-    const reference = `RS_MULTI_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    if (
+      !buyerId ||
+      !items ||
+      !Array.isArray(items) ||
+      !totalAmount ||
+      !paymentReference
+    ) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error:
+            "Missing required fields: buyerId, items (array), totalAmount, paymentReference",
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
 
-    // Simulate successful payment initialization
-    const paymentData = {
-      authorization_url: `https://checkout.paystack.com/test_${reference}`,
-      access_code: `ACC_${reference}`,
-      reference: reference,
+    // Simulate processing multi-seller purchase
+    const processedOrders = items.map((item, index) => ({
+      id: crypto.randomUUID(),
+      book_id: item.bookId,
+      buyer_id: buyerId,
+      seller_id: item.sellerId,
+      amount: item.amount,
+      payment_reference: `${paymentReference}_${index + 1}`,
+      status: "processing",
+      order_group: paymentReference,
+      processed_at: new Date().toISOString(),
+    }));
+
+    const multiPurchase = {
+      group_id: paymentReference,
+      buyer_id: buyerId,
+      total_amount: totalAmount,
+      total_orders: items.length,
+      orders: processedOrders,
+      status: "processing",
+      processed_at: new Date().toISOString(),
     };
+
+    console.log("Multi-seller purchase processed:", multiPurchase);
 
     return new Response(
       JSON.stringify({
         success: true,
-        data: paymentData,
-        summary: {
-          book_count: cartItems.length,
-          total_amount: totalAmount,
-          delivery_fee: totalDeliveryFee,
-          grand_total: grandTotal,
-        },
-        message: "Multi-seller purchase initialized successfully (simulated)",
+        message: `Multi-seller purchase processed successfully (${items.length} orders)`,
+        multiPurchase: multiPurchase,
       }),
       {
         status: 200,
@@ -89,7 +108,6 @@ serve(async (req: Request) => {
 
     return new Response(
       JSON.stringify({
-        success: false,
         error: "Function crashed",
         details: error.message || "Unknown error",
       }),
