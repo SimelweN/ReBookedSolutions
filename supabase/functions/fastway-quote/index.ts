@@ -87,16 +87,22 @@ serve(async (req: Request) => {
       },
     };
 
-    // Simulate API call (replace with actual Fastway API endpoint)
+    // Call real Fastway API with timeout and proper error handling
     try {
-      const response = await fetch("https://api.fastway.co.za/v1/quote", {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+      const response = await fetch("https://sa.api.fastway.org/v3/quote", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${FASTWAY_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(quoteData),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error("Fastway API error");
