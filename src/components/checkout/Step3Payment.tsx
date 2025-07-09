@@ -49,6 +49,19 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
         orderSummary,
       );
 
+      // Verify user authentication first
+      const { data: authCheck, error: authError } =
+        await supabase.auth.getSession();
+      if (authError || !authCheck.session) {
+        throw new Error("User authentication failed. Please log in again.");
+      }
+
+      console.log("User authenticated:", {
+        userId: userId,
+        email: authCheck.session.user?.email,
+        authenticated: !!authCheck.session,
+      });
+
       // Create order data
       const orderData = {
         book_id: orderSummary.book.id,
