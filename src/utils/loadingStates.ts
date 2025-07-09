@@ -123,9 +123,9 @@ export const useAsyncOperation = <T = unknown>(
 };
 
 // Hook for managing multiple async operations
-export const useMultipleAsyncOperations = <T extends Record<string, any>>(
+export const useMultipleAsyncOperations = <T extends Record<string, unknown>>(
   operations: Record<keyof T, () => Promise<T[keyof T]>>,
-  config: LoadingStateConfig = {},
+  _config: LoadingStateConfig = {},
 ): AsyncOperationState<T> => {
   const [states, setStates] = useState<Record<keyof T, LoadingState>>(() =>
     Object.keys(operations).reduce(
@@ -217,7 +217,7 @@ export interface PaginatedState<T> {
 
 export const usePaginatedData = <T>(
   loadPage: (page: number) => Promise<{ items: T[]; hasMore: boolean }>,
-  pageSize: number = 20,
+  _pageSize: number = 20,
 ): PaginatedState<T> => {
   const [items, setItems] = useState<T[]>([]);
   const [loading, setLoading] = useState(false);
