@@ -163,8 +163,9 @@ const FUNCTION_TESTS: FunctionTestConfig[] = [
     description: "Test email notification sending",
     testPayload: {
       to: "test@example.com",
-      template: "test",
-      data: { message: "Test email from function tester" },
+      subject: "Test Email from Function Tester",
+      template: "welcome",
+      data: { name: "Test User", message: "Test email from function tester" },
     },
   },
   {
