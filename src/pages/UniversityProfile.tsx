@@ -4,22 +4,24 @@ import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/index";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   ArrowLeft,
   ExternalLink,
   MapPin,
   BookOpen,
   Calculator,
-  Star,
+  BarChart3,
   Users,
   Calendar,
   Building,
   GraduationCap,
+  Globe,
 } from "lucide-react";
 import Layout from "@/components/Layout";
 
 /**
- * University Profile Component - Matches the design from the provided image
+ * University Profile Component - Clean and professional design
  */
 const UniversityProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -48,36 +50,36 @@ const UniversityProfile: React.FC = () => {
 
   return (
     <Layout>
-      <div className="bg-white min-h-screen">
-        {/* Green Header Section */}
-        <div className="bg-book-600 text-white relative overflow-hidden">
-          {/* Background pattern overlay */}
-          <div className="absolute inset-0 opacity-10">
+      <div className="bg-gray-50 min-h-screen">
+        {/* Modern Header Section */}
+        <div className="bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 text-white relative overflow-hidden">
+          {/* Subtle pattern overlay */}
+          <div className="absolute inset-0 opacity-5">
             <div
               className="absolute inset-0"
               style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.3'%3E%3Ccircle cx='20' cy='20' r='1'/%3E%3C/g%3E%3C/svg%3E")`,
               }}
             />
           </div>
 
-          <div className="container mx-auto px-4 py-6 relative z-10">
+          <div className="container mx-auto px-6 py-8 relative z-10">
             {/* Back button */}
             <Link
               to="/university-info"
-              className="inline-flex items-center text-white hover:text-gray-200 transition-colors mb-6"
+              className="inline-flex items-center text-white/80 hover:text-white transition-colors mb-8 text-sm font-medium"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Universities
             </Link>
 
-            <div className="flex flex-col lg:flex-row gap-8 items-start">
+            <div className="grid lg:grid-cols-3 gap-8">
               {/* Left side - University info */}
-              <div className="flex-1">
-                <div className="flex items-start gap-6 mb-6">
+              <div className="lg:col-span-2 space-y-6">
+                <div className="flex items-start gap-6">
                   {/* University logo */}
-                  <div className="bg-white rounded-lg p-4 shadow-lg">
-                    <div className="w-16 h-16 bg-book-600 rounded-lg flex items-center justify-center">
+                  <div className="bg-white rounded-xl p-4 shadow-lg shrink-0">
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center">
                       <span className="text-white font-bold text-xl">
                         {university.abbreviation ||
                           university.name.substring(0, 3).toUpperCase()}
@@ -85,30 +87,34 @@ const UniversityProfile: React.FC = () => {
                     </div>
                   </div>
 
-                  <div>
-                    <Badge className="bg-white/20 text-white border-white/30 mb-3">
-                      {university.type}
-                    </Badge>
-                    <h1 className="text-3xl lg:text-4xl font-bold mb-2">
-                      {university.fullName || university.name}
-                    </h1>
-                    <div className="flex items-center text-white/90 mb-4">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      {university.location}, {university.province}
+                  <div className="space-y-4">
+                    <div>
+                      <Badge className="bg-blue-100 text-blue-800 border-0 mb-3 font-medium">
+                        {university.type}
+                      </Badge>
+                      <h1 className="text-3xl lg:text-4xl font-bold mb-2 text-white">
+                        {university.fullName || university.name}
+                      </h1>
+                      <div className="flex items-center text-gray-300 mb-4">
+                        <MapPin className="h-4 w-4 mr-2" />
+                        <span className="text-base">
+                          {university.location}, {university.province}
+                        </span>
+                      </div>
                     </div>
-                    <p className="text-lg text-white/90 leading-relaxed max-w-2xl">
+
+                    <p className="text-gray-300 leading-relaxed max-w-2xl text-base">
                       {university.overview ||
-                        "Africa's leading university, globally ranked for academic excellence and research innovation."}
+                        "A leading South African university committed to academic excellence, innovation, and producing graduates who make a difference in the world."}
                     </p>
                   </div>
                 </div>
 
                 {/* Action buttons */}
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-3 pt-2">
                   {university.website && (
                     <Button
-                      variant="secondary"
-                      className="bg-white text-book-600 hover:bg-gray-100"
+                      className="bg-white text-slate-800 hover:bg-gray-100 shadow-md font-medium"
                       asChild
                     >
                       <a
@@ -116,18 +122,18 @@ const UniversityProfile: React.FC = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <ExternalLink className="h-4 w-4 mr-2" />
+                        <Globe className="h-4 w-4 mr-2" />
                         Visit Website
                       </a>
                     </Button>
                   )}
 
-                  <Button className="bg-book-700 hover:bg-book-800 text-white">
+                  <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-md font-medium">
                     <BookOpen className="h-4 w-4 mr-2" />
                     Find Textbooks
                   </Button>
 
-                  <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                  <Button className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-md font-medium">
                     <Calculator className="h-4 w-4 mr-2" />
                     APS Calculator
                   </Button>
@@ -135,43 +141,55 @@ const UniversityProfile: React.FC = () => {
               </div>
 
               {/* Right side - University stats */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 min-w-[280px]">
-                <h3 className="text-white font-semibold mb-4 flex items-center">
-                  <Star className="h-4 w-4 mr-2" />
-                  University Stats
-                </h3>
+              <div className="lg:col-span-1">
+                <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+                  <CardContent className="p-6">
+                    <h3 className="font-semibold mb-6 flex items-center text-lg">
+                      <BarChart3 className="h-5 w-5 mr-2" />
+                      University Stats
+                    </h3>
 
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-white/80">Students</span>
-                    <span className="text-white font-semibold text-lg">
-                      {studentCount}
-                    </span>
-                  </div>
+                    <div className="space-y-5">
+                      <div className="flex justify-between items-center py-2">
+                        <span className="text-gray-200 font-medium">
+                          Students
+                        </span>
+                        <span className="text-white font-bold text-xl">
+                          {studentCount}
+                        </span>
+                      </div>
 
-                  {university.establishedYear && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-white/80">Established</span>
-                      <span className="text-white font-semibold text-lg">
-                        {university.establishedYear}
-                      </span>
+                      {university.establishedYear && (
+                        <div className="flex justify-between items-center py-2">
+                          <span className="text-gray-200 font-medium">
+                            Established
+                          </span>
+                          <span className="text-white font-bold text-xl">
+                            {university.establishedYear}
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="flex justify-between items-center py-2">
+                        <span className="text-gray-200 font-medium">
+                          Faculties
+                        </span>
+                        <span className="text-white font-bold text-xl">
+                          {university.faculties?.length || 0}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between items-center py-2">
+                        <span className="text-gray-200 font-medium">
+                          Programs
+                        </span>
+                        <span className="text-white font-bold text-xl">
+                          {totalPrograms}
+                        </span>
+                      </div>
                     </div>
-                  )}
-
-                  <div className="flex justify-between items-center">
-                    <span className="text-white/80">Faculties</span>
-                    <span className="text-white font-semibold text-lg">
-                      {university.faculties?.length || 0}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between items-center">
-                    <span className="text-white/80">Programs</span>
-                    <span className="text-white font-semibold text-lg">
-                      {totalPrograms}
-                    </span>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </div>
