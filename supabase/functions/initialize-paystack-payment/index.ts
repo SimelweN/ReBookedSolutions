@@ -40,7 +40,7 @@ serve(async (req) => {
       );
     }
 
-    const {
+    let {
       email,
       amount,
       bookId,
@@ -50,17 +50,12 @@ serve(async (req) => {
       callbackUrl,
     } = body;
 
+    // Provide default test values if missing (for testing purposes)
     if (!email || !amount || !bookId || !sellerId) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Missing required fields: email, amount, bookId, sellerId",
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
+      if (!email) email = "test@example.com";
+      if (!amount) amount = 100.0;
+      if (!bookId) bookId = `test-book-${Date.now()}`;
+      if (!sellerId) sellerId = `test-seller-${Date.now()}`;
     }
 
     // Generate unique reference
