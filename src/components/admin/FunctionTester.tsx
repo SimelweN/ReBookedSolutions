@@ -201,11 +201,11 @@ const FUNCTION_TESTS: FunctionTestConfig[] = [
     name: "file-upload",
     displayName: "File Upload",
     category: "upload",
-    description: "Test file upload functionality",
+    description:
+      "Test file upload functionality (requires FormData - not testable via JSON)",
     testPayload: {
-      bucket: "test",
-      path: "test/test-file.txt",
-      content_type: "text/plain",
+      error:
+        "This function requires FormData with a file and cannot be tested with JSON payload",
     },
   },
 
