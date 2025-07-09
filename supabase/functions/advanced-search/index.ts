@@ -5,7 +5,6 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
-  "Content-Type": "application/json",
 };
 
 const supabase = createClient(
@@ -34,14 +33,12 @@ serve(async (req: Request) => {
   }
 
   try {
-    console.log("Advanced search request:", req.method);
-
     if (req.method !== "POST") {
       return new Response(
         JSON.stringify({ error: "Method not allowed. Use POST." }),
         {
           status: 405,
-          headers: corsHeaders,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         },
       );
     }
@@ -50,20 +47,14 @@ serve(async (req: Request) => {
     const results = await performAdvancedSearch(filters);
 
     return new Response(JSON.stringify(results), {
-      headers: corsHeaders,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
     console.error("Error in advanced-search:", error);
-    return new Response(
-      JSON.stringify({
-        error: "Internal Server Error",
-        details: error?.message || "Unknown error",
-      }),
-      {
-        status: 500,
-        headers: corsHeaders,
-      },
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
 
@@ -87,12 +78,21 @@ async function performAdvancedSearch(filters: SearchFilters) {
     .from("books")
     .select(
       `
-      *,
-      profiles!books_seller_id_fkey(
-        full_name,
-        email,
-        pickup_address
-      )
+      id,
+      title,
+      author,
+      description,
+      price,
+      category,
+      condition,
+      image_url,
+      seller_id,
+      created_at,
+      sold,
+      university,
+      grade,
+      availability,
+      province
     `,
     )
     .eq("sold", false);
