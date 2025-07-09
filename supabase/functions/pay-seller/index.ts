@@ -65,6 +65,7 @@ serve(async (req) => {
       .eq("id", order_id)
       .eq("seller_id", seller_id)
       .eq("status", "delivered")
+      .eq("payment_held", false) // CRITICAL: Only pay when hold is released
       .single();
 
     if (orderError || !order) {
