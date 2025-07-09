@@ -4,7 +4,7 @@ import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/index";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ArrowLeft,
   ExternalLink,
@@ -14,14 +14,18 @@ import {
   BarChart3,
   Users,
   Calendar,
-  Building,
+  Building2,
   GraduationCap,
   Globe,
+  TrendingUp,
+  Award,
+  Heart,
+  Info,
 } from "lucide-react";
 import Layout from "@/components/Layout";
 
 /**
- * University Profile Component - Clean and professional design
+ * University Profile Component - Complete modern redesign
  */
 const UniversityProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -50,71 +54,71 @@ const UniversityProfile: React.FC = () => {
 
   return (
     <Layout>
-      <div className="bg-gray-50 min-h-screen">
-        {/* Modern Header Section */}
-        <div className="bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 text-white relative overflow-hidden">
-          {/* Subtle pattern overlay */}
-          <div className="absolute inset-0 opacity-5">
-            <div
-              className="absolute inset-0"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.3'%3E%3Ccircle cx='20' cy='20' r='1'/%3E%3C/g%3E%3C/svg%3E")`,
-              }}
-            />
-          </div>
-
-          <div className="container mx-auto px-6 py-8 relative z-10">
-            {/* Back button */}
+      <div className="bg-white min-h-screen">
+        {/* Clean Header */}
+        <div className="bg-gradient-to-b from-gray-50 to-white border-b border-gray-200">
+          <div className="container mx-auto px-6 py-8">
+            {/* Back Navigation */}
             <Link
               to="/university-info"
-              className="inline-flex items-center text-white/80 hover:text-white transition-colors mb-8 text-sm font-medium"
+              className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors mb-8 group"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Universities
+              <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+              <span className="font-medium">Back to Universities</span>
             </Link>
 
-            <div className="grid lg:grid-cols-3 gap-8">
-              {/* Left side - University info */}
-              <div className="lg:col-span-2 space-y-6">
-                <div className="flex items-start gap-6">
-                  {/* University logo */}
-                  <div className="bg-white rounded-xl p-4 shadow-lg shrink-0">
-                    <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center">
-                      <span className="text-white font-bold text-xl">
+            {/* University Header */}
+            <div className="grid lg:grid-cols-4 gap-8">
+              {/* Main Info */}
+              <div className="lg:col-span-3">
+                <div className="flex items-start gap-6 mb-8">
+                  {/* Logo */}
+                  <div className="relative">
+                    <div className="w-20 h-20 bg-white border-4 border-gray-100 rounded-2xl flex items-center justify-center shadow-lg">
+                      <span className="text-2xl font-bold text-gray-700">
                         {university.abbreviation ||
                           university.name.substring(0, 3).toUpperCase()}
                       </span>
                     </div>
+                    <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-book-500 rounded-full flex items-center justify-center">
+                      <Award className="h-3 w-3 text-white" />
+                    </div>
                   </div>
 
-                  <div className="space-y-4">
+                  {/* Info */}
+                  <div className="flex-1 space-y-4">
                     <div>
-                      <Badge className="bg-blue-100 text-blue-800 border-0 mb-3 font-medium">
+                      <Badge
+                        variant="secondary"
+                        className="mb-3 bg-blue-50 text-blue-700 border-blue-200"
+                      >
                         {university.type}
                       </Badge>
-                      <h1 className="text-3xl lg:text-4xl font-bold mb-2 text-white">
+                      <h1 className="text-4xl font-bold text-gray-900 mb-3">
                         {university.fullName || university.name}
                       </h1>
-                      <div className="flex items-center text-gray-300 mb-4">
-                        <MapPin className="h-4 w-4 mr-2" />
-                        <span className="text-base">
+                      <div className="flex items-center text-gray-600 mb-4">
+                        <MapPin className="h-5 w-5 mr-2 text-gray-400" />
+                        <span className="text-lg">
                           {university.location}, {university.province}
                         </span>
                       </div>
                     </div>
 
-                    <p className="text-gray-300 leading-relaxed max-w-2xl text-base">
+                    <p className="text-gray-700 leading-relaxed text-lg max-w-3xl">
                       {university.overview ||
-                        "A leading South African university committed to academic excellence, innovation, and producing graduates who make a difference in the world."}
+                        "A prestigious South African institution dedicated to academic excellence, research innovation, and developing leaders who shape the future."}
                     </p>
                   </div>
                 </div>
 
-                {/* Action buttons */}
-                <div className="flex flex-wrap gap-3 pt-2">
+                {/* Action Buttons */}
+                <div className="flex flex-wrap gap-4">
                   {university.website && (
                     <Button
-                      className="bg-white text-slate-800 hover:bg-gray-100 shadow-md font-medium"
+                      size="lg"
+                      variant="outline"
+                      className="border-2 hover:border-book-500 hover:text-book-600"
                       asChild
                     >
                       <a
@@ -122,68 +126,86 @@ const UniversityProfile: React.FC = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <Globe className="h-4 w-4 mr-2" />
-                        Visit Website
+                        <Globe className="h-5 w-5 mr-2" />
+                        Official Website
                       </a>
                     </Button>
                   )}
 
-                  <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-md font-medium">
-                    <BookOpen className="h-4 w-4 mr-2" />
+                  <Button
+                    size="lg"
+                    className="bg-book-600 hover:bg-book-700 text-white"
+                  >
+                    <BookOpen className="h-5 w-5 mr-2" />
                     Find Textbooks
                   </Button>
 
-                  <Button className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-md font-medium">
-                    <Calculator className="h-4 w-4 mr-2" />
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-2 border-blue-200 text-blue-600 hover:bg-blue-50"
+                  >
+                    <Calculator className="h-5 w-5 mr-2" />
                     APS Calculator
                   </Button>
                 </div>
               </div>
 
-              {/* Right side - University stats */}
+              {/* Quick Stats */}
               <div className="lg:col-span-1">
-                <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
-                  <CardContent className="p-6">
-                    <h3 className="font-semibold mb-6 flex items-center text-lg">
-                      <BarChart3 className="h-5 w-5 mr-2" />
-                      University Stats
-                    </h3>
-
-                    <div className="space-y-5">
-                      <div className="flex justify-between items-center py-2">
-                        <span className="text-gray-200 font-medium">
-                          Students
-                        </span>
-                        <span className="text-white font-bold text-xl">
+                <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-lg flex items-center text-gray-800">
+                      <BarChart3 className="h-5 w-5 mr-2 text-book-500" />
+                      Quick Stats
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-gray-600 font-medium">
+                        Students
+                      </span>
+                      <div className="flex items-center">
+                        <Users className="h-4 w-4 mr-1 text-book-500" />
+                        <span className="font-bold text-gray-900">
                           {studentCount}
                         </span>
                       </div>
+                    </div>
 
-                      {university.establishedYear && (
-                        <div className="flex justify-between items-center py-2">
-                          <span className="text-gray-200 font-medium">
-                            Established
-                          </span>
-                          <span className="text-white font-bold text-xl">
+                    {university.establishedYear && (
+                      <div className="flex justify-between items-center py-2">
+                        <span className="text-gray-600 font-medium">
+                          Founded
+                        </span>
+                        <div className="flex items-center">
+                          <Calendar className="h-4 w-4 mr-1 text-book-500" />
+                          <span className="font-bold text-gray-900">
                             {university.establishedYear}
                           </span>
                         </div>
-                      )}
+                      </div>
+                    )}
 
-                      <div className="flex justify-between items-center py-2">
-                        <span className="text-gray-200 font-medium">
-                          Faculties
-                        </span>
-                        <span className="text-white font-bold text-xl">
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-gray-600 font-medium">
+                        Faculties
+                      </span>
+                      <div className="flex items-center">
+                        <Building2 className="h-4 w-4 mr-1 text-book-500" />
+                        <span className="font-bold text-gray-900">
                           {university.faculties?.length || 0}
                         </span>
                       </div>
+                    </div>
 
-                      <div className="flex justify-between items-center py-2">
-                        <span className="text-gray-200 font-medium">
-                          Programs
-                        </span>
-                        <span className="text-white font-bold text-xl">
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-gray-600 font-medium">
+                        Programs
+                      </span>
+                      <div className="flex items-center">
+                        <GraduationCap className="h-4 w-4 mr-1 text-book-500" />
+                        <span className="font-bold text-gray-900">
                           {totalPrograms}
                         </span>
                       </div>
