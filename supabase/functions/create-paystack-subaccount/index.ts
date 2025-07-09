@@ -35,7 +35,21 @@ serve(async (req: Request) => {
       );
     }
 
-    const { userId, businessName, bankCode, accountNumber } = requestBody;
+    const { action, userId, businessName, bankCode, accountNumber } =
+      requestBody;
+
+    // Handle health check
+    if (action === "health") {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Create Paystack subaccount function is healthy",
+          timestamp: new Date().toISOString(),
+          version: "1.0.0",
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     if (!userId || !businessName || !bankCode || !accountNumber) {
       return new Response(
