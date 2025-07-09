@@ -10,6 +10,12 @@
   "outputDirectory": "dist",
   "installCommand": "yarn install",
   "framework": null,
+  "rewrites": [
+    {
+      "source": "/((?!api|_next|static|favicon.ico|robots.txt|sitemap.xml|ads.txt|sw.js|_headers|_redirects|assets|university-logos|lovable-uploads).*)",
+      "destination": "/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
@@ -25,6 +31,15 @@
         {
           "key": "Access-Control-Allow-Headers",
           "value": "Content-Type, Authorization"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
         }
       ]
     },
