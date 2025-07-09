@@ -44,6 +44,20 @@ serve(async (req: Request) => {
     }
 
     const filters: SearchFilters = await req.json();
+
+    // Handle health check
+    if (filters.query === "health" && Object.keys(filters).length === 1) {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Advanced search function is healthy",
+          timestamp: new Date().toISOString(),
+          version: "1.0.0",
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
     const results = await performAdvancedSearch(filters);
 
     return new Response(JSON.stringify(results), {
