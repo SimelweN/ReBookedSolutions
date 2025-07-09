@@ -9,7 +9,7 @@ interface PaystackTransaction {
   customer: {
     email: string;
   };
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   paid_at?: string;
 }
 
@@ -170,12 +170,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       amount: transaction.amount / 100,
       currency: transaction.currency,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error in payment verification:", error);
     return res.status(500).json({
       success: false,
       error: "Payment verification failed",
-      details: error.message,
+      details: error instanceof Error ? error.message : String(error),
     });
   }
 }
