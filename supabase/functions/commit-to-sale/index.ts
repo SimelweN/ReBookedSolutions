@@ -5,7 +5,6 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
-  "Content-Type": "application/json",
 };
 
 const supabase = createClient(
@@ -14,26 +13,27 @@ const supabase = createClient(
 );
 
 serve(async (req: Request) => {
+  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    if (req.method !== "POST") {
-      return new Response(JSON.stringify({ error: "Method not allowed" }), {
-        status: 405,
-        headers: corsHeaders,
-      });
-    }
+    // Only call req.json() ONCE
+    const body = await req.json();
+    console.log("Received body:", body);
 
-    const { orderId, sellerId } = await req.json();
+    const { orderId, sellerId } = body;
 
     if (!orderId || !sellerId) {
       return new Response(
-        JSON.stringify({ error: "Order ID and Seller ID are required" }),
+        JSON.stringify({
+          success: false,
+          error: "Order ID and Seller ID are required",
+        }),
         {
-          status: 400,
-          headers: corsHeaders,
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         },
       );
     }
@@ -56,7 +56,7 @@ serve(async (req: Request) => {
         JSON.stringify({ error: "Order not found or unauthorized" }),
         {
           status: 404,
-          headers: corsHeaders,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         },
       );
     }
@@ -66,72 +66,23 @@ serve(async (req: Request) => {
         JSON.stringify({ error: "Order is not in paid status" }),
         {
           status: 400,
-          headers: corsHeaders,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         },
       );
     }
 
-    // Update order status to committed (with retry)
-    let updateSuccess = false;
-    let updateError = null;
+    // Update order status to committed
+    const { error: updateError } = await supabase
+      .from("orders")
+      .update({
+        status: "committed",
+        committed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", orderId);
 
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      try {
-        console.log(`Order commit attempt ${attempt}/3`);
-
-        const { error } = await supabase
-          .from("orders")
-          .update({
-            status: "committed",
-            committed_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", orderId);
-
-        if (error) {
-          updateError = error;
-          console.error(`Commit attempt ${attempt} failed:`, error);
-
-          if (attempt < 3) {
-            await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
-          }
-        } else {
-          updateSuccess = true;
-          break;
-        }
-      } catch (err) {
-        updateError = err;
-        console.error(`Commit attempt ${attempt} error:`, err);
-        if (attempt < 3) {
-          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
-        }
-      }
-    }
-
-    if (!updateSuccess) {
-      console.error(
-        "Failed to commit order after retries, storing for manual processing",
-      );
-
-      // Fallback: Store commit request for manual processing
-      await supabase.from("pending_commits").insert({
-        order_id: orderId,
-        seller_id: sellerId,
-        requested_at: new Date().toISOString(),
-        error_details: updateError?.message || "Database update failed",
-        status: "pending_manual_processing",
-      });
-
-      return new Response(
-        JSON.stringify({
-          success: true,
-          fallback: true,
-          message:
-            "Your commit request has been received and will be processed manually. You'll be notified once complete.",
-          status: "pending_processing",
-        }),
-        { headers: corsHeaders },
-      );
+    if (updateError) {
+      throw updateError;
     }
 
     // Mark book as sold
@@ -172,13 +123,21 @@ serve(async (req: Request) => {
           committed_at: new Date().toISOString(),
         },
       }),
-      { headers: corsHeaders },
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (error) {
-    console.error("Error in commit-to-sale:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: corsHeaders,
-    });
+    console.error("Edge Function Error:", error);
+
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: "Function crashed",
+        details: error.message || "Unknown error",
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
 });
