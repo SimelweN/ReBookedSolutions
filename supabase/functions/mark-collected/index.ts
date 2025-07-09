@@ -196,7 +196,9 @@ serve(async (req) => {
       if (sellerProfile?.bank_account_number) {
         // Call pay-seller function
         try {
-          const paystackAmount = Math.round(order.total_price * 100); // Convert to kobo
+          // Calculate book price only (exclude delivery fee for seller payout)
+          const bookPrice = order.book_price || order.total_price; // Use book_price if available, fallback to total
+          const paystackAmount = Math.round(bookPrice * 100); // Convert to kobo
 
           await fetch(
             `${Deno.env.get("SUPABASE_URL")}/functions/v1/pay-seller`,
