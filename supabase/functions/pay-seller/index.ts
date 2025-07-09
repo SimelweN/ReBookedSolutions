@@ -69,7 +69,10 @@ serve(async (req) => {
       .single();
 
     if (orderError || !order) {
-      throw new Error("Order not found or not eligible for payout");
+      console.error("Order verification failed:", orderError);
+      throw new Error(
+        "Order not found, not delivered, or payment still held (collection not confirmed)",
+      );
     }
 
     // Check if payout already exists
