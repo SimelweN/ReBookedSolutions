@@ -130,7 +130,7 @@ export const logNetworkError = (
   error: unknown,
   networkStatus?: NetworkStatus,
 ) => {
-  const status = networkStatus || getNetworkStatus();
+  const _status = networkStatus || getNetworkStatus();
 
   // Network error logged
 };
