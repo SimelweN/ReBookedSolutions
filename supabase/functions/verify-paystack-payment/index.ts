@@ -285,12 +285,13 @@ serve(async (req) => {
           throw updatePaymentError;
         }
 
-        // Update order status to paid
+        // Update order status to paid WITH payment holding until collection
         const { error: updateOrderError } = await supabaseClient
           .from("orders")
           .update({
             status: "paid",
             paid_at: verifiedAt,
+            payment_held: true, // CRITICAL: Hold payment until book collection
             updated_at: verifiedAt,
           })
           .eq("id", payment.order_id);
