@@ -79,8 +79,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(
-    shouldSkipAuthLoading() ? false : false,
-  ); // Always start as false
+    shouldSkipAuthLoading() ? false : true,
+  ); // Start as true unless auth should be skipped
   const [authInitialized, setAuthInitialized] = useState(false);
   const [initError, setInitError] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
