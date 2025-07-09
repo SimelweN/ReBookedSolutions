@@ -60,6 +60,7 @@ import ProgramReview from "@/components/admin/ProgramReview";
 import DatabaseTest from "@/components/admin/DatabaseTest";
 import QADashboard from "@/components/admin/QADashboard";
 import FunctionTester from "@/components/admin/FunctionTester";
+import EdgeFunctionMonitor from "@/components/EdgeFunctionMonitor";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
