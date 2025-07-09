@@ -105,7 +105,21 @@ serve(async (req: Request) => {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error("Fastway API error");
+        const errorData = await response.text();
+        console.error(`Fastway API error ${response.status}:`, errorData);
+
+        if (response.status === 429) {
+          console.warn("Fastway rate limit exceeded, using fallback");
+          throw new Error("Rate limit exceeded");
+        } else if (response.status === 401) {
+          console.error("Fastway authentication failed - check API key");
+          throw new Error("Authentication failed");
+        } else if (response.status >= 500) {
+          console.error("Fastway server error - temporary issue");
+          throw new Error("Server error");
+        }
+
+        throw new Error(`Fastway API error: ${response.status}`);
       }
 
       const data = await response.json();
