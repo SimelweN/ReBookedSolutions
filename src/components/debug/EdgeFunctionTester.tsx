@@ -135,7 +135,7 @@ const EdgeFunctionTester = () => {
         <CardTitle>Edge Function Tester</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Button
             onClick={testUserAuth}
             disabled={loading === "auth"}
@@ -160,6 +160,16 @@ const EdgeFunctionTester = () => {
             {loading === "initialize-paystack-payment"
               ? "Testing..."
               : "Test Payment Init"}
+          </Button>
+
+          <Button
+            onClick={testSimplePayment}
+            disabled={loading === "simple-payment"}
+            variant="secondary"
+          >
+            {loading === "simple-payment"
+              ? "Testing..."
+              : "Test Simple Payment"}
           </Button>
         </div>
 
