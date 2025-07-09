@@ -174,7 +174,7 @@ export function loadGoogleMapsScript(): Promise<boolean> {
     script.defer = true;
 
     script.onload = () => {
-      console.log("✅ Google Maps JavaScript API loaded successfully");
+      // Google Maps JavaScript API loaded successfully
       resolve(true);
     };
 
@@ -250,7 +250,7 @@ export function createFallbackAutocomplete(inputElement: HTMLInputElement) {
     "Polokwane",
   ];
 
-  let currentFocus = -1;
+  let _currentFocus = -1;
 
   inputElement.addEventListener("input", function (e) {
     const value = (e.target as HTMLInputElement).value;
@@ -270,7 +270,7 @@ export function createFallbackAutocomplete(inputElement: HTMLInputElement) {
       city.toLowerCase().includes(value.toLowerCase()),
     );
 
-    matchingCities.forEach((city, index) => {
+    matchingCities.forEach((city) => {
       const item = document.createElement("div");
       item.innerHTML = city.replace(
         new RegExp(value, "gi"),
@@ -336,7 +336,7 @@ export async function initializeAddressAutocomplete(
       }
     });
 
-    console.log("✅ Google Maps autocomplete initialized");
+    // Google Maps autocomplete initialized
     return true;
   } catch (error) {
     console.error("Failed to initialize Google Maps autocomplete:", error);
