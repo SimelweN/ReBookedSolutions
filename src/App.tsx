@@ -269,6 +269,16 @@ function App() {
 
                         {/* Protected Routes */}
                         <Route
+                          path="/dashboard"
+                          element={
+                            <ProtectedRoute>
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <Dashboard />
+                              </Suspense>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
                           path="/profile"
                           element={
                             <ProtectedRoute>
