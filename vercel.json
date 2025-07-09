@@ -1,8 +1,6 @@
 {
   "functions": {
-    "api/**/*.ts": {
-      "runtime": "@vercel/node@18"
-    }
+    "api/**/*.ts": "@vercel/node"
   },
   "rewrites": [
     {
@@ -14,9 +12,6 @@
       "destination": "/"
     }
   ],
-  "env": {
-    "NODE_ENV": "production"
-  },
   "headers": [
     {
       "source": "/api/(.*)",
