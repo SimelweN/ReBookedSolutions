@@ -130,9 +130,8 @@ export async function testMapsConnection(): Promise<{
           availableServices.push("Places API");
         }
       }
-    } catch (error) {
+    } catch {
       // Places API might not be enabled, but don't fail completely
-      console.warn("Places API test failed:", error);
     }
 
     return {
@@ -250,7 +249,7 @@ export function createFallbackAutocomplete(inputElement: HTMLInputElement) {
     "Polokwane",
   ];
 
-  let _currentFocus = -1;
+  const _currentFocus = -1;
 
   inputElement.addEventListener("input", function (e) {
     const value = (e.target as HTMLInputElement).value;
