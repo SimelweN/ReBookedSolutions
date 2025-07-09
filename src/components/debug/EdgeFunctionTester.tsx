@@ -99,6 +99,36 @@ const EdgeFunctionTester = () => {
     }
   };
 
+  const testSimplePayment = async () => {
+    setLoading("simple-payment");
+    try {
+      // Get current user email for the test
+      const { data: authData } = await supabase.auth.getSession();
+      const userEmail = authData.session?.user?.email || "test@example.com";
+
+      const testData = {
+        email: userEmail,
+        amount: 100,
+        currency: "ZAR",
+        callback_url: `${window.location.origin}/payment/callback`,
+        metadata: { test: true, debug: true },
+      };
+
+      await testFunction("initialize-payment-simple", testData);
+    } catch (error) {
+      console.error("Simple payment test failed:", error);
+      setResults((prev) => ({
+        ...prev,
+        "initialize-payment-simple": {
+          success: false,
+          error: error.message,
+        },
+      }));
+    } finally {
+      setLoading(null);
+    }
+  };
+
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
