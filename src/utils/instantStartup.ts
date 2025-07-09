@@ -6,7 +6,7 @@ export const enableInstantStartup = () => {
   try {
     localStorage.setItem("app_instant_mode", "true");
     localStorage.setItem("auth_skip_loading", "true");
-    console.log("✅ Instant startup mode enabled");
+    // Instant startup mode enabled
   } catch (error) {
     console.warn("Could not enable instant startup mode:", error);
   }
