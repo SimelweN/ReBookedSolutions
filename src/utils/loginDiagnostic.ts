@@ -5,7 +5,7 @@ export interface LoginDiagnosticResult {
   step: string;
   status: "pass" | "fail" | "warning";
   message: string;
-  details?: any;
+  details?: unknown;
 }
 
 export const runLoginDiagnostic = async (): Promise<

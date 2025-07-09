@@ -349,12 +349,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         "Prices are estimates and may vary based on actual package details and current rates",
       message: `Found ${quotes.length} delivery options`,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error generating delivery quotes:", error);
     return res.status(500).json({
       success: false,
       error: "Failed to generate delivery quotes",
-      details: error.message,
+      details: error instanceof Error ? error.message : String(error),
     });
   }
 }

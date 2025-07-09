@@ -6,7 +6,7 @@ interface PaystackInitRequest {
   amount: number;
   reference?: string;
   callback_url?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   subaccount?: string;
   order_id?: string;
   currency?: string;
@@ -91,7 +91,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Build request payload for Paystack
-    const paystackPayload: any = {
+    const paystackPayload: Record<string, unknown> = {
       email,
       amount: amountInKobo,
       currency,
@@ -178,12 +178,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       data: paystackData.data,
       message: "Payment initialized successfully",
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error initializing payment:", error);
     return res.status(500).json({
       success: false,
       error: "Payment initialization failed",
-      details: error.message,
+      details: error instanceof Error ? error.message : String(error),
     });
   }
 }

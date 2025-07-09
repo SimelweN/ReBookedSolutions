@@ -11,7 +11,7 @@ export interface LoadingStateConfig {
   retryDelay?: number;
 }
 
-export interface AsyncOperationState<T = any> {
+export interface AsyncOperationState<T = unknown> {
   state: LoadingState;
   data: T | null;
   error: string | null;
@@ -23,7 +23,7 @@ export interface AsyncOperationState<T = any> {
 }
 
 // Custom hook for managing async operations
-export const useAsyncOperation = <T = any>(
+export const useAsyncOperation = <T = unknown>(
   operation: () => Promise<T>,
   config: LoadingStateConfig = {},
 ): AsyncOperationState<T> => {
@@ -123,10 +123,10 @@ export const useAsyncOperation = <T = any>(
 };
 
 // Hook for managing multiple async operations
-export const useMultipleAsyncOperations = <T extends Record<string, any>>(
+export const useMultipleAsyncOperations = <T extends Record<string, unknown>>(
   operations: Record<keyof T, () => Promise<T[keyof T]>>,
-  config: LoadingStateConfig = {},
-) => {
+  _config: LoadingStateConfig = {},
+): AsyncOperationState<T> => {
   const [states, setStates] = useState<Record<keyof T, LoadingState>>(() =>
     Object.keys(operations).reduce(
       (acc, key) => ({ ...acc, [key]: "idle" }),
@@ -188,7 +188,7 @@ export const useMultipleAsyncOperations = <T extends Record<string, any>>(
 
 // Utility for creating loading states with Supabase
 export const createSupabaseLoader = <T>(
-  query: () => Promise<{ data: T | null; error: any }>,
+  query: () => Promise<{ data: T | null; error: unknown }>,
 ) => {
   return async (): Promise<T> => {
     const { data, error } = await query();
@@ -217,7 +217,7 @@ export interface PaginatedState<T> {
 
 export const usePaginatedData = <T>(
   loadPage: (page: number) => Promise<{ items: T[]; hasMore: boolean }>,
-  pageSize: number = 20,
+  _pageSize: number = 20,
 ): PaginatedState<T> => {
   const [items, setItems] = useState<T[]>([]);
   const [loading, setLoading] = useState(false);

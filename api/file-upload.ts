@@ -142,7 +142,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Generate secure filename
-    const _fileExtension =
+    const fileExtension =
       file.originalFilename?.split(".").pop()?.toLowerCase() || "bin";
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 8);
@@ -223,12 +223,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       bucket,
       message: "File uploaded successfully",
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Unexpected error in file-upload:", error);
     return res.status(500).json({
       success: false,
       error: "An unexpected error occurred during file upload",
-      details: error.message,
+      details: error instanceof Error ? error.message : String(error),
     });
   }
 }
