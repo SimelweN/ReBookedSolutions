@@ -22,6 +22,7 @@ import RegisterPage from "./pages/Register";
 import AdminPage from "./pages/Admin";
 
 // Lazy load other pages
+const Dashboard = React.lazy(() => import("./pages/Dashboard"));
 const BookListing = React.lazy(() => import("./pages/BookListing"));
 const BookDetails = React.lazy(() => import("./pages/BookDetails"));
 const Profile = React.lazy(() => import("./pages/Profile"));
