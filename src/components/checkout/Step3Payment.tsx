@@ -62,6 +62,41 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
         authenticated: !!authCheck.session,
       });
 
+      // Debug mode: Test payment initialization with simplified data
+      const debugMode = import.meta.env.DEV && false; // Set to true for debugging
+
+      if (debugMode) {
+        console.log("🔍 DEBUG MODE: Testing payment initialization directly");
+
+        const simplePaymentRequest = {
+          order_id: "test-order-" + Date.now(),
+          email: authCheck.session.user?.email,
+          amount: orderSummary.total_price,
+          currency: "ZAR",
+          callback_url: `${window.location.origin}/checkout/success`,
+          metadata: {
+            debug: true,
+            book_title: orderSummary.book.title,
+            buyer_id: userId,
+          },
+        };
+
+        console.log("🔍 DEBUG: Testing payment with:", simplePaymentRequest);
+
+        const { data: testData, error: testError } =
+          await supabase.functions.invoke("initialize-paystack-payment", {
+            body: simplePaymentRequest,
+          });
+
+        console.log("🔍 DEBUG: Payment test result:", { testData, testError });
+
+        if (testError) {
+          throw new Error(`DEBUG: Payment test failed - ${testError.message}`);
+        }
+
+        return; // Exit early in debug mode
+      }
+
       // Create order data
       const orderData = {
         book_id: orderSummary.book.id,
