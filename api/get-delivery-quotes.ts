@@ -1,16 +1,5 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3";
-import {
-  wrapFunction,
-  successResponse,
-  errorResponse,
-  safeJsonParse,
-  withTimeout,
-  withRetry,
-} from "../_shared/response-utils.ts";
-
-const requiredEnvVars = ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"];
-const allowedMethods = ["GET", "POST", "OPTIONS"];
+import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { createClient } from "@supabase/supabase-js";
 
 interface Address {
   street?: string;
@@ -96,7 +85,7 @@ const generateQuotes = (
   const quotes: DeliveryQuote[] = [];
 
   // CourierGuy quotes
-  if (Deno.env.get("COURIER_GUY_API_KEY") || true) {
+  if (process.env.COURIER_GUY_API_KEY || true) {
     // Always include for now
     quotes.push({
       provider: "courier-guy",
@@ -127,7 +116,7 @@ const generateQuotes = (
   }
 
   // Fastway quotes
-  if (Deno.env.get("FASTWAY_API_KEY") || true) {
+  if (process.env.FASTWAY_API_KEY || true) {
     // Always include for now
     quotes.push({
       provider: "fastway",
@@ -190,21 +179,25 @@ const generateQuotes = (
   return quotes.sort((a, b) => a.price - b.price);
 };
 
-const handler = async (req: Request): Promise<Response> => {
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-  );
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // CORS headers
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
 
   // Health check for GET requests
   if (req.method === "GET") {
     const apiKeys = {
-      courierGuy: !!Deno.env.get("COURIER_GUY_API_KEY"),
-      fastway: !!Deno.env.get("FASTWAY_API_KEY"),
-      shiplogic: !!Deno.env.get("SHIPLOGIC_API_KEY"),
+      courierGuy: !!process.env.COURIER_GUY_API_KEY,
+      fastway: !!process.env.FASTWAY_API_KEY,
+      shiplogic: !!process.env.SHIPLOGIC_API_KEY,
     };
 
-    return successResponse({
+    return res.status(200).json({
       service: "get-delivery-quotes",
       timestamp: new Date().toISOString(),
       status: "healthy",
@@ -220,91 +213,84 @@ const handler = async (req: Request): Promise<Response> => {
     });
   }
 
-  // Parse request body
-  const { data: requestBody, error: parseError } = await safeJsonParse(req);
-  if (parseError) {
-    return errorResponse("Invalid JSON body", 400, "INVALID_JSON", {
-      error: parseError,
-    });
-  }
-
-  // Handle test requests
-  if (requestBody.test === true || requestBody.action === "test") {
-    const mockQuotes: DeliveryQuote[] = [
-      {
-        provider: "courier-guy",
-        service: "Standard Delivery",
-        price: 85.0,
-        currency: "ZAR",
-        estimated_days: "2-3",
-        tracking_included: true,
-        insurance_included: true,
-        provider_id: "test_cg",
-      },
-      {
-        provider: "fastway",
-        service: "Express Delivery",
-        price: 120.0,
-        currency: "ZAR",
-        estimated_days: "1-2",
-        tracking_included: true,
-        provider_id: "test_fw",
-      },
-      {
-        provider: "postnet",
-        service: "Economy",
-        price: 65.0,
-        currency: "ZAR",
-        estimated_days: "3-5",
-        tracking_included: false,
-        provider_id: "test_pn",
-      },
-    ];
-
-    return successResponse({
-      quotes: mockQuotes,
-      test: true,
-      message: "Test quotes generated successfully",
-    });
-  }
-
-  const { pickup_address, delivery_address, package_details } = requestBody;
-
-  // Validate required fields
-  if (!pickup_address || !delivery_address) {
-    return errorResponse(
-      "Missing required fields: pickup_address and delivery_address are required",
-      400,
-      "REQUIRED_FIELDS_MISSING",
-      { required: ["pickup_address", "delivery_address"] },
-    );
-  }
-
-  // Validate address format
-  if (
-    !pickup_address.city ||
-    !pickup_address.province ||
-    !delivery_address.city ||
-    !delivery_address.province
-  ) {
-    return errorResponse(
-      "Address must include city and province",
-      400,
-      "INVALID_ADDRESS_FORMAT",
-      {
-        pickup_address: {
-          hasCity: !!pickup_address.city,
-          hasProvince: !!pickup_address.province,
-        },
-        delivery_address: {
-          hasCity: !!delivery_address.city,
-          hasProvince: !!delivery_address.province,
-        },
-      },
-    );
+  if (req.method !== "POST") {
+    return res
+      .status(405)
+      .json({ success: false, error: "Method not allowed" });
   }
 
   try {
+    const supabase = createClient(
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    );
+
+    const { pickup_address, delivery_address, package_details, test } =
+      req.body;
+
+    // Handle test requests
+    if (test === true) {
+      const mockQuotes: DeliveryQuote[] = [
+        {
+          provider: "courier-guy",
+          service: "Standard Delivery",
+          price: 85.0,
+          currency: "ZAR",
+          estimated_days: "2-3",
+          tracking_included: true,
+          insurance_included: true,
+          provider_id: "test_cg",
+        },
+        {
+          provider: "fastway",
+          service: "Express Delivery",
+          price: 120.0,
+          currency: "ZAR",
+          estimated_days: "1-2",
+          tracking_included: true,
+          provider_id: "test_fw",
+        },
+        {
+          provider: "postnet",
+          service: "Economy",
+          price: 65.0,
+          currency: "ZAR",
+          estimated_days: "3-5",
+          tracking_included: false,
+          provider_id: "test_pn",
+        },
+      ];
+
+      return res.status(200).json({
+        success: true,
+        quotes: mockQuotes,
+        test: true,
+        message: "Test quotes generated successfully",
+      });
+    }
+
+    // Validate required fields
+    if (!pickup_address || !delivery_address) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "Missing required fields: pickup_address and delivery_address are required",
+      });
+    }
+
+    // Validate address format
+    if (
+      !pickup_address.city ||
+      !pickup_address.province ||
+      !delivery_address.city ||
+      !delivery_address.province
+    ) {
+      return res.status(400).json({
+        success: false,
+        error: "Address must include city and province",
+      });
+    }
+
     // Generate quotes based on addresses and package details
     const quotes = generateQuotes(
       pickup_address,
@@ -313,12 +299,10 @@ const handler = async (req: Request): Promise<Response> => {
     );
 
     if (quotes.length === 0) {
-      return errorResponse(
-        "No delivery options available for this route",
-        404,
-        "NO_QUOTES_AVAILABLE",
-        { pickup_address, delivery_address },
-      );
+      return res.status(404).json({
+        success: false,
+        error: "No delivery options available for this route",
+      });
     }
 
     // Log the quote request (non-blocking)
@@ -341,32 +325,28 @@ const handler = async (req: Request): Promise<Response> => {
         console.warn("Failed to log quote request:", error.message),
       );
 
-    return successResponse(
-      {
-        quotes,
-        route: {
-          from: `${pickup_address.city}, ${pickup_address.province}`,
-          to: `${delivery_address.city}, ${delivery_address.province}`,
-          distance_estimate: `${calculateDistance(pickup_address, delivery_address)}km`,
-        },
-        package_details: package_details || {
-          weight: 1,
-          note: "Default package weight assumed",
-        },
-        pricing_note:
-          "Prices are estimates and may vary based on actual package details and current rates",
+    return res.status(200).json({
+      success: true,
+      quotes,
+      route: {
+        from: `${pickup_address.city}, ${pickup_address.province}`,
+        to: `${delivery_address.city}, ${delivery_address.province}`,
+        distance_estimate: `${calculateDistance(pickup_address, delivery_address)}km`,
       },
-      `Found ${quotes.length} delivery options`,
-    );
-  } catch (error) {
+      package_details: package_details || {
+        weight: 1,
+        note: "Default package weight assumed",
+      },
+      pricing_note:
+        "Prices are estimates and may vary based on actual package details and current rates",
+      message: `Found ${quotes.length} delivery options`,
+    });
+  } catch (error: any) {
     console.error("Error generating delivery quotes:", error);
-    return errorResponse(
-      "Failed to generate delivery quotes",
-      500,
-      "QUOTE_GENERATION_ERROR",
-      { error: error.message },
-    );
+    return res.status(500).json({
+      success: false,
+      error: "Failed to generate delivery quotes",
+      details: error.message,
+    });
   }
-};
-
-serve(wrapFunction(handler, requiredEnvVars, allowedMethods));
+}

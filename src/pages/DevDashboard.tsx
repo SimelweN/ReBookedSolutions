@@ -85,6 +85,10 @@ import ComprehensiveBackendTester from "@/components/test/ComprehensiveBackendTe
 import EnvironmentTester from "@/components/test/EnvironmentTester";
 import FunctionTester from "@/components/admin/FunctionTester";
 import { functionFallback } from "@/services/functionFallbackService";
+import {
+  createGetTableNamesFunction,
+  testGetTableNamesFunction,
+} from "@/utils/createMissingRpcFunctions";
 
 interface TestResult {
   id: string;
@@ -216,42 +220,71 @@ const DevDashboard: React.FC = () => {
 
   const loadDatabaseTables = async () => {
     try {
-      // Get table names by querying information_schema
-      const { data, error } = await supabase.rpc("get_table_names", {});
+      // Test if the get_table_names function exists
+      const testResult = await testGetTableNamesFunction();
 
-      if (error) {
-        // Fallback: try common tables
-        const tables = [
-          "profiles",
-          "books",
-          "orders",
-          "transactions",
-          "order_notifications",
-        ];
-        const existingTables = [];
-
-        for (const table of tables) {
-          try {
-            const { error: tableError } = await supabase
-              .from(table)
-              .select("*")
-              .limit(1);
-            if (!tableError) {
-              existingTables.push({
-                table_name: table,
-                table_schema: "public",
-                table_type: "BASE TABLE",
-              });
-            }
-          } catch (e) {
-            // Table doesn't exist
-          }
+      if (testResult.exists) {
+        // Function exists, use it
+        const { data, error } = await supabase.rpc("get_table_names", {});
+        if (!error) {
+          setDbTables(data || []);
+          return;
         }
-
-        setDbTables(existingTables);
-      } else {
-        setDbTables(data || []);
       }
+
+      // Function doesn't exist or failed, show creation instructions
+      if (testResult.needsCreation) {
+        console.warn("❌ get_table_names RPC function is missing!");
+        console.log("Please create this function in your Supabase SQL Editor:");
+        const creationResult = await createGetTableNamesFunction();
+        console.log(creationResult.sql);
+
+        toast.error(
+          "Database RPC function missing. Check console for SQL to run.",
+        );
+        addTestResult(
+          "Database RPC Function",
+          "failed",
+          "get_table_names function missing. Check console for SQL to create it.",
+        );
+      }
+
+      // Fallback: try common tables
+      const tables = [
+        "profiles",
+        "books",
+        "orders",
+        "transactions",
+        "order_notifications",
+        "banking_details",
+        "banking_subaccounts",
+        "payments",
+        "notifications",
+        "audit_logs",
+        "study_resources",
+        "institutions",
+      ];
+      const existingTables = [];
+
+      for (const table of tables) {
+        try {
+          const { error: tableError } = await supabase
+            .from(table)
+            .select("*")
+            .limit(1);
+          if (!tableError) {
+            existingTables.push({
+              table_name: table,
+              table_schema: "public",
+              table_type: "BASE TABLE",
+            });
+          }
+        } catch (e) {
+          // Table doesn't exist
+        }
+      }
+
+      setDbTables(existingTables);
     } catch (error) {
       console.error("Error loading tables:", error);
       setDbTables([]);

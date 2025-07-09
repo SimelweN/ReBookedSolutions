@@ -98,7 +98,7 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
       }
 
       // Create order data
-      const orderData = {
+      const orderRequest = {
         book_id: orderSummary.book.id,
         seller_id: orderSummary.book.seller_id,
         buyer_id: userId,

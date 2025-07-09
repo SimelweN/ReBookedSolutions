@@ -1,447 +1,419 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3";
+import { serve } from "@std/http/server";
+import { createClient } from "@supabase/supabase-js";
+import {
+  wrapFunction,
+  successResponse,
+  errorResponse,
+  safeJsonParse,
+  withTimeout,
+} from "../_shared/response-utils.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+const requiredEnvVars = ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"];
+const allowedMethods = ["GET", "POST", "OPTIONS"];
 
-// Validate environment variables at startup
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-
-if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-  console.error(
-    "Missing required environment variables: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY",
-  );
+interface SearchParams {
+  query?: string;
+  subject?: string;
+  academic_level?: string;
+  institution_id?: string;
+  category_id?: string;
+  limit?: number;
+  offset?: number;
 }
 
-const supabase = createClient(
-  SUPABASE_URL ?? "",
-  SUPABASE_SERVICE_ROLE_KEY ?? "",
-);
+const handler = async (req: Request): Promise<Response> => {
+  const supabase = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+  );
 
-serve(async (req: Request) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const url = new URL(req.url);
+  const segments = url.pathname.split("/").filter(Boolean);
+  const action = segments[segments.length - 1];
 
-  try {
-    if (req.method === "POST") {
-      const body = await req.json();
-      const { action } = body;
-
-      switch (action) {
-        case "health":
-          return new Response(
-            JSON.stringify({
-              success: true,
-              message: "Study Resources API is healthy",
-              timestamp: new Date().toISOString(),
-              version: "1.0.0",
-              environment: {
-                supabaseConfigured:
-                  !!SUPABASE_URL && !!SUPABASE_SERVICE_ROLE_KEY,
-              },
-            }),
-            { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-          );
-        case "search":
-          return await handleSearchFromBody(body);
-        case "create":
-          return await handleCreate(req);
-        case "update":
-          return await handleUpdate(req);
-        case "delete":
-          return await handleDelete(req);
-        case "get":
-          return await handleGetFromBody(body);
-        case "rate":
-          return await handleRate(req);
-        case "verify":
-          return await handleVerify(req);
-        default:
-          return new Response(
-            JSON.stringify({
-              error:
-                "Invalid action. Supported actions: health, search, create, update, delete, get, rate, verify",
-            }),
-            {
-              status: 400,
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            },
-          );
-      }
-    } else {
-      const url = new URL(req.url);
-      const segments = url.pathname.split("/").filter(Boolean);
-      const action = segments[segments.length - 1];
-
-      switch (action) {
-        case "search":
-          return await handleSearch(req);
-        case "get":
-          return await handleGet(req);
-        default:
-          return new Response(JSON.stringify({ error: "Invalid action" }), {
-            status: 404,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-      }
-    }
-  } catch (error) {
-    console.error("Error in study-resources-api:", error);
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error: error.message || "Internal server error",
+  // Handle GET requests (health check and simple queries)
+  if (req.method === "GET") {
+    if (action === "health" || url.pathname.endsWith("/study-resources-api")) {
+      return successResponse({
+        service: "study-resources-api",
         timestamp: new Date().toISOString(),
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
-  }
-});
+        status: "healthy",
+        version: "2.0.0",
+        endpoints: [
+          "GET /health - Health check",
+          "POST /search - Search resources",
+          "POST /create - Create resource",
+          "POST /get - Get resource by ID",
+          "GET /search?query=... - Simple search",
+        ],
+      });
+    }
 
-async function handleSearch(req: Request) {
-  const url = new URL(req.url);
-  const query = url.searchParams.get("q") || "";
-  const category = url.searchParams.get("category");
-  const university = url.searchParams.get("university");
-  const limit = parseInt(url.searchParams.get("limit") || "20");
-  const offset = parseInt(url.searchParams.get("offset") || "0");
+    // Handle simple GET search
+    if (action === "search") {
+      const query = url.searchParams.get("query") || "";
+      const subject = url.searchParams.get("subject");
+      const limit = parseInt(url.searchParams.get("limit") || "10");
 
-  let dbQuery = supabase
-    .from("books")
-    .select(
-      `
-      *,
-      profiles!books_seller_id_fkey(full_name, email)
-    `,
-    )
-    .eq("sold", false);
+      return await handleSimpleSearch(supabase, { query, subject, limit });
+    }
 
-  if (query) {
-    dbQuery = dbQuery.or(
-      `title.ilike.%${query}%,author.ilike.%${query}%,description.ilike.%${query}%`,
-    );
+    return errorResponse("Invalid GET endpoint", 404, "ENDPOINT_NOT_FOUND");
   }
 
-  if (category) {
-    dbQuery = dbQuery.eq("category", category);
-  }
-
-  if (university) {
-    dbQuery = dbQuery.eq("university", university);
-  }
-
-  const { data: books, error } = await dbQuery
-    .order("created_at", { ascending: false })
-    .range(offset, offset + limit - 1);
-
-  if (error) {
-    throw error;
-  }
-
-  const { count: total } = await supabase
-    .from("books")
-    .select("*", { count: "exact", head: true })
-    .eq("sold", false);
-
-  return new Response(
-    JSON.stringify({
-      success: true,
-      books,
-      total,
-      hasMore: (total || 0) > offset + limit,
-    }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-  );
-}
-
-async function handleCreate(req: Request) {
-  const bookData = await req.json();
-
-  const { data: book, error } = await supabase
-    .from("books")
-    .insert(bookData)
-    .select()
-    .single();
-
-  if (error) {
-    throw error;
-  }
-
-  await supabase.from("audit_logs").insert({
-    action: "book_created",
-    table_name: "books",
-    record_id: book.id,
-    user_id: book.seller_id,
-    new_values: bookData,
-  });
-
-  return new Response(
-    JSON.stringify({
-      success: true,
-      book,
-      message: "Book created successfully",
-    }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-  );
-}
-
-async function handleUpdate(req: Request) {
-  const { bookId, updates } = await req.json();
-
-  const { data: book, error } = await supabase
-    .from("books")
-    .update(updates)
-    .eq("id", bookId)
-    .select()
-    .single();
-
-  if (error) {
-    throw error;
-  }
-
-  await supabase.from("audit_logs").insert({
-    action: "book_updated",
-    table_name: "books",
-    record_id: bookId,
-    user_id: book.seller_id,
-    new_values: updates,
-  });
-
-  return new Response(
-    JSON.stringify({
-      success: true,
-      book,
-      message: "Book updated successfully",
-    }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-  );
-}
-
-async function handleDelete(req: Request) {
-  const { bookId, userId } = await req.json();
-
-  const { error } = await supabase
-    .from("books")
-    .delete()
-    .eq("id", bookId)
-    .eq("seller_id", userId);
-
-  if (error) {
-    throw error;
-  }
-
-  await supabase.from("audit_logs").insert({
-    action: "book_deleted",
-    table_name: "books",
-    record_id: bookId,
-    user_id: userId,
-    new_values: { deleted: true },
-  });
-
-  return new Response(
-    JSON.stringify({
-      success: true,
-      message: "Book deleted successfully",
-    }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-  );
-}
-
-async function handleGet(req: Request) {
-  const url = new URL(req.url);
-  const bookId = url.searchParams.get("bookId");
-
-  if (!bookId) {
-    return new Response(JSON.stringify({ error: "Book ID is required" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+  // Handle POST requests
+  const { data: requestBody, error: parseError } = await safeJsonParse(req);
+  if (parseError) {
+    return errorResponse("Invalid JSON body", 400, "INVALID_JSON", {
+      error: parseError,
     });
   }
 
-  const { data: book, error } = await supabase
-    .from("books")
-    .select(
-      `
-      *,
-      profiles!books_seller_id_fkey(full_name, email, pickup_address)
-    `,
-    )
-    .eq("id", bookId)
-    .single();
+  const { action: postAction } = requestBody;
 
-  if (error) {
-    throw error;
+  switch (postAction) {
+    case "health":
+      return successResponse(
+        {
+          service: "study-resources-api",
+          timestamp: new Date().toISOString(),
+          status: "healthy",
+          database: await testDatabaseConnection(supabase),
+        },
+        "Study Resources API is healthy",
+      );
+
+    case "search":
+      return await handleSearch(supabase, requestBody);
+
+    case "create":
+      return await handleCreate(supabase, requestBody);
+
+    case "get":
+      return await handleGet(supabase, requestBody);
+
+    case "rate":
+      return await handleRate(supabase, requestBody);
+
+    case "verify":
+      return await handleVerify(supabase, requestBody);
+
+    default:
+      return errorResponse(
+        `Invalid action: ${postAction}. Supported actions: health, search, create, get, rate, verify`,
+        400,
+        "INVALID_ACTION",
+        {
+          supportedActions: [
+            "health",
+            "search",
+            "create",
+            "get",
+            "rate",
+            "verify",
+          ],
+        },
+      );
   }
+};
 
-  return new Response(
-    JSON.stringify({
-      success: true,
-      book,
-    }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-  );
-}
-
-async function handleRate(req: Request) {
-  const { bookId, userId, rating, review } = await req.json();
-
-  // This would typically insert into a ratings table
-  // For now, we'll log it as an audit entry
-  await supabase.from("audit_logs").insert({
-    action: "book_rated",
-    table_name: "books",
-    record_id: bookId,
-    user_id: userId,
-    new_values: { rating, review },
-  });
-
-  return new Response(
-    JSON.stringify({
-      success: true,
-      message: "Rating submitted successfully",
-    }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-  );
-}
-
-async function handleVerify(req: Request) {
-  const { bookId, adminId, verified } = await req.json();
-
-  const { data: book, error } = await supabase
-    .from("books")
-    .update({ verified: verified })
-    .eq("id", bookId)
-    .select()
-    .single();
-
-  if (error) {
-    throw error;
+const testDatabaseConnection = async (supabase: any): Promise<string> => {
+  try {
+    const { error } = await supabase
+      .from("study_resources")
+      .select("count")
+      .limit(1);
+    return error ? "error" : "healthy";
+  } catch {
+    return "error";
   }
+};
 
-  await supabase.from("audit_logs").insert({
-    action: "book_verified",
-    table_name: "books",
-    record_id: bookId,
-    user_id: adminId,
-    new_values: { verified },
-  });
-
-  return new Response(
-    JSON.stringify({
-      success: true,
-      book,
-      message: `Book ${verified ? "verified" : "unverified"} successfully`,
-    }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-  );
-}
-
-async function handleSearchFromBody(body: any) {
-  const { query = "", category, university, limit = 20, offset = 0 } = body;
-
-  // Mock study resources data for health checks
-  const mockResources = [
-    {
-      id: "1",
-      title: "Advanced Mathematics Textbook",
-      subject: "mathematics",
-      type: "textbook",
-      difficulty: "advanced",
-      description: "Comprehensive mathematics textbook",
-      rating: 4.5,
-    },
-    {
-      id: "2",
-      title: "Physics Study Guide",
-      subject: "physics",
-      type: "study_guide",
-      difficulty: "intermediate",
-      description: "Physics study guide covering mechanics",
-      rating: 4.2,
-    },
-    {
-      id: "3",
-      title: "Chemistry Lab Manual",
-      subject: "chemistry",
-      type: "lab_manual",
-      difficulty: "beginner",
-      description: "Laboratory manual for chemistry",
-      rating: 4.0,
-    },
-  ];
-
-  const filteredResources = query
-    ? mockResources.filter(
-        (r) =>
-          r.title.toLowerCase().includes(query.toLowerCase()) ||
-          r.subject.toLowerCase().includes(query.toLowerCase()) ||
-          r.description.toLowerCase().includes(query.toLowerCase()),
+const handleSimpleSearch = async (
+  supabase: any,
+  params: SearchParams,
+): Promise<Response> => {
+  try {
+    let query = supabase
+      .from("study_resources")
+      .select(
+        `
+        id,
+        title,
+        description,
+        resource_type,
+        subject,
+        academic_level,
+        file_url,
+        tags,
+        created_at,
+        study_resource_categories(name),
+        institutions(name, abbreviation)
+      `,
       )
-    : mockResources;
+      .eq("is_active", true);
 
-  return new Response(
-    JSON.stringify({
-      success: true,
-      data: filteredResources,
-      count: filteredResources.length,
-    }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-  );
-}
+    if (params.query) {
+      query = query.or(
+        `title.ilike.%${params.query}%,description.ilike.%${params.query}%,subject.ilike.%${params.query}%`,
+      );
+    }
 
-async function handleGetFromBody(body: any) {
-  const { id } = body;
+    if (params.subject) {
+      query = query.eq("subject", params.subject);
+    }
 
-  const mockResources = [
-    {
-      id: "1",
-      title: "Advanced Mathematics Textbook",
-      subject: "mathematics",
-      type: "textbook",
-      difficulty: "advanced",
-      description: "Comprehensive mathematics textbook",
-      rating: 4.5,
-    },
-    {
-      id: "2",
-      title: "Physics Study Guide",
-      subject: "physics",
-      type: "study_guide",
-      difficulty: "intermediate",
-      description: "Physics study guide covering mechanics",
-      rating: 4.2,
-    },
-    {
-      id: "3",
-      title: "Chemistry Lab Manual",
-      subject: "chemistry",
-      type: "lab_manual",
-      difficulty: "beginner",
-      description: "Laboratory manual for chemistry",
-      rating: 4.0,
-    },
-  ];
+    const { data, error } = await query
+      .order("created_at", { ascending: false })
+      .limit(params.limit || 10);
 
-  const resource = mockResources.find((r) => r.id === id);
-  if (!resource) {
-    return new Response(
-      JSON.stringify({ success: false, error: "Resource not found" }),
+    if (error) {
+      return errorResponse("Database query failed", 500, "DATABASE_ERROR", {
+        error: error.message,
+      });
+    }
+
+    return successResponse(
       {
-        status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        resources: data || [],
+        total: data?.length || 0,
+        query: params,
+      },
+      `Found ${data?.length || 0} resources`,
+    );
+  } catch (error) {
+    return errorResponse("Search failed", 500, "SEARCH_ERROR", {
+      error: error.message,
+    });
+  }
+};
+
+const handleSearch = async (supabase: any, body: any): Promise<Response> => {
+  const {
+    query = "",
+    subject,
+    academic_level,
+    institution_id,
+    category_id,
+    limit = 20,
+    offset = 0,
+  } = body;
+
+  try {
+    let dbQuery = supabase
+      .from("study_resources")
+      .select(
+        `
+        id,
+        title,
+        description,
+        resource_type,
+        subject,
+        academic_level,
+        file_url,
+        file_size,
+        file_type,
+        tags,
+        created_at,
+        study_resource_categories(id, name),
+        institutions(id, name, abbreviation),
+        created_by
+      `,
+      )
+      .eq("is_active", true);
+
+    // Apply filters
+    if (query) {
+      dbQuery = dbQuery.or(
+        `title.ilike.%${query}%,description.ilike.%${query}%,subject.ilike.%${query}%,tags.cs.{${query}}`,
+      );
+    }
+
+    if (subject) {
+      dbQuery = dbQuery.eq("subject", subject);
+    }
+
+    if (academic_level) {
+      dbQuery = dbQuery.eq("academic_level", academic_level);
+    }
+
+    if (institution_id) {
+      dbQuery = dbQuery.eq("institution_id", institution_id);
+    }
+
+    if (category_id) {
+      dbQuery = dbQuery.eq("category_id", category_id);
+    }
+
+    const { data, error } = await dbQuery
+      .order("created_at", { ascending: false })
+      .range(offset, offset + limit - 1);
+
+    if (error) {
+      return errorResponse("Database query failed", 500, "DATABASE_ERROR", {
+        error: error.message,
+      });
+    }
+
+    // Get total count for pagination
+    const { count, error: countError } = await supabase
+      .from("study_resources")
+      .select("id", { count: "exact", head: true })
+      .eq("is_active", true);
+
+    return successResponse(
+      {
+        resources: data || [],
+        pagination: {
+          total: count || 0,
+          limit,
+          offset,
+          hasMore: (count || 0) > offset + limit,
+        },
+        filters: {
+          query,
+          subject,
+          academic_level,
+          institution_id,
+          category_id,
+        },
+      },
+      `Found ${data?.length || 0} resources`,
+    );
+  } catch (error) {
+    return errorResponse("Search failed", 500, "SEARCH_ERROR", {
+      error: error.message,
+    });
+  }
+};
+
+const handleCreate = async (supabase: any, body: any): Promise<Response> => {
+  const {
+    title,
+    description,
+    resource_type,
+    subject,
+    academic_level,
+    category_id,
+    institution_id,
+    file_url,
+    file_size,
+    file_type,
+    tags,
+    created_by,
+  } = body;
+
+  // Validate required fields
+  if (!title || !description || !resource_type || !file_url || !created_by) {
+    return errorResponse(
+      "Missing required fields: title, description, resource_type, file_url, created_by",
+      400,
+      "REQUIRED_FIELDS_MISSING",
+      {
+        required: [
+          "title",
+          "description",
+          "resource_type",
+          "file_url",
+          "created_by",
+        ],
       },
     );
   }
 
-  return new Response(JSON.stringify({ success: true, data: resource }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
+  try {
+    const { data, error } = await supabase
+      .from("study_resources")
+      .insert({
+        title,
+        description,
+        resource_type,
+        subject,
+        academic_level,
+        category_id,
+        institution_id,
+        file_url,
+        file_size,
+        file_type,
+        tags,
+        created_by,
+        is_active: true,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      return errorResponse("Failed to create resource", 500, "CREATE_ERROR", {
+        error: error.message,
+      });
+    }
+
+    return successResponse(data, "Resource created successfully");
+  } catch (error) {
+    return errorResponse("Create operation failed", 500, "CREATE_FAILED", {
+      error: error.message,
+    });
+  }
+};
+
+const handleGet = async (supabase: any, body: any): Promise<Response> => {
+  const { id, resource_id } = body;
+  const resourceId = id || resource_id;
+
+  if (!resourceId) {
+    return errorResponse("Resource ID is required", 400, "ID_MISSING");
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("study_resources")
+      .select(
+        `
+        *,
+        study_resource_categories(id, name, description),
+        institutions(id, name, abbreviation, province),
+        profiles!created_by(id, full_name)
+      `,
+      )
+      .eq("id", resourceId)
+      .eq("is_active", true)
+      .single();
+
+    if (error) {
+      if (error.code === "PGRST116") {
+        return errorResponse("Resource not found", 404, "RESOURCE_NOT_FOUND");
+      }
+      return errorResponse("Database query failed", 500, "DATABASE_ERROR", {
+        error: error.message,
+      });
+    }
+
+    return successResponse(data, "Resource retrieved successfully");
+  } catch (error) {
+    return errorResponse("Get operation failed", 500, "GET_FAILED", {
+      error: error.message,
+    });
+  }
+};
+
+const handleRate = async (supabase: any, body: any): Promise<Response> => {
+  // This would implement resource rating functionality
+  return successResponse(
+    {
+      message: "Rating functionality not yet implemented",
+    },
+    "Rating endpoint placeholder",
+  );
+};
+
+const handleVerify = async (supabase: any, body: any): Promise<Response> => {
+  // This would implement resource verification functionality
+  return successResponse(
+    {
+      message: "Verification functionality not yet implemented",
+    },
+    "Verification endpoint placeholder",
+  );
+};
+
+serve(wrapFunction(handler, requiredEnvVars, allowedMethods));

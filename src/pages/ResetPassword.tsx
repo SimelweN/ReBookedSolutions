@@ -244,6 +244,7 @@ const ResetPassword = () => {
                       className="pl-10 pr-10"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      autoComplete="new-password"
                       required
                     />
                     <button
@@ -288,6 +289,7 @@ const ResetPassword = () => {
                       className="pl-10 pr-10"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
+                      autoComplete="new-password"
                       required
                     />
                     <button
