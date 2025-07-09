@@ -1,44 +1,31 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-serve(async (req: Request) => {
+serve(async (req) => {
+  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    if (req.method !== "POST") {
-      return new Response(
-        JSON.stringify({ success: false, error: "Method not allowed" }),
-        {
-          status: 405,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
-    }
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    );
 
-    let requestBody;
-    try {
-      requestBody = await req.json();
-    } catch {
-      return new Response(
-        JSON.stringify({ success: false, error: "Invalid JSON body" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
-    }
-
-    const { action, orderId, sellerId } = requestBody;
+    // Only call req.json() ONCE
+    const body = await req.json();
+    console.log("Received body:", body);
 
     // Handle health check
-    if (action === "health") {
+    if (body.action === "health") {
       return new Response(
         JSON.stringify({
           success: true,
@@ -46,9 +33,14 @@ serve(async (req: Request) => {
           timestamp: new Date().toISOString(),
           version: "1.0.0",
         }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
+
+    const { orderId, sellerId } = body;
 
     if (!orderId || !sellerId) {
       return new Response(
@@ -67,27 +59,33 @@ serve(async (req: Request) => {
     const payoutAmount = 90.0; // Simulated amount
     const reference = `PAYOUT_${orderId}_${Date.now()}`;
 
+    const payout = {
+      order_id: orderId,
+      seller_id: sellerId,
+      amount: payoutAmount,
+      reference: reference,
+      status: "completed",
+      processed_at: new Date().toISOString(),
+    };
+
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Payout processed successfully (simulated)",
-        payout: {
-          order_id: orderId,
-          seller_id: sellerId,
-          amount: payoutAmount,
-          reference: reference,
-          status: "completed",
-          processed_at: new Date().toISOString(),
-        },
+        message: "Payout processed successfully",
+        payout: payout,
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   } catch (error) {
-    console.error("Error in pay-seller:", error);
+    console.error("Edge Function Error:", error);
+
     return new Response(
       JSON.stringify({
-        success: false,
-        error: error.message || "Internal server error",
+        error: "Function crashed",
+        details: error.message || "Unknown error",
       }),
       {
         status: 500,
