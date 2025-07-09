@@ -85,7 +85,11 @@ const generateQuotes = (
   const quotes: DeliveryQuote[] = [];
 
   // CourierGuy quotes
-  if (process.env.COURIER_GUY_API_KEY || true) {
+  if (
+    process.env.COURIER_GUY_API_KEY ||
+    !process.env.NODE_ENV ||
+    process.env.NODE_ENV === "development"
+  ) {
     // Always include for now
     quotes.push({
       provider: "courier-guy",
@@ -116,7 +120,11 @@ const generateQuotes = (
   }
 
   // Fastway quotes
-  if (process.env.FASTWAY_API_KEY || true) {
+  if (
+    process.env.FASTWAY_API_KEY ||
+    !process.env.NODE_ENV ||
+    process.env.NODE_ENV === "development"
+  ) {
     // Always include for now
     quotes.push({
       provider: "fastway",
