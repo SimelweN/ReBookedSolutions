@@ -416,13 +416,18 @@ serve(async (req) => {
     const emailData = {
       buyer_email: {
         to: payment.order.buyer.email,
-        template: "payment_confirmed",
+        template: "payment_confirmed_with_receipt",
         data: {
           recipient_name: payment.order.buyer.full_name,
           book_title: payment.order.book.title,
           amount: payment.amount,
           order_id: payment.order_id,
           reference,
+          receipt_id: receiptId,
+          receipt_url: receiptId
+            ? `${Deno.env.get("SUPABASE_URL")}/functions/v1/generate-receipt-pdf?receipt_id=${receiptId}`
+            : null,
+          transaction_id: transaction.id,
         },
       },
       seller_email: {
@@ -434,6 +439,7 @@ serve(async (req) => {
           amount: payment.amount,
           order_id: payment.order_id,
           buyer_name: payment.order.buyer.full_name,
+          receipt_id: receiptId,
         },
       },
     };
