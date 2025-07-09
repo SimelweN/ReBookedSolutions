@@ -132,13 +132,7 @@ export const logNetworkError = (
 ) => {
   const status = networkStatus || getNetworkStatus();
 
-  console.error(`[Network Error - ${context}]:`, {
-    message: error instanceof Error ? error.message : String(error),
-    type: error instanceof Error ? error.constructor.name : typeof error,
-    networkStatus: status,
-    timestamp: new Date().toISOString(),
-    userAgent: navigator.userAgent,
-  });
+  // Network error logged
 };
 
 /**
@@ -173,14 +167,14 @@ export const createNetworkMonitor = (
 
   const handleOnline = () => {
     currentStatus = getNetworkStatus();
-    console.log("[Network Monitor] Connection restored:", currentStatus);
+    // Connection restored
     onOnline?.();
     onConnectionChange?.(currentStatus);
   };
 
   const handleOffline = () => {
     currentStatus = getNetworkStatus();
-    console.log("[Network Monitor] Connection lost:", currentStatus);
+    // Connection lost
     onOffline?.();
     onConnectionChange?.(currentStatus);
   };
@@ -189,7 +183,7 @@ export const createNetworkMonitor = (
     const newStatus = getNetworkStatus();
     if (JSON.stringify(newStatus) !== JSON.stringify(currentStatus)) {
       currentStatus = newStatus;
-      console.log("[Network Monitor] Connection changed:", currentStatus);
+      // Connection changed
       onConnectionChange?.(currentStatus);
     }
   };
@@ -198,7 +192,11 @@ export const createNetworkMonitor = (
   window.addEventListener("offline", handleOffline);
 
   // Monitor connection changes if available
-  const nav = navigator as any;
+  const nav = navigator as unknown as {
+    connection?: {
+      addEventListener: (event: string, listener: () => void) => void;
+    };
+  };
   if (nav.connection) {
     nav.connection.addEventListener("change", handleConnectionChange);
   }
