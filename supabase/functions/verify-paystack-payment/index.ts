@@ -1,62 +1,46 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const supabase = createClient(
-  Deno.env.get("SUPABASE_URL") ?? "",
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-);
-
-const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
-
-serve(async (req: Request) => {
+serve(async (req) => {
+  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    if (req.method !== "POST") {
-      return new Response(
-        JSON.stringify({ success: false, error: "Method not allowed" }),
-        {
-          status: 405,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
-    }
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    );
 
-    let requestBody;
-    try {
-      requestBody = await req.json();
-    } catch {
-      return new Response(
-        JSON.stringify({ success: false, error: "Invalid JSON body" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
-    }
-
-    const { action, reference } = requestBody;
+    // Only call req.json() ONCE
+    const body = await req.json();
+    console.log("Received body:", body);
 
     // Handle health check
-    if (action === "health") {
+    if (body.action === "health") {
       return new Response(
         JSON.stringify({
           success: true,
-          message: "Verify Paystack payment function is healthy",
+          message: "Verify payment function is healthy",
           timestamp: new Date().toISOString(),
           version: "1.0.0",
         }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
+
+    const { reference } = body;
 
     if (!reference) {
       return new Response(
@@ -70,6 +54,8 @@ serve(async (req: Request) => {
         },
       );
     }
+
+    const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
 
     // For testing without Paystack API key
     if (!PAYSTACK_SECRET_KEY) {
@@ -90,7 +76,10 @@ serve(async (req: Request) => {
             },
           },
         }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -125,10 +114,14 @@ serve(async (req: Request) => {
       return new Response(
         JSON.stringify({
           success: false,
+          verified: false,
           status: transaction?.status || "unknown",
           message: "Payment was not successful",
         }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -139,14 +132,18 @@ serve(async (req: Request) => {
         transaction: transaction,
         message: "Payment verified successfully",
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   } catch (error) {
-    console.error("Error in verify-paystack-payment:", error);
+    console.error("Edge Function Error:", error);
+
     return new Response(
       JSON.stringify({
-        success: false,
-        error: error.message || "Internal server error",
+        error: "Function crashed",
+        details: error.message || "Unknown error",
       }),
       {
         status: 500,
