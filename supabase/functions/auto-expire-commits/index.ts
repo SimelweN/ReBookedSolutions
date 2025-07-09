@@ -57,7 +57,7 @@ serve(async (req: Request) => {
           .update({
             status: "cancelled",
             cancelled_at: new Date().toISOString(),
-            cancellation_reason: "Seller failed to commit within 7 days",
+            cancellation_reason: "Seller failed to commit within 48 hours",
           })
           .eq("id", order.id);
 
