@@ -148,10 +148,20 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
       console.log("Creating order with data:", createOrderRequest);
 
       // Create the order first
-      const { data: orderData, error: orderError } =
-        await supabase.functions.invoke("create-order", {
+      console.log("📦 Calling create-order function...");
+
+      let orderInvokeResult;
+      try {
+        orderInvokeResult = await supabase.functions.invoke("create-order", {
           body: createOrderRequest,
         });
+        console.log("📎 Raw create-order response:", orderInvokeResult);
+      } catch (invokeError) {
+        console.error("🚫 Function invoke failed:", invokeError);
+        throw new Error(`Function call failed: ${invokeError.message}`);
+      }
+
+      const { data: orderData, error: orderError } = orderInvokeResult;
 
       if (orderError) {
         console.error("Order creation error details:", {
