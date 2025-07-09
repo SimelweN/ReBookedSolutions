@@ -106,7 +106,16 @@ serve(async (req: Request) => {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Courier Guy API error:", data);
+      console.error(`Courier Guy API error ${response.status}:`, data);
+
+      if (response.status === 429) {
+        console.warn("Courier Guy rate limit exceeded, using fallback");
+      } else if (response.status === 401) {
+        console.error("Courier Guy authentication failed - check API key");
+      } else if (response.status >= 500) {
+        console.error("Courier Guy server error - temporary issue");
+      }
+
       // Return fallback quote on API error
       return new Response(
         JSON.stringify({
