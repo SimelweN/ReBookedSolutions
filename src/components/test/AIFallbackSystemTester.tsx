@@ -50,6 +50,15 @@ interface TestResult {
 }
 
 const AIFallbackSystemTester = () => {
+  // Legacy component - redirecting to EnhancedAIFallbackTester
+  return <EnhancedAIFallbackTester />;
+};
+
+// Import the enhanced version
+import EnhancedAIFallbackTester from "./EnhancedAIFallbackTester";
+
+// Keep original component for backward compatibility
+const OriginalAIFallbackSystemTester = () => {
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [progress, setProgress] = useState(0);
