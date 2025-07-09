@@ -35,7 +35,20 @@ serve(async (req: Request) => {
       );
     }
 
-    const { orderId, sellerId } = requestBody;
+    const { action, orderId, sellerId } = requestBody;
+
+    // Handle health check
+    if (action === "health") {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Pay seller function is healthy",
+          timestamp: new Date().toISOString(),
+          version: "1.0.0",
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     if (!orderId || !sellerId) {
       return new Response(
