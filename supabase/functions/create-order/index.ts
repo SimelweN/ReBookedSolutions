@@ -5,28 +5,23 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
-  "Content-Type": "application/json",
 };
 
-const supabase = createClient(
-  Deno.env.get("SUPABASE_URL") ?? "",
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-);
-
 serve(async (req: Request) => {
+  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log("Create order request:", req.method);
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    );
 
-    if (req.method !== "POST") {
-      return new Response(JSON.stringify({ error: "Method not allowed" }), {
-        status: 405,
-        headers: corsHeaders,
-      });
-    }
+    // Only call req.json() ONCE
+    const body = await req.json();
+    console.log("Received body:", body);
 
     const {
       bookId,
@@ -39,15 +34,18 @@ serve(async (req: Request) => {
       deliveryData,
       paystackReference,
       paystackSubaccount,
-    } = await req.json();
+    } = body;
 
     // Validate required fields
     if (!bookId || !buyerEmail || !sellerId || !amount || !paystackReference) {
       return new Response(
-        JSON.stringify({ error: "Missing required fields" }),
+        JSON.stringify({
+          success: false,
+          error: "Missing required fields",
+        }),
         {
-          status: 400,
-          headers: corsHeaders,
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         },
       );
     }
@@ -60,18 +58,27 @@ serve(async (req: Request) => {
       .single();
 
     if (bookError || !book) {
-      return new Response(JSON.stringify({ error: "Book not found" }), {
-        status: 404,
-        headers: corsHeaders,
-      });
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Book not found",
+        }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
     }
 
     if (book.sold) {
       return new Response(
-        JSON.stringify({ error: "Book is no longer available" }),
+        JSON.stringify({
+          success: false,
+          error: "Book is no longer available",
+        }),
         {
-          status: 400,
-          headers: corsHeaders,
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         },
       );
     }
@@ -156,18 +163,23 @@ serve(async (req: Request) => {
         order: order,
         message: "Order created successfully",
       }),
-      { headers: corsHeaders },
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   } catch (error) {
-    console.error("Error in create-order:", error);
+    console.error("Edge Function Error:", error);
+
     return new Response(
       JSON.stringify({
-        error: "Internal Server Error",
-        details: error?.message || "Unknown error",
+        success: false,
+        error: "Function crashed",
+        details: error.message || "Unknown error",
       }),
       {
         status: 500,
-        headers: corsHeaders,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       },
     );
   }
