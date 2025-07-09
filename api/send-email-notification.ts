@@ -5,7 +5,7 @@ interface EmailRequest {
   to: string;
   subject: string;
   template?: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   htmlContent?: string;
   textContent?: string;
   priority?: "high" | "normal" | "low";
@@ -19,7 +19,7 @@ const validateEmail = (email: string): boolean => {
 
 const generateEmailFromTemplate = (
   template: string,
-  data: Record<string, any>,
+  data: Record<string, unknown>,
 ) => {
   const templates = {
     welcome: {
@@ -285,7 +285,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Try providers in sequence
-    let result: any = null;
+    let result: {
+      success: boolean;
+      provider?: string;
+      messageId?: string;
+      message?: string;
+      error?: string;
+    } | null = null;
     let lastError = "";
 
     // Try Sender first
@@ -325,8 +331,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           message: result.message,
         });
       }
-    } catch (error: any) {
-      lastError = error.message;
+    } catch (error: unknown) {
+      lastError = error instanceof Error ? error.message : String(error);
       console.warn("Sender failed:", lastError);
     }
 
@@ -347,8 +353,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           message: result.message,
         });
       }
-    } catch (error: any) {
-      lastError = error.message;
+    } catch (error: unknown) {
+      lastError = error instanceof Error ? error.message : String(error);
       console.warn("Resend failed:", lastError);
     }
 
@@ -359,12 +365,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       lastError,
       attemptedProviders: ["sender", "resend"],
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Unexpected error in send-email-notification:", error);
     return res.status(500).json({
       success: false,
       error: "An unexpected error occurred while sending email",
-      details: error.message,
+      details: error instanceof Error ? error.message : String(error),
     });
   }
 }
