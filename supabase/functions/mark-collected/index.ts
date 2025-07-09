@@ -95,7 +95,7 @@ serve(async (req) => {
 
     const collectionTime = new Date().toISOString();
 
-    // Update order status
+    // Update order status and release payment hold
     const { error: updateError } = await supabaseClient
       .from("orders")
       .update({
@@ -104,6 +104,7 @@ serve(async (req) => {
         collection_notes: notes,
         collection_location: location_coords,
         collected_at: collectionTime,
+        payment_held: false, // Release payment hold - seller can now be paid
         updated_at: collectionTime,
       })
       .eq("id", order_id);
