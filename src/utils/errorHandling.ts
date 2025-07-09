@@ -279,7 +279,7 @@ export const handleFormError = (
 
 // Helper for handling API responses
 export const handleApiResponse = <T>(
-  response: { data?: T; error?: any },
+  response: { data?: T; error?: unknown },
   context?: ErrorContext,
 ): T | null => {
   if (response.error) {
@@ -291,7 +291,10 @@ export const handleApiResponse = <T>(
 };
 
 // Error boundary error handler
-export const handleBoundaryError = (error: Error, errorInfo: any): void => {
+export const handleBoundaryError = (
+  error: Error,
+  errorInfo: Record<string, unknown>,
+): void => {
   const handledError: HandledError = {
     message: `React Error Boundary: ${error.message}`,
     code: "BOUNDARY_ERROR",
