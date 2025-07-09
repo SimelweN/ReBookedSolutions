@@ -467,7 +467,7 @@ const EdgeFunctionsTester = () => {
       const result = await Promise.race([testPromise, timeoutPromise]);
       const duration = Date.now() - startTime;
 
-            if (result.error) {
+      if (result.error) {
         const errorMsg = result.error.message || "Unknown error";
 
         // Only treat deployment/not found errors as deployment failures
@@ -490,7 +490,7 @@ const EdgeFunctionsTester = () => {
           updateFunctionStatus(
             func.id,
             "failed",
-            `Function error: ${errorMsg.substring(0, 100)}${errorMsg.length > 100 ? '...' : ''}`,
+            `Function error: ${errorMsg.substring(0, 100)}${errorMsg.length > 100 ? "..." : ""}`,
             duration,
             result.error,
           );
@@ -499,17 +499,21 @@ const EdgeFunctionsTester = () => {
         // Check if the response data indicates success or failure
         const responseData = result.data;
 
-        if (responseData && typeof responseData === 'object') {
+        if (responseData && typeof responseData === "object") {
           // Check for explicit success/error indicators in response
           if (responseData.success === false || responseData.error) {
             updateFunctionStatus(
               func.id,
               "failed",
-              `Function returned error: ${responseData.error || responseData.message || 'Unknown error'}`,
+              `Function returned error: ${responseData.error || responseData.message || "Unknown error"}`,
               duration,
               responseData,
             );
-          } else if (responseData.success === true || responseData.message || responseData.data) {
+          } else if (
+            responseData.success === true ||
+            responseData.message ||
+            responseData.data
+          ) {
             updateFunctionStatus(
               func.id,
               "success",
@@ -528,6 +532,15 @@ const EdgeFunctionsTester = () => {
             );
           }
         } else {
+          updateFunctionStatus(
+            func.id,
+            "success",
+            "Function healthy and responsive",
+            duration,
+            result.data,
+          );
+        }
+      } else {
         updateFunctionStatus(
           func.id,
           "success",
