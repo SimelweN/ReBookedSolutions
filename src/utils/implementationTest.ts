@@ -45,7 +45,7 @@ export const testImplementation = async () => {
 
     // 3. Test address format - check if profiles have proper address structure
     // Testing address format
-    const { data: profileData, error: profileError } = await supabase
+    const { data: _profileData, error: profileError } = await supabase
       .from("profiles")
       .select("id, pickup_address, shipping_address")
       .not("pickup_address", "is", null)
