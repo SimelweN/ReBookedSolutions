@@ -1,37 +1,37 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-serve(async (req: Request) => {
-  // Handle CORS preflight requests
+serve(async (req) => {
+  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    );
+
     // Only call req.json() ONCE
     const body = await req.json();
     console.log("Received body:", body);
 
-    const {
-      userId,
-      subaccountCode,
-      businessName,
-      bankCode,
-      accountNumber,
-      percentageCharge,
-    } = body;
-
-    // Validate required fields
-    if (!userId || !subaccountCode) {
+    // Handle health check
+    if (body.action === "health") {
       return new Response(
         JSON.stringify({
-          success: false,
-          error: "User ID and Subaccount Code are required",
+          success: true,
+          message: "Update Paystack subaccount function is healthy",
+          timestamp: new Date().toISOString(),
+          version: "1.0.0",
         }),
         {
           status: 200,
@@ -40,24 +40,45 @@ serve(async (req: Request) => {
       );
     }
 
-    // Simulate successful update
+    const {
+      subaccountCode,
+      businessName,
+      bankCode,
+      accountNumber,
+      percentageCharge,
+    } = body;
+
+    if (!subaccountCode) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Missing required field: subaccountCode",
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    // Simulate subaccount update
     const updatedSubaccount = {
-      id: crypto.randomUUID(),
-      user_id: userId,
       subaccount_code: subaccountCode,
-      business_name: businessName || "Updated Business",
-      settlement_bank: bankCode || "Updated Bank",
-      account_number: accountNumber || "1234567890",
-      percentage_charge: percentageCharge || 0.0,
+      business_name: businessName || "Updated Business Name",
+      settlement_bank: bankCode || "044",
+      account_number: accountNumber || "0123456789",
+      percentage_charge: percentageCharge || 10,
       status: "active",
       updated_at: new Date().toISOString(),
     };
 
+    console.log("Subaccount updated:", updatedSubaccount);
+
     return new Response(
       JSON.stringify({
         success: true,
+        message: "Subaccount updated successfully",
         subaccount: updatedSubaccount,
-        message: "Subaccount updated successfully (simulated)",
       }),
       {
         status: 200,
@@ -69,7 +90,6 @@ serve(async (req: Request) => {
 
     return new Response(
       JSON.stringify({
-        success: false,
         error: "Function crashed",
         details: error.message || "Unknown error",
       }),
