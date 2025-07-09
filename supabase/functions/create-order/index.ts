@@ -23,6 +23,19 @@ serve(async (req: Request) => {
     const body = await req.json();
     console.log("Received body:", body);
 
+    // Handle health check
+    if (body.action === "health") {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Create order function is healthy",
+          timestamp: new Date().toISOString(),
+          version: "1.0.0",
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
     const {
       bookId,
       buyerId,
