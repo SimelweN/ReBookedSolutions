@@ -300,7 +300,7 @@ export function createFallbackAutocomplete(inputElement: HTMLInputElement) {
  */
 export async function initializeAddressAutocomplete(
   inputElement: HTMLInputElement,
-  onPlaceSelected?: (place: any) => void,
+  onPlaceSelected?: (place: unknown) => void,
 ) {
   const config = validateMapsConfig();
 
@@ -348,6 +348,6 @@ export async function initializeAddressAutocomplete(
 // Extend window interface for TypeScript
 declare global {
   interface Window {
-    google: any;
+    google: unknown;
   }
 }
