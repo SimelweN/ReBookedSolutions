@@ -6,7 +6,7 @@ export interface ErrorContext {
   component?: string;
   action?: string;
   userId?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface HandledError {
@@ -21,7 +21,7 @@ export interface HandledError {
 // Error classification
 export const classifyError = (
   error: unknown,
-  context?: ErrorContext,
+  _context?: ErrorContext,
 ): HandledError => {
   // Handle different error types
   if (error instanceof Error) {
@@ -279,7 +279,7 @@ export const handleFormError = (
 
 // Helper for handling API responses
 export const handleApiResponse = <T>(
-  response: { data?: T; error?: any },
+  response: { data?: T; error?: unknown },
   context?: ErrorContext,
 ): T | null => {
   if (response.error) {
@@ -291,7 +291,10 @@ export const handleApiResponse = <T>(
 };
 
 // Error boundary error handler
-export const handleBoundaryError = (error: Error, errorInfo: any): void => {
+export const handleBoundaryError = (
+  error: Error,
+  errorInfo: Record<string, unknown>,
+): void => {
   const handledError: HandledError = {
     message: `React Error Boundary: ${error.message}`,
     code: "BOUNDARY_ERROR",

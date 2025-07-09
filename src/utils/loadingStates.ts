@@ -269,7 +269,7 @@ export const usePaginatedData = <T>(
   // Initial load
   useEffect(() => {
     refresh();
-  }, []);
+  }, [refresh]);
 
   return {
     items,

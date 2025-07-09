@@ -5,7 +5,7 @@ import {
   COMPREHENSIVE_COURSES,
 } from "@/constants/universities/comprehensive-course-database";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/complete-26-universities";
-import { APSSubject, Degree, Faculty, University } from "@/types/university";
+import { APSSubject } from "@/types/university";
 
 /**
  * Enhanced validation utilities addressing critical data integrity issues
