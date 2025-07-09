@@ -1,104 +1,153 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-serve(async (req) => {
-  // Handle CORS preflight
-  if (req.method === "OPTIONS") {
+const supabase = createClient(
+  Deno.env.get('SUPABASE_URL') ?? '',
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+);
+
+serve(async (req: Request) => {
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    );
-
-    // Only call req.json() ONCE
-    const body = await req.json();
-    console.log("Received body:", body);
-
-    // Handle health check
-    if (body.action === "health") {
+    if (req.method !== 'POST') {
       return new Response(
-        JSON.stringify({
-          success: true,
-          message: "Process book purchase function is healthy",
-          timestamp: new Date().toISOString(),
-          version: "1.0.0",
-        }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+        JSON.stringify({ error: 'Method not allowed' }),
+        { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    let {
+    const {
       bookId,
       buyerId,
-      sellerId,
-      amount,
-      paymentReference,
+      buyerEmail,
       deliveryOption,
-    } = body;
+      shippingAddress,
+      callbackUrl
+    } = await req.json();
 
-    // Provide default test values if missing (for testing purposes)
-    if (!bookId || !buyerId || !sellerId || !amount || !paymentReference) {
-      if (!bookId) bookId = `test-book-${Date.now()}`;
-      if (!buyerId) buyerId = `test-buyer-${Date.now()}`;
-      if (!sellerId) sellerId = `test-seller-${Date.now()}`;
-      if (!amount) amount = 100.0;
-      if (!paymentReference) paymentReference = `test-ref-${Date.now()}`;
+    if (!bookId || !buyerEmail) {
+      return new Response(
+        JSON.stringify({ error: 'Missing required fields: bookId, buyerEmail' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    // Simulate processing the book purchase
-    const purchase = {
-      id: crypto.randomUUID(),
-      book_id: bookId,
-      buyer_id: buyerId,
-      seller_id: sellerId,
-      amount: amount,
-      payment_reference: paymentReference,
-      delivery_option: deliveryOption || "pickup",
-      status: "processing",
-      processed_at: new Date().toISOString(),
-      expected_completion: new Date(
-        Date.now() + 2 * 24 * 60 * 60 * 1000,
-      ).toISOString(), // 2 days
-    };
+    // Get book details and check availability
+    const { data: book, error: bookError } = await supabase
+      .from('books')
+      .select(`
+        *,
+        profiles!books_seller_id_fkey(id, full_name, email, subaccount_code)
+      `)
+      .eq('id', bookId)
+      .single();
 
-    console.log("Book purchase processed:", purchase);
+    if (bookError || !book) {
+      return new Response(
+        JSON.stringify({ error: 'Book not found' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (book.sold) {
+      return new Response(
+        JSON.stringify({ error: 'Book is no longer available' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Prevent self-purchase
+    if (book.seller_id === buyerId) {
+      return new Response(
+        JSON.stringify({ error: 'You cannot purchase your own book' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Calculate total amount (book price + delivery if applicable)
+    let totalAmount = book.price;
+    let deliveryFee = 0;
+
+    if (deliveryOption && deliveryOption !== 'self_collection') {
+      // Add delivery fee if not self collection
+      deliveryFee = deliveryOption.price || 0;
+      totalAmount += deliveryFee;
+    }
+
+    // Initialize payment with Paystack
+    const paymentResponse = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/initialize-paystack-payment`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: buyerEmail,
+        amount: totalAmount,
+        bookId: bookId,
+        sellerId: book.seller_id,
+        deliveryOption: deliveryOption,
+        shippingAddress: shippingAddress,
+        callbackUrl: callbackUrl
+      })
+    });
+
+    if (!paymentResponse.ok) {
+      const error = await paymentResponse.json();
+      throw new Error(error.error || 'Failed to initialize payment');
+    }
+
+    const paymentData = await paymentResponse.json();
+
+    // Log the purchase attempt
+    await supabase.from('audit_logs').insert({
+      action: 'book_purchase_initiated',
+      table_name: 'books',
+      record_id: bookId,
+      user_id: buyerId,
+      new_values: {
+        book_title: book.title,
+        amount: totalAmount,
+        delivery_option: deliveryOption?.service || 'self_collection',
+        payment_reference: paymentData.data.reference
+      }
+    });
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Book purchase processed successfully",
-        purchase: purchase,
+        book: {
+          id: book.id,
+          title: book.title,
+          author: book.author,
+          price: book.price,
+          image_url: book.image_url
+        },
+        seller: {
+          id: book.profiles.id,
+          name: book.profiles.full_name
+        },
+        payment: paymentData.data,
+        total_amount: totalAmount,
+        delivery_fee: deliveryFee
       }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
-  } catch (error) {
-    console.error("Edge Function Error:", error);
 
+  } catch (error) {
+    console.error('Error in process-book-purchase:', error);
     return new Response(
-      JSON.stringify({
-        error: "Function crashed",
-        details: error.message || "Unknown error",
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
+      JSON.stringify({ error: error.message }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });

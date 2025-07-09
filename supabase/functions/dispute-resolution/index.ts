@@ -1,101 +1,57 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-serve(async (req) => {
-  // Handle CORS preflight
-  if (req.method === "OPTIONS") {
+serve(async (req: Request) => {
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    );
-
-    // Only call req.json() ONCE
-    const body = await req.json();
-    console.log("Received body:", body);
-
-    // Handle health check
-    if (body.action === "health") {
+    if (req.method !== 'POST') {
       return new Response(
-        JSON.stringify({
-          success: true,
-          message: "Dispute resolution function is healthy",
-          timestamp: new Date().toISOString(),
-          version: "1.0.0",
-        }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+        JSON.stringify({ success: false, error: 'Method not allowed' }),
+        { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const { action, disputeId, orderId, reason, resolution } = body;
-
-    // Process dispute based on action
-    let result;
-    switch (action) {
-      case "create":
-        result = {
-          id: crypto.randomUUID(),
-          order_id: orderId,
-          reason: reason || "Not specified",
-          status: "open",
-          created_at: new Date().toISOString(),
-        };
-        break;
-
-      case "resolve":
-        result = {
-          id: disputeId || crypto.randomUUID(),
-          status: "resolved",
-          resolution: resolution || "Dispute resolved successfully",
-          resolved_at: new Date().toISOString(),
-        };
-        break;
-
-      default:
-        result = {
-          id: disputeId || crypto.randomUUID(),
-          status: "processed",
-          action: action || "updated",
-          processed_at: new Date().toISOString(),
-        };
+    let requestBody;
+    try {
+      requestBody = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid JSON body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
+
+    const { action, disputeId } = requestBody;
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: `Dispute ${action || "processed"} successfully`,
-        dispute: result,
+        message: `Dispute ${action || 'processed'} successfully (simulated)`,
+        dispute: {
+          id: disputeId || crypto.randomUUID(),
+          status: 'resolved',
+          action: action || 'created',
+          processed_at: new Date().toISOString()
+        }
       }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
-  } catch (error) {
-    console.error("Edge Function Error:", error);
 
+  } catch (error) {
+    console.error('Error in dispute-resolution:', error);
     return new Response(
-      JSON.stringify({
-        error: "Function crashed",
-        details: error.message || "Unknown error",
+      JSON.stringify({ 
+        success: false, 
+        error: error.message || 'Internal server error' 
       }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });

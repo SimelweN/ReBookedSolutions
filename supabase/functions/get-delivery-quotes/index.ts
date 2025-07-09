@@ -1,258 +1,139 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import {
-  createRobustFunction,
-  createHealthResponse,
-  validateRequired,
-  callExternalAPI,
-  createFallbackResponse,
-  sanitizeInput,
-  createAuditLog,
-} from "../_shared/utilities.ts";
-import { createSuccessResponse, createErrorResponse } from "../_shared/cors.ts";
 
-const FUNCTION_NAME = "get-delivery-quotes";
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
-serve(
-  createRobustFunction(FUNCTION_NAME, async (req, supabase) => {
-    const body = await req.json();
-    console.log(`[${FUNCTION_NAME}] Received request:`, {
-      ...body,
-      timestamp: new Date().toISOString(),
+serve(async (req: Request) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    if (req.method !== 'POST') {
+      return new Response(
+        JSON.stringify({ error: 'Method not allowed' }),
+        { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { fromAddress, toAddress, parcel } = await req.json();
+
+    if (!fromAddress || !toAddress) {
+      return new Response(
+        JSON.stringify({ error: 'Missing required address information' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const parcelData = {
+      length: parcel?.length || 20,
+      width: parcel?.width || 15,
+      height: parcel?.height || 5,
+      weight: parcel?.weight || 0.5
+    };
+
+    // Get quotes from multiple providers
+    const quotePromises = [
+      getQuote('courier-guy', fromAddress, toAddress, parcelData),
+      getQuote('fastway', fromAddress, toAddress, parcelData)
+    ];
+
+    const results = await Promise.allSettled(quotePromises);
+    
+    const allQuotes: any[] = [];
+    const providers: string[] = [];
+
+    results.forEach((result, index) => {
+      if (result.status === 'fulfilled' && result.value.success) {
+        allQuotes.push(...result.value.quotes);
+        providers.push(result.value.provider);
+      }
     });
 
-    // Handle health check
-    if (body.action === "health") {
-      return createHealthResponse(FUNCTION_NAME);
-    }
-
-    // Sanitize input data
-    const sanitizedBody = sanitizeInput(body);
-    let { fromAddress, toAddress, parcel } = sanitizedBody;
-
-    // Provide graceful defaults for testing/fallback
-    if (!fromAddress || !toAddress || !parcel) {
-      console.log(
-        `[${FUNCTION_NAME}] Using fallback data for missing parameters`,
-      );
-
-      fromAddress = fromAddress || {
-        streetAddress: "123 Test Street",
-        city: "Cape Town",
-        postalCode: "8001",
-        province: "Western Cape",
-      };
-
-      toAddress = toAddress || {
-        streetAddress: "456 Example Road",
-        city: "Johannesburg",
-        postalCode: "2000",
-        province: "Gauteng",
-      };
-
-      parcel = parcel || {
-        weight: 1,
-        length: 20,
-        width: 15,
-        height: 5,
-      };
-    }
-
-    try {
-      // Attempt to get real quotes from external services
-      const externalQuotes = await getExternalQuotes(
-        fromAddress,
-        toAddress,
-        parcel,
-      );
-
-      if (externalQuotes.success && externalQuotes.data?.length > 0) {
-        const deliveryQuotes = {
-          from: fromAddress,
-          to: toAddress,
-          parcel: parcel,
-          quotes: externalQuotes.data,
-          quote_count: externalQuotes.data.length,
-          generated_at: new Date().toISOString(),
-          source: "external_apis",
-        };
-
-        // Log successful quote generation
-        await createAuditLog(
-          supabase,
-          "delivery_quotes_requested",
-          "delivery_quotes",
-          crypto.randomUUID(),
-          undefined,
-          { fromAddress, toAddress, parcel },
-          deliveryQuotes,
-          FUNCTION_NAME,
-        );
-
-        console.log(
-          `[${FUNCTION_NAME}] Successfully generated external quotes:`,
-          deliveryQuotes,
-        );
-        return createSuccessResponse({
-          message: "Delivery quotes retrieved successfully",
-          data: deliveryQuotes,
-        });
-      }
-
-      // Fallback to local quotes if external services fail
-      console.warn(
-        `[${FUNCTION_NAME}] External services failed, using fallback quotes`,
-      );
-      return createFallbackQuotes(
-        fromAddress,
-        toAddress,
-        parcel,
-        externalQuotes.error,
-      );
-    } catch (error) {
-      console.error(`[${FUNCTION_NAME}] Error generating quotes:`, error);
-      return createFallbackQuotes(fromAddress, toAddress, parcel, error);
-    }
-  }),
-);
-
-// External API integration with resilience
-async function getExternalQuotes(
-  fromAddress: any,
-  toAddress: any,
-  parcel: any,
-): Promise<{ success: boolean; data?: any[]; error?: any }> {
-  const quotes: any[] = [];
-
-  // Courier Guy API call
-  try {
-    const courierGuyResult = await callExternalAPI(
-      "https://api.courierguy.co.za/v1/quotes",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Deno.env.get("VITE_COURIER_GUY_API_KEY")}`,
-        },
-        body: JSON.stringify({
-          from: fromAddress,
-          to: toAddress,
-          parcel: parcel,
-        }),
-      },
-      8000, // 8 second timeout
-      2, // 2 retries
-    );
-
-    if (courierGuyResult.success && courierGuyResult.data?.quotes) {
-      quotes.push(
-        ...courierGuyResult.data.quotes.map((q: any) => ({
-          ...q,
-          provider: "Courier Guy",
-          tracking_included: true,
-        })),
-      );
-    }
-  } catch (error) {
-    console.warn("Courier Guy API failed:", error.message);
-  }
-
-  // Fastway API call
-  try {
-    const fastwayResult = await callExternalAPI(
-      "https://api.fastway.co.za/v1/quotes",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Deno.env.get("VITE_FASTWAY_API_KEY")}`,
-        },
-        body: JSON.stringify({
-          from: fromAddress,
-          to: toAddress,
-          parcel: parcel,
-        }),
-      },
-      8000, // 8 second timeout
-      2, // 2 retries
-    );
-
-    if (fastwayResult.success && fastwayResult.data?.quotes) {
-      quotes.push(
-        ...fastwayResult.data.quotes.map((q: any) => ({
-          ...q,
-          provider: "Fastway",
-          tracking_included: true,
-        })),
-      );
-    }
-  } catch (error) {
-    console.warn("Fastway API failed:", error.message);
-  }
-
-  // Return quotes if we have any, otherwise fallback
-  if (quotes.length > 0) {
-    return { success: true, data: quotes };
-  }
-
-  return { success: false, error: "All external quote services unavailable" };
-}
-
-// Fallback quotes with graceful degradation
-function createFallbackQuotes(
-  fromAddress: any,
-  toAddress: any,
-  parcel: any,
-  originalError: any,
-): Response {
-  const fallbackQuotes = [
-    {
-      provider: "Self Collection",
-      service: "Collect from Seller",
+    // Add self-collection option
+    allQuotes.push({
+      service: 'Self Collection',
       price: 0,
-      currency: "ZAR",
-      estimated_days: "0",
-      service_code: "SELF",
-      tracking_included: false,
-      fallback: true,
-    },
-    {
-      provider: "Standard Delivery",
-      service: "Local Courier",
-      price: 75.0,
-      currency: "ZAR",
-      estimated_days: "2-3",
-      service_code: "STD",
-      tracking_included: true,
-      fallback: true,
-    },
-    {
-      provider: "Express Delivery",
-      service: "Priority Courier",
-      price: 120.0,
-      currency: "ZAR",
-      estimated_days: "1-2",
-      service_code: "EXP",
-      tracking_included: true,
-      fallback: true,
-    },
-  ];
+      currency: 'ZAR',
+      estimated_days: 'Immediate',
+      service_code: 'SELF',
+      provider: 'self'
+    });
 
-  const deliveryQuotes = {
-    from: fromAddress,
-    to: toAddress,
-    parcel: parcel,
-    quotes: fallbackQuotes,
-    quote_count: fallbackQuotes.length,
-    generated_at: new Date().toISOString(),
-    source: "fallback",
-  };
+    // Sort by price
+    allQuotes.sort((a, b) => a.price - b.price);
 
-  return createFallbackResponse(
-    originalError,
-    {
-      message: "Delivery quotes retrieved with fallback data",
-      data: deliveryQuotes,
-    },
-    "External delivery services are temporarily unavailable. Showing standard rates.",
-  );
+    return new Response(
+      JSON.stringify({
+        success: true,
+        quotes: allQuotes,
+        providers: [...providers, 'self'],
+        total_quotes: allQuotes.length
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+
+  } catch (error) {
+    console.error('Error in get-delivery-quotes:', error);
+    
+    // Return basic fallback quotes
+    return new Response(
+      JSON.stringify({
+        success: true,
+        quotes: [
+          {
+            service: 'Self Collection',
+            price: 0,
+            currency: 'ZAR',
+            estimated_days: 'Immediate',
+            service_code: 'SELF',
+            provider: 'self'
+          },
+          {
+            service: 'Standard Delivery',
+            price: 75.00,
+            currency: 'ZAR',
+            estimated_days: '2-3',
+            service_code: 'STD',
+            provider: 'fallback'
+          }
+        ],
+        providers: ['self', 'fallback'],
+        fallback: true,
+        error: error.message
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+});
+
+async function getQuote(provider: string, fromAddress: any, toAddress: any, parcel: any) {
+  const functionName = provider === 'courier-guy' ? 'courier-guy-quote' : 'fastway-quote';
+  
+  try {
+    const response = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/${functionName}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        fromAddress,
+        toAddress,
+        parcel
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`${provider} quote failed`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(`Error getting ${provider} quote:`, error);
+    return { success: false, error: error.message };
+  }
 }

@@ -1,207 +1,124 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import {
-  createRobustFunction,
-  createHealthResponse,
-  validateRequired,
-  callExternalAPI,
-  sanitizeInput,
-  createAuditLog,
-  createFallbackResponse,
-} from "../_shared/utilities.ts";
-import { createSuccessResponse, createErrorResponse } from "../_shared/cors.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3";
 
-const FUNCTION_NAME = "verify-paystack-payment";
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
-serve(
-  createRobustFunction(FUNCTION_NAME, async (req, supabase) => {
-    const body = await req.json();
-    console.log(`[${FUNCTION_NAME}] Received request:`, {
-      ...body,
-      timestamp: new Date().toISOString(),
-    });
-
-    // Handle health check
-    if (body.action === "health") {
-      return createHealthResponse(FUNCTION_NAME);
-    }
-
-    // Sanitize input data
-    const sanitizedBody = sanitizeInput(body);
-
-    // Validate required fields
-    const requiredFields = ["reference"];
-    const validation = validateRequired(sanitizedBody, requiredFields);
-
-    if (!validation.isValid) {
-      return createErrorResponse(
-        `Missing required fields: ${validation.missing.join(", ")}`,
-        400,
-        { missingFields: validation.missing },
-        FUNCTION_NAME,
-      );
-    }
-
-    const { reference } = sanitizedBody;
-
-    try {
-      // Get API key - use environment variable
-      const secretKey = Deno.env.get("PAYSTACK_SECRET_KEY");
-
-      if (!secretKey) {
-        console.log(
-          `[${FUNCTION_NAME}] Using fallback verification - API key not configured`,
-        );
-        return createFallbackVerification(reference, "API key not configured");
-      }
-
-      // Call Paystack verification API with proper timeout and retry
-      const result = await callExternalAPI(
-        `https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${secretKey}`,
-            "Content-Type": "application/json",
-          },
-        },
-        15000, // 15 second timeout for verification
-        3, // 3 retries
-      );
-
-      if (result.success && result.data?.status) {
-        const transaction = result.data.data;
-
-        if (!transaction) {
-          console.warn(
-            `[${FUNCTION_NAME}] No transaction data received for reference: ${reference}`,
-          );
-          return createFallbackVerification(
-            reference,
-            "No transaction data from Paystack",
-          );
-        }
-
-        const isSuccessful = transaction.status === "success";
-        const amount = transaction.amount ? transaction.amount / 100 : 0; // Convert from kobo
-
-        // Log verification attempt
-        await createAuditLog(
-          supabase,
-          "payment_verification",
-          "payments",
-          reference,
-          undefined,
-          undefined,
-          {
-            reference,
-            status: transaction.status,
-            amount,
-            customer_email: transaction.customer?.email,
-            verified: isSuccessful,
-            gateway_response: transaction.gateway_response,
-          },
-          FUNCTION_NAME,
-        );
-
-        if (isSuccessful) {
-          console.log(
-            `[${FUNCTION_NAME}] Payment verified successfully: ${reference}`,
-          );
-
-          return createSuccessResponse({
-            verified: true,
-            transaction: {
-              reference: transaction.reference,
-              status: transaction.status,
-              amount,
-              currency: transaction.currency || "NGN",
-              customer: {
-                email: transaction.customer?.email,
-                customer_code: transaction.customer?.customer_code,
-              },
-              metadata: transaction.metadata || {},
-              paid_at: transaction.paid_at,
-              gateway_response: transaction.gateway_response,
-            },
-            message: "Payment verified successfully",
-            source: "api",
-          });
-        } else {
-          console.warn(
-            `[${FUNCTION_NAME}] Payment verification failed - status: ${transaction.status}`,
-          );
-
-          return createSuccessResponse({
-            verified: false,
-            status: transaction.status,
-            gateway_response: transaction.gateway_response,
-            message: `Payment verification failed: ${transaction.gateway_response || "Payment was not successful"}`,
-            source: "api",
-          });
-        }
-      }
-
-      // API failed, return fallback
-      console.warn(
-        `[${FUNCTION_NAME}] Paystack verification API failed, using fallback:`,
-        result.error,
-      );
-      return createFallbackVerification(reference, result.error);
-    } catch (error) {
-      console.error(`[${FUNCTION_NAME}] Unexpected error:`, error);
-
-      // Log error attempt
-      await createAuditLog(
-        supabase,
-        "payment_verification_error",
-        "payments",
-        reference,
-        undefined,
-        undefined,
-        {
-          reference,
-          error_message: error.message,
-        },
-        FUNCTION_NAME,
-      );
-
-      return createFallbackVerification(reference, error);
-    }
-  }),
+const supabase = createClient(
+  Deno.env.get('SUPABASE_URL') ?? '',
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 );
 
-// Fallback verification function with guaranteed success response
-function createFallbackVerification(
-  reference: string,
-  originalError: any,
-): Response {
-  const fallbackTransaction = {
-    reference,
-    status: "success",
-    amount: 10000, // 100.00 in kobo
-    currency: "NGN",
-    customer: {
-      email: "test@example.com",
-      customer_code: "CUS_fallback",
-    },
-    metadata: {
-      book_id: "test-book-id",
-      buyer_id: "test-buyer-id",
-      seller_id: "test-seller-id",
-      fallback: true,
-    },
-    paid_at: new Date().toISOString(),
-    gateway_response: "Approved by fallback system",
-  };
+const PAYSTACK_SECRET_KEY = Deno.env.get('PAYSTACK_SECRET_KEY');
 
-  return createFallbackResponse(
-    originalError,
-    {
-      verified: true,
-      transaction: fallbackTransaction,
-      message: "Payment verification completed with fallback data",
-      source: "fallback",
-    },
-    "Paystack verification service is temporarily unavailable. Using fallback verification.",
-  );
-}
+serve(async (req: Request) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    if (req.method !== 'POST') {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Method not allowed' }),
+        { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    let requestBody;
+    try {
+      requestBody = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid JSON body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { reference } = requestBody;
+
+    if (!reference) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Payment reference is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // For testing without Paystack API key
+    if (!PAYSTACK_SECRET_KEY) {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          verified: true,
+          message: 'Payment verification simulated (no API key)',
+          transaction: {
+            reference: reference,
+            status: 'success',
+            amount: 10000,
+            customer: { email: 'test@example.com' },
+            metadata: {
+              book_id: 'test-book-id',
+              buyer_id: 'test-buyer-id',
+              seller_id: 'test-seller-id'
+            }
+          }
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Verify payment with Paystack
+    const paystackResponse = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
+      headers: {
+        'Authorization': `Bearer ${PAYSTACK_SECRET_KEY}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!paystackResponse.ok) {
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: 'Payment verification failed with Paystack API'
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const paystackData = await paystackResponse.json();
+    const transaction = paystackData.data;
+
+    if (!transaction || transaction.status !== 'success') {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          status: transaction?.status || 'unknown',
+          message: 'Payment was not successful'
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        verified: true,
+        transaction: transaction,
+        message: 'Payment verified successfully'
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+
+  } catch (error) {
+    console.error('Error in verify-paystack-payment:', error);
+    return new Response(
+      JSON.stringify({ 
+        success: false, 
+        error: error.message || 'Internal server error' 
+      }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+});

@@ -1,90 +1,71 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-serve(async (req) => {
-  // Handle CORS preflight
-  if (req.method === "OPTIONS") {
+serve(async (req: Request) => {
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    );
-
-    // Only call req.json() ONCE
-    const body = await req.json();
-    console.log("Received body:", body);
-
-    // Handle health check
-    if (body.action === "health") {
+    if (req.method !== 'POST') {
       return new Response(
-        JSON.stringify({
-          success: true,
-          message: "Pay seller function is healthy",
-          timestamp: new Date().toISOString(),
-          version: "1.0.0",
-        }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+        JSON.stringify({ success: false, error: 'Method not allowed' }),
+        { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    let { orderId, sellerId } = body;
+    let requestBody;
+    try {
+      requestBody = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid JSON body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-    // Provide default test values if missing (for testing purposes)
+    const { orderId, sellerId } = requestBody;
+
     if (!orderId || !sellerId) {
-      if (body.test === true || !orderId) orderId = `test-order-${Date.now()}`;
-      if (body.test === true || !sellerId)
-        sellerId = `test-seller-${Date.now()}`;
+      return new Response(
+        JSON.stringify({ success: false, error: 'Order ID and Seller ID are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // Simulate successful payout processing
-    const payoutAmount = 90.0; // Simulated amount
+    const payoutAmount = 90.00; // Simulated amount
     const reference = `PAYOUT_${orderId}_${Date.now()}`;
-
-    const payout = {
-      order_id: orderId,
-      seller_id: sellerId,
-      amount: payoutAmount,
-      reference: reference,
-      status: "completed",
-      processed_at: new Date().toISOString(),
-    };
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Payout processed successfully",
-        payout: payout,
+        message: 'Payout processed successfully (simulated)',
+        payout: {
+          order_id: orderId,
+          seller_id: sellerId,
+          amount: payoutAmount,
+          reference: reference,
+          status: 'completed',
+          processed_at: new Date().toISOString()
+        }
       }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
-  } catch (error) {
-    console.error("Edge Function Error:", error);
 
+  } catch (error) {
+    console.error('Error in pay-seller:', error);
     return new Response(
-      JSON.stringify({
-        error: "Function crashed",
-        details: error.message || "Unknown error",
+      JSON.stringify({ 
+        success: false, 
+        error: error.message || 'Internal server error' 
       }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });

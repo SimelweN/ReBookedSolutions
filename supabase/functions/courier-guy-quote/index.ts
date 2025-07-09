@@ -1,183 +1,159 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import {
-  createRobustFunction,
-  createHealthResponse,
-  validateRequired,
-  callExternalAPI,
-  sanitizeInput,
-  createFallbackResponse,
-} from "../_shared/utilities.ts";
-import { createSuccessResponse, createErrorResponse } from "../_shared/cors.ts";
 
-const FUNCTION_NAME = "courier-guy-quote";
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
-serve(
-  createRobustFunction(FUNCTION_NAME, async (req, supabase) => {
-    const body = await req.json();
-    console.log(`[${FUNCTION_NAME}] Received request:`, {
-      ...body,
-      timestamp: new Date().toISOString(),
+const COURIER_GUY_API_KEY = Deno.env.get('COURIER_GUY_API_KEY');
+
+serve(async (req: Request) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    if (req.method !== 'POST') {
+      return new Response(
+        JSON.stringify({ error: 'Method not allowed' }),
+        { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { fromAddress, toAddress, parcel } = await req.json();
+
+    if (!fromAddress || !toAddress || !parcel) {
+      return new Response(
+        JSON.stringify({ error: 'Missing required address or parcel information' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Fallback quote for development/testing
+    if (!COURIER_GUY_API_KEY) {
+      console.log('Using fallback Courier Guy quote');
+      return new Response(
+        JSON.stringify({
+          success: true,
+          quotes: [
+            {
+              service: 'Standard Overnight',
+              price: 89.00,
+              currency: 'ZAR',
+              estimated_days: '1-2',
+              service_code: 'ON'
+            },
+            {
+              service: 'Economy',
+              price: 65.00,
+              currency: 'ZAR',
+              estimated_days: '2-3',
+              service_code: 'EC'
+            }
+          ],
+          provider: 'courier-guy'
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Real Courier Guy API integration
+    const quoteData = {
+      collection_address: {
+        street_address: fromAddress.streetAddress,
+        suburb: fromAddress.suburb,
+        city: fromAddress.city,
+        postal_code: fromAddress.postalCode,
+        province: fromAddress.province
+      },
+      delivery_address: {
+        street_address: toAddress.streetAddress,
+        suburb: toAddress.suburb,
+        city: toAddress.city,
+        postal_code: toAddress.postalCode,
+        province: toAddress.province
+      },
+      parcel: {
+        submitted_length_cm: parcel.length || 20,
+        submitted_width_cm: parcel.width || 15,
+        submitted_height_cm: parcel.height || 5,
+        submitted_weight_kg: parcel.weight || 0.5
+      }
+    };
+
+    const response = await fetch('https://api.courierguy.co.za/v1/rates', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${COURIER_GUY_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(quoteData),
     });
 
-    // Handle health check
-    if (body.action === "health") {
-      return createHealthResponse(FUNCTION_NAME);
-    }
+    const data = await response.json();
 
-    // Sanitize input data
-    const sanitizedBody = sanitizeInput(body);
-
-    // Validate required fields
-    const requiredFields = ["fromAddress", "toAddress", "parcel"];
-    const validation = validateRequired(sanitizedBody, requiredFields);
-
-    if (!validation.isValid) {
-      return createErrorResponse(
-        `Missing required fields: ${validation.missing.join(", ")}`,
-        400,
-        { missingFields: validation.missing },
-        FUNCTION_NAME,
+    if (!response.ok) {
+      console.error('Courier Guy API error:', data);
+      // Return fallback quote on API error
+      return new Response(
+        JSON.stringify({
+          success: true,
+          quotes: [
+            {
+              service: 'Standard Overnight',
+              price: 89.00,
+              currency: 'ZAR',
+              estimated_days: '1-2',
+              service_code: 'ON'
+            }
+          ],
+          provider: 'courier-guy',
+          fallback: true
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const { fromAddress, toAddress, parcel } = sanitizedBody;
+    // Transform API response to standard format
+    const quotes = data.rates?.map((rate: any) => ({
+      service: rate.service_name,
+      price: parseFloat(rate.rate),
+      currency: 'ZAR',
+      estimated_days: rate.delivery_time,
+      service_code: rate.service_code
+    })) || [];
 
-    try {
-      // Get API key - use environment variable
-      const apiKey = Deno.env.get("VITE_COURIER_GUY_API_KEY");
+    return new Response(
+      JSON.stringify({
+        success: true,
+        quotes,
+        provider: 'courier-guy'
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
 
-      if (!apiKey) {
-        console.log(
-          `[${FUNCTION_NAME}] Using fallback quotes - API key not configured`,
-        );
-        return createFallbackQuotes(
-          fromAddress,
-          toAddress,
-          parcel,
-          "API key not configured",
-        );
-      }
-
-      // Prepare quote data with proper format
-      const quoteData = {
-        collection_address: {
-          street_address: fromAddress.streetAddress || fromAddress.street || "",
-          suburb: fromAddress.suburb || "",
-          city: fromAddress.city || "",
-          postal_code: fromAddress.postalCode || fromAddress.postcode || "",
-          province: fromAddress.province || fromAddress.state || "",
-        },
-        delivery_address: {
-          street_address: toAddress.streetAddress || toAddress.street || "",
-          suburb: toAddress.suburb || "",
-          city: toAddress.city || "",
-          postal_code: toAddress.postalCode || toAddress.postcode || "",
-          province: toAddress.province || toAddress.state || "",
-        },
-        parcel: {
-          submitted_length_cm: Number(parcel.length) || 20,
-          submitted_width_cm: Number(parcel.width) || 15,
-          submitted_height_cm: Number(parcel.height) || 5,
-          submitted_weight_kg: Number(parcel.weight) || 0.5,
-        },
-      };
-
-      // Call external API with proper timeout and retry
-      const result = await callExternalAPI(
-        "https://api.courierguy.co.za/v1/rates",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(quoteData),
-        },
-        8000, // 8 second timeout
-        2, // 2 retries
-      );
-
-      if (result.success && result.data?.rates) {
-        // Transform API response to standard format
-        const quotes = result.data.rates.map((rate: any) => ({
-          service: rate.service_name || rate.service || "Unknown Service",
-          price: parseFloat(rate.rate) || parseFloat(rate.price) || 0,
-          currency: "ZAR",
-          estimated_days: rate.delivery_time || rate.estimated_days || "2-3",
-          service_code: rate.service_code || "STD",
-          provider: "courier-guy",
-        }));
-
-        console.log(
-          `[${FUNCTION_NAME}] Successfully retrieved ${quotes.length} quotes from API`,
-        );
-
-        return createSuccessResponse({
-          quotes,
-          provider: "courier-guy",
-          source: "api",
-          message: "Courier Guy quotes retrieved successfully",
-        });
-      }
-
-      // API failed, return fallback
-      console.warn(
-        `[${FUNCTION_NAME}] Courier Guy API failed, using fallback quotes:`,
-        result.error,
-      );
-      return createFallbackQuotes(fromAddress, toAddress, parcel, result.error);
-    } catch (error) {
-      console.error(`[${FUNCTION_NAME}] Unexpected error:`, error);
-      return createFallbackQuotes(fromAddress, toAddress, parcel, error);
-    }
-  }),
-);
-
-// Fallback quotes function with guaranteed success response
-function createFallbackQuotes(
-  fromAddress: any,
-  toAddress: any,
-  parcel: any,
-  originalError: any,
-): Response {
-  const fallbackQuotes = [
-    {
-      service: "Standard Overnight",
-      price: 89.0,
-      currency: "ZAR",
-      estimated_days: "1-2",
-      service_code: "ON",
-      provider: "courier-guy",
-      fallback: true,
-    },
-    {
-      service: "Economy Service",
-      price: 65.0,
-      currency: "ZAR",
-      estimated_days: "2-3",
-      service_code: "EC",
-      provider: "courier-guy",
-      fallback: true,
-    },
-    {
-      service: "Express Same Day",
-      price: 150.0,
-      currency: "ZAR",
-      estimated_days: "0-1",
-      service_code: "SD",
-      provider: "courier-guy",
-      fallback: true,
-    },
-  ];
-
-  return createFallbackResponse(
-    originalError,
-    {
-      quotes: fallbackQuotes,
-      provider: "courier-guy",
-      source: "fallback",
-      message: "Courier Guy quotes retrieved with fallback data",
-    },
-    "Courier Guy service is temporarily unavailable. Showing standard rates.",
-  );
-}
+  } catch (error) {
+    console.error('Error in courier-guy-quote:', error);
+    
+    // Return fallback quote on any error
+    return new Response(
+      JSON.stringify({
+        success: true,
+        quotes: [
+          {
+            service: 'Standard Overnight',
+            price: 89.00,
+            currency: 'ZAR',
+            estimated_days: '1-2',
+            service_code: 'ON'
+          }
+        ],
+        provider: 'courier-guy',
+        fallback: true,
+        error: error.message
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+});

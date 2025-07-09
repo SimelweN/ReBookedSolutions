@@ -1,94 +1,73 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-serve(async (req) => {
-  // Handle CORS preflight
-  if (req.method === "OPTIONS") {
+serve(async (req: Request) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    );
-
     // Only call req.json() ONCE
     const body = await req.json();
     console.log("Received body:", body);
 
-    // Handle health check
-    if (body.action === "health") {
-      return new Response(
-        JSON.stringify({
-          success: true,
-          message: "Update Paystack subaccount function is healthy",
-          timestamp: new Date().toISOString(),
-          version: "1.0.0",
-        }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
-    }
-
-    let {
+    const {
+      userId,
       subaccountCode,
       businessName,
       bankCode,
       accountNumber,
-      percentageCharge,
+      percentageCharge
     } = body;
 
-    // Provide default test value if missing (for testing purposes)
-    if (!subaccountCode) {
-      subaccountCode = `test-subaccount-${Date.now()}`;
+    // Validate required fields
+    if (!userId || !subaccountCode) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'User ID and Subaccount Code are required'
+      }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
     }
 
-    // Simulate subaccount update
+    // Simulate successful update
     const updatedSubaccount = {
+      id: crypto.randomUUID(),
+      user_id: userId,
       subaccount_code: subaccountCode,
-      business_name: businessName || "Updated Business Name",
-      settlement_bank: bankCode || "044",
-      account_number: accountNumber || "0123456789",
-      percentage_charge: percentageCharge || 10,
-      status: "active",
-      updated_at: new Date().toISOString(),
+      business_name: businessName || 'Updated Business',
+      settlement_bank: bankCode || 'Updated Bank',
+      account_number: accountNumber || '1234567890',
+      percentage_charge: percentageCharge || 0.00,
+      status: 'active',
+      updated_at: new Date().toISOString()
     };
 
-    console.log("Subaccount updated:", updatedSubaccount);
+    return new Response(JSON.stringify({
+      success: true,
+      subaccount: updatedSubaccount,
+      message: 'Subaccount updated successfully (simulated)'
+    }), {
+      status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: "Subaccount updated successfully",
-        subaccount: updatedSubaccount,
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
   } catch (error) {
     console.error("Edge Function Error:", error);
 
-    return new Response(
-      JSON.stringify({
-        error: "Function crashed",
-        details: error.message || "Unknown error",
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    return new Response(JSON.stringify({
+      success: false,
+      error: "Function crashed",
+      details: error.message || "Unknown error"
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
   }
 });

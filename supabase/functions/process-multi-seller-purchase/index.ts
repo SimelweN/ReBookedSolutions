@@ -1,127 +1,81 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-serve(async (req) => {
-  // Handle CORS preflight
-  if (req.method === "OPTIONS") {
+serve(async (req: Request) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    );
-
     // Only call req.json() ONCE
     const body = await req.json();
     console.log("Received body:", body);
 
-    // Handle health check
-    if (body.action === "health") {
-      return new Response(
-        JSON.stringify({
-          success: true,
-          message: "Process multi-seller purchase function is healthy",
-          timestamp: new Date().toISOString(),
-          version: "1.0.0",
-        }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
-    }
-
-    let {
+    const {
+      cartItems,
       buyerId,
-      items, // Array of {bookId, sellerId, amount}
-      totalAmount,
-      paymentReference,
+      buyerEmail,
+      deliveryOptions,
+      shippingAddress,
+      callbackUrl
     } = body;
 
-    // Provide default test values if missing (for testing purposes)
-    if (
-      !buyerId ||
-      !items ||
-      !Array.isArray(items) ||
-      !totalAmount ||
-      !paymentReference
-    ) {
-      if (!buyerId) buyerId = `test-buyer-${Date.now()}`;
-      if (!items || !Array.isArray(items)) {
-        items = [
-          {
-            bookId: `test-book-1-${Date.now()}`,
-            sellerId: `test-seller-1-${Date.now()}`,
-            amount: 50.0,
-          },
-          {
-            bookId: `test-book-2-${Date.now()}`,
-            sellerId: `test-seller-2-${Date.now()}`,
-            amount: 75.0,
-          },
-        ];
-      }
-      if (!totalAmount) totalAmount = 125.0;
-      if (!paymentReference) paymentReference = `test-multi-ref-${Date.now()}`;
+    // Validate required fields
+    if (!cartItems || !buyerEmail || !Array.isArray(cartItems) || cartItems.length === 0) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Missing required fields or empty cart'
+      }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
     }
 
-    // Simulate processing multi-seller purchase
-    const processedOrders = items.map((item, index) => ({
-      id: crypto.randomUUID(),
-      book_id: item.bookId,
-      buyer_id: buyerId,
-      seller_id: item.sellerId,
-      amount: item.amount,
-      payment_reference: `${paymentReference}_${index + 1}`,
-      status: "processing",
-      order_group: paymentReference,
-      processed_at: new Date().toISOString(),
-    }));
+    // Calculate totals
+    const totalAmount = cartItems.reduce((sum: number, item: any) => sum + (item.price || 0), 0);
+    const totalDeliveryFee = deliveryOptions?.reduce((sum: number, opt: any) => sum + (opt.price || 0), 0) || 0;
+    const grandTotal = totalAmount + totalDeliveryFee;
 
-    const multiPurchase = {
-      group_id: paymentReference,
-      buyer_id: buyerId,
-      total_amount: totalAmount,
-      total_orders: items.length,
-      orders: processedOrders,
-      status: "processing",
-      processed_at: new Date().toISOString(),
+    // Generate unique reference
+    const reference = `RS_MULTI_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+    // Simulate successful payment initialization
+    const paymentData = {
+      authorization_url: `https://checkout.paystack.com/test_${reference}`,
+      access_code: `ACC_${reference}`,
+      reference: reference
     };
 
-    console.log("Multi-seller purchase processed:", multiPurchase);
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: `Multi-seller purchase processed successfully (${items.length} orders)`,
-        multiPurchase: multiPurchase,
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+    return new Response(JSON.stringify({
+      success: true,
+      data: paymentData,
+      summary: {
+        book_count: cartItems.length,
+        total_amount: totalAmount,
+        delivery_fee: totalDeliveryFee,
+        grand_total: grandTotal
       },
-    );
+      message: 'Multi-seller purchase initialized successfully (simulated)'
+    }), {
+      status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+
   } catch (error) {
     console.error("Edge Function Error:", error);
 
-    return new Response(
-      JSON.stringify({
-        error: "Function crashed",
-        details: error.message || "Unknown error",
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    return new Response(JSON.stringify({
+      success: false,
+      error: "Function crashed",
+      details: error.message || "Unknown error"
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
   }
 });
