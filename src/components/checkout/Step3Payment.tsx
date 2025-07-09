@@ -110,7 +110,7 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
         throw new Error(orderError.message || "Failed to create order");
       }
 
-      if (!orderData?.success || !orderData?.orderId) {
+      if (!orderData?.success || !orderData?.order?.id) {
         throw new Error("Failed to create order - no order ID returned");
       }
 
@@ -118,7 +118,7 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
 
       // Step 2: Initialize payment with the created order_id
       const paymentRequest = {
-        order_id: orderData.orderId,
+        order_id: orderData.order.id,
         email: userData.user.email,
         amount: orderSummary.total_price,
         currency: "ZAR",
