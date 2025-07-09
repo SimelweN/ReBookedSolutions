@@ -132,9 +132,26 @@ const FUNCTION_TESTS: FunctionTestConfig[] = [
     category: "delivery",
     description: "Test Fastway quote API",
     testPayload: {
-      pickup_address: { city: "Pretoria", province: "Gauteng" },
-      delivery_address: { city: "Port Elizabeth", province: "Eastern Cape" },
-      weight: 1.0,
+      fromAddress: {
+        streetAddress: "123 Test Street",
+        suburb: "City Center",
+        city: "Pretoria",
+        province: "Gauteng",
+        postalCode: "0001",
+      },
+      toAddress: {
+        streetAddress: "456 Test Avenue",
+        suburb: "Downtown",
+        city: "Port Elizabeth",
+        province: "Eastern Cape",
+        postalCode: "6001",
+      },
+      parcel: {
+        length: 20,
+        width: 15,
+        height: 5,
+        weight: 1.0,
+      },
     },
   },
 
