@@ -78,15 +78,50 @@ const Step3Payment: React.FC<Step3PaymentProps> = ({
         );
       }
 
-      // Prepare payment request
-      const paymentRequest = {
-        email: userData.user.email,
-        amount: orderSummary.total_price * 100, // Convert to kobo
+      // Step 1: Create order first
+      const createOrderRequest = {
         bookId: orderSummary.book.id,
+        buyerId: userId,
+        buyerEmail: userData.user.email,
         sellerId: orderSummary.book.seller_id,
-        sellerSubaccountCode: orderSummary.book.seller_subaccount_code,
-        bookPrice: orderSummary.book_price,
-        deliveryFee: orderSummary.delivery_price,
+        amount: orderSummary.total_price,
+        deliveryOption: orderSummary.delivery.service_name,
+        shippingAddress: orderSummary.buyer_address,
+        deliveryData: {
+          courier: orderSummary.delivery.courier,
+          service_name: orderSummary.delivery.service_name,
+          estimated_days: orderSummary.delivery.estimated_days,
+          price: orderSummary.delivery_price,
+        },
+        paystackReference: `order_${Date.now()}_${userId}`, // Temporary reference
+        paystackSubaccount: orderSummary.book.seller_subaccount_code,
+      };
+
+      console.log("Creating order with data:", createOrderRequest);
+
+      // Create the order first
+      const { data: orderData, error: orderError } =
+        await supabase.functions.invoke("create-order", {
+          body: createOrderRequest,
+        });
+
+      if (orderError) {
+        console.error("Order creation error:", orderError);
+        throw new Error(orderError.message || "Failed to create order");
+      }
+
+      if (!orderData?.success || !orderData?.orderId) {
+        throw new Error("Failed to create order - no order ID returned");
+      }
+
+      console.log("Order created successfully:", orderData);
+
+      // Step 2: Initialize payment with the created order_id
+      const paymentRequest = {
+        order_id: orderData.orderId,
+        email: userData.user.email,
+        amount: orderSummary.total_price,
+        currency: "ZAR",
         callback_url: `${window.location.origin}/checkout/success`,
         metadata: {
           order_data: orderData,
