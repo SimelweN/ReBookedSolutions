@@ -3,7 +3,7 @@
   "functions": {
     "api/**/*.ts": {
       "runtime": "nodejs20.x",
-      "maxDuration": 30
+      "maxDuration": 15
     }
   },
   "buildCommand": "yarn build",
@@ -12,7 +12,7 @@
   "framework": null,
   "rewrites": [
     {
-      "source": "/((?!api|_next|static|favicon.ico|robots.txt|sitemap.xml|ads.txt|sw.js|_headers|_redirects|assets|university-logos|lovable-uploads).*)",
+      "source": "/((?!api|_next|static|favicon.ico|robots.txt|sitemap.xml|ads.txt|sw.js|_headers|_redirects|assets|university-logos|lovable-uploads|offline.html|404.html|placeholder.svg).*)",
       "destination": "/index.html"
     }
   ],
@@ -44,6 +44,15 @@
       ]
     },
     {
+      "source": "/(.*\\.(js|css|png|jpg|jpeg|gif|webp|svg|ico|woff|woff2|ttf|eot))",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=2592000"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {
@@ -57,6 +66,10 @@
         {
           "key": "X-XSS-Protection",
           "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
         }
       ]
     }
