@@ -41,13 +41,12 @@ export const validateEnvironment = () => {
     );
   });
 
-  const missingCritical = critical.filter((key) => {
+    const missingCritical = critical.filter((key) => {
     const value = ENV[key as keyof typeof ENV];
     return (
       !value ||
       value.trim() === "" ||
-      value.includes("demo-") ||
-      value.includes("test_")
+      (IS_PRODUCTION && (value.includes("demo-") || value.includes("test_")))
     );
   });
 
@@ -80,8 +79,8 @@ export const validateEnvironment = () => {
     return !value || value.trim() === "" || value.includes("demo-");
   });
 
-  // Check for demo/placeholder values
-  const hasPlaceholders = Object.entries(ENV).some(
+    // Check for demo/placeholder values (only warn in production)
+  const hasPlaceholders = IS_PRODUCTION && Object.entries(ENV).some(
     ([key, value]) =>
       typeof value === "string" &&
       (value.includes("demo-") ||
@@ -90,7 +89,7 @@ export const validateEnvironment = () => {
         (key.includes("API_KEY") && value.length < 10)),
   );
 
-  if (missing.length > 0 || hasPlaceholders) {
+    if ((missing.length > 0 && IS_PRODUCTION) || hasPlaceholders) {
     const errorMessage = `
 🚨 CONFIGURATION REQUIRED 🚨
 
@@ -136,18 +135,20 @@ OPTION 2: Manual setup
 🔍 Current status: ${ENV.NODE_ENV} environment
     `;
 
-    console.error(errorMessage);
+        console.error(errorMessage);
 
-    if (import.meta.env.PROD) {
+    if (IS_PRODUCTION) {
       console.error(
         `❌ Missing required environment variables: ${missing.join(", ")}`,
       );
       console.error(
         "⚠️ Application may not function correctly without proper configuration",
       );
-    } else {
-      console.warn("⚠️ Environment variables needed for full functionality");
     }
+  } else if (missing.length > 0 && IS_DEVELOPMENT) {
+    console.warn("ℹ️ Development mode: Some environment variables are using demo values");
+    console.warn("📋 To set up real credentials, run: node setup-environment.js");
+  }
   }
 
   if (missing.length === 0) {
