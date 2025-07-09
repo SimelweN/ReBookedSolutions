@@ -759,7 +759,7 @@ const AdminDashboard = () => {
           onValueChange={setSelectedTab}
           className="space-y-6"
         >
-          <TabsList className="grid grid-cols-3 lg:grid-cols-8 w-full bg-white shadow-sm border">
+          <TabsList className="grid grid-cols-3 lg:grid-cols-9 w-full bg-white shadow-sm border">
             <TabsTrigger
               value="overview"
               className="flex items-center space-x-2"
@@ -795,6 +795,13 @@ const AdminDashboard = () => {
             >
               <TestTube className="h-4 w-4" />
               <span>Functions</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="monitor"
+              className="flex items-center space-x-2"
+            >
+              <Activity className="h-4 w-4" />
+              <span>Monitor</span>
             </TabsTrigger>
             <TabsTrigger value="qa" className="flex items-center space-x-2">
               <Shield className="h-4 w-4" />
