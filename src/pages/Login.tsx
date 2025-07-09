@@ -401,6 +401,7 @@ const Login = () => {
                       className="pl-10 h-12 border-gray-300 focus:border-book-500 focus:ring-book-500 rounded-lg"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      autoComplete="current-password"
                       required
                       disabled={isLoading}
                     />
