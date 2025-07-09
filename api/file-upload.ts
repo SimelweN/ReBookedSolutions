@@ -142,7 +142,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Generate secure filename
-    const fileExtension =
+    const _fileExtension =
       file.originalFilename?.split(".").pop()?.toLowerCase() || "bin";
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 8);
