@@ -170,8 +170,8 @@ serve(async (req) => {
 
       // Add split payment if seller has subaccount
       if (order.seller_profile?.paystack_subaccount_code) {
-        // Calculate platform fee (5%)
-        const platformFeeRate = 0.05;
+        // Calculate platform fee (10% as per business requirements)
+        const platformFeeRate = 0.1;
         const platformFee = Math.round(amountInKobo * platformFeeRate);
         const sellerAmount = amountInKobo - platformFee;
 
