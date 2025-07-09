@@ -1210,6 +1210,11 @@ const AdminDashboard = () => {
             <FunctionTester />
           </TabsContent>
 
+          {/* Enhanced Edge Function Monitor Tab */}
+          <TabsContent value="monitor" className="space-y-6">
+            <EdgeFunctionMonitor />
+          </TabsContent>
+
           {/* QA Testing Tab */}
           <TabsContent value="qa" className="space-y-6">
             <QADashboard />
