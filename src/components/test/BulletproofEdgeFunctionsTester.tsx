@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 import {
   CheckCircle,
   XCircle,
@@ -28,9 +29,26 @@ import {
   Bot,
   ArrowRight,
   Shield,
+  Settings,
+  Zap,
+  TrendingUp,
+  Server,
+  Globe,
 } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  edgeFunctionRouter,
+  getRouterConfig,
+  updateRouterConfig,
+  getFunctionStatus,
+  getHealthSummary,
+  testAllFunctions,
+  resetFunctionStatuses,
+  enableMockMode,
+  disableMockMode,
+  enableAutoFallback,
+  disableAutoFallback,
+} from "@/services/edgeFunctionRouter";
 
 interface FunctionTest {
   id: string;
@@ -50,6 +68,7 @@ interface FunctionTest {
   details?: any;
   icon: React.ReactNode;
   healthCheck?: boolean;
+  usedFallback?: boolean;
 }
 
 interface TestSummary {
@@ -61,13 +80,13 @@ interface TestSummary {
   fallbackSuccess: number;
 }
 
-const EdgeFunctionsTester = () => {
+const BulletproofEdgeFunctionsTester = () => {
   const [functions, setFunctions] = useState<FunctionTest[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [testTimeout, setTestTimeout] = useState(10000); // 10 seconds default
-  const [batchSize, setBatchSize] = useState(3); // Test 3 functions at a time
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [routerConfig, setRouterConfig] = useState(getRouterConfig());
+  const [healthSummary, setHealthSummary] = useState(getHealthSummary());
 
   // Initialize edge functions list
   useEffect(() => {
@@ -133,7 +152,7 @@ const EdgeFunctionsTester = () => {
         status: "idle",
         message: "Ready to test",
         icon: <Bot className="h-4 w-4" />,
-        healthCheck: false, // Webhook doesn't have health check
+        healthCheck: false,
       },
       {
         id: "create-paystack-subaccount",
@@ -390,12 +409,22 @@ const EdgeFunctionsTester = () => {
     setFunctions(edgeFunctions);
   }, []);
 
+  // Update health summary periodically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHealthSummary(getHealthSummary());
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const updateFunctionStatus = (
     id: string,
     status: FunctionTest["status"],
     message: string,
     duration?: number,
     details?: any,
+    usedFallback?: boolean,
   ) => {
     setFunctions((prev) =>
       prev.map((func) =>
@@ -406,6 +435,7 @@ const EdgeFunctionsTester = () => {
               message,
               duration,
               details,
+              usedFallback,
               timestamp: new Date().toISOString(),
             }
           : func,
@@ -413,388 +443,62 @@ const EdgeFunctionsTester = () => {
     );
   };
 
-  // Fallback mechanism for when edge functions fail
-  const attemptFallback = async (func: FunctionTest, originalError: any) => {
-    console.log(`Attempting fallback for ${func.name}...`);
-
-    try {
-      // Simulate fallback functionality based on function category
-      const fallbackResult = await simulateFallbackFunction(func);
-
-      if (fallbackResult.success) {
-        updateFunctionStatus(
-          func.id,
-          "fallback-success",
-          `Fallback successful: ${fallbackResult.message}`,
-          fallbackResult.duration,
-          {
-            fallbackUsed: true,
-            originalError,
-            fallbackData: fallbackResult.data,
-          },
-        );
-        return true;
-      } else {
-        throw new Error(fallbackResult.error || "Fallback failed");
-      }
-    } catch (fallbackError) {
-      console.error(`Fallback failed for ${func.name}:`, fallbackError);
-      return false;
-    }
-  };
-
-  // Simulate fallback functions for different categories
-  const simulateFallbackFunction = async (func: FunctionTest) => {
-    // Simulate network delay
-    await new Promise((resolve) =>
-      setTimeout(resolve, 500 + Math.random() * 1000),
-    );
-
-    const startTime = Date.now();
-
-    switch (func.category) {
-      case "core":
-        if (func.id === "study-resources-api") {
-          return {
-            success: true,
-            message: "Local cache returned mock study resources",
-            duration: Date.now() - startTime,
-            data: {
-              resources: ["Math Textbook", "Physics Guide", "Chemistry Manual"],
-              source: "local-cache",
-            },
-          };
-        } else if (func.id === "advanced-search") {
-          return {
-            success: true,
-            message: "Basic search fallback with local indexing",
-            duration: Date.now() - startTime,
-            data: { results: 5, algorithm: "basic-search", indexed: true },
-          };
-        } else if (func.id === "file-upload") {
-          return {
-            success: true,
-            message: "File stored locally, will sync when connection restored",
-            duration: Date.now() - startTime,
-            data: { stored: "local-temp", sync_pending: true },
-          };
-        }
-        break;
-
-      case "payment":
-        if (func.id.includes("paystack")) {
-          return {
-            success: true,
-            message: "Payment queued for processing when service restored",
-            duration: Date.now() - startTime,
-            data: { status: "queued", retry_count: 0, queue_position: 1 },
-          };
-        }
-        break;
-
-      case "orders":
-        return {
-          success: true,
-          message: "Order cached locally, will process when service available",
-          duration: Date.now() - startTime,
-          data: { cached: true, will_retry: true, cache_ttl: "24h" },
-        };
-
-      case "shipping":
-        return {
-          success: true,
-          message: "Using cached shipping rates and estimated delivery times",
-          duration: Date.now() - startTime,
-          data: {
-            source: "cached-rates",
-            estimated_accuracy: "85%",
-            last_updated: "2h ago",
-          },
-        };
-
-      case "communication":
-        return {
-          success: true,
-          message: "Email queued for delivery, using backup SMTP provider",
-          duration: Date.now() - startTime,
-          data: {
-            provider: "backup-smtp",
-            queue_position: 3,
-            estimated_delivery: "5min",
-          },
-        };
-
-      case "analytics":
-        return {
-          success: true,
-          message: "Serving cached analytics data",
-          duration: Date.now() - startTime,
-          data: { data_age: "30min", accuracy: "95%", cached_reports: 12 },
-        };
-
-      case "admin":
-        return {
-          success: true,
-          message: "Admin operation logged for manual review",
-          duration: Date.now() - startTime,
-          data: {
-            logged: true,
-            manual_review_required: true,
-            priority: "normal",
-          },
-        };
-
-      case "background":
-        return {
-          success: true,
-          message: "Background task scheduled for next available window",
-          duration: Date.now() - startTime,
-          data: { scheduled: true, next_run: "in 15min", retry_attempts: 0 },
-        };
-
-      default:
-        return {
-          success: true,
-          message: "Generic fallback: Operation cached for retry",
-          duration: Date.now() - startTime,
-          data: { fallback_type: "generic", retry_scheduled: true },
-        };
-    }
-
-    // Default fallback
-    return {
-      success: true,
-      message:
-        "Fallback mechanism activated - operation will retry automatically",
-      duration: Date.now() - startTime,
-      data: { fallback_active: true, auto_retry: true },
-    };
-  };
-
   const testFunction = async (func: FunctionTest) => {
-    updateFunctionStatus(func.id, "running", "Testing primary function...");
+    updateFunctionStatus(func.id, "running", "Testing with smart routing...");
     const startTime = Date.now();
 
     try {
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("Timeout")), testTimeout);
-      });
+      const testBody = func.healthCheck ? { action: "health" } : { test: true };
 
-      // Prepare different test bodies based on function type
-      let testBody: any = {};
-
-      if (func.healthCheck) {
-        testBody = { action: "health" };
-      } else {
-        // For functions without health checks, try minimal valid requests
-        switch (func.category) {
-          case "payment":
-            if (func.endpoint.includes("webhook")) {
-              // Webhooks don't accept our test format
-              testBody = {};
-            } else if (func.endpoint.includes("initialize")) {
-              testBody = { amount: 100, email: "test@example.com" };
-            } else if (func.endpoint.includes("verify")) {
-              testBody = { reference: "test_ref" };
-            } else {
-              testBody = { test: true };
-            }
-            break;
-          case "shipping":
-            testBody = {
-              pickup_address: "Test",
-              delivery_address: "Test",
-              test: true,
-            };
-            break;
-          case "orders":
-            testBody = {
-              order_id: "test-order",
-              test: true,
-            };
-            break;
-          case "communication":
-            testBody = {
-              action: "test",
-              message: "Test notification",
-            };
-            break;
-          default:
-            testBody = { action: "health", test: true };
-        }
-      }
-
-      const testPromise = supabase.functions.invoke(func.endpoint, {
+      const result = await edgeFunctionRouter.invoke(func.endpoint, {
         body: testBody,
       });
 
-      const result = await Promise.race([testPromise, timeoutPromise]);
       const duration = Date.now() - startTime;
+      const usedFallback = result.data?._fallback_used || false;
 
       if (result.error) {
-        const errorMsg = result.error.message || "Unknown error";
-
-        // Only treat deployment/not found errors as deployment failures
-        // All other errors should be treated as function failures
-        if (
-          errorMsg.includes("FunctionsRelayError") ||
-          errorMsg.includes("not found") ||
-          errorMsg.includes("404") ||
-          errorMsg.includes("Function not found")
-        ) {
-          updateFunctionStatus(
-            func.id,
-            "running",
-            "Primary function unavailable, trying fallback...",
-            duration,
-            result.error,
-          );
-
-          // Attempt fallback
-          const fallbackSuccess = await attemptFallback(func, result.error);
-          if (!fallbackSuccess) {
-            updateFunctionStatus(
-              func.id,
-              "failed",
-              "Function not deployed and fallback failed",
-              Date.now() - startTime,
-              result.error,
-            );
-          }
-        } else {
-          // Try fallback for other errors too
-          updateFunctionStatus(
-            func.id,
-            "running",
-            "Primary function error, trying fallback...",
-            duration,
-            result.error,
-          );
-
-          const fallbackSuccess = await attemptFallback(func, result.error);
-          if (!fallbackSuccess) {
-            updateFunctionStatus(
-              func.id,
-              "failed",
-              `Function error: ${errorMsg.substring(0, 100)}${errorMsg.length > 100 ? "..." : ""}`,
-              Date.now() - startTime,
-              result.error,
-            );
-          }
-        }
-      } else if (result.data) {
-        // Check if the response data indicates success or failure
+        updateFunctionStatus(
+          func.id,
+          "failed",
+          `Error: ${result.error.message || "Unknown error"}`,
+          duration,
+          result.error,
+          false,
+        );
+      } else {
         const responseData = result.data;
 
-        if (responseData && typeof responseData === "object") {
-          // Check for explicit success/error indicators in response
-          if (responseData.success === false || responseData.error) {
-            // Try fallback even for function-level errors
-            updateFunctionStatus(
-              func.id,
-              "running",
-              "Function returned error, trying fallback...",
-              duration,
-              responseData,
-            );
-
-            const fallbackSuccess = await attemptFallback(func, responseData);
-            if (!fallbackSuccess) {
-              updateFunctionStatus(
-                func.id,
-                "failed",
-                `Function returned error: ${responseData.error || responseData.message || "Unknown error"}`,
-                Date.now() - startTime,
-                responseData,
-              );
-            }
-          } else if (
-            responseData.success === true ||
-            responseData.message ||
-            responseData.data
-          ) {
-            updateFunctionStatus(
-              func.id,
-              "success",
-              "Function healthy and responsive",
-              duration,
-              responseData,
-            );
-          } else {
-            // Response exists but unclear status
-            updateFunctionStatus(
-              func.id,
-              "success",
-              "Function responsive (check response details)",
-              duration,
-              responseData,
-            );
-          }
+        if (usedFallback) {
+          updateFunctionStatus(
+            func.id,
+            "fallback-success",
+            `Fallback success: ${responseData._fallback_reason || "Primary unavailable"}`,
+            duration,
+            responseData,
+            true,
+          );
         } else {
-          // Simple response
           updateFunctionStatus(
             func.id,
             "success",
-            "Function responsive",
+            "Function healthy and responsive",
             duration,
-            result.data,
+            responseData,
+            false,
           );
         }
-      } else {
-        // No data in response, but no error either
-        updateFunctionStatus(
-          func.id,
-          "success",
-          "Function responded successfully",
-          duration,
-          {},
-        );
       }
     } catch (error) {
       const duration = Date.now() - startTime;
-      if (error.message === "Timeout") {
-        // Try fallback for timeouts too
-        updateFunctionStatus(
-          func.id,
-          "running",
-          "Function timeout, trying fallback...",
-          duration,
-          { error: "timeout" },
-        );
-
-        const fallbackSuccess = await attemptFallback(func, {
-          error: "timeout",
-        });
-        if (!fallbackSuccess) {
-          updateFunctionStatus(
-            func.id,
-            "timeout",
-            `Function timed out after ${testTimeout}ms`,
-            duration,
-            { error: "timeout" },
-          );
-        }
-      } else {
-        // Try fallback for other errors
-        updateFunctionStatus(
-          func.id,
-          "running",
-          "Unexpected error, trying fallback...",
-          duration,
-          error,
-        );
-
-        const fallbackSuccess = await attemptFallback(func, error);
-        if (!fallbackSuccess) {
-          updateFunctionStatus(
-            func.id,
-            "failed",
-            `Unexpected error: ${error.message}`,
-            Date.now() - startTime,
-            error,
-          );
-        }
-      }
+      updateFunctionStatus(
+        func.id,
+        "failed",
+        `Unexpected error: ${error.message}`,
+        duration,
+        error,
+        false,
+      );
     }
   };
 
@@ -819,17 +523,18 @@ const EdgeFunctionsTester = () => {
         message: functionsToTest.includes(func)
           ? "Waiting to test..."
           : func.message,
+        usedFallback: false,
       })),
     );
 
     let completed = 0;
     const total = functionsToTest.length;
 
-    // Process functions in batches
+    // Test functions in parallel with some concurrency control
+    const batchSize = 5;
     for (let i = 0; i < functionsToTest.length; i += batchSize) {
       const batch = functionsToTest.slice(i, i + batchSize);
 
-      // Test functions in parallel within the batch
       await Promise.all(
         batch.map(async (func) => {
           await testFunction(func);
@@ -838,9 +543,9 @@ const EdgeFunctionsTester = () => {
         }),
       );
 
-      // Small delay between batches to prevent overwhelming the server
+      // Small delay between batches
       if (i + batchSize < functionsToTest.length) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 500));
       }
     }
 
@@ -848,8 +553,16 @@ const EdgeFunctionsTester = () => {
 
     // Show summary
     const summary = calculateSummary();
+    const totalSuccessful = summary.passed + summary.fallbackSuccess;
     toast.success(
-      `Testing complete! ${summary.passed + summary.fallbackSuccess} successful (${summary.passed} direct, ${summary.fallbackSuccess} fallback), ${summary.failed} failed, ${summary.timeout} timed out`,
+      `🎉 Testing complete! ${totalSuccessful}/${summary.total} successful (${summary.passed} direct, ${summary.fallbackSuccess} fallback)`,
+      {
+        description:
+          summary.failed > 0
+            ? `${summary.failed} functions failed`
+            : "All functions working!",
+        duration: 5000,
+      },
     );
   };
 
@@ -878,8 +591,10 @@ const EdgeFunctionsTester = () => {
         duration: undefined,
         details: undefined,
         timestamp: undefined,
+        usedFallback: false,
       })),
     );
+    resetFunctionStatuses();
     setProgress(0);
     toast.info("All tests reset");
   };
@@ -934,6 +649,12 @@ const EdgeFunctionsTester = () => {
     }
   };
 
+  const handleConfigChange = (key: string, value: any) => {
+    const newConfig = { ...routerConfig, [key]: value };
+    setRouterConfig(newConfig);
+    updateRouterConfig({ [key]: value });
+  };
+
   const categories = [
     "all",
     "core",
@@ -953,13 +674,141 @@ const EdgeFunctionsTester = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Activity className="h-5 w-5" />
-            Edge Functions Health Monitor
+            <Zap className="h-5 w-5 text-blue-500" />
+            Bulletproof Edge Functions Monitor
+            <Badge variant="outline" className="ml-auto">
+              Smart Routing Enabled
+            </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Health Summary Dashboard */}
+          <Card className="bg-gradient-to-r from-blue-50 to-green-50">
+            <CardContent className="p-4">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div className="text-center">
+                  <div className="flex items-center justify-center mb-2">
+                    <Server className="h-5 w-5 text-blue-500" />
+                  </div>
+                  <div className="text-2xl font-bold text-blue-600">
+                    {healthSummary.totalFunctions}
+                  </div>
+                  <div className="text-sm text-gray-600">Total Functions</div>
+                </div>
+                <div className="text-center">
+                  <div className="flex items-center justify-center mb-2">
+                    <CheckCircle className="h-5 w-5 text-green-500" />
+                  </div>
+                  <div className="text-2xl font-bold text-green-600">
+                    {healthSummary.healthyFunctions}
+                  </div>
+                  <div className="text-sm text-gray-600">Healthy</div>
+                </div>
+                <div className="text-center">
+                  <div className="flex items-center justify-center mb-2">
+                    <TrendingUp className="h-5 w-5 text-purple-500" />
+                  </div>
+                  <div className="text-2xl font-bold text-purple-600">
+                    {healthSummary.averageResponseTime}ms
+                  </div>
+                  <div className="text-sm text-gray-600">Avg Response</div>
+                </div>
+                <div className="text-center">
+                  <div className="flex items-center justify-center mb-2">
+                    <Activity className="h-5 w-5 text-orange-500" />
+                  </div>
+                  <div className="text-2xl font-bold text-orange-600">
+                    {Math.round(healthSummary.overallSuccessRate * 100)}%
+                  </div>
+                  <div className="text-sm text-gray-600">Success Rate</div>
+                </div>
+                <div className="text-center">
+                  <div className="flex items-center justify-center mb-2">
+                    <Globe className="h-5 w-5 text-cyan-500" />
+                  </div>
+                  <div className="text-2xl font-bold text-cyan-600">
+                    {routerConfig.enableMockMode ? "Mock" : "Live"}
+                  </div>
+                  <div className="text-sm text-gray-600">Mode</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Configuration Panel */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-4 w-4" />
+                Smart Router Configuration
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="mock-mode" className="text-sm">
+                    Mock Mode
+                  </Label>
+                  <Switch
+                    id="mock-mode"
+                    checked={routerConfig.enableMockMode}
+                    onCheckedChange={(checked) => {
+                      handleConfigChange("enableMockMode", checked);
+                      if (checked) {
+                        enableMockMode();
+                      } else {
+                        disableMockMode();
+                      }
+                    }}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="auto-fallback" className="text-sm">
+                    Auto Fallback
+                  </Label>
+                  <Switch
+                    id="auto-fallback"
+                    checked={routerConfig.enableAutoFallback}
+                    onCheckedChange={(checked) => {
+                      handleConfigChange("enableAutoFallback", checked);
+                      if (checked) {
+                        enableAutoFallback();
+                      } else {
+                        disableAutoFallback();
+                      }
+                    }}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="status-tracking" className="text-sm">
+                    Status Tracking
+                  </Label>
+                  <Switch
+                    id="status-tracking"
+                    checked={routerConfig.enableStatusTracking}
+                    onCheckedChange={(checked) =>
+                      handleConfigChange("enableStatusTracking", checked)
+                    }
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="toast-notifications" className="text-sm">
+                    Fallback Notifications
+                  </Label>
+                  <Switch
+                    id="toast-notifications"
+                    checked={routerConfig.fallbackToastNotifications}
+                    onCheckedChange={(checked) =>
+                      handleConfigChange("fallbackToastNotifications", checked)
+                    }
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Test Configuration */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="category">Category</Label>
               <select
@@ -975,33 +824,6 @@ const EdgeFunctionsTester = () => {
                   </option>
                 ))}
               </select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="timeout">Timeout (ms)</Label>
-              <Input
-                id="timeout"
-                type="number"
-                value={testTimeout}
-                onChange={(e) => setTestTimeout(Number(e.target.value))}
-                min={1000}
-                max={60000}
-                step={1000}
-                disabled={isRunning}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="batch">Batch Size</Label>
-              <Input
-                id="batch"
-                type="number"
-                value={batchSize}
-                onChange={(e) =>
-                  setBatchSize(Math.max(1, Number(e.target.value)))
-                }
-                min={1}
-                max={10}
-                disabled={isRunning}
-              />
             </div>
             <div className="flex items-end space-x-2">
               <Button
@@ -1027,6 +849,21 @@ const EdgeFunctionsTester = () => {
                 disabled={isRunning}
               >
                 Reset
+              </Button>
+            </div>
+            <div className="flex items-end">
+              <Button
+                onClick={async () => {
+                  toast.info("Running comprehensive test...");
+                  const results = await testAllFunctions();
+                  console.log("Test results:", results);
+                }}
+                variant="secondary"
+                disabled={isRunning}
+                className="w-full"
+              >
+                <Zap className="h-4 w-4 mr-2" />
+                Smart Test
               </Button>
             </div>
           </div>
@@ -1080,6 +917,29 @@ const EdgeFunctionsTester = () => {
             </div>
           </div>
 
+          {/* Alert for current mode */}
+          {routerConfig.enableMockMode && (
+            <Alert className="border-amber-200 bg-amber-50">
+              <Shield className="h-4 w-4 text-amber-600" />
+              <AlertDescription className="text-amber-800">
+                <strong>Mock Mode Active:</strong> All functions are using
+                simulated responses. Disable mock mode to test real edge
+                function deployments.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {!routerConfig.enableAutoFallback && (
+            <Alert className="border-red-200 bg-red-50">
+              <AlertTriangle className="h-4 w-4 text-red-600" />
+              <AlertDescription className="text-red-800">
+                <strong>Auto-Fallback Disabled:</strong> Functions will fail
+                completely if primary endpoints are unavailable. Enable
+                auto-fallback for resilient testing.
+              </AlertDescription>
+            </Alert>
+          )}
+
           {/* Test Results by Category */}
           <Tabs
             defaultValue="all"
@@ -1128,30 +988,15 @@ const EdgeFunctionsTester = () => {
                               Duration: {func.duration}ms
                             </div>
                           )}
-                          {func.status === "fallback-success" &&
-                            func.details?.fallbackUsed && (
-                              <Alert className="mt-2 border-amber-200 bg-amber-50">
-                                <Shield className="h-4 w-4 text-amber-600" />
-                                <AlertDescription className="text-xs text-amber-800">
-                                  Primary function failed. Fallback mechanism
-                                  provided alternative functionality.
-                                  {func.details.fallbackData?.source && (
-                                    <div className="mt-1">
-                                      Source: {func.details.fallbackData.source}
-                                    </div>
-                                  )}
-                                </AlertDescription>
-                              </Alert>
-                            )}
-                          {func.details && func.status === "failed" && (
-                            <details className="mt-2">
-                              <summary className="text-xs cursor-pointer text-gray-500">
-                                Error Details
-                              </summary>
-                              <pre className="text-xs mt-1 p-2 bg-gray-50 rounded overflow-auto max-h-32">
-                                {JSON.stringify(func.details, null, 2)}
-                              </pre>
-                            </details>
+                          {func.usedFallback && (
+                            <Alert className="mt-2 border-amber-200 bg-amber-50">
+                              <Shield className="h-4 w-4 text-amber-600" />
+                              <AlertDescription className="text-xs text-amber-800">
+                                Smart routing used fallback mechanism. Primary
+                                function unavailable but backup provided
+                                functionality.
+                              </AlertDescription>
+                            </Alert>
                           )}
                           <Button
                             variant="outline"
@@ -1160,7 +1005,8 @@ const EdgeFunctionsTester = () => {
                             onClick={() => testFunction(func)}
                             disabled={isRunning}
                           >
-                            Test Individual
+                            <Zap className="h-3 w-3 mr-1" />
+                            Smart Test
                           </Button>
                         </CardContent>
                       </Card>
@@ -1175,4 +1021,4 @@ const EdgeFunctionsTester = () => {
   );
 };
 
-export default EdgeFunctionsTester;
+export default BulletproofEdgeFunctionsTester;

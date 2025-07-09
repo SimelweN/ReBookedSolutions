@@ -1,105 +1,145 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
+// Validate environment variables at startup
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+  console.error(
+    "Missing required environment variables: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY",
+  );
+}
+
 const supabase = createClient(
-  Deno.env.get('SUPABASE_URL') ?? '',
-  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+  SUPABASE_URL ?? "",
+  SUPABASE_SERVICE_ROLE_KEY ?? "",
 );
 
 serve(async (req: Request) => {
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    if (req.method === 'POST') {
+    if (req.method === "POST") {
       const body = await req.json();
       const { action } = body;
 
       switch (action) {
-        case 'search':
+        case "health":
+          return new Response(
+            JSON.stringify({
+              success: true,
+              message: "Study Resources API is healthy",
+              timestamp: new Date().toISOString(),
+              version: "1.0.0",
+              environment: {
+                supabaseConfigured:
+                  !!SUPABASE_URL && !!SUPABASE_SERVICE_ROLE_KEY,
+              },
+            }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          );
+        case "search":
           return await handleSearchFromBody(body);
-        case 'create':
+        case "create":
           return await handleCreate(req);
-        case 'update':
+        case "update":
           return await handleUpdate(req);
-        case 'delete':
+        case "delete":
           return await handleDelete(req);
-        case 'get':
+        case "get":
           return await handleGetFromBody(body);
-        case 'rate':
+        case "rate":
           return await handleRate(req);
-        case 'verify':
+        case "verify":
           return await handleVerify(req);
         default:
           return new Response(
-            JSON.stringify({ error: 'Invalid action. Supported actions: search, create, update, delete, get, rate, verify' }),
-            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error:
+                "Invalid action. Supported actions: health, search, create, update, delete, get, rate, verify",
+            }),
+            {
+              status: 400,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            },
           );
       }
     } else {
       const url = new URL(req.url);
-      const segments = url.pathname.split('/').filter(Boolean);
+      const segments = url.pathname.split("/").filter(Boolean);
       const action = segments[segments.length - 1];
 
       switch (action) {
-        case 'search':
+        case "search":
           return await handleSearch(req);
-        case 'get':
+        case "get":
           return await handleGet(req);
         default:
-          return new Response(
-            JSON.stringify({ error: 'Invalid action' }),
-            { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
+          return new Response(JSON.stringify({ error: "Invalid action" }), {
+            status: 404,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
       }
     }
-
   } catch (error) {
-    console.error('Error in study-resources-api:', error);
+    console.error("Error in study-resources-api:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({
+        success: false,
+        error: error.message || "Internal server error",
+        timestamp: new Date().toISOString(),
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
 });
 
 async function handleSearch(req: Request) {
   const url = new URL(req.url);
-  const query = url.searchParams.get('q') || '';
-  const category = url.searchParams.get('category');
-  const university = url.searchParams.get('university');
-  const limit = parseInt(url.searchParams.get('limit') || '20');
-  const offset = parseInt(url.searchParams.get('offset') || '0');
+  const query = url.searchParams.get("q") || "";
+  const category = url.searchParams.get("category");
+  const university = url.searchParams.get("university");
+  const limit = parseInt(url.searchParams.get("limit") || "20");
+  const offset = parseInt(url.searchParams.get("offset") || "0");
 
   let dbQuery = supabase
-    .from('books')
-    .select(`
+    .from("books")
+    .select(
+      `
       *,
       profiles!books_seller_id_fkey(full_name, email)
-    `)
-    .eq('sold', false);
+    `,
+    )
+    .eq("sold", false);
 
   if (query) {
-    dbQuery = dbQuery.or(`title.ilike.%${query}%,author.ilike.%${query}%,description.ilike.%${query}%`);
+    dbQuery = dbQuery.or(
+      `title.ilike.%${query}%,author.ilike.%${query}%,description.ilike.%${query}%`,
+    );
   }
 
   if (category) {
-    dbQuery = dbQuery.eq('category', category);
+    dbQuery = dbQuery.eq("category", category);
   }
 
   if (university) {
-    dbQuery = dbQuery.eq('university', university);
+    dbQuery = dbQuery.eq("university", university);
   }
 
   const { data: books, error } = await dbQuery
-    .order('created_at', { ascending: false })
+    .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
   if (error) {
@@ -107,26 +147,26 @@ async function handleSearch(req: Request) {
   }
 
   const { count: total } = await supabase
-    .from('books')
-    .select('*', { count: 'exact', head: true })
-    .eq('sold', false);
+    .from("books")
+    .select("*", { count: "exact", head: true })
+    .eq("sold", false);
 
   return new Response(
     JSON.stringify({
       success: true,
       books,
       total,
-      hasMore: (total || 0) > offset + limit
+      hasMore: (total || 0) > offset + limit,
     }),
-    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );
 }
 
 async function handleCreate(req: Request) {
   const bookData = await req.json();
-  
+
   const { data: book, error } = await supabase
-    .from('books')
+    .from("books")
     .insert(bookData)
     .select()
     .single();
@@ -135,21 +175,21 @@ async function handleCreate(req: Request) {
     throw error;
   }
 
-  await supabase.from('audit_logs').insert({
-    action: 'book_created',
-    table_name: 'books',
+  await supabase.from("audit_logs").insert({
+    action: "book_created",
+    table_name: "books",
     record_id: book.id,
     user_id: book.seller_id,
-    new_values: bookData
+    new_values: bookData,
   });
 
   return new Response(
-    JSON.stringify({ 
-      success: true, 
+    JSON.stringify({
+      success: true,
       book,
-      message: 'Book created successfully' 
+      message: "Book created successfully",
     }),
-    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );
 }
 
@@ -157,9 +197,9 @@ async function handleUpdate(req: Request) {
   const { bookId, updates } = await req.json();
 
   const { data: book, error } = await supabase
-    .from('books')
+    .from("books")
     .update(updates)
-    .eq('id', bookId)
+    .eq("id", bookId)
     .select()
     .single();
 
@@ -167,21 +207,21 @@ async function handleUpdate(req: Request) {
     throw error;
   }
 
-  await supabase.from('audit_logs').insert({
-    action: 'book_updated',
-    table_name: 'books',
+  await supabase.from("audit_logs").insert({
+    action: "book_updated",
+    table_name: "books",
     record_id: bookId,
     user_id: book.seller_id,
-    new_values: updates
+    new_values: updates,
   });
 
   return new Response(
-    JSON.stringify({ 
-      success: true, 
+    JSON.stringify({
+      success: true,
       book,
-      message: 'Book updated successfully' 
+      message: "Book updated successfully",
     }),
-    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );
 }
 
@@ -189,50 +229,52 @@ async function handleDelete(req: Request) {
   const { bookId, userId } = await req.json();
 
   const { error } = await supabase
-    .from('books')
+    .from("books")
     .delete()
-    .eq('id', bookId)
-    .eq('seller_id', userId);
+    .eq("id", bookId)
+    .eq("seller_id", userId);
 
   if (error) {
     throw error;
   }
 
-  await supabase.from('audit_logs').insert({
-    action: 'book_deleted',
-    table_name: 'books',
+  await supabase.from("audit_logs").insert({
+    action: "book_deleted",
+    table_name: "books",
     record_id: bookId,
     user_id: userId,
-    new_values: { deleted: true }
+    new_values: { deleted: true },
   });
 
   return new Response(
-    JSON.stringify({ 
-      success: true, 
-      message: 'Book deleted successfully' 
+    JSON.stringify({
+      success: true,
+      message: "Book deleted successfully",
     }),
-    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );
 }
 
 async function handleGet(req: Request) {
   const url = new URL(req.url);
-  const bookId = url.searchParams.get('bookId');
+  const bookId = url.searchParams.get("bookId");
 
   if (!bookId) {
-    return new Response(
-      JSON.stringify({ error: 'Book ID is required' }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ error: "Book ID is required" }), {
+      status: 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 
   const { data: book, error } = await supabase
-    .from('books')
-    .select(`
+    .from("books")
+    .select(
+      `
       *,
       profiles!books_seller_id_fkey(full_name, email, pickup_address)
-    `)
-    .eq('id', bookId)
+    `,
+    )
+    .eq("id", bookId)
     .single();
 
   if (error) {
@@ -240,11 +282,11 @@ async function handleGet(req: Request) {
   }
 
   return new Response(
-    JSON.stringify({ 
-      success: true, 
-      book 
+    JSON.stringify({
+      success: true,
+      book,
     }),
-    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );
 }
 
@@ -253,20 +295,20 @@ async function handleRate(req: Request) {
 
   // This would typically insert into a ratings table
   // For now, we'll log it as an audit entry
-  await supabase.from('audit_logs').insert({
-    action: 'book_rated',
-    table_name: 'books',
+  await supabase.from("audit_logs").insert({
+    action: "book_rated",
+    table_name: "books",
     record_id: bookId,
     user_id: userId,
-    new_values: { rating, review }
+    new_values: { rating, review },
   });
 
   return new Response(
-    JSON.stringify({ 
-      success: true, 
-      message: 'Rating submitted successfully' 
+    JSON.stringify({
+      success: true,
+      message: "Rating submitted successfully",
     }),
-    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );
 }
 
@@ -274,9 +316,9 @@ async function handleVerify(req: Request) {
   const { bookId, adminId, verified } = await req.json();
 
   const { data: book, error } = await supabase
-    .from('books')
+    .from("books")
     .update({ verified: verified })
-    .eq('id', bookId)
+    .eq("id", bookId)
     .select()
     .single();
 
@@ -284,39 +326,64 @@ async function handleVerify(req: Request) {
     throw error;
   }
 
-  await supabase.from('audit_logs').insert({
-    action: 'book_verified',
-    table_name: 'books',
+  await supabase.from("audit_logs").insert({
+    action: "book_verified",
+    table_name: "books",
     record_id: bookId,
     user_id: adminId,
-    new_values: { verified }
+    new_values: { verified },
   });
 
   return new Response(
-    JSON.stringify({ 
-      success: true, 
+    JSON.stringify({
+      success: true,
       book,
-      message: `Book ${verified ? 'verified' : 'unverified'} successfully` 
+      message: `Book ${verified ? "verified" : "unverified"} successfully`,
     }),
-    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );
 }
 
 async function handleSearchFromBody(body: any) {
-  const { query = '', category, university, limit = 20, offset = 0 } = body;
-  
-  // Mock study resources data
+  const { query = "", category, university, limit = 20, offset = 0 } = body;
+
+  // Mock study resources data for health checks
   const mockResources = [
-    { id: '1', title: 'Advanced Mathematics Textbook', subject: 'mathematics', type: 'textbook', difficulty: 'advanced', description: 'Comprehensive mathematics textbook', rating: 4.5 },
-    { id: '2', title: 'Physics Study Guide', subject: 'physics', type: 'study_guide', difficulty: 'intermediate', description: 'Physics study guide covering mechanics', rating: 4.2 },
-    { id: '3', title: 'Chemistry Lab Manual', subject: 'chemistry', type: 'lab_manual', difficulty: 'beginner', description: 'Laboratory manual for chemistry', rating: 4.0 }
+    {
+      id: "1",
+      title: "Advanced Mathematics Textbook",
+      subject: "mathematics",
+      type: "textbook",
+      difficulty: "advanced",
+      description: "Comprehensive mathematics textbook",
+      rating: 4.5,
+    },
+    {
+      id: "2",
+      title: "Physics Study Guide",
+      subject: "physics",
+      type: "study_guide",
+      difficulty: "intermediate",
+      description: "Physics study guide covering mechanics",
+      rating: 4.2,
+    },
+    {
+      id: "3",
+      title: "Chemistry Lab Manual",
+      subject: "chemistry",
+      type: "lab_manual",
+      difficulty: "beginner",
+      description: "Laboratory manual for chemistry",
+      rating: 4.0,
+    },
   ];
 
-  const filteredResources = query 
-    ? mockResources.filter(r => 
-        r.title.toLowerCase().includes(query.toLowerCase()) ||
-        r.subject.toLowerCase().includes(query.toLowerCase()) ||
-        r.description.toLowerCase().includes(query.toLowerCase())
+  const filteredResources = query
+    ? mockResources.filter(
+        (r) =>
+          r.title.toLowerCase().includes(query.toLowerCase()) ||
+          r.subject.toLowerCase().includes(query.toLowerCase()) ||
+          r.description.toLowerCase().includes(query.toLowerCase()),
       )
     : mockResources;
 
@@ -324,31 +391,57 @@ async function handleSearchFromBody(body: any) {
     JSON.stringify({
       success: true,
       data: filteredResources,
-      count: filteredResources.length
+      count: filteredResources.length,
     }),
-    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
   );
 }
 
 async function handleGetFromBody(body: any) {
   const { id } = body;
-  
+
   const mockResources = [
-    { id: '1', title: 'Advanced Mathematics Textbook', subject: 'mathematics', type: 'textbook', difficulty: 'advanced', description: 'Comprehensive mathematics textbook', rating: 4.5 },
-    { id: '2', title: 'Physics Study Guide', subject: 'physics', type: 'study_guide', difficulty: 'intermediate', description: 'Physics study guide covering mechanics', rating: 4.2 },
-    { id: '3', title: 'Chemistry Lab Manual', subject: 'chemistry', type: 'lab_manual', difficulty: 'beginner', description: 'Laboratory manual for chemistry', rating: 4.0 }
+    {
+      id: "1",
+      title: "Advanced Mathematics Textbook",
+      subject: "mathematics",
+      type: "textbook",
+      difficulty: "advanced",
+      description: "Comprehensive mathematics textbook",
+      rating: 4.5,
+    },
+    {
+      id: "2",
+      title: "Physics Study Guide",
+      subject: "physics",
+      type: "study_guide",
+      difficulty: "intermediate",
+      description: "Physics study guide covering mechanics",
+      rating: 4.2,
+    },
+    {
+      id: "3",
+      title: "Chemistry Lab Manual",
+      subject: "chemistry",
+      type: "lab_manual",
+      difficulty: "beginner",
+      description: "Laboratory manual for chemistry",
+      rating: 4.0,
+    },
   ];
 
-  const resource = mockResources.find(r => r.id === id);
+  const resource = mockResources.find((r) => r.id === id);
   if (!resource) {
     return new Response(
-      JSON.stringify({ success: false, error: 'Resource not found' }),
-      { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ success: false, error: "Resource not found" }),
+      {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
 
-  return new Response(
-    JSON.stringify({ success: true, data: resource }),
-    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-  );
+  return new Response(JSON.stringify({ success: true, data: resource }), {
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
 }
