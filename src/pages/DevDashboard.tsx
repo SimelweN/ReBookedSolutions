@@ -357,7 +357,10 @@ const DevDashboard: React.FC = () => {
     }
 
     setIsRunningTests(false);
-    toast.success("All tests completed!");
+    // Defer this toast to avoid render cycle issues
+    setTimeout(() => {
+      toast.success("All tests completed!");
+    }, 0);
   };
 
   const testDatabaseConnection = async () => {
@@ -660,11 +663,14 @@ const DevDashboard: React.FC = () => {
 
   const testFunctionFallbacks = async () => {
     try {
-      addTestResult(
-        "Function Fallback Test",
-        "running",
-        "Testing fallback system...",
-      );
+      // Defer this state update to avoid render cycle issues
+      setTimeout(() => {
+        addTestResult(
+          "Function Fallback Test",
+          "running",
+          "Testing fallback system...",
+        );
+      }, 0);
 
       // Test non-critical functions with fallbacks
       const tests = [
@@ -706,26 +712,32 @@ const DevDashboard: React.FC = () => {
 
       const message = `Tested ${tests.length} functions: ${passed} passed, ${failed} failed, ${fallbacksUsed} used fallbacks`;
 
-      if (failed === 0) {
-        toast.success(`Function fallback test successful: ${message}`);
-        addTestResult("Function Fallback Test", "success", message);
-      } else {
-        toast.warning(
-          `Function fallback test completed with issues: ${message}`,
-        );
-        addTestResult(
-          "Function Fallback Test",
-          "success",
-          message + " (Fallbacks working)",
-        );
-      }
+      // Defer these state updates to avoid render cycle issues
+      setTimeout(() => {
+        if (failed === 0) {
+          toast.success(`Function fallback test successful: ${message}`);
+          addTestResult("Function Fallback Test", "success", message);
+        } else {
+          toast.warning(
+            `Function fallback test completed with issues: ${message}`,
+          );
+          addTestResult(
+            "Function Fallback Test",
+            "success",
+            message + " (Fallbacks working)",
+          );
+        }
+      }, 0);
 
       // Get function stats
       const stats = functionFallback.getFunctionStats();
       console.log("Function statistics:", stats);
     } catch (error) {
-      toast.error(`Function fallback test error: ${error}`);
-      addTestResult("Function Fallback Test", "failed", `Error: ${error}`);
+      // Defer these state updates to avoid render cycle issues
+      setTimeout(() => {
+        toast.error(`Function fallback test error: ${error}`);
+        addTestResult("Function Fallback Test", "failed", `Error: ${error}`);
+      }, 0);
     }
   };
 
