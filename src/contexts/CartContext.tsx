@@ -5,7 +5,10 @@ import { Book } from "@/types/book";
 import { toast } from "sonner";
 import { createSafeContext } from "@/utils/reactContextSafety";
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+const CartContext = createSafeContext<CartContextType | undefined>(
+  undefined,
+  "CartContext",
+);
 
 export const useCart = () => {
   const context = useContext(CartContext);
