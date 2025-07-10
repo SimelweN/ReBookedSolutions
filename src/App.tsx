@@ -70,6 +70,9 @@ function App() {
   const [systemReady, setSystemReady] = React.useState(false);
   const [showStartupChecker, setShowStartupChecker] = React.useState(false);
 
+  // Initialize commit auto-expiry system
+  useCommitAutoExpiry();
+
   React.useEffect(() => {
     // Check if system needs setup
     const envValid = validateEnvironment();
