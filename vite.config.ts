@@ -198,6 +198,8 @@ export default defineConfig(({ mode }) => ({
     "process.env.NODE_ENV": JSON.stringify(
       mode === "production" ? "production" : "development",
     ),
+    // Ensure global React availability
+    global: "globalThis",
   },
 
   // Performance optimizations
