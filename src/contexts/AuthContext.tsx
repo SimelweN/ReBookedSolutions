@@ -25,6 +25,7 @@ import { logError, getErrorMessage } from "@/utils/errorUtils";
 import { createFallbackProfile } from "@/utils/databaseConnectivityHelper";
 import { shouldSkipAuthLoading } from "@/utils/instantStartup";
 import { CookieManager } from "@/utils/cookieManager";
+import { createSafeContext } from "@/utils/reactContextSafety";
 
 // Simple logging for development
 const devLog = (message: string, data?: unknown) => {
