@@ -942,6 +942,13 @@ const DevDashboard: React.FC = () => {
                   <TestTube className="h-3 w-3 lg:h-4 lg:w-4" />
                   <span>Fallbacks</span>
                 </TabsTrigger>
+                <TabsTrigger
+                  value="comprehensive-test"
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
+                >
+                  <CheckCircle className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Full Test</span>
+                </TabsTrigger>
               </TabsList>
             </div>
 
