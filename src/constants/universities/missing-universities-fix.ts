@@ -1,4 +1,4 @@
-import { Faculty } from "@/types/university";
+import { Faculty } from "../../types/university";
 
 /**
  * CRITICAL FIX: Faculty data for universities that were using generic fallbacks
