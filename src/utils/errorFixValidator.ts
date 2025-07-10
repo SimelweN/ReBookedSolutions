@@ -52,13 +52,7 @@ export class ErrorFixValidator {
       const response = await fetch(window.location.href, { method: "HEAD" });
       const csp = response.headers.get("Content-Security-Policy");
 
-      const requiredDomains = [
-        "vercel.live",
-        "vitals.vercel-analytics.com",
-        "js.paystack.co",
-        "maps.googleapis.com",
-        "www.googletagmanager.com",
-      ];
+      const requiredDomains = ["js.paystack.co", "maps.googleapis.com"];
 
       let allDomainsAllowed = true;
       const missingDomains: string[] = [];
