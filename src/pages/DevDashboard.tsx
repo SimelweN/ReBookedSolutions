@@ -681,7 +681,7 @@ const DevDashboard: React.FC = () => {
             delivery_address: { city: "Johannesburg", province: "Gauteng" },
           },
         },
-        { name: "file-upload", payload: { bucket: "test", path: "test.txt" } },
+
         { name: "advanced-search", payload: { query: "test", filters: {} } },
         {
           name: "study-resources-api",
