@@ -26,9 +26,6 @@ export class ThirdPartyErrorHandler {
     // Handle Vercel Live script errors specifically
     this.handleVercelLiveErrors();
 
-    // Handle analytics script errors
-    this.handleAnalyticsErrors();
-
     this.initialized = true;
     console.log("✅ Third-party error handler initialized");
   }
