@@ -25,6 +25,7 @@ import { logError, getErrorMessage } from "@/utils/errorUtils";
 import { createFallbackProfile } from "@/utils/databaseConnectivityHelper";
 import { shouldSkipAuthLoading } from "@/utils/instantStartup";
 import { CookieManager } from "@/utils/cookieManager";
+import { safeCreateContext } from "@/utils/reactImportValidator";
 // Simple logging for development
 const devLog = (message: string, data?: unknown) => {
   if (import.meta.env.DEV) console.log(message, data);
@@ -61,7 +62,10 @@ interface AuthContextType {
   refreshProfile: () => Promise<void>;
 }
 
-const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
+const AuthContext = safeCreateContext<AuthContextType | undefined>(
+  undefined,
+  "AuthContext",
+);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
