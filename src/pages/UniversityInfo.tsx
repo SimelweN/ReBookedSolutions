@@ -555,12 +555,6 @@ const UniversityInfo = () => {
       ? UNIVERSITY_APPLICATIONS_2025
       : UNIVERSITY_APPLICATIONS_2025.slice(0, 6);
 
-    console.log("UniversityInfo render:", {
-      showAllUniversities,
-      totalUniversities: UNIVERSITY_APPLICATIONS_2025.length,
-      displayedCount: displayedUniversities.length,
-    });
-
     return (
       <div className="py-12">
         <div className="container mx-auto px-4">
