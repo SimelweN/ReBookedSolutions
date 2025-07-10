@@ -287,32 +287,9 @@ export class CookieManager {
     return this.getCookie("locale");
   }
 
-  // Analytics helpers
+  // Analytics helpers - removed for privacy
   static initializeAnalytics(): void {
-    if (!this.hasConsent("analytics")) return;
-
-    // Google Analytics initialization would go here
-    if (typeof gtag !== "undefined") {
-      // GA already loaded
-      return;
-    }
-
-    // Load Google Analytics script
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = "https://www.googletagmanager.com/gtag/js?id=YOUR_GA_ID";
-    document.head.appendChild(script);
-
-    script.onload = () => {
-      (window as any).dataLayer = (window as any).dataLayer || [];
-      function gtag(...args: any[]) {
-        (window as any).dataLayer.push(args);
-      }
-      (window as any).gtag = gtag;
-
-      gtag("js", new Date());
-      gtag("config", "YOUR_GA_ID");
-    };
+    // Analytics functionality removed
   }
 
   // Check if consent popup should be shown
