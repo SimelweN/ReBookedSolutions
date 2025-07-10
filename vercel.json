@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "defaultRuntime": "nodejs20.x",
   "functions": {
     "api/**/*.ts": {
       "runtime": "nodejs20.x",
