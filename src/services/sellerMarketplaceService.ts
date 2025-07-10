@@ -377,7 +377,7 @@ export class SellerMarketplaceService {
           name,
           email,
           bio,
-          profile_image,
+          profile_picture_url,
           university,
           created_at
         `,
