@@ -73,35 +73,10 @@ const extractUniversityPrograms = () => {
   }> = [];
 
   try {
-    // Get all university IDs from the database - all 26 South African public universities
-    const allUniversityIds = [
-      "uct",
-      "wits",
-      "stellenbosch",
-      "up",
-      "ukzn",
-      "ufs",
-      "ru",
-      "nwu",
-      "uwc",
-      "ufh",
-      "ul",
-      "cput",
-      "dut",
-      "tut",
-      "cut",
-      "vut",
-      "mut",
-      "uj",
-      "unisa",
-      "unizulu",
-      "univen",
-      "nmu",
-      "wsu",
-      "smu",
-      "spu", // Fixed: was "sol", should be "spu" (Sol Plaatje University)
-      "ump",
-    ];
+    // Get all university IDs dynamically from the complete database
+    const allUniversityIds = ALL_SOUTH_AFRICAN_UNIVERSITIES.map(
+      (uni) => uni.id,
+    );
 
     // Find university info by ID
     const getUniversityInfo = (id: string) => {
