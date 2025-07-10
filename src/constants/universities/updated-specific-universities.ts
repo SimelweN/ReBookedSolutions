@@ -77,9 +77,9 @@ export function getFacultiesByUniversityIdLegacy(
       return UNIVEN_FACULTIES;
     case "ufs":
       return UFS_FACULTIES;
-    // Missing universities - return generic faculties for now
+    // UCT with real faculty data
     case "uct":
-      return getGenericUniversityFaculties("University of Cape Town", "uct");
+      return UCT_FACULTIES;
     case "ru":
     case "rhodes":
       return getGenericUniversityFaculties("Rhodes University", "ru");
