@@ -3,11 +3,7 @@ import { useContext, useState, useEffect } from "react";
 import { CartItem, CartContextType } from "@/types/cart";
 import { Book } from "@/types/book";
 import { toast } from "sonner";
-import { safeCreateContext } from "@/utils/reactImportValidator";
-const CartContext = safeCreateContext<CartContextType | undefined>(
-  undefined,
-  "CartContext",
-);
+const CartContext = React.createContext<CartContextType | undefined>(undefined);
 
 export const useCart = () => {
   const context = useContext(CartContext);
