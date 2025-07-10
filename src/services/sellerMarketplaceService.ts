@@ -304,7 +304,6 @@ export class SellerMarketplaceService {
           name: seller.name || "Unknown Seller",
           email: seller.email,
           bio: seller.bio,
-          university: seller.university,
           rating: 4.5, // TODO: Implement rating system
           totalSales: 0, // Will be calculated separately if needed
           memberSince: seller.created_at,
