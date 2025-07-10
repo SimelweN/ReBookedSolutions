@@ -28,6 +28,12 @@ export class ClientCommitAutoExpiry {
     console.log("🚀 Starting client-side commit auto-expiry service");
     this.isRunning = true;
 
+    // Temporarily disabled to fix 400 database errors
+    console.log(
+      "⚠️ Auto-expiry temporarily disabled - fixing database queries",
+    );
+    return;
+
     // Check immediately on start
     this.checkAndExpireCommits();
 
