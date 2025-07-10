@@ -389,83 +389,180 @@ const UniversityProfile: React.FC = () => {
 
                 {university.faculties && university.faculties.length > 0 ? (
                   <div className="grid gap-8">
-                    {university.faculties.map((faculty, index) => (
-                      <Card key={index} className="border-0 shadow-lg">
-                        <CardHeader className="bg-gradient-to-r from-gray-50 to-white">
-                          <CardTitle className="text-xl flex items-center text-gray-900">
-                            <Building2 className="h-6 w-6 mr-3 text-book-500" />
-                            {faculty.name}
-                          </CardTitle>
-                          {faculty.description && (
-                            <p className="text-gray-600 mt-2">
-                              {faculty.description}
-                            </p>
-                          )}
-                        </CardHeader>
+                    {university.faculties.map((faculty, index) => {
+                      const facultyPrograms = faculty.degrees || [];
+                      const filteredPrograms = filterPrograms(facultyPrograms);
+                      const eligibleCount =
+                        facultyPrograms.filter(isEligibleForProgram).length;
 
-                        {faculty.degrees && faculty.degrees.length > 0 && (
-                          <CardContent className="pt-6">
-                            <div className="grid gap-4">
-                              {faculty.degrees
-                                .slice(0, 3)
-                                .map((degree, degreeIndex) => (
-                                  <div
-                                    key={degreeIndex}
-                                    className="group bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md hover:border-book-200 transition-all duration-200"
-                                  >
-                                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                                      <div className="flex-1">
-                                        <h5 className="font-semibold text-gray-900 mb-2 group-hover:text-book-700 transition-colors">
-                                          {degree.name}
-                                        </h5>
-                                        {degree.description && (
-                                          <p className="text-gray-600 text-sm leading-relaxed mb-3">
-                                            {degree.description}
-                                          </p>
-                                        )}
-                                        {degree.duration && (
-                                          <div className="flex items-center text-sm text-gray-500">
-                                            <Calendar className="h-4 w-4 mr-1" />
-                                            {degree.duration}
-                                          </div>
-                                        )}
-                                      </div>
-                                      <div className="flex items-center gap-2 shrink-0">
-                                        <Badge className="bg-book-100 text-book-700 border-book-200">
-                                          APS: {degree.apsRequirement}
-                                        </Badge>
-                                        <Button
-                                          size="sm"
-                                          variant="outline"
-                                          className="border-book-200 text-book-600 hover:bg-book-50"
-                                          onClick={() =>
-                                            handleViewProgram(degree)
-                                          }
-                                        >
-                                          <Eye className="h-4 w-4 mr-1" />
-                                          View More
-                                        </Button>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              {faculty.degrees.length > 3 && (
-                                <div className="text-center py-4">
-                                  <Button
-                                    variant="outline"
-                                    className="border-book-200 text-book-600 hover:bg-book-50"
-                                  >
-                                    <TrendingUp className="h-4 w-4 mr-2" />
-                                    View {faculty.degrees.length - 3} more
-                                    programs
-                                  </Button>
-                                </div>
+                      // Skip faculty if no programs match the filter
+                      if (showEligibleOnly && filteredPrograms.length === 0) {
+                        return null;
+                      }
+
+                      return (
+                        <Card key={index} className="border-0 shadow-lg">
+                          <CardHeader className="bg-gradient-to-r from-gray-50 to-white">
+                            <CardTitle className="text-xl flex items-center justify-between text-gray-900">
+                              <div className="flex items-center">
+                                <Building2 className="h-6 w-6 mr-3 text-book-500" />
+                                {faculty.name}
+                              </div>
+                              {fromAPS && userAPS > 0 && (
+                                <Badge
+                                  variant={
+                                    eligibleCount > 0 ? "default" : "secondary"
+                                  }
+                                  className={
+                                    eligibleCount > 0
+                                      ? "bg-green-100 text-green-800 border-green-300"
+                                      : "bg-red-100 text-red-800 border-red-300"
+                                  }
+                                >
+                                  {eligibleCount}/{facultyPrograms.length}{" "}
+                                  eligible
+                                </Badge>
                               )}
-                            </div>
-                          </CardContent>
-                        )}
-                      </Card>
-                    ))}
+                            </CardTitle>
+                            {faculty.description && (
+                              <p className="text-gray-600 mt-2">
+                                {faculty.description}
+                              </p>
+                            )}
+                          </CardHeader>
+
+                          {filteredPrograms.length > 0 && (
+                            <CardContent className="pt-6">
+                              <div className="grid gap-4">
+                                {filteredPrograms
+                                  .slice(
+                                    0,
+                                    showEligibleOnly
+                                      ? filteredPrograms.length
+                                      : 3,
+                                  )
+                                  .map((degree, degreeIndex) => {
+                                    const isEligible =
+                                      isEligibleForProgram(degree);
+                                    return (
+                                      <div
+                                        key={degreeIndex}
+                                        className={`group bg-white border rounded-xl p-5 hover:shadow-md transition-all duration-200 ${
+                                          fromAPS && userAPS > 0
+                                            ? isEligible
+                                              ? "border-green-300 bg-green-50 hover:border-green-400"
+                                              : "border-red-300 bg-red-50 hover:border-red-400"
+                                            : "border-gray-200 hover:border-book-200"
+                                        }`}
+                                      >
+                                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                                          <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-2">
+                                              {fromAPS &&
+                                                userAPS > 0 &&
+                                                (isEligible ? (
+                                                  <CheckCircle className="h-5 w-5 text-green-600" />
+                                                ) : (
+                                                  <XCircle className="h-5 w-5 text-red-600" />
+                                                ))}
+                                              <h5
+                                                className={`font-semibold mb-0 group-hover:text-book-700 transition-colors ${
+                                                  fromAPS && userAPS > 0
+                                                    ? isEligible
+                                                      ? "text-green-900"
+                                                      : "text-red-900"
+                                                    : "text-gray-900"
+                                                }`}
+                                              >
+                                                {degree.name}
+                                              </h5>
+                                            </div>
+                                            {degree.description && (
+                                              <p
+                                                className={`text-sm leading-relaxed mb-3 ${
+                                                  fromAPS && userAPS > 0
+                                                    ? isEligible
+                                                      ? "text-green-700"
+                                                      : "text-red-700"
+                                                    : "text-gray-600"
+                                                }`}
+                                              >
+                                                {degree.description}
+                                              </p>
+                                            )}
+                                            {degree.duration && (
+                                              <div
+                                                className={`flex items-center text-sm ${
+                                                  fromAPS && userAPS > 0
+                                                    ? isEligible
+                                                      ? "text-green-600"
+                                                      : "text-red-600"
+                                                    : "text-gray-500"
+                                                }`}
+                                              >
+                                                <Calendar className="h-4 w-4 mr-1" />
+                                                {degree.duration}
+                                              </div>
+                                            )}
+                                          </div>
+                                          <div className="flex items-center gap-2 shrink-0">
+                                            <Badge
+                                              className={
+                                                fromAPS && userAPS > 0
+                                                  ? isEligible
+                                                    ? "bg-green-100 text-green-800 border-green-300"
+                                                    : "bg-red-100 text-red-800 border-red-300"
+                                                  : "bg-book-100 text-book-700 border-book-200"
+                                              }
+                                            >
+                                              APS: {degree.apsRequirement}
+                                              {fromAPS && userAPS > 0 && (
+                                                <span className="ml-1">
+                                                  {isEligible ? "✓" : "✗"}
+                                                </span>
+                                              )}
+                                            </Badge>
+                                            <Button
+                                              size="sm"
+                                              variant="outline"
+                                              className={
+                                                fromAPS && userAPS > 0
+                                                  ? isEligible
+                                                    ? "border-green-300 text-green-700 hover:bg-green-100"
+                                                    : "border-red-300 text-red-700 hover:bg-red-100"
+                                                  : "border-book-200 text-book-600 hover:bg-book-50"
+                                              }
+                                              onClick={() =>
+                                                handleViewProgram(degree)
+                                              }
+                                            >
+                                              <Eye className="h-4 w-4 mr-1" />
+                                              View More
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                {!showEligibleOnly &&
+                                  facultyPrograms.length > 3 && (
+                                    <div className="text-center py-4">
+                                      <Button
+                                        variant="outline"
+                                        className="border-book-200 text-book-600 hover:bg-book-50"
+                                      >
+                                        <TrendingUp className="h-4 w-4 mr-2" />
+                                        View {facultyPrograms.length - 3} more
+                                        programs
+                                      </Button>
+                                    </div>
+                                  )}
+                              </div>
+                            </CardContent>
+                          )}
+                        </Card>
+                      );
+                    })}
                   </div>
                 ) : (
                   <Card className="border-0 shadow-lg">
