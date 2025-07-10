@@ -16,7 +16,6 @@ import {
   fetchUserProfileQuick,
 } from "@/services/authOperations";
 import { measureAsyncPerformance } from "@/utils/performanceUtils";
-import { createSafeContext } from "@/utils/reactContextSafety";
 
 // Simple logging for development
 const devLog = (message: string, data?: unknown) => {
