@@ -55,8 +55,14 @@ interface AuthActions {
 }
 
 // Split context into state and actions to prevent unnecessary re-renders
-const AuthStateContext = createContext<AuthState | undefined>(undefined);
-const AuthActionsContext = createContext<AuthActions | undefined>(undefined);
+const AuthStateContext = createSafeContext<AuthState | undefined>(
+  undefined,
+  "AuthStateContext",
+);
+const AuthActionsContext = createSafeContext<AuthActions | undefined>(
+  undefined,
+  "AuthActionsContext",
+);
 
 export const useAuthState = () => {
   const context = useContext(AuthStateContext);
