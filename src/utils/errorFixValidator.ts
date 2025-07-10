@@ -138,48 +138,51 @@ export class ErrorFixValidator {
   }
 
   /**
-   * Test analytics fallbacks
+   * Test analytics removal
    */
-  private testAnalyticsFallbacks(): void {
+  private testAnalyticsRemoval(): void {
     try {
-      // Test gtag fallback
-      const gtagAvailable = typeof (window as any).gtag === "function";
+      // Test gtag is removed
+      const gtagExists = typeof (window as any).gtag === "function";
       this.addResult({
         category: "Analytics",
-        test: "gtag availability",
-        passed: gtagAvailable,
-        message: gtagAvailable
-          ? "gtag function is available (real or fallback)"
-          : "gtag is not available",
+        test: "gtag removal",
+        passed: !gtagExists,
+        message: !gtagExists
+          ? "gtag successfully removed"
+          : "gtag still present",
       });
 
-      // Test dataLayer
-      const dataLayerAvailable = Array.isArray((window as any).dataLayer);
+      // Test dataLayer is removed
+      const dataLayerExists = Array.isArray((window as any).dataLayer);
       this.addResult({
         category: "Analytics",
-        test: "dataLayer availability",
-        passed: dataLayerAvailable,
-        message: dataLayerAvailable
-          ? "dataLayer is available"
-          : "dataLayer is not available",
+        test: "dataLayer removal",
+        passed: !dataLayerExists,
+        message: !dataLayerExists
+          ? "dataLayer successfully removed"
+          : "dataLayer still present",
       });
 
-      // Test analytics object
-      const analyticsAvailable = typeof (window as any).analytics === "object";
+      // Test no analytics scripts in DOM
+      const analyticsScripts = document.querySelectorAll(
+        'script[src*="google-analytics"], script[src*="googletagmanager"], script[src*="gtag"]',
+      );
       this.addResult({
         category: "Analytics",
-        test: "Analytics object",
-        passed: analyticsAvailable,
-        message: analyticsAvailable
-          ? "Analytics object is available"
-          : "Analytics object fallback created",
+        test: "Analytics scripts removal",
+        passed: analyticsScripts.length === 0,
+        message:
+          analyticsScripts.length === 0
+            ? "All analytics scripts removed"
+            : `${analyticsScripts.length} analytics scripts still present`,
       });
     } catch (error: any) {
       this.addResult({
         category: "Analytics",
-        test: "Analytics fallback test",
+        test: "Analytics removal test",
         passed: false,
-        message: `Error testing analytics: ${error.message}`,
+        message: `Error testing analytics removal: ${error.message}`,
       });
     }
   }
