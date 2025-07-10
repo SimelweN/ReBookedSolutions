@@ -104,6 +104,33 @@ const AccountInformation = ({
     setIsEditing(false);
   };
 
+  const miniPageUrl = `${window.location.origin}/seller/${user?.id}`;
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(miniPageUrl);
+      toast.success("Link copied to clipboard!");
+    } catch (error) {
+      toast.error("Failed to copy link");
+    }
+  };
+
+  const handleShareLink = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${profile.name}'s ReBooked Mini Marketplace`,
+          text: `Check out my books on ReBooked!`,
+          url: miniPageUrl,
+        });
+      } catch (error) {
+        console.error("Share failed:", error);
+      }
+    } else {
+      handleCopyLink();
+    }
+  };
+
   return (
     <>
       <Card>
