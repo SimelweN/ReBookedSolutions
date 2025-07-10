@@ -494,7 +494,13 @@ const DevDashboard: React.FC = () => {
         );
       }
     } catch (error) {
-      addTestResult("Commit System", "failed", `Commit system error: ${error}`);
+      setTimeout(() => {
+        addTestResult(
+          "Commit System",
+          "failed",
+          `Commit system error: ${error}`,
+        );
+      }, 0);
     }
   };
 
@@ -506,20 +512,30 @@ const DevDashboard: React.FC = () => {
         .limit(1);
 
       if (error) {
+        setTimeout(() => {
+          addTestResult(
+            "Notifications",
+            "failed",
+            `Notifications table error: ${error.message}`,
+          );
+        }, 0);
+      } else {
+        setTimeout(() => {
+          addTestResult(
+            "Notifications",
+            "success",
+            "Notifications system accessible",
+          );
+        }, 0);
+      }
+    } catch (error) {
+      setTimeout(() => {
         addTestResult(
           "Notifications",
           "failed",
-          `Notifications table error: ${error.message}`,
+          `Notifications error: ${error}`,
         );
-      } else {
-        addTestResult(
-          "Notifications",
-          "success",
-          "Notifications system accessible",
-        );
-      }
-    } catch (error) {
-      addTestResult("Notifications", "failed", `Notifications error: ${error}`);
+      }, 0);
     }
   };
 
