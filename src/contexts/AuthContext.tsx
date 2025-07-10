@@ -1,5 +1,5 @@
-import React, {
-  createContext,
+import * as React from "react";
+import {
   useContext,
   useEffect,
   useState,
@@ -25,6 +25,7 @@ import { logError, getErrorMessage } from "@/utils/errorUtils";
 import { createFallbackProfile } from "@/utils/databaseConnectivityHelper";
 import { shouldSkipAuthLoading } from "@/utils/instantStartup";
 import { CookieManager } from "@/utils/cookieManager";
+import { createSafeContext } from "@/utils/reactContextSafety";
 
 // Simple logging for development
 const devLog = (message: string, data?: unknown) => {
@@ -62,7 +63,10 @@ interface AuthContextType {
   refreshProfile: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createSafeContext<AuthContextType | undefined>(
+  undefined,
+  "AuthContext",
+);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

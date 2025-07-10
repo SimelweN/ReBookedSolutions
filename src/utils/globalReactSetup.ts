@@ -24,6 +24,21 @@ export function setupGlobalReact() {
   (window as any).Component = React.Component;
   (window as any).Fragment = React.Fragment;
 
+  // Additional safety: ensure React.createContext is always available
+  if (!React.createContext) {
+    console.error(
+      "❌ React.createContext is not available in the React import",
+    );
+  } else {
+    // Test createContext to ensure it works
+    try {
+      const testContext = React.createContext(null);
+      console.log("✅ React.createContext test successful");
+    } catch (error) {
+      console.error("❌ React.createContext test failed:", error);
+    }
+  }
+
   console.log("✅ React globals initialized for third-party compatibility");
 }
 

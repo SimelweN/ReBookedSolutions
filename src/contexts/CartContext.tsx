@@ -1,9 +1,14 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import * as React from "react";
+import { useContext, useState, useEffect } from "react";
 import { CartItem, CartContextType } from "@/types/cart";
 import { Book } from "@/types/book";
 import { toast } from "sonner";
+import { createSafeContext } from "@/utils/reactContextSafety";
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+const CartContext = createSafeContext<CartContextType | undefined>(
+  undefined,
+  "CartContext",
+);
 
 export const useCart = () => {
   const context = useContext(CartContext);
