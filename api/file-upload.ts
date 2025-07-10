@@ -187,9 +187,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Log the upload (non-blocking)
-    supabase
-      .from("audit_logs")
-      .insert({
+    try {
+      await supabase.from("audit_logs").insert({
         action: "file_uploaded",
         table_name: "storage",
         user_id: userId,
@@ -201,10 +200,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           contentType: file.mimetype,
           publicUrl: publicUrlData.publicUrl,
         },
-      })
-      .catch((error) =>
-        console.warn("Failed to log file upload:", error.message),
-      );
+      });
+    } catch (error: any) {
+      console.warn("Failed to log file upload:", error.message);
+    }
 
     // Clean up temporary file
     try {
