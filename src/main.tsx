@@ -1,5 +1,8 @@
 import * as React from "react";
 
+// Import Datadog warning suppression as early as possible
+import "./utils/suppressDatadogWarnings";
+
 import { createRoot } from "react-dom/client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
