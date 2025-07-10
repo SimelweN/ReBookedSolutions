@@ -80,8 +80,8 @@ export class SellerMarketplaceService {
     const { data: bankingData } = await safeDbOperation(
       () =>
         supabase
-          .from("banking_subaccounts")
-          .select("subaccount_code, status")
+          .from("banking_details")
+          .select("paystack_subaccount_code, account_verified")
           .eq("user_id", sellerId)
           .single(),
       "getSellerBanking",
