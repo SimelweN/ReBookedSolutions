@@ -9,26 +9,24 @@ const Toaster = ({ ...props }: ToasterProps) => {
 
   useEffect(() => {
     mountedRef.current = true;
+    let timeoutId: NodeJS.Timeout;
 
     // Use multiple async boundaries to ensure we're completely outside the render cycle
     const rafId = requestAnimationFrame(() => {
-      const timeoutId = setTimeout(() => {
+      timeoutId = setTimeout(() => {
         // Only update state if component is still mounted
         if (mountedRef.current) {
           setShouldRender(true);
         }
       }, 100); // Increased delay to ensure render cycle completion
-
-      // Store timeout ID for cleanup
-      mountedRef.current && (mountedRef.current.timeoutId = timeoutId);
     });
 
     return () => {
       mountedRef.current = false;
       cancelAnimationFrame(rafId);
       // Clear any pending timeout
-      if (mountedRef.current?.timeoutId) {
-        clearTimeout(mountedRef.current.timeoutId);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
       }
     };
   }, []);
