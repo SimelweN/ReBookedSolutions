@@ -56,7 +56,7 @@ const UniversityProfile: React.FC = () => {
     <Layout>
       <div className="bg-white min-h-screen">
         {/* Clean Header */}
-        <div className="bg-gradient-to-b from-gray-50 to-white border-b border-gray-200">
+        <div className="bg-gradient-to-b from-book-100 via-book-50 to-white border-b border-book-200">
           <div className="container mx-auto px-6 py-8">
             {/* Back Navigation */}
             <Link
@@ -74,11 +74,19 @@ const UniversityProfile: React.FC = () => {
                 <div className="flex items-start gap-6 mb-8">
                   {/* Logo */}
                   <div className="relative">
-                    <div className="w-20 h-20 bg-white border-4 border-gray-100 rounded-2xl flex items-center justify-center shadow-lg">
-                      <span className="text-2xl font-bold text-gray-700">
-                        {university.abbreviation ||
-                          university.name.substring(0, 3).toUpperCase()}
-                      </span>
+                    <div className="w-20 h-20 bg-white border-4 border-book-200 rounded-2xl flex items-center justify-center shadow-lg">
+                      {university.logo ? (
+                        <img
+                          src={university.logo}
+                          alt={`${university.name} logo`}
+                          className="w-16 h-16 object-contain"
+                        />
+                      ) : (
+                        <span className="text-2xl font-bold text-gray-700">
+                          {university.abbreviation ||
+                            university.name.substring(0, 3).toUpperCase()}
+                        </span>
+                      )}
                     </div>
                     <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-book-500 rounded-full flex items-center justify-center">
                       <Award className="h-3 w-3 text-white" />
@@ -90,7 +98,7 @@ const UniversityProfile: React.FC = () => {
                     <div>
                       <Badge
                         variant="secondary"
-                        className="mb-3 bg-blue-50 text-blue-700 border-blue-200"
+                        className="mb-3 bg-book-50 text-book-700 border-book-200"
                       >
                         {university.type}
                       </Badge>
@@ -153,7 +161,7 @@ const UniversityProfile: React.FC = () => {
 
               {/* Quick Stats */}
               <div className="lg:col-span-1">
-                <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50">
+                <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-book-50 border-book-200">
                   <CardHeader className="pb-4">
                     <CardTitle className="text-lg flex items-center text-gray-800">
                       <BarChart3 className="h-5 w-5 mr-2 text-book-500" />
