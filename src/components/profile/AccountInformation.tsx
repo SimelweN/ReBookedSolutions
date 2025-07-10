@@ -215,6 +215,86 @@ const AccountInformation = ({
           </div>
         </CardContent>
       </Card>
+
+      {/* ReBooked Mini Page Sharing */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Store className="h-5 w-5 text-book-600" />
+            Your ReBooked Mini Marketplace
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label>Share Your Mini Page</Label>
+            <p className="text-sm text-gray-600 mt-1 mb-3">
+              Your personal marketplace where buyers can see all your books and
+              seller information.
+            </p>
+
+            <div className="bg-gray-50 rounded-lg p-3 border">
+              <div className="flex items-center gap-2 mb-2">
+                <ExternalLink className="h-4 w-4 text-gray-500" />
+                <span className="text-sm font-medium text-gray-700">
+                  Your Mini Page URL:
+                </span>
+              </div>
+              <code className="text-sm text-book-600 break-all">
+                {miniPageUrl}
+              </code>
+            </div>
+
+            <div className="flex gap-2 mt-3">
+              <Button
+                onClick={handleCopyLink}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Copy className="h-4 w-4" />
+                Copy Link
+              </Button>
+              <Button
+                onClick={handleShareLink}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Share2 className="h-4 w-4" />
+                Share
+              </Button>
+              <Button
+                onClick={() => window.open(miniPageUrl, "_blank")}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Preview
+              </Button>
+            </div>
+          </div>
+
+          <Alert className="border-book-200 bg-book-50">
+            <Store className="h-4 w-4 text-book-600" />
+            <AlertDescription className="text-book-800">
+              <div className="space-y-2">
+                <div className="font-medium">
+                  💡 Share your ReBooked Mini page to:
+                </div>
+                <ul className="text-sm space-y-1 ml-4">
+                  <li>
+                    • Share on social media (WhatsApp, Facebook, Instagram)
+                  </li>
+                  <li>• Add to your university group chats</li>
+                  <li>• Include in your email signature</li>
+                  <li>• Share with classmates directly</li>
+                </ul>
+              </div>
+            </AlertDescription>
+          </Alert>
+        </CardContent>
+      </Card>
     </>
   );
 };
