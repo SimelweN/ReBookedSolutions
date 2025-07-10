@@ -690,23 +690,349 @@ const UniversityProfile: React.FC = () => {
               <div className="space-y-8">
                 <div>
                   <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                    Campus Life
+                    Campus Life at {university.name}
                   </h2>
                   <p className="text-gray-600">
-                    Discover what makes campus life special
+                    Discover what makes student life vibrant and engaging
                   </p>
                 </div>
 
+                {/* Accommodation */}
                 <Card className="border-0 shadow-lg">
-                  <CardContent className="p-8 text-center">
-                    <Heart className="h-16 w-16 mx-auto text-book-500 mb-6" />
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                      Campus Life Information Coming Soon
-                    </h3>
-                    <p className="text-gray-600 max-w-md mx-auto">
-                      We're preparing detailed information about student life,
-                      campus facilities, and extracurricular activities.
-                    </p>
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <Building2 className="h-6 w-6 mr-3 text-book-500" />
+                      Student Accommodation
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="p-4 bg-book-50 rounded-lg">
+                          <h4 className="font-semibold text-book-800 mb-2">
+                            On-Campus Residences
+                          </h4>
+                          <ul className="text-sm text-book-700 space-y-1">
+                            {university.id === "uwc" ? (
+                              <>
+                                <li>• Cassinga Residence</li>
+                                <li>• Basil February Residence</li>
+                                <li>• Chris Hani Residence</li>
+                                <li>• Ruth First Residence</li>
+                                <li>• Eduardo Dos Santos Residence</li>
+                              </>
+                            ) : (
+                              <>
+                                <li>• Modern residence facilities</li>
+                                <li>• Shared and single room options</li>
+                                <li>• Meal plan options available</li>
+                                <li>• 24/7 security and support</li>
+                              </>
+                            )}
+                          </ul>
+                        </div>
+                        <div className="p-4 bg-blue-50 rounded-lg">
+                          <h4 className="font-semibold text-blue-800 mb-2">
+                            Off-Campus Housing
+                          </h4>
+                          <ul className="text-sm text-blue-700 space-y-1">
+                            <li>• Private accommodation options</li>
+                            <li>• Shuttle services to campus</li>
+                            <li>• Student housing partnerships</li>
+                            <li>• Rental assistance programs</li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="p-4 bg-green-50 rounded-lg">
+                          <h4 className="font-semibold text-green-800 mb-2">
+                            Residence Features
+                          </h4>
+                          <ul className="text-sm text-green-700 space-y-1">
+                            <li>• Wi-Fi and study areas</li>
+                            <li>• Recreational facilities</li>
+                            <li>• Laundry facilities</li>
+                            <li>• Common areas and kitchens</li>
+                          </ul>
+                        </div>
+                        <div className="p-4 bg-purple-50 rounded-lg">
+                          <h4 className="font-semibold text-purple-800 mb-2">
+                            Application Process
+                          </h4>
+                          <ul className="text-sm text-purple-700 space-y-1">
+                            <li>• Online application system</li>
+                            <li>• Early application recommended</li>
+                            <li>• Various accommodation options</li>
+                            <li>• Payment plan options</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Student Activities */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <Heart className="h-6 w-6 mr-3 text-book-500" />
+                      Student Activities & Organizations
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-3 gap-6">
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">
+                          Sports & Recreation
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="p-3 bg-orange-50 rounded-lg">
+                            <h5 className="font-medium text-orange-800">
+                              Sports Clubs
+                            </h5>
+                            <p className="text-sm text-orange-700">
+                              Rugby, soccer, netball, athletics, and more
+                            </p>
+                          </div>
+                          <div className="p-3 bg-red-50 rounded-lg">
+                            <h5 className="font-medium text-red-800">
+                              Fitness Facilities
+                            </h5>
+                            <p className="text-sm text-red-700">
+                              Modern gym and fitness centers
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">
+                          Cultural Activities
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="p-3 bg-purple-50 rounded-lg">
+                            <h5 className="font-medium text-purple-800">
+                              Cultural Societies
+                            </h5>
+                            <p className="text-sm text-purple-700">
+                              Drama, music, dance, and arts clubs
+                            </p>
+                          </div>
+                          <div className="p-3 bg-pink-50 rounded-lg">
+                            <h5 className="font-medium text-pink-800">
+                              Events & Festivals
+                            </h5>
+                            <p className="text-sm text-pink-700">
+                              Annual festivals and cultural celebrations
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">
+                          Academic & Professional
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="p-3 bg-blue-50 rounded-lg">
+                            <h5 className="font-medium text-blue-800">
+                              Academic Societies
+                            </h5>
+                            <p className="text-sm text-blue-700">
+                              Subject-specific student organizations
+                            </p>
+                          </div>
+                          <div className="p-3 bg-green-50 rounded-lg">
+                            <h5 className="font-medium text-green-800">
+                              Leadership Programs
+                            </h5>
+                            <p className="text-sm text-green-700">
+                              Student leadership and mentorship
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Campus Facilities */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <Building2 className="h-6 w-6 mr-3 text-book-500" />
+                      Campus Facilities
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="p-4 bg-book-50 rounded-lg">
+                          <h4 className="font-semibold text-book-800 mb-3">
+                            Academic Facilities
+                          </h4>
+                          <ul className="text-sm text-book-700 space-y-2">
+                            <li className="flex items-center">
+                              <BookOpen className="h-4 w-4 mr-2" />
+                              Modern libraries with digital resources
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              State-of-the-art laboratories
+                            </li>
+                            <li className="flex items-center">
+                              <Globe className="h-4 w-4 mr-2" />
+                              Computer labs and IT facilities
+                            </li>
+                            <li className="flex items-center">
+                              <Building2 className="h-4 w-4 mr-2" />
+                              Lecture halls and seminar rooms
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="p-4 bg-green-50 rounded-lg">
+                          <h4 className="font-semibold text-green-800 mb-3">
+                            Student Support
+                          </h4>
+                          <ul className="text-sm text-green-700 space-y-2">
+                            <li className="flex items-center">
+                              <Heart className="h-4 w-4 mr-2" />
+                              Counseling and wellness center
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Academic support services
+                            </li>
+                            <li className="flex items-center">
+                              <Award className="h-4 w-4 mr-2" />
+                              Career guidance center
+                            </li>
+                            <li className="flex items-center">
+                              <Info className="h-4 w-4 mr-2" />
+                              Disability support services
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="p-4 bg-blue-50 rounded-lg">
+                          <h4 className="font-semibold text-blue-800 mb-3">
+                            Campus Amenities
+                          </h4>
+                          <ul className="text-sm text-blue-700 space-y-2">
+                            <li className="flex items-center">
+                              <Building2 className="h-4 w-4 mr-2" />
+                              Student center and dining halls
+                            </li>
+                            <li className="flex items-center">
+                              <MapPin className="h-4 w-4 mr-2" />
+                              Campus bookstore and shops
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Banking and postal services
+                            </li>
+                            <li className="flex items-center">
+                              <Heart className="h-4 w-4 mr-2" />
+                              Medical center and pharmacy
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="p-4 bg-orange-50 rounded-lg">
+                          <h4 className="font-semibold text-orange-800 mb-3">
+                            Transportation
+                          </h4>
+                          <ul className="text-sm text-orange-700 space-y-2">
+                            <li className="flex items-center">
+                              <MapPin className="h-4 w-4 mr-2" />
+                              Campus shuttle services
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Public transport links
+                            </li>
+                            <li className="flex items-center">
+                              <Building2 className="h-4 w-4 mr-2" />
+                              Parking facilities
+                            </li>
+                            <li className="flex items-center">
+                              <Award className="h-4 w-4 mr-2" />
+                              Bicycle-friendly campus
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Student Support Services */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <Users className="h-6 w-6 mr-3 text-book-500" />
+                      Student Support Services
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <div className="p-4 bg-gradient-to-r from-book-100 to-book-50 rounded-lg">
+                          <h4 className="font-semibold text-book-800 mb-2">
+                            Academic Support
+                          </h4>
+                          <p className="text-sm text-book-700">
+                            Tutoring programs, study groups, and academic
+                            advising to help you succeed.
+                          </p>
+                        </div>
+                        <div className="p-4 bg-gradient-to-r from-green-100 to-green-50 rounded-lg">
+                          <h4 className="font-semibold text-green-800 mb-2">
+                            Mental Health & Wellness
+                          </h4>
+                          <p className="text-sm text-green-700">
+                            Professional counseling services and wellness
+                            programs for student wellbeing.
+                          </p>
+                        </div>
+                        <div className="p-4 bg-gradient-to-r from-blue-100 to-blue-50 rounded-lg">
+                          <h4 className="font-semibold text-blue-800 mb-2">
+                            Financial Aid Office
+                          </h4>
+                          <p className="text-sm text-blue-700">
+                            Assistance with funding, bursaries, and financial
+                            planning for your studies.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="space-y-3">
+                        <div className="p-4 bg-gradient-to-r from-purple-100 to-purple-50 rounded-lg">
+                          <h4 className="font-semibold text-purple-800 mb-2">
+                            Career Services
+                          </h4>
+                          <p className="text-sm text-purple-700">
+                            Career guidance, internship placement, and job
+                            search assistance.
+                          </p>
+                        </div>
+                        <div className="p-4 bg-gradient-to-r from-orange-100 to-orange-50 rounded-lg">
+                          <h4 className="font-semibold text-orange-800 mb-2">
+                            International Student Support
+                          </h4>
+                          <p className="text-sm text-orange-700">
+                            Specialized support for international students
+                            including visa and cultural assistance.
+                          </p>
+                        </div>
+                        <div className="p-4 bg-gradient-to-r from-pink-100 to-pink-50 rounded-lg">
+                          <h4 className="font-semibold text-pink-800 mb-2">
+                            Diversity & Inclusion
+                          </h4>
+                          <p className="text-sm text-pink-700">
+                            Programs promoting diversity, equality, and
+                            inclusive campus culture.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
