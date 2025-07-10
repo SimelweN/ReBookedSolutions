@@ -194,6 +194,24 @@ function App() {
                           }
                         />
 
+                        {/* Study Resources Routes */}
+                        <Route
+                          path="/study-resources"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <StudyResources />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/study-tips"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <StudyResources />
+                            </Suspense>
+                          }
+                        />
+
                         {/* Shopping and Cart Routes */}
                         <Route
                           path="/cart"
