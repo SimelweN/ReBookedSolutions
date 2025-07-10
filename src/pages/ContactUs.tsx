@@ -175,6 +175,41 @@ const ContactUs = () => {
                 </div>
               </div>
 
+              {/* Social Media Section */}
+              <div className="flex items-start">
+                <div className="bg-book-100 p-3 rounded-full mr-4">
+                  <Instagram className="h-6 w-6 text-book-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    Follow Us
+                  </h3>
+                  <div className="flex items-center space-x-4 mt-2">
+                    <a
+                      href="https://www.instagram.com/rebooked.solutions?igsh=M2ZsNjd2aTNmZmRh"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center text-pink-600 hover:text-pink-800 transition-colors"
+                    >
+                      <Instagram className="h-5 w-5 mr-1" />
+                      Instagram
+                    </a>
+                    <a
+                      href="https://www.facebook.com/share/16ngKMps6U/?mibextid=wwXIfr"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+                    >
+                      <Facebook className="h-5 w-5 mr-1" />
+                      Facebook
+                    </a>
+                  </div>
+                  <p className="text-gray-600 mt-1">
+                    Stay updated with our latest books and announcements!
+                  </p>
+                </div>
+              </div>
+
               <div className="mt-8 bg-gray-50 p-6 rounded-lg">
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">
                   ReBooked Solutions Support Team
