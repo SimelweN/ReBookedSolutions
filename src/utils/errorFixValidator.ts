@@ -309,32 +309,16 @@ export class ErrorFixValidator {
         });
       }
 
-      // Test 2: Simulate gtag call
-      try {
-        if (typeof (window as any).gtag === "function") {
-          (window as any).gtag("event", "test_event", { test: true });
-          this.addResult({
-            category: "Prevention",
-            test: "gtag call simulation",
-            passed: true,
-            message: "gtag calls work without errors",
-          });
-        } else {
-          this.addResult({
-            category: "Prevention",
-            test: "gtag call simulation",
-            passed: false,
-            message: "gtag is not available",
-          });
-        }
-      } catch (error: any) {
-        this.addResult({
-          category: "Prevention",
-          test: "gtag call simulation",
-          passed: false,
-          message: `gtag call failed: ${error.message}`,
-        });
-      }
+      // Test 2: Verify analytics removal
+      const gtagAbsent = typeof (window as any).gtag === "undefined";
+      this.addResult({
+        category: "Prevention",
+        test: "Analytics removal verification",
+        passed: gtagAbsent,
+        message: gtagAbsent
+          ? "Analytics successfully removed"
+          : "Analytics still present",
+      });
     } catch (error: any) {
       this.addResult({
         category: "Prevention",
