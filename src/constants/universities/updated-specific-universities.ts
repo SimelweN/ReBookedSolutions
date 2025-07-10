@@ -24,12 +24,12 @@ import { UNIVEN_FACULTIES } from "./univen";
 import { UFS_FACULTIES } from "./ufs";
 import { UCT_FACULTIES } from "./uct";
 import { RHODES_FACULTIES } from "./rhodes";
-import {
-  UFH_FACULTIES,
-  UNISA_FACULTIES,
-  NMU_FACULTIES,
-  SMU_FACULTIES,
-} from "./missing-universities-fix";
+// import {
+//   UFH_FACULTIES,
+//   UNISA_FACULTIES,
+//   NMU_FACULTIES,
+//   SMU_FACULTIES,
+// } from "./missing-universities-fix";
 
 /**
  * MODULAR UNIVERSITY DATA SYSTEM
