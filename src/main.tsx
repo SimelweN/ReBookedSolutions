@@ -1,4 +1,5 @@
-// Import global React setup FIRST to prevent third-party script errors
+// Import suppressions FIRST
+import "./utils/suppressDatadogWarnings";
 import "./utils/globalReactSetup";
 
 import * as React from "react";
