@@ -62,7 +62,6 @@ export interface SellerProfile {
   name: string;
   email: string;
   bio?: string;
-  university?: string;
   rating?: number;
   totalSales?: number;
   memberSince: string;
