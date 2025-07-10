@@ -410,6 +410,24 @@ export const UL_FACULTIES: Faculty[] = [
     degrees: [
       // School of Agricultural & Environmental Sciences
       {
+        id: createDegreeId("Bachelor Agricultural Management UL"),
+        name: "Bachelor of Agricultural Management",
+        faculty: "Science & Agriculture",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Agricultural business and farm management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Manager",
+          "Farm Manager",
+          "Agricultural Consultant",
+        ],
+      },
+      {
         id: createDegreeId("BSc Agriculture Animal Production UL"),
         name: "BSc Agriculture - Animal Production",
         faculty: "Science & Agriculture",
