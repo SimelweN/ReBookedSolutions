@@ -165,11 +165,15 @@ const CommitTester = () => {
         "Successfully committed to sale",
         result,
       );
-      toast.success("Commit to sale test passed");
+      setTimeout(() => {
+        toast.success("Commit to sale test passed");
+      }, 0);
       await loadMockOrders();
     } catch (error: any) {
       updateTestStatus(testId, "failed", `Commit failed: ${error.message}`);
-      toast.error(`Commit test failed: ${error.message}`);
+      setTimeout(() => {
+        toast.error(`Commit test failed: ${error.message}`);
+      }, 0);
     } finally {
       setIsLoading(false);
     }
@@ -197,7 +201,9 @@ const CommitTester = () => {
         "Successfully declined commit",
         result,
       );
-      toast.success("Decline commit test passed");
+      setTimeout(() => {
+        toast.success("Decline commit test passed");
+      }, 0);
       await loadMockOrders();
     } catch (error: any) {
       updateTestStatus(testId, "failed", `Decline failed: ${error.message}`);
