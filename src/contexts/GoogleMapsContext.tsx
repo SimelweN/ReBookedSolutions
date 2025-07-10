@@ -2,6 +2,7 @@ import * as React from "react";
 import { useContext } from "react";
 type ReactNode = React.ReactNode;
 import { useJsApiLoader } from "@react-google-maps/api";
+import { safeCreateContext } from "@/utils/reactImportValidator";
 // Define the libraries array with proper typing
 const libraries: "places"[] = ["places"];
 
@@ -12,9 +13,10 @@ interface GoogleMapsContextType {
 }
 
 // Create the context with undefined as default
-const GoogleMapsContext = React.createContext<
-  GoogleMapsContextType | undefined
->(undefined);
+const GoogleMapsContext = safeCreateContext<GoogleMapsContextType | undefined>(
+  undefined,
+  "GoogleMapsContext",
+);
 
 // Custom hook to use the Google Maps context
 export const useGoogleMaps = (): GoogleMapsContextType => {
