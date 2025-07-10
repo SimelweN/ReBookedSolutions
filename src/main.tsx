@@ -12,6 +12,9 @@ import "./utils/thirdPartyErrorHandler";
 // Import safe storage handler
 import "./utils/safeStorage";
 
+// Import analytics fallback
+import "./utils/analyticsFallback";
+
 console.log("🚀 ReBooked Solutions - Starting...");
 
 // Create query client with basic settings
