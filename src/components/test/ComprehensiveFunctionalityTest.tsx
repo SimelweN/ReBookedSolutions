@@ -344,7 +344,9 @@ const ComprehensiveFunctionalityTest = () => {
   };
 
   const runAllTests = async () => {
-    toast.info("Starting comprehensive functionality test...");
+    setTimeout(() => {
+      toast.info("Starting comprehensive functionality test...");
+    }, 0);
 
     for (const test of tests) {
       await runTest(test.name);
@@ -355,13 +357,15 @@ const ComprehensiveFunctionalityTest = () => {
     const passedTests = tests.filter((t) => t.status === "passed").length;
     const totalTests = tests.length;
 
-    if (passedTests === totalTests) {
-      toast.success(`All ${totalTests} tests passed! 🎉`);
-    } else {
-      toast.error(
-        `${totalTests - passedTests} tests failed out of ${totalTests}`,
-      );
-    }
+    setTimeout(() => {
+      if (passedTests === totalTests) {
+        toast.success(`All ${totalTests} tests passed! 🎉`);
+      } else {
+        toast.error(
+          `${totalTests - passedTests} tests failed out of ${totalTests}`,
+        );
+      }
+    }, 0);
   };
 
   const getStatusIcon = (status: TestResult["status"]) => {
