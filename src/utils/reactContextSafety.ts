@@ -50,7 +50,14 @@ export function createSafeContext<T>(
       },
       Consumer: ({ children }: { children: (value: T) => React.ReactNode }) => {
         console.warn(`⚠️ Using emergency fallback consumer for ${contextName}`);
-        return children(defaultValue);
+        if (typeof React !== "undefined" && React.createElement) {
+          return React.createElement(
+            React.Fragment,
+            null,
+            children(defaultValue),
+          );
+        }
+        return children(defaultValue) as any;
       },
       displayName: `EmergencyFallback_${contextName}`,
     } as React.Context<T>;
