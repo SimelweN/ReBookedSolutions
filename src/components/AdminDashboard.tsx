@@ -182,7 +182,7 @@ const AdminDashboard = () => {
       window.URL.revokeObjectURL(url);
 
       toast.success("Report generated and downloaded successfully!");
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to generate report");
     } finally {
       setIsGeneratingReport(false);
