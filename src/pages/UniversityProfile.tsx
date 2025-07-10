@@ -347,9 +347,22 @@ const UniversityProfile: React.FC = () => {
                                           </div>
                                         )}
                                       </div>
-                                      <Badge className="bg-book-100 text-book-700 border-book-200 shrink-0">
-                                        APS: {degree.apsRequirement}
-                                      </Badge>
+                                      <div className="flex items-center gap-2 shrink-0">
+                                        <Badge className="bg-book-100 text-book-700 border-book-200">
+                                          APS: {degree.apsRequirement}
+                                        </Badge>
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          className="border-book-200 text-book-600 hover:bg-book-50"
+                                          onClick={() =>
+                                            handleViewProgram(degree)
+                                          }
+                                        >
+                                          <Eye className="h-4 w-4 mr-1" />
+                                          View More
+                                        </Button>
+                                      </div>
                                     </div>
                                   </div>
                                 ))}
