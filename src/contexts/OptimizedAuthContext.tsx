@@ -1,5 +1,5 @@
 import * as React from "react";
-import React, {
+import {
   useContext,
   useEffect,
   useState,
@@ -16,6 +16,7 @@ import {
   fetchUserProfileQuick,
 } from "@/services/authOperations";
 import { measureAsyncPerformance } from "@/utils/performanceUtils";
+import { safeCreateContext } from "@/utils/reactImportValidator";
 
 // Simple logging for development
 const devLog = (message: string, data?: unknown) => {
@@ -54,9 +55,13 @@ interface AuthActions {
 }
 
 // Split context into state and actions to prevent unnecessary re-renders
-const AuthStateContext = React.createContext<AuthState | undefined>(undefined);
-const AuthActionsContext = React.createContext<AuthActions | undefined>(
+const AuthStateContext = safeCreateContext<AuthState | undefined>(
   undefined,
+  "AuthStateContext",
+);
+const AuthActionsContext = safeCreateContext<AuthActions | undefined>(
+  undefined,
+  "AuthActionsContext",
 );
 
 export const useAuthState = () => {
