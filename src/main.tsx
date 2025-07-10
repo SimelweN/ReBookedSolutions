@@ -12,9 +12,6 @@ import "./utils/thirdPartyErrorHandler";
 // Import safe storage handler
 import "./utils/safeStorage";
 
-// Import analytics fallback
-import "./utils/analyticsFallback";
-
 // Import error fix test (runs automatically in dev)
 import "./utils/testErrorFixes";
 
