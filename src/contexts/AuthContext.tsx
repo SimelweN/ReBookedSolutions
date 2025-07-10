@@ -63,7 +63,10 @@ interface AuthContextType {
   refreshProfile: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createSafeContext<AuthContextType | undefined>(
+  undefined,
+  "AuthContext",
+);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
