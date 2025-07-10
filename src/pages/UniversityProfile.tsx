@@ -21,8 +21,11 @@ import {
   Award,
   Heart,
   Info,
+  Eye,
 } from "lucide-react";
 import Layout from "@/components/Layout";
+import ProgramDetailModal from "@/components/university-info/ProgramDetailModal";
+import { Degree } from "@/types/university";
 
 /**
  * University Profile Component - Complete modern redesign
