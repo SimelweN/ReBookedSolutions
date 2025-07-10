@@ -83,12 +83,15 @@ export class ThirdPartyErrorHandler {
       "fullstory",
       "hotjar",
       "mixpanel",
+      "datadog",
 
       // Known harmless errors
       "Cannot read properties of undefined (reading 'createContext')",
       "Non-Error promise rejection captured",
       "Script error.",
       "ResizeObserver loop limit exceeded",
+      "No storage available for session",
+      "ERR_BLOCKED_BY_CLIENT",
     ];
 
     const content =
