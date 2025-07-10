@@ -294,15 +294,24 @@ export class FunctionFallbackService {
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
+      console.log(`Calling function ${functionName} with payload:`, payload);
       const { data, error } = await supabase.functions.invoke(functionName, {
         body: payload,
         signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
+
+      if (error) {
+        console.error(`Function ${functionName} returned error:`, error);
+      } else {
+        console.log(`Function ${functionName} succeeded:`, data);
+      }
+
       return { data, error };
     } catch (error) {
       clearTimeout(timeoutId);
+      console.error(`Function ${functionName} threw exception:`, error);
       throw error;
     }
   }
