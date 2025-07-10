@@ -36,9 +36,22 @@ import { Degree } from "@/types/university";
  */
 const UniversityProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState("programs");
   const [selectedProgram, setSelectedProgram] = useState<Degree | null>(null);
   const [isProgramModalOpen, setIsProgramModalOpen] = useState(false);
+  const [showEligibleOnly, setShowEligibleOnly] = useState(false);
+
+  // Get APS from URL parameters
+  const fromAPS = searchParams.get("fromAPS") === "true";
+  const userAPS = parseInt(searchParams.get("aps") || "0");
+
+  useEffect(() => {
+    // If coming from APS calculator, show eligible programs by default
+    if (fromAPS && userAPS > 0) {
+      setShowEligibleOnly(true);
+    }
+  }, [fromAPS, userAPS]);
 
   const handleViewProgram = (program: Degree) => {
     setSelectedProgram(program);
@@ -48,6 +61,18 @@ const UniversityProfile: React.FC = () => {
   const closeProgramModal = () => {
     setIsProgramModalOpen(false);
     setSelectedProgram(null);
+  };
+
+  // Helper function to check if user is eligible for a program
+  const isEligibleForProgram = (program: Degree): boolean => {
+    if (!userAPS || userAPS === 0) return true;
+    return userAPS >= program.apsRequirement;
+  };
+
+  // Helper function to filter programs based on eligibility
+  const filterPrograms = (programs: Degree[]): Degree[] => {
+    if (!showEligibleOnly || !userAPS) return programs;
+    return programs.filter(isEligibleForProgram);
   };
 
   const university = ALL_SOUTH_AFRICAN_UNIVERSITIES.find(
