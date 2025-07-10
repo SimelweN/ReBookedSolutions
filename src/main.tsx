@@ -23,6 +23,9 @@ import "./utils/testErrorFixes";
 // Import context validation (runs automatically in dev)
 import "./utils/validateContextFixes";
 
+// Import createContext fix summary (runs automatically in dev)
+import "./utils/createContextFixSummary";
+
 console.log("🚀 ReBooked Solutions - Starting...");
 
 // Create query client with basic settings
