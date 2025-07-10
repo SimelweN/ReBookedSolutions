@@ -266,7 +266,7 @@ const ProgramDetailModal: React.FC<ProgramDetailModalProps> = ({
         <Tabs defaultValue="overview" className="w-full mt-6">
           {/* Mobile: Vertical Tab Stack */}
           <div className="block sm:hidden">
-            <TabsList className="bg-transparent p-1 h-auto w-full flex flex-col space-y-1 rounded-lg">
+            <TabsList className="bg-transparent p-1 w-full flex flex-col space-y-1 rounded-lg">
               <TabsTrigger
                 value="overview"
                 className="w-full rounded-lg py-2 px-3 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 text-sm"
