@@ -253,6 +253,9 @@ export class SafeStorage {
   static initialize(): void {
     if (typeof window === "undefined") return;
 
+    // Suppress Datadog SDK storage warnings
+    this.suppressDatadogWarnings();
+
     // Create a polyfill for localStorage if it's not available or broken
     if (!this.isAvailable()) {
       console.warn("📦 localStorage not available, using memory fallback");
@@ -275,6 +278,48 @@ export class SafeStorage {
 
     // Clean up periodically
     this.schedulePeriodicCleanup();
+  }
+
+  /**
+   * Suppress Datadog SDK warnings about storage
+   */
+  private static suppressDatadogWarnings(): void {
+    const originalConsoleWarn = console.warn;
+    const originalConsoleLog = console.log;
+
+    console.warn = (...args: any[]) => {
+      const message = args.join(" ");
+
+      // Suppress Datadog storage warnings
+      if (
+        message.includes("Datadog Browser SDK") &&
+        (message.includes("No storage available") ||
+          message.includes("session") ||
+          message.includes("not send any data"))
+      ) {
+        console.debug(
+          "🔇 Suppressed Datadog storage warning:",
+          message.substring(0, 100),
+        );
+        return;
+      }
+
+      originalConsoleWarn.apply(console, args);
+    };
+
+    console.log = (...args: any[]) => {
+      const message = args.join(" ");
+
+      // Suppress Datadog logs about storage issues
+      if (
+        message.includes("Datadog Browser SDK") &&
+        message.includes("storage")
+      ) {
+        return;
+      }
+
+      originalConsoleLog.apply(console, args);
+    };
   }
 
   /**
