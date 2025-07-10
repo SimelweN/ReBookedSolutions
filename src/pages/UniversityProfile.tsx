@@ -345,42 +345,79 @@ const UniversityProfile: React.FC = () => {
             onValueChange={setActiveTab}
             className="w-full"
           >
-            {/* Modern Tab Navigation */}
+            {/* Modern Tab Navigation - Mobile Optimized */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
-              <TabsList className="bg-transparent p-1 h-auto w-full grid grid-cols-4 rounded-xl">
-                <TabsTrigger
-                  value="programs"
-                  className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
-                >
-                  <GraduationCap className="h-5 w-5 mr-2" />
-                  <span className="hidden sm:inline">Academic Programs</span>
-                  <span className="sm:hidden">Programs</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="admissions"
-                  className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
-                >
-                  <Calendar className="h-5 w-5 mr-2" />
-                  <span className="hidden sm:inline">Admissions</span>
-                  <span className="sm:hidden">Apply</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="student-life"
-                  className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
-                >
-                  <Heart className="h-5 w-5 mr-2" />
-                  <span className="hidden sm:inline">Campus Life</span>
-                  <span className="sm:hidden">Life</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="resources"
-                  className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
-                >
-                  <Info className="h-5 w-5 mr-2" />
-                  <span className="hidden sm:inline">Resources</span>
-                  <span className="sm:hidden">Info</span>
-                </TabsTrigger>
-              </TabsList>
+              {/* Mobile: Vertical Stack */}
+              <div className="block md:hidden">
+                <TabsList className="bg-transparent p-2 h-auto w-full flex flex-col space-y-2 rounded-xl">
+                  <TabsTrigger
+                    value="programs"
+                    className="w-full rounded-lg py-3 px-4 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all justify-start"
+                  >
+                    <GraduationCap className="h-5 w-5 mr-3" />
+                    Academic Programs
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="admissions"
+                    className="w-full rounded-lg py-3 px-4 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all justify-start"
+                  >
+                    <Calendar className="h-5 w-5 mr-3" />
+                    Admissions
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="student-life"
+                    className="w-full rounded-lg py-3 px-4 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all justify-start"
+                  >
+                    <Heart className="h-5 w-5 mr-3" />
+                    Campus Life
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="resources"
+                    className="w-full rounded-lg py-3 px-4 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all justify-start"
+                  >
+                    <Info className="h-5 w-5 mr-3" />
+                    Resources
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+
+              {/* Desktop: Horizontal Grid */}
+              <div className="hidden md:block">
+                <TabsList className="bg-transparent p-1 h-auto w-full grid grid-cols-4 rounded-xl">
+                  <TabsTrigger
+                    value="programs"
+                    className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
+                  >
+                    <GraduationCap className="h-5 w-5 mr-2" />
+                    <span className="hidden lg:inline">Academic Programs</span>
+                    <span className="lg:hidden">Programs</span>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="admissions"
+                    className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
+                  >
+                    <Calendar className="h-5 w-5 mr-2" />
+                    <span className="hidden lg:inline">Admissions</span>
+                    <span className="lg:hidden">Apply</span>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="student-life"
+                    className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
+                  >
+                    <Heart className="h-5 w-5 mr-2" />
+                    <span className="hidden lg:inline">Campus Life</span>
+                    <span className="lg:hidden">Life</span>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="resources"
+                    className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
+                  >
+                    <Info className="h-5 w-5 mr-2" />
+                    <span className="hidden lg:inline">Resources</span>
+                    <span className="lg:hidden">Info</span>
+                  </TabsTrigger>
+                </TabsList>
+              </div>
             </div>
 
             {/* Tab Content */}
