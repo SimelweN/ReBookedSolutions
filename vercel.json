@@ -6,9 +6,9 @@
       "maxDuration": 15
     }
   },
-  "buildCommand": "yarn build",
+  "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "installCommand": "yarn install",
+  "installCommand": "npm install",
   "framework": null,
   "rewrites": [
     {
