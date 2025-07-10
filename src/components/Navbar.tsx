@@ -269,6 +269,14 @@ const Navbar = () => {
                       Cart
                     </Link>
 
+                    {/* Admin Access in Mobile Menu */}
+                    <div className="mb-2">
+                      <AdminAccess
+                        isMobile={true}
+                        onMenuClose={() => setIsMenuOpen(false)}
+                      />
+                    </div>
+
                     <button
                       onClick={() => {
                         handleLogout();
