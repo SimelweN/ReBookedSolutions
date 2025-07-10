@@ -34,6 +34,7 @@ const CommitToSaleButton: React.FC<CommitToSaleButtonProps> = ({
 }) => {
   const [isCommitting, setIsCommitting] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const { user } = useAuth();
 
   const timeRemaining = () => {
     const now = new Date();
