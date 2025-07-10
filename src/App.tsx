@@ -36,6 +36,7 @@ const Shipping = React.lazy(() => import("./pages/Shipping"));
 const ContactUs = React.lazy(() => import("./pages/ContactUs"));
 const FAQ = React.lazy(() => import("./pages/FAQ"));
 const AddProgram = React.lazy(() => import("./pages/AddProgram"));
+const StudyResources = React.lazy(() => import("./pages/StudyResources"));
 
 const UserOrders = React.lazy(() => import("./pages/EnhancedUserOrders"));
 const BankingSetup = React.lazy(() => import("./pages/BankingSetup"));
