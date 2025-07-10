@@ -98,9 +98,13 @@ export const ReactFallbacks = {
     console.warn("⚠️ Using fallback createContext implementation");
     return {
       Provider: ({ children }: { children: React.ReactNode }) =>
-        React.createElement(React.Fragment, null, children),
+        typeof React !== "undefined" && React.createElement && React.Fragment
+          ? React.createElement(React.Fragment, null, children)
+          : (children as any),
       Consumer: ({ children }: { children: (value: T) => React.ReactNode }) =>
-        children(defaultValue),
+        typeof React !== "undefined" && React.createElement
+          ? React.createElement(React.Fragment, null, children(defaultValue))
+          : (children(defaultValue) as any),
       displayName: "FallbackContext",
     } as React.Context<T>;
   },
