@@ -677,8 +677,8 @@ const DevDashboard: React.FC = () => {
         {
           name: "get-delivery-quotes",
           payload: {
-            pickup_address: { city: "Cape Town" },
-            delivery_address: { city: "Johannesburg" },
+            pickup_address: { city: "Cape Town", province: "Western Cape" },
+            delivery_address: { city: "Johannesburg", province: "Gauteng" },
           },
         },
         { name: "file-upload", payload: { bucket: "test", path: "test.txt" } },
