@@ -685,7 +685,7 @@ const DevDashboard: React.FC = () => {
         { name: "advanced-search", payload: { query: "test", filters: {} } },
         {
           name: "study-resources-api",
-          payload: { action: "get_resources", limit: 5 },
+          payload: { action: "health" },
         },
       ];
 
