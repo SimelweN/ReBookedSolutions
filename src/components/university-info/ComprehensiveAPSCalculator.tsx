@@ -73,7 +73,7 @@ const extractUniversityPrograms = () => {
   }> = [];
 
   try {
-    // Get all university IDs from the database
+    // Get all university IDs from the database - all 26 South African public universities
     const allUniversityIds = [
       "uct",
       "wits",
@@ -99,7 +99,7 @@ const extractUniversityPrograms = () => {
       "nmu",
       "wsu",
       "smu",
-      "sol",
+      "spu", // Fixed: was "sol", should be "spu" (Sol Plaatje University)
       "ump",
     ];
 
