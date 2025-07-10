@@ -103,7 +103,12 @@ function App() {
           <GoogleMapsProvider>
             <AuthProvider>
               <CartProvider>
-                <Router>
+                <Router
+                  future={{
+                    v7_startTransition: true,
+                    v7_relativeSplatPath: true,
+                  }}
+                >
                   <div className="min-h-screen bg-white">
                     <Suspense fallback={<LoadingSpinner />}>
                       <Routes>
