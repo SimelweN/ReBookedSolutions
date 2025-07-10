@@ -79,13 +79,6 @@ export class ThirdPartyErrorHandler {
       "feedback.js",
       "_next-live",
 
-      // Analytics
-      "google-analytics",
-      "googletagmanager",
-      "gtag",
-      "datadog",
-      "vitals.vercel",
-
       // Other tracking
       "fullstory",
       "hotjar",
