@@ -269,6 +269,60 @@ const UniversityProfile: React.FC = () => {
           </div>
         </div>
 
+        {/* APS Status Banner */}
+        {fromAPS && userAPS > 0 && (
+          <div className="bg-book-100 border-b border-book-200">
+            <div className="container mx-auto px-6 py-4">
+              <Alert className="border-book-300 bg-book-50">
+                <Calculator className="h-5 w-5 text-book-600" />
+                <AlertDescription className="text-book-800">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                      <strong>Your APS Score: {userAPS}</strong> -
+                      {(() => {
+                        const eligibleCount = university.faculties.reduce(
+                          (total, faculty) => {
+                            const eligiblePrograms = filterPrograms(
+                              faculty.degrees || [],
+                            );
+                            return total + eligiblePrograms.length;
+                          },
+                          0,
+                        );
+                        const totalPrograms = university.faculties.reduce(
+                          (total, faculty) => {
+                            return total + (faculty.degrees?.length || 0);
+                          },
+                          0,
+                        );
+                        return (
+                          <span className="ml-2">
+                            You qualify for <strong>{eligibleCount}</strong> out
+                            of <strong>{totalPrograms}</strong> programs
+                          </span>
+                        );
+                      })()}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant={showEligibleOnly ? "default" : "outline"}
+                        onClick={() => setShowEligibleOnly(!showEligibleOnly)}
+                        className="bg-book-600 hover:bg-book-700 text-white"
+                      >
+                        <Filter className="h-4 w-4 mr-2" />
+                        {showEligibleOnly
+                          ? "Show All Programs"
+                          : "Show Eligible Only"}
+                      </Button>
+                    </div>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            </div>
+          </div>
+        )}
+
         {/* Main Content */}
         <div className="container mx-auto px-6 py-8">
           <Tabs
