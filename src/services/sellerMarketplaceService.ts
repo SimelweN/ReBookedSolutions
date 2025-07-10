@@ -109,7 +109,7 @@ export class SellerMarketplaceService {
       name: data.name || "Unknown Seller",
       email: data.email,
       bio: data.bio,
-      profileImage: data.profile_image,
+      profileImage: data.profile_picture_url,
       university: data.university,
       rating: 4.5, // TODO: Implement rating system
       totalSales,
