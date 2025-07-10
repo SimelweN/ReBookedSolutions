@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import { useParams, Navigate, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, Navigate, Link, useSearchParams } from "react-router-dom";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/index";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   ArrowLeft,
   ExternalLink,
@@ -22,6 +23,9 @@ import {
   Heart,
   Info,
   Eye,
+  CheckCircle,
+  XCircle,
+  Filter,
 } from "lucide-react";
 import Layout from "@/components/Layout";
 import ProgramDetailModal from "@/components/university-info/ProgramDetailModal";
