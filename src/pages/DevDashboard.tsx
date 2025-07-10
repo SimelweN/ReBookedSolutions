@@ -1706,6 +1706,11 @@ const DevDashboard: React.FC = () => {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            {/* Comprehensive Functionality Test Tab */}
+            <TabsContent value="comprehensive-test" className="space-y-6">
+              <ComprehensiveFunctionalityTest />
+            </TabsContent>
           </Tabs>
         </div>
       </div>
