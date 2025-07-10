@@ -22,6 +22,7 @@ import { UKZN_FACULTIES } from "./ukzn";
 import { UWC_FACULTIES } from "./uwc";
 import { UNIVEN_FACULTIES } from "./univen";
 import { UFS_FACULTIES } from "./ufs";
+import { UCT_FACULTIES } from "./uct";
 
 /**
  * MODULAR UNIVERSITY DATA SYSTEM
