@@ -24,6 +24,12 @@ import { UNIVEN_FACULTIES } from "./univen";
 import { UFS_FACULTIES } from "./ufs";
 import { UCT_FACULTIES } from "./uct";
 import { RHODES_FACULTIES } from "./rhodes";
+import {
+  UFH_FACULTIES,
+  UNISA_FACULTIES,
+  NMU_FACULTIES,
+  SMU_FACULTIES,
+} from "./missing-universities-fix";
 
 /**
  * MODULAR UNIVERSITY DATA SYSTEM
@@ -85,19 +91,13 @@ export function getFacultiesByUniversityIdLegacy(
     case "rhodes":
       return RHODES_FACULTIES;
     case "ufh":
-      return getGenericUniversityFaculties("University of Fort Hare", "ufh");
+      return UFH_FACULTIES;
     case "unisa":
-      return getGenericUniversityFaculties(
-        "University of South Africa",
-        "unisa",
-      );
+      return UNISA_FACULTIES;
     case "nmu":
-      return getGenericUniversityFaculties("Nelson Mandela University", "nmu");
+      return NMU_FACULTIES;
     case "smu":
-      return getGenericUniversityFaculties(
-        "Sefako Makgatho Health Sciences University",
-        "smu",
-      );
+      return SMU_FACULTIES;
     default:
       return null;
   }
