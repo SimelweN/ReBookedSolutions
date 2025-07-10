@@ -6,6 +6,15 @@ import "./index.css";
 // Import ResizeObserver error suppression
 import "./utils/resizeObserverFix";
 
+// Import third-party error handler
+import "./utils/thirdPartyErrorHandler";
+
+// Import safe storage handler
+import "./utils/safeStorage";
+
+// Import error fix test (runs automatically in dev)
+import "./utils/testErrorFixes";
+
 console.log("🚀 ReBooked Solutions - Starting...");
 
 // Create query client with basic settings
