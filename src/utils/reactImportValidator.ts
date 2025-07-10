@@ -46,20 +46,36 @@ export const validateReactImport = () => {
 };
 
 // Emergency React context creator with validation
-export const safeCreateContext = <T>(defaultValue: T, contextName?: string) => {
+export const safeCreateContext = <T>(
+  defaultValue: T,
+  contextName?: string,
+): React.Context<T> => {
   try {
     if (typeof React !== "undefined" && React.createContext) {
       return React.createContext<T>(defaultValue);
     } else {
-      // Fallback for cases where React is not properly imported
-      console.warn(
-        `⚠️ Creating fallback context for ${contextName || "unnamed context"}`,
+      // This shouldn't happen if React is properly imported
+      console.error(
+        `❌ React.createContext is not available for ${contextName || "unnamed context"}`,
       );
 
-      // Use dynamic import as fallback
-      return import("react").then((ReactModule) => {
-        return ReactModule.createContext<T>(defaultValue);
-      });
+      // Create a minimal context-like object as fallback
+      const fallbackContext = {
+        Provider: ({ children, value }: { children: any; value: T }) =>
+          children,
+        Consumer: ({ children }: { children: (value: T) => any }) =>
+          children(defaultValue),
+        displayName: contextName || "FallbackContext",
+        _currentValue: defaultValue,
+        _currentValue2: defaultValue,
+        _threadCount: 0,
+      } as React.Context<T>;
+
+      console.warn(
+        `⚠️ Using fallback context implementation for ${contextName || "unnamed context"}`,
+      );
+
+      return fallbackContext;
     }
   } catch (error) {
     console.error(`❌ Failed to create context ${contextName || ""}:`, error);

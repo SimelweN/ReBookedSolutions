@@ -1,5 +1,5 @@
 import * as React from "react";
-import React, {
+import {
   useContext,
   useEffect,
   useState,
@@ -16,7 +16,6 @@ import {
   fetchUserProfileQuick,
 } from "@/services/authOperations";
 import { measureAsyncPerformance } from "@/utils/performanceUtils";
-
 // Simple logging for development
 const devLog = (message: string, data?: unknown) => {
   if (import.meta.env.DEV) console.log(message, data);
