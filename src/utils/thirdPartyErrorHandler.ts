@@ -136,42 +136,6 @@ export class ThirdPartyErrorHandler {
   }
 
   /**
-   * Handle analytics script errors
-   */
-  private static handleAnalyticsErrors() {
-    // Provide fallback for gtag if it fails to load
-    if (typeof window !== "undefined" && !window.gtag) {
-      (window as any).gtag = (...args: any[]) => {
-        console.debug("📊 Analytics call (gtag unavailable):", args[0]);
-      };
-    }
-
-    // Handle Datadog storage issues
-    this.handleDatadogStorageIssues();
-  }
-
-  /**
-   * Handle Datadog storage issues specifically
-   */
-  private static handleDatadogStorageIssues() {
-    // Override Storage methods to handle quota exceeded errors
-    const originalSetItem = Storage.prototype.setItem;
-
-    Storage.prototype.setItem = function (key: string, value: string) {
-      try {
-        originalSetItem.call(this, key, value);
-      } catch (error: any) {
-        // Handle quota exceeded errors silently for third-party scripts
-        if (error.name === "QuotaExceededError" || error.code === 22) {
-          console.debug("🔇 Storage quota exceeded for third-party script");
-          return;
-        }
-        throw error;
-      }
-    };
-  }
-
-  /**
    * Cleanup event listeners
    */
   static cleanup() {
