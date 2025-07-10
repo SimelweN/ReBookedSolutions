@@ -1,36 +1,9 @@
-// Import early React setup FIRST to prevent any createContext errors
-import "./utils/earlyReactSetup";
 import * as React from "react";
-
-// Import React availability check AFTER React is set up
-import "./utils/reactAvailabilityCheck";
-
-// Import suppressions
-import "./utils/suppressDatadogWarnings";
-import "./utils/globalReactSetup";
 
 import { createRoot } from "react-dom/client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
-
-// Import ResizeObserver error suppression
-import "./utils/resizeObserverFix";
-
-// Import third-party error handler
-import "./utils/thirdPartyErrorHandler";
-
-// Import safe storage handler
-import "./utils/safeStorage";
-
-// Import error fix test (runs automatically in dev)
-import "./utils/testErrorFixes";
-
-// Import context validation (runs automatically in dev)
-import "./utils/validateContextFixes";
-
-// Import createContext fix summary (runs automatically in dev)
-import "./utils/createContextFixSummary";
 
 console.log("🚀 ReBooked Solutions - Starting...");
 
