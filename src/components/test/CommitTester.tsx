@@ -128,7 +128,9 @@ const CommitTester = () => {
         data,
       );
       setTestOrderId(data.id);
-      toast.success("Mock order created for testing");
+      setTimeout(() => {
+        toast.success("Mock order created for testing");
+      }, 0);
       await loadMockOrders();
     } catch (error: any) {
       updateTestStatus(
@@ -136,7 +138,9 @@ const CommitTester = () => {
         "failed",
         `Failed to create mock order: ${error.message}`,
       );
-      toast.error(`Failed to create mock order: ${error.message}`);
+      setTimeout(() => {
+        toast.error(`Failed to create mock order: ${error.message}`);
+      }, 0);
     } finally {
       setIsLoading(false);
     }
@@ -144,7 +148,9 @@ const CommitTester = () => {
 
   const testCommitToSale = async () => {
     if (!testOrderId) {
-      toast.error("Please create a mock order first or enter an order ID");
+      setTimeout(() => {
+        toast.error("Please create a mock order first or enter an order ID");
+      }, 0);
       return;
     }
 
@@ -159,11 +165,15 @@ const CommitTester = () => {
         "Successfully committed to sale",
         result,
       );
-      toast.success("Commit to sale test passed");
+      setTimeout(() => {
+        toast.success("Commit to sale test passed");
+      }, 0);
       await loadMockOrders();
     } catch (error: any) {
       updateTestStatus(testId, "failed", `Commit failed: ${error.message}`);
-      toast.error(`Commit test failed: ${error.message}`);
+      setTimeout(() => {
+        toast.error(`Commit test failed: ${error.message}`);
+      }, 0);
     } finally {
       setIsLoading(false);
     }
@@ -171,7 +181,9 @@ const CommitTester = () => {
 
   const testDeclineCommit = async () => {
     if (!testOrderId) {
-      toast.error("Please create a mock order first or enter an order ID");
+      setTimeout(() => {
+        toast.error("Please create a mock order first or enter an order ID");
+      }, 0);
       return;
     }
 
@@ -189,7 +201,9 @@ const CommitTester = () => {
         "Successfully declined commit",
         result,
       );
-      toast.success("Decline commit test passed");
+      setTimeout(() => {
+        toast.success("Decline commit test passed");
+      }, 0);
       await loadMockOrders();
     } catch (error: any) {
       updateTestStatus(testId, "failed", `Decline failed: ${error.message}`);
@@ -232,7 +246,9 @@ const CommitTester = () => {
 
   const testCommitReminder = async () => {
     if (!testOrderId) {
-      toast.error("Please create a mock order first or enter an order ID");
+      setTimeout(() => {
+        toast.error("Please create a mock order first or enter an order ID");
+      }, 0);
       return;
     }
 

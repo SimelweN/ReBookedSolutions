@@ -1,22 +1,33 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Toaster as Sonner, toast } from "sonner";
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const [shouldRender, setShouldRender] = useState(false);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
-    // Use requestAnimationFrame to defer rendering until after the current render cycle
+    mountedRef.current = true;
+    let timeoutId: NodeJS.Timeout;
+
+    // Use multiple async boundaries to ensure we're completely outside the render cycle
     const rafId = requestAnimationFrame(() => {
-      // Add an additional setTimeout to ensure we're completely outside the render cycle
-      setTimeout(() => {
-        setShouldRender(true);
-      }, 0);
+      timeoutId = setTimeout(() => {
+        // Only update state if component is still mounted
+        if (mountedRef.current) {
+          setShouldRender(true);
+        }
+      }, 100); // Increased delay to ensure render cycle completion
     });
 
     return () => {
+      mountedRef.current = false;
       cancelAnimationFrame(rafId);
+      // Clear any pending timeout
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     };
   }, []);
 

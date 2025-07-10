@@ -202,7 +202,8 @@ export const UL_FACULTIES: Faculty[] = [
         faculty: "Humanities",
         duration: "4 years",
         apsRequirement: 25,
-        description: "Professional social work practice",
+        description:
+          "Professional social work practice (using higher APS score: 25)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Orientation", level: 4, isRequired: true },
@@ -218,9 +219,9 @@ export const UL_FACULTIES: Faculty[] = [
         name: "Bachelor of Psychology (BPsych)",
         faculty: "Humanities",
         duration: "3 years",
-        apsRequirement: 23,
+        apsRequirement: 25,
         description:
-          "Psychology theory and practice (APS 23/25 depending on stream)",
+          "Psychology theory and practice (using higher APS score: 25)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
@@ -232,9 +233,9 @@ export const UL_FACULTIES: Faculty[] = [
         name: "Bachelor of Arts - Sociology & Anthropology",
         faculty: "Humanities",
         duration: "3 years",
-        apsRequirement: 23,
+        apsRequirement: 25,
         description:
-          "Sociology and anthropology studies (APS 23/25 depending on stream)",
+          "Sociology and anthropology studies (using higher APS score: 25)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Orientation", level: 4, isRequired: true },
@@ -263,9 +264,23 @@ export const UL_FACULTIES: Faculty[] = [
         name: "Bachelor of Arts - Criminology & Psychology",
         faculty: "Humanities",
         duration: "3 years",
-        apsRequirement: 23,
+        apsRequirement: 25,
         description:
-          "Criminology and psychology studies (APS 23/25 depending on stream, includes standard and extended options)",
+          "Criminology and psychology studies (using higher APS score: 25, includes extended option at 24)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Orientation", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Criminologist", "Psychologist", "Social Researcher"],
+      },
+      {
+        id: createDegreeId("BA Criminology Psychology Extended UL"),
+        name: "Bachelor of Arts - Criminology & Psychology (Extended)",
+        faculty: "Humanities",
+        duration: "4 years",
+        apsRequirement: 24,
+        description:
+          "Extended criminology and psychology studies program (using higher APS score: 24)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Orientation", level: 4, isRequired: true },
@@ -344,6 +359,47 @@ export const UL_FACULTIES: Faculty[] = [
         ],
         careerProspects: ["Information Scientist", "Librarian", "Data Manager"],
       },
+      {
+        id: createDegreeId("BA Languages Stream UL"),
+        name: "Bachelor of Arts - Languages Stream",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 25,
+        description: "Comprehensive language studies program",
+        subjects: [
+          { name: "English", level: 5, isRequired: true },
+          { name: "Home Language", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Language Teacher",
+          "Translator",
+          "Language Specialist",
+        ],
+      },
+      {
+        id: createDegreeId("BA Communication Studies UL"),
+        name: "Bachelor of Arts - Communication Studies",
+        faculty: "Humanities",
+        duration: "3 years",
+        apsRequirement: 25,
+        description: "Communication theory and practice",
+        subjects: [{ name: "English", level: 5, isRequired: true }],
+        careerProspects: [
+          "Communications Specialist",
+          "Public Relations Officer",
+          "Media Analyst",
+        ],
+      },
+      {
+        id: createDegreeId("BA Media Studies Extended UL"),
+        name: "Bachelor of Arts - Media Studies (Extended)",
+        faculty: "Humanities",
+        duration: "4 years",
+        apsRequirement: 23,
+        description: "Extended media studies program",
+        subjects: [{ name: "English", level: 4, isRequired: true }],
+        careerProspects: ["Media Analyst", "Journalist", "Content Creator"],
+      },
     ],
   },
   {
@@ -353,6 +409,24 @@ export const UL_FACULTIES: Faculty[] = [
       "Agricultural, environmental, and natural science programs across specialized schools",
     degrees: [
       // School of Agricultural & Environmental Sciences
+      {
+        id: createDegreeId("Bachelor Agricultural Management UL"),
+        name: "Bachelor of Agricultural Management",
+        faculty: "Science & Agriculture",
+        duration: "3 years",
+        apsRequirement: 24,
+        description: "Agricultural business and farm management",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+          { name: "Life Sciences", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "Agricultural Manager",
+          "Farm Manager",
+          "Agricultural Consultant",
+        ],
+      },
       {
         id: createDegreeId("BSc Agriculture Animal Production UL"),
         name: "BSc Agriculture - Animal Production",
@@ -626,8 +700,24 @@ export const UL_FACULTIES: Faculty[] = [
         faculty: "Management & Law",
         duration: "3 years",
         apsRequirement: 26,
-        description:
-          "Human resource management (Standard: APS 26; Extended: APS 22)",
+        description: "Human resource management (Standard: APS 26)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "HR Manager",
+          "Recruitment Specialist",
+          "Training Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("BCom Human Resource Management Extended UL"),
+        name: "BCom Human Resource Management (Extended)",
+        faculty: "Management & Law",
+        duration: "4 years",
+        apsRequirement: 22,
+        description: "Extended human resource management program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
