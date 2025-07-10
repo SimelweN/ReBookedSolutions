@@ -303,8 +303,16 @@ export const handleDatabaseError = (
       message: error?.message,
       details: error?.details,
       hint: error?.hint,
-      originalError: error,
+      errorType: typeof error,
+      errorString: String(error),
     });
+    // Log the full error object separately to avoid circular references
+    if (error && typeof error === "object") {
+      console.error(
+        `${logContext} Full Error:`,
+        JSON.stringify(error, null, 2),
+      );
+    }
   }
 
   // Show toast notification if needed
