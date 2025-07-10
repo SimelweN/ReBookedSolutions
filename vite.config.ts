@@ -35,6 +35,9 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      // Ensure consistent React imports
+      react: path.resolve(__dirname, "node_modules/react"),
+      "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
     },
     dedupe: ["react", "react-dom"], // Prevent multiple React instances
   },
@@ -185,12 +188,24 @@ export default defineConfig(({ mode }) => ({
       "@react-google-maps/api",
     ],
     force: true, // Force re-bundling to ensure consistency
+    // Ensure React context is properly handled
+    esbuildOptions: {
+      target: "es2020",
+      // Ensure React is properly available
+      banner: {
+        js: "if (typeof React === 'undefined') { var React = require('react'); }",
+      },
+    },
   },
 
   // Ensure React is properly available in production builds
   define: {
     // Ensure React is available globally if needed
     __REACT_DEVTOOLS_GLOBAL_HOOK__: "undefined",
+    // Prevent React createContext errors in production
+    "process.env.NODE_ENV": JSON.stringify(
+      mode === "production" ? "production" : "development",
+    ),
   },
 
   // Performance optimizations
