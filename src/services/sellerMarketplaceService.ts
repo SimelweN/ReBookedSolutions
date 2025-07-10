@@ -411,7 +411,6 @@ export class SellerMarketplaceService {
         name: seller.name || "Unknown Seller",
         email: seller.email,
         bio: seller.bio,
-        university: seller.university,
         rating: 4.5,
         totalSales: 0,
         memberSince: seller.created_at,
