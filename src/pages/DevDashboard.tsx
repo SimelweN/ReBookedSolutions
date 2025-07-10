@@ -569,17 +569,21 @@ const DevDashboard: React.FC = () => {
       missing.push("VITE_SUPABASE_ANON_KEY");
 
     if (missing.length > 0) {
-      addTestResult(
-        "Environment Config",
-        "failed",
-        `Missing: ${missing.join(", ")}`,
-      );
+      setTimeout(() => {
+        addTestResult(
+          "Environment Config",
+          "failed",
+          `Missing: ${missing.join(", ")}`,
+        );
+      }, 0);
     } else {
-      addTestResult(
-        "Environment Config",
-        "success",
-        "All required environment variables are set",
-      );
+      setTimeout(() => {
+        addTestResult(
+          "Environment Config",
+          "success",
+          "All required environment variables are set",
+        );
+      }, 0);
     }
   };
 
