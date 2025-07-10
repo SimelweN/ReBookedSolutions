@@ -303,13 +303,17 @@ const DevDashboard: React.FC = () => {
         .limit(10);
 
       if (error) {
-        toast.error(`Failed to load ${tableName}: ${error.message}`);
+        setTimeout(() => {
+          toast.error(`Failed to load ${tableName}: ${error.message}`);
+        }, 0);
         setTableData([]);
       } else {
         setTableData(data || []);
       }
     } catch (error) {
-      toast.error(`Error loading table data: ${error}`);
+      setTimeout(() => {
+        toast.error(`Error loading table data: ${error}`);
+      }, 0);
       setTableData([]);
     }
   };
@@ -582,21 +586,31 @@ const DevDashboard: React.FC = () => {
         } else {
           setDemoOrderId(orderData.id);
           setDemoSellerId(orderData.seller_id);
-          toast.success(`Demo order created in orders table: ${orderData.id}`);
+          setTimeout(() => {
+            toast.success(
+              `Demo order created in orders table: ${orderData.id}`,
+            );
+          }, 0);
         }
       } else {
         setDemoOrderId(data.id);
         setDemoSellerId(data.seller_id);
-        toast.success(`Demo order created in transactions table: ${data.id}`);
+        setTimeout(() => {
+          toast.success(`Demo order created in transactions table: ${data.id}`);
+        }, 0);
       }
     } catch (error) {
-      toast.error(`Failed to create demo order: ${error}`);
+      setTimeout(() => {
+        toast.error(`Failed to create demo order: ${error}`);
+      }, 0);
     }
   };
 
   const testCommitFlow = async () => {
     if (!demoOrderId || !demoSellerId) {
-      toast.error("Please create a demo order first");
+      setTimeout(() => {
+        toast.error("Please create a demo order first");
+      }, 0);
       return;
     }
 
@@ -621,7 +635,9 @@ const DevDashboard: React.FC = () => {
 
   const testDeclineFlow = async () => {
     if (!demoOrderId || !demoSellerId) {
-      toast.error("Please create a demo order first");
+      setTimeout(() => {
+        toast.error("Please create a demo order first");
+      }, 0);
       return;
     }
 
