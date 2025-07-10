@@ -35,6 +35,9 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      // Ensure consistent React imports
+      react: path.resolve(__dirname, "node_modules/react"),
+      "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
     },
     dedupe: ["react", "react-dom"], // Prevent multiple React instances
   },
@@ -191,6 +194,10 @@ export default defineConfig(({ mode }) => ({
   define: {
     // Ensure React is available globally if needed
     __REACT_DEVTOOLS_GLOBAL_HOOK__: "undefined",
+    // Prevent React createContext errors in production
+    "process.env.NODE_ENV": JSON.stringify(
+      mode === "production" ? "production" : "development",
+    ),
   },
 
   // Performance optimizations

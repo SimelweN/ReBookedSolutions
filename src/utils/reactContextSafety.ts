@@ -6,6 +6,7 @@
  */
 
 import * as React from "react";
+import { ReactFallbacks } from "./reactAvailabilityCheck";
 
 /**
  * Safe context creator that validates React availability
@@ -15,38 +16,53 @@ export function createSafeContext<T>(
   contextName = "UnnamedContext",
 ): React.Context<T> {
   try {
-    // Validate React is available
-    if (typeof React === "undefined") {
-      throw new Error("React is not available in the current scope");
+    // First, try the standard React.createContext
+    if (
+      typeof React !== "undefined" &&
+      typeof React.createContext === "function"
+    ) {
+      console.log(`✅ Creating safe context: ${contextName}`);
+      return React.createContext<T>(defaultValue);
     }
 
-    // Validate createContext is available
-    if (typeof React.createContext !== "function") {
-      throw new Error("React.createContext is not available");
-    }
-
-    console.log(`✅ Creating safe context: ${contextName}`);
-    return React.createContext<T>(defaultValue);
+    // If that fails, use the fallback implementation
+    console.warn(`⚠️ Using fallback createContext for: ${contextName}`);
+    return ReactFallbacks.createContext<T>(defaultValue);
   } catch (error) {
     console.error(
       `❌ Failed to create context ${contextName}:`,
       error instanceof Error ? error.message : String(error),
     );
 
-    // Create a fallback context that won't break the app
-    const fallbackContext = {
+    // Last resort fallback context that won't break the app
+    const emergencyFallbackContext = {
       Provider: ({ children }: { children: React.ReactNode }) => {
-        console.warn(`⚠️ Using fallback provider for ${contextName}`);
-        return React.createElement(React.Fragment, null, children);
+        console.warn(`⚠️ Using emergency fallback provider for ${contextName}`);
+        if (
+          typeof React !== "undefined" &&
+          React.createElement &&
+          React.Fragment
+        ) {
+          return React.createElement(React.Fragment, null, children);
+        }
+        // If even React.createElement isn't available, return children as-is
+        return children as any;
       },
       Consumer: ({ children }: { children: (value: T) => React.ReactNode }) => {
-        console.warn(`⚠️ Using fallback consumer for ${contextName}`);
-        return children(defaultValue);
+        console.warn(`⚠️ Using emergency fallback consumer for ${contextName}`);
+        if (typeof React !== "undefined" && React.createElement) {
+          return React.createElement(
+            React.Fragment,
+            null,
+            children(defaultValue),
+          );
+        }
+        return children(defaultValue) as any;
       },
-      displayName: `Fallback_${contextName}`,
+      displayName: `EmergencyFallback_${contextName}`,
     } as React.Context<T>;
 
-    return fallbackContext;
+    return emergencyFallbackContext;
   }
 }
 
