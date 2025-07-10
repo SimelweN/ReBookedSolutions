@@ -128,7 +128,9 @@ const CommitTester = () => {
         data,
       );
       setTestOrderId(data.id);
-      toast.success("Mock order created for testing");
+      setTimeout(() => {
+        toast.success("Mock order created for testing");
+      }, 0);
       await loadMockOrders();
     } catch (error: any) {
       updateTestStatus(
@@ -136,7 +138,9 @@ const CommitTester = () => {
         "failed",
         `Failed to create mock order: ${error.message}`,
       );
-      toast.error(`Failed to create mock order: ${error.message}`);
+      setTimeout(() => {
+        toast.error(`Failed to create mock order: ${error.message}`);
+      }, 0);
     } finally {
       setIsLoading(false);
     }
@@ -144,7 +148,9 @@ const CommitTester = () => {
 
   const testCommitToSale = async () => {
     if (!testOrderId) {
-      toast.error("Please create a mock order first or enter an order ID");
+      setTimeout(() => {
+        toast.error("Please create a mock order first or enter an order ID");
+      }, 0);
       return;
     }
 
@@ -171,7 +177,9 @@ const CommitTester = () => {
 
   const testDeclineCommit = async () => {
     if (!testOrderId) {
-      toast.error("Please create a mock order first or enter an order ID");
+      setTimeout(() => {
+        toast.error("Please create a mock order first or enter an order ID");
+      }, 0);
       return;
     }
 
@@ -232,7 +240,9 @@ const CommitTester = () => {
 
   const testCommitReminder = async () => {
     if (!testOrderId) {
-      toast.error("Please create a mock order first or enter an order ID");
+      setTimeout(() => {
+        toast.error("Please create a mock order first or enter an order ID");
+      }, 0);
       return;
     }
 
