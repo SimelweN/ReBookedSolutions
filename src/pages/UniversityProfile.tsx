@@ -33,6 +33,18 @@ import { Degree } from "@/types/university";
 const UniversityProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState("programs");
+  const [selectedProgram, setSelectedProgram] = useState<Degree | null>(null);
+  const [isProgramModalOpen, setIsProgramModalOpen] = useState(false);
+
+  const handleViewProgram = (program: Degree) => {
+    setSelectedProgram(program);
+    setIsProgramModalOpen(true);
+  };
+
+  const closeProgramModal = () => {
+    setIsProgramModalOpen(false);
+    setSelectedProgram(null);
+  };
 
   const university = ALL_SOUTH_AFRICAN_UNIVERSITIES.find(
     (uni) =>
