@@ -27,7 +27,6 @@ export class SellerMarketplaceService {
           name,
           email,
           bio,
-          profile_picture_url,
           university,
           created_at,
           pickup_address,
