@@ -281,11 +281,17 @@ const CampusNavbar = React.memo(() => {
 
               <Button
                 variant="ghost"
-                onClick={() => handleNavigation("/study-tips")}
-                className="flex items-center justify-start px-4 py-3 w-full text-left rounded-lg font-medium transition-colors hover:bg-book-50 hover:text-book-600"
+                onClick={() =>
+                  handleNavigation("/university-info?tool=aps-calculator")
+                }
+                className={`w-full justify-start px-4 py-3 rounded-lg font-medium transition-colors text-sm ${
+                  isActive("aps-calculator")
+                    ? "bg-book-50 text-book-600"
+                    : "text-gray-600"
+                }`}
               >
-                <Lightbulb className="w-4 h-4 mr-3" />
-                Study Tips
+                <Calculator className="w-4 h-4 mr-3" />
+                APS Calculator
               </Button>
 
               <Button
