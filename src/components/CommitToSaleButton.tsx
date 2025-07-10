@@ -64,15 +64,11 @@ const CommitToSaleButton: React.FC<CommitToSaleButtonProps> = ({
 
     setIsCommitting(true);
     try {
-      // Get current user ID (you might need to get this from auth context)
-      const user = await import("@/contexts/AuthContext").then((m) =>
-        m.useAuth(),
-      );
-      if (!user) {
+      if (!user?.id) {
         throw new Error("User not authenticated");
       }
 
-      await TransactionService.commitSale(transactionId, user.user?.id || "");
+      await TransactionService.commitSale(transactionId, user.id);
 
       toast.success("🎉 Sale committed successfully!");
       setShowConfirmDialog(false);
