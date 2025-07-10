@@ -13,6 +13,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
+import { createSafeContext } from "@/utils/reactContextSafety";
 
 const Form = FormProvider;
 
