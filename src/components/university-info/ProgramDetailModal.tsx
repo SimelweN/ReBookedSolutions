@@ -226,7 +226,7 @@ const ProgramDetailModal: React.FC<ProgramDetailModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[95vw] sm:max-w-2xl lg:max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-start gap-4">
             <div className="flex-1">
@@ -236,24 +236,24 @@ const ProgramDetailModal: React.FC<ProgramDetailModalProps> = ({
               <DialogDescription className="text-lg">
                 {university.fullName} • {program.faculty}
               </DialogDescription>
-              <div className="flex items-center gap-4 mt-3">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-3">
                 <Badge
                   variant="secondary"
-                  className="bg-book-100 text-book-700"
+                  className="bg-book-100 text-book-700 text-xs sm:text-sm"
                 >
                   <Clock className="h-3 w-3 mr-1" />
                   {program.duration}
                 </Badge>
                 <Badge
                   variant="secondary"
-                  className="bg-blue-100 text-blue-700"
+                  className="bg-blue-100 text-blue-700 text-xs sm:text-sm"
                 >
                   <Calculator className="h-3 w-3 mr-1" />
                   APS: {program.apsRequirement}
                 </Badge>
                 <Badge
                   variant="secondary"
-                  className="bg-green-100 text-green-700"
+                  className="bg-green-100 text-green-700 text-xs sm:text-sm"
                 >
                   <TrendingUp className="h-3 w-3 mr-1" />
                   {employmentRate}% Employment Rate
@@ -264,12 +264,45 @@ const ProgramDetailModal: React.FC<ProgramDetailModalProps> = ({
         </DialogHeader>
 
         <Tabs defaultValue="overview" className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="career">Career Info</TabsTrigger>
-            <TabsTrigger value="requirements">Requirements</TabsTrigger>
-            <TabsTrigger value="financial">Financial Info</TabsTrigger>
-          </TabsList>
+          {/* Mobile: Vertical Tab Stack */}
+          <div className="block sm:hidden">
+            <TabsList className="bg-transparent p-1 h-auto w-full flex flex-col space-y-1 rounded-lg">
+              <TabsTrigger
+                value="overview"
+                className="w-full rounded-lg py-2 px-3 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 text-sm"
+              >
+                Overview
+              </TabsTrigger>
+              <TabsTrigger
+                value="career"
+                className="w-full rounded-lg py-2 px-3 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 text-sm"
+              >
+                Career Info
+              </TabsTrigger>
+              <TabsTrigger
+                value="requirements"
+                className="w-full rounded-lg py-2 px-3 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 text-sm"
+              >
+                Requirements
+              </TabsTrigger>
+              <TabsTrigger
+                value="financial"
+                className="w-full rounded-lg py-2 px-3 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 text-sm"
+              >
+                Financial Info
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          {/* Desktop: Horizontal Grid */}
+          <div className="hidden sm:block">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="career">Career Info</TabsTrigger>
+              <TabsTrigger value="requirements">Requirements</TabsTrigger>
+              <TabsTrigger value="financial">Financial Info</TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="overview" className="mt-6">
             <div className="space-y-6">
@@ -295,7 +328,7 @@ const ProgramDetailModal: React.FC<ProgramDetailModalProps> = ({
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {skillsDeveloped.map((skill, index) => (
                       <div
                         key={index}
@@ -368,7 +401,7 @@ const ProgramDetailModal: React.FC<ProgramDetailModalProps> = ({
                 </CardContent>
               </Card>
 
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid gap-6 md:grid-cols-2">
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center">
@@ -558,7 +591,7 @@ const ProgramDetailModal: React.FC<ProgramDetailModalProps> = ({
                       </p>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-4">
+                    <div className="grid gap-4 sm:grid-cols-2">
                       <div className="p-4 bg-green-50 rounded-lg">
                         <h4 className="font-medium text-green-800 mb-2">
                           Financial Aid Available
@@ -590,7 +623,33 @@ const ProgramDetailModal: React.FC<ProgramDetailModalProps> = ({
           </TabsContent>
         </Tabs>
 
-        <div className="flex justify-between items-center pt-6 border-t">
+        {/* Mobile: Stacked buttons */}
+        <div className="block sm:hidden pt-6 border-t space-y-3">
+          <div className="flex flex-col gap-3">
+            {university.website && (
+              <Button variant="outline" className="w-full" asChild>
+                <a
+                  href={university.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  University Website
+                </a>
+              </Button>
+            )}
+            <Button className="bg-book-600 hover:bg-book-700 w-full">
+              <Calculator className="h-4 w-4 mr-2" />
+              Calculate My APS
+            </Button>
+            <Button variant="outline" onClick={onClose} className="w-full">
+              Close
+            </Button>
+          </div>
+        </div>
+
+        {/* Desktop: Horizontal layout */}
+        <div className="hidden sm:flex justify-between items-center pt-6 border-t">
           <Button variant="outline" onClick={onClose}>
             Close
           </Button>
