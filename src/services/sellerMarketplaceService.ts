@@ -107,7 +107,6 @@ export class SellerMarketplaceService {
       name: data.name || "Unknown Seller",
       email: data.email,
       bio: data.bio,
-      university: data.university,
       rating: 4.5, // TODO: Implement rating system
       totalSales,
       memberSince: data.created_at,
