@@ -14,8 +14,9 @@ interface GoogleMapsContextType {
 }
 
 // Create the context with undefined as default
-const GoogleMapsContext = createContext<GoogleMapsContextType | undefined>(
+const GoogleMapsContext = createSafeContext<GoogleMapsContextType | undefined>(
   undefined,
+  "GoogleMapsContext",
 );
 
 // Custom hook to use the Google Maps context
