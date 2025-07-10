@@ -240,14 +240,17 @@ const DevDashboard: React.FC = () => {
         const creationResult = await createGetTableNamesFunction();
         console.log(creationResult.sql);
 
-        toast.error(
-          "Database RPC function missing. Check console for SQL to run.",
-        );
-        addTestResult(
-          "Database RPC Function",
-          "failed",
-          "get_table_names function missing. Check console for SQL to create it.",
-        );
+        // Defer these state updates to avoid render cycle issues
+        setTimeout(() => {
+          toast.error(
+            "Database RPC function missing. Check console for SQL to run.",
+          );
+          addTestResult(
+            "Database RPC Function",
+            "failed",
+            "get_table_names function missing. Check console for SQL to create it.",
+          );
+        }, 0);
       }
 
       // Fallback: try common tables
