@@ -91,13 +91,19 @@ export function getFacultiesByUniversityIdLegacy(
     case "rhodes":
       return RHODES_FACULTIES;
     case "ufh":
-      return UFH_FACULTIES;
+      return getGenericUniversityFaculties("University of Fort Hare", "ufh");
     case "unisa":
-      return UNISA_FACULTIES;
+      return getGenericUniversityFaculties(
+        "University of South Africa",
+        "unisa",
+      );
     case "nmu":
-      return NMU_FACULTIES;
+      return getGenericUniversityFaculties("Nelson Mandela University", "nmu");
     case "smu":
-      return SMU_FACULTIES;
+      return getGenericUniversityFaculties(
+        "Sefako Makgatho Health Sciences University",
+        "smu",
+      );
     default:
       return null;
   }
