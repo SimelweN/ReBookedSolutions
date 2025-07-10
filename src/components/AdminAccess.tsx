@@ -1,5 +1,5 @@
 import { memo, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,7 +11,12 @@ import {
 import { Shield, TestTube, ChevronDown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
-const AdminAccess = () => {
+interface AdminAccessProps {
+  isMobile?: boolean;
+  onMenuClose?: () => void;
+}
+
+const AdminAccess = ({ isMobile = false, onMenuClose }: AdminAccessProps) => {
   const { isAuthenticated, isAdmin, isLoading } = useAuth();
   const navigate = useNavigate();
 
