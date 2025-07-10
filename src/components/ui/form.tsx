@@ -13,8 +13,6 @@ import {
 
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
-import { createSafeContext } from "@/utils/reactContextSafety";
-
 const Form = FormProvider;
 
 type FormFieldContextValue<
@@ -24,9 +22,8 @@ type FormFieldContextValue<
   name: TName;
 };
 
-const FormFieldContext = createSafeContext<FormFieldContextValue>(
+const FormFieldContext = React.createContext<FormFieldContextValue>(
   {} as FormFieldContextValue,
-  "FormFieldContext",
 );
 
 const FormField = <
