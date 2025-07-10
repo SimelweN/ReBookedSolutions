@@ -28,8 +28,8 @@ export class ErrorFixValidator {
     // Test React context availability
     this.testReactContextAvailability();
 
-    // Test analytics fallbacks
-    this.testAnalyticsFallbacks();
+    // Test analytics removal
+    this.testAnalyticsRemoval();
 
     // Test storage handling
     this.testStorageHandling();
