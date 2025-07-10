@@ -314,9 +314,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Log the quote request (non-blocking)
-    supabase
-      .from("audit_logs")
-      .insert({
+    try {
+      await supabase.from("audit_logs").insert({
         action: "delivery_quotes_requested",
         table_name: "delivery_quotes",
         new_values: {
@@ -328,10 +327,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           package_weight: package_details?.weight,
           requested_at: new Date().toISOString(),
         },
-      })
-      .catch((error) =>
-        console.warn("Failed to log quote request:", error.message),
-      );
+      });
+    } catch (error: any) {
+      console.warn("Failed to log quote request:", error.message);
+    }
 
     return res.status(200).json({
       success: true,
