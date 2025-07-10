@@ -3,6 +3,7 @@ import { useContext, useState, useEffect } from "react";
 import { CartItem, CartContextType } from "@/types/cart";
 import { Book } from "@/types/book";
 import { toast } from "sonner";
+import { createSafeContext } from "@/utils/reactContextSafety";
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
