@@ -711,7 +711,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       } catch (error) {
         console.warn(
-          "⚠️ [AuthContext] Auth state change error:",
+          "���️ [AuthContext] Auth state change error:",
           error instanceof Error ? error.message : String(error),
         );
 

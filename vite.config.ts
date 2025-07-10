@@ -46,16 +46,23 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Keep React and React-DOM together and prioritize them
+          // Keep React and React-DOM together and prioritize them FIRST
+          if (
+            id.includes("node_modules/react/") ||
+            id.includes("node_modules/react-dom/")
+          ) {
+            return "0-react-core";
+          }
           if (id.includes("react-dom")) {
-            return "react-vendor";
+            return "0-react-core";
           }
           if (
             id.includes("react") &&
             !id.includes("react-router") &&
-            !id.includes("@react-google-maps")
+            !id.includes("@react-google-maps") &&
+            !id.includes("@tanstack/react-query")
           ) {
-            return "react-vendor";
+            return "0-react-core";
           }
 
           // Router (separate from core React)
@@ -198,6 +205,8 @@ export default defineConfig(({ mode }) => ({
     "process.env.NODE_ENV": JSON.stringify(
       mode === "production" ? "production" : "development",
     ),
+    // Ensure global React availability
+    global: "globalThis",
   },
 
   // Performance optimizations

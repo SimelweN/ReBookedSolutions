@@ -1,11 +1,14 @@
-// Import React availability check FIRST to prevent createContext errors
+// Import early React setup FIRST to prevent any createContext errors
+import "./utils/earlyReactSetup";
+import * as React from "react";
+
+// Import React availability check AFTER React is set up
 import "./utils/reactAvailabilityCheck";
 
 // Import suppressions
 import "./utils/suppressDatadogWarnings";
 import "./utils/globalReactSetup";
 
-import * as React from "react";
 import { createRoot } from "react-dom/client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
