@@ -191,62 +191,6 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
     );
   }
 
-  // Load existing data if in edit mode
-  useEffect(() => {
-    const loadExistingData = async () => {
-      if (!editMode) return;
-
-      try {
-        setIsLoading(true);
-        const status =
-          await PaystackSubaccountService.getUserSubaccountStatus();
-
-        if (status.hasSubaccount) {
-          setExistingData(status);
-          setFormData({
-            businessName: status.businessName || "",
-            email: status.email || "",
-            bankName: status.bankName || "",
-            accountNumber: status.accountNumber || "",
-          });
-
-          // Set branch code for the existing bank
-          const selectedBank = SOUTH_AFRICAN_BANKS.find(
-            (bank) => bank.name === status.bankName,
-          );
-          setBranchCode(selectedBank?.branchCode || "");
-        }
-      } catch (error) {
-        toast.error("Failed to load existing banking details");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadExistingData();
-    if (!editMode) {
-      autofillUserInfo();
-    }
-  }, [editMode]);
-
-  const autofillUserInfo = async () => {
-    if (hasAutofilled || editMode) return;
-
-    try {
-      const userInfo = await UserAutofillService.getUserInfo();
-      if (userInfo) {
-        setFormData((prev) => ({
-          ...prev,
-          businessName: prev.businessName || userInfo.name,
-          email: prev.email || userInfo.email,
-        }));
-        setHasAutofilled(true);
-      }
-    } catch (error) {
-      // Silently fail autofill attempts
-    }
-  };
-
   const handleBankChange = (bankName: string) => {
     const selectedBank = SOUTH_AFRICAN_BANKS.find(
       (bank) => bank.name === bankName,
