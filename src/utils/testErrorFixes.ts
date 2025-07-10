@@ -3,6 +3,8 @@
  * Quick validation that our error fixes are working
  */
 
+import React from "react";
+
 export function testErrorFixes(): void {
   console.log("🧪 Testing error fixes...");
 

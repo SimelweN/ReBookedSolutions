@@ -85,7 +85,6 @@ export class ThirdPartyErrorHandler {
       "mixpanel",
 
       // Known harmless errors
-      "Cannot read properties of undefined (reading 'createContext')",
       "Non-Error promise rejection captured",
       "Script error.",
       "ResizeObserver loop limit exceeded",
