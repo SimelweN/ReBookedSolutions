@@ -369,7 +369,6 @@ export class SellerMarketplaceService {
           name,
           email,
           bio,
-          university,
           created_at
         `,
           )
