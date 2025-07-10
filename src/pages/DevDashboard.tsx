@@ -412,32 +412,40 @@ const DevDashboard: React.FC = () => {
       } = await supabase.auth.getUser();
 
       if (error) {
-        addTestResult(
-          "Authentication",
-          "failed",
-          `Auth error: ${error.message}`,
-          error,
-        );
+        setTimeout(() => {
+          addTestResult(
+            "Authentication",
+            "failed",
+            `Auth error: ${error.message}`,
+            error,
+          );
+        }, 0);
       } else if (authUser) {
-        addTestResult(
-          "Authentication",
-          "success",
-          `Authenticated as: ${authUser.email}`,
-        );
+        setTimeout(() => {
+          addTestResult(
+            "Authentication",
+            "success",
+            `Authenticated as: ${authUser.email}`,
+          );
+        }, 0);
       } else {
-        addTestResult(
-          "Authentication",
-          "failed",
-          "No authenticated user found",
-        );
+        setTimeout(() => {
+          addTestResult(
+            "Authentication",
+            "failed",
+            "No authenticated user found",
+          );
+        }, 0);
       }
     } catch (error) {
-      addTestResult(
-        "Authentication",
-        "failed",
-        `Auth test error: ${error}`,
-        error,
-      );
+      setTimeout(() => {
+        addTestResult(
+          "Authentication",
+          "failed",
+          `Auth test error: ${error}`,
+          error,
+        );
+      }, 0);
     }
   };
 
