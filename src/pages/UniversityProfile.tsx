@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import { useParams, Navigate, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, Navigate, Link, useSearchParams } from "react-router-dom";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/index";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   ArrowLeft,
   ExternalLink,
@@ -21,15 +22,61 @@ import {
   Award,
   Heart,
   Info,
+  Eye,
+  CheckCircle,
+  XCircle,
+  Filter,
 } from "lucide-react";
 import Layout from "@/components/Layout";
+import ProgramDetailModal from "@/components/university-info/ProgramDetailModal";
+import { Degree } from "@/types/university";
 
 /**
  * University Profile Component - Complete modern redesign
  */
 const UniversityProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState("programs");
+  const [selectedProgram, setSelectedProgram] = useState<Degree | null>(null);
+  const [isProgramModalOpen, setIsProgramModalOpen] = useState(false);
+  const [showEligibleOnly, setShowEligibleOnly] = useState(false);
+
+  // Get APS from URL parameters
+  const fromAPS = searchParams.get("fromAPS") === "true";
+  const userAPS = parseInt(searchParams.get("aps") || "0");
+
+  useEffect(() => {
+    // Scroll to top when component mounts or university changes
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    // If coming from APS calculator, show eligible programs by default
+    if (fromAPS && userAPS > 0) {
+      setShowEligibleOnly(true);
+    }
+  }, [id, fromAPS, userAPS]);
+
+  const handleViewProgram = (program: Degree) => {
+    setSelectedProgram(program);
+    setIsProgramModalOpen(true);
+  };
+
+  const closeProgramModal = () => {
+    setIsProgramModalOpen(false);
+    setSelectedProgram(null);
+  };
+
+  // Helper function to check if user is eligible for a program
+  const isEligibleForProgram = (program: Degree): boolean => {
+    if (!userAPS || userAPS === 0) return true;
+    return userAPS >= program.apsRequirement;
+  };
+
+  // Helper function to filter programs based on eligibility
+  const filterPrograms = (programs: Degree[]): Degree[] => {
+    if (!showEligibleOnly || !userAPS) return programs;
+    return programs.filter(isEligibleForProgram);
+  };
 
   const university = ALL_SOUTH_AFRICAN_UNIVERSITIES.find(
     (uni) =>
@@ -56,7 +103,7 @@ const UniversityProfile: React.FC = () => {
     <Layout>
       <div className="bg-white min-h-screen">
         {/* Clean Header */}
-        <div className="bg-gradient-to-b from-gray-50 to-white border-b border-gray-200">
+        <div className="bg-gradient-to-b from-book-100 via-book-50 to-white border-b border-book-200">
           <div className="container mx-auto px-6 py-8">
             {/* Back Navigation */}
             <Link
@@ -74,11 +121,19 @@ const UniversityProfile: React.FC = () => {
                 <div className="flex items-start gap-6 mb-8">
                   {/* Logo */}
                   <div className="relative">
-                    <div className="w-20 h-20 bg-white border-4 border-gray-100 rounded-2xl flex items-center justify-center shadow-lg">
-                      <span className="text-2xl font-bold text-gray-700">
-                        {university.abbreviation ||
-                          university.name.substring(0, 3).toUpperCase()}
-                      </span>
+                    <div className="w-20 h-20 bg-white border-4 border-book-200 rounded-2xl flex items-center justify-center shadow-lg">
+                      {university.logo ? (
+                        <img
+                          src={university.logo}
+                          alt={`${university.name} logo`}
+                          className="w-16 h-16 object-contain"
+                        />
+                      ) : (
+                        <span className="text-2xl font-bold text-gray-700">
+                          {university.abbreviation ||
+                            university.name.substring(0, 3).toUpperCase()}
+                        </span>
+                      )}
                     </div>
                     <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-book-500 rounded-full flex items-center justify-center">
                       <Award className="h-3 w-3 text-white" />
@@ -90,7 +145,7 @@ const UniversityProfile: React.FC = () => {
                     <div>
                       <Badge
                         variant="secondary"
-                        className="mb-3 bg-blue-50 text-blue-700 border-blue-200"
+                        className="mb-3 bg-book-50 text-book-700 border-book-200"
                       >
                         {university.type}
                       </Badge>
@@ -153,7 +208,7 @@ const UniversityProfile: React.FC = () => {
 
               {/* Quick Stats */}
               <div className="lg:col-span-1">
-                <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50">
+                <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-book-50 border-book-200">
                   <CardHeader className="pb-4">
                     <CardTitle className="text-lg flex items-center text-gray-800">
                       <BarChart3 className="h-5 w-5 mr-2 text-book-500" />
@@ -216,6 +271,72 @@ const UniversityProfile: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* APS Status Banner */}
+        {fromAPS && userAPS > 0 && (
+          <div className="bg-book-100 border-b border-book-200">
+            <div className="container mx-auto px-6 py-4">
+              <Alert className="border-book-300 bg-book-50">
+                <Calculator className="h-5 w-5 text-book-600" />
+                <AlertDescription className="text-book-800">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                      <strong>Your APS Score: {userAPS}</strong> -
+                      {(() => {
+                        const eligibleCount = university.faculties.reduce(
+                          (total, faculty) => {
+                            const eligiblePrograms = filterPrograms(
+                              faculty.degrees || [],
+                            );
+                            return total + eligiblePrograms.length;
+                          },
+                          0,
+                        );
+                        const totalPrograms = university.faculties.reduce(
+                          (total, faculty) => {
+                            return total + (faculty.degrees?.length || 0);
+                          },
+                          0,
+                        );
+                        return (
+                          <span className="ml-2">
+                            You qualify for <strong>{eligibleCount}</strong> out
+                            of <strong>{totalPrograms}</strong> programs
+                          </span>
+                        );
+                      })()}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant={showEligibleOnly ? "default" : "outline"}
+                        onClick={() => setShowEligibleOnly(!showEligibleOnly)}
+                        className="bg-book-600 hover:bg-book-700 text-white"
+                      >
+                        <Filter className="h-4 w-4 mr-2" />
+                        {showEligibleOnly
+                          ? "Show All Programs"
+                          : "Show Eligible Only"}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          // Clear APS by removing URL parameters and reloading
+                          window.location.href = `/university/${id}`;
+                        }}
+                        className="border-gray-300 text-gray-600 hover:bg-gray-50"
+                      >
+                        <XCircle className="h-4 w-4 mr-2" />
+                        Clear APS Profile
+                      </Button>
+                    </div>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            </div>
+          </div>
+        )}
 
         {/* Main Content */}
         <div className="container mx-auto px-6 py-8">
@@ -283,70 +404,180 @@ const UniversityProfile: React.FC = () => {
 
                 {university.faculties && university.faculties.length > 0 ? (
                   <div className="grid gap-8">
-                    {university.faculties.map((faculty, index) => (
-                      <Card key={index} className="border-0 shadow-lg">
-                        <CardHeader className="bg-gradient-to-r from-gray-50 to-white">
-                          <CardTitle className="text-xl flex items-center text-gray-900">
-                            <Building2 className="h-6 w-6 mr-3 text-book-500" />
-                            {faculty.name}
-                          </CardTitle>
-                          {faculty.description && (
-                            <p className="text-gray-600 mt-2">
-                              {faculty.description}
-                            </p>
-                          )}
-                        </CardHeader>
+                    {university.faculties.map((faculty, index) => {
+                      const facultyPrograms = faculty.degrees || [];
+                      const filteredPrograms = filterPrograms(facultyPrograms);
+                      const eligibleCount =
+                        facultyPrograms.filter(isEligibleForProgram).length;
 
-                        {faculty.degrees && faculty.degrees.length > 0 && (
-                          <CardContent className="pt-6">
-                            <div className="grid gap-4">
-                              {faculty.degrees
-                                .slice(0, 3)
-                                .map((degree, degreeIndex) => (
-                                  <div
-                                    key={degreeIndex}
-                                    className="group bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md hover:border-book-200 transition-all duration-200"
-                                  >
-                                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                                      <div className="flex-1">
-                                        <h5 className="font-semibold text-gray-900 mb-2 group-hover:text-book-700 transition-colors">
-                                          {degree.name}
-                                        </h5>
-                                        {degree.description && (
-                                          <p className="text-gray-600 text-sm leading-relaxed mb-3">
-                                            {degree.description}
-                                          </p>
-                                        )}
-                                        {degree.duration && (
-                                          <div className="flex items-center text-sm text-gray-500">
-                                            <Calendar className="h-4 w-4 mr-1" />
-                                            {degree.duration}
-                                          </div>
-                                        )}
-                                      </div>
-                                      <Badge className="bg-book-100 text-book-700 border-book-200 shrink-0">
-                                        APS: {degree.apsRequirement}
-                                      </Badge>
-                                    </div>
-                                  </div>
-                                ))}
-                              {faculty.degrees.length > 3 && (
-                                <div className="text-center py-4">
-                                  <Button
-                                    variant="outline"
-                                    className="border-book-200 text-book-600 hover:bg-book-50"
-                                  >
-                                    <TrendingUp className="h-4 w-4 mr-2" />
-                                    View {faculty.degrees.length - 3} more
-                                    programs
-                                  </Button>
-                                </div>
+                      // Skip faculty if no programs match the filter
+                      if (showEligibleOnly && filteredPrograms.length === 0) {
+                        return null;
+                      }
+
+                      return (
+                        <Card key={index} className="border-0 shadow-lg">
+                          <CardHeader className="bg-gradient-to-r from-gray-50 to-white">
+                            <CardTitle className="text-xl flex items-center justify-between text-gray-900">
+                              <div className="flex items-center">
+                                <Building2 className="h-6 w-6 mr-3 text-book-500" />
+                                {faculty.name}
+                              </div>
+                              {fromAPS && userAPS > 0 && (
+                                <Badge
+                                  variant={
+                                    eligibleCount > 0 ? "default" : "secondary"
+                                  }
+                                  className={
+                                    eligibleCount > 0
+                                      ? "bg-green-100 text-green-800 border-green-300"
+                                      : "bg-red-100 text-red-800 border-red-300"
+                                  }
+                                >
+                                  {eligibleCount}/{facultyPrograms.length}{" "}
+                                  eligible
+                                </Badge>
                               )}
-                            </div>
-                          </CardContent>
-                        )}
-                      </Card>
-                    ))}
+                            </CardTitle>
+                            {faculty.description && (
+                              <p className="text-gray-600 mt-2">
+                                {faculty.description}
+                              </p>
+                            )}
+                          </CardHeader>
+
+                          {filteredPrograms.length > 0 && (
+                            <CardContent className="pt-6">
+                              <div className="grid gap-4">
+                                {filteredPrograms
+                                  .slice(
+                                    0,
+                                    showEligibleOnly
+                                      ? filteredPrograms.length
+                                      : 3,
+                                  )
+                                  .map((degree, degreeIndex) => {
+                                    const isEligible =
+                                      isEligibleForProgram(degree);
+                                    return (
+                                      <div
+                                        key={degreeIndex}
+                                        className={`group bg-white border rounded-xl p-5 hover:shadow-md transition-all duration-200 ${
+                                          fromAPS && userAPS > 0
+                                            ? isEligible
+                                              ? "border-green-300 bg-green-50 hover:border-green-400"
+                                              : "border-red-300 bg-red-50 hover:border-red-400"
+                                            : "border-gray-200 hover:border-book-200"
+                                        }`}
+                                      >
+                                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                                          <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-2">
+                                              {fromAPS &&
+                                                userAPS > 0 &&
+                                                (isEligible ? (
+                                                  <CheckCircle className="h-5 w-5 text-green-600" />
+                                                ) : (
+                                                  <XCircle className="h-5 w-5 text-red-600" />
+                                                ))}
+                                              <h5
+                                                className={`font-semibold mb-0 group-hover:text-book-700 transition-colors ${
+                                                  fromAPS && userAPS > 0
+                                                    ? isEligible
+                                                      ? "text-green-900"
+                                                      : "text-red-900"
+                                                    : "text-gray-900"
+                                                }`}
+                                              >
+                                                {degree.name}
+                                              </h5>
+                                            </div>
+                                            {degree.description && (
+                                              <p
+                                                className={`text-sm leading-relaxed mb-3 ${
+                                                  fromAPS && userAPS > 0
+                                                    ? isEligible
+                                                      ? "text-green-700"
+                                                      : "text-red-700"
+                                                    : "text-gray-600"
+                                                }`}
+                                              >
+                                                {degree.description}
+                                              </p>
+                                            )}
+                                            {degree.duration && (
+                                              <div
+                                                className={`flex items-center text-sm ${
+                                                  fromAPS && userAPS > 0
+                                                    ? isEligible
+                                                      ? "text-green-600"
+                                                      : "text-red-600"
+                                                    : "text-gray-500"
+                                                }`}
+                                              >
+                                                <Calendar className="h-4 w-4 mr-1" />
+                                                {degree.duration}
+                                              </div>
+                                            )}
+                                          </div>
+                                          <div className="flex items-center gap-2 shrink-0">
+                                            <Badge
+                                              className={
+                                                fromAPS && userAPS > 0
+                                                  ? isEligible
+                                                    ? "bg-green-100 text-green-800 border-green-300"
+                                                    : "bg-red-100 text-red-800 border-red-300"
+                                                  : "bg-book-100 text-book-700 border-book-200"
+                                              }
+                                            >
+                                              APS: {degree.apsRequirement}
+                                              {fromAPS && userAPS > 0 && (
+                                                <span className="ml-1">
+                                                  {isEligible ? "✓" : "✗"}
+                                                </span>
+                                              )}
+                                            </Badge>
+                                            <Button
+                                              size="sm"
+                                              variant="outline"
+                                              className={
+                                                fromAPS && userAPS > 0
+                                                  ? isEligible
+                                                    ? "border-green-300 text-green-700 hover:bg-green-100"
+                                                    : "border-red-300 text-red-700 hover:bg-red-100"
+                                                  : "border-book-200 text-book-600 hover:bg-book-50"
+                                              }
+                                              onClick={() =>
+                                                handleViewProgram(degree)
+                                              }
+                                            >
+                                              <Eye className="h-4 w-4 mr-1" />
+                                              View More
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                {!showEligibleOnly &&
+                                  facultyPrograms.length > 3 && (
+                                    <div className="text-center py-4">
+                                      <Button
+                                        variant="outline"
+                                        className="border-book-200 text-book-600 hover:bg-book-50"
+                                      >
+                                        <TrendingUp className="h-4 w-4 mr-2" />
+                                        View {facultyPrograms.length - 3} more
+                                        programs
+                                      </Button>
+                                    </div>
+                                  )}
+                              </div>
+                            </CardContent>
+                          )}
+                        </Card>
+                      );
+                    })}
                   </div>
                 ) : (
                   <Card className="border-0 shadow-lg">
@@ -373,36 +604,278 @@ const UniversityProfile: React.FC = () => {
                     Admissions Information
                   </h2>
                   <p className="text-gray-600">
-                    Everything you need to know about applying
+                    Everything you need to know about applying to{" "}
+                    {university.name}
                   </p>
                 </div>
 
+                {/* Application Dates */}
                 <Card className="border-0 shadow-lg">
-                  <CardContent className="p-8 text-center">
-                    <Calendar className="h-16 w-16 mx-auto text-book-500 mb-6" />
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                      Admissions Information Coming Soon
-                    </h3>
-                    <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                      We're working on bringing you comprehensive admissions
-                      information. For now, please visit the official university
-                      website.
-                    </p>
-                    {university.website && (
-                      <Button
-                        className="bg-book-600 hover:bg-book-700 text-white"
-                        asChild
-                      >
-                        <a
-                          href={university.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <ExternalLink className="h-5 w-5 mr-2" />
-                          Visit University Website
-                        </a>
-                      </Button>
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <Calendar className="h-6 w-6 mr-3 text-book-500" />
+                      Application Dates & Deadlines
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    {university.applicationInfo ? (
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                          <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                            <h4 className="font-semibold text-green-800 mb-2">
+                              Application Period
+                            </h4>
+                            <p className="text-green-700">
+                              {university.applicationInfo.openingDate} -{" "}
+                              {university.applicationInfo.closingDate}
+                            </p>
+                          </div>
+                          <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <h4 className="font-semibold text-blue-800 mb-2">
+                              Academic Year
+                            </h4>
+                            <p className="text-blue-700">
+                              {university.applicationInfo.academicYear}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="space-y-4">
+                          <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
+                            <h4 className="font-semibold text-orange-800 mb-2">
+                              Application Fee
+                            </h4>
+                            <p className="text-orange-700">
+                              {university.applicationInfo.applicationFee ||
+                                "No application fee"}
+                            </p>
+                          </div>
+                          <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                            <h4 className="font-semibold text-purple-800 mb-2">
+                              Application Method
+                            </h4>
+                            <p className="text-purple-700">
+                              {university.applicationInfo.applicationMethod}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-6 bg-gray-50 rounded-lg text-center">
+                        <p className="text-gray-600">
+                          Application dates will be published closer to the
+                          application period.
+                        </p>
+                      </div>
                     )}
+                  </CardContent>
+                </Card>
+
+                {/* Application Process */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <Users className="h-6 w-6 mr-3 text-book-500" />
+                      Application Process
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="space-y-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="w-8 h-8 bg-book-500 text-white rounded-full flex items-center justify-center font-bold">
+                          1
+                        </div>
+                        <div>
+                          <h4 className="font-semibold mb-2">
+                            Check Admission Requirements
+                          </h4>
+                          <p className="text-gray-600">
+                            Review the specific requirements for your chosen
+                            program, including APS scores and subject
+                            requirements.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-4">
+                        <div className="w-8 h-8 bg-book-500 text-white rounded-full flex items-center justify-center font-bold">
+                          2
+                        </div>
+                        <div>
+                          <h4 className="font-semibold mb-2">
+                            Prepare Required Documents
+                          </h4>
+                          <p className="text-gray-600">
+                            Gather certified copies of ID, academic transcripts,
+                            and any additional documents required for your
+                            program.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-4">
+                        <div className="w-8 h-8 bg-book-500 text-white rounded-full flex items-center justify-center font-bold">
+                          3
+                        </div>
+                        <div>
+                          <h4 className="font-semibold mb-2">
+                            Submit Online Application
+                          </h4>
+                          <p className="text-gray-600">
+                            Complete the online application form and upload all
+                            required documents before the deadline.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-4">
+                        <div className="w-8 h-8 bg-book-500 text-white rounded-full flex items-center justify-center font-bold">
+                          4
+                        </div>
+                        <div>
+                          <h4 className="font-semibold mb-2">
+                            Track Application Status
+                          </h4>
+                          <p className="text-gray-600">
+                            Monitor your application status through the student
+                            portal and respond to any requests for additional
+                            information.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Financial Aid */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <Award className="h-6 w-6 mr-3 text-book-500" />
+                      Financial Aid & Funding
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">
+                          Government Funding
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="p-3 bg-green-50 rounded-lg">
+                            <h5 className="font-medium text-green-800">
+                              NSFAS
+                            </h5>
+                            <p className="text-sm text-green-700">
+                              National Student Financial Aid Scheme for
+                              qualifying students
+                            </p>
+                          </div>
+                          <div className="p-3 bg-blue-50 rounded-lg">
+                            <h5 className="font-medium text-blue-800">
+                              Provincial Bursaries
+                            </h5>
+                            <p className="text-sm text-blue-700">
+                              Provincial government bursary programs available
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">
+                          University Support
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="p-3 bg-purple-50 rounded-lg">
+                            <h5 className="font-medium text-purple-800">
+                              Merit Scholarships
+                            </h5>
+                            <p className="text-sm text-purple-700">
+                              Academic excellence scholarships for top
+                              performers
+                            </p>
+                          </div>
+                          <div className="p-3 bg-orange-50 rounded-lg">
+                            <h5 className="font-medium text-orange-800">
+                              Need-Based Aid
+                            </h5>
+                            <p className="text-sm text-orange-700">
+                              Financial assistance for students from
+                              disadvantaged backgrounds
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Contact Information */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <Info className="h-6 w-6 mr-3 text-book-500" />
+                      Admissions Contact
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <h4 className="font-semibold mb-3">
+                          Get Help With Your Application
+                        </h4>
+                        <div className="space-y-2">
+                          {university.admissionsContact && (
+                            <div className="flex items-center">
+                              <span className="font-medium w-20">Email:</span>
+                              <span className="text-book-600">
+                                {university.admissionsContact}
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex items-center">
+                            <span className="font-medium w-20">Website:</span>
+                            <a
+                              href={university.website}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-book-600 hover:text-book-700 underline"
+                            >
+                              {university.website}
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-3">
+                        {university.website && (
+                          <Button
+                            className="bg-book-600 hover:bg-book-700 text-white"
+                            asChild
+                          >
+                            <a
+                              href={university.website}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <ExternalLink className="h-5 w-5 mr-2" />
+                              Visit University Website
+                            </a>
+                          </Button>
+                        )}
+                        {university.studentPortal && (
+                          <Button
+                            variant="outline"
+                            className="border-book-200 text-book-600 hover:bg-book-50"
+                            asChild
+                          >
+                            <a
+                              href={university.studentPortal}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Users className="h-5 w-5 mr-2" />
+                              Student Portal
+                            </a>
+                          </Button>
+                        )}
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -412,23 +885,349 @@ const UniversityProfile: React.FC = () => {
               <div className="space-y-8">
                 <div>
                   <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                    Campus Life
+                    Campus Life at {university.name}
                   </h2>
                   <p className="text-gray-600">
-                    Discover what makes campus life special
+                    Discover what makes student life vibrant and engaging
                   </p>
                 </div>
 
+                {/* Accommodation */}
                 <Card className="border-0 shadow-lg">
-                  <CardContent className="p-8 text-center">
-                    <Heart className="h-16 w-16 mx-auto text-book-500 mb-6" />
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                      Campus Life Information Coming Soon
-                    </h3>
-                    <p className="text-gray-600 max-w-md mx-auto">
-                      We're preparing detailed information about student life,
-                      campus facilities, and extracurricular activities.
-                    </p>
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <Building2 className="h-6 w-6 mr-3 text-book-500" />
+                      Student Accommodation
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="p-4 bg-book-50 rounded-lg">
+                          <h4 className="font-semibold text-book-800 mb-2">
+                            On-Campus Residences
+                          </h4>
+                          <ul className="text-sm text-book-700 space-y-1">
+                            {university.id === "uwc" ? (
+                              <>
+                                <li>• Cassinga Residence</li>
+                                <li>• Basil February Residence</li>
+                                <li>• Chris Hani Residence</li>
+                                <li>• Ruth First Residence</li>
+                                <li>• Eduardo Dos Santos Residence</li>
+                              </>
+                            ) : (
+                              <>
+                                <li>• Modern residence facilities</li>
+                                <li>• Shared and single room options</li>
+                                <li>• Meal plan options available</li>
+                                <li>• 24/7 security and support</li>
+                              </>
+                            )}
+                          </ul>
+                        </div>
+                        <div className="p-4 bg-blue-50 rounded-lg">
+                          <h4 className="font-semibold text-blue-800 mb-2">
+                            Off-Campus Housing
+                          </h4>
+                          <ul className="text-sm text-blue-700 space-y-1">
+                            <li>• Private accommodation options</li>
+                            <li>• Shuttle services to campus</li>
+                            <li>• Student housing partnerships</li>
+                            <li>• Rental assistance programs</li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="p-4 bg-green-50 rounded-lg">
+                          <h4 className="font-semibold text-green-800 mb-2">
+                            Residence Features
+                          </h4>
+                          <ul className="text-sm text-green-700 space-y-1">
+                            <li>• Wi-Fi and study areas</li>
+                            <li>• Recreational facilities</li>
+                            <li>• Laundry facilities</li>
+                            <li>• Common areas and kitchens</li>
+                          </ul>
+                        </div>
+                        <div className="p-4 bg-purple-50 rounded-lg">
+                          <h4 className="font-semibold text-purple-800 mb-2">
+                            Application Process
+                          </h4>
+                          <ul className="text-sm text-purple-700 space-y-1">
+                            <li>• Online application system</li>
+                            <li>• Early application recommended</li>
+                            <li>• Various accommodation options</li>
+                            <li>• Payment plan options</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Student Activities */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <Heart className="h-6 w-6 mr-3 text-book-500" />
+                      Student Activities & Organizations
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-3 gap-6">
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">
+                          Sports & Recreation
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="p-3 bg-orange-50 rounded-lg">
+                            <h5 className="font-medium text-orange-800">
+                              Sports Clubs
+                            </h5>
+                            <p className="text-sm text-orange-700">
+                              Rugby, soccer, netball, athletics, and more
+                            </p>
+                          </div>
+                          <div className="p-3 bg-red-50 rounded-lg">
+                            <h5 className="font-medium text-red-800">
+                              Fitness Facilities
+                            </h5>
+                            <p className="text-sm text-red-700">
+                              Modern gym and fitness centers
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">
+                          Cultural Activities
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="p-3 bg-purple-50 rounded-lg">
+                            <h5 className="font-medium text-purple-800">
+                              Cultural Societies
+                            </h5>
+                            <p className="text-sm text-purple-700">
+                              Drama, music, dance, and arts clubs
+                            </p>
+                          </div>
+                          <div className="p-3 bg-pink-50 rounded-lg">
+                            <h5 className="font-medium text-pink-800">
+                              Events & Festivals
+                            </h5>
+                            <p className="text-sm text-pink-700">
+                              Annual festivals and cultural celebrations
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">
+                          Academic & Professional
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="p-3 bg-blue-50 rounded-lg">
+                            <h5 className="font-medium text-blue-800">
+                              Academic Societies
+                            </h5>
+                            <p className="text-sm text-blue-700">
+                              Subject-specific student organizations
+                            </p>
+                          </div>
+                          <div className="p-3 bg-green-50 rounded-lg">
+                            <h5 className="font-medium text-green-800">
+                              Leadership Programs
+                            </h5>
+                            <p className="text-sm text-green-700">
+                              Student leadership and mentorship
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Campus Facilities */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <Building2 className="h-6 w-6 mr-3 text-book-500" />
+                      Campus Facilities
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="p-4 bg-book-50 rounded-lg">
+                          <h4 className="font-semibold text-book-800 mb-3">
+                            Academic Facilities
+                          </h4>
+                          <ul className="text-sm text-book-700 space-y-2">
+                            <li className="flex items-center">
+                              <BookOpen className="h-4 w-4 mr-2" />
+                              Modern libraries with digital resources
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              State-of-the-art laboratories
+                            </li>
+                            <li className="flex items-center">
+                              <Globe className="h-4 w-4 mr-2" />
+                              Computer labs and IT facilities
+                            </li>
+                            <li className="flex items-center">
+                              <Building2 className="h-4 w-4 mr-2" />
+                              Lecture halls and seminar rooms
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="p-4 bg-green-50 rounded-lg">
+                          <h4 className="font-semibold text-green-800 mb-3">
+                            Student Support
+                          </h4>
+                          <ul className="text-sm text-green-700 space-y-2">
+                            <li className="flex items-center">
+                              <Heart className="h-4 w-4 mr-2" />
+                              Counseling and wellness center
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Academic support services
+                            </li>
+                            <li className="flex items-center">
+                              <Award className="h-4 w-4 mr-2" />
+                              Career guidance center
+                            </li>
+                            <li className="flex items-center">
+                              <Info className="h-4 w-4 mr-2" />
+                              Disability support services
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="p-4 bg-blue-50 rounded-lg">
+                          <h4 className="font-semibold text-blue-800 mb-3">
+                            Campus Amenities
+                          </h4>
+                          <ul className="text-sm text-blue-700 space-y-2">
+                            <li className="flex items-center">
+                              <Building2 className="h-4 w-4 mr-2" />
+                              Student center and dining halls
+                            </li>
+                            <li className="flex items-center">
+                              <MapPin className="h-4 w-4 mr-2" />
+                              Campus bookstore and shops
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Banking and postal services
+                            </li>
+                            <li className="flex items-center">
+                              <Heart className="h-4 w-4 mr-2" />
+                              Medical center and pharmacy
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="p-4 bg-orange-50 rounded-lg">
+                          <h4 className="font-semibold text-orange-800 mb-3">
+                            Transportation
+                          </h4>
+                          <ul className="text-sm text-orange-700 space-y-2">
+                            <li className="flex items-center">
+                              <MapPin className="h-4 w-4 mr-2" />
+                              Campus shuttle services
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Public transport links
+                            </li>
+                            <li className="flex items-center">
+                              <Building2 className="h-4 w-4 mr-2" />
+                              Parking facilities
+                            </li>
+                            <li className="flex items-center">
+                              <Award className="h-4 w-4 mr-2" />
+                              Bicycle-friendly campus
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Student Support Services */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <Users className="h-6 w-6 mr-3 text-book-500" />
+                      Student Support Services
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <div className="p-4 bg-gradient-to-r from-book-100 to-book-50 rounded-lg">
+                          <h4 className="font-semibold text-book-800 mb-2">
+                            Academic Support
+                          </h4>
+                          <p className="text-sm text-book-700">
+                            Tutoring programs, study groups, and academic
+                            advising to help you succeed.
+                          </p>
+                        </div>
+                        <div className="p-4 bg-gradient-to-r from-green-100 to-green-50 rounded-lg">
+                          <h4 className="font-semibold text-green-800 mb-2">
+                            Mental Health & Wellness
+                          </h4>
+                          <p className="text-sm text-green-700">
+                            Professional counseling services and wellness
+                            programs for student wellbeing.
+                          </p>
+                        </div>
+                        <div className="p-4 bg-gradient-to-r from-blue-100 to-blue-50 rounded-lg">
+                          <h4 className="font-semibold text-blue-800 mb-2">
+                            Financial Aid Office
+                          </h4>
+                          <p className="text-sm text-blue-700">
+                            Assistance with funding, bursaries, and financial
+                            planning for your studies.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="space-y-3">
+                        <div className="p-4 bg-gradient-to-r from-purple-100 to-purple-50 rounded-lg">
+                          <h4 className="font-semibold text-purple-800 mb-2">
+                            Career Services
+                          </h4>
+                          <p className="text-sm text-purple-700">
+                            Career guidance, internship placement, and job
+                            search assistance.
+                          </p>
+                        </div>
+                        <div className="p-4 bg-gradient-to-r from-orange-100 to-orange-50 rounded-lg">
+                          <h4 className="font-semibold text-orange-800 mb-2">
+                            International Student Support
+                          </h4>
+                          <p className="text-sm text-orange-700">
+                            Specialized support for international students
+                            including visa and cultural assistance.
+                          </p>
+                        </div>
+                        <div className="p-4 bg-gradient-to-r from-pink-100 to-pink-50 rounded-lg">
+                          <h4 className="font-semibold text-pink-800 mb-2">
+                            Diversity & Inclusion
+                          </h4>
+                          <p className="text-sm text-pink-700">
+                            Programs promoting diversity, equality, and
+                            inclusive campus culture.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -441,20 +1240,427 @@ const UniversityProfile: React.FC = () => {
                     University Resources
                   </h2>
                   <p className="text-gray-600">
-                    Essential resources and facilities
+                    Essential resources, facilities, and support services at{" "}
+                    {university.name}
                   </p>
                 </div>
 
+                {/* Library & Learning Resources */}
                 <Card className="border-0 shadow-lg">
-                  <CardContent className="p-8 text-center">
-                    <Info className="h-16 w-16 mx-auto text-book-500 mb-6" />
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                      Resources Information Coming Soon
-                    </h3>
-                    <p className="text-gray-600 max-w-md mx-auto">
-                      We're compiling comprehensive information about university
-                      resources, facilities, and support services.
-                    </p>
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <BookOpen className="h-6 w-6 mr-3 text-book-500" />
+                      Library & Learning Resources
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="p-4 bg-book-50 rounded-lg">
+                          <h4 className="font-semibold text-book-800 mb-3">
+                            Digital Resources
+                          </h4>
+                          <ul className="text-sm text-book-700 space-y-2">
+                            <li className="flex items-center">
+                              <Globe className="h-4 w-4 mr-2" />
+                              Online databases and journals
+                            </li>
+                            <li className="flex items-center">
+                              <BookOpen className="h-4 w-4 mr-2" />
+                              E-books and digital collections
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Research support services
+                            </li>
+                            <li className="flex items-center">
+                              <Info className="h-4 w-4 mr-2" />
+                              Citation and writing support
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="p-4 bg-blue-50 rounded-lg">
+                          <h4 className="font-semibold text-blue-800 mb-3">
+                            Study Spaces
+                          </h4>
+                          <ul className="text-sm text-blue-700 space-y-2">
+                            <li className="flex items-center">
+                              <Building2 className="h-4 w-4 mr-2" />
+                              Quiet study areas
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Group study rooms
+                            </li>
+                            <li className="flex items-center">
+                              <Globe className="h-4 w-4 mr-2" />
+                              24/7 access areas
+                            </li>
+                            <li className="flex items-center">
+                              <BookOpen className="h-4 w-4 mr-2" />
+                              Computer labs
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="p-4 bg-green-50 rounded-lg">
+                          <h4 className="font-semibold text-green-800 mb-3">
+                            Library Services
+                          </h4>
+                          <ul className="text-sm text-green-700 space-y-2">
+                            <li className="flex items-center">
+                              <Award className="h-4 w-4 mr-2" />
+                              Librarian consultations
+                            </li>
+                            <li className="flex items-center">
+                              <TrendingUp className="h-4 w-4 mr-2" />
+                              Research training workshops
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Interlibrary loan services
+                            </li>
+                            <li className="flex items-center">
+                              <Info className="h-4 w-4 mr-2" />
+                              Subject specialist support
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="p-4 bg-purple-50 rounded-lg">
+                          <h4 className="font-semibold text-purple-800 mb-3">
+                            Technology Access
+                          </h4>
+                          <ul className="text-sm text-purple-700 space-y-2">
+                            <li className="flex items-center">
+                              <Globe className="h-4 w-4 mr-2" />
+                              Campus-wide Wi-Fi
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Laptop lending program
+                            </li>
+                            <li className="flex items-center">
+                              <Building2 className="h-4 w-4 mr-2" />
+                              Printing and scanning
+                            </li>
+                            <li className="flex items-center">
+                              <Award className="h-4 w-4 mr-2" />
+                              Software access
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Academic Support */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <GraduationCap className="h-6 w-6 mr-3 text-book-500" />
+                      Academic Support Services
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-3 gap-6">
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">
+                          Learning Support
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="p-3 bg-book-50 rounded-lg">
+                            <h5 className="font-medium text-book-800">
+                              Tutoring Services
+                            </h5>
+                            <p className="text-sm text-book-700">
+                              Peer and professional tutoring programs
+                            </p>
+                          </div>
+                          <div className="p-3 bg-green-50 rounded-lg">
+                            <h5 className="font-medium text-green-800">
+                              Study Skills Workshops
+                            </h5>
+                            <p className="text-sm text-green-700">
+                              Time management and study techniques
+                            </p>
+                          </div>
+                          <div className="p-3 bg-blue-50 rounded-lg">
+                            <h5 className="font-medium text-blue-800">
+                              Writing Center
+                            </h5>
+                            <p className="text-sm text-blue-700">
+                              Academic writing and research support
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">
+                          Language Support
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="p-3 bg-purple-50 rounded-lg">
+                            <h5 className="font-medium text-purple-800">
+                              Language Center
+                            </h5>
+                            <p className="text-sm text-purple-700">
+                              English and multilingual support
+                            </p>
+                          </div>
+                          <div className="p-3 bg-orange-50 rounded-lg">
+                            <h5 className="font-medium text-orange-800">
+                              ESL Programs
+                            </h5>
+                            <p className="text-sm text-orange-700">
+                              English as Second Language support
+                            </p>
+                          </div>
+                          <div className="p-3 bg-pink-50 rounded-lg">
+                            <h5 className="font-medium text-pink-800">
+                              Translation Services
+                            </h5>
+                            <p className="text-sm text-pink-700">
+                              Document translation assistance
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">Accessibility</h4>
+                        <div className="space-y-3">
+                          <div className="p-3 bg-red-50 rounded-lg">
+                            <h5 className="font-medium text-red-800">
+                              Disability Services
+                            </h5>
+                            <p className="text-sm text-red-700">
+                              Accommodation and support services
+                            </p>
+                          </div>
+                          <div className="p-3 bg-yellow-50 rounded-lg">
+                            <h5 className="font-medium text-yellow-800">
+                              Assistive Technology
+                            </h5>
+                            <p className="text-sm text-yellow-700">
+                              Specialized equipment and software
+                            </p>
+                          </div>
+                          <div className="p-3 bg-indigo-50 rounded-lg">
+                            <h5 className="font-medium text-indigo-800">
+                              Sign Language
+                            </h5>
+                            <p className="text-sm text-indigo-700">
+                              Interpreter services available
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Research & Innovation */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <TrendingUp className="h-6 w-6 mr-3 text-book-500" />
+                      Research & Innovation
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="p-4 bg-book-50 rounded-lg">
+                          <h4 className="font-semibold text-book-800 mb-3">
+                            Research Centers
+                          </h4>
+                          <ul className="text-sm text-book-700 space-y-2">
+                            <li className="flex items-center">
+                              <TrendingUp className="h-4 w-4 mr-2" />
+                              Specialized research institutes
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Collaborative research projects
+                            </li>
+                            <li className="flex items-center">
+                              <Globe className="h-4 w-4 mr-2" />
+                              International partnerships
+                            </li>
+                            <li className="flex items-center">
+                              <Award className="h-4 w-4 mr-2" />
+                              Research funding opportunities
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="p-4 bg-green-50 rounded-lg">
+                          <h4 className="font-semibold text-green-800 mb-3">
+                            Innovation Hub
+                          </h4>
+                          <ul className="text-sm text-green-700 space-y-2">
+                            <li className="flex items-center">
+                              <Building2 className="h-4 w-4 mr-2" />
+                              Entrepreneurship programs
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Startup incubation
+                            </li>
+                            <li className="flex items-center">
+                              <TrendingUp className="h-4 w-4 mr-2" />
+                              Technology transfer
+                            </li>
+                            <li className="flex items-center">
+                              <Award className="h-4 w-4 mr-2" />
+                              Innovation competitions
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="p-4 bg-blue-50 rounded-lg">
+                          <h4 className="font-semibold text-blue-800 mb-3">
+                            Graduate Research
+                          </h4>
+                          <ul className="text-sm text-blue-700 space-y-2">
+                            <li className="flex items-center">
+                              <GraduationCap className="h-4 w-4 mr-2" />
+                              Masters and PhD programs
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Research supervision
+                            </li>
+                            <li className="flex items-center">
+                              <BookOpen className="h-4 w-4 mr-2" />
+                              Thesis writing support
+                            </li>
+                            <li className="flex items-center">
+                              <Globe className="h-4 w-4 mr-2" />
+                              Conference funding
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="p-4 bg-purple-50 rounded-lg">
+                          <h4 className="font-semibold text-purple-800 mb-3">
+                            Industry Partnerships
+                          </h4>
+                          <ul className="text-sm text-purple-700 space-y-2">
+                            <li className="flex items-center">
+                              <Building2 className="h-4 w-4 mr-2" />
+                              Corporate collaborations
+                            </li>
+                            <li className="flex items-center">
+                              <TrendingUp className="h-4 w-4 mr-2" />
+                              Internship programs
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Guest lectures and seminars
+                            </li>
+                            <li className="flex items-center">
+                              <Award className="h-4 w-4 mr-2" />
+                              Job placement assistance
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Contact Information */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <Info className="h-6 w-6 mr-3 text-book-500" />
+                      Contact & Support
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">
+                          General Information
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="flex items-center p-3 bg-book-50 rounded">
+                            <Globe className="h-5 w-5 mr-3 text-book-500" />
+                            <div>
+                              <span className="font-medium">Website:</span>
+                              <a
+                                href={university.website}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-book-600 hover:text-book-700 underline ml-2"
+                              >
+                                {university.website}
+                              </a>
+                            </div>
+                          </div>
+                          {university.studentPortal && (
+                            <div className="flex items-center p-3 bg-blue-50 rounded">
+                              <Users className="h-5 w-5 mr-3 text-blue-500" />
+                              <div>
+                                <span className="font-medium">
+                                  Student Portal:
+                                </span>
+                                <a
+                                  href={university.studentPortal}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:text-blue-700 underline ml-2"
+                                >
+                                  Student Services
+                                </a>
+                              </div>
+                            </div>
+                          )}
+                          <div className="flex items-center p-3 bg-green-50 rounded">
+                            <MapPin className="h-5 w-5 mr-3 text-green-500" />
+                            <div>
+                              <span className="font-medium">Location:</span>
+                              <span className="ml-2">
+                                {university.location}, {university.province}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">Quick Actions</h4>
+                        <div className="space-y-3">
+                          <Button
+                            className="w-full bg-book-600 hover:bg-book-700 text-white"
+                            asChild
+                          >
+                            <a
+                              href={university.website}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <ExternalLink className="h-5 w-5 mr-2" />
+                              Visit Official Website
+                            </a>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="w-full border-book-200 text-book-600 hover:bg-book-50"
+                          >
+                            <Calculator className="h-5 w-5 mr-2" />
+                            Calculate My APS Score
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="w-full border-blue-200 text-blue-600 hover:bg-blue-50"
+                          >
+                            <BookOpen className="h-5 w-5 mr-2" />
+                            Find Textbooks for {university.name}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -462,6 +1668,14 @@ const UniversityProfile: React.FC = () => {
           </Tabs>
         </div>
       </div>
+
+      {/* Program Detail Modal */}
+      <ProgramDetailModal
+        program={selectedProgram}
+        university={university}
+        isOpen={isProgramModalOpen}
+        onClose={closeProgramModal}
+      />
     </Layout>
   );
 };

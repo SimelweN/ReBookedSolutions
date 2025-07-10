@@ -12,6 +12,7 @@ import NoScriptFallback from "./components/NoScriptFallback";
 import LoadingFallback from "./components/LoadingFallback";
 import StartupChecker from "./components/StartupChecker";
 import { validateEnvironment } from "./config/environment";
+import { useCommitAutoExpiry } from "./hooks/useCommitAutoExpiry";
 import "./App.css";
 
 // Import critical pages directly
@@ -68,6 +69,9 @@ const LoadingSpinner = () => <LoadingFallback type="compact" />;
 function App() {
   const [systemReady, setSystemReady] = React.useState(false);
   const [showStartupChecker, setShowStartupChecker] = React.useState(false);
+
+  // Initialize commit auto-expiry system
+  useCommitAutoExpiry();
 
   React.useEffect(() => {
     // Check if system needs setup

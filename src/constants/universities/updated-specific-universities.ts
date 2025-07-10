@@ -22,6 +22,8 @@ import { UKZN_FACULTIES } from "./ukzn";
 import { UWC_FACULTIES } from "./uwc";
 import { UNIVEN_FACULTIES } from "./univen";
 import { UFS_FACULTIES } from "./ufs";
+import { UCT_FACULTIES } from "./uct";
+import { RHODES_FACULTIES } from "./rhodes";
 
 /**
  * MODULAR UNIVERSITY DATA SYSTEM
@@ -66,6 +68,7 @@ export function getFacultiesByUniversityIdLegacy(
     case "wits":
       return WITS_FACULTIES;
     case "su":
+    case "stellenbosch":
       return SU_FACULTIES;
     case "ukzn":
       return UKZN_FACULTIES;
@@ -75,9 +78,190 @@ export function getFacultiesByUniversityIdLegacy(
       return UNIVEN_FACULTIES;
     case "ufs":
       return UFS_FACULTIES;
+    // UCT with real faculty data
+    case "uct":
+      return UCT_FACULTIES;
+    case "ru":
+    case "rhodes":
+      return RHODES_FACULTIES;
+    case "ufh":
+      return getGenericUniversityFaculties("University of Fort Hare", "ufh");
+    case "unisa":
+      return getGenericUniversityFaculties(
+        "University of South Africa",
+        "unisa",
+      );
+    case "nmu":
+      return getGenericUniversityFaculties("Nelson Mandela University", "nmu");
+    case "smu":
+      return getGenericUniversityFaculties(
+        "Sefako Makgatho Health Sciences University",
+        "smu",
+      );
     default:
       return null;
   }
+}
+
+// Helper function to create generic faculties for universities without specific data
+function getGenericUniversityFaculties(
+  universityName: string,
+  universityId: string,
+): Faculty[] {
+  return [
+    {
+      id: `${universityId}-humanities`,
+      name: "Faculty of Humanities",
+      description: "Liberal arts, languages, and social sciences programs",
+      degrees: [
+        {
+          id: `${universityId}-ba`,
+          name: "Bachelor of Arts",
+          faculty: "Faculty of Humanities",
+          duration: "3 years",
+          apsRequirement: 26,
+          description:
+            "Comprehensive liberal arts education with various specialization options",
+          subjects: [
+            { name: "English", level: 4, isRequired: true },
+            {
+              name: "Mathematics or Mathematical Literacy",
+              level: 3,
+              isRequired: true,
+            },
+          ],
+          careerProspects: [
+            "Social Worker",
+            "Teacher",
+            "Journalist",
+            "Government Official",
+            "Non-profit Manager",
+          ],
+        },
+        {
+          id: `${universityId}-psychology`,
+          name: "Bachelor of Psychology",
+          faculty: "Faculty of Humanities",
+          duration: "3 years",
+          apsRequirement: 30,
+          description: "Study of human behavior and mental processes",
+          subjects: [
+            { name: "English", level: 4, isRequired: true },
+            { name: "Mathematics", level: 4, isRequired: true },
+            { name: "Life Sciences", level: 4, isRequired: false },
+          ],
+          careerProspects: [
+            "Psychologist",
+            "Counselor",
+            "Researcher",
+            "HR Specialist",
+            "Social Worker",
+          ],
+        },
+      ],
+    },
+    {
+      id: `${universityId}-science`,
+      name: "Faculty of Science",
+      description:
+        "Natural sciences, mathematics, and computer science programs",
+      degrees: [
+        {
+          id: `${universityId}-bsc`,
+          name: "Bachelor of Science",
+          faculty: "Faculty of Science",
+          duration: "3 years",
+          apsRequirement: 30,
+          description:
+            "Foundation in scientific principles with specialization options",
+          subjects: [
+            { name: "English", level: 4, isRequired: true },
+            { name: "Mathematics", level: 5, isRequired: true },
+            { name: "Physical Sciences", level: 4, isRequired: true },
+            { name: "Life Sciences", level: 4, isRequired: false },
+          ],
+          careerProspects: [
+            "Research Scientist",
+            "Laboratory Technician",
+            "Data Analyst",
+            "Environmental Consultant",
+            "Science Teacher",
+          ],
+        },
+        {
+          id: `${universityId}-computer-science`,
+          name: "Bachelor of Computer Science",
+          faculty: "Faculty of Science",
+          duration: "3 years",
+          apsRequirement: 35,
+          description:
+            "Computer programming, software development, and information technology",
+          subjects: [
+            { name: "English", level: 4, isRequired: true },
+            { name: "Mathematics", level: 6, isRequired: true },
+            { name: "Physical Sciences", level: 4, isRequired: false },
+            { name: "Information Technology", level: 5, isRequired: false },
+          ],
+          careerProspects: [
+            "Software Developer",
+            "System Analyst",
+            "IT Consultant",
+            "Cybersecurity Specialist",
+            "Data Scientist",
+          ],
+        },
+      ],
+    },
+    {
+      id: `${universityId}-commerce`,
+      name: "Faculty of Commerce",
+      description: "Business, economics, and management programs",
+      degrees: [
+        {
+          id: `${universityId}-bcom`,
+          name: "Bachelor of Commerce",
+          faculty: "Faculty of Commerce",
+          duration: "3 years",
+          apsRequirement: 28,
+          description:
+            "Business fundamentals with specialization in various commercial fields",
+          subjects: [
+            { name: "English", level: 4, isRequired: true },
+            { name: "Mathematics", level: 4, isRequired: true },
+            { name: "Accounting", level: 4, isRequired: false },
+            { name: "Business Studies", level: 4, isRequired: false },
+          ],
+          careerProspects: [
+            "Business Analyst",
+            "Financial Advisor",
+            "Marketing Manager",
+            "Accountant",
+            "Entrepreneur",
+          ],
+        },
+        {
+          id: `${universityId}-economics`,
+          name: "Bachelor of Economics",
+          faculty: "Faculty of Commerce",
+          duration: "3 years",
+          apsRequirement: 32,
+          description: "Economic theory and policy analysis",
+          subjects: [
+            { name: "English", level: 4, isRequired: true },
+            { name: "Mathematics", level: 5, isRequired: true },
+            { name: "Economics", level: 4, isRequired: false },
+          ],
+          careerProspects: [
+            "Economist",
+            "Policy Analyst",
+            "Financial Analyst",
+            "Investment Advisor",
+            "Research Economist",
+          ],
+        },
+      ],
+    },
+  ];
 }
 
 // Export all faculty arrays for backward compatibility
@@ -98,6 +282,8 @@ export {
   UP_FACULTIES,
   WITS_FACULTIES,
   SU_FACULTIES,
+  UCT_FACULTIES,
+  RHODES_FACULTIES,
   UKZN_FACULTIES,
   UWC_FACULTIES,
   UNIVEN_FACULTIES,

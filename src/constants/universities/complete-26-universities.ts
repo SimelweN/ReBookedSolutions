@@ -743,4 +743,30 @@ if (import.meta.env.DEV) {
   console.log(
     `📊 Statistics: ${UNIVERSITY_STATISTICS.traditional} Traditional, ${UNIVERSITY_STATISTICS.technology} Technology, ${UNIVERSITY_STATISTICS.comprehensive} Comprehensive`,
   );
+
+  // Check for universities without programs
+  const universitiesWithoutPrograms = ALL_SOUTH_AFRICAN_UNIVERSITIES.filter(
+    (uni) => !uni.faculties || uni.faculties.length === 0,
+  );
+
+  if (universitiesWithoutPrograms.length > 0) {
+    console.warn(
+      `⚠️ Universities without faculties (${universitiesWithoutPrograms.length}):`,
+      universitiesWithoutPrograms.map((u) => u.id),
+    );
+  }
+
+  // Log program counts per university
+  const universityProgramCounts = ALL_SOUTH_AFRICAN_UNIVERSITIES.map((uni) => ({
+    id: uni.id,
+    name: uni.name,
+    facultyCount: uni.faculties?.length || 0,
+    programCount:
+      uni.faculties?.reduce(
+        (total, fac) => total + (fac.degrees?.length || 0),
+        0,
+      ) || 0,
+  }));
+
+  console.log("🎓 University Program Counts:", universityProgramCounts);
 }

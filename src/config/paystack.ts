@@ -8,11 +8,21 @@ export const PAYSTACK_CONFIG = {
 
   // Validation
   isConfigured: () => {
-    const hasPublicKey = Boolean(import.meta.env.VITE_PAYSTACK_PUBLIC_KEY);
+    const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
+    const hasPublicKey = Boolean(publicKey);
 
     if (!hasPublicKey) {
       console.warn(
-        "⚠️ Paystack configuration incomplete. Some features may not work.",
+        "⚠️ Paystack configuration incomplete. VITE_PAYSTACK_PUBLIC_KEY not found.",
+        "Set this environment variable to enable payments.",
+      );
+      return false;
+    }
+
+    // Validate key format
+    if (!publicKey.startsWith("pk_")) {
+      console.error(
+        "❌ Invalid Paystack public key format. Must start with 'pk_test_' or 'pk_live_'",
       );
       return false;
     }
@@ -20,9 +30,35 @@ export const PAYSTACK_CONFIG = {
     return true;
   },
 
+  // Test mode detection
+  isTestMode: () => {
+    const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || "";
+    return publicKey.startsWith("pk_test_");
+  },
+
+  isLiveMode: () => {
+    const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || "";
+    return publicKey.startsWith("pk_live_");
+  },
+
   // Environment detection
   isDevelopment: import.meta.env.DEV,
   isProduction: import.meta.env.PROD,
+
+  // Get status for debugging
+  getStatus: () => {
+    const config = PAYSTACK_CONFIG;
+    return {
+      configured: config.isConfigured(),
+      testMode: config.isTestMode(),
+      liveMode: config.isLiveMode(),
+      development: config.isDevelopment,
+      production: config.isProduction,
+      publicKey: config.PUBLIC_KEY
+        ? `${config.PUBLIC_KEY.slice(0, 12)}...`
+        : "Not set",
+    };
+  },
 };
 
 // Bank codes mapping for Paystack

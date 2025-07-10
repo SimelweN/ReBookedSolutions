@@ -138,6 +138,59 @@ const BankingDetailsForm: React.FC<BankingDetailsFormProps> = ({
     }
   };
 
+  // Prevent editing - redirect to contact support
+  if (editMode) {
+    return (
+      <Card className={showAsModal ? "w-full max-w-md mx-auto" : ""}>
+        <CardHeader className="text-center pb-4">
+          <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <Mail className="w-6 h-6 text-white" />
+          </div>
+          <CardTitle className="text-xl font-bold text-gray-900">
+            Need to Edit Your Banking Details?
+          </CardTitle>
+          <CardDescription className="text-sm text-gray-600">
+            Contact our support team and we'll help you update your information
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Alert className="mb-4">
+            <Mail className="h-4 w-4" />
+            <AlertDescription>
+              For security reasons, banking details must be updated through our
+              support team. Please contact us at:{" "}
+              <span className="font-semibold">
+                contact@rebookedsolutions.co.za
+              </span>
+            </AlertDescription>
+          </Alert>
+          <div className="space-y-3">
+            <p className="text-sm text-gray-600">
+              What to include in your email:
+            </p>
+            <ul className="text-xs text-gray-500 space-y-1 ml-4">
+              <li>• Your account email address</li>
+              <li>• What you need to change (bank, account number, etc.)</li>
+              <li>• Reason for the change</li>
+            </ul>
+          </div>
+          <div className="pt-4">
+            {onCancel && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onCancel}
+                className="w-full h-11"
+              >
+                Go Back
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const handleBankChange = (bankName: string) => {
     const selectedBank = SOUTH_AFRICAN_BANKS.find(
       (bank) => bank.name === bankName,

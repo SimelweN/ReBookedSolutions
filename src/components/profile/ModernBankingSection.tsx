@@ -20,7 +20,7 @@ import {
   Banknote,
   Lock,
   Info,
-  Edit3,
+  Mail,
   Settings,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -157,19 +157,22 @@ const ModernBankingSection = () => {
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-1">
                   <h3 className="text-xl font-bold">All Set! 🎉</h3>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleEditClick}
-                    className="text-white hover:bg-white/10 h-8"
-                  >
-                    <Edit3 className="w-4 h-4 mr-1" />
-                    Edit Details
-                  </Button>
                 </div>
                 <p className="text-white/80 mb-3">
                   Your payment account is active and ready to receive funds
                 </p>
+
+                {/* Contact Support Alert */}
+                <Alert className="bg-white/10 border-white/20 mb-4">
+                  <Mail className="h-4 w-4 text-white" />
+                  <AlertDescription className="text-white/90">
+                    Need to edit or remove your details? Contact support and
+                    we'll do that for you:{" "}
+                    <span className="font-semibold">
+                      contact@rebookedsolutions.co.za
+                    </span>
+                  </AlertDescription>
+                </Alert>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
                   {subaccountData?.business_name && (

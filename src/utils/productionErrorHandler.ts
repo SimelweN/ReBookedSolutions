@@ -1,78 +1,205 @@
 /**
- * Production Error Handler
- * Handles errors gracefully in production without interfering with third-party scripts
+ * Production-safe error handling utilities
+ * Designed to prevent Vercel deployment errors and optimize performance
  */
 
-let isInitialized = false;
+interface ErrorContext {
+  component?: string;
+  action?: string;
+  userId?: string;
+  metadata?: Record<string, unknown>;
+}
 
-/**
- * Initialize production error handling
- */
-export const initProductionErrorHandler = () => {
-  if (isInitialized || typeof window === "undefined" || import.meta.env.DEV) {
-    return;
+export class ProductionErrorHandler {
+  private static isProduction = import.meta.env.PROD;
+  private static isDevelopment = import.meta.env.DEV;
+
+  /**
+   * Safe error logging that won't cause deployment issues
+   */
+  static logError(error: unknown, context?: ErrorContext): void {
+    // Only log detailed errors in development
+    if (this.isDevelopment) {
+      this.devLog(error, context);
+    } else {
+      // Production: minimal, safe logging
+      this.prodLog(error, context);
+    }
   }
 
-  isInitialized = true;
+  /**
+   * Development logging with full details
+   */
+  private static devLog(error: unknown, context?: ErrorContext): void {
+    const timestamp = new Date().toISOString();
+    const prefix = context?.component ? `[${context.component}]` : "[Error]";
 
-  // Handle unhandled promise rejections gracefully
-  window.addEventListener("unhandledrejection", (event) => {
-    const error = event.reason;
+    console.group(`${prefix} ${timestamp}`);
 
-    if (error && typeof error === "object") {
-      const message = error.message || "";
-      const stack = error.stack || "";
+    if (error instanceof Error) {
+      console.error("Message:", error.message);
+      console.error("Stack:", error.stack);
+    } else {
+      console.error("Error:", error);
+    }
 
-      // Only handle specific known issues that shouldn't break the app
-      if (
-        // FullStory analytics errors
-        stack.includes("fullstory.com") ||
-        stack.includes("fs.js") ||
-        // Vercel analytics errors
-        stack.includes("vercel-analytics") ||
-        stack.includes("vercel-insights") ||
-        stack.includes("vitals.vercel") ||
-        // Generic third-party fetch errors
-        (message.includes("Failed to fetch") &&
-          (stack.includes("edge.fullstory.com") ||
-            stack.includes("vercel.com")))
-      ) {
-        console.warn(
-          "🔧 Third-party service error handled gracefully:",
-          message,
-        );
-        event.preventDefault();
-        return;
+    if (context) {
+      console.info("Context:", context);
+    }
+
+    console.groupEnd();
+  }
+
+  /**
+   * Production logging - minimal and safe
+   */
+  private static prodLog(error: unknown, context?: ErrorContext): void {
+    // In production, we might want to send errors to a service like Sentry
+    // For now, we'll handle gracefully without console.error to avoid deployment warnings
+
+    const errorInfo = {
+      message: error instanceof Error ? error.message : String(error),
+      component: context?.component || "unknown",
+      action: context?.action || "unknown",
+      timestamp: new Date().toISOString(),
+    };
+
+    // Could integrate with error reporting service here
+    // Example: Sentry.captureException(error, { contexts: { errorInfo } });
+
+    // For now, store in sessionStorage for debugging if needed
+    try {
+      const errors = JSON.parse(sessionStorage.getItem("app_errors") || "[]");
+      errors.push(errorInfo);
+      // Keep only last 10 errors to prevent storage bloat
+      sessionStorage.setItem("app_errors", JSON.stringify(errors.slice(-10)));
+    } catch {
+      // Silent fail if sessionStorage is not available
+    }
+  }
+
+  /**
+   * Safe async error handler for promises
+   */
+  static async safeAsync<T>(
+    promise: Promise<T>,
+    context?: ErrorContext,
+  ): Promise<T | null> {
+    try {
+      return await promise;
+    } catch (error) {
+      this.logError(error, context);
+      return null;
+    }
+  }
+
+  /**
+   * Safe function wrapper
+   */
+  static safe<T extends (...args: unknown[]) => unknown>(
+    fn: T,
+    context?: ErrorContext,
+  ): T {
+    return ((...args: Parameters<T>) => {
+      try {
+        return fn(...args);
+      } catch (error) {
+        this.logError(error, context);
+        return null;
+      }
+    }) as T;
+  }
+
+  /**
+   * Network error handler
+   */
+  static handleNetworkError(error: unknown): {
+    message: string;
+    type: "network" | "timeout" | "server" | "unknown";
+  } {
+    if (error instanceof TypeError && error.message.includes("fetch")) {
+      return {
+        message:
+          "Network connection error. Please check your internet connection.",
+        type: "network",
+      };
+    }
+
+    if (error instanceof Error && error.message.includes("timeout")) {
+      return {
+        message: "Request timed out. Please try again.",
+        type: "timeout",
+      };
+    }
+
+    if (error instanceof Error && error.message.includes("5")) {
+      return {
+        message: "Server error. Please try again later.",
+        type: "server",
+      };
+    }
+
+    return {
+      message: "An unexpected error occurred. Please try again.",
+      type: "unknown",
+    };
+  }
+
+  /**
+   * React error boundary helper
+   */
+  static handleReactError(
+    error: Error,
+    errorInfo: { componentStack: string },
+  ): void {
+    this.logError(error, {
+      component: "ErrorBoundary",
+      action: "render",
+      metadata: { componentStack: errorInfo.componentStack },
+    });
+  }
+
+  /**
+   * Form validation error formatter
+   */
+  static formatValidationErrors(errors: Record<string, string[]>): string {
+    return Object.entries(errors)
+      .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
+      .join("; ");
+  }
+
+  /**
+   * API error formatter
+   */
+  static formatApiError(error: unknown): string {
+    if (error instanceof Error) {
+      return error.message;
+    }
+
+    if (typeof error === "object" && error !== null) {
+      const errorObj = error as Record<string, unknown>;
+      if (errorObj.message) {
+        return String(errorObj.message);
+      }
+      if (errorObj.error) {
+        return String(errorObj.error);
       }
     }
 
-    // Let other errors through for proper error reporting
-  });
-
-  // Handle global errors from third-party scripts
-  window.addEventListener("error", (event) => {
-    const error = event.error;
-    const source = event.filename || "";
-
-    // Handle third-party script errors
-    if (
-      source.includes("fullstory.com") ||
-      source.includes("vercel.com") ||
-      (error && error.message && error.message.includes("Script error"))
-    ) {
-      console.warn("🔧 Third-party script error handled:", event.message);
-      event.preventDefault();
-      return true;
-    }
-
-    // Let application errors through for proper error reporting
-    return false;
-  });
-
-  console.log("✅ Production error handler initialized");
-};
-
-// Initialize immediately in production
-if (import.meta.env.PROD && typeof window !== "undefined") {
-  initProductionErrorHandler();
+    return "An unexpected error occurred";
+  }
 }
+
+// Export convenience functions
+export const logError = ProductionErrorHandler.logError.bind(
+  ProductionErrorHandler,
+);
+export const safeAsync = ProductionErrorHandler.safeAsync.bind(
+  ProductionErrorHandler,
+);
+export const safe = ProductionErrorHandler.safe.bind(ProductionErrorHandler);
+export const handleNetworkError =
+  ProductionErrorHandler.handleNetworkError.bind(ProductionErrorHandler);
+export const formatApiError = ProductionErrorHandler.formatApiError.bind(
+  ProductionErrorHandler,
+);
