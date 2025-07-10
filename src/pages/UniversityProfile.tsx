@@ -1045,20 +1045,427 @@ const UniversityProfile: React.FC = () => {
                     University Resources
                   </h2>
                   <p className="text-gray-600">
-                    Essential resources and facilities
+                    Essential resources, facilities, and support services at{" "}
+                    {university.name}
                   </p>
                 </div>
 
+                {/* Library & Learning Resources */}
                 <Card className="border-0 shadow-lg">
-                  <CardContent className="p-8 text-center">
-                    <Info className="h-16 w-16 mx-auto text-book-500 mb-6" />
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                      Resources Information Coming Soon
-                    </h3>
-                    <p className="text-gray-600 max-w-md mx-auto">
-                      We're compiling comprehensive information about university
-                      resources, facilities, and support services.
-                    </p>
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <BookOpen className="h-6 w-6 mr-3 text-book-500" />
+                      Library & Learning Resources
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="p-4 bg-book-50 rounded-lg">
+                          <h4 className="font-semibold text-book-800 mb-3">
+                            Digital Resources
+                          </h4>
+                          <ul className="text-sm text-book-700 space-y-2">
+                            <li className="flex items-center">
+                              <Globe className="h-4 w-4 mr-2" />
+                              Online databases and journals
+                            </li>
+                            <li className="flex items-center">
+                              <BookOpen className="h-4 w-4 mr-2" />
+                              E-books and digital collections
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Research support services
+                            </li>
+                            <li className="flex items-center">
+                              <Info className="h-4 w-4 mr-2" />
+                              Citation and writing support
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="p-4 bg-blue-50 rounded-lg">
+                          <h4 className="font-semibold text-blue-800 mb-3">
+                            Study Spaces
+                          </h4>
+                          <ul className="text-sm text-blue-700 space-y-2">
+                            <li className="flex items-center">
+                              <Building2 className="h-4 w-4 mr-2" />
+                              Quiet study areas
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Group study rooms
+                            </li>
+                            <li className="flex items-center">
+                              <Globe className="h-4 w-4 mr-2" />
+                              24/7 access areas
+                            </li>
+                            <li className="flex items-center">
+                              <BookOpen className="h-4 w-4 mr-2" />
+                              Computer labs
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="p-4 bg-green-50 rounded-lg">
+                          <h4 className="font-semibold text-green-800 mb-3">
+                            Library Services
+                          </h4>
+                          <ul className="text-sm text-green-700 space-y-2">
+                            <li className="flex items-center">
+                              <Award className="h-4 w-4 mr-2" />
+                              Librarian consultations
+                            </li>
+                            <li className="flex items-center">
+                              <TrendingUp className="h-4 w-4 mr-2" />
+                              Research training workshops
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Interlibrary loan services
+                            </li>
+                            <li className="flex items-center">
+                              <Info className="h-4 w-4 mr-2" />
+                              Subject specialist support
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="p-4 bg-purple-50 rounded-lg">
+                          <h4 className="font-semibold text-purple-800 mb-3">
+                            Technology Access
+                          </h4>
+                          <ul className="text-sm text-purple-700 space-y-2">
+                            <li className="flex items-center">
+                              <Globe className="h-4 w-4 mr-2" />
+                              Campus-wide Wi-Fi
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Laptop lending program
+                            </li>
+                            <li className="flex items-center">
+                              <Building2 className="h-4 w-4 mr-2" />
+                              Printing and scanning
+                            </li>
+                            <li className="flex items-center">
+                              <Award className="h-4 w-4 mr-2" />
+                              Software access
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Academic Support */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <GraduationCap className="h-6 w-6 mr-3 text-book-500" />
+                      Academic Support Services
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-3 gap-6">
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">
+                          Learning Support
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="p-3 bg-book-50 rounded-lg">
+                            <h5 className="font-medium text-book-800">
+                              Tutoring Services
+                            </h5>
+                            <p className="text-sm text-book-700">
+                              Peer and professional tutoring programs
+                            </p>
+                          </div>
+                          <div className="p-3 bg-green-50 rounded-lg">
+                            <h5 className="font-medium text-green-800">
+                              Study Skills Workshops
+                            </h5>
+                            <p className="text-sm text-green-700">
+                              Time management and study techniques
+                            </p>
+                          </div>
+                          <div className="p-3 bg-blue-50 rounded-lg">
+                            <h5 className="font-medium text-blue-800">
+                              Writing Center
+                            </h5>
+                            <p className="text-sm text-blue-700">
+                              Academic writing and research support
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">
+                          Language Support
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="p-3 bg-purple-50 rounded-lg">
+                            <h5 className="font-medium text-purple-800">
+                              Language Center
+                            </h5>
+                            <p className="text-sm text-purple-700">
+                              English and multilingual support
+                            </p>
+                          </div>
+                          <div className="p-3 bg-orange-50 rounded-lg">
+                            <h5 className="font-medium text-orange-800">
+                              ESL Programs
+                            </h5>
+                            <p className="text-sm text-orange-700">
+                              English as Second Language support
+                            </p>
+                          </div>
+                          <div className="p-3 bg-pink-50 rounded-lg">
+                            <h5 className="font-medium text-pink-800">
+                              Translation Services
+                            </h5>
+                            <p className="text-sm text-pink-700">
+                              Document translation assistance
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">Accessibility</h4>
+                        <div className="space-y-3">
+                          <div className="p-3 bg-red-50 rounded-lg">
+                            <h5 className="font-medium text-red-800">
+                              Disability Services
+                            </h5>
+                            <p className="text-sm text-red-700">
+                              Accommodation and support services
+                            </p>
+                          </div>
+                          <div className="p-3 bg-yellow-50 rounded-lg">
+                            <h5 className="font-medium text-yellow-800">
+                              Assistive Technology
+                            </h5>
+                            <p className="text-sm text-yellow-700">
+                              Specialized equipment and software
+                            </p>
+                          </div>
+                          <div className="p-3 bg-indigo-50 rounded-lg">
+                            <h5 className="font-medium text-indigo-800">
+                              Sign Language
+                            </h5>
+                            <p className="text-sm text-indigo-700">
+                              Interpreter services available
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Research & Innovation */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <TrendingUp className="h-6 w-6 mr-3 text-book-500" />
+                      Research & Innovation
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="p-4 bg-book-50 rounded-lg">
+                          <h4 className="font-semibold text-book-800 mb-3">
+                            Research Centers
+                          </h4>
+                          <ul className="text-sm text-book-700 space-y-2">
+                            <li className="flex items-center">
+                              <TrendingUp className="h-4 w-4 mr-2" />
+                              Specialized research institutes
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Collaborative research projects
+                            </li>
+                            <li className="flex items-center">
+                              <Globe className="h-4 w-4 mr-2" />
+                              International partnerships
+                            </li>
+                            <li className="flex items-center">
+                              <Award className="h-4 w-4 mr-2" />
+                              Research funding opportunities
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="p-4 bg-green-50 rounded-lg">
+                          <h4 className="font-semibold text-green-800 mb-3">
+                            Innovation Hub
+                          </h4>
+                          <ul className="text-sm text-green-700 space-y-2">
+                            <li className="flex items-center">
+                              <Building2 className="h-4 w-4 mr-2" />
+                              Entrepreneurship programs
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Startup incubation
+                            </li>
+                            <li className="flex items-center">
+                              <TrendingUp className="h-4 w-4 mr-2" />
+                              Technology transfer
+                            </li>
+                            <li className="flex items-center">
+                              <Award className="h-4 w-4 mr-2" />
+                              Innovation competitions
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="p-4 bg-blue-50 rounded-lg">
+                          <h4 className="font-semibold text-blue-800 mb-3">
+                            Graduate Research
+                          </h4>
+                          <ul className="text-sm text-blue-700 space-y-2">
+                            <li className="flex items-center">
+                              <GraduationCap className="h-4 w-4 mr-2" />
+                              Masters and PhD programs
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Research supervision
+                            </li>
+                            <li className="flex items-center">
+                              <BookOpen className="h-4 w-4 mr-2" />
+                              Thesis writing support
+                            </li>
+                            <li className="flex items-center">
+                              <Globe className="h-4 w-4 mr-2" />
+                              Conference funding
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="p-4 bg-purple-50 rounded-lg">
+                          <h4 className="font-semibold text-purple-800 mb-3">
+                            Industry Partnerships
+                          </h4>
+                          <ul className="text-sm text-purple-700 space-y-2">
+                            <li className="flex items-center">
+                              <Building2 className="h-4 w-4 mr-2" />
+                              Corporate collaborations
+                            </li>
+                            <li className="flex items-center">
+                              <TrendingUp className="h-4 w-4 mr-2" />
+                              Internship programs
+                            </li>
+                            <li className="flex items-center">
+                              <Users className="h-4 w-4 mr-2" />
+                              Guest lectures and seminars
+                            </li>
+                            <li className="flex items-center">
+                              <Award className="h-4 w-4 mr-2" />
+                              Job placement assistance
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Contact Information */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <Info className="h-6 w-6 mr-3 text-book-500" />
+                      Contact & Support
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">
+                          General Information
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="flex items-center p-3 bg-book-50 rounded">
+                            <Globe className="h-5 w-5 mr-3 text-book-500" />
+                            <div>
+                              <span className="font-medium">Website:</span>
+                              <a
+                                href={university.website}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-book-600 hover:text-book-700 underline ml-2"
+                              >
+                                {university.website}
+                              </a>
+                            </div>
+                          </div>
+                          {university.studentPortal && (
+                            <div className="flex items-center p-3 bg-blue-50 rounded">
+                              <Users className="h-5 w-5 mr-3 text-blue-500" />
+                              <div>
+                                <span className="font-medium">
+                                  Student Portal:
+                                </span>
+                                <a
+                                  href={university.studentPortal}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:text-blue-700 underline ml-2"
+                                >
+                                  Student Services
+                                </a>
+                              </div>
+                            </div>
+                          )}
+                          <div className="flex items-center p-3 bg-green-50 rounded">
+                            <MapPin className="h-5 w-5 mr-3 text-green-500" />
+                            <div>
+                              <span className="font-medium">Location:</span>
+                              <span className="ml-2">
+                                {university.location}, {university.province}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">Quick Actions</h4>
+                        <div className="space-y-3">
+                          <Button
+                            className="w-full bg-book-600 hover:bg-book-700 text-white"
+                            asChild
+                          >
+                            <a
+                              href={university.website}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <ExternalLink className="h-5 w-5 mr-2" />
+                              Visit Official Website
+                            </a>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="w-full border-book-200 text-book-600 hover:bg-book-50"
+                          >
+                            <Calculator className="h-5 w-5 mr-2" />
+                            Calculate My APS Score
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="w-full border-blue-200 text-blue-600 hover:bg-blue-50"
+                          >
+                            <BookOpen className="h-5 w-5 mr-2" />
+                            Find Textbooks for {university.name}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
