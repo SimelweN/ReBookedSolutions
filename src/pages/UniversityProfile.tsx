@@ -315,6 +315,18 @@ const UniversityProfile: React.FC = () => {
                           ? "Show All Programs"
                           : "Show Eligible Only"}
                       </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          // Clear APS by removing URL parameters and reloading
+                          window.location.href = `/university/${id}`;
+                        }}
+                        className="border-gray-300 text-gray-600 hover:bg-gray-50"
+                      >
+                        <XCircle className="h-4 w-4 mr-2" />
+                        Clear APS Profile
+                      </Button>
                     </div>
                   </div>
                 </AlertDescription>
