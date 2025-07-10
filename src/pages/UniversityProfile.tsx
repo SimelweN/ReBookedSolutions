@@ -409,36 +409,278 @@ const UniversityProfile: React.FC = () => {
                     Admissions Information
                   </h2>
                   <p className="text-gray-600">
-                    Everything you need to know about applying
+                    Everything you need to know about applying to{" "}
+                    {university.name}
                   </p>
                 </div>
 
+                {/* Application Dates */}
                 <Card className="border-0 shadow-lg">
-                  <CardContent className="p-8 text-center">
-                    <Calendar className="h-16 w-16 mx-auto text-book-500 mb-6" />
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                      Admissions Information Coming Soon
-                    </h3>
-                    <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                      We're working on bringing you comprehensive admissions
-                      information. For now, please visit the official university
-                      website.
-                    </p>
-                    {university.website && (
-                      <Button
-                        className="bg-book-600 hover:bg-book-700 text-white"
-                        asChild
-                      >
-                        <a
-                          href={university.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <ExternalLink className="h-5 w-5 mr-2" />
-                          Visit University Website
-                        </a>
-                      </Button>
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <Calendar className="h-6 w-6 mr-3 text-book-500" />
+                      Application Dates & Deadlines
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    {university.applicationInfo ? (
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                          <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                            <h4 className="font-semibold text-green-800 mb-2">
+                              Application Period
+                            </h4>
+                            <p className="text-green-700">
+                              {university.applicationInfo.openingDate} -{" "}
+                              {university.applicationInfo.closingDate}
+                            </p>
+                          </div>
+                          <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <h4 className="font-semibold text-blue-800 mb-2">
+                              Academic Year
+                            </h4>
+                            <p className="text-blue-700">
+                              {university.applicationInfo.academicYear}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="space-y-4">
+                          <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
+                            <h4 className="font-semibold text-orange-800 mb-2">
+                              Application Fee
+                            </h4>
+                            <p className="text-orange-700">
+                              {university.applicationInfo.applicationFee ||
+                                "No application fee"}
+                            </p>
+                          </div>
+                          <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                            <h4 className="font-semibold text-purple-800 mb-2">
+                              Application Method
+                            </h4>
+                            <p className="text-purple-700">
+                              {university.applicationInfo.applicationMethod}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-6 bg-gray-50 rounded-lg text-center">
+                        <p className="text-gray-600">
+                          Application dates will be published closer to the
+                          application period.
+                        </p>
+                      </div>
                     )}
+                  </CardContent>
+                </Card>
+
+                {/* Application Process */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <Users className="h-6 w-6 mr-3 text-book-500" />
+                      Application Process
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="space-y-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="w-8 h-8 bg-book-500 text-white rounded-full flex items-center justify-center font-bold">
+                          1
+                        </div>
+                        <div>
+                          <h4 className="font-semibold mb-2">
+                            Check Admission Requirements
+                          </h4>
+                          <p className="text-gray-600">
+                            Review the specific requirements for your chosen
+                            program, including APS scores and subject
+                            requirements.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-4">
+                        <div className="w-8 h-8 bg-book-500 text-white rounded-full flex items-center justify-center font-bold">
+                          2
+                        </div>
+                        <div>
+                          <h4 className="font-semibold mb-2">
+                            Prepare Required Documents
+                          </h4>
+                          <p className="text-gray-600">
+                            Gather certified copies of ID, academic transcripts,
+                            and any additional documents required for your
+                            program.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-4">
+                        <div className="w-8 h-8 bg-book-500 text-white rounded-full flex items-center justify-center font-bold">
+                          3
+                        </div>
+                        <div>
+                          <h4 className="font-semibold mb-2">
+                            Submit Online Application
+                          </h4>
+                          <p className="text-gray-600">
+                            Complete the online application form and upload all
+                            required documents before the deadline.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-4">
+                        <div className="w-8 h-8 bg-book-500 text-white rounded-full flex items-center justify-center font-bold">
+                          4
+                        </div>
+                        <div>
+                          <h4 className="font-semibold mb-2">
+                            Track Application Status
+                          </h4>
+                          <p className="text-gray-600">
+                            Monitor your application status through the student
+                            portal and respond to any requests for additional
+                            information.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Financial Aid */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <Award className="h-6 w-6 mr-3 text-book-500" />
+                      Financial Aid & Funding
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">
+                          Government Funding
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="p-3 bg-green-50 rounded-lg">
+                            <h5 className="font-medium text-green-800">
+                              NSFAS
+                            </h5>
+                            <p className="text-sm text-green-700">
+                              National Student Financial Aid Scheme for
+                              qualifying students
+                            </p>
+                          </div>
+                          <div className="p-3 bg-blue-50 rounded-lg">
+                            <h5 className="font-medium text-blue-800">
+                              Provincial Bursaries
+                            </h5>
+                            <p className="text-sm text-blue-700">
+                              Provincial government bursary programs available
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg">
+                          University Support
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="p-3 bg-purple-50 rounded-lg">
+                            <h5 className="font-medium text-purple-800">
+                              Merit Scholarships
+                            </h5>
+                            <p className="text-sm text-purple-700">
+                              Academic excellence scholarships for top
+                              performers
+                            </p>
+                          </div>
+                          <div className="p-3 bg-orange-50 rounded-lg">
+                            <h5 className="font-medium text-orange-800">
+                              Need-Based Aid
+                            </h5>
+                            <p className="text-sm text-orange-700">
+                              Financial assistance for students from
+                              disadvantaged backgrounds
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Contact Information */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-book-50 to-white">
+                    <CardTitle className="text-xl flex items-center text-gray-900">
+                      <Info className="h-6 w-6 mr-3 text-book-500" />
+                      Admissions Contact
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <h4 className="font-semibold mb-3">
+                          Get Help With Your Application
+                        </h4>
+                        <div className="space-y-2">
+                          {university.admissionsContact && (
+                            <div className="flex items-center">
+                              <span className="font-medium w-20">Email:</span>
+                              <span className="text-book-600">
+                                {university.admissionsContact}
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex items-center">
+                            <span className="font-medium w-20">Website:</span>
+                            <a
+                              href={university.website}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-book-600 hover:text-book-700 underline"
+                            >
+                              {university.website}
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-3">
+                        {university.website && (
+                          <Button
+                            className="bg-book-600 hover:bg-book-700 text-white"
+                            asChild
+                          >
+                            <a
+                              href={university.website}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <ExternalLink className="h-5 w-5 mr-2" />
+                              Visit University Website
+                            </a>
+                          </Button>
+                        )}
+                        {university.studentPortal && (
+                          <Button
+                            variant="outline"
+                            className="border-book-200 text-book-600 hover:bg-book-50"
+                            asChild
+                          >
+                            <a
+                              href={university.studentPortal}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Users className="h-5 w-5 mr-2" />
+                              Student Portal
+                            </a>
+                          </Button>
+                        )}
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
