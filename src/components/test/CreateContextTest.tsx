@@ -3,7 +3,6 @@
  */
 
 import * as React from "react";
-import { safeCreateContext } from "@/utils/reactImportValidator";
 interface TestContextValue {
   message: string;
   count: number;
@@ -15,10 +14,7 @@ const defaultValue: TestContextValue = {
 };
 
 // Test the context creation
-const TestContext = safeCreateContext<TestContextValue>(
-  defaultValue,
-  "TestContext",
-);
+const TestContext = React.createContext<TestContextValue>(defaultValue);
 
 export const CreateContextTest: React.FC = () => {
   const [count, setCount] = React.useState(0);
