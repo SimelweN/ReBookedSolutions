@@ -32,12 +32,14 @@ export function testErrorFixes(): void {
     });
   }
 
-  // Test 2: Analytics fallback
+  // Test 2: Analytics removed (should not exist)
   const gtagExists = typeof (window as any).gtag === "function";
   results.push({
-    test: "Analytics gtag",
-    passed: gtagExists,
-    message: gtagExists ? "gtag is available" : "gtag fallback created",
+    test: "Analytics removal",
+    passed: !gtagExists,
+    message: !gtagExists
+      ? "Analytics successfully removed"
+      : "Analytics still present",
   });
 
   // Test 3: Storage operations
