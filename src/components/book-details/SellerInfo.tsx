@@ -34,43 +34,6 @@ const SellerInfo = ({ seller, onViewProfile }: SellerInfoProps) => {
           </div>
         </div>
 
-        {/* Seller readiness status */}
-        {seller?.hasAddress !== undefined &&
-          seller?.hasSubaccount !== undefined && (
-            <div className="mt-4">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  {seller.hasAddress ? (
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <AlertCircle className="h-4 w-4 text-amber-500" />
-                  )}
-                  <span
-                    className={`text-sm ${seller.hasAddress ? "text-green-700" : "text-amber-700"}`}
-                  >
-                    {seller.hasAddress
-                      ? "Pickup address verified"
-                      : "Pickup address needed"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  {seller.hasSubaccount ? (
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <AlertCircle className="h-4 w-4 text-amber-500" />
-                  )}
-                  <span
-                    className={`text-sm ${seller.hasSubaccount ? "text-green-700" : "text-amber-700"}`}
-                  >
-                    {seller.hasSubaccount
-                      ? "Payment setup complete"
-                      : "Payment setup pending"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-
         <div className="mt-4 p-3 bg-blue-50 rounded-lg">
           <p className="text-sm text-blue-800 mb-3">
             💡 Visit {seller?.name || "this seller"}'s ReBooked Mini marketplace
