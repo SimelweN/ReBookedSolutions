@@ -461,31 +461,39 @@ const DevDashboard: React.FC = () => {
             error.message?.includes("not found") ||
             error.message?.includes("Failed to send a request")
           ) {
-            addTestResult(
-              `Edge Function: ${functionName}`,
-              "failed",
-              "Function not deployed or not accessible",
-            );
+            setTimeout(() => {
+              addTestResult(
+                `Edge Function: ${functionName}`,
+                "failed",
+                "Function not deployed or not accessible",
+              );
+            }, 0);
           } else {
-            addTestResult(
-              `Edge Function: ${functionName}`,
-              "failed",
-              error.message,
-            );
+            setTimeout(() => {
+              addTestResult(
+                `Edge Function: ${functionName}`,
+                "failed",
+                error.message,
+              );
+            }, 0);
           }
         } else {
-          addTestResult(
-            `Edge Function: ${functionName}`,
-            "success",
-            "Function is accessible",
-          );
+          setTimeout(() => {
+            addTestResult(
+              `Edge Function: ${functionName}`,
+              "success",
+              "Function is accessible",
+            );
+          }, 0);
         }
       } catch (error) {
-        addTestResult(
-          `Edge Function: ${functionName}`,
-          "failed",
-          `Error: ${error}`,
-        );
+        setTimeout(() => {
+          addTestResult(
+            `Edge Function: ${functionName}`,
+            "failed",
+            `Error: ${error}`,
+          );
+        }, 0);
       }
     }
   };
