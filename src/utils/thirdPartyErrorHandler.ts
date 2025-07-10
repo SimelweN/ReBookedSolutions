@@ -124,14 +124,24 @@ export class ThirdPartyErrorHandler {
    */
   private static handleVercelLiveErrors() {
     // Ensure React is available globally for Vercel Live if needed
-    if (typeof window !== "undefined" && !window.React) {
-      import("react")
-        .then((React) => {
-          (window as any).React = React;
-        })
-        .catch(() => {
-          // Fail silently - this is just for third-party compatibility
-        });
+    if (typeof window !== "undefined") {
+      // Try to get React from various sources
+      let ReactModule = (window as any).React;
+
+      if (!ReactModule && typeof React !== "undefined") {
+        ReactModule = React;
+        (window as any).React = React;
+      }
+
+      if (!ReactModule) {
+        // Create a minimal React shim for third-party scripts
+        (window as any).React = {
+          createContext: () => ({ Provider: () => null, Consumer: () => null }),
+          useState: () => [null, () => {}],
+          useEffect: () => {},
+          createElement: () => null,
+        };
+      }
     }
   }
 
