@@ -83,7 +83,7 @@ export function getFacultiesByUniversityIdLegacy(
       return UCT_FACULTIES;
     case "ru":
     case "rhodes":
-      return getGenericUniversityFaculties("Rhodes University", "ru");
+      return RHODES_FACULTIES;
     case "ufh":
       return getGenericUniversityFaculties("University of Fort Hare", "ufh");
     case "unisa":
