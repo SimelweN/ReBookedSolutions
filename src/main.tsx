@@ -9,6 +9,9 @@ import "./utils/resizeObserverFix";
 // Import third-party error handler
 import "./utils/thirdPartyErrorHandler";
 
+// Import safe storage handler
+import "./utils/safeStorage";
+
 console.log("🚀 ReBooked Solutions - Starting...");
 
 // Create query client with basic settings
