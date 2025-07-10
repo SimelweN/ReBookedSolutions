@@ -111,8 +111,10 @@ export class SellerMarketplaceService {
       totalSales,
       memberSince: data.created_at,
       pickupAddress: data.pickup_address,
-      hasValidBanking: !!bankingData?.data?.subaccount_code,
-      subaccountCode: bankingData?.data?.subaccount_code,
+      hasValidBanking:
+        !!bankingData?.paystack_subaccount_code &&
+        !!bankingData?.account_verified,
+      subaccountCode: bankingData?.paystack_subaccount_code,
     };
   }
 
