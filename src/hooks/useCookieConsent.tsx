@@ -60,10 +60,8 @@ export const useCookieConsent = () => {
 
   // Analytics helpers
   const trackEvent = useCallback(
-    (eventName: string, parameters?: any) => {
-      if (hasConsent("analytics") && typeof gtag !== "undefined") {
-        gtag("event", eventName, parameters);
-      }
+    (_eventName: string, _parameters?: any) => {
+      // Analytics removed - no tracking
     },
     [hasConsent],
   );
