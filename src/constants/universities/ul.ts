@@ -682,8 +682,24 @@ export const UL_FACULTIES: Faculty[] = [
         faculty: "Management & Law",
         duration: "3 years",
         apsRequirement: 26,
-        description:
-          "Human resource management (Standard: APS 26; Extended: APS 22)",
+        description: "Human resource management (Standard: APS 26)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Mathematics", level: 4, isRequired: true },
+        ],
+        careerProspects: [
+          "HR Manager",
+          "Recruitment Specialist",
+          "Training Coordinator",
+        ],
+      },
+      {
+        id: createDegreeId("BCom Human Resource Management Extended UL"),
+        name: "BCom Human Resource Management (Extended)",
+        faculty: "Management & Law",
+        duration: "4 years",
+        apsRequirement: 22,
+        description: "Extended human resource management program",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Mathematics", level: 4, isRequired: true },
