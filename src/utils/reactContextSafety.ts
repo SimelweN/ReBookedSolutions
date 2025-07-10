@@ -6,6 +6,7 @@
  */
 
 import * as React from "react";
+import { ReactFallbacks } from "./reactAvailabilityCheck";
 
 /**
  * Safe context creator that validates React availability
