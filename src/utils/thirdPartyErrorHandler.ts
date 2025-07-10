@@ -124,13 +124,17 @@ export class ThirdPartyErrorHandler {
   private static handleVercelLiveErrors() {
     // Ensure React is available globally for Vercel Live if needed
     if (typeof window !== "undefined" && !window.React) {
-      import("react")
-        .then((React) => {
+      // Only try to set React if it's already available in the app
+      try {
+        // Use require instead of dynamic import to avoid issues
+        const React = (window as any).__REACT_GLOBAL__ || null;
+        if (React) {
           (window as any).React = React;
-        })
-        .catch(() => {
-          // Fail silently - this is just for third-party compatibility
-        });
+        }
+      } catch (error) {
+        // Fail silently - this is just for third-party compatibility
+        console.debug("Could not set global React for third-party scripts");
+      }
     }
   }
 
