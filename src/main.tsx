@@ -1,11 +1,14 @@
 import * as React from "react";
 import { createRoot } from "react-dom/client";
 
-// Ensure React is available globally for compatibility
+// Ensure React is available globally for compatibility BEFORE any other imports
 if (typeof window !== "undefined") {
   (window as any).React = React;
   (window as any).__REACT_GLOBAL__ = React;
+  // Make createContext available globally as well
+  (window as any).createContext = React.createContext;
 }
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 
