@@ -795,6 +795,10 @@ const FunctionTester = () => {
                                 <DialogContent>
                                   <DialogHeader>
                                     <DialogTitle>Error Details</DialogTitle>
+                                    <DialogDescription>
+                                      Full error information for debugging
+                                      purposes
+                                    </DialogDescription>
                                   </DialogHeader>
                                   <pre className="text-sm bg-gray-100 p-3 rounded overflow-auto">
                                     {result.error}
