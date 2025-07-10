@@ -1,11 +1,6 @@
-// Import React FIRST before anything else
+// Import early React setup FIRST to prevent any createContext errors
+import "./utils/earlyReactSetup";
 import * as React from "react";
-
-// Make React globally available immediately
-if (typeof window !== "undefined") {
-  (window as any).React = React;
-  (window as any).__REACT_GLOBAL__ = React;
-}
 
 // Import React availability check AFTER React is set up
 import "./utils/reactAvailabilityCheck";
