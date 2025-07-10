@@ -153,9 +153,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Log payment initialization
-    await supabase
-      .from("payments")
-      .upsert(
+    try {
+      await supabase.from("payments").upsert(
         {
           reference: paymentReference,
           status: "pending",
@@ -168,10 +167,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           created_at: new Date().toISOString(),
         },
         { onConflict: "reference" },
-      )
-      .catch((error) =>
-        console.error("Failed to log payment initialization:", error),
       );
+    } catch (error: any) {
+      console.error("Failed to log payment initialization:", error);
+    }
 
     return res.status(200).json({
       success: true,
