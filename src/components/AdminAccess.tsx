@@ -27,14 +27,34 @@ const AdminAccess = ({ isMobile = false, onMenuClose }: AdminAccessProps) => {
 
   // Early return with transition-friendly approach
   if (!shouldShowButton) {
+    return null;
+  }
+
+  // Mobile view renders as simple links
+  if (isMobile) {
     return (
-      <div
-        className="opacity-0 pointer-events-none transition-opacity duration-200"
-        aria-hidden="true"
-      />
+      <>
+        <Link
+          to="/admin"
+          className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-book-600 rounded-md min-h-[44px]"
+          onClick={onMenuClose}
+        >
+          <Shield className="w-5 h-5 mr-3" />
+          Admin Dashboard
+        </Link>
+        <Link
+          to="/dev-dashboard"
+          className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-book-600 rounded-md min-h-[44px]"
+          onClick={onMenuClose}
+        >
+          <TestTube className="w-5 h-5 mr-3" />
+          Development Dashboard
+        </Link>
+      </>
     );
   }
 
+  // Desktop view with dropdown
   return (
     <div className="opacity-100 transition-opacity duration-200">
       <DropdownMenu>
