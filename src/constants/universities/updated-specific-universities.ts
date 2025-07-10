@@ -23,6 +23,7 @@ import { UWC_FACULTIES } from "./uwc";
 import { UNIVEN_FACULTIES } from "./univen";
 import { UFS_FACULTIES } from "./ufs";
 import { UCT_FACULTIES } from "./uct";
+import { RHODES_FACULTIES } from "./rhodes";
 
 /**
  * MODULAR UNIVERSITY DATA SYSTEM
