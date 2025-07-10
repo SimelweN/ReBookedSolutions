@@ -11,6 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { TransactionService } from "@/services/transactionService";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface CommitToSaleButtonProps {
   transactionId: string;
