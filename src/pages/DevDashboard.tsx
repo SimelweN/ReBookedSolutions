@@ -621,15 +621,21 @@ const DevDashboard: React.FC = () => {
       );
 
       if (result.success) {
-        toast.success(`Commit test successful: ${result.message}`);
-        addTestResult("Commit Flow Test", "success", result.message);
+        setTimeout(() => {
+          toast.success(`Commit test successful: ${result.message}`);
+          addTestResult("Commit Flow Test", "success", result.message);
+        }, 0);
       } else {
-        toast.error(`Commit test failed: ${result.message}`);
-        addTestResult("Commit Flow Test", "failed", result.message);
+        setTimeout(() => {
+          toast.error(`Commit test failed: ${result.message}`);
+          addTestResult("Commit Flow Test", "failed", result.message);
+        }, 0);
       }
     } catch (error) {
-      toast.error(`Commit test error: ${error}`);
-      addTestResult("Commit Flow Test", "failed", `Error: ${error}`);
+      setTimeout(() => {
+        toast.error(`Commit test error: ${error}`);
+        addTestResult("Commit Flow Test", "failed", `Error: ${error}`);
+      }, 0);
     }
   };
 
@@ -648,15 +654,21 @@ const DevDashboard: React.FC = () => {
       );
 
       if (result.success) {
-        toast.success(`Decline test successful: ${result.message}`);
-        addTestResult("Decline Flow Test", "success", result.message);
+        setTimeout(() => {
+          toast.success(`Decline test successful: ${result.message}`);
+          addTestResult("Decline Flow Test", "success", result.message);
+        }, 0);
       } else {
-        toast.error(`Decline test failed: ${result.message}`);
-        addTestResult("Decline Flow Test", "failed", result.message);
+        setTimeout(() => {
+          toast.error(`Decline test failed: ${result.message}`);
+          addTestResult("Decline Flow Test", "failed", result.message);
+        }, 0);
       }
     } catch (error) {
-      toast.error(`Decline test error: ${error}`);
-      addTestResult("Decline Flow Test", "failed", `Error: ${error}`);
+      setTimeout(() => {
+        toast.error(`Decline test error: ${error}`);
+        addTestResult("Decline Flow Test", "failed", `Error: ${error}`);
+      }, 0);
     }
   };
 
@@ -665,15 +677,21 @@ const DevDashboard: React.FC = () => {
       const result = await CommitSystemService.triggerAutoExpire();
 
       if (result.success) {
-        toast.success(`Auto-expire test successful: ${result.message}`);
-        addTestResult("Auto-Expire Test", "success", result.message);
+        setTimeout(() => {
+          toast.success(`Auto-expire test successful: ${result.message}`);
+          addTestResult("Auto-Expire Test", "success", result.message);
+        }, 0);
       } else {
-        toast.error(`Auto-expire test failed: ${result.message}`);
-        addTestResult("Auto-Expire Test", "failed", result.message);
+        setTimeout(() => {
+          toast.error(`Auto-expire test failed: ${result.message}`);
+          addTestResult("Auto-Expire Test", "failed", result.message);
+        }, 0);
       }
     } catch (error) {
-      toast.error(`Auto-expire test error: ${error}`);
-      addTestResult("Auto-Expire Test", "failed", `Error: ${error}`);
+      setTimeout(() => {
+        toast.error(`Auto-expire test error: ${error}`);
+        addTestResult("Auto-Expire Test", "failed", `Error: ${error}`);
+      }, 0);
     }
   };
 
