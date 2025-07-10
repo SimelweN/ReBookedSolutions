@@ -271,11 +271,10 @@ export class SellerMarketplaceService {
           name,
           email,
           bio,
-          university,
           created_at
         `,
           )
-          .or(`name.ilike.%${query}%,university.ilike.%${query}%`)
+          .ilike("name", `%${query}%`)
           .limit(20),
       "searchSellers",
       { showToast: false },
