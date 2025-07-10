@@ -15,6 +15,9 @@ import "./utils/safeStorage";
 // Import analytics fallback
 import "./utils/analyticsFallback";
 
+// Import error fix test (runs automatically in dev)
+import "./utils/testErrorFixes";
+
 console.log("🚀 ReBooked Solutions - Starting...");
 
 // Create query client with basic settings
