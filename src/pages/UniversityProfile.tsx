@@ -47,11 +47,14 @@ const UniversityProfile: React.FC = () => {
   const userAPS = parseInt(searchParams.get("aps") || "0");
 
   useEffect(() => {
+    // Scroll to top when component mounts or university changes
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
     // If coming from APS calculator, show eligible programs by default
     if (fromAPS && userAPS > 0) {
       setShowEligibleOnly(true);
     }
-  }, [fromAPS, userAPS]);
+  }, [id, fromAPS, userAPS]);
 
   const handleViewProgram = (program: Degree) => {
     setSelectedProgram(program);
