@@ -1,14 +1,33 @@
-import { useTheme } from "next-themes"
-import { Toaster as Sonner, toast } from "sonner"
+import React, { useEffect, useState } from "react";
+import { Toaster as Sonner, toast } from "sonner";
 
-type ToasterProps = React.ComponentProps<typeof Sonner>
+type ToasterProps = React.ComponentProps<typeof Sonner>;
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+  const [shouldRender, setShouldRender] = useState(false);
+
+  useEffect(() => {
+    // Use requestAnimationFrame to defer rendering until after the current render cycle
+    const rafId = requestAnimationFrame(() => {
+      // Add an additional setTimeout to ensure we're completely outside the render cycle
+      setTimeout(() => {
+        setShouldRender(true);
+      }, 0);
+    });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  // Don't render until we're safely outside the render cycle
+  if (!shouldRender) {
+    return null;
+  }
 
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      theme="light"
       className="toaster group"
       toastOptions={{
         classNames: {
@@ -23,7 +42,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       {...props}
     />
-  )
-}
+  );
+};
 
-export { Toaster, toast }
+export { Toaster, toast };

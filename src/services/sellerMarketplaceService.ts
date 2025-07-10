@@ -27,8 +27,6 @@ export class SellerMarketplaceService {
           name,
           email,
           bio,
-          profile_image,
-          university,
           created_at,
           pickup_address,
           addresses_same
@@ -82,8 +80,8 @@ export class SellerMarketplaceService {
     const { data: bankingData } = await safeDbOperation(
       () =>
         supabase
-          .from("banking_subaccounts")
-          .select("subaccount_code, status")
+          .from("banking_details")
+          .select("paystack_subaccount_code, account_verified")
           .eq("user_id", sellerId)
           .single(),
       "getSellerBanking",
@@ -109,14 +107,14 @@ export class SellerMarketplaceService {
       name: data.name || "Unknown Seller",
       email: data.email,
       bio: data.bio,
-      profileImage: data.profile_image,
-      university: data.university,
       rating: 4.5, // TODO: Implement rating system
       totalSales,
       memberSince: data.created_at,
       pickupAddress: data.pickup_address,
-      hasValidBanking: !!bankingData?.data?.subaccount_code,
-      subaccountCode: bankingData?.data?.subaccount_code,
+      hasValidBanking:
+        !!bankingData?.paystack_subaccount_code &&
+        !!bankingData?.account_verified,
+      subaccountCode: bankingData?.paystack_subaccount_code,
     };
   }
 
@@ -275,12 +273,10 @@ export class SellerMarketplaceService {
           name,
           email,
           bio,
-          profile_image,
-          university,
           created_at
         `,
           )
-          .or(`name.ilike.%${query}%,university.ilike.%${query}%`)
+          .ilike("name", `%${query}%`)
           .limit(20),
       "searchSellers",
       { showToast: false },
@@ -310,8 +306,6 @@ export class SellerMarketplaceService {
           name: seller.name || "Unknown Seller",
           email: seller.email,
           bio: seller.bio,
-          profileImage: seller.profile_image,
-          university: seller.university,
           rating: 4.5, // TODO: Implement rating system
           totalSales: 0, // Will be calculated separately if needed
           memberSince: seller.created_at,
@@ -340,8 +334,6 @@ export class SellerMarketplaceService {
           name,
           email,
           bio,
-          profile_image,
-          university,
           created_at,
           pickup_address
         `,
@@ -377,8 +369,6 @@ export class SellerMarketplaceService {
           name,
           email,
           bio,
-          profile_image,
-          university,
           created_at
         `,
           )
@@ -423,8 +413,6 @@ export class SellerMarketplaceService {
         name: seller.name || "Unknown Seller",
         email: seller.email,
         bio: seller.bio,
-        profileImage: seller.profile_image,
-        university: seller.university,
         rating: 4.5,
         totalSales: 0,
         memberSince: seller.created_at,

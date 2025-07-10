@@ -1,598 +1,214 @@
 /**
- * Email Service using Sender.net API with Fallback Support
- * Handles all transactional emails for ReBooked Solutions
- *
- * Features automatic fallback to alternative methods when functions fail
+ * Enhanced email notification service for ReBooked marketplace
+ * Handles all automated email communications including seller notifications
  */
 
-import { functionFallback } from "./functionFallbackService";
-
-interface EmailOptions {
+export interface EmailData {
   to: string;
   subject: string;
-  html: string;
-  from?: {
-    name: string;
-    email: string;
-  };
+  template: string;
+  variables: Record<string, any>;
 }
 
-interface BookDetails {
-  title: string;
-  author: string;
-  price: number;
-  imageUrl?: string;
+export interface SellerPickupNotificationData {
+  seller_name: string;
+  book_title: string;
+  pickup_date: string;
+  pickup_time: string;
+  courier: string;
+  label_url: string;
+  tracking_number: string;
 }
 
-interface UserDetails {
-  name: string;
-  email: string;
-}
-
-class EmailService {
-  private static readonly API_KEY = import.meta.env.VITE_SENDER_API;
-  private static readonly FROM_EMAIL = {
-    name: "ReBooked Solutions",
-    email: "noreply@rebookedsolutions.co.za",
-  };
-
-  // Check if running in production
-  private static readonly IS_PRODUCTION = import.meta.env.PROD;
-
-  /**
-   * Send email using Supabase Edge Function with automatic fallback
-   */
-  private static async sendEmail(options: EmailOptions): Promise<boolean> {
-    console.log(
-      `📧 Attempting to send email to ${options.to}: ${options.subject}`,
-    );
-
-    // Try using fallback service for critical email functions
-    const result = await functionFallback.callFunction(
-      "send-email-notification",
-      {
-        to: options.to,
-        subject: options.subject,
-        html: options.html,
-        from: options.from || this.FROM_EMAIL,
+/**
+ * Send email notification using Resend API
+ */
+export async function sendEmailNotification(
+  emailData: EmailData,
+): Promise<void> {
+  try {
+    // Call the send-email-notification edge function
+    const response = await fetch("/api/send-email-notification", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify(emailData),
+    });
 
-    if (result.success) {
-      console.log("✅ Email sent successfully");
-      return true;
-    } else {
-      console.warn("⚠️ Email function failed, using fallback simulation");
-      console.log(
-        `📧 [FALLBACK] Simulated email to ${options.to}: ${options.subject}`,
-      );
+    const result = await response.json();
 
-      // In development, just log and return success for demo purposes
-      if (!this.IS_PRODUCTION) {
-        return true;
-      }
-
-      // In production, we should still try to handle this gracefully
-      console.error("❌ Email service failed in production:", result.error);
-      return false;
+    if (!result.success) {
+      throw new Error(result.error || "Failed to send email");
     }
-  }
 
-  /**
-   * Generate email templates
-   */
-  private static getEmailTemplate(content: string): string {
-    return `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            background-color: #f3fef7;
-            padding: 20px;
-            color: #1f4e3d;
-            margin: 0;
-          }
-          .container {
-            max-width: 500px;
-            margin: auto;
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-          }
-          .btn {
-            display: inline-block;
-            padding: 12px 20px;
-            background-color: #3ab26f;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-top: 20px;
-            font-weight: bold;
-          }
-          .link {
-            color: #3ab26f;
-            text-decoration: none;
-          }
-          .book-card {
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            background: #f9f9f9;
-          }
-          .price {
-            font-size: 24px;
-            font-weight: bold;
-            color: #3ab26f;
-          }
-          .footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
-            color: #666;
-            font-size: 14px;
-          }
-          h2 {
-            color: #1f4e3d;
-            margin-bottom: 20px;
-          }
-          h3 {
-            color: #1f4e3d;
-            margin-top: 25px;
-          }
-          ul, ol {
-            padding-left: 20px;
-          }
-          li {
-            margin: 8px 0;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          ${content}
-          <div class="footer">
-            <p>© 2024 ReBooked Solutions. All rights reserved.</p>
-            <p>
-              <a href="https://rebookedsolutions.co.za" class="link">Visit our website</a> |
-              <a href="mailto:support@rebookedsolutions.co.za" class="link">Contact Support</a>
-            </p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
-  }
-
-  /**
-   * ✅ Welcome Email (Account Created)
-   */
-  static async sendWelcomeEmail(user: UserDetails): Promise<boolean> {
-    const content = `
-      <h2>Welcome to ReBooked Solutions! 🎉</h2>
-      <p>Hi <strong>${user.name}</strong>,</p>
-      <p>Thank you for joining ReBooked Solutions, South Africa's trusted platform for buying and selling textbooks!</p>
-
-      <h3>What you can do now:</h3>
-      <ul>
-        <li>📖 <strong>Browse books</strong> - Find affordable textbooks from students across the country</li>
-        <li>💰 <strong>Sell your books</strong> - Turn your old textbooks into cash</li>
-        <li>🏫 <strong>Connect with your campus</strong> - Find books specific to your university</li>
-        <li>🚚 <strong>Safe delivery</strong> - Secure payment and delivery system</li>
-      </ul>
-
-      <p style="text-align: center;">
-        <a href="https://rebookedsolutions.co.za/books" class="btn">Start Browsing Books</a>
-      </p>
-
-      <p>If you have any questions, feel free to reach out to our support team.</p>
-      <p>Happy reading! 📚</p>
-    `;
-
-    return this.sendEmail({
-      to: user.email,
-      subject: "🎉 Welcome to ReBooked Solutions!",
-      html: this.getEmailTemplate(content),
-    });
-  }
-
-  /**
-   * ✅ Email Verification
-   */
-  static async sendEmailVerification(
-    user: UserDetails,
-    verificationLink: string,
-  ): Promise<boolean> {
-    const content = `
-      <h2>Verify Your Email Address 📧</h2>
-      <p>Hi <strong>${user.name}</strong>,</p>
-      <p>Thanks for signing up with ReBooked Solutions! Please verify your email address to complete your registration.</p>
-
-      <p style="text-align: center;">
-        <a href="${verificationLink}" class="btn">Verify Email Address</a>
-      </p>
-
-      <p>If the button doesn't work, copy and paste this link into your browser:</p>
-      <p style="word-break: break-all; background: #f5f5f5; padding: 10px; border-radius: 4px;">
-        ${verificationLink}
-      </p>
-
-      <p><strong>This link will expire in 24 hours.</strong></p>
-      <p>If you didn't create an account with us, please ignore this email.</p>
-    `;
-
-    return this.sendEmail({
-      to: user.email,
-      subject: "📧 Verify your ReBooked Solutions account",
-      html: this.getEmailTemplate(content),
-    });
-  }
-
-  /**
-   * 🔐 Forgot Password Email
-   */
-  static async sendPasswordReset(
-    user: UserDetails,
-    resetLink: string,
-  ): Promise<boolean> {
-    const content = `
-      <h2>Reset Your Password 🔐</h2>
-      <p>Hi <strong>${user.name}</strong>,</p>
-      <p>We received a request to reset your password for your ReBooked Solutions account.</p>
-
-      <p style="text-align: center;">
-        <a href="${resetLink}" class="btn">Reset Password</a>
-      </p>
-
-      <p>If the button doesn't work, copy and paste this link into your browser:</p>
-      <p style="word-break: break-all; background: #f5f5f5; padding: 10px; border-radius: 4px;">
-        ${resetLink}
-      </p>
-
-      <p><strong>This link will expire in 1 hour.</strong></p>
-      <p>If you didn't request a password reset, please ignore this email. Your password will remain unchanged.</p>
-    `;
-
-    return this.sendEmail({
-      to: user.email,
-      subject: "🔐 Reset your ReBooked Solutions password",
-      html: this.getEmailTemplate(content),
-    });
-  }
-
-  /**
-   * 💳 Payment Confirmation (To Buyer)
-   */
-  static async sendPaymentConfirmation(
-    buyer: UserDetails,
-    seller: UserDetails,
-    book: BookDetails,
-    orderDetails: {
-      orderId: string;
-      totalAmount: number;
-      paymentReference: string;
-    },
-  ): Promise<boolean> {
-    const content = `
-      <h2>Payment Successful! 💳✅</h2>
-      <p>Hi <strong>${buyer.name}</strong>,</p>
-      <p>Your payment has been successfully processed. Thank you for your purchase!</p>
-
-      <div class="book-card">
-        <h3>${book.title}</h3>
-        <p><strong>Author:</strong> ${book.author}</p>
-        <p><strong>Seller:</strong> ${seller.name}</p>
-        <p class="price">R${(book.price / 100).toFixed(2)}</p>
-      </div>
-
-      <h3>Order Details:</h3>
-      <ul>
-        <li><strong>Order ID:</strong> ${orderDetails.orderId}</li>
-        <li><strong>Payment Reference:</strong> ${orderDetails.paymentReference}</li>
-        <li><strong>Total Amount:</strong> R${(orderDetails.totalAmount / 100).toFixed(2)}</li>
-        <li><strong>Payment Date:</strong> ${new Date().toLocaleDateString()}</li>
-      </ul>
-
-      <h3>What happens next?</h3>
-      <p>📦 The seller has been notified and will prepare your book for collection within 48 hours.</p>
-      <p>🚚 Once collected by our courier partner, you'll receive tracking information.</p>
-      <p>📱 You can track your order status in your account dashboard.</p>
-
-      <p style="text-align: center;">
-        <a href="https://rebookedsolutions.co.za/my-orders" class="btn">Track Your Order</a>
-      </p>
-    `;
-
-    return this.sendEmail({
-      to: buyer.email,
-      subject: "💳 Payment confirmed - Your book is on the way!",
-      html: this.getEmailTemplate(content),
-    });
-  }
-
-  /**
-   * 📘 Book Purchase Alert (To Seller)
-   */
-  static async sendBookPurchaseAlert(
-    seller: UserDetails,
-    buyer: UserDetails,
-    book: BookDetails,
-    orderDetails: {
-      orderId: string;
-      totalAmount: number;
-      collectionDeadline: string;
-    },
-  ): Promise<boolean> {
-    const content = `
-      <h2>Great News! Your Book Was Purchased! 🎉</h2>
-      <p>Hi <strong>${seller.name}</strong>,</p>
-      <p><strong>${buyer.name}</strong> just purchased your book. Congratulations on the sale!</p>
-
-      <div class="book-card">
-        <h3>${book.title}</h3>
-        <p><strong>Author:</strong> ${book.author}</p>
-        <p><strong>Buyer:</strong> ${buyer.name}</p>
-        <p class="price">R${(book.price / 100).toFixed(2)}</p>
-      </div>
-
-      <h3>⏰ Action Required - Collection Deadline</h3>
-      <p><strong>Deadline:</strong> ${new Date(orderDetails.collectionDeadline).toLocaleString()}</p>
-      <p>Please prepare your book for courier collection within 48 hours to avoid order cancellation.</p>
-
-      <h3>Next Steps:</h3>
-      <ol>
-        <li>📦 <strong>Package your book securely</strong></li>
-        <li>📱 <strong>Wait for courier contact</strong> - They'll arrange pickup</li>
-        <li>🤝 <strong>Hand over to courier</strong> - Get confirmation receipt</li>
-        <li>💰 <strong>Get paid</strong> - You'll receive 90% of the sale price</li>
-      </ol>
-
-      <p style="text-align: center;">
-        <a href="https://rebookedsolutions.co.za/my-orders" class="btn">Manage Your Orders</a>
-      </p>
-
-      <p><strong>Earnings:</strong> You'll receive R${((book.price * 0.9) / 100).toFixed(2)} (90% of sale price) once delivery is confirmed.</p>
-    `;
-
-    return this.sendEmail({
-      to: seller.email,
-      subject: "📘 Your book was purchased! Action required",
-      html: this.getEmailTemplate(content),
-    });
-  }
-
-  /**
-   * ✅ Bank Details Added Confirmation
-   */
-  static async sendBankDetailsConfirmation(
-    user: UserDetails,
-  ): Promise<boolean> {
-    const content = `
-      <h2>Bank Details Successfully Added! 🏦✅</h2>
-      <p>Hi <strong>${user.name}</strong>,</p>
-      <p>Great news! Your bank details have been successfully added to your ReBooked Solutions account.</p>
-
-      <h3>What this means:</h3>
-      <ul>
-        <li>💰 <strong>Automatic payouts</strong> - You'll receive 90% of each sale directly to your bank account</li>
-        <li>🚀 <strong>Faster transactions</strong> - No need to wait for manual processing</li>
-        <li>🔒 <strong>Secure payments</strong> - Your banking details are encrypted and protected</li>
-        <li>📊 <strong>Payment tracking</strong> - View all your earnings in your dashboard</li>
-      </ul>
-
-      <h3>Ready to start selling?</h3>
-      <p>Now that your account is set up for payouts, you can start listing your textbooks and earning money!</p>
-
-      <p style="text-align: center;">
-        <a href="https://rebookedsolutions.co.za/create-listing" class="btn">List Your First Book</a>
-      </p>
-
-      <p><strong>Payout Schedule:</strong> Payments are processed after successful delivery confirmation.</p>
-    `;
-
-    return this.sendEmail({
-      to: user.email,
-      subject: "🏦 Bank details confirmed - Ready to earn!",
-      html: this.getEmailTemplate(content),
-    });
-  }
-
-  /**
-   * 🚚 Courier Pickup Confirmed
-   */
-  static async sendCourierPickupConfirmation(
-    seller: UserDetails,
-    buyer: UserDetails,
-    book: BookDetails,
-    trackingInfo: {
-      trackingNumber: string;
-      courierService: string;
-      estimatedDelivery: string;
-    },
-  ): Promise<boolean> {
-    // Email to seller
-    const sellerContent = `
-      <h2>Courier Pickup Confirmed! 🚚✅</h2>
-      <p>Hi <strong>${seller.name}</strong>,</p>
-      <p>Great news! The courier has successfully picked up your book and it's now on its way to the buyer.</p>
-
-      <div class="book-card">
-        <h3>${book.title}</h3>
-        <p><strong>Buyer:</strong> ${buyer.name}</p>
-        <p><strong>Tracking Number:</strong> ${trackingInfo.trackingNumber}</p>
-        <p><strong>Courier Service:</strong> ${trackingInfo.courierService}</p>
-        <p><strong>Estimated Delivery:</strong> ${trackingInfo.estimatedDelivery}</p>
-      </div>
-
-      <h3>What happens next?</h3>
-      <p>📦 Your book is now in transit to the buyer</p>
-      <p>💰 You'll receive payment once delivery is confirmed</p>
-      <p>⭐ The buyer can leave you a review after receiving the book</p>
-
-      <p style="text-align: center;">
-        <a href="https://rebookedsolutions.co.za/my-orders" class="btn">Track Order Status</a>
-      </p>
-    `;
-
-    // Email to buyer
-    const buyerContent = `
-      <h2>Your Book is On The Way! 🚚📦</h2>
-      <p>Hi <strong>${buyer.name}</strong>,</p>
-      <p>Excellent news! Your book has been picked up by our courier and is now on its way to you!</p>
-
-      <div class="book-card">
-        <h3>${book.title}</h3>
-        <p><strong>Author:</strong> ${book.author}</p>
-        <p><strong>Seller:</strong> ${seller.name}</p>
-        <p><strong>Tracking Number:</strong> ${trackingInfo.trackingNumber}</p>
-        <p><strong>Courier Service:</strong> ${trackingInfo.courierService}</p>
-        <p><strong>Estimated Delivery:</strong> ${trackingInfo.estimatedDelivery}</p>
-      </div>
-
-      <p style="text-align: center;">
-        <a href="https://rebookedsolutions.co.za/my-orders" class="btn">Track Your Delivery</a>
-      </p>
-
-      <p>📱 You'll receive another email once your book has been delivered.</p>
-      <p>❓ If you have any questions about your delivery, please contact our support team.</p>
-    `;
-
-    // Send both emails
-    const [sellerSent, buyerSent] = await Promise.all([
-      this.sendEmail({
-        to: seller.email,
-        subject: "🚚 Book picked up - Payment coming soon!",
-        html: this.getEmailTemplate(sellerContent),
-      }),
-      this.sendEmail({
-        to: buyer.email,
-        subject: "📦 Your book is on the way!",
-        html: this.getEmailTemplate(buyerContent),
-      }),
-    ]);
-
-    return sellerSent && buyerSent;
-  }
-
-  /**
-   * 📦 Delivery Complete Notification
-   */
-  static async sendDeliveryConfirmation(
-    seller: UserDetails,
-    buyer: UserDetails,
-    book: BookDetails,
-  ): Promise<boolean> {
-    // Email to buyer
-    const buyerContent = `
-      <h2>Book Delivered Successfully! 📦✅</h2>
-      <p>Hi <strong>${buyer.name}</strong>,</p>
-      <p>Your book has been successfully delivered! We hope you enjoy your new textbook.</p>
-
-      <div class="book-card">
-        <h3>${book.title}</h3>
-        <p><strong>Author:</strong> ${book.author}</p>
-        <p><strong>Delivered:</strong> ${new Date().toLocaleString()}</p>
-      </div>
-
-      <h3>What's next?</h3>
-      <p>⭐ <strong>Rate your experience</strong> - Help other students by leaving a review</p>
-      <p>📚 <strong>Browse more books</strong> - Find your next textbook</p>
-      <p>💰 <strong>Sell your old books</strong> - Turn your books into cash</p>
-
-      <p style="text-align: center;">
-        <a href="https://rebookedsolutions.co.za/books" class="btn">Browse More Books</a>
-      </p>
-
-      <p>Thank you for choosing ReBooked Solutions!</p>
-    `;
-
-    // Email to seller
-    const sellerContent = `
-      <h2>Payment Processed! 💰✅</h2>
-      <p>Hi <strong>${seller.name}</strong>,</p>
-      <p>Congratulations! Your book has been successfully delivered and your payment has been processed.</p>
-
-      <div class="book-card">
-        <h3>${book.title}</h3>
-        <p><strong>Buyer:</strong> ${buyer.name}</p>
-        <p><strong>Your Earnings:</strong> <span class="price">R${((book.price * 0.9) / 100).toFixed(2)}</span></p>
-        <p><strong>Delivered:</strong> ${new Date().toLocaleString()}</p>
-      </div>
-
-      <p>💳 Your payment will appear in your linked bank account within 1-3 business days.</p>
-
-      <p style="text-align: center;">
-        <a href="https://rebookedsolutions.co.za/create-listing" class="btn">List Another Book</a>
-      </p>
-
-      <p>Keep selling your textbooks and earning money with ReBooked Solutions!</p>
-    `;
-
-    // Send both emails
-    const [buyerSent, sellerSent] = await Promise.all([
-      this.sendEmail({
-        to: buyer.email,
-        subject: "📦 Book delivered - Enjoy your reading!",
-        html: this.getEmailTemplate(buyerContent),
-      }),
-      this.sendEmail({
-        to: seller.email,
-        subject: "💰 Payment processed - Great job!",
-        html: this.getEmailTemplate(sellerContent),
-      }),
-    ]);
-
-    return buyerSent && sellerSent;
-  }
-
-  /**
-   * ⚠️ Order Cancellation Notification
-   */
-  static async sendOrderCancellation(
-    user: UserDetails,
-    book: BookDetails,
-    reason: string,
-    refundAmount?: number,
-  ): Promise<boolean> {
-    const content = `
-      <h2>Order Cancelled ⚠️</h2>
-      <p>Hi <strong>${user.name}</strong>,</p>
-      <p>We're sorry to inform you that your order has been cancelled.</p>
-
-      <div class="book-card">
-        <h3>${book.title}</h3>
-        <p><strong>Author:</strong> ${book.author}</p>
-        <p><strong>Reason:</strong> ${reason}</p>
-        ${refundAmount ? `<p><strong>Refund Amount:</strong> R${(refundAmount / 100).toFixed(2)}</p>` : ""}
-      </div>
-
-      ${
-        refundAmount
-          ? `
-        <h3>Refund Information</h3>
-        <p>💳 Your refund of R${(refundAmount / 100).toFixed(2)} will be processed within 3-5 business days.</p>
-        <p>The refund will appear on the same payment method used for the original purchase.</p>
-      `
-          : ""
-      }
-
-      <p>We apologize for any inconvenience. Please browse our other available books or contact support if you need assistance.</p>
-
-      <p style="text-align: center;">
-        <a href="https://rebookedsolutions.co.za/books" class="btn">Browse Other Books</a>
-      </p>
-    `;
-
-    return this.sendEmail({
-      to: user.email,
-      subject: "⚠️ Order cancellation notification",
-      html: this.getEmailTemplate(content),
-    });
+    console.log(`✅ Email sent successfully to: ${emailData.to}`);
+  } catch (error) {
+    console.error("Email notification failed:", error);
+    throw error;
   }
 }
 
-export default EmailService;
+/**
+ * Send seller pickup notification email
+ */
+export async function sendSellerPickupNotification(
+  sellerEmail: string,
+  data: SellerPickupNotificationData,
+): Promise<void> {
+  const emailData: EmailData = {
+    to: sellerEmail,
+    subject: `📦 Pickup scheduled for "${data.book_title}" - ${data.courier}`,
+    template: "seller-pickup-notification",
+    variables: data,
+  };
+
+  await sendEmailNotification(emailData);
+}
+
+/**
+ * Generate HTML email template for seller pickup notification
+ */
+export function generateSellerPickupEmailHTML(
+  data: SellerPickupNotificationData,
+): string {
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pickup Scheduled - ReBooked</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; }
+        .container { max-width: 600px; margin: 0 auto; background-color: white; }
+        .header { background: linear-gradient(135deg, #65c69f 0%, #44ab83 100%); color: white; padding: 30px 20px; text-align: center; }
+        .content { padding: 30px 20px; }
+        .pickup-info { background-color: #f0f9f5; border-left: 4px solid #65c69f; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .button { display: inline-block; background-color: #65c69f; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 15px 5px; }
+        .button:hover { background-color: #44ab83; }
+        .instructions { background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .footer { background-color: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 14px; }
+        .tracking-box { background-color: #e7f3ff; border: 1px solid #b3d9ff; padding: 15px; border-radius: 6px; margin: 15px 0; }
+        ul { padding-left: 20px; }
+        li { margin: 8px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 Pickup Scheduled!</h1>
+            <p>Your book is ready for courier collection</p>
+        </div>
+        
+        <div class="content">
+            <p>Hi <strong>${data.seller_name}</strong>,</p>
+            
+            <p>Great news! We've scheduled a pickup for your book "<strong>${data.book_title}</strong>" with ${data.courier}.</p>
+            
+            <div class="pickup-info">
+                <h3>📅 Pickup Details</h3>
+                <p><strong>Date:</strong> ${data.pickup_date}</p>
+                <p><strong>Time Window:</strong> ${data.pickup_time}</p>
+                <p><strong>Courier:</strong> ${data.courier}</p>
+                <p><strong>Tracking Number:</strong> ${data.tracking_number}</p>
+            </div>
+            
+            <div class="tracking-box">
+                <p><strong>📱 Track Your Shipment:</strong></p>
+                <p>Tracking Number: <code>${data.tracking_number}</code></p>
+                <p>You can track your shipment on the ${data.courier} website or app.</p>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="${data.label_url}" class="button" target="_blank">📄 Download Shipping Label</a>
+            </div>
+            
+            <div class="instructions">
+                <h3>📋 Preparation Instructions</h3>
+                <p><strong>Before pickup time:</strong></p>
+                <ul>
+                    <li>🖨️ <strong>Print the shipping label</strong> and attach it securely to your package</li>
+                    <li>📦 <strong>Package your book safely</strong> - use bubble wrap or padding if needed</li>
+                    <li>✅ <strong>Ensure your pickup address is accessible</strong> and someone will be available</li>
+                    <li>📱 <strong>Keep your phone nearby</strong> - the courier may call if they can't find you</li>
+                    <li>🆔 <strong>Have ID ready</strong> - some couriers may request identification</li>
+                </ul>
+                
+                <p><strong>Packaging Tips:</strong></p>
+                <ul>
+                    <li>Use a sturdy envelope or small box</li>
+                    <li>Wrap the book in bubble wrap or plastic</li>
+                    <li>Make sure the shipping label is clearly visible</li>
+                    <li>Seal the package properly with tape</li>
+                </ul>
+            </div>
+            
+            <div style="background-color: #e7f8f0; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3>💰 Payment Release</h3>
+                <p>Your payment will be released to your account after the book is successfully delivered to the buyer. You'll receive a confirmation email when this happens.</p>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <p><strong>Need help or have questions?</strong></p>
+                <a href="mailto:support@rebookedsolutions.co.za" class="button">Contact Support</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This is an automated message from ReBooked Solutions</p>
+            <p>🌍 Connecting students with affordable textbooks across South Africa</p>
+            <p><a href="https://rebookedsolutions.co.za">rebookedsolutions.co.za</a></p>
+        </div>
+    </div>
+</body>
+</html>`;
+}
+
+/**
+ * Generate plain text version for email clients that don't support HTML
+ */
+export function generateSellerPickupEmailText(
+  data: SellerPickupNotificationData,
+): string {
+  return `
+📦 PICKUP SCHEDULED - REBOOKED
+
+Hi ${data.seller_name},
+
+Great news! We've scheduled a pickup for your book "${data.book_title}" with ${data.courier}.
+
+📅 PICKUP DETAILS:
+• Date: ${data.pickup_date}
+• Time Window: ${data.pickup_time}
+• Courier: ${data.courier}
+• Tracking Number: ${data.tracking_number}
+
+📋 PREPARATION CHECKLIST:
+Before pickup time:
+✅ Print the shipping label: ${data.label_url}
+✅ Package your book safely with bubble wrap or padding
+✅ Ensure your pickup address is accessible
+✅ Keep your phone nearby for courier contact
+✅ Have ID ready if requested
+
+📦 PACKAGING TIPS:
+• Use a sturdy envelope or small box
+• Wrap the book in bubble wrap or plastic
+• Attach the shipping label securely and visibly
+• Seal the package properly with tape
+
+💰 PAYMENT:
+Your payment will be released after successful delivery to the buyer.
+
+📱 TRACKING:
+Track your shipment using tracking number: ${data.tracking_number}
+
+Need help? Contact us at support@rebookedsolutions.co.za
+
+---
+ReBooked Solutions
+Connecting students with affordable textbooks
+https://rebookedsolutions.co.za
+`;
+}

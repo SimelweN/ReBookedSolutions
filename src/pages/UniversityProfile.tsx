@@ -114,34 +114,34 @@ const UniversityProfile: React.FC = () => {
               <span className="font-medium">Back to Universities</span>
             </Link>
 
-            {/* University Header */}
-            <div className="grid lg:grid-cols-4 gap-8">
+            {/* University Header - Mobile Optimized */}
+            <div className="grid lg:grid-cols-4 gap-6 lg:gap-8">
               {/* Main Info */}
               <div className="lg:col-span-3">
-                <div className="flex items-start gap-6 mb-8">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6 mb-6 sm:mb-8">
                   {/* Logo */}
-                  <div className="relative">
-                    <div className="w-20 h-20 bg-white border-4 border-book-200 rounded-2xl flex items-center justify-center shadow-lg">
+                  <div className="relative mx-auto sm:mx-0 flex-shrink-0">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white border-4 border-book-200 rounded-2xl flex items-center justify-center shadow-lg">
                       {university.logo ? (
                         <img
                           src={university.logo}
                           alt={`${university.name} logo`}
-                          className="w-16 h-16 object-contain"
+                          className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
                         />
                       ) : (
-                        <span className="text-2xl font-bold text-gray-700">
+                        <span className="text-lg sm:text-2xl font-bold text-gray-700">
                           {university.abbreviation ||
                             university.name.substring(0, 3).toUpperCase()}
                         </span>
                       )}
                     </div>
-                    <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-book-500 rounded-full flex items-center justify-center">
-                      <Award className="h-3 w-3 text-white" />
+                    <div className="absolute -bottom-2 -right-2 w-5 h-5 sm:w-6 sm:h-6 bg-book-500 rounded-full flex items-center justify-center">
+                      <Award className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" />
                     </div>
                   </div>
 
                   {/* Info */}
-                  <div className="flex-1 space-y-4">
+                  <div className="flex-1 space-y-3 sm:space-y-4 text-center sm:text-left">
                     <div>
                       <Badge
                         variant="secondary"
@@ -149,47 +149,29 @@ const UniversityProfile: React.FC = () => {
                       >
                         {university.type}
                       </Badge>
-                      <h1 className="text-4xl font-bold text-gray-900 mb-3">
+                      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-3 leading-tight">
                         {university.fullName || university.name}
                       </h1>
-                      <div className="flex items-center text-gray-600 mb-4">
-                        <MapPin className="h-5 w-5 mr-2 text-gray-400" />
-                        <span className="text-lg">
+                      <div className="flex items-center justify-center sm:justify-start text-gray-600 mb-3 sm:mb-4">
+                        <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-gray-400" />
+                        <span className="text-base sm:text-lg">
                           {university.location}, {university.province}
                         </span>
                       </div>
                     </div>
 
-                    <p className="text-gray-700 leading-relaxed text-lg max-w-3xl">
+                    <p className="text-gray-700 leading-relaxed text-sm sm:text-base lg:text-lg max-w-3xl">
                       {university.overview ||
                         "A prestigious South African institution dedicated to academic excellence, research innovation, and developing leaders who shape the future."}
                     </p>
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex flex-wrap gap-4">
-                  {university.website && (
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="border-2 hover:border-book-500 hover:text-book-600"
-                      asChild
-                    >
-                      <a
-                        href={university.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Globe className="h-5 w-5 mr-2" />
-                        Official Website
-                      </a>
-                    </Button>
-                  )}
-
+                {/* Action Buttons - Mobile Optimized */}
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   <Button
                     size="lg"
-                    className="bg-book-600 hover:bg-book-700 text-white"
+                    className="bg-book-600 hover:bg-book-700 text-white w-full sm:w-auto"
                   >
                     <BookOpen className="h-5 w-5 mr-2" />
                     Find Textbooks
@@ -198,11 +180,32 @@ const UniversityProfile: React.FC = () => {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-2 border-blue-200 text-blue-600 hover:bg-blue-50"
+                    className="border-2 border-blue-200 text-blue-600 hover:bg-blue-50 w-full sm:w-auto"
                   >
                     <Calculator className="h-5 w-5 mr-2" />
                     APS Calculator
                   </Button>
+
+                  {university.website && (
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="border-2 hover:border-book-500 hover:text-book-600 w-full sm:w-auto"
+                      asChild
+                    >
+                      <a
+                        href={university.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Globe className="h-5 w-5 mr-2" />
+                        <span className="hidden sm:inline">
+                          Official Website
+                        </span>
+                        <span className="sm:hidden">Website</span>
+                      </a>
+                    </Button>
+                  )}
                 </div>
               </div>
 
@@ -345,42 +348,79 @@ const UniversityProfile: React.FC = () => {
             onValueChange={setActiveTab}
             className="w-full"
           >
-            {/* Modern Tab Navigation */}
+            {/* Modern Tab Navigation - Mobile Optimized */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
-              <TabsList className="bg-transparent p-1 h-auto w-full grid grid-cols-4 rounded-xl">
-                <TabsTrigger
-                  value="programs"
-                  className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
-                >
-                  <GraduationCap className="h-5 w-5 mr-2" />
-                  <span className="hidden sm:inline">Academic Programs</span>
-                  <span className="sm:hidden">Programs</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="admissions"
-                  className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
-                >
-                  <Calendar className="h-5 w-5 mr-2" />
-                  <span className="hidden sm:inline">Admissions</span>
-                  <span className="sm:hidden">Apply</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="student-life"
-                  className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
-                >
-                  <Heart className="h-5 w-5 mr-2" />
-                  <span className="hidden sm:inline">Campus Life</span>
-                  <span className="sm:hidden">Life</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="resources"
-                  className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
-                >
-                  <Info className="h-5 w-5 mr-2" />
-                  <span className="hidden sm:inline">Resources</span>
-                  <span className="sm:hidden">Info</span>
-                </TabsTrigger>
-              </TabsList>
+              {/* Mobile: Vertical Stack */}
+              <div className="block md:hidden">
+                <TabsList className="bg-transparent p-2 h-auto w-full flex flex-col space-y-2 rounded-xl">
+                  <TabsTrigger
+                    value="programs"
+                    className="w-full rounded-lg py-3 px-4 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all justify-start"
+                  >
+                    <GraduationCap className="h-5 w-5 mr-3" />
+                    Academic Programs
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="admissions"
+                    className="w-full rounded-lg py-3 px-4 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all justify-start"
+                  >
+                    <Calendar className="h-5 w-5 mr-3" />
+                    Admissions
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="student-life"
+                    className="w-full rounded-lg py-3 px-4 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all justify-start"
+                  >
+                    <Heart className="h-5 w-5 mr-3" />
+                    Campus Life
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="resources"
+                    className="w-full rounded-lg py-3 px-4 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all justify-start"
+                  >
+                    <Info className="h-5 w-5 mr-3" />
+                    Resources
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+
+              {/* Desktop: Horizontal Grid */}
+              <div className="hidden md:block">
+                <TabsList className="bg-transparent p-1 h-auto w-full grid grid-cols-4 rounded-xl">
+                  <TabsTrigger
+                    value="programs"
+                    className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
+                  >
+                    <GraduationCap className="h-5 w-5 mr-2" />
+                    <span className="hidden lg:inline">Academic Programs</span>
+                    <span className="lg:hidden">Programs</span>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="admissions"
+                    className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
+                  >
+                    <Calendar className="h-5 w-5 mr-2" />
+                    <span className="hidden lg:inline">Admissions</span>
+                    <span className="lg:hidden">Apply</span>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="student-life"
+                    className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
+                  >
+                    <Heart className="h-5 w-5 mr-2" />
+                    <span className="hidden lg:inline">Campus Life</span>
+                    <span className="lg:hidden">Life</span>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="resources"
+                    className="rounded-lg py-4 px-6 data-[state=active]:bg-book-50 data-[state=active]:text-book-700 data-[state=active]:shadow-sm font-medium transition-all"
+                  >
+                    <Info className="h-5 w-5 mr-2" />
+                    <span className="hidden lg:inline">Resources</span>
+                    <span className="lg:hidden">Info</span>
+                  </TabsTrigger>
+                </TabsList>
+              </div>
             </div>
 
             {/* Tab Content */}
