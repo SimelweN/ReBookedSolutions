@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { User, Calendar, CheckCircle, AlertCircle, Store } from "lucide-react";
+import { User, Calendar, Store } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface SellerInfoProps {
