@@ -66,9 +66,8 @@ type FormItemContextValue = {
   id: string;
 };
 
-const FormItemContext = createSafeContext<FormItemContextValue>(
+const FormItemContext = React.createContext<FormItemContextValue>(
   {} as FormItemContextValue,
-  "FormItemContext",
 );
 
 const FormItem = forwardRef<
