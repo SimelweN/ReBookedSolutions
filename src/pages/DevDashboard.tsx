@@ -375,26 +375,32 @@ const DevDashboard: React.FC = () => {
         .limit(1);
 
       if (error) {
+        setTimeout(() => {
+          addTestResult(
+            "Database Connection",
+            "failed",
+            `Connection failed: ${error.message}`,
+            error,
+          );
+        }, 0);
+      } else {
+        setTimeout(() => {
+          addTestResult(
+            "Database Connection",
+            "success",
+            "Database connection successful",
+          );
+        }, 0);
+      }
+    } catch (error) {
+      setTimeout(() => {
         addTestResult(
           "Database Connection",
           "failed",
-          `Connection failed: ${error.message}`,
+          `Connection error: ${error}`,
           error,
         );
-      } else {
-        addTestResult(
-          "Database Connection",
-          "success",
-          "Database connection successful",
-        );
-      }
-    } catch (error) {
-      addTestResult(
-        "Database Connection",
-        "failed",
-        `Connection error: ${error}`,
-        error,
-      );
+      }, 0);
     }
   };
 
