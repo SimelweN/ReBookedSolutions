@@ -4,14 +4,24 @@ import { Toaster as Sonner, toast } from "sonner";
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const [mounted, setMounted] = useState(false);
+  const [shouldRender, setShouldRender] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    // Use requestAnimationFrame to defer rendering until after the current render cycle
+    const rafId = requestAnimationFrame(() => {
+      // Add an additional setTimeout to ensure we're completely outside the render cycle
+      setTimeout(() => {
+        setShouldRender(true);
+      }, 0);
+    });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+    };
   }, []);
 
-  // Don't render until mounted to prevent hydration issues
-  if (!mounted) {
+  // Don't render until we're safely outside the render cycle
+  if (!shouldRender) {
     return null;
   }
 
