@@ -587,18 +587,7 @@ const UniversityInfo = () => {
           {UNIVERSITY_APPLICATIONS_2025.length > 6 && (
             <div className="text-center px-4">
               <Button
-                onClick={() => {
-                  console.log(
-                    "View More button clicked. Current state:",
-                    showAllUniversities,
-                  );
-                  console.log(
-                    "Total universities:",
-                    UNIVERSITY_APPLICATIONS_2025.length,
-                  );
-                  setShowAllUniversities(!showAllUniversities);
-                  console.log("New state will be:", !showAllUniversities);
-                }}
+                onClick={() => setShowAllUniversities(!showAllUniversities)}
                 className="bg-book-600 hover:bg-book-700 text-white px-6 sm:px-8 py-3 text-base sm:text-lg w-full sm:w-auto max-w-sm mx-auto"
                 size="lg"
               >
