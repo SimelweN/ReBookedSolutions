@@ -69,6 +69,8 @@ const APSScoreCard: React.FC<APSScoreCardProps> = ({
     navigate(
       `/university/${score.universityId}?fromAPS=true&aps=${score.score}`,
     );
+    // Scroll to top after navigation
+    setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
   };
 
   const getScoreColor = (percentage: number) => {
