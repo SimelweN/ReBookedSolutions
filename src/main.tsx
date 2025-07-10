@@ -1,4 +1,7 @@
-// Import suppressions FIRST
+// Import React availability check FIRST to prevent createContext errors
+import "./utils/reactAvailabilityCheck";
+
+// Import suppressions
 import "./utils/suppressDatadogWarnings";
 import "./utils/globalReactSetup";
 
