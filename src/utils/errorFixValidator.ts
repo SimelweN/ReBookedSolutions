@@ -3,6 +3,8 @@
  * Tests all the implemented fixes to ensure errors are resolved
  */
 
+import * as React from "react";
+
 export interface ValidationResult {
   category: string;
   test: string;
