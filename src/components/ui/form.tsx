@@ -13,6 +13,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
+import { safeCreateContext } from "@/utils/reactImportValidator";
 const Form = FormProvider;
 
 type FormFieldContextValue<
@@ -22,8 +23,9 @@ type FormFieldContextValue<
   name: TName;
 };
 
-const FormFieldContext = React.createContext<FormFieldContextValue>(
+const FormFieldContext = safeCreateContext<FormFieldContextValue>(
   {} as FormFieldContextValue,
+  "FormFieldContext",
 );
 
 const FormField = <
@@ -66,8 +68,9 @@ type FormItemContextValue = {
   id: string;
 };
 
-const FormItemContext = React.createContext<FormItemContextValue>(
+const FormItemContext = safeCreateContext<FormItemContextValue>(
   {} as FormItemContextValue,
+  "FormItemContext",
 );
 
 const FormItem = forwardRef<
