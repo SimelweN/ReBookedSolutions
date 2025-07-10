@@ -6,6 +6,8 @@
  * that can occur during bundling when React is not available in the namespace.
  */
 
+import * as React from "react";
+
 // Ensure React is available globally for components that might need it
 if (typeof window !== "undefined" && !(window as any).React) {
   try {
