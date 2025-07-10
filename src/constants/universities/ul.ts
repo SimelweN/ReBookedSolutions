@@ -202,7 +202,8 @@ export const UL_FACULTIES: Faculty[] = [
         faculty: "Humanities",
         duration: "4 years",
         apsRequirement: 25,
-        description: "Professional social work practice",
+        description:
+          "Professional social work practice (using higher APS score: 25)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Orientation", level: 4, isRequired: true },
@@ -218,9 +219,9 @@ export const UL_FACULTIES: Faculty[] = [
         name: "Bachelor of Psychology (BPsych)",
         faculty: "Humanities",
         duration: "3 years",
-        apsRequirement: 23,
+        apsRequirement: 25,
         description:
-          "Psychology theory and practice (APS 23/25 depending on stream)",
+          "Psychology theory and practice (using higher APS score: 25)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Sciences", level: 4, isRequired: true },
@@ -232,9 +233,9 @@ export const UL_FACULTIES: Faculty[] = [
         name: "Bachelor of Arts - Sociology & Anthropology",
         faculty: "Humanities",
         duration: "3 years",
-        apsRequirement: 23,
+        apsRequirement: 25,
         description:
-          "Sociology and anthropology studies (APS 23/25 depending on stream)",
+          "Sociology and anthropology studies (using higher APS score: 25)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Orientation", level: 4, isRequired: true },
@@ -263,9 +264,23 @@ export const UL_FACULTIES: Faculty[] = [
         name: "Bachelor of Arts - Criminology & Psychology",
         faculty: "Humanities",
         duration: "3 years",
-        apsRequirement: 23,
+        apsRequirement: 25,
         description:
-          "Criminology and psychology studies (APS 23/25 depending on stream, includes standard and extended options)",
+          "Criminology and psychology studies (using higher APS score: 25, includes extended option at 24)",
+        subjects: [
+          { name: "English", level: 4, isRequired: true },
+          { name: "Life Orientation", level: 4, isRequired: true },
+        ],
+        careerProspects: ["Criminologist", "Psychologist", "Social Researcher"],
+      },
+      {
+        id: createDegreeId("BA Criminology Psychology Extended UL"),
+        name: "Bachelor of Arts - Criminology & Psychology (Extended)",
+        faculty: "Humanities",
+        duration: "4 years",
+        apsRequirement: 24,
+        description:
+          "Extended criminology and psychology studies program (using higher APS score: 24)",
         subjects: [
           { name: "English", level: 4, isRequired: true },
           { name: "Life Orientation", level: 4, isRequired: true },
