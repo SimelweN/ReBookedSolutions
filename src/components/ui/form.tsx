@@ -24,8 +24,9 @@ type FormFieldContextValue<
   name: TName;
 };
 
-const FormFieldContext = createContext<FormFieldContextValue>(
+const FormFieldContext = createSafeContext<FormFieldContextValue>(
   {} as FormFieldContextValue,
+  "FormFieldContext",
 );
 
 const FormField = <
