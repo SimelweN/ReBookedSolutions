@@ -91,6 +91,8 @@ export const batchDOMOperations = (operations: (() => void)[]) => {
 
 // Initialize performance optimizations
 export const initPerformanceOptimizations = () => {
+  if (typeof window === "undefined") return;
+
   // Clean up on page load
   cleanupEventListeners();
   cleanupStorage();
