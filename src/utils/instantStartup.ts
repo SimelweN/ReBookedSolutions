@@ -1,5 +1,6 @@
 // Instant startup utility to bypass all loading states
 // This ensures the app is immediately usable
+import { safeLocalStorage } from "./safeLocalStorage";
 
 export const enableInstantStartup = () => {
   // Override any persistent loading states in localStorage
