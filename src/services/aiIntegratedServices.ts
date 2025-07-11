@@ -511,13 +511,27 @@ export const getAiAnalyticsService = () => {
   return aiAnalyticsServiceInstance;
 };
 
-// Export all services as a single object
+// Export all services as a single object using getters
 export const aiServices = {
-  payment: aiPaymentService,
-  email: aiEmailService,
-  file: aiFileService,
-  shipping: aiShippingService,
-  order: aiOrderService,
-  search: aiSearchService,
-  analytics: aiAnalyticsService,
+  get payment() {
+    return getAiPaymentService();
+  },
+  get email() {
+    return getAiEmailService();
+  },
+  get file() {
+    return getAiFileService();
+  },
+  get shipping() {
+    return getAiShippingService();
+  },
+  get order() {
+    return getAiOrderService();
+  },
+  get search() {
+    return getAiSearchService();
+  },
+  get analytics() {
+    return getAiAnalyticsService();
+  },
 };
