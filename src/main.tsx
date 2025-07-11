@@ -1,7 +1,6 @@
 import * as React from "react";
 
-// Import Datadog warning suppression as early as possible
-import "./utils/suppressDatadogWarnings";
+// Note: Datadog warning suppression removed as SDK is not actually installed
 
 import { createRoot } from "react-dom/client";
 
