@@ -972,20 +972,22 @@ export const COMPREHENSIVE_FIELDS_OF_STUDY = isWorkersEnvironment
       "Web Development",
     ];
 
-export const BURSARY_PROVIDERS = [
-  "Government Departments",
-  "Provincial Governments",
-  "Banking & Financial Services",
-  "Mining Companies",
-  "Technology Companies",
-  "Healthcare Organizations",
-  "Retail Companies",
-  "Energy Companies",
-  "Manufacturing Companies",
-  "Professional Services",
-  "Agricultural Companies",
-  "Transport & Logistics",
-  "International Organizations",
-  "Professional Associations",
-  "SETA Organizations",
-];
+export const BURSARY_PROVIDERS = isWorkersEnvironment
+  ? []
+  : [
+      "Government Departments",
+      "Provincial Governments",
+      "Banking & Financial Services",
+      "Mining Companies",
+      "Technology Companies",
+      "Healthcare Organizations",
+      "Retail Companies",
+      "Energy Companies",
+      "Manufacturing Companies",
+      "Professional Services",
+      "Agricultural Companies",
+      "Transport & Logistics",
+      "International Organizations",
+      "Professional Associations",
+      "SETA Organizations",
+    ];
