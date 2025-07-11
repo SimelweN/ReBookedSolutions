@@ -8,7 +8,7 @@ import {
 import { getFunctionPolicy } from "@/config/functionPolicyRegistry";
 import { getFallbackStorage } from "./fallbackStorage";
 import { getHealthTracker } from "./healthTracker";
-import { aiMonitoringService } from "./aiMonitoringService";
+import { getAiMonitoringService } from "./aiMonitoringService";
 import { supabase } from "@/integrations/supabase/client";
 
 class AIFunctionExecutor {
@@ -56,7 +56,7 @@ class AIFunctionExecutor {
         if (result.success) {
           getHealthTracker().recordSuccess("supabase");
           getHealthTracker().recordPerformance("supabase", Date.now() - startTime);
-          aiMonitoringService.logFunctionExecution(
+          getAiMonitoringService().logFunctionExecution(
             functionName,
             result,
             Date.now() - startTime,
@@ -83,7 +83,7 @@ class AIFunctionExecutor {
         if (result.success) {
           getHealthTracker().recordSuccess("vercel");
           getHealthTracker().recordPerformance("vercel", Date.now() - startTime);
-          aiMonitoringService.logFunctionExecution(
+          getAiMonitoringService().logFunctionExecution(
             functionName,
             result,
             Date.now() - startTime,
@@ -106,7 +106,7 @@ class AIFunctionExecutor {
       console.log(
         `🔄 Using fallback mechanism for ${functionName}: ${policy.fallbackType}`,
       );
-      aiMonitoringService.logFallbackUsage(
+      getAiMonitoringService().logFallbackUsage(
         functionName,
         policy.fallbackType,
         "All primary layers failed",
@@ -117,7 +117,7 @@ class AIFunctionExecutor {
         fullContext,
         policy.fallbackType,
       );
-      aiMonitoringService.logFunctionExecution(
+      getAiMonitoringService().logFunctionExecution(
         functionName,
         result,
         Date.now() - startTime,
@@ -371,7 +371,7 @@ class AIFunctionExecutor {
     };
 
     await getFallbackStorage().enqueue(queueItem);
-    aiMonitoringService.logQueueEvent("enqueue", functionName, {
+    getAiMonitoringService().logQueueEvent("enqueue", functionName, {
       queueId: queueItem.id,
       priority: context.priority,
     });
