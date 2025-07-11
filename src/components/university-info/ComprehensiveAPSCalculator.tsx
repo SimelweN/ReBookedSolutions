@@ -135,9 +135,9 @@ const extractUniversityPrograms = async () => {
 
 // Get comprehensive university programs data
 // Get comprehensive university programs data lazily
-const getUniversityPrograms = () => {
+const getUniversityPrograms = async () => {
   try {
-    return extractUniversityPrograms();
+    return await extractUniversityPrograms();
   } catch (error) {
     console.warn(
       "Failed to extract university programs, using empty array",
