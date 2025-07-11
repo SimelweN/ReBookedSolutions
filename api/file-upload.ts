@@ -1,7 +1,24 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
-import formidable from "formidable";
-import fs from "fs";
+
+// Conditional imports for Node.js environment only
+let formidable: any = null;
+let fs: any = null;
+
+// Check if we're in a Node.js environment (not Workers)
+if (
+  typeof process !== "undefined" &&
+  process.versions &&
+  process.versions.node
+) {
+  try {
+    formidable = require("formidable");
+    fs = require("fs");
+  } catch (error) {
+    // In Workers environment, these modules won't be available
+    console.warn("Node.js modules not available in this environment");
+  }
+}
 
 export const config = {
   api: {
