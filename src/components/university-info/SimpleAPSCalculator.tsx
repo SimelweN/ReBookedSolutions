@@ -58,7 +58,10 @@ const getUniversityPrograms = () => {
   try {
     return extractUniversityPrograms();
   } catch (error) {
-    console.warn("Failed to extract university programs, using fallback", error);
+    console.warn(
+      "Failed to extract university programs, using fallback",
+      error,
+    );
     return [];
   }
 };
@@ -75,6 +78,7 @@ const getFinalUniversityPrograms = () => {
         apsRequired: program.aps,
         universityId: program.abbreviation.toLowerCase(),
       }));
+};
 
 // Types
 interface APSSubject {
