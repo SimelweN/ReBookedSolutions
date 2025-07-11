@@ -31,6 +31,8 @@ export const throttle = <T extends (...args: any[]) => void>(
 
 // Clean up unused event listeners
 export const cleanupEventListeners = () => {
+  if (typeof window === "undefined") return;
+
   // Remove duplicate scroll listeners
   const events = ["scroll", "resize", "mousemove"];
   events.forEach((event) => {
