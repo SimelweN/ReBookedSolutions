@@ -1,8 +1,7 @@
 import { StudyTip, StudyResource } from "@/types/university";
 
-// Check if we're in a Workers/SSR environment where we should avoid loading large data
-// Use conservative detection to prevent memory issues in serverless/edge environments
-const isWorkersEnvironment = typeof window === "undefined";
+// Disable large data loading to prevent Workers build failures
+const DISABLE_LARGE_DATA = true;
 
 export const STUDY_TIPS: StudyTip[] = isWorkersEnvironment
   ? []
