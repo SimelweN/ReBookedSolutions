@@ -736,7 +736,7 @@ export const UNIVERSITY_STATISTICS = {
   total: ALL_SOUTH_AFRICAN_UNIVERSITIES.length,
 };
 
-if (import.meta.env.DEV) {
+if (import.meta.env.DEV && typeof window !== "undefined") {
   console.log(
     `✅ Complete database loaded: ${ALL_SOUTH_AFRICAN_UNIVERSITIES.length} South African universities`,
   );
