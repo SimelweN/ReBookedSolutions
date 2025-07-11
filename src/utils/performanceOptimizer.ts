@@ -65,6 +65,8 @@ export const optimizeImages = () => {
 
 // Clear unnecessary localStorage items
 export const cleanupStorage = () => {
+  if (typeof localStorage === "undefined") return;
+
   const keysToKeep = [
     "sb-access-token",
     "sb-refresh-token",
