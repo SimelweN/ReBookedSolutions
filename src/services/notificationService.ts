@@ -128,7 +128,7 @@ export const getNotifications = async (
     }));
 
     // Update cache
-    notificationCache.set(userId, {
+    getNotificationCache().set(userId, {
       data: notifications,
       timestamp: Date.now(),
     });
