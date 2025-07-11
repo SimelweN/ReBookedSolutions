@@ -984,4 +984,5 @@ export class FunctionFallbackService {
   }
 }
 
-export const functionFallback = FunctionFallbackService.getInstance();
+// Lazy initialization to prevent "Cannot access before initialization" errors
+export const getFunctionFallback = () => FunctionFallbackService.getInstance();
