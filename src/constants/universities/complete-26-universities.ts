@@ -9,9 +9,8 @@ import { getFacultiesByUniversityIdLegacy } from "./updated-specific-universitie
  * Faculties are populated dynamically using the assignment rules.
  */
 
-// Check if we're in a Workers/SSR environment where we should avoid loading large data
-// Use conservative detection to prevent memory issues in serverless/edge environments
-const isWorkersEnvironment = typeof window === "undefined";
+// Disable large data loading to prevent Workers build failures
+const DISABLE_LARGE_DATA = true;
 
 // Base universities without programs (will be populated dynamically)
 const BASE_UNIVERSITIES: University[] = isWorkersEnvironment
