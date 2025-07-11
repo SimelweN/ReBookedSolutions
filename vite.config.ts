@@ -2,6 +2,11 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
+// Workers-compatible environment detection
+const isNode =
+  typeof process !== "undefined" && process.versions && process.versions.node;
+const isDev = process.env.NODE_ENV !== "production";
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
