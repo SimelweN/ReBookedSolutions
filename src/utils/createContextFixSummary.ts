@@ -151,8 +151,8 @@ export function logFixSummary(): void {
   }
 }
 
-// Auto-run in development
-if (import.meta.env.DEV) {
+// Auto-run in development (browser only)
+if (import.meta.env.DEV && typeof window !== "undefined") {
   setTimeout(() => {
     logFixSummary();
   }, 3000);
