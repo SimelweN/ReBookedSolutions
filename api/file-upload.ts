@@ -99,6 +99,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .json({ success: false, error: "Method not allowed" });
   }
 
+  // Check if required modules are available
+  if (!formidable || !fs) {
+    return res.status(500).json({
+      success: false,
+      error: "File upload not supported in this environment",
+    });
+  }
+
   try {
     const supabase = createClient(
       process.env.SUPABASE_URL!,
