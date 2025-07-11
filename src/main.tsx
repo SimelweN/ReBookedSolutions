@@ -25,11 +25,16 @@ const queryClient = new QueryClient({
 import App from "./App";
 import { initDatabaseStatusCheck } from "./utils/databaseConnectivityHelper";
 
-// Get root element
-const rootElement = document.getElementById("root");
-if (!rootElement) {
-  throw new Error("Root element not found");
-}
+// Only run in browser environment
+if (typeof window === "undefined" || typeof document === "undefined") {
+  // In Workers environment, export for static generation
+  export default App;
+} else {
+  // Get root element
+  const rootElement = document.getElementById("root");
+  if (!rootElement) {
+    throw new Error("Root element not found");
+  }
 
 try {
   // Create React root
