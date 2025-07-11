@@ -3,7 +3,7 @@ import { Bursary } from "@/types/university";
 // Disable large data loading to prevent Workers build failures
 const DISABLE_LARGE_DATA = true;
 
-export const ADDITIONAL_VALID_BURSARIES: Bursary[] = isWorkersEnvironment
+export const ADDITIONAL_VALID_BURSARIES: Bursary[] = DISABLE_LARGE_DATA
   ? []
   : [
       // Recent Government Initiatives & Provincial Bursaries (2024-2025)
