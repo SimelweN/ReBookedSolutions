@@ -21,7 +21,7 @@ import {
   Pause,
 } from "lucide-react";
 import { toast } from "sonner";
-import { healthTracker } from "@/services/healthTracker";
+import { getHealthTracker } from "@/services/healthTracker";
 import { getFallbackStorage } from "@/services/fallbackStorage";
 import {
   aiFunctionExecutor,
@@ -56,7 +56,7 @@ const AIFunctionMonitor = () => {
   const loadData = async () => {
     try {
       // Get health statuses
-      const statuses = healthTracker.getAllServiceStatuses();
+      const statuses = getHealthTracker().getAllServiceStatuses();
       setHealthStatuses(statuses);
 
       // Get queue size
@@ -109,7 +109,7 @@ const AIFunctionMonitor = () => {
 
   const handleResetService = async (service: ServiceLayer) => {
     try {
-      healthTracker.resetServiceHealth(service);
+      getHealthTracker().resetServiceHealth(service);
       toast.success(`${service} service health reset`);
       await loadData();
     } catch (error) {
@@ -131,7 +131,7 @@ const AIFunctionMonitor = () => {
 
   const handleHealthCheck = async (service: ServiceLayer) => {
     try {
-      const isHealthy = await healthTracker.performHealthCheck(service);
+      const isHealthy = await getHealthTracker().performHealthCheck(service);
       toast.success(
         `${service} health check: ${isHealthy ? "Healthy" : "Unhealthy"}`,
       );
@@ -173,7 +173,7 @@ const AIFunctionMonitor = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  const healthSummary = healthTracker.getHealthSummary();
+  const healthSummary = getHealthTracker().getHealthSummary();
   const overallHealthColor = {
     healthy: "text-green-500",
     degraded: "text-yellow-500",
@@ -420,7 +420,7 @@ const AIFunctionMonitor = () => {
                   <h4 className="font-medium">Health Management</h4>
                   <Button
                     variant="outline"
-                    onClick={() => healthTracker.resetAllHealth()}
+                    onClick={() => getHealthTracker().resetAllHealth()}
                     className="w-full flex items-center gap-2"
                   >
                     <RefreshCw className="h-4 w-4" />

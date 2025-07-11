@@ -7,7 +7,7 @@ import {
 } from "@/types/functionFallback";
 import { getFunctionPolicy } from "@/config/functionPolicyRegistry";
 import { getFallbackStorage } from "./fallbackStorage";
-import { healthTracker } from "./healthTracker";
+import { getHealthTracker } from "./healthTracker";
 import { aiMonitoringService } from "./aiMonitoringService";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -46,7 +46,7 @@ class AIFunctionExecutor {
     }
 
     // Layer 1: Try Supabase Edge Function
-    if (healthTracker.isServiceHealthy("supabase")) {
+    if (getHealthTracker().isServiceHealthy("supabase")) {
       try {
         const result = await this.callSupabaseEdgeFunction<T>(
           functionName,
@@ -54,8 +54,8 @@ class AIFunctionExecutor {
           fullContext,
         );
         if (result.success) {
-          healthTracker.recordSuccess("supabase");
-          healthTracker.recordPerformance("supabase", Date.now() - startTime);
+          getHealthTracker().recordSuccess("supabase");
+          getHealthTracker().recordPerformance("supabase", Date.now() - startTime);
           aiMonitoringService.logFunctionExecution(
             functionName,
             result,
@@ -66,14 +66,14 @@ class AIFunctionExecutor {
         throw new Error(result.error || "Supabase function failed");
       } catch (error) {
         console.warn(`⚠️ Supabase function ${functionName} failed:`, error);
-        healthTracker.recordFailure("supabase", String(error));
+        getHealthTracker().recordFailure("supabase", String(error));
       }
     } else {
       console.log(`⚠️ Supabase service is unhealthy, skipping to layer 2`);
     }
 
     // Layer 2: Try Vercel API/Edge Function
-    if (policy.vercelAllowed && healthTracker.isServiceHealthy("vercel")) {
+    if (policy.vercelAllowed && getHealthTracker().isServiceHealthy("vercel")) {
       try {
         const result = await this.callVercelFunction<T>(
           functionName,
@@ -81,8 +81,8 @@ class AIFunctionExecutor {
           fullContext,
         );
         if (result.success) {
-          healthTracker.recordSuccess("vercel");
-          healthTracker.recordPerformance("vercel", Date.now() - startTime);
+          getHealthTracker().recordSuccess("vercel");
+          getHealthTracker().recordPerformance("vercel", Date.now() - startTime);
           aiMonitoringService.logFunctionExecution(
             functionName,
             result,
@@ -93,7 +93,7 @@ class AIFunctionExecutor {
         throw new Error(result.error || "Vercel function failed");
       } catch (error) {
         console.warn(`⚠️ Vercel function ${functionName} failed:`, error);
-        healthTracker.recordFailure("vercel", String(error));
+        getHealthTracker().recordFailure("vercel", String(error));
       }
     } else if (!policy.vercelAllowed) {
       console.log(`⚠️ Vercel not allowed for function ${functionName}`);
@@ -571,7 +571,7 @@ class AIFunctionExecutor {
   } {
     return {
       queueSize: getFallbackStorage().getQueueSize(),
-      healthSummary: healthTracker.getHealthSummary(),
+      healthSummary: getHealthTracker().getHealthSummary(),
       storageStats: getFallbackStorage().getStorageStats(),
     };
   }
@@ -582,7 +582,7 @@ class AIFunctionExecutor {
   async reset(): Promise<void> {
     await getFallbackStorage().clearQueue();
     await getFallbackStorage().clearCache();
-    healthTracker.resetAllHealth();
+    getHealthTracker().resetAllHealth();
     console.log("🔄 AI Function Executor reset complete");
   }
 }

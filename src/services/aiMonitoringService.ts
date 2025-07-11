@@ -1,4 +1,4 @@
-import { healthTracker } from "./healthTracker";
+import { getHealthTracker } from "./healthTracker";
 import { getFallbackStorage } from "./fallbackStorage";
 import { ServiceLayer, FunctionResult } from "@/types/functionFallback";
 
@@ -286,7 +286,7 @@ class AIMonitoringService {
     storageUsage: any;
     recentErrors: MonitoringEvent[];
   }> {
-    const healthSummary = healthTracker.getHealthSummary();
+    const healthSummary = getHealthTracker().getHealthSummary();
     const queueSize = await getFallbackStorage().getQueueSize();
     const storageStats = getFallbackStorage().getStorageStats();
 
