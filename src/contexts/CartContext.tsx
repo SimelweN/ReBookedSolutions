@@ -45,27 +45,27 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
           // If we filtered out items, update localStorage
           if (validItems.length !== parsed.length) {
-            localStorage.setItem("cart", JSON.stringify(validItems));
+            safeLocalStorage.setItem("cart", JSON.stringify(validItems));
             console.log(
               `Cleaned ${parsed.length - validItems.length} invalid items from cart`,
             );
           }
         } else {
           console.warn("Invalid cart format in localStorage, clearing cart");
-          localStorage.removeItem("cart");
+          safeLocalStorage.removeItem("cart");
           setItems([]);
         }
       }
     } catch (error) {
       console.error("Error parsing saved cart:", error);
-      localStorage.removeItem("cart");
+      safeLocalStorage.removeItem("cart");
       setItems([]);
     }
   }, []);
 
   // Save cart to localStorage whenever items change
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(items));
+    safeLocalStorage.setItem("cart", JSON.stringify(items));
   }, [items]);
 
   const addToCart = (book: Book) => {
@@ -140,7 +140,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const clearCart = () => {
     setItems([]);
-    localStorage.removeItem("cart");
+    safeLocalStorage.removeItem("cart");
   };
 
   const getTotalPrice = () => {
