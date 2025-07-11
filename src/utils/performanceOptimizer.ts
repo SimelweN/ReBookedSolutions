@@ -84,6 +84,20 @@ export const cleanupStorage = () => {
 
 // Reduce DOM reflows by batching operations
 export const batchDOMOperations = (operations: (() => void)[]) => {
+  if (typeof requestAnimationFrame === "undefined") {
+    // Fallback for environments without requestAnimationFrame
+    setTimeout(() => {
+      operations.forEach((op) => {
+        try {
+          op();
+        } catch (e) {
+          console.warn("DOM operation failed:", e);
+        }
+      });
+    }, 0);
+    return;
+  }
+
   requestAnimationFrame(() => {
     operations.forEach((op) => {
       try {
