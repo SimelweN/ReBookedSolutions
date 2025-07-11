@@ -2,7 +2,7 @@ import { VercelRequest, VercelResponse } from "@vercel/node";
 import {
   generateSellerPickupEmailHTML,
   generateSellerPickupEmailText,
-} from "../src/services/emailService";
+} from "../shared/emailTemplates";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Enable CORS
