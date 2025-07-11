@@ -1,6 +1,7 @@
 import { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { isAdminUser } from "@/services/admin/adminAuthService";
+import { ENV } from "@/config/environment";
 import {
   logError,
   getErrorMessage,
@@ -93,7 +94,6 @@ export const loginUser = async (email: string, password: string) => {
   let supabaseKey: string;
 
   try {
-    const { ENV } = await import("@/config/environment");
     supabaseUrl = ENV.VITE_SUPABASE_URL;
     supabaseKey = ENV.VITE_SUPABASE_ANON_KEY;
 
