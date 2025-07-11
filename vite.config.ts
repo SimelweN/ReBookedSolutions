@@ -47,7 +47,7 @@ export default defineConfig(({ mode }) => ({
           "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
         }
       : {
-          "@": "./src",
+          "@": "/src",
         },
     dedupe: ["react", "react-dom"], // Prevent multiple React instances
   },
