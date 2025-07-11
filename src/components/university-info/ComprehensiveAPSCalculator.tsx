@@ -63,6 +63,11 @@ import { toast } from "sonner";
 
 // Extract all programs from the massive course database - now async
 const extractUniversityPrograms = async () => {
+  // Skip in non-browser environments to prevent Workers build failures
+  if (typeof window === "undefined") {
+    return [];
+  }
+
   const COMPREHENSIVE_COURSES = await getComprehensiveCourses();
   const programs: Array<{
     id: string;
