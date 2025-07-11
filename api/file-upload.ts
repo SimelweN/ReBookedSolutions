@@ -25,6 +25,7 @@ export const config = {
   api: {
     bodyParser: false,
   },
+  runtime: "nodejs18.x", // Explicitly require Node.js runtime
 };
 
 const parseForm = (
