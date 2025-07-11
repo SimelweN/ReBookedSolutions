@@ -30,6 +30,7 @@ export const validateEnvironment = () => {
     "VITE_FASTWAY_API_KEY",
     "VITE_GOOGLE_MAPS_API_KEY",
     "VITE_SENDER_API",
+    "VITE_RESEND_API_KEY",
   ];
 
   const missing = required.filter((key) => {
