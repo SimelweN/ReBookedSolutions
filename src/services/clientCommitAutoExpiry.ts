@@ -322,3 +322,8 @@ export const startClientCommitAutoExpiry = () => {
     });
   }
 };
+
+// Don't auto-start in Workers environment
+if (typeof window !== "undefined") {
+  startClientCommitAutoExpiry();
+}
