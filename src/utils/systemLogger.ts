@@ -4,6 +4,7 @@
  */
 
 export type LogLevel = "debug" | "info" | "warning" | "error" | "critical";
+export type LogSeverity = "low" | "medium" | "high" | "critical";
 export type LogType =
   | "assignment-error"
   | "validation-error"
