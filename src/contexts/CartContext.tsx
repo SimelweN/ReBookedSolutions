@@ -22,7 +22,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   // Load cart from localStorage on mount with validation
   useEffect(() => {
     try {
-      const savedCart = localStorage.getItem("cart");
+      const savedCart = safeLocalStorage.getItem("cart");
       if (savedCart) {
         const parsed = JSON.parse(savedCart);
 
