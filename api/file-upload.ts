@@ -176,6 +176,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const fileName = `${folderPath}${userId}/${timestamp}-${randomString}-${sanitizedOriginalName}`;
 
     // Read file data
+    if (!fs) {
+      return res.status(500).json({
+        success: false,
+        error: "File system operations not supported in this environment",
+      });
+    }
+
     const fileBuffer = fs.readFileSync(file.filepath);
 
     // Upload to Supabase Storage
