@@ -320,7 +320,7 @@ const ComprehensiveAPSCalculator: React.FC = () => {
 
   // Filter and analyze programs
   const { eligiblePrograms, programsByFaculty, stats } = useMemo(() => {
-    let filteredPrograms = UNIVERSITY_PROGRAMS;
+    let filteredPrograms = getUniversityPrograms();
 
     // Apply faculty filter
     if (facultyFilter !== "all") {
