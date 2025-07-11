@@ -14,13 +14,21 @@ const devWarn = (message: string, error?: any) => {
 };
 
 const perfMark = (name: string) => {
-  if (import.meta.env.DEV && performance.mark) {
+  if (
+    import.meta.env.DEV &&
+    typeof performance !== "undefined" &&
+    performance.mark
+  ) {
     performance.mark(name);
   }
 };
 
 const perfMeasure = (name: string, startMark: string) => {
-  if (import.meta.env.DEV && performance.measure) {
+  if (
+    import.meta.env.DEV &&
+    typeof performance !== "undefined" &&
+    performance.measure
+  ) {
     try {
       performance.measure(name, startMark);
     } catch (e) {
