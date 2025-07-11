@@ -173,8 +173,14 @@ class SystemLogger {
   }
 }
 
-// Create singleton instance
-const systemLogger = new SystemLogger();
+// Create singleton instance lazily
+let systemLogger: SystemLogger | null = null;
+const getSystemLogger = () => {
+  if (!systemLogger) {
+    systemLogger = new SystemLogger();
+  }
+  return systemLogger;
+};
 
 // Helper function to map severity to log level
 const mapSeverityToLevel = (severity: LogSeverity | LogLevel): LogLevel => {
