@@ -66,10 +66,3 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
 
 // Export App for static generation/Workers environments
 export default App;
-
-// Workers-specific exports
-export const WorkerApp = App;
-export const config = {
-  runtime: "nodejs",
-  regions: ["iad1"],
-};
