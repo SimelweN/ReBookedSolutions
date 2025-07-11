@@ -25,6 +25,7 @@ import { logError, getErrorMessage } from "@/utils/errorUtils";
 import { createFallbackProfile } from "@/utils/databaseConnectivityHelper";
 import { shouldSkipAuthLoading } from "@/utils/instantStartup";
 import { CookieManager } from "@/utils/cookieManager";
+import { safeLocalStorage } from "@/utils/safeLocalStorage";
 // Simple logging for development
 const devLog = (message: string, data?: unknown) => {
   if (import.meta.env.DEV) console.log(message, data);
