@@ -19,7 +19,7 @@ if (
 // Import React as early as possible
 import * as React from "react";
 
-// Immediately make React available globally
+// Immediately make React available globally - only in compatible environments
 const setupGlobalReact = () => {
   if (typeof window !== "undefined") {
     // Browser environment
@@ -34,16 +34,24 @@ const setupGlobalReact = () => {
     (window as any).useEffect = React.useEffect;
   }
 
-  if (typeof global !== "undefined") {
-    // Node.js environment
-    (global as any).React = React;
-    (global as any).__REACT_GLOBAL__ = React;
+  if (typeof global !== "undefined" && typeof window === "undefined") {
+    // Node.js environment (but not Workers which also lack window)
+    try {
+      (global as any).React = React;
+      (global as any).__REACT_GLOBAL__ = React;
+    } catch (error) {
+      // Ignore errors in restricted environments
+    }
   }
 
-  if (typeof globalThis !== "undefined") {
-    // Universal environment
-    (globalThis as any).React = React;
-    (globalThis as any).__REACT_GLOBAL__ = React;
+  if (typeof globalThis !== "undefined" && typeof window !== "undefined") {
+    // Universal environment - only in browser context
+    try {
+      (globalThis as any).React = React;
+      (globalThis as any).__REACT_GLOBAL__ = React;
+    } catch (error) {
+      // Ignore errors in restricted environments
+    }
   }
 };
 
