@@ -4,19 +4,8 @@
 const getEnvVar = (key: string, defaultValue: string = ""): string => {
   try {
     // Check if we're in a Workers environment
-    if (typeof import !== "undefined" && import.meta && import.meta.env) {
+    if (typeof window !== "undefined" && import.meta && import.meta.env) {
       return import.meta.env[key] || defaultValue;
-    }
-    return defaultValue;
-  } catch {
-    return defaultValue;
-  }
-};
-
-const getBooleanEnv = (key: string, defaultValue: boolean = false): boolean => {
-  try {
-    if (typeof import !== "undefined" && import.meta && import.meta.env) {
-      return import.meta.env[key] === "true" || import.meta.env[key] === true;
     }
     return defaultValue;
   } catch {
@@ -27,7 +16,10 @@ const getBooleanEnv = (key: string, defaultValue: boolean = false): boolean => {
 export const ENV = {
   NODE_ENV: getEnvVar("NODE_ENV", "development"),
   VITE_SUPABASE_URL: getEnvVar("VITE_SUPABASE_URL"),
-  VITE_SUPABASE_ANON_KEY: getEnvVar("VITE_SUPABASE_ANON_KEY").replace(/^=+/, ""),
+  VITE_SUPABASE_ANON_KEY: getEnvVar("VITE_SUPABASE_ANON_KEY").replace(
+    /^=+/,
+    "",
+  ),
   VITE_PAYSTACK_PUBLIC_KEY: getEnvVar("VITE_PAYSTACK_PUBLIC_KEY"),
   VITE_APP_URL: getEnvVar("VITE_APP_URL", "https://rebookedsolutions.co.za"),
   VITE_COURIER_GUY_API_KEY: getEnvVar("VITE_COURIER_GUY_API_KEY"),
@@ -35,7 +27,10 @@ export const ENV = {
   VITE_GOOGLE_MAPS_API_KEY: getEnvVar("VITE_GOOGLE_MAPS_API_KEY"),
   VITE_SENDER_API: getEnvVar("VITE_SENDER_API"),
   VITE_RESEND_API_KEY: getEnvVar("VITE_RESEND_API_KEY"),
-  VITE_BANKING_VAULT_URL: getEnvVar("VITE_BANKING_VAULT_URL", "https://paystack-vault-south-africa.lovable.app"),
+  VITE_BANKING_VAULT_URL: getEnvVar(
+    "VITE_BANKING_VAULT_URL",
+    "https://paystack-vault-south-africa.lovable.app",
+  ),
 } as const;
 
 export const IS_PRODUCTION = ENV.NODE_ENV === "production";
