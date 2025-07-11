@@ -165,7 +165,7 @@ export const getNotifications = async (
     }
 
     // Return cached data if available, otherwise empty array
-    const cached = notificationCache.get(userId);
+    const cached = getNotificationCache().get(userId);
     return cached ? cached.data : [];
   } finally {
     currentFetchController = null;
@@ -431,7 +431,7 @@ export const deleteMultipleNotifications = async (
   if (notificationIds.length === 0) return;
 
   try {
-    console.log("🗑️ Deleting notifications:", notificationIds);
+    console.log("���️ Deleting notifications:", notificationIds);
 
     const { error, count } = await supabase
       .from("notifications")
