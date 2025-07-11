@@ -1,9 +1,10 @@
 import { Bursary } from "@/types/university";
 
-// Disable large data loading to prevent Workers build failures
-const DISABLE_LARGE_DATA = true;
+// Check if we're in a Workers/SSR environment where we should avoid loading large data
+// Use conservative detection to prevent memory issues in serverless/edge environments
+const isWorkersEnvironment = typeof window === "undefined";
 
-export const ADDITIONAL_VALID_BURSARIES: Bursary[] = DISABLE_LARGE_DATA
+export const ADDITIONAL_VALID_BURSARIES: Bursary[] = isWorkersEnvironment
   ? []
   : [
       // Recent Government Initiatives & Provincial Bursaries (2024-2025)
@@ -871,7 +872,7 @@ export const ADDITIONAL_VALID_BURSARIES: Bursary[] = DISABLE_LARGE_DATA
     ];
 
 // Updated comprehensive fields of study
-export const COMPREHENSIVE_FIELDS_OF_STUDY = DISABLE_LARGE_DATA
+export const COMPREHENSIVE_FIELDS_OF_STUDY = isWorkersEnvironment
   ? []
   : [
       "All fields",
@@ -971,7 +972,7 @@ export const COMPREHENSIVE_FIELDS_OF_STUDY = DISABLE_LARGE_DATA
       "Web Development",
     ];
 
-export const BURSARY_PROVIDERS = DISABLE_LARGE_DATA
+export const BURSARY_PROVIDERS = isWorkersEnvironment
   ? []
   : [
       "Government Departments",

@@ -1,9 +1,10 @@
 import { Bursary } from "@/types/university";
 
-// Disable large data loading to prevent Workers build failures
-const DISABLE_LARGE_DATA = true;
+// Check if we're in a Workers/SSR environment where we should avoid loading large data
+// Use conservative detection to prevent memory issues in serverless/edge environments
+const isWorkersEnvironment = typeof window === "undefined";
 
-export const ENHANCED_BURSARIES: Bursary[] = DISABLE_LARGE_DATA
+export const ENHANCED_BURSARIES: Bursary[] = isWorkersEnvironment
   ? []
   : [
       // Updated Government Bursaries (1-15)
@@ -487,7 +488,7 @@ export const ENHANCED_BURSARIES: Bursary[] = DISABLE_LARGE_DATA
     ];
 
 // Continue with more bursaries to reach 100+...
-export const ADDITIONAL_BURSARIES: Bursary[] = DISABLE_LARGE_DATA
+export const ADDITIONAL_BURSARIES: Bursary[] = isWorkersEnvironment
   ? []
   : [
       // Government & Public Sector (Additional)
