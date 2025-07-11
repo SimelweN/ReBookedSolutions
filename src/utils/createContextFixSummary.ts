@@ -55,8 +55,10 @@ export function verifyCreateContextFixes(): FixVerification[] {
 
   // 3. Global React setup
   try {
-    const globalReact = (window as any).React;
-    const globalCreateContext = (window as any).createContext;
+    const globalReact =
+      typeof window !== "undefined" ? (window as any).React : undefined;
+    const globalCreateContext =
+      typeof window !== "undefined" ? (window as any).createContext : undefined;
 
     verifications.push({
       check: "Global React Setup",
