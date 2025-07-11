@@ -201,7 +201,7 @@ const SimpleAPSCalculator: React.FC = () => {
   // Group by university
   const universityMatches = useMemo(() => {
     const groupedPrograms = groupProgramsByUniversity(
-      FINAL_UNIVERSITY_PROGRAMS as UniversityProgramExtended[],
+      getFinalUniversityPrograms() as UniversityProgramExtended[],
     );
     return calculateUniversityStats(groupedPrograms, totalAPS);
   }, [totalAPS]);
