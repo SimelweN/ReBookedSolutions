@@ -30,7 +30,10 @@ const BroadcastManager = () => {
     }
     // Check if broadcasts are disabled for this session (with fallback)
     try {
-      if (localStorage.getItem("broadcasts_disabled") === "true") {
+      if (
+        typeof window !== "undefined" &&
+        localStorage.getItem("broadcasts_disabled") === "true"
+      ) {
         return;
       }
     } catch (error) {
