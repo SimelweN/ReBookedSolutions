@@ -133,7 +133,18 @@ const extractUniversityPrograms = () => {
 };
 
 // Get comprehensive university programs data
-const UNIVERSITY_PROGRAMS = extractUniversityPrograms();
+// Get comprehensive university programs data lazily
+const getUniversityPrograms = () => {
+  try {
+    return extractUniversityPrograms();
+  } catch (error) {
+    console.warn(
+      "Failed to extract university programs, using empty array",
+      error,
+    );
+    return [];
+  }
+};
 
 interface APSSubject {
   name: string;
