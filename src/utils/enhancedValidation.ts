@@ -57,3 +57,11 @@ export const validateAssignmentRule = (rule: any): ValidationResult => ({
   errors: [],
   warnings: [],
 });
+
+export const validateAPSSubjectsEnhanced = (
+  subjects: APSSubject[],
+): ValidationResult => ({
+  isValid: true,
+  errors: [],
+  warnings: [],
+});
