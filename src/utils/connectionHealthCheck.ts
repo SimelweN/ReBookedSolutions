@@ -47,7 +47,7 @@ const ERROR_CACHE_DURATION = 5000; // 5 seconds for failed checks
 
 // Connection state tracking
 let consecutiveFailures = 0;
-let isOnline = navigator.onLine;
+let isOnline = typeof navigator !== "undefined" ? navigator.onLine : true;
 
 // Listen for online/offline events
 if (typeof window !== "undefined") {
