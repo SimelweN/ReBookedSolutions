@@ -487,7 +487,7 @@ export const ENHANCED_BURSARIES: Bursary[] = DISABLE_LARGE_DATA
     ];
 
 // Continue with more bursaries to reach 100+...
-export const ADDITIONAL_BURSARIES: Bursary[] = isWorkersEnvironment
+export const ADDITIONAL_BURSARIES: Bursary[] = DISABLE_LARGE_DATA
   ? []
   : [
       // Government & Public Sector (Additional)
