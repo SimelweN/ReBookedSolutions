@@ -279,7 +279,7 @@ export const addNotification = async (
     );
 
     // Invalidate cache after adding new notification
-    notificationCache.delete(notification.userId);
+    getNotificationCache().delete(notification.userId);
 
     // Clean up old entries from recentNotifications map
     cleanupRecentNotifications();
@@ -431,7 +431,7 @@ export const deleteMultipleNotifications = async (
   if (notificationIds.length === 0) return;
 
   try {
-    console.log("���️ Deleting notifications:", notificationIds);
+    console.log("🗑️ Deleting notifications:", notificationIds);
 
     const { error, count } = await supabase
       .from("notifications")
