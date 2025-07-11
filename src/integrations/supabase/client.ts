@@ -28,37 +28,23 @@ const validateSupabaseConfig = () => {
   }
 
   // Validate API key format (should be a JWT token)
-  if (!ENV.VITE_SUPABASE_ANON_KEY.startsWith("eyJ")) {
-    console.error(
-      "❌ Invalid Supabase API key format. Key should start with 'eyJ'",
-    );
-    console.error(
-      "Current key starts with:",
-      ENV.VITE_SUPABASE_ANON_KEY.substring(0, 10),
-    );
+  const apiKey = ENV.VITE_SUPABASE_ANON_KEY.replace(/^=+/, "");
+  if (!apiKey.startsWith("eyJ")) {
     throw new Error(
-      "Invalid VITE_SUPABASE_ANON_KEY format. Should be a JWT token starting with 'eyJ'.",
+      `Invalid VITE_SUPABASE_ANON_KEY format. Should be a JWT token starting with "eyJ".`,
     );
   }
 };
 
-// Validate configuration with graceful fallback (only in browser)
+// Only validate in browser environment
 if (typeof window !== "undefined") {
   try {
     validateSupabaseConfig();
-  } catch (configError) {
-    console.warn("⚠️ Supabase configuration issue:", configError);
-    // In development, we can continue with limited functionality
-    if (import.meta.env.DEV) {
-      console.warn(
-        "⚠️ Continuing with limited functionality in development mode",
-      );
-    }
+    console.log("✅ Supabase configuration validated");
+  } catch (error) {
+    console.error("❌ Supabase configuration error:", error);
   }
 }
-
-// Import the supabase client like this:
-// import { supabase } from "@/integrations/supabase/client";
 
 // Clean the API key (remove any leading = signs that might have been added by accident)
 const getCleanApiKey = () => ENV.VITE_SUPABASE_ANON_KEY.replace(/^=+/, "");
@@ -78,36 +64,40 @@ const createProtectedFetch = () => {
 
       // Set headers
       if (init?.headers) {
-        const headers = new Headers(init.headers);
-        headers.forEach((value, key) => {
+        const headers = init.headers as Record<string, string>;
+        Object.entries(headers).forEach(([key, value]) => {
           xhr.setRequestHeader(key, value);
         });
       }
 
-      // Handle response
-      xhr.onload = () => {
-        const headers: Record<string, string> = {};
-        xhr
-          .getAllResponseHeaders()
-          .split("\r\n")
-          .forEach((line) => {
-            const [key, value] = line.split(": ");
-            if (key && value) headers[key] = value;
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          const headers = new Headers();
+          xhr
+            .getAllResponseHeaders()
+            .split("\r\n")
+            .forEach((line) => {
+              const [key, value] = line.split(": ");
+              if (key && value) {
+                headers.set(key, value);
+              }
+            });
+
+          const response = new Response(xhr.responseText, {
+            status: xhr.status,
+            statusText: xhr.statusText,
+            headers,
           });
 
-        // Handle responses that shouldn't have a body
-        const statusWithoutBody = [204, 205, 304];
-        const responseBody = statusWithoutBody.includes(xhr.status)
-          ? null
-          : xhr.responseText;
-
-        const response = new Response(responseBody, {
-          status: xhr.status,
-          statusText: xhr.statusText,
-          headers: new Headers(headers),
-        });
-
-        resolve(response);
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve(response);
+          } else {
+            console.warn(
+              `🌐 Supabase request failed: ${xhr.status} ${xhr.statusText}`,
+            );
+            resolve(response); // Don't reject, let Supabase handle the error
+          }
+        }
       };
 
       xhr.onerror = () => {
@@ -150,138 +140,126 @@ const initializeSupabase = () => {
     const cleanApiKey = getCleanApiKey();
 
     if (ENV.VITE_SUPABASE_URL && cleanApiKey) {
-    supabase = createClient<Database>(ENV.VITE_SUPABASE_URL, cleanApiKey, {
-      auth: {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true,
-        flowType: "pkce",
-        debug: import.meta.env.DEV,
-      },
-      global: {
-        // Use XMLHttpRequest-based fetch to completely bypass FullStory
-        fetch: protectedFetch,
-      },
-    });
-  } else {
-    console.error("❌ Supabase configuration missing - creating mock client");
-    // Create a mock client for development
-    const createMockQueryBuilder = () => {
-      const mockError = {
-        message:
-          "Supabase not configured - please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables",
-        code: "SUPABASE_NOT_CONFIGURED",
+      supabase = createClient<Database>(ENV.VITE_SUPABASE_URL, cleanApiKey, {
+        auth: {
+          autoRefreshToken: true,
+          persistSession: true,
+          detectSessionInUrl: true,
+          flowType: "pkce",
+          debug: import.meta.env.DEV,
+        },
+        global: {
+          // Use XMLHttpRequest-based fetch to completely bypass FullStory
+          fetch: protectedFetch,
+        },
+      });
+    } else {
+      console.error("❌ Supabase configuration missing - creating mock client");
+      // Create a mock client for development
+      const createMockQueryBuilder = () => {
+        const mockError = {
+          message: "Supabase client not configured",
+          details:
+            "Please configure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY",
+          hint: "Run 'node setup-environment.js' to configure",
+        };
+
+        return {
+          select: () => createMockQueryBuilder(),
+          insert: () => createMockQueryBuilder(),
+          update: () => createMockQueryBuilder(),
+          delete: () => createMockQueryBuilder(),
+          upsert: () => createMockQueryBuilder(),
+          from: () => createMockQueryBuilder(),
+          eq: () => createMockQueryBuilder(),
+          neq: () => createMockQueryBuilder(),
+          gt: () => createMockQueryBuilder(),
+          gte: () => createMockQueryBuilder(),
+          lt: () => createMockQueryBuilder(),
+          lte: () => createMockQueryBuilder(),
+          like: () => createMockQueryBuilder(),
+          ilike: () => createMockQueryBuilder(),
+          is: () => createMockQueryBuilder(),
+          in: () => createMockQueryBuilder(),
+          contains: () => createMockQueryBuilder(),
+          containedBy: () => createMockQueryBuilder(),
+          rangeGt: () => createMockQueryBuilder(),
+          rangeGte: () => createMockQueryBuilder(),
+          rangeLt: () => createMockQueryBuilder(),
+          rangeLte: () => createMockQueryBuilder(),
+          rangeAdjacent: () => createMockQueryBuilder(),
+          overlaps: () => createMockQueryBuilder(),
+          textSearch: () => createMockQueryBuilder(),
+          match: () => createMockQueryBuilder(),
+          not: () => createMockQueryBuilder(),
+          or: () => createMockQueryBuilder(),
+          filter: () => createMockQueryBuilder(),
+          order: () => createMockQueryBuilder(),
+          limit: () => createMockQueryBuilder(),
+          range: () => createMockQueryBuilder(),
+          abortSignal: () => createMockQueryBuilder(),
+          single: () => Promise.resolve({ data: null, error: mockError }),
+          maybeSingle: () => Promise.resolve({ data: null, error: mockError }),
+          then: () => Promise.resolve({ data: null, error: mockError }),
+        };
       };
-      const mockResponse = { data: null, error: mockError };
-      const mockPromise = Promise.resolve(mockResponse);
 
-      const mockQuery = {
-        select: () => mockQuery,
-        insert: () => mockQuery,
-        update: () => mockQuery,
-        delete: () => mockQuery,
-        limit: () => mockQuery,
-        single: () => mockQuery,
-        range: () => mockQuery,
-        order: () => mockQuery,
-        filter: () => mockQuery,
-        eq: () => mockQuery,
-        neq: () => mockQuery,
-        gt: () => mockQuery,
-        gte: () => mockQuery,
-        lt: () => mockQuery,
-        lte: () => mockQuery,
-        like: () => mockQuery,
-        ilike: () => mockQuery,
-        is: () => mockQuery,
-        in: () => mockQuery,
-        contains: () => mockQuery,
-        containedBy: () => mockQuery,
-        rangeGt: () => mockQuery,
-        rangeGte: () => mockQuery,
-        rangeLt: () => mockQuery,
-        rangeLte: () => mockQuery,
-        rangeAdjacent: () => mockQuery,
-        overlaps: () => mockQuery,
-        textSearch: () => mockQuery,
-        match: () => mockQuery,
-        not: () => mockQuery,
-        or: () => mockQuery,
-        then: (onFulfilled?: any, onRejected?: any) =>
-          mockPromise.then(onFulfilled, onRejected),
-        catch: (onRejected?: any) => mockPromise.catch(onRejected),
-        finally: (onFinally?: any) => mockPromise.finally(onFinally),
-        // Make it awaitable
-        [Symbol.toStringTag]: "Promise",
+      supabase = {
+        from: () => createMockQueryBuilder(),
+        auth: {
+          signUp: () => Promise.resolve({ data: null, error: mockError }),
+          signInWithPassword: () =>
+            Promise.resolve({ data: null, error: mockError }),
+          signOut: () => Promise.resolve({ error: null }),
+          getSession: () =>
+            Promise.resolve({ data: { session: null }, error: null }),
+          getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+          onAuthStateChange: () => ({
+            data: { subscription: { unsubscribe: () => {} } },
+          }),
+        },
+        storage: {
+          from: () => ({
+            upload: () => Promise.resolve({ data: null, error: mockError }),
+            download: () => Promise.resolve({ data: null, error: mockError }),
+            getPublicUrl: () => ({ data: { publicUrl: "" } }),
+            list: () => Promise.resolve({ data: null, error: mockError }),
+            remove: () => Promise.resolve({ data: null, error: mockError }),
+          }),
+        },
       };
+    }
 
-      // Make the query builder await-able
-      Object.setPrototypeOf(mockQuery, Promise.prototype);
-
-      return mockQuery;
-    };
-
-    const mockError = {
-      message:
-        "Supabase not configured - please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables",
-      code: "SUPABASE_NOT_CONFIGURED",
-    };
-
-    supabase = {
-      auth: {
-        signUp: () =>
-          Promise.resolve({
-            data: { user: null, session: null },
-            error: mockError,
-          }),
-        signInWithPassword: () =>
-          Promise.resolve({
-            data: { user: null, session: null },
-            error: mockError,
-          }),
-        signOut: () => Promise.resolve({ error: mockError }),
-        getSession: () =>
-          Promise.resolve({ data: { session: null }, error: null }),
-        onAuthStateChange: () => ({
-          data: { subscription: { unsubscribe: () => {} } },
-        }),
-        getUser: () =>
-          Promise.resolve({ data: { user: null }, error: mockError }),
-        refreshSession: () =>
-          Promise.resolve({
-            data: { user: null, session: null },
-            error: mockError,
-          }),
-        updateUser: () =>
-          Promise.resolve({ data: { user: null }, error: mockError }),
-        resetPasswordForEmail: () =>
-          Promise.resolve({ data: {}, error: mockError }),
-      },
-      from: () => createMockQueryBuilder(),
-      functions: {
-        invoke: () => Promise.resolve({ data: null, error: mockError }),
-      },
-      storage: {
-        from: () => ({
-          upload: () => Promise.resolve({ data: null, error: mockError }),
-          download: () => Promise.resolve({ data: null, error: mockError }),
-          list: () => Promise.resolve({ data: null, error: mockError }),
-          remove: () => Promise.resolve({ data: null, error: mockError }),
-        }),
-      },
-    };
+    return supabase;
+  } catch (error) {
+    console.error("❌ Failed to initialize Supabase client:", error);
+    throw error;
   }
-} catch (error) {
-  console.error("❌ Failed to initialize Supabase client:", error);
-  throw error;
-}
+};
 
-export { supabase };
+// Create a getter that initializes on first access
+const supabaseProxy = new Proxy(
+  {},
+  {
+    get(target, prop) {
+      const client = initializeSupabase();
+      return client[prop];
+    },
+  },
+);
+
+export { supabaseProxy as supabase };
 
 // Debug connection on client creation (browser only)
 if (import.meta.env.DEV && typeof window !== "undefined") {
-  console.log("🔗 Supabase client initialized with XMLHttpRequest-based fetch");
-  console.log("URL:", ENV.VITE_SUPABASE_URL);
-  console.log("Key starts with:", cleanApiKey.substring(0, 20) + "...");
-  console.log("✅ Using FullStory-proof XMLHttpRequest implementation");
+  // Delay debug logging to avoid immediate execution
+  setTimeout(() => {
+    const cleanApiKey = getCleanApiKey();
+    console.log(
+      "🔗 Supabase client initialized with XMLHttpRequest-based fetch",
+    );
+    console.log("URL:", ENV.VITE_SUPABASE_URL);
+    console.log("Key starts with:", cleanApiKey.substring(0, 20) + "...");
+    console.log("✅ Using FullStory-proof XMLHttpRequest implementation");
+  }, 0);
 }
