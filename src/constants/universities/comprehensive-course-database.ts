@@ -5,7 +5,13 @@ import { University, Faculty, Degree } from "@/types/university";
  *
  * This implements the complete course list with proper assignment rules
  * and university-specific APS requirements as requested.
+ *
+ * Note: In Workers/SSR environments, data is stubbed to prevent memory issues
  */
+
+// Check if we're in a Workers/SSR environment where we should avoid loading large data
+const isWorkersEnvironment =
+  typeof window === "undefined" && typeof importScripts === "undefined";
 
 // University abbreviation mappings
 export const UNIVERSITY_ABBREVIATIONS = {
