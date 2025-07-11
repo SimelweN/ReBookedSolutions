@@ -55,8 +55,13 @@ const setupGlobalReact = () => {
   }
 };
 
-// Execute immediately
-setupGlobalReact();
+// Execute immediately - only in safe environments
+if (
+  typeof window !== "undefined" ||
+  (typeof global !== "undefined" && typeof process !== "undefined")
+) {
+  setupGlobalReact();
+}
 
 // Validate that React.createContext is available
 if (typeof React.createContext !== "function") {
