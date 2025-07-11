@@ -1,15 +1,21 @@
 import { StudyTip, StudyResource } from "@/types/university";
 
-export const STUDY_TIPS: StudyTip[] = [
-  {
-    id: "tip-1",
-    title: "The Science-Backed Reading Method (SQ3R)",
-    category: "Reading & Comprehension",
-    difficulty: "Beginner",
-    estimatedTime: "15 min to learn",
-    effectiveness: 85,
-    tags: ["reading", "comprehension", "note-taking"],
-    content: `**Most students read textbooks wrong. Here's how to read like a top achiever.**
+// Check if we're in a Workers/SSR environment where we should avoid loading large data
+const isWorkersEnvironment =
+  typeof window === "undefined" && typeof importScripts === "undefined";
+
+export const STUDY_TIPS: StudyTip[] = isWorkersEnvironment
+  ? []
+  : [
+      {
+        id: "tip-1",
+        title: "The Science-Backed Reading Method (SQ3R)",
+        category: "Reading & Comprehension",
+        difficulty: "Beginner",
+        estimatedTime: "15 min to learn",
+        effectiveness: 85,
+        tags: ["reading", "comprehension", "note-taking"],
+        content: `**Most students read textbooks wrong. Here's how to read like a top achiever.**
 
 **BEFORE you start reading:**
 • **Preview the chapter** - Read headings, subheadings, and summary first
@@ -50,16 +56,16 @@ export const STUDY_TIPS: StudyTip[] = [
 • Answer your original questions
 • Connect new information to what you already knew
 ��� Plan what you'll study next time`,
-  },
-  {
-    id: "tip-2",
-    title: "Memory Palace Technique for Exam Success",
-    category: "Memory & Retention",
-    difficulty: "Intermediate",
-    estimatedTime: "30 min to master",
-    effectiveness: 90,
-    tags: ["memory", "visualization", "exam-prep"],
-    content: `**Turn your memory into a superpower using ancient techniques.**
+      },
+      {
+        id: "tip-2",
+        title: "Memory Palace Technique for Exam Success",
+        category: "Memory & Retention",
+        difficulty: "Intermediate",
+        estimatedTime: "30 min to master",
+        effectiveness: 90,
+        tags: ["memory", "visualization", "exam-prep"],
+        content: `**Turn your memory into a superpower using ancient techniques.**
 
 **What is the Memory Palace?**
 • Also called "Method of Loci"
@@ -96,16 +102,16 @@ export const STUDY_TIPS: StudyTip[] = [
 • Include yourself in the scenes
 • Make images colorful and exaggerated
 • Practice walking through your palace daily`,
-  },
-  {
-    id: "tip-3",
-    title: "Active Recall: The Most Powerful Study Method",
-    category: "Study Techniques",
-    difficulty: "Beginner",
-    estimatedTime: "20 min to implement",
-    effectiveness: 95,
-    tags: ["active-recall", "testing", "flashcards"],
-    content: `**Stop re-reading. Start testing yourself. This method is proven by 100+ studies.**
+      },
+      {
+        id: "tip-3",
+        title: "Active Recall: The Most Powerful Study Method",
+        category: "Study Techniques",
+        difficulty: "Beginner",
+        estimatedTime: "20 min to implement",
+        effectiveness: 95,
+        tags: ["active-recall", "testing", "flashcards"],
+        content: `**Stop re-reading. Start testing yourself. This method is proven by 100+ studies.**
 
 **What is Active Recall?**
 • Testing yourself on material instead of just reviewing
@@ -146,16 +152,16 @@ export const STUDY_TIPS: StudyTip[] = [
 • Anki (spaced repetition flashcards)
 • Quizlet (online flashcards)
 • RemNote (note-taking with built-in spaced repetition)`,
-  },
-  {
-    id: "tip-4",
-    title: "The Pomodoro Technique for Deep Focus",
-    category: "Time Management",
-    difficulty: "Beginner",
-    estimatedTime: "10 min to start",
-    effectiveness: 85,
-    tags: ["focus", "time-management", "productivity"],
-    content: `**Work smarter, not harder. This simple technique can double your productivity.**
+      },
+      {
+        id: "tip-4",
+        title: "The Pomodoro Technique for Deep Focus",
+        category: "Time Management",
+        difficulty: "Beginner",
+        estimatedTime: "10 min to start",
+        effectiveness: 85,
+        tags: ["focus", "time-management", "productivity"],
+        content: `**Work smarter, not harder. This simple technique can double your productivity.**
 
 **The Basic Pomodoro Technique:**
 • Work for 25 minutes (1 Pomodoro)
@@ -196,16 +202,16 @@ export const STUDY_TIPS: StudyTip[] = [
 • Track how many Pomodoros you complete daily
 • Experiment with different work/break ratios
 • Plan difficult tasks for when you're most alert`,
-  },
-  {
-    id: "tip-5",
-    title: "Cornell Note-Taking System",
-    category: "Note-Taking",
-    difficulty: "Beginner",
-    estimatedTime: "15 min to setup",
-    effectiveness: 88,
-    tags: ["note-taking", "organization", "review"],
-    content: `**Transform messy notes into a powerful learning system.**
+      },
+      {
+        id: "tip-5",
+        title: "Cornell Note-Taking System",
+        category: "Note-Taking",
+        difficulty: "Beginner",
+        estimatedTime: "15 min to setup",
+        effectiveness: 88,
+        tags: ["note-taking", "organization", "review"],
+        content: `**Transform messy notes into a powerful learning system.**
 
 **How to Set Up Cornell Notes:**
 
@@ -247,16 +253,16 @@ export const STUDY_TIPS: StudyTip[] = [
 • Add links between related topics
 • Include images and diagrams
 • Search through all your notes instantly`,
-  },
-  {
-    id: "tip-6",
-    title: "Spaced Repetition for Long-Term Retention",
-    category: "Memory & Retention",
-    difficulty: "Intermediate",
-    estimatedTime: "20 min to understand",
-    effectiveness: 92,
-    tags: ["memory", "spaced-repetition", "long-term"],
-    content: `**Remember more with less effort using scientifically proven intervals.**
+      },
+      {
+        id: "tip-6",
+        title: "Spaced Repetition for Long-Term Retention",
+        category: "Memory & Retention",
+        difficulty: "Intermediate",
+        estimatedTime: "20 min to understand",
+        effectiveness: 92,
+        tags: ["memory", "spaced-repetition", "long-term"],
+        content: `**Remember more with less effort using scientifically proven intervals.**
 
 **What is Spaced Repetition?**
 • Reviewing information at increasing intervals
@@ -311,16 +317,16 @@ export const STUDY_TIPS: StudyTip[] = [
 • 15 minutes daily is better than 2 hours once a week
 • Focus on understanding, not just memorization
 • Combine with other techniques for best results`,
-  },
-  {
-    id: "tip-7",
-    title: "Mind Mapping for Complex Topics",
-    category: "Visualization",
-    difficulty: "Beginner",
-    estimatedTime: "25 min to create first map",
-    effectiveness: 82,
-    tags: ["mind-mapping", "visualization", "creativity"],
-    content: `**See the big picture and connections between ideas.**
+      },
+      {
+        id: "tip-7",
+        title: "Mind Mapping for Complex Topics",
+        category: "Visualization",
+        difficulty: "Beginner",
+        estimatedTime: "25 min to create first map",
+        effectiveness: 82,
+        tags: ["mind-mapping", "visualization", "creativity"],
+        content: `**See the big picture and connections between ideas.**
 
 **What is Mind Mapping?**
 • Visual representation of information
@@ -382,16 +388,16 @@ export const STUDY_TIPS: StudyTip[] = [
 • Shows connections between ideas
 • Makes complex topics manageable
 • Engages both left and right brain`,
-  },
-  {
-    id: "tip-8",
-    title: "The Feynman Technique for Deep Understanding",
-    category: "Study Techniques",
-    difficulty: "Intermediate",
-    estimatedTime: "30 min per concept",
-    effectiveness: 90,
-    tags: ["understanding", "teaching", "simplification"],
-    content: `**If you can't explain it simply, you don't understand it well enough.**
+      },
+      {
+        id: "tip-8",
+        title: "The Feynman Technique for Deep Understanding",
+        category: "Study Techniques",
+        difficulty: "Intermediate",
+        estimatedTime: "30 min per concept",
+        effectiveness: 90,
+        tags: ["understanding", "teaching", "simplification"],
+        content: `**If you can't explain it simply, you don't understand it well enough.**
 
 **The 4-Step Feynman Technique:**
 
@@ -422,7 +428,7 @@ export const STUDY_TIPS: StudyTip[] = [
 
 **Physics - Gravity**
 • Complex: "Gravitational force is proportional to mass and inversely proportional to distance squared"
-• Feynman: "Imagine space is like a stretchy trampoline. Heavy objects make bigger dips. When you roll a ball near a dip, it gets pulled in. That's gravity!"
+�� Feynman: "Imagine space is like a stretchy trampoline. Heavy objects make bigger dips. When you roll a ball near a dip, it gets pulled in. That's gravity!"
 
 **Economics - Supply and Demand**
 • Complex: "Market equilibrium occurs where quantity supplied equals quantity demanded"
@@ -439,16 +445,16 @@ export const STUDY_TIPS: StudyTip[] = [
 • Practice with study groups
 • Record yourself explaining concepts
 • Create simple teaching videos`,
-  },
-  {
-    id: "tip-9",
-    title: "Interleaving: Mix Up Your Practice",
-    category: "Study Techniques",
-    difficulty: "Intermediate",
-    estimatedTime: "Plan 45 min sessions",
-    effectiveness: 87,
-    tags: ["practice", "variety", "problem-solving"],
-    content: `**Stop practicing one skill at a time. Mix it up for better learning.**
+      },
+      {
+        id: "tip-9",
+        title: "Interleaving: Mix Up Your Practice",
+        category: "Study Techniques",
+        difficulty: "Intermediate",
+        estimatedTime: "Plan 45 min sessions",
+        effectiveness: 87,
+        tags: ["practice", "variety", "problem-solving"],
+        content: `**Stop practicing one skill at a time. Mix it up for better learning.**
 
 **What is Interleaving?**
 • Practicing different skills or topics in a mixed order
@@ -499,16 +505,16 @@ export const STUDY_TIPS: StudyTip[] = [
 • During initial concept introduction
 • When high accuracy is needed immediately
 • For simple memorization tasks`,
-  },
-  {
-    id: "tip-10",
-    title: "Effective Group Study Strategies",
-    category: "Study Techniques",
-    difficulty: "Intermediate",
-    estimatedTime: "2-3 hour sessions",
-    effectiveness: 80,
-    tags: ["collaboration", "group-study", "teaching"],
-    content: `**Study groups can be incredibly powerful or a complete waste of time. Here's how to make them work.**
+      },
+      {
+        id: "tip-10",
+        title: "Effective Group Study Strategies",
+        category: "Study Techniques",
+        difficulty: "Intermediate",
+        estimatedTime: "2-3 hour sessions",
+        effectiveness: 80,
+        tags: ["collaboration", "group-study", "teaching"],
+        content: `**Study groups can be incredibly powerful or a complete waste of time. Here's how to make them work.**
 
 **Benefits of Group Study:**
 • Learn from others' explanations and perspectives
@@ -570,16 +576,16 @@ export const STUDY_TIPS: StudyTip[] = [
 • Breakout rooms for smaller discussions
 • Shared documents for collaborative notes
 • Video calls to maintain accountability`,
-  },
-  {
-    id: "tip-11",
-    title: "Managing Test Anxiety and Stress",
-    category: "Mental Wellness",
-    difficulty: "Beginner",
-    estimatedTime: "Ongoing practice",
-    effectiveness: 78,
-    tags: ["anxiety", "stress-management", "mental-health"],
-    content: `**Turn nervous energy into peak performance with proven anxiety management techniques.**
+      },
+      {
+        id: "tip-11",
+        title: "Managing Test Anxiety and Stress",
+        category: "Mental Wellness",
+        difficulty: "Beginner",
+        estimatedTime: "Ongoing practice",
+        effectiveness: 78,
+        tags: ["anxiety", "stress-management", "mental-health"],
+        content: `**Turn nervous energy into peak performance with proven anxiety management techniques.**
 
 **Understanding Test Anxiety:**
 • Normal response to high-stakes situations
@@ -645,16 +651,16 @@ export const STUDY_TIPS: StudyTip[] = [
 • Physical symptoms are severe
 • Performance significantly below your ability
 • Panic attacks or extreme distress`,
-  },
-  {
-    id: "tip-12",
-    title: "Optimizing Your Study Environment",
-    category: "Environment",
-    difficulty: "Beginner",
-    estimatedTime: "30 min to setup",
-    effectiveness: 75,
-    tags: ["environment", "focus", "productivity", "setup"],
-    content: `**Your environment shapes your performance. Design a space that promotes deep learning.**
+      },
+      {
+        id: "tip-12",
+        title: "Optimizing Your Study Environment",
+        category: "Environment",
+        difficulty: "Beginner",
+        estimatedTime: "30 min to setup",
+        effectiveness: 75,
+        tags: ["environment", "focus", "productivity", "setup"],
+        content: `**Your environment shapes your performance. Design a space that promotes deep learning.**
 
 **The Science of Study Environments:**
 • Your brain associates locations with activities
@@ -721,16 +727,16 @@ export const STUDY_TIPS: StudyTip[] = [
 • Use specific scents to trigger focus (peppermint, rosemary)
 • Have consistent study tools and materials
 • End sessions by reviewing what you accomplished`,
-  },
-  {
-    id: "tip-13",
-    title: "Speed Reading Techniques That Work",
-    category: "Reading & Comprehension",
-    difficulty: "Intermediate",
-    estimatedTime: "2-3 weeks to develop",
-    effectiveness: 73,
-    tags: ["reading", "speed", "comprehension", "efficiency"],
-    content: `**Read faster while maintaining comprehension with proven techniques.**
+      },
+      {
+        id: "tip-13",
+        title: "Speed Reading Techniques That Work",
+        category: "Reading & Comprehension",
+        difficulty: "Intermediate",
+        estimatedTime: "2-3 weeks to develop",
+        effectiveness: 73,
+        tags: ["reading", "speed", "comprehension", "efficiency"],
+        content: `**Read faster while maintaining comprehension with proven techniques.**
 
 **Common Speed Reading Myths:**
 • Reading 2000+ words per minute with full comprehension (impossible)
@@ -800,16 +806,16 @@ export const STUDY_TIPS: StudyTip[] = [
 • Ask yourself: main points, key details, conclusions
 • If comprehension drops below 70%, slow down
 • Better to read at moderate speed with good understanding`,
-  },
-  {
-    id: "tip-14",
-    title: "Creating Effective Study Schedules",
-    category: "Time Management",
-    difficulty: "Beginner",
-    estimatedTime: "1 hour to plan",
-    effectiveness: 84,
-    tags: ["scheduling", "planning", "time-management", "organization"],
-    content: `**A good study schedule is the foundation of academic success.**
+      },
+      {
+        id: "tip-14",
+        title: "Creating Effective Study Schedules",
+        category: "Time Management",
+        difficulty: "Beginner",
+        estimatedTime: "1 hour to plan",
+        effectiveness: 84,
+        tags: ["scheduling", "planning", "time-management", "organization"],
+        content: `**A good study schedule is the foundation of academic success.**
 
 **Why Most Study Schedules Fail:**
 • Too ambitious and unrealistic
@@ -883,16 +889,16 @@ export const STUDY_TIPS: StudyTip[] = [
 • Have backup plans for disrupted study time
 • Review and adjust weekly
 • Don't abandon the whole schedule if you miss one session`,
-  },
-  {
-    id: "tip-15",
-    title: "Mastering Multiple Choice Questions",
-    category: "Exam Strategies",
-    difficulty: "Beginner",
-    estimatedTime: "Practice during study",
-    effectiveness: 79,
-    tags: ["multiple-choice", "test-taking", "strategy"],
-    content: `**Strategic approaches to multiple choice questions can significantly improve your scores.**
+      },
+      {
+        id: "tip-15",
+        title: "Mastering Multiple Choice Questions",
+        category: "Exam Strategies",
+        difficulty: "Beginner",
+        estimatedTime: "Practice during study",
+        effectiveness: 79,
+        tags: ["multiple-choice", "test-taking", "strategy"],
+        content: `**Strategic approaches to multiple choice questions can significantly improve your scores.**
 
 **Before Looking at Answer Choices:**
 • Read the question carefully and completely
@@ -963,8 +969,8 @@ export const STUDY_TIPS: StudyTip[] = [
 • First instincts are often correct
 • Look for careless mistakes in reading
 • Check that you marked the intended answer`,
-  },
-];
+      },
+    ];
 
 export const STUDY_RESOURCES: StudyResource[] = [
   {
