@@ -2,7 +2,10 @@ import { Bursary } from "@/types/university";
 
 // Check if we're in a Workers/SSR environment where we should avoid loading large data
 const isWorkersEnvironment =
-  typeof window === "undefined" && typeof importScripts === "undefined";
+  typeof window === "undefined" &&
+  typeof importScripts === "undefined" &&
+  typeof process === "undefined" &&
+  typeof global === "undefined";
 
 export const ENHANCED_BURSARIES: Bursary[] = isWorkersEnvironment
   ? []
