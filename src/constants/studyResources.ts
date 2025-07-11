@@ -3,7 +3,7 @@ import { StudyTip, StudyResource } from "@/types/university";
 // Disable large data loading to prevent Workers build failures
 const DISABLE_LARGE_DATA = true;
 
-export const STUDY_TIPS: StudyTip[] = isWorkersEnvironment
+export const STUDY_TIPS: StudyTip[] = DISABLE_LARGE_DATA
   ? []
   : [
       {
