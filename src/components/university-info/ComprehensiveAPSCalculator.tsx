@@ -54,15 +54,16 @@ import { cn } from "@/lib/utils";
 import { SOUTH_AFRICAN_SUBJECTS } from "@/constants/subjects";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/complete-26-universities";
 import {
-  COMPREHENSIVE_COURSES,
+  getComprehensiveCourses,
   getUniversitiesForCourse,
   getAPSRequirement,
   courseToDegree,
-} from "@/constants/universities/comprehensive-course-database";
+} from "@/constants/universities/comprehensive-course-database-lazy";
 import { toast } from "sonner";
 
-// Extract all programs from the massive course database
-const extractUniversityPrograms = () => {
+// Extract all programs from the massive course database - now async
+const extractUniversityPrograms = async () => {
+  const COMPREHENSIVE_COURSES = await getComprehensiveCourses();
   const programs: Array<{
     id: string;
     name: string;
