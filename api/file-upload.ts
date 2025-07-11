@@ -102,7 +102,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .json({ success: false, error: "Method not allowed" });
   }
 
-  // Check if required modules are available
+  // Load Node.js modules if needed
+  if (!formidable || !fs) {
+    await loadNodeModules();
+  }
+
+  // Check if required modules are available after loading
   if (!formidable || !fs) {
     return res.status(500).json({
       success: false,
