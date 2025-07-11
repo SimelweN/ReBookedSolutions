@@ -12,6 +12,7 @@ export const ENV = {
   VITE_FASTWAY_API_KEY: import.meta.env.VITE_FASTWAY_API_KEY || "",
   VITE_GOOGLE_MAPS_API_KEY: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
   VITE_SENDER_API: import.meta.env.VITE_SENDER_API || "",
+  VITE_RESEND_API_KEY: import.meta.env.VITE_RESEND_API_KEY || "",
   VITE_BANKING_VAULT_URL:
     import.meta.env.VITE_BANKING_VAULT_URL ||
     "https://paystack-vault-south-africa.lovable.app",
