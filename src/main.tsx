@@ -46,6 +46,9 @@ try {
   );
 
   console.log("✅ App rendered successfully");
+
+  // Initialize database status check in development
+  initDatabaseStatusCheck();
 } catch (error) {
   console.error("❌ Failed to render app:", error);
 
