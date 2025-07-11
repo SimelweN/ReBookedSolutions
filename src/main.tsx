@@ -11,8 +11,14 @@ import "./index.css";
 import App from "./App";
 import { initDatabaseStatusCheck } from "./utils/databaseConnectivityHelper";
 
+// Workers-compatible check - more comprehensive
+const isBrowser =
+  typeof window !== "undefined" &&
+  typeof document !== "undefined" &&
+  typeof navigator !== "undefined";
+
 // Only run in browser environment
-if (typeof window !== "undefined" && typeof document !== "undefined") {
+if (isBrowser) {
   console.log("🚀 ReBooked Solutions - Starting...");
 
   // Create query client with basic settings
