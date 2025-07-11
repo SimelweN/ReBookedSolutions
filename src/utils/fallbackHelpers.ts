@@ -192,7 +192,7 @@ export const getEnvironmentConfig = () => {
     isDev,
     isProd,
     apiUrl:
-      process.env.REACT_APP_API_URL ||
+      import.meta.env.VITE_APP_URL ||
       (isDev ? "http://localhost:3000" : "https://api.rebooked.co.za"),
     enableErrorReporting: isProd,
     enableDebugLogs: isDev,
