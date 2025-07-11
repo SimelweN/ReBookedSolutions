@@ -1,5 +1,5 @@
 import { generateSystemValidationReport } from "@/utils/enhancedValidation";
-import { getSystemStatistics } from "./apsAwareCourseAssignmentService";
+// Removed circular import - getSystemStatistics will be imported dynamically when needed
 
 /**
  * System Monitoring Service
