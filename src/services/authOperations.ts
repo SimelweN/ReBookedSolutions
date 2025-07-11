@@ -94,7 +94,6 @@ export const loginUser = async (email: string, password: string) => {
   let supabaseKey: string;
 
   try {
-    const { ENV } = await import("@/config/environment");
     supabaseUrl = ENV.VITE_SUPABASE_URL;
     supabaseKey = ENV.VITE_SUPABASE_ANON_KEY;
 
