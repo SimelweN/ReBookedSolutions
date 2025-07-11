@@ -4,9 +4,11 @@
  * components that use ResizeObserver for positioning and measuring elements.
  */
 
-// Store the original console.error
-const originalConsoleError = console.error;
-const originalConsoleWarn = console.warn;
+// Only run in browser environment
+if (typeof window !== "undefined" && typeof console !== "undefined") {
+  // Store the original console.error
+  const originalConsoleError = console.error;
+  const originalConsoleWarn = console.warn;
 
 // Debounced error reporting to prevent spam
 let errorCount = 0;
