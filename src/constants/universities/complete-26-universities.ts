@@ -10,11 +10,8 @@ import { getFacultiesByUniversityIdLegacy } from "./updated-specific-universitie
  */
 
 // Check if we're in a Workers/SSR environment where we should avoid loading large data
-const isWorkersEnvironment =
-  typeof window === "undefined" &&
-  typeof importScripts === "undefined" &&
-  typeof process === "undefined" &&
-  typeof global === "undefined";
+// Use conservative detection to prevent memory issues in serverless/edge environments
+const isWorkersEnvironment = typeof window === "undefined";
 
 // Base universities without programs (will be populated dynamically)
 const BASE_UNIVERSITIES: University[] = isWorkersEnvironment
