@@ -5,7 +5,7 @@
  * The system automatically handles function failures and provides client-side alternatives.
  */
 
-import { functionFallback } from "./functionFallbackService";
+import { getFunctionFallback } from "./functionFallbackService";
 
 // Example 1: Using delivery quotes with automatic fallback
 export const getDeliveryQuotesExample = async () => {
