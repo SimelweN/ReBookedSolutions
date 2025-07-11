@@ -104,5 +104,5 @@ export default {
       },
     },
   },
-  plugins: tailwindAnimate ? [tailwindAnimate] : [],
+  plugins: [tailwindAnimate],
 } satisfies Config;
