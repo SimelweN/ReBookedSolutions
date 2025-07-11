@@ -871,7 +871,7 @@ export const ADDITIONAL_VALID_BURSARIES: Bursary[] = DISABLE_LARGE_DATA
     ];
 
 // Updated comprehensive fields of study
-export const COMPREHENSIVE_FIELDS_OF_STUDY = isWorkersEnvironment
+export const COMPREHENSIVE_FIELDS_OF_STUDY = DISABLE_LARGE_DATA
   ? []
   : [
       "All fields",
