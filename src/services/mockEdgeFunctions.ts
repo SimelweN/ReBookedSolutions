@@ -741,12 +741,18 @@ class MockEdgeFunctions {
   }
 }
 
-// Export singleton instance
-export const mockEdgeFunctions = new MockEdgeFunctions();
+// Lazy initialization to prevent "Cannot access before initialization" errors
+let mockEdgeFunctionsInstance: MockEdgeFunctions | null = null;
+export const getMockEdgeFunctions = () => {
+  if (!mockEdgeFunctionsInstance) {
+    mockEdgeFunctionsInstance = new MockEdgeFunctions();
+  }
+  return mockEdgeFunctionsInstance;
+};
 
 // Helper function for easy integration
 export const invokeFunction = async (endpoint: string, options: any = {}) => {
-  return mockEdgeFunctions.invoke(endpoint, options);
+  return getMockEdgeFunctions().invoke(endpoint, options);
 };
 
 // Configuration helpers
