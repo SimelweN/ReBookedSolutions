@@ -16,9 +16,7 @@
   "functions": {
     "api/**/*.ts": {
       "runtime": "nodejs18.x",
-      "maxDuration": 30,
-      "memory": 1024,
-      "regions": ["iad1"]
+      "maxDuration": 30
     }
   },
   "rewrites": [
