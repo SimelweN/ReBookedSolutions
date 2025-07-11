@@ -29,11 +29,14 @@ export const getDeliveryQuotes = async (
       weight,
     });
 
-    const result = await functionFallback.callFunction("get-delivery-quotes", {
-      pickup_address: fromAddress,
-      delivery_address: toAddress,
-      weight,
-    });
+    const result = await getFunctionFallback().callFunction(
+      "get-delivery-quotes",
+      {
+        pickup_address: fromAddress,
+        delivery_address: toAddress,
+        weight,
+      },
+    );
 
     if (result.success) {
       console.log("Delivery quotes received:", result.data);
