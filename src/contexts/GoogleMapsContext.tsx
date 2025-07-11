@@ -34,6 +34,19 @@ interface GoogleMapsProviderProps {
 export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
   children,
 }) => {
+  // Skip Google Maps loading in non-browser environments
+  if (typeof window === "undefined") {
+    const mockContext: GoogleMapsContextType = {
+      isLoaded: false,
+      loadError: undefined,
+    };
+    return (
+      <GoogleMapsContext.Provider value={mockContext}>
+        {children}
+      </GoogleMapsContext.Provider>
+    );
+  }
+
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
   // Check if API key is available
