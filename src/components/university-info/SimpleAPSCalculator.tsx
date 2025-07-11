@@ -53,12 +53,20 @@ import {
 } from "@/utils/apsCalculatorUtils";
 import { FALLBACK_PROGRAMS } from "@/constants/universityPrograms";
 
-// Get university programs data
-const UNIVERSITY_PROGRAMS = extractUniversityPrograms();
+// Get university programs data lazily
+const getUniversityPrograms = () => {
+  try {
+    return extractUniversityPrograms();
+  } catch (error) {
+    console.warn("Failed to extract university programs, using fallback", error);
+    return [];
+  }
+};
 
-// Use real data if available, otherwise fallback
-const FINAL_UNIVERSITY_PROGRAMS =
-  UNIVERSITY_PROGRAMS.length > 0
+// Use real data if available, otherwise fallback (lazy evaluation)
+const getFinalUniversityPrograms = () => {
+  const UNIVERSITY_PROGRAMS = getUniversityPrograms();
+  return UNIVERSITY_PROGRAMS.length > 0
     ? UNIVERSITY_PROGRAMS
     : FALLBACK_PROGRAMS.map((program, index) => ({
         ...program,
