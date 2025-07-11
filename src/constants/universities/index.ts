@@ -11,7 +11,7 @@ export const ALL_SOUTH_AFRICAN_UNIVERSITIES: University[] =
 export const SOUTH_AFRICAN_UNIVERSITIES = ALL_SOUTH_AFRICAN_UNIVERSITIES;
 
 // Production-ready university data loaded
-if (import.meta.env.DEV) {
+if (import.meta.env.DEV && typeof window !== "undefined") {
   try {
     const totalPrograms = ALL_SOUTH_AFRICAN_UNIVERSITIES.reduce(
       (total, uni) => {
