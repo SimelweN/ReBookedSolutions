@@ -111,7 +111,7 @@ export const checkConnectionHealth = async (
   const startTime = Date.now();
 
   const result: ConnectionHealthResult = {
-    isOnline: navigator.onLine,
+    isOnline: typeof navigator !== "undefined" ? navigator.onLine : true,
     supabaseConnected: false,
     authStatus: "disconnected",
     timestamp: new Date().toISOString(),
