@@ -1,13 +1,5 @@
 import type { Config } from "tailwindcss";
-
-// Use dynamic import for Workers compatibility
-let tailwindAnimate: any;
-try {
-  tailwindAnimate = require("tailwindcss-animate");
-} catch {
-  // Fallback for environments where require is not available
-  tailwindAnimate = null;
-}
+import tailwindAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
