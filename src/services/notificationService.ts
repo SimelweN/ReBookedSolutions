@@ -54,7 +54,7 @@ export const getNotifications = async (
   }
 
   // Check cache first
-  const cached = notificationCache.get(userId);
+  const cached = getNotificationCache().get(userId);
   if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
     return cached.data;
   }
