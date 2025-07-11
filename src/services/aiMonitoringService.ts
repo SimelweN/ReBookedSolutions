@@ -1,5 +1,5 @@
 import { healthTracker } from "./healthTracker";
-import { fallbackStorage } from "./fallbackStorage";
+import { getFallbackStorage } from "./fallbackStorage";
 import { ServiceLayer, FunctionResult } from "@/types/functionFallback";
 
 interface MonitoringEvent {
