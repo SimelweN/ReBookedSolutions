@@ -24,7 +24,6 @@ const queryClient = new QueryClient({
 // Import the simplified App
 import App from "./App";
 import { initDatabaseStatusCheck } from "./utils/databaseConnectivityHelper";
-import "./utils/testCircularImportFix";
 
 // Get root element
 const rootElement = document.getElementById("root");
