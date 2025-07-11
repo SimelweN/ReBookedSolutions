@@ -73,7 +73,7 @@ if (typeof React.createContext !== "function") {
   );
 }
 
-if (typeof window !== "undefined") {
+if (typeof window !== "undefined" && typeof console !== "undefined") {
   console.log(
     "✅ Early React setup completed - React.createContext is available",
   );
