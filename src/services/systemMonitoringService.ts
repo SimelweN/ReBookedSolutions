@@ -440,7 +440,7 @@ export const generateHealthReport = () =>
   getSystemMonitor().generateHealthReport();
 
 export const getErrorLogs = (filters?: any) =>
-  systemMonitor.getErrorLogs(filters);
+  getSystemMonitor().getErrorLogs(filters);
 
 // Auto-cleanup old errors daily
 if (typeof window !== "undefined") {
