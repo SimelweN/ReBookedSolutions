@@ -49,6 +49,8 @@ export const cleanupEventListeners = () => {
 
 // Optimize images by reducing quality for performance
 export const optimizeImages = () => {
+  if (typeof document === "undefined") return;
+
   const images = document.querySelectorAll("img");
   images.forEach((img) => {
     if (!img.loading) {
