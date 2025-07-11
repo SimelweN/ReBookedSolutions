@@ -65,6 +65,18 @@ const parseForm = (
 };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Early exit for Workers/Edge environments that don't support file uploads
+  if (
+    typeof process === "undefined" ||
+    !process.versions ||
+    !process.versions.node
+  ) {
+    return res.status(501).json({
+      success: false,
+      error: "File upload not supported in this runtime environment",
+    });
+  }
+
   // CORS headers
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
