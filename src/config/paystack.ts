@@ -4,7 +4,10 @@
 export const PAYSTACK_CONFIG = {
   PUBLIC_KEY: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || "",
   BASE_URL: "https://api.paystack.co",
-  CALLBACK_URL: `${window.location.origin}/payment-callback`,
+  CALLBACK_URL:
+    typeof window !== "undefined"
+      ? `${window.location.origin}/payment-callback`
+      : "/payment-callback",
 
   // Validation
   isConfigured: () => {
