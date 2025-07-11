@@ -287,8 +287,8 @@ class AIMonitoringService {
     recentErrors: MonitoringEvent[];
   }> {
     const healthSummary = healthTracker.getHealthSummary();
-    const queueSize = await fallbackStorage.getQueueSize();
-    const storageStats = fallbackStorage.getStorageStats();
+    const queueSize = await getFallbackStorage().getQueueSize();
+    const storageStats = getFallbackStorage().getStorageStats();
 
     const recentErrors = this.events
       .filter((e) => !e.success && e.type === "function_call")

@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { healthTracker } from "@/services/healthTracker";
-import { fallbackStorage } from "@/services/fallbackStorage";
+import { getFallbackStorage } from "@/services/fallbackStorage";
 import {
   aiFunctionExecutor,
   processQueue,
@@ -60,11 +60,11 @@ const AIFunctionMonitor = () => {
       setHealthStatuses(statuses);
 
       // Get queue size
-      const size = await fallbackStorage.getQueueSize();
+      const size = await getFallbackStorage().getQueueSize();
       setQueueSize(size);
 
       // Get storage stats
-      const stats = fallbackStorage.getStorageStats();
+      const stats = getFallbackStorage().getStorageStats();
       setStorageStats(stats);
     } catch (error) {
       console.error("Failed to load monitoring data:", error);
@@ -87,7 +87,7 @@ const AIFunctionMonitor = () => {
 
   const handleClearQueue = async () => {
     try {
-      await fallbackStorage.clearQueue();
+      await getFallbackStorage().clearQueue();
       toast.success("Queue cleared");
       await loadData();
     } catch (error) {
@@ -98,7 +98,7 @@ const AIFunctionMonitor = () => {
 
   const handleClearCache = async () => {
     try {
-      await fallbackStorage.clearCache();
+      await getFallbackStorage().clearCache();
       toast.success("Cache cleared");
       await loadData();
     } catch (error) {

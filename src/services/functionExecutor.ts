@@ -370,7 +370,7 @@ class AIFunctionExecutor {
       created: Date.now(),
     };
 
-    await fallbackStorage.enqueue(queueItem);
+    await getFallbackStorage().enqueue(queueItem);
     aiMonitoringService.logQueueEvent("enqueue", functionName, {
       queueId: queueItem.id,
       priority: context.priority,
@@ -395,7 +395,7 @@ class AIFunctionExecutor {
     context: FunctionCallContext,
   ): Promise<FunctionResult<T>> {
     const cacheKey = `${functionName}_${JSON.stringify(payload)}`;
-    const cached = await fallbackStorage.getCache<T>(cacheKey);
+    const cached = await getFallbackStorage().getCache<T>(cacheKey);
 
     if (cached) {
       return {
@@ -426,7 +426,7 @@ class AIFunctionExecutor {
     context: FunctionCallContext,
   ): Promise<FunctionResult<T>> {
     const storageKey = `${functionName}_${context.requestId}`;
-    await fallbackStorage.storeLocally(storageKey, {
+    await getFallbackStorage().storeLocally(storageKey, {
       functionName,
       payload,
       context,
@@ -476,7 +476,7 @@ class AIFunctionExecutor {
       created: Date.now(),
     };
 
-    await fallbackStorage.enqueue(deferredItem);
+    await getFallbackStorage().enqueue(deferredItem);
 
     return {
       success: true,
@@ -512,7 +512,7 @@ class AIFunctionExecutor {
    * Process queued functions when services become available
    */
   async processQueue(): Promise<void> {
-    const queueSize = await fallbackStorage.getQueueSize();
+    const queueSize = await getFallbackStorage().getQueueSize();
     if (queueSize === 0) return;
 
     console.log(`📋 Processing queue with ${queueSize} items`);
@@ -521,7 +521,7 @@ class AIFunctionExecutor {
     const maxBatchSize = 10;
 
     while (processed < maxBatchSize) {
-      const item = await fallbackStorage.dequeue();
+      const item = await getFallbackStorage().dequeue();
       if (!item) break;
 
       try {
@@ -540,7 +540,7 @@ class AIFunctionExecutor {
           if (item.attempts < item.maxAttempts) {
             item.attempts++;
             item.nextRetry = Date.now() + Math.pow(2, item.attempts) * 1000; // Exponential backoff
-            await fallbackStorage.enqueue(item);
+            await getFallbackStorage().enqueue(item);
             console.log(
               `🔄 Re-queued function ${item.functionName}, attempt ${item.attempts}`,
             );
@@ -570,9 +570,9 @@ class AIFunctionExecutor {
     storageStats: any;
   } {
     return {
-      queueSize: fallbackStorage.getQueueSize(),
+      queueSize: getFallbackStorage().getQueueSize(),
       healthSummary: healthTracker.getHealthSummary(),
-      storageStats: fallbackStorage.getStorageStats(),
+      storageStats: getFallbackStorage().getStorageStats(),
     };
   }
 
@@ -580,8 +580,8 @@ class AIFunctionExecutor {
    * Reset all systems
    */
   async reset(): Promise<void> {
-    await fallbackStorage.clearQueue();
-    await fallbackStorage.clearCache();
+    await getFallbackStorage().clearQueue();
+    await getFallbackStorage().clearCache();
     healthTracker.resetAllHealth();
     console.log("🔄 AI Function Executor reset complete");
   }
