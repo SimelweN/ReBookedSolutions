@@ -422,21 +422,22 @@ class SystemMonitoringService {
 // Lazy initialization to prevent "Cannot access before initialization" errors
 export const getSystemMonitor = () => SystemMonitoringService.getInstance();
 
-// Convenience functions
+// Convenience functions using lazy getter
 export const logError = (
   type: ErrorLog["type"],
   severity: ErrorLog["severity"],
   message: string,
   context?: any,
-) => systemMonitor.logError(type, severity, message, context);
+) => getSystemMonitor().logError(type, severity, message, context);
 
 export const trackPerformance = (
   responseTime: number,
   isError?: boolean,
   cacheHit?: boolean,
-) => systemMonitor.trackPerformance(responseTime, isError, cacheHit);
+) => getSystemMonitor().trackPerformance(responseTime, isError, cacheHit);
 
-export const generateHealthReport = () => systemMonitor.generateHealthReport();
+export const generateHealthReport = () =>
+  getSystemMonitor().generateHealthReport();
 
 export const getErrorLogs = (filters?: any) =>
   systemMonitor.getErrorLogs(filters);
