@@ -588,19 +588,30 @@ class AIFunctionExecutor {
 }
 
 // Singleton instance
-export const aiFunctionExecutor = new AIFunctionExecutor();
+// Lazy initialization to prevent "Cannot access before initialization" errors
+let aiFunctionExecutorInstance: AIFunctionExecutor | null = null;
+let autoProcessingStarted = false;
 
-// Auto-process queue periodically
-if (typeof window !== "undefined") {
-  setInterval(() => {
-    aiFunctionExecutor.processQueue();
-  }, 30000); // Every 30 seconds
+export const getAiFunctionExecutor = () => {
+  if (!aiFunctionExecutorInstance) {
+    aiFunctionExecutorInstance = new AIFunctionExecutor();
 
-  // Process queue on page load
-  setTimeout(() => {
-    aiFunctionExecutor.processQueue();
-  }, 5000); // After 5 seconds
-}
+    // Start auto-processing only once and only in browser environment
+    if (!autoProcessingStarted && typeof window !== "undefined") {
+      autoProcessingStarted = true;
+
+      setInterval(() => {
+        aiFunctionExecutorInstance?.processQueue();
+      }, 30000); // Every 30 seconds
+
+      // Process queue on first access
+      setTimeout(() => {
+        aiFunctionExecutorInstance?.processQueue();
+      }, 5000); // After 5 seconds
+    }
+  }
+  return aiFunctionExecutorInstance;
+};
 
 // Export convenience functions
 export const executeFunction =
