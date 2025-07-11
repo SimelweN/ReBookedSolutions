@@ -10,6 +10,10 @@ export interface NetworkStatus {
 }
 
 export const getNetworkStatus = (): NetworkStatus => {
+  if (typeof navigator === "undefined") {
+    return { isOnline: true };
+  }
+
   const nav = navigator as unknown as {
     connection?: { effectiveType?: string; downlink?: number; rtt?: number };
   };
