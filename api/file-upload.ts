@@ -236,7 +236,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Clean up temporary file
     try {
-      fs.unlinkSync(file.filepath);
+      if (fs) {
+        fs.unlinkSync(file.filepath);
+      }
     } catch (cleanupError) {
       console.warn("Failed to clean up temporary file:", cleanupError);
     }
