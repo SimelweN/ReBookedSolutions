@@ -61,7 +61,7 @@ if (typeof window !== "undefined") {
 // import { supabase } from "@/integrations/supabase/client";
 
 // Clean the API key (remove any leading = signs that might have been added by accident)
-const cleanApiKey = ENV.VITE_SUPABASE_ANON_KEY.replace(/^=+/, "");
+const getCleanApiKey = () => ENV.VITE_SUPABASE_ANON_KEY.replace(/^=+/, "");
 
 // Create a FullStory-proof fetch implementation using XMLHttpRequest
 const createProtectedFetch = () => {
