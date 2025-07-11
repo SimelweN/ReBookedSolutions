@@ -971,7 +971,7 @@ export const COMPREHENSIVE_FIELDS_OF_STUDY = DISABLE_LARGE_DATA
       "Web Development",
     ];
 
-export const BURSARY_PROVIDERS = isWorkersEnvironment
+export const BURSARY_PROVIDERS = DISABLE_LARGE_DATA
   ? []
   : [
       "Government Departments",
