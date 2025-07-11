@@ -410,11 +410,13 @@ const ComprehensiveAPSCalculator: React.FC = () => {
 
   // Get unique faculties and universities for filters
   const availableFaculties = useMemo(() => {
-    return [...new Set(UNIVERSITY_PROGRAMS.map((p) => p.faculty))].sort();
+    return [...new Set(getUniversityPrograms().map((p) => p.faculty))].sort();
   }, []);
 
   const availableUniversities = useMemo(() => {
-    return [...new Set(UNIVERSITY_PROGRAMS.map((p) => p.abbreviation))].sort();
+    return [
+      ...new Set(getUniversityPrograms().map((p) => p.abbreviation)),
+    ].sort();
   }, []);
 
   const addSubject = useCallback(() => {
