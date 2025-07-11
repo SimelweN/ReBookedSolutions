@@ -39,12 +39,16 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [react()],
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-      // Ensure consistent React imports
-      react: path.resolve(__dirname, "node_modules/react"),
-      "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
-    },
+    alias: isNode
+      ? {
+          "@": path.resolve(__dirname, "./src"),
+          // Ensure consistent React imports
+          react: path.resolve(__dirname, "node_modules/react"),
+          "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
+        }
+      : {
+          "@": "./src",
+        },
     dedupe: ["react", "react-dom"], // Prevent multiple React instances
   },
   build: {
