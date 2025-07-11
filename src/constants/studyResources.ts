@@ -971,7 +971,7 @@ export const STUDY_TIPS: StudyTip[] = DISABLE_LARGE_DATA
       },
     ];
 
-export const STUDY_RESOURCES: StudyResource[] = isWorkersEnvironment
+export const STUDY_RESOURCES: StudyResource[] = DISABLE_LARGE_DATA
   ? []
   : [
       {
