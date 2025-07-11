@@ -134,8 +134,9 @@ class DatabaseHealthCircuitBreaker {
   }
 }
 
-// Export singleton instance
-export const databaseHealthChecker = DatabaseHealthCircuitBreaker.getInstance();
+// Lazy initialization to prevent "Cannot access before initialization" errors
+export const getDatabaseHealthChecker = () =>
+  DatabaseHealthCircuitBreaker.getInstance();
 
 // Convenience function for simple usage
 export async function checkDatabaseHealth(): Promise<HealthCheckResult> {
