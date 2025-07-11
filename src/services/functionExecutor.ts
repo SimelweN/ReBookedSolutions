@@ -613,11 +613,15 @@ export const getAiFunctionExecutor = () => {
   return aiFunctionExecutorInstance;
 };
 
-// Export convenience functions
-export const executeFunction =
-  aiFunctionExecutor.executeFunction.bind(aiFunctionExecutor);
-export const processQueue =
-  aiFunctionExecutor.processQueue.bind(aiFunctionExecutor);
-export const getFunctionStats =
-  aiFunctionExecutor.getStats.bind(aiFunctionExecutor);
-export const resetExecutor = aiFunctionExecutor.reset.bind(aiFunctionExecutor);
+// Export convenience functions using lazy getter
+export const executeFunction = (
+  functionName: string,
+  params: any,
+  options?: any,
+) => getAiFunctionExecutor().executeFunction(functionName, params, options);
+
+export const processQueue = () => getAiFunctionExecutor().processQueue();
+
+export const getFunctionStats = () => getAiFunctionExecutor().getStats();
+
+export const resetExecutor = () => getAiFunctionExecutor().reset();
