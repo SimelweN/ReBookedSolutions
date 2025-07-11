@@ -3,12 +3,16 @@
  * This ensures React is available globally before any other modules load
  */
 
-// Polyfill for older environments (only in Node.js, not Workers)
-if (typeof globalThis === "undefined" && typeof global !== "undefined") {
+// Polyfill for older environments - only in compatible environments
+if (
+  typeof window === "undefined" &&
+  typeof globalThis === "undefined" &&
+  typeof global !== "undefined"
+) {
   try {
     (global as any).globalThis = global;
   } catch (error) {
-    // Ignore polyfill errors in restricted environments
+    // Ignore polyfill errors in restricted environments like Workers
   }
 }
 
