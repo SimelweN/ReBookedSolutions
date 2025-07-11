@@ -9,9 +9,9 @@ import { University, Faculty, Degree } from "@/types/university";
  * Note: In Workers/SSR environments, data is stubbed to prevent memory issues
  */
 
-// Check if we're in a Workers/SSR environment where we should avoid loading large data
-// Use conservative detection to prevent memory issues in serverless/edge environments
-const isWorkersEnvironment = typeof window === "undefined";
+import { isServerEnvironment } from "@/utils/environmentGuard";
+
+// Use environment guard to prevent loading large data in server environments
 
 // University abbreviation mappings
 export const UNIVERSITY_ABBREVIATIONS = {
