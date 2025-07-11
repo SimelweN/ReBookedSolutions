@@ -314,8 +314,14 @@ class ApiService {
   }
 }
 
-// Create singleton instance
-export const apiService = new ApiService();
+// Lazy initialization to prevent "Cannot access before initialization" errors
+let apiServiceInstance: ApiService | null = null;
+export const getApiService = () => {
+  if (!apiServiceInstance) {
+    apiServiceInstance = new ApiService();
+  }
+  return apiServiceInstance;
+};
 
 // Export individual methods for convenience
 export const {
