@@ -59,7 +59,7 @@ export const handleProfileImageError = (
 
 // Network status checker
 export const isOnline = (): boolean => {
-  return navigator.onLine;
+  return typeof navigator !== "undefined" ? navigator.onLine : true;
 };
 
 // Retry with exponential backoff
