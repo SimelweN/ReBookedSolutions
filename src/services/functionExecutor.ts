@@ -6,7 +6,7 @@ import {
   FallbackType,
 } from "@/types/functionFallback";
 import { getFunctionPolicy } from "@/config/functionPolicyRegistry";
-import { fallbackStorage } from "./fallbackStorage";
+import { getFallbackStorage } from "./fallbackStorage";
 import { healthTracker } from "./healthTracker";
 import { aiMonitoringService } from "./aiMonitoringService";
 import { supabase } from "@/integrations/supabase/client";
