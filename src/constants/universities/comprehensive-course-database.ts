@@ -101,7 +101,7 @@ function parseMostExceptRule(exceptList: string): AssignmentRule {
 }
 
 // Comprehensive course database - conditional loading for Workers compatibility
-export const COMPREHENSIVE_COURSES: ComprehensiveCourse[] = isWorkersEnvironment
+export const COMPREHENSIVE_COURSES: ComprehensiveCourse[] = isBuildEnvironment
   ? []
   : [
       // ==============================================
