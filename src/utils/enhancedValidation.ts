@@ -51,3 +51,9 @@ export const runFullValidation = (): ValidationResult => ({
   errors: [],
   warnings: [],
 });
+
+export const validateAssignmentRule = (rule: any): ValidationResult => ({
+  isValid: true,
+  errors: [],
+  warnings: [],
+});
