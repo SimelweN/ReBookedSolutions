@@ -195,7 +195,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
               });
 
               // Clear local storage to prevent data contamination
-              localStorage.removeItem("supabase.auth.token");
+              safeLocalStorage.removeItem("supabase.auth.token");
               sessionStorage.clear();
 
               // Small delay to ensure state is cleared
@@ -597,7 +597,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setSession(null);
 
       // Clear all browser storage
-      localStorage.clear();
+      safeLocalStorage.clear();
       sessionStorage.clear();
 
       // Clear any cookies
