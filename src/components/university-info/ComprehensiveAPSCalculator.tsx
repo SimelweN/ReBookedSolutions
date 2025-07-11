@@ -53,23 +53,16 @@ import {
 import { cn } from "@/lib/utils";
 import { SOUTH_AFRICAN_SUBJECTS } from "@/constants/subjects";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/complete-26-universities";
+import {
+  COMPREHENSIVE_COURSES,
+  getUniversitiesForCourse,
+  getAPSRequirement,
+  courseToDegree,
+} from "@/constants/universities/comprehensive-course-database";
 import { toast } from "sonner";
 
 // Extract all programs from the massive course database
 const extractUniversityPrograms = () => {
-  // Skip in non-browser environments to prevent Workers build failures
-  if (typeof window === "undefined") {
-    return [];
-  }
-
-  // Dynamic import to prevent immediate loading during Workers builds
-  try {
-    const {
-      COMPREHENSIVE_COURSES,
-      getUniversitiesForCourse,
-      getAPSRequirement,
-      courseToDegree
-    } = require("@/constants/universities/comprehensive-course-database");
   const programs: Array<{
     id: string;
     name: string;
@@ -141,9 +134,9 @@ const extractUniversityPrograms = () => {
 
 // Get comprehensive university programs data
 // Get comprehensive university programs data lazily
-const getUniversityPrograms = async () => {
+const getUniversityPrograms = () => {
   try {
-    return await extractUniversityPrograms();
+    return extractUniversityPrograms();
   } catch (error) {
     console.warn(
       "Failed to extract university programs, using empty array",
