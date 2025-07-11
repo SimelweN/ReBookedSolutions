@@ -2,7 +2,10 @@ import { StudyTip, StudyResource } from "@/types/university";
 
 // Check if we're in a Workers/SSR environment where we should avoid loading large data
 const isWorkersEnvironment =
-  typeof window === "undefined" && typeof importScripts === "undefined";
+  typeof window === "undefined" &&
+  typeof importScripts === "undefined" &&
+  typeof process === "undefined" &&
+  typeof global === "undefined";
 
 export const STUDY_TIPS: StudyTip[] = isWorkersEnvironment
   ? []
@@ -873,7 +876,7 @@ export const STUDY_TIPS: StudyTip[] = isWorkersEnvironment
 • 7:00-8:30 PM: Review and practice problems
 
 **Tuesday, Thursday:**
-�� 10:00-11:30 AM: Write History essay
+• 10:00-11:30 AM: Write History essay
 • 1:00-2:30 PM: Science reading and notes
 • 3:00-4:30 PM: Math problem sets
 • 8:00-9:00 PM: Review flashcards
@@ -910,7 +913,7 @@ export const STUDY_TIPS: StudyTip[] = isWorkersEnvironment
 **Process of Elimination:**
 
 **First Pass - Eliminate Obviously Wrong Answers:**
-�� Cross out answers that are clearly incorrect
+• Cross out answers that are clearly incorrect
 • Look for answers that are off-topic
 • Eliminate answers with extreme language ("always," "never")
 • Remove answers that contradict known facts
