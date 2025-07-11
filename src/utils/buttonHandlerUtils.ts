@@ -210,8 +210,8 @@ export const monitorButtonClicks = () => {
   console.log("🔍 Button click monitor activated");
 };
 
-// Auto-start monitoring in development
-if (import.meta.env.DEV) {
+// Auto-start monitoring in development (browser only)
+if (import.meta.env.DEV && typeof document !== "undefined") {
   // Wait for DOM to load
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", monitorButtonClicks);
