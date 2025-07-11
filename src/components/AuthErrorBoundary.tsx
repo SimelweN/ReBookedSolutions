@@ -72,7 +72,7 @@ class AuthErrorBoundary extends Component<Props, State> {
                   This might be due to a temporary issue.
                 </AlertDescription>
 
-                {process.env.NODE_ENV === "development" && this.state.error && (
+                {import.meta.env.DEV && this.state.error && (
                   <div className="mb-4 p-3 bg-red-100 border border-red-200 rounded text-sm">
                     <div className="font-medium text-red-800 mb-1">
                       Error Details:
