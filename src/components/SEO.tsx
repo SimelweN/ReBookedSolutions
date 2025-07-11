@@ -18,6 +18,8 @@ const SEO = ({
   type = "website",
 }: SEOProps) => {
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     // Update document title
     document.title = title;
 
@@ -45,12 +47,16 @@ const SEO = ({
     updateMetaTag("twitter:image", image);
 
     return () => {
-      // Reset title to default when component unmounts
-      document.title = "ReBooked Solutions - Buy and Sell Textbooks Securely";
+      if (typeof window !== "undefined") {
+        // Reset title to default when component unmounts
+        document.title = "ReBooked Solutions - Buy and Sell Textbooks Securely";
+      }
     };
   }, [title, description, keywords, image, url, type]);
 
   const updateMetaTag = (name: string, content: string) => {
+    if (typeof window === "undefined") return;
+
     let element = document.querySelector(`meta[name="${name}"]`);
     if (!element) {
       element = document.createElement("meta");
@@ -61,6 +67,8 @@ const SEO = ({
   };
 
   const updateMetaProperty = (property: string, content: string) => {
+    if (typeof window === "undefined") return;
+
     let element = document.querySelector(`meta[property="${property}"]`);
     if (!element) {
       element = document.createElement("meta");
