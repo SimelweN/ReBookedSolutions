@@ -35,13 +35,3 @@ tsconfig*.json
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
-src/main.tsx
-src/components/debug/
-src/components/admin/
-src/utils/databaseConnectivityHelper.ts
-src/utils/deploymentReadinessChecker.ts
-src/utils/environmentValidator.ts
-src/utils/buttonHandlerUtils.ts
-src/utils/viteErrorHandler.ts
-src/utils/program-verification.ts
-src/utils/instantStartup.ts
