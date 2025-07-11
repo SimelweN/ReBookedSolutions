@@ -162,7 +162,10 @@ class SystemMonitoringService {
       // Get validation report
       const validationReport = generateSystemValidationReport();
 
-      // Get system statistics
+      // Get system statistics (dynamic import to avoid circular dependency)
+      const { getSystemStatistics } = await import(
+        "./apsAwareCourseAssignmentService"
+      );
       const systemStats = getSystemStatistics();
 
       // Calculate performance metrics
