@@ -42,16 +42,18 @@ const validateSupabaseConfig = () => {
   }
 };
 
-// Validate configuration with graceful fallback
-try {
-  validateSupabaseConfig();
-} catch (configError) {
-  console.warn("⚠️ Supabase configuration issue:", configError);
-  // In development, we can continue with limited functionality
-  if (import.meta.env.DEV) {
-    console.warn(
-      "⚠️ Continuing with limited functionality in development mode",
-    );
+// Validate configuration with graceful fallback (only in browser)
+if (typeof window !== "undefined") {
+  try {
+    validateSupabaseConfig();
+  } catch (configError) {
+    console.warn("⚠️ Supabase configuration issue:", configError);
+    // In development, we can continue with limited functionality
+    if (import.meta.env.DEV) {
+      console.warn(
+        "⚠️ Continuing with limited functionality in development mode",
+      );
+    }
   }
 }
 
