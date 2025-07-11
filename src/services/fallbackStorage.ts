@@ -364,6 +364,4 @@ export const getFallbackStorage = () => {
   return fallbackStorageInstance;
 };
 
-  // Run cleanup on page load
-  fallbackStorage.cleanup();
-}
+// Initial cleanup is now handled in getFallbackStorage()
