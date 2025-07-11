@@ -10,11 +10,8 @@ import { University, Faculty, Degree } from "@/types/university";
  */
 
 // Check if we're in a Workers/SSR environment where we should avoid loading large data
-const isWorkersEnvironment =
-  typeof window === "undefined" &&
-  typeof importScripts === "undefined" &&
-  typeof process === "undefined" &&
-  typeof global === "undefined";
+// Use conservative detection to prevent memory issues in serverless/edge environments
+const isWorkersEnvironment = typeof window === "undefined";
 
 // University abbreviation mappings
 export const UNIVERSITY_ABBREVIATIONS = {
