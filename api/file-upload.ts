@@ -28,13 +28,18 @@ export const config = {
 
 const parseForm = (
   req: VercelRequest,
-): Promise<{ fields: formidable.Fields; files: formidable.Files }> => {
+): Promise<{ fields: any; files: any }> => {
   return new Promise((resolve, reject) => {
+    if (!formidable) {
+      reject(new Error("File upload not supported in this environment"));
+      return;
+    }
+
     const form = formidable({
       maxFileSize: 10 * 1024 * 1024, // 10MB
       maxFiles: 1,
       allowEmptyFiles: false,
-      filter: ({ mimetype }) => {
+      filter: ({ mimetype }: any) => {
         // Allow images, PDFs, and documents
         return Boolean(
           mimetype &&
@@ -49,7 +54,7 @@ const parseForm = (
       },
     });
 
-    form.parse(req, (err, fields, files) => {
+    form.parse(req, (err: any, fields: any, files: any) => {
       if (err) reject(err);
       else resolve({ fields, files });
     });
