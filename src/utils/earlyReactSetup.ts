@@ -52,9 +52,11 @@ if (typeof React.createContext !== "function") {
   );
 }
 
-console.log(
-  "✅ Early React setup completed - React.createContext is available",
-);
+if (typeof window !== "undefined") {
+  console.log(
+    "✅ Early React setup completed - React.createContext is available",
+  );
+}
 
 export default React;
 export { React };
