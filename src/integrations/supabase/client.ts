@@ -135,13 +135,21 @@ const createProtectedFetch = () => {
   };
 };
 
-const protectedFetch = createProtectedFetch();
+// Lazy initialization to avoid immediate execution
+let protectedFetch: any = null;
+let supabase: any = null;
 
-// Only create Supabase client if we have valid configuration
-let supabase: any;
+const initializeSupabase = () => {
+  if (supabase) return supabase;
 
-try {
-  if (ENV.VITE_SUPABASE_URL && cleanApiKey) {
+  try {
+    if (!protectedFetch) {
+      protectedFetch = createProtectedFetch();
+    }
+
+    const cleanApiKey = getCleanApiKey();
+
+    if (ENV.VITE_SUPABASE_URL && cleanApiKey) {
     supabase = createClient<Database>(ENV.VITE_SUPABASE_URL, cleanApiKey, {
       auth: {
         autoRefreshToken: true,
