@@ -9,9 +9,8 @@ import { University, Faculty, Degree } from "@/types/university";
  * Note: In Workers/SSR environments, data is stubbed to prevent memory issues
  */
 
-// Disable large data loading to prevent Workers build failures
-// This will be tree-shaken out in production builds but prevents memory issues during compilation
-const DISABLE_LARGE_DATA = true;
+// Use environment detection to prevent loading large data in non-browser environments
+const isNonBrowserEnvironment = typeof window === "undefined";
 
 // University abbreviation mappings
 export const UNIVERSITY_ABBREVIATIONS = {
