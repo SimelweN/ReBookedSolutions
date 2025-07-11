@@ -1,8 +1,8 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import {
+const {
   generateSellerPickupEmailHTML,
   generateSellerPickupEmailText,
-} from "./emailTemplates";
+} = require("./emailTemplates");
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Enable CORS
