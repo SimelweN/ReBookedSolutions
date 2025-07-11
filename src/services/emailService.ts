@@ -20,6 +20,12 @@ export interface SellerPickupNotificationData {
   tracking_number: string;
 }
 
+// Re-export shared email template functions for backward compatibility
+export {
+  generateSellerPickupEmailHTML,
+  generateSellerPickupEmailText,
+} from "../../shared/emailTemplates";
+
 /**
  * Send email notification using Resend API
  */
