@@ -338,7 +338,14 @@ class HealthTracker {
 }
 
 // Singleton instance
-export const healthTracker = new HealthTracker();
+// Lazy initialization to prevent "Cannot access before initialization" errors
+let healthTrackerInstance: HealthTracker | null = null;
+export const getHealthTracker = () => {
+  if (!healthTrackerInstance) {
+    healthTrackerInstance = new HealthTracker();
+  }
+  return healthTrackerInstance;
+};
 
 // Health check event listeners for monitoring
 if (typeof window !== "undefined") {
