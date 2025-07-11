@@ -72,3 +72,21 @@ if (isBrowser) {
 
 // Export App for static generation/Workers environments
 export default App;
+
+// Workers-specific fallback
+export const handleWorkerRequest = () => {
+  return {
+    status: 200,
+    body: "React App - Workers environment detected",
+    headers: { "Content-Type": "text/plain" },
+  };
+};
+
+// Prevent any immediate execution in Workers
+if (
+  typeof WorkerGlobalScope !== "undefined" &&
+  self instanceof WorkerGlobalScope
+) {
+  // We're in a Worker environment, export handler only
+  console.log("Workers environment detected");
+}
