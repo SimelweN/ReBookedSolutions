@@ -85,7 +85,7 @@ import ComprehensiveBackendTester from "@/components/test/ComprehensiveBackendTe
 import EnvironmentTester from "@/components/test/EnvironmentTester";
 import ComprehensiveFunctionalityTest from "@/components/test/ComprehensiveFunctionalityTest";
 import FunctionTester from "@/components/admin/FunctionTester";
-import { functionFallback } from "@/services/functionFallbackService";
+import { getFunctionFallback } from "@/services/functionFallbackService";
 import {
   createGetTableNamesFunction,
   testGetTableNamesFunction,
