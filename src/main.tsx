@@ -24,7 +24,6 @@ const queryClient = new QueryClient({
 // Import the simplified App
 import App from "./App";
 import { initDatabaseStatusCheck } from "./utils/databaseConnectivityHelper";
-import "./utils/deploymentReadinessChecker";
 
 // Get root element
 const rootElement = document.getElementById("root");
@@ -50,7 +49,7 @@ try {
   // Initialize database status check in development
   initDatabaseStatusCheck();
 } catch (error) {
-  console.error("❌ Failed to render app:", error);
+  console.error("�� Failed to render app:", error);
 
   // Fallback rendering
   rootElement.innerHTML = `
