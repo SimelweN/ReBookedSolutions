@@ -1,25 +1,23 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
 
-// Dynamic imports for Node.js modules - Workers compatible
+// Node.js modules - only loaded in Node.js environment
 let formidable: any = null;
 let fs: any = null;
 
-// Load Node.js modules only in compatible environments
-async function loadNodeModules() {
-  if (
-    typeof process !== "undefined" &&
-    process.versions &&
-    process.versions.node
-  ) {
-    try {
-      const formidableModule = await import("formidable");
-      formidable = formidableModule.default || formidableModule;
-      const fsModule = await import("fs");
-      fs = fsModule.default || fsModule;
-    } catch (error) {
-      console.warn("Node.js modules not available in this environment");
-    }
+// Only load in Node.js environment
+if (
+  typeof process !== "undefined" &&
+  process.versions &&
+  process.versions.node
+) {
+  try {
+    // Use eval to avoid bundler processing in Workers
+    const req = eval("require");
+    formidable = req("formidable");
+    fs = req("fs");
+  } catch (error) {
+    console.warn("Node.js modules not available");
   }
 }
 
