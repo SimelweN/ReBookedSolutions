@@ -324,6 +324,7 @@ export const getApiService = () => {
 };
 
 // Export individual methods for convenience
+const apiServiceInstance = getApiService();
 export const {
   verifyPaystackPayment,
   initializePaystackPayment,
@@ -334,4 +335,4 @@ export const {
   switchToVercelApi,
   switchToSupabase,
   getCurrentMode,
-} = apiService;
+} = apiServiceInstance;
