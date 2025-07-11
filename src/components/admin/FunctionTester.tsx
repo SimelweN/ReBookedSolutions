@@ -355,7 +355,7 @@ const FunctionTester = () => {
   }, []);
 
   const loadFunctionStats = () => {
-    const stats = functionFallback.getFunctionStats();
+    const stats = getFunctionFallback().getFunctionStats();
     setFunctionStats(stats);
   };
 
@@ -366,7 +366,7 @@ const FunctionTester = () => {
       const testConfig = FUNCTION_TESTS.find((t) => t.name === functionName);
       const testPayload = payload || testConfig?.testPayload || {};
 
-      const result = await functionFallback.testFunction(
+      const result = await getFunctionFallback().testFunction(
         functionName,
         testPayload,
       );
@@ -437,7 +437,7 @@ const FunctionTester = () => {
 
   const clearResults = () => {
     setTestResults([]);
-    functionFallback.resetStats();
+    getFunctionFallback().resetStats();
     setFunctionStats({});
     toast.info("Test results cleared");
   };
