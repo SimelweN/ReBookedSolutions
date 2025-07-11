@@ -268,8 +268,8 @@ try {
 
 export { supabase };
 
-// Debug connection on client creation
-if (import.meta.env.DEV) {
+// Debug connection on client creation (browser only)
+if (import.meta.env.DEV && typeof window !== "undefined") {
   console.log("🔗 Supabase client initialized with XMLHttpRequest-based fetch");
   console.log("URL:", ENV.VITE_SUPABASE_URL);
   console.log("Key starts with:", cleanApiKey.substring(0, 20) + "...");
