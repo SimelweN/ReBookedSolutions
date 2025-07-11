@@ -419,8 +419,8 @@ class SystemMonitoringService {
   }
 }
 
-// Export singleton instance
-export const systemMonitor = SystemMonitoringService.getInstance();
+// Lazy initialization to prevent "Cannot access before initialization" errors
+export const getSystemMonitor = () => SystemMonitoringService.getInstance();
 
 // Convenience functions
 export const logError = (
