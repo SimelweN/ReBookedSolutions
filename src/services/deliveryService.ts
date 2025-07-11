@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { SellerProfileService } from "./sellerProfileService";
-import { functionFallback } from "./functionFallbackService";
+import { getFunctionFallback } from "./functionFallbackService";
 
 export interface DeliveryQuote {
   courier: "fastway" | "courier-guy";
