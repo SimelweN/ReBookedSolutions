@@ -453,21 +453,85 @@ export class AIAnalyticsService {
 }
 
 // Export singleton instances
-export const aiPaymentService = new AIPaymentService();
-export const aiEmailService = new AIEmailService();
-export const aiFileService = new AIFileService();
-export const aiShippingService = new AIShippingService();
-export const aiOrderService = new AIOrderService();
-export const aiSearchService = new AISearchService();
-export const aiAnalyticsService = new AIAnalyticsService();
+// Lazy initialization to prevent "Cannot access before initialization" errors
+let aiPaymentServiceInstance: AIPaymentService | null = null;
+let aiEmailServiceInstance: AIEmailService | null = null;
+let aiFileServiceInstance: AIFileService | null = null;
+let aiShippingServiceInstance: AIShippingService | null = null;
+let aiOrderServiceInstance: AIOrderService | null = null;
+let aiSearchServiceInstance: AISearchService | null = null;
+let aiAnalyticsServiceInstance: AIAnalyticsService | null = null;
 
-// Export all services as a single object
+export const getAiPaymentService = () => {
+  if (!aiPaymentServiceInstance) {
+    aiPaymentServiceInstance = new AIPaymentService();
+  }
+  return aiPaymentServiceInstance;
+};
+
+export const getAiEmailService = () => {
+  if (!aiEmailServiceInstance) {
+    aiEmailServiceInstance = new AIEmailService();
+  }
+  return aiEmailServiceInstance;
+};
+
+export const getAiFileService = () => {
+  if (!aiFileServiceInstance) {
+    aiFileServiceInstance = new AIFileService();
+  }
+  return aiFileServiceInstance;
+};
+
+export const getAiShippingService = () => {
+  if (!aiShippingServiceInstance) {
+    aiShippingServiceInstance = new AIShippingService();
+  }
+  return aiShippingServiceInstance;
+};
+
+export const getAiOrderService = () => {
+  if (!aiOrderServiceInstance) {
+    aiOrderServiceInstance = new AIOrderService();
+  }
+  return aiOrderServiceInstance;
+};
+
+export const getAiSearchService = () => {
+  if (!aiSearchServiceInstance) {
+    aiSearchServiceInstance = new AISearchService();
+  }
+  return aiSearchServiceInstance;
+};
+
+export const getAiAnalyticsService = () => {
+  if (!aiAnalyticsServiceInstance) {
+    aiAnalyticsServiceInstance = new AIAnalyticsService();
+  }
+  return aiAnalyticsServiceInstance;
+};
+
+// Export all services as a single object using getters
 export const aiServices = {
-  payment: aiPaymentService,
-  email: aiEmailService,
-  file: aiFileService,
-  shipping: aiShippingService,
-  order: aiOrderService,
-  search: aiSearchService,
-  analytics: aiAnalyticsService,
+  get payment() {
+    return getAiPaymentService();
+  },
+  get email() {
+    return getAiEmailService();
+  },
+  get file() {
+    return getAiFileService();
+  },
+  get shipping() {
+    return getAiShippingService();
+  },
+  get order() {
+    return getAiOrderService();
+  },
+  get search() {
+    return getAiSearchService();
+  },
+  get analytics() {
+    return getAiAnalyticsService();
+  },
 };

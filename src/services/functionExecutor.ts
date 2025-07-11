@@ -6,9 +6,9 @@ import {
   FallbackType,
 } from "@/types/functionFallback";
 import { getFunctionPolicy } from "@/config/functionPolicyRegistry";
-import { fallbackStorage } from "./fallbackStorage";
-import { healthTracker } from "./healthTracker";
-import { aiMonitoringService } from "./aiMonitoringService";
+import { getFallbackStorage } from "./fallbackStorage";
+import { getHealthTracker } from "./healthTracker";
+import { getAiMonitoringService } from "./aiMonitoringService";
 import { supabase } from "@/integrations/supabase/client";
 
 class AIFunctionExecutor {
@@ -46,7 +46,7 @@ class AIFunctionExecutor {
     }
 
     // Layer 1: Try Supabase Edge Function
-    if (healthTracker.isServiceHealthy("supabase")) {
+    if (getHealthTracker().isServiceHealthy("supabase")) {
       try {
         const result = await this.callSupabaseEdgeFunction<T>(
           functionName,
@@ -54,9 +54,9 @@ class AIFunctionExecutor {
           fullContext,
         );
         if (result.success) {
-          healthTracker.recordSuccess("supabase");
-          healthTracker.recordPerformance("supabase", Date.now() - startTime);
-          aiMonitoringService.logFunctionExecution(
+          getHealthTracker().recordSuccess("supabase");
+          getHealthTracker().recordPerformance("supabase", Date.now() - startTime);
+          getAiMonitoringService().logFunctionExecution(
             functionName,
             result,
             Date.now() - startTime,
@@ -66,14 +66,14 @@ class AIFunctionExecutor {
         throw new Error(result.error || "Supabase function failed");
       } catch (error) {
         console.warn(`⚠️ Supabase function ${functionName} failed:`, error);
-        healthTracker.recordFailure("supabase", String(error));
+        getHealthTracker().recordFailure("supabase", String(error));
       }
     } else {
       console.log(`⚠️ Supabase service is unhealthy, skipping to layer 2`);
     }
 
     // Layer 2: Try Vercel API/Edge Function
-    if (policy.vercelAllowed && healthTracker.isServiceHealthy("vercel")) {
+    if (policy.vercelAllowed && getHealthTracker().isServiceHealthy("vercel")) {
       try {
         const result = await this.callVercelFunction<T>(
           functionName,
@@ -81,9 +81,9 @@ class AIFunctionExecutor {
           fullContext,
         );
         if (result.success) {
-          healthTracker.recordSuccess("vercel");
-          healthTracker.recordPerformance("vercel", Date.now() - startTime);
-          aiMonitoringService.logFunctionExecution(
+          getHealthTracker().recordSuccess("vercel");
+          getHealthTracker().recordPerformance("vercel", Date.now() - startTime);
+          getAiMonitoringService().logFunctionExecution(
             functionName,
             result,
             Date.now() - startTime,
@@ -93,7 +93,7 @@ class AIFunctionExecutor {
         throw new Error(result.error || "Vercel function failed");
       } catch (error) {
         console.warn(`⚠️ Vercel function ${functionName} failed:`, error);
-        healthTracker.recordFailure("vercel", String(error));
+        getHealthTracker().recordFailure("vercel", String(error));
       }
     } else if (!policy.vercelAllowed) {
       console.log(`⚠️ Vercel not allowed for function ${functionName}`);
@@ -106,7 +106,7 @@ class AIFunctionExecutor {
       console.log(
         `🔄 Using fallback mechanism for ${functionName}: ${policy.fallbackType}`,
       );
-      aiMonitoringService.logFallbackUsage(
+      getAiMonitoringService().logFallbackUsage(
         functionName,
         policy.fallbackType,
         "All primary layers failed",
@@ -117,7 +117,7 @@ class AIFunctionExecutor {
         fullContext,
         policy.fallbackType,
       );
-      aiMonitoringService.logFunctionExecution(
+      getAiMonitoringService().logFunctionExecution(
         functionName,
         result,
         Date.now() - startTime,
@@ -370,8 +370,8 @@ class AIFunctionExecutor {
       created: Date.now(),
     };
 
-    await fallbackStorage.enqueue(queueItem);
-    aiMonitoringService.logQueueEvent("enqueue", functionName, {
+    await getFallbackStorage().enqueue(queueItem);
+    getAiMonitoringService().logQueueEvent("enqueue", functionName, {
       queueId: queueItem.id,
       priority: context.priority,
     });
@@ -395,7 +395,7 @@ class AIFunctionExecutor {
     context: FunctionCallContext,
   ): Promise<FunctionResult<T>> {
     const cacheKey = `${functionName}_${JSON.stringify(payload)}`;
-    const cached = await fallbackStorage.getCache<T>(cacheKey);
+    const cached = await getFallbackStorage().getCache<T>(cacheKey);
 
     if (cached) {
       return {
@@ -426,7 +426,7 @@ class AIFunctionExecutor {
     context: FunctionCallContext,
   ): Promise<FunctionResult<T>> {
     const storageKey = `${functionName}_${context.requestId}`;
-    await fallbackStorage.storeLocally(storageKey, {
+    await getFallbackStorage().storeLocally(storageKey, {
       functionName,
       payload,
       context,
@@ -476,7 +476,7 @@ class AIFunctionExecutor {
       created: Date.now(),
     };
 
-    await fallbackStorage.enqueue(deferredItem);
+    await getFallbackStorage().enqueue(deferredItem);
 
     return {
       success: true,
@@ -512,7 +512,7 @@ class AIFunctionExecutor {
    * Process queued functions when services become available
    */
   async processQueue(): Promise<void> {
-    const queueSize = await fallbackStorage.getQueueSize();
+    const queueSize = await getFallbackStorage().getQueueSize();
     if (queueSize === 0) return;
 
     console.log(`📋 Processing queue with ${queueSize} items`);
@@ -521,7 +521,7 @@ class AIFunctionExecutor {
     const maxBatchSize = 10;
 
     while (processed < maxBatchSize) {
-      const item = await fallbackStorage.dequeue();
+      const item = await getFallbackStorage().dequeue();
       if (!item) break;
 
       try {
@@ -540,7 +540,7 @@ class AIFunctionExecutor {
           if (item.attempts < item.maxAttempts) {
             item.attempts++;
             item.nextRetry = Date.now() + Math.pow(2, item.attempts) * 1000; // Exponential backoff
-            await fallbackStorage.enqueue(item);
+            await getFallbackStorage().enqueue(item);
             console.log(
               `🔄 Re-queued function ${item.functionName}, attempt ${item.attempts}`,
             );
@@ -570,9 +570,9 @@ class AIFunctionExecutor {
     storageStats: any;
   } {
     return {
-      queueSize: fallbackStorage.getQueueSize(),
-      healthSummary: healthTracker.getHealthSummary(),
-      storageStats: fallbackStorage.getStorageStats(),
+      queueSize: getFallbackStorage().getQueueSize(),
+      healthSummary: getHealthTracker().getHealthSummary(),
+      storageStats: getFallbackStorage().getStorageStats(),
     };
   }
 
@@ -580,33 +580,48 @@ class AIFunctionExecutor {
    * Reset all systems
    */
   async reset(): Promise<void> {
-    await fallbackStorage.clearQueue();
-    await fallbackStorage.clearCache();
-    healthTracker.resetAllHealth();
+    await getFallbackStorage().clearQueue();
+    await getFallbackStorage().clearCache();
+    getHealthTracker().resetAllHealth();
     console.log("🔄 AI Function Executor reset complete");
   }
 }
 
 // Singleton instance
-export const aiFunctionExecutor = new AIFunctionExecutor();
+// Lazy initialization to prevent "Cannot access before initialization" errors
+let aiFunctionExecutorInstance: AIFunctionExecutor | null = null;
+let autoProcessingStarted = false;
 
-// Auto-process queue periodically
-if (typeof window !== "undefined") {
-  setInterval(() => {
-    aiFunctionExecutor.processQueue();
-  }, 30000); // Every 30 seconds
+export const getAiFunctionExecutor = () => {
+  if (!aiFunctionExecutorInstance) {
+    aiFunctionExecutorInstance = new AIFunctionExecutor();
 
-  // Process queue on page load
-  setTimeout(() => {
-    aiFunctionExecutor.processQueue();
-  }, 5000); // After 5 seconds
-}
+    // Start auto-processing only once and only in browser environment
+    if (!autoProcessingStarted && typeof window !== "undefined") {
+      autoProcessingStarted = true;
 
-// Export convenience functions
-export const executeFunction =
-  aiFunctionExecutor.executeFunction.bind(aiFunctionExecutor);
-export const processQueue =
-  aiFunctionExecutor.processQueue.bind(aiFunctionExecutor);
-export const getFunctionStats =
-  aiFunctionExecutor.getStats.bind(aiFunctionExecutor);
-export const resetExecutor = aiFunctionExecutor.reset.bind(aiFunctionExecutor);
+      setInterval(() => {
+        aiFunctionExecutorInstance?.processQueue();
+      }, 30000); // Every 30 seconds
+
+      // Process queue on first access
+      setTimeout(() => {
+        aiFunctionExecutorInstance?.processQueue();
+      }, 5000); // After 5 seconds
+    }
+  }
+  return aiFunctionExecutorInstance;
+};
+
+// Export convenience functions using lazy getter
+export const executeFunction = (
+  functionName: string,
+  params: any,
+  options?: any,
+) => getAiFunctionExecutor().executeFunction(functionName, params, options);
+
+export const processQueue = () => getAiFunctionExecutor().processQueue();
+
+export const getFunctionStats = () => getAiFunctionExecutor().getStats();
+
+export const resetExecutor = () => getAiFunctionExecutor().reset();

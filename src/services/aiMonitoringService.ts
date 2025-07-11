@@ -1,5 +1,5 @@
-import { healthTracker } from "./healthTracker";
-import { fallbackStorage } from "./fallbackStorage";
+import { getHealthTracker } from "./healthTracker";
+import { getFallbackStorage } from "./fallbackStorage";
 import { ServiceLayer, FunctionResult } from "@/types/functionFallback";
 
 interface MonitoringEvent {
@@ -286,9 +286,9 @@ class AIMonitoringService {
     storageUsage: any;
     recentErrors: MonitoringEvent[];
   }> {
-    const healthSummary = healthTracker.getHealthSummary();
-    const queueSize = await fallbackStorage.getQueueSize();
-    const storageStats = fallbackStorage.getStorageStats();
+    const healthSummary = getHealthTracker().getHealthSummary();
+    const queueSize = await getFallbackStorage().getQueueSize();
+    const storageStats = getFallbackStorage().getStorageStats();
 
     const recentErrors = this.events
       .filter((e) => !e.success && e.type === "function_call")
@@ -413,12 +413,19 @@ class AIMonitoringService {
   }
 }
 
-// Singleton instance
-export const aiMonitoringService = new AIMonitoringService();
+// Lazy initialization to prevent "Cannot access before initialization" errors
+let aiMonitoringServiceInstance: AIMonitoringService | null = null;
 
-// Start real-time logging in development
-if (import.meta.env.DEV) {
-  aiMonitoringService.startRealtimeLogging();
-}
+export const getAiMonitoringService = () => {
+  if (!aiMonitoringServiceInstance) {
+    aiMonitoringServiceInstance = new AIMonitoringService();
 
-export default aiMonitoringService;
+    // Start real-time logging in development only once
+    if (import.meta.env.DEV) {
+      aiMonitoringServiceInstance.startRealtimeLogging();
+    }
+  }
+  return aiMonitoringServiceInstance;
+};
+
+export default getAiMonitoringService;

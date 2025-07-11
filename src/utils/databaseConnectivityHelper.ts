@@ -163,7 +163,9 @@ export async function logDatabaseStatus() {
   }
 }
 
-// Auto-run status check in development
-if (import.meta.env.DEV) {
-  setTimeout(logDatabaseStatus, 2000);
-}
+// Export function for manual status checking to prevent initialization issues
+export const initDatabaseStatusCheck = () => {
+  if (import.meta.env.DEV) {
+    setTimeout(logDatabaseStatus, 2000);
+  }
+};

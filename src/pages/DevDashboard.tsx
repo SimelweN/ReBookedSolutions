@@ -85,7 +85,7 @@ import ComprehensiveBackendTester from "@/components/test/ComprehensiveBackendTe
 import EnvironmentTester from "@/components/test/EnvironmentTester";
 import ComprehensiveFunctionalityTest from "@/components/test/ComprehensiveFunctionalityTest";
 import FunctionTester from "@/components/admin/FunctionTester";
-import { functionFallback } from "@/services/functionFallbackService";
+import { getFunctionFallback } from "@/services/functionFallbackService";
 import {
   createGetTableNamesFunction,
   testGetTableNamesFunction,
@@ -763,7 +763,7 @@ const DevDashboard: React.FC = () => {
 
       for (const test of tests) {
         try {
-          const result = await functionFallback.testFunction(
+          const result = await getFunctionFallback().testFunction(
             test.name,
             test.payload,
           );
@@ -798,7 +798,7 @@ const DevDashboard: React.FC = () => {
       }, 0);
 
       // Get function stats
-      const stats = functionFallback.getFunctionStats();
+      const stats = getFunctionFallback().getFunctionStats();
       console.log("Function statistics:", stats);
     } catch (error) {
       // Defer these state updates to avoid render cycle issues

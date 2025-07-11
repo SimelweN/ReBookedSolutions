@@ -4,7 +4,7 @@ import {
   getAPSRequirement,
 } from "@/constants/universities/comprehensive-course-database";
 import { adaptToOldFormat } from "./newSubjectEngine";
-import { logError } from "./systemMonitoringService";
+import { logError } from "@/utils/systemLogger";
 import {
   calculateUniversitySpecificAPS,
   usesSpecialAPSCalculation,

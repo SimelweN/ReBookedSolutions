@@ -341,19 +341,27 @@ class LocalFallbackStorage implements FallbackStorage {
   }
 }
 
-// Singleton instance
-export const fallbackStorage = new LocalFallbackStorage();
+// Lazy initialization to prevent "Cannot access before initialization" errors
+let fallbackStorageInstance: LocalFallbackStorage | null = null;
+let cleanupStarted = false;
 
-// Initialize cleanup on page load
-if (typeof window !== "undefined") {
-  // Run cleanup periodically
-  setInterval(
-    () => {
-      fallbackStorage.cleanup();
-    },
-    30 * 60 * 1000,
-  ); // Every 30 minutes
+export const getFallbackStorage = () => {
+  if (!fallbackStorageInstance) {
+    fallbackStorageInstance = new LocalFallbackStorage();
 
-  // Run cleanup on page load
-  fallbackStorage.cleanup();
-}
+    // Initialize cleanup only once and only in browser
+    if (!cleanupStarted && typeof window !== "undefined") {
+      cleanupStarted = true;
+      // Run cleanup periodically
+      setInterval(
+        () => {
+          fallbackStorageInstance?.cleanup();
+        },
+        30 * 60 * 1000,
+      ); // Every 30 minutes
+    }
+  }
+  return fallbackStorageInstance;
+};
+
+// Initial cleanup is now handled in getFallbackStorage()

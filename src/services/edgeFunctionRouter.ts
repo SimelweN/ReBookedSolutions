@@ -400,12 +400,18 @@ class EdgeFunctionRouter {
   }
 }
 
-// Export singleton instance
-export const edgeFunctionRouter = new EdgeFunctionRouter();
+// Lazy initialization to prevent "Cannot access before initialization" errors
+let edgeFunctionRouterInstance: EdgeFunctionRouter | null = null;
+export const getEdgeFunctionRouter = () => {
+  if (!edgeFunctionRouterInstance) {
+    edgeFunctionRouterInstance = new EdgeFunctionRouter();
+  }
+  return edgeFunctionRouterInstance;
+};
 
 // Export convenient helper functions
 export const invokeEdgeFunction = (endpoint: string, options: any = {}) => {
-  return edgeFunctionRouter.invoke(endpoint, options);
+  return getEdgeFunctionRouter().invoke(endpoint, options);
 };
 
 export const getRouterConfig = () => edgeFunctionRouter.getConfig();

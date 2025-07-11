@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { SellerProfileService } from "./sellerProfileService";
-import { functionFallback } from "./functionFallbackService";
+import { getFunctionFallback } from "./functionFallbackService";
 
 export interface DeliveryQuote {
   courier: "fastway" | "courier-guy";
@@ -29,11 +29,14 @@ export const getDeliveryQuotes = async (
       weight,
     });
 
-    const result = await functionFallback.callFunction("get-delivery-quotes", {
-      pickup_address: fromAddress,
-      delivery_address: toAddress,
-      weight,
-    });
+    const result = await getFunctionFallback().callFunction(
+      "get-delivery-quotes",
+      {
+        pickup_address: fromAddress,
+        delivery_address: toAddress,
+        weight,
+      },
+    );
 
     if (result.success) {
       console.log("Delivery quotes received:", result.data);

@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { executeFunction } from "@/services/functionExecutor";
-import { healthTracker } from "@/services/healthTracker";
+import { getHealthTracker } from "@/services/healthTracker";
 
 interface LayerStatus {
   supabase: "success" | "failed" | "skipped" | "disabled" | "not-tried";
@@ -135,7 +135,7 @@ const AIFallbackSystemTester = () => {
 
   // Enhanced test function with detailed status tracking
   const testWithDetailedStatus = async (functionName: string, payload: any) => {
-    const healthStatus = healthTracker.getAllServiceStatuses();
+    const healthStatus = getHealthTracker().getAllServiceStatuses();
     const supabaseHealthy =
       healthStatus.find((s) => s.service === "supabase")?.healthy &&
       !healthStatus.find((s) => s.service === "supabase")?.disabled;
@@ -311,13 +311,13 @@ const AIFallbackSystemTester = () => {
   };
 
   const testServiceHealth = async () => {
-    const healthStatus = healthTracker.getAllServiceStatuses();
+    const healthStatus = getHealthTracker().getAllServiceStatuses();
 
     return {
       success: true,
       data: {
         services: healthStatus,
-        overall: healthTracker.getHealthSummary(),
+        overall: getHealthTracker().getHealthSummary(),
       },
       source: "health-check",
       timestamp: Date.now(),

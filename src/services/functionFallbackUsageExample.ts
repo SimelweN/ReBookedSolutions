@@ -5,11 +5,11 @@
  * The system automatically handles function failures and provides client-side alternatives.
  */
 
-import { functionFallback } from "./functionFallbackService";
+import { getFunctionFallback } from "./functionFallbackService";
 
 // Example 1: Using delivery quotes with automatic fallback
 export const getDeliveryQuotesExample = async () => {
-  const result = await functionFallback.callFunction("get-delivery-quotes", {
+  const result = await getFunctionFallback().callFunction("get-delivery-quotes", {
     pickup_address: {
       city: "Cape Town",
       province: "Western Cape",
@@ -37,7 +37,7 @@ export const getDeliveryQuotesExample = async () => {
 
 // Example 2: File upload with fallback to direct storage
 export const uploadFileExample = async (file: File, path: string) => {
-  const result = await functionFallback.callFunction("file-upload", {
+  const result = await getFunctionFallback().callFunction("file-upload", {
     file,
     bucket: "books",
     path: path,
@@ -54,7 +54,7 @@ export const uploadFileExample = async (file: File, path: string) => {
 
 // Example 3: Email sending with graceful degradation
 export const sendEmailExample = async (emailData: any) => {
-  const result = await functionFallback.callFunction(
+  const result = await getFunctionFallback().callFunction(
     "send-email-notification",
     emailData,
     {
@@ -73,7 +73,7 @@ export const sendEmailExample = async (emailData: any) => {
 
 // Example 4: Search with client-side fallback
 export const searchExample = async (query: string, filters: any) => {
-  const result = await functionFallback.callFunction("advanced-search", {
+  const result = await getFunctionFallback().callFunction("advanced-search", {
     query,
     filters,
   });
@@ -88,7 +88,7 @@ export const searchExample = async (query: string, filters: any) => {
 
 // Example 5: Testing a function programmatically
 export const testFunctionExample = async () => {
-  const testResult = await functionFallback.testFunction(
+  const testResult = await getFunctionFallback().testFunction(
     "get-delivery-quotes",
     {
       pickup_address: { city: "Test City" },
@@ -108,8 +108,8 @@ export const testFunctionExample = async () => {
 
 // Example 6: Getting function statistics
 export const getFunctionHealthExample = () => {
-  const stats = functionFallback.getFunctionStats();
-  const configs = functionFallback.getAllFunctionConfigs();
+  const stats = getFunctionFallback().getFunctionStats();
+  const configs = getFunctionFallback().getAllFunctionConfigs();
 
   console.log("Function Health Report:");
   Object.entries(stats).forEach(([functionName, stat]: [string, any]) => {
@@ -134,7 +134,7 @@ export const getFunctionHealthExample = () => {
 /**
  * Integration Guide:
  *
- * 1. Replace direct supabase.functions.invoke calls with functionFallback.callFunction
+ * 1. Replace direct supabase.functions.invoke calls with getFunctionFallback().callFunction
  * 2. Handle the response object which includes success, data, error, and fallbackUsed
  * 3. For critical functions (payment, etc.), they will retry automatically
  * 4. For non-critical functions, they will use client-side fallbacks

@@ -1,7 +1,6 @@
 import * as React from "react";
 
-// Import Datadog warning suppression as early as possible
-import "./utils/suppressDatadogWarnings";
+// Note: Datadog warning suppression removed as SDK is not actually installed
 
 import { createRoot } from "react-dom/client";
 
@@ -24,6 +23,7 @@ const queryClient = new QueryClient({
 
 // Import the simplified App
 import App from "./App";
+import { initDatabaseStatusCheck } from "./utils/databaseConnectivityHelper";
 
 // Get root element
 const rootElement = document.getElementById("root");
@@ -45,8 +45,11 @@ try {
   );
 
   console.log("✅ App rendered successfully");
+
+  // Initialize database status check in development
+  initDatabaseStatusCheck();
 } catch (error) {
-  console.error("❌ Failed to render app:", error);
+  console.error("�� Failed to render app:", error);
 
   // Fallback rendering
   rootElement.innerHTML = `

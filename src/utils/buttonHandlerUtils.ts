@@ -183,7 +183,7 @@ export const checkElementLoadingState = (element: HTMLElement): boolean => {
  * Global button click monitor for debugging
  */
 export const monitorButtonClicks = () => {
-  if (process.env.NODE_ENV !== "development") return;
+  if (!import.meta.env.DEV) return;
 
   document.addEventListener("click", (event) => {
     const target = event.target as HTMLElement;
@@ -211,7 +211,7 @@ export const monitorButtonClicks = () => {
 };
 
 // Auto-start monitoring in development
-if (process.env.NODE_ENV === "development") {
+if (import.meta.env.DEV) {
   // Wait for DOM to load
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", monitorButtonClicks);

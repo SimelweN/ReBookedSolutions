@@ -310,13 +310,15 @@ export class ClientCommitAutoExpiry {
   }
 }
 
-// Auto-start the service when this module is imported
-if (typeof window !== "undefined") {
-  // Only run in browser environment
-  ClientCommitAutoExpiry.start();
+// Export function to manually start auto-expiry (avoid module-level execution)
+export const startClientCommitAutoExpiry = () => {
+  if (typeof window !== "undefined") {
+    // Only run in browser environment
+    ClientCommitAutoExpiry.start();
 
-  // Clean up on page unload
-  window.addEventListener("beforeunload", () => {
-    ClientCommitAutoExpiry.stop();
-  });
-}
+    // Clean up on page unload
+    window.addEventListener("beforeunload", () => {
+      ClientCommitAutoExpiry.stop();
+    });
+  }
+};

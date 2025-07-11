@@ -25,6 +25,7 @@ import { logError, getErrorMessage } from "@/utils/errorUtils";
 import { createFallbackProfile } from "@/utils/databaseConnectivityHelper";
 import { shouldSkipAuthLoading } from "@/utils/instantStartup";
 import { CookieManager } from "@/utils/cookieManager";
+import { safeLocalStorage } from "@/utils/safeLocalStorage";
 // Simple logging for development
 const devLog = (message: string, data?: unknown) => {
   if (import.meta.env.DEV) console.log(message, data);
@@ -194,7 +195,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
               });
 
               // Clear local storage to prevent data contamination
-              localStorage.removeItem("supabase.auth.token");
+              safeLocalStorage.removeItem("supabase.auth.token");
               sessionStorage.clear();
 
               // Small delay to ensure state is cleared
@@ -596,7 +597,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setSession(null);
 
       // Clear all browser storage
-      localStorage.clear();
+      safeLocalStorage.clear();
       sessionStorage.clear();
 
       // Clear any cookies

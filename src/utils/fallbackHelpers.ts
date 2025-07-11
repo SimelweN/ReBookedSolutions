@@ -185,8 +185,8 @@ export const withFallback = async <T>(
 
 // Environment-specific fallbacks
 export const getEnvironmentConfig = () => {
-  const isDev = process.env.NODE_ENV === "development";
-  const isProd = process.env.NODE_ENV === "production";
+  const isDev = import.meta.env.DEV;
+  const isProd = import.meta.env.PROD;
 
   return {
     isDev,
