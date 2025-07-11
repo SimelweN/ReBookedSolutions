@@ -176,13 +176,26 @@ class SystemLogger {
 // Create singleton instance
 const systemLogger = new SystemLogger();
 
-// Convenience functions for easy import
+// Helper function to map severity to log level
+const mapSeverityToLevel = (severity: LogSeverity | LogLevel): LogLevel => {
+  if (severity === "low") return "info";
+  if (severity === "medium") return "warning";
+  if (severity === "high") return "error";
+  if (severity === "critical") return "critical";
+  // If it's already a LogLevel, return as is
+  return severity as LogLevel;
+};
+
+// Convenience functions for easy import (backward compatible with old interface)
 export const logError = (
   type: LogType,
-  level: LogLevel,
+  severityOrLevel: LogSeverity | LogLevel,
   message: string,
   context?: any,
-) => systemLogger.log(type, level, message, context);
+) => {
+  const level = mapSeverityToLevel(severityOrLevel);
+  return systemLogger.log(type, level, message, context);
+};
 
 export const logInfo = (type: LogType, message: string, context?: any) =>
   systemLogger.log(type, "info", message, context);
