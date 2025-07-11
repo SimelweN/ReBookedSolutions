@@ -173,7 +173,7 @@ const SimpleAPSCalculator: React.FC = () => {
   const degreeAnalysis = useMemo(() => {
     const degrees: DegreeInsight[] = [];
 
-    FINAL_UNIVERSITY_PROGRAMS.forEach((program) => {
+    getFinalUniversityPrograms().forEach((program) => {
       degrees.push({
         id: program.id || `${program.universityId}-${program.name}`,
         name: program.name || program.program,
