@@ -45,7 +45,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "pay-seller": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "queue",
     timeout: 30000,
     retryAttempts: 3,
@@ -53,7 +53,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "paystack-webhook": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "queue",
     timeout: 15000,
     retryAttempts: 5,
@@ -63,7 +63,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   // Shipping & Courier APIs
   "get-delivery-quotes": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "cached-rates",
     timeout: 10000,
     retryAttempts: 2,
@@ -73,7 +73,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "courier-guy-quote": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "cached-rates",
     timeout: 8000,
     retryAttempts: 2,
@@ -83,7 +83,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "courier-guy-shipment": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "queue",
     timeout: 15000,
     retryAttempts: 3,
@@ -91,7 +91,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "courier-guy-track": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "cached-rates",
     timeout: 8000,
     retryAttempts: 2,
@@ -101,7 +101,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "fastway-quote": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "cached-rates",
     timeout: 8000,
     retryAttempts: 2,
@@ -111,7 +111,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "fastway-shipment": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "queue",
     timeout: 15000,
     retryAttempts: 3,
@@ -119,7 +119,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "fastway-track": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "cached-rates",
     timeout: 8000,
     retryAttempts: 2,
@@ -131,7 +131,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   // File Upload
   "file-upload": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "store-locally",
     timeout: 60000,
     retryAttempts: 3,
@@ -141,7 +141,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   // Order Management
   "create-order": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "queue-order",
     timeout: 15000,
     retryAttempts: 3,
@@ -149,7 +149,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "commit-to-sale": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "queue-order",
     timeout: 10000,
     retryAttempts: 3,
@@ -157,7 +157,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "decline-commit": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "queue-order",
     timeout: 10000,
     retryAttempts: 3,
@@ -165,7 +165,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "mark-collected": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "queue-order",
     timeout: 10000,
     retryAttempts: 3,
@@ -173,7 +173,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "process-book-purchase": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "queue-order",
     timeout: 20000,
     retryAttempts: 3,
@@ -181,7 +181,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "process-multi-seller-purchase": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "queue-order",
     timeout: 30000,
     retryAttempts: 3,
@@ -189,7 +189,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "auto-expire-commits": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "deferred",
     timeout: 5000,
     retryAttempts: 2,
@@ -197,7 +197,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "check-expired-orders": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "deferred",
     timeout: 10000,
     retryAttempts: 2,
@@ -205,7 +205,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "process-order-reminders": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "queue-email",
     timeout: 10000,
     retryAttempts: 2,
@@ -215,7 +215,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   // Email & Notifications
   "send-email-notification": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "queue-email",
     timeout: 15000,
     retryAttempts: 3,
@@ -223,7 +223,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "email-automation": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "queue-email",
     timeout: 10000,
     retryAttempts: 3,
@@ -241,7 +241,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   // Analytics & Logs
   "analytics-reporting": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "deferred",
     timeout: 8000,
     retryAttempts: 1,
@@ -251,7 +251,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   // Other Services
   "study-resources-api": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "cached-rates",
     timeout: 10000,
     retryAttempts: 2,
@@ -261,7 +261,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "advanced-search": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "cached-rates",
     timeout: 8000,
     retryAttempts: 2,
@@ -271,7 +271,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "dispute-resolution": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "queue",
     timeout: 15000,
     retryAttempts: 3,
@@ -279,7 +279,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "update-paystack-subaccount": {
     fallback: true,
-    vercelAllowed: true,
+    
     fallbackType: "queue",
     timeout: 20000,
     retryAttempts: 3,
@@ -291,7 +291,7 @@ export const getFunctionPolicy = (functionName: string): FunctionPolicy => {
   return (
     FUNCTION_POLICY_REGISTRY[functionName] || {
       fallback: true,
-      vercelAllowed: true,
+      
       fallbackType: "queue",
       timeout: 10000,
       retryAttempts: 2,
