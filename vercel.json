@@ -65,5 +65,5 @@
       ]
     }
   ],
-  "ignoreCommand": "npx vercel-ignore"
+  "ignoreCommand": "bash vercel-ignore.sh"
 }
