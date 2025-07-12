@@ -263,7 +263,11 @@ export class ClientCommitAutoExpiry {
       // Handle auth errors gracefully - don't log as errors
       if (
         transError?.code === "UNAUTHORIZED" ||
-        orderError?.code === "UNAUTHORIZED"
+        transError?.message?.includes("HTTP 401") ||
+        transError?.message?.includes("401") ||
+        orderError?.code === "UNAUTHORIZED" ||
+        orderError?.message?.includes("HTTP 401") ||
+        orderError?.message?.includes("401")
       ) {
         // User not authenticated, return null instead of logging error
         return null;
