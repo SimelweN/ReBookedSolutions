@@ -13,7 +13,6 @@ if (typeof window !== "undefined") {
 
 // Import the simplified App
 import App from "./App";
-import { initDatabaseStatusCheck } from "./utils/databaseConnectivityHelper";
 
 // Workers-compatible check - more comprehensive
 const isBrowser =
