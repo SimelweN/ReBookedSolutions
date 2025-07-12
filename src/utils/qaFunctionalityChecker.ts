@@ -11,7 +11,7 @@ export interface QATestResult {
   category: string;
   status: "pass" | "fail" | "warning" | "skip";
   message: string;
-  details?: unknown;
+  details?: any;
   timestamp: string;
 }
 
@@ -27,11 +27,11 @@ export class QAFunctionalityChecker {
 
   // SECTION 1: USER AUTHENTICATION & PROFILE MANAGEMENT
   async testAuthenticationSystem() {
-    console.warn("🔐 Testing Authentication System...");
+    console.log("🔐 Testing Authentication System...");
 
     // Test 1.1: Database Connection
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("profiles")
         .select("count")
         .limit(1);
@@ -87,6 +87,7 @@ export class QAFunctionalityChecker {
     try {
       const {
         data: { session },
+        error,
       } = await supabase.auth.getSession();
       this.addResult({
         name: "Auth Session Check",
@@ -110,7 +111,7 @@ export class QAFunctionalityChecker {
 
   // SECTION 5: APS CALCULATOR FUNCTIONALITY
   async testAPSCalculator() {
-    console.warn("🧮 Testing APS Calculator...");
+    console.log("🧮 Testing APS Calculator...");
 
     // Test 5.1: Basic APS system check
     try {
@@ -199,7 +200,7 @@ export class QAFunctionalityChecker {
 
   // SECTION 3: GOOGLE MAPS FUNCTIONALITY
   async testGoogleMapsIntegration() {
-    console.warn("🗺️ Testing Google Maps Integration...");
+    console.log("🗺️ Testing Google Maps Integration...");
 
     // Test 3.1: Google Maps API Key
     const mapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -255,7 +256,7 @@ export class QAFunctionalityChecker {
 
   // SECTION 4: PAYMENT SYSTEM
   async testPaymentSystem() {
-    console.warn("💳 Testing Payment System...");
+    console.log("💳 Testing Payment System...");
 
     // Test 4.1: Paystack Configuration
     const paystackKey = ENV.VITE_PAYSTACK_PUBLIC_KEY;
@@ -277,7 +278,7 @@ export class QAFunctionalityChecker {
 
     // Test 4.2: Banking Details Table
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("banking_details")
         .select("count")
         .limit(1);
@@ -310,7 +311,7 @@ export class QAFunctionalityChecker {
 
   // SECTION 5: COURIER INTEGRATION
   async testCourierIntegration() {
-    console.warn("🚚 Testing Courier Integration...");
+    console.log("🚚 Testing Courier Integration...");
 
     const courierApiKeys = [
       { name: "Courier Guy", key: ENV.VITE_COURIER_GUY_API_KEY },
@@ -338,7 +339,7 @@ export class QAFunctionalityChecker {
 
   // SECTION 6: DATABASE TABLES AND STRUCTURE
   async testDatabaseStructure() {
-    console.warn("🗄️ Testing Database Structure...");
+    console.log("🗄️ Testing Database Structure...");
 
     const criticalTables = [
       "profiles",
@@ -350,7 +351,10 @@ export class QAFunctionalityChecker {
 
     for (const table of criticalTables) {
       try {
-        const { error } = await supabase.from(table).select("count").limit(1);
+        const { data, error } = await supabase
+          .from(table)
+          .select("count")
+          .limit(1);
         if (error) {
           this.addResult({
             name: `Table: ${table}`,
@@ -381,7 +385,7 @@ export class QAFunctionalityChecker {
 
   // SECTION 7: CART FUNCTIONALITY
   async testCartFunctionality() {
-    console.warn("🛒 Testing Cart Functionality...");
+    console.log("🛒 Testing Cart Functionality...");
 
     try {
       // Test cart localStorage operations
@@ -439,8 +443,8 @@ export class QAFunctionalityChecker {
   async runAllTests(): Promise<QATestResult[]> {
     this.results = [];
 
-    console.warn("🔍 Starting Comprehensive QA Functionality Check...");
-    console.warn("===============================================");
+    console.log("🔍 Starting Comprehensive QA Functionality Check...");
+    console.log("===============================================");
 
     try {
       await this.testAuthenticationSystem();
@@ -461,8 +465,8 @@ export class QAFunctionalityChecker {
       });
     }
 
-    console.warn("✅ QA Functionality Check Complete");
-    console.warn("===============================================");
+    console.log("✅ QA Functionality Check Complete");
+    console.log("===============================================");
 
     return this.results;
   }

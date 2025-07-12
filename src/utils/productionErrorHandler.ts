@@ -34,7 +34,7 @@ export class ProductionErrorHandler {
     const timestamp = new Date().toISOString();
     const prefix = context?.component ? `[${context.component}]` : "[Error]";
 
-    console.error(`${prefix} ${timestamp}`);
+    console.group(`${prefix} ${timestamp}`);
 
     if (error instanceof Error) {
       console.error("Message:", error.message);
@@ -44,8 +44,10 @@ export class ProductionErrorHandler {
     }
 
     if (context) {
-      console.error("Context:", context);
+      console.info("Context:", context);
     }
+
+    console.groupEnd();
   }
 
   /**
