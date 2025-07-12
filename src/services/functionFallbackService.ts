@@ -431,6 +431,9 @@ export class FunctionFallbackService {
       case "client":
         return this.useClientFallback(functionName, payload, options);
 
+      case "mock":
+        return this.useMockFallback(functionName, payload, options);
+
       case "skip":
         if (!options.silent) {
           toast.warning(
