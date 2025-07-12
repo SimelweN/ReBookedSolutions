@@ -49,7 +49,7 @@ export const safeFetch = async (
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
-    const response = await fetch(url, {
+    const response = await originalFetch(url, {
       ...options,
       signal: controller.signal,
     });
