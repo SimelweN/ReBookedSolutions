@@ -37,12 +37,25 @@ let supabaseAnonKey = getEnvVar("VITE_SUPABASE_ANON_KEY");
 // Debug logging for development - Workers compatible
 const isDev = (() => {
   try {
+    // Primary: Vite environment detection
     if (typeof import.meta !== "undefined" && import.meta.env) {
       return import.meta.env.DEV || import.meta.env.NODE_ENV === "development";
     }
-    if (typeof globalThis !== "undefined" && globalThis.process?.env) {
+
+    // Fallback: Check process env if available
+    if (typeof process !== "undefined" && process.env) {
+      return process.env.NODE_ENV === "development";
+    }
+
+    // Final fallback with strict checks
+    if (
+      typeof globalThis !== "undefined" &&
+      globalThis.process &&
+      typeof globalThis.process.env === "object"
+    ) {
       return globalThis.process.env.NODE_ENV === "development";
     }
+
     return false;
   } catch {
     return false;
