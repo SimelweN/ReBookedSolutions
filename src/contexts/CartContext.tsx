@@ -4,7 +4,7 @@ import { CartItem, CartContextType } from "@/types/cart";
 import { Book } from "@/types/book";
 import { toast } from "sonner";
 import { safeLocalStorage } from "@/utils/safeLocalStorage";
-const CartContext = createContext<CartContextType | undefined>(undefined);
+const CartContext = safeCreateContext<CartContextType | undefined>(undefined);
 
 export const useCart = () => {
   const context = useContext(CartContext);
