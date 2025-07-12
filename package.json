@@ -62,6 +62,7 @@
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.3.0",
     "formidable": "^3.5.1",
+    "framer-motion": "^12.23.3",
     "html-to-image": "^1.11.13",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.462.0",
@@ -77,7 +78,8 @@
     "tailwindcss-animate": "^1.0.7",
     "use-places-autocomplete": "^4.0.1",
     "vaul": "^0.9.3",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
