@@ -18,8 +18,8 @@ const isBrowser = (() => {
 
 // Only execute React app in browser environment
 if (isBrowser) {
-  // Initialize cleanup for problematic scripts
-  import("./utils/cleanupThirdPartyScripts").catch(console.warn);
+  // Apply targeted fetch error fix
+  import("./utils/fetchErrorFix").catch(console.warn);
 
   // Dynamically import App component to prevent Workers build issues
   import("./App.tsx")
