@@ -86,23 +86,52 @@ export const loginUser = async (email: string, password: string) => {
     throw new Error("Password must be at least 6 characters long");
   }
 
+  // Check if Supabase is configured - if not, provide development fallback
+  const supabaseUrl = ENV.VITE_SUPABASE_URL;
+  const supabaseKey = ENV.VITE_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    if (import.meta.env.DEV) {
+      console.warn("🔧 Supabase not configured - using development fallback auth");
+
+      // In development, simulate a successful login
+      return {
+        data: {
+          user: {
+            id: `dev-user-${Date.now()}`,
+            email: email,
+            created_at: new Date().toISOString(),
+            email_confirmed_at: new Date().toISOString(),
+            aud: "authenticated",
+            role: "authenticated",
+          },
+          session: {
+            access_token: "dev-token",
+            refresh_token: "dev-refresh",
+            expires_at: Date.now() + 3600000,
+            token_type: "bearer",
+            user: {
+              id: `dev-user-${Date.now()}`,
+              email: email,
+            },
+          },
+        },
+        error: null,
+      };
+    } else {
+      throw new Error("Authentication service not configured. Please contact support.");
+    }
+  }
+
   // Quick network connectivity check
   await testNetworkConnectivity();
 
-  // Verify Supabase configuration using centralized ENV
-  let supabaseUrl: string;
-  let supabaseKey: string;
-
-  try {
-    supabaseUrl = ENV.VITE_SUPABASE_URL;
-    supabaseKey = ENV.VITE_SUPABASE_ANON_KEY;
-
-    console.log("🔧 Supabase Config Check:", {
-      hasUrl: !!supabaseUrl,
-      hasKey: !!supabaseKey,
-      urlLength: supabaseUrl?.length || 0,
-      keyPrefix: supabaseKey?.substring(0, 10) || "none",
-      isDev: import.meta.env.DEV,
+  console.log("🔧 Supabase Config Check:", {
+    hasUrl: !!supabaseUrl,
+    hasKey: !!supabaseKey,
+    urlLength: supabaseUrl?.length || 0,
+    keyPrefix: supabaseKey?.substring(0, 10) || "none",
+    isDev: import.meta.env.DEV,
     });
   } catch (envError) {
     console.warn(
