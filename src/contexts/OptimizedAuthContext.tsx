@@ -1,5 +1,5 @@
-import * as React from "react";
-import {
+import React, {
+  createContext,
   useContext,
   useEffect,
   useState,
@@ -53,10 +53,8 @@ interface AuthActions {
 }
 
 // Split context into state and actions to prevent unnecessary re-renders
-const AuthStateContext = React.createContext<AuthState | undefined>(undefined);
-const AuthActionsContext = React.createContext<AuthActions | undefined>(
-  undefined,
-);
+const AuthStateContext = createContext<AuthState | undefined>(undefined);
+const AuthActionsContext = createContext<AuthActions | undefined>(undefined);
 
 export const useAuthState = () => {
   const context = useContext(AuthStateContext);

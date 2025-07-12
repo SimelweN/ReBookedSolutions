@@ -1,5 +1,4 @@
-import * as React from "react";
-import { useContext } from "react";
+import React, { createContext, useContext } from "react";
 type ReactNode = React.ReactNode;
 import { useJsApiLoader } from "@react-google-maps/api";
 // Define the libraries array with proper typing
@@ -12,9 +11,9 @@ interface GoogleMapsContextType {
 }
 
 // Create the context with undefined as default
-const GoogleMapsContext = React.createContext<
-  GoogleMapsContextType | undefined
->(undefined);
+const GoogleMapsContext = createContext<GoogleMapsContextType | undefined>(
+  undefined,
+);
 
 // Custom hook to use the Google Maps context
 export const useGoogleMaps = (): GoogleMapsContextType => {
@@ -54,7 +53,7 @@ export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
     typeof window !== "undefined" && typeof document !== "undefined";
   const hasApiKey = Boolean(apiKey && apiKey.trim() !== "" && isBrowser);
 
-  // Only load Google Maps if we have a valid API key and we're in browser
+  // Always call useJsApiLoader hook - React hooks must be called unconditionally
   const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: apiKey || "",

@@ -1,5 +1,5 @@
-import * as React from "react";
-import {
+import React, {
+  createContext,
   useContext,
   useEffect,
   useState,
@@ -62,7 +62,7 @@ interface AuthContextType {
   refreshProfile: () => Promise<void>;
 }
 
-const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

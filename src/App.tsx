@@ -172,8 +172,8 @@ function App() {
     }
   }, []);
 
-  // Initialize commit auto-expiry system only in browser environment
-  const commitAutoExpiry = isWorkerEnv ? null : useCommitAutoExpiry();
+  // Initialize commit auto-expiry system - always call hook but handle environment inside
+  const commitAutoExpiry = useCommitAutoExpiry();
 
   React.useEffect(() => {
     // Check if system needs setup

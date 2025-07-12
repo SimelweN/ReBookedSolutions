@@ -49,7 +49,8 @@ if (isDev) {
 const createMockSupabaseClient = () => {
   if (isDev) {
     console.warn(
-      "⚠️ Supabase environment variables not configured. Using mock client.",
+      "⚠️ Supabase environment variables not configured. Using mock client.\n" +
+        "💡 To fix: Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file",
     );
   }
 
@@ -78,23 +79,37 @@ const createMockSupabaseClient = () => {
     auth: {
       signUp: () =>
         Promise.resolve({
-          data: null,
-          error: { message: "Supabase not configured - using demo mode" },
+          data: { user: null, session: null },
+          error: {
+            message:
+              "Supabase not configured - please set environment variables",
+          },
         }),
       signInWithPassword: () =>
         Promise.resolve({
-          data: null,
-          error: { message: "Supabase not configured - using demo mode" },
+          data: { user: null, session: null },
+          error: {
+            message:
+              "Supabase not configured - please set environment variables",
+          },
         }),
       signOut: () => Promise.resolve({ error: null }),
       getSession: () =>
         Promise.resolve({ data: { session: null }, error: null }),
       getUser: () => Promise.resolve({ data: { user: null }, error: null }),
-      onAuthStateChange: () => ({
-        data: { subscription: { unsubscribe: () => {} } },
-      }),
+      onAuthStateChange: (callback: any) => {
+        // Call callback immediately with no session
+        setTimeout(() => callback("SIGNED_OUT", null), 100);
+        return {
+          data: { subscription: { unsubscribe: () => {} } },
+        };
+      },
+      exchangeCodeForSession: () =>
+        Promise.resolve({
+          data: { user: null, session: null },
+          error: { message: "Supabase not configured" },
+        }),
     },
-    // Add storage mock
     storage: {
       from: () => ({
         upload: () =>
