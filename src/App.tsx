@@ -663,6 +663,7 @@ function App() {
                     </div>
                   </Router>
                   <NotificationStack position="top-right" maxVisible={3} />
+                  <NotificationInitializer />
                 </CartProvider>
               </AuthProvider>
             </GoogleMapsProvider>
