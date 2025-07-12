@@ -85,17 +85,50 @@ const createMockSupabaseClient = () => {
   };
 };
 
-// Create client directly if environment variables are available
-export const supabase =
-  supabaseUrl && supabaseAnonKey
-    ? createClient<Database>(supabaseUrl, supabaseAnonKey, {
-        auth: {
-          autoRefreshToken: true,
-          persistSession: true,
-          detectSessionInUrl: true,
+// Enhanced client creation with error handling
+const createSupabaseClient = () => {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return createMockSupabaseClient() as any;
+  }
+
+  try {
+    const client = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+      },
+      global: {
+        fetch: async (url, options = {}) => {
+          try {
+            const response = await fetch(url, {
+              ...options,
+              // Add timeout to prevent hanging requests
+              signal: AbortSignal.timeout?.(10000), // 10 second timeout if supported
+            });
+            return response;
+          } catch (error) {
+            console.warn("Supabase fetch error:", error);
+            // Return a mock response to prevent crashes
+            return new Response(JSON.stringify({ error: "Network error" }), {
+              status: 500,
+              statusText: "Network Error",
+              headers: { "Content-Type": "application/json" },
+            });
+          }
         },
-      })
-    : (createMockSupabaseClient() as any);
+      },
+    });
+
+    return client;
+  } catch (error) {
+    console.error("Failed to create Supabase client:", error);
+    return createMockSupabaseClient() as any;
+  }
+};
+
+// Create client with error handling
+export const supabase = createSupabaseClient();
 
 // Export default for compatibility
 export default supabase;
