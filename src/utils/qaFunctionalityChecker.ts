@@ -311,7 +311,7 @@ export class QAFunctionalityChecker {
 
   // SECTION 5: COURIER INTEGRATION
   async testCourierIntegration() {
-    console.log("🚚 Testing Courier Integration...");
+    console.warn("🚚 Testing Courier Integration...");
 
     const courierApiKeys = [
       { name: "Courier Guy", key: ENV.VITE_COURIER_GUY_API_KEY },
