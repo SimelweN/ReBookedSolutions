@@ -1623,6 +1623,9 @@ const DevDashboard: React.FC = () => {
 
               {/* Purchase Flow Tester */}
               <PurchaseFlowTester />
+
+              {/* Notification System Demo */}
+              <NotificationDemo />
             </TabsContent>
 
             {/* Dev Tools Tab */}
