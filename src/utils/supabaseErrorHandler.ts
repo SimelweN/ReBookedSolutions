@@ -33,6 +33,18 @@ export const isSupabaseConfigError = (error: any): boolean => {
   );
 };
 
+export const isAuthError = (error: any): boolean => {
+  if (!error) return false;
+
+  const errorMessage = error.message || String(error);
+  return (
+    errorMessage.includes("HTTP 401") ||
+    errorMessage.includes("Unauthorized") ||
+    errorMessage.includes("authentication") ||
+    errorMessage.includes("UNAUTHORIZED")
+  );
+};
+
 export const handleSupabaseError = (
   error: any,
   operation: string,
