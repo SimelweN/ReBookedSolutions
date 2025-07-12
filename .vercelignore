@@ -47,3 +47,16 @@ jest.config.js
 # Misc
 .eslintcache
 .stylelintcache
+
+# Conflicting deployment configs (for Vercel deployment)
+netlify.toml
+wrangler.json
+_headers
+_redirects
+
+# Supabase edge functions (use Supabase for these, not Vercel)
+supabase/functions/
+
+# Other cloud provider configs
+.cloudflare
+.netlify
