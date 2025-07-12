@@ -98,29 +98,10 @@ const createSupabaseClient = () => {
         persistSession: true,
         detectSessionInUrl: true,
       },
-      global: {
-        fetch: async (url, options = {}) => {
-          try {
-            // Use native fetch to avoid circular calls
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-            const response = await globalThis.fetch(url, {
-              ...options,
-              signal: controller.signal,
-            });
-
-            clearTimeout(timeoutId);
-            return response;
-          } catch (error) {
-            console.warn("Supabase fetch error:", error);
-            // Return a mock response to prevent crashes
-            return new Response(JSON.stringify({ error: "Network error" }), {
-              status: 500,
-              statusText: "Network Error",
-              headers: { "Content-Type": "application/json" },
-            });
-          }
+      // Use standard fetch without custom overrides
+      realtime: {
+        params: {
+          eventsPerSecond: 2,
         },
       },
     });
