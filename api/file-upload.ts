@@ -23,6 +23,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 
+  // Check authentication
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({
+      success: false,
+      error: "Authentication required. Please provide a valid bearer token.",
+    });
+  }
+
   // Dynamic Node.js module loading - only executed in Node.js
   let formidable: any;
   let fs: any;
