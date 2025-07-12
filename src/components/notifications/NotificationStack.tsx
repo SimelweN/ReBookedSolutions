@@ -47,13 +47,34 @@ interface NotificationStackProps {
   autoHideDelay?: number;
 }
 
-// Internal component that requires auth context
-const NotificationStackInternal: React.FC<NotificationStackProps> = ({
+const NotificationStack: React.FC<NotificationStackProps> = ({
   position = "top-right",
   maxVisible = 3,
   autoHideDelay = 8000,
 }) => {
-  const { user } = useAuth();
+  // Use auth with fallback
+  const [user, setUser] = useState<any>(null);
+  const [authReady, setAuthReady] = useState(false);
+
+  useEffect(() => {
+    try {
+      const authContext = useAuth();
+      setUser(authContext.user);
+      setAuthReady(true);
+    } catch (error) {
+      // Auth context not available, continue without user
+      console.warn(
+        "NotificationStack: Auth context not ready, continuing without user",
+      );
+      setUser(null);
+      setAuthReady(true);
+    }
+  }, []);
+
+  // Wait for auth check to complete
+  if (!authReady) {
+    return null;
+  }
   const {
     notifications,
     unreadCount,
