@@ -168,6 +168,27 @@ const createSupabaseClient = () => {
           } catch (error) {
             console.error("Supabase fetch error:", error);
 
+            // Handle network errors gracefully
+            if (isNetworkError(error)) {
+              console.warn(
+                "Network error detected, returning fallback response",
+              );
+              return new Response(
+                JSON.stringify({
+                  data: null,
+                  error: {
+                    message:
+                      "Unable to connect to database. Please check your internet connection.",
+                    code: "NETWORK_ERROR",
+                  },
+                }),
+                {
+                  status: 200,
+                  headers: { "Content-Type": "application/json" },
+                },
+              );
+            }
+
             // Return a mock response for development to prevent crashes
             if (isDev) {
               return new Response(
