@@ -204,54 +204,6 @@ const FUNCTION_CONFIGS: Record<string, FunctionConfig> = {
     fallbackStrategy: "skip",
     timeout: 10000,
   },
-  "file-upload": {
-    name: "file-upload",
-    critical: false,
-    fallbackStrategy: "client",
-    timeout: 15000,
-  },
-  "study-resources-api": {
-    name: "study-resources-api",
-    critical: false,
-    fallbackStrategy: "client",
-    timeout: 10000,
-  },
-  "courier-guy-track": {
-    name: "courier-guy-track",
-    critical: false,
-    fallbackStrategy: "client",
-    timeout: 10000,
-  },
-  "fastway-track": {
-    name: "fastway-track",
-    critical: false,
-    fallbackStrategy: "client",
-    timeout: 10000,
-  },
-  "courier-guy-shipment": {
-    name: "courier-guy-shipment",
-    critical: false,
-    fallbackStrategy: "client",
-    timeout: 15000,
-  },
-  "fastway-shipment": {
-    name: "fastway-shipment",
-    critical: false,
-    fallbackStrategy: "client",
-    timeout: 15000,
-  },
-  "mark-collected": {
-    name: "mark-collected",
-    critical: false,
-    fallbackStrategy: "skip",
-    timeout: 10000,
-  },
-  "email-automation": {
-    name: "email-automation",
-    critical: false,
-    fallbackStrategy: "skip",
-    timeout: 10000,
-  },
 };
 
 export class FunctionFallbackService {

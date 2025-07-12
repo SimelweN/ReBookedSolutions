@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import Layout from "@/components/Layout";
+import SEO from "@/components/SEO";
 import BookImageSection from "@/components/book-details/BookImageSection";
 import BookInfo from "@/components/book-details/BookInfo";
 import BookDescription from "@/components/book-details/BookDescription";
@@ -256,6 +257,34 @@ const BookDetails = () => {
 
   return (
     <Layout>
+      <SEO
+        title={`${book.title} by ${book.author} - ReBooked Solutions`}
+        description={`Buy ${book.title} by ${book.author} for R${book.price}. ${book.description || "Quality used textbook available for students."}`}
+        canonical={`https://rebookedsolutions.co.za/books/${book.id}`}
+        type="product"
+        image={book.image || "/placeholder.svg"}
+        imageAlt={`Cover of ${book.title} by ${book.author}`}
+        product={{
+          name: book.title,
+          description: book.description || `${book.title} by ${book.author}`,
+          image: book.image || "/placeholder.svg",
+          price: book.price,
+          currency: "ZAR",
+          availability: book.sold ? "OutOfStock" : "InStock",
+          condition: book.condition || "UsedCondition",
+          author: book.author,
+          isbn: book.isbn,
+          category: book.category,
+          seller: {
+            name: book.seller?.name || "ReBooked Seller",
+          },
+        }}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Books", url: "/books" },
+          { name: book.title, url: `/books/${book.id}` },
+        ]}
+      />
       <div className="container mx-auto px-4 py-4 sm:py-8 max-w-6xl">
         {/* Back button */}
         <div className="mb-4 sm:mb-6">

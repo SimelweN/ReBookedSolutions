@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
+import { rateLimit, rateLimitConfigs } from "./utils/rate-limiter";
 
 interface PaystackInitRequest {
   email: string;
@@ -13,8 +14,24 @@ interface PaystackInitRequest {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  // Apply rate limiting
+  const rateLimiter = rateLimit(rateLimitConfigs.payment);
+  if (!rateLimiter(req, res)) {
+    return; // Rate limit exceeded, response already sent
+  }
+
+  // CORS headers - restrict to specific domains
+  const allowedOrigins = [
+    "https://rebookedsolutions.co.za",
+    "https://www.rebookedsolutions.co.za",
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://localhost:8080",
+  ];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 

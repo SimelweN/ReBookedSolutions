@@ -9,25 +9,27 @@ const fs = require("fs");
 const path = require("path");
 
 const DEMO_ENV_CONTENT = `# Demo Environment Configuration
-# These are safe demo/test keys for development and testing
+# Please replace all placeholder values with your actual API keys
 
-# Paystack Test Keys (Safe to share - they're test keys)
-VITE_PAYSTACK_PUBLIC_KEY=pk_test_37c77bb59dc7a6b3a3b836a74ebc3b9f59e25de7
-VITE_PAYSTACK_SECRET_KEY=sk_test_37c77bb59dc7a6b3a3b836a74ebc3b9f59e25de7
+# Paystack Configuration (Replace with your test keys)
+VITE_PAYSTACK_PUBLIC_KEY=pk_test_your_paystack_public_key_here
+VITE_PAYSTACK_SECRET_KEY=sk_test_your_paystack_secret_key_here
 
-# Demo API Keys for testing (non-functional but safe)
-VITE_GOOGLE_MAPS_API_KEY=demo-google-maps-key
-VITE_COURIER_GUY_API_KEY=demo-courier-guy-key
-VITE_FASTWAY_API_KEY=demo-fastway-key
-VITE_SENDER_API=demo-sender-api-key
+# API Keys (Replace with your actual keys)
+VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
+VITE_COURIER_GUY_API_KEY=your_courier_guy_api_key_here
+VITE_FASTWAY_API_KEY=your_fastway_api_key_here
+VITE_SENDER_API=your_sender_api_key_here
+RESEND_API_KEY=your_resend_api_key_here
 
 # App Configuration
 VITE_APP_URL=http://localhost:5173
-VITE_BANKING_VAULT_URL=https://demo-banking-vault.lovable.app
+VITE_BANKING_VAULT_URL=https://your-banking-vault-url.lovable.app
 
-# Add your actual Supabase credentials here:
-# VITE_SUPABASE_URL=https://your-project.supabase.co
-# VITE_SUPABASE_ANON_KEY=your-anon-key
+# Supabase Configuration (Required - Replace with your actual values)
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
 
 # Node Environment
 NODE_ENV=development

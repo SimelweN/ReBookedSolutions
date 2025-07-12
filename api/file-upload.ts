@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { rateLimit, rateLimitConfigs } from "./utils/rate-limiter";
 
 export const config = {
   api: {
@@ -23,6 +24,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 
+  // Apply rate limiting for file uploads
+  const rateLimiter = rateLimit(rateLimitConfigs.upload);
+  if (!rateLimiter(req, res)) {
+    return; // Rate limit exceeded, response already sent
+  }
+
+  // Check authentication
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({
+      success: false,
+      error: "Authentication required. Please provide a valid bearer token.",
+    });
+  }
+
   // Dynamic Node.js module loading - only executed in Node.js
   let formidable: any;
   let fs: any;
@@ -41,8 +57,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 
-  // CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  // CORS headers - restrict to specific domains
+  const allowedOrigins = [
+    "https://rebookedsolutions.co.za",
+    "https://www.rebookedsolutions.co.za",
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://localhost:8080",
+  ];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
   res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 

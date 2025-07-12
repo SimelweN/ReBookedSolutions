@@ -16,12 +16,12 @@
   },
   "functions": {
     "api/**/*.ts": {
-      "runtime": "nodejs18.x",
+      "runtime": "nodejs20.x",
       "maxDuration": 30,
       "memory": 1024
     },
     "api/**/*.js": {
-      "runtime": "nodejs18.x",
+      "runtime": "nodejs20.x",
       "maxDuration": 30,
       "memory": 1024
     }
