@@ -170,8 +170,17 @@ export const checkConnectionHealth = async (
       ])) as any;
 
       if (authError) {
-        result.authStatus = "error";
-        if (!result.error) result.error = authError.message;
+        // Handle auth errors gracefully - don't treat as connection failures
+        if (
+          authError.code === "UNAUTHORIZED" ||
+          authError.message?.includes("authentication")
+        ) {
+          devWarn("Auth session check: Authentication error", authError);
+          result.authStatus = "disconnected";
+        } else {
+          result.authStatus = "error";
+          if (!result.error) result.error = authError.message;
+        }
       } else if (session) {
         result.authStatus = "connected";
       } else {
