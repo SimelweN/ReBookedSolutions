@@ -209,19 +209,25 @@ export class ClientCommitAutoExpiry {
       supabase.from("order_notifications").insert({
         order_id: commit.id,
         user_id: commit.buyer_id,
-        type: "order_expired",
+        type: "commit_expired_refund", // Use valid type from schema
         title: "Order Expired - Refund Processed",
         message: `Your order #${commit.id.slice(0, 8)} has expired as the seller didn't commit within 48 hours. You have been automatically refunded.`,
         read: false,
+        metadata: {
+          notification_subtype: "order_expired",
+        },
       }),
       // Notify seller
       supabase.from("order_notifications").insert({
         order_id: commit.id,
         user_id: commit.seller_id,
-        type: "commit_expired",
+        type: "commit_expired_penalty", // Use valid type from schema
         title: "Commitment Window Expired",
         message: `Your 48-hour commitment window for order #${commit.id.slice(0, 8)} has expired. The buyer has been refunded and your book has been relisted.`,
         read: false,
+        metadata: {
+          notification_subtype: "commit_expired",
+        },
       }),
     ]);
 
