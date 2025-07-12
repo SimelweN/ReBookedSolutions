@@ -11,7 +11,7 @@ export interface FunctionResponse<T = any> {
 export interface FunctionConfig {
   name: string;
   critical: boolean;
-  fallbackStrategy: "client" | "skip" | "retry";
+  fallbackStrategy: "client" | "skip" | "retry" | "mock";
   retryAttempts?: number;
   timeout?: number;
 }
