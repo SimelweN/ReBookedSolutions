@@ -85,20 +85,82 @@ const createMockSupabaseClient = () => {
   };
 };
 
-// Enhanced client creation with error handling
+// Enhanced client creation with error handling and fetch protection
 const createSupabaseClient = () => {
   if (!supabaseUrl || !supabaseAnonKey) {
+    if (isDev) {
+      console.warn(
+        "Supabase environment variables not configured, using mock client",
+      );
+    }
+    return createMockSupabaseClient() as any;
+  }
+
+  // Validate URL format to prevent fetch errors
+  try {
+    new URL(supabaseUrl);
+  } catch {
+    console.error("Invalid Supabase URL format:", supabaseUrl);
+    return createMockSupabaseClient() as any;
+  }
+
+  // Validate API key format
+  const cleanKey = supabaseAnonKey.replace(/^=+/, "");
+  if (!cleanKey || cleanKey.length < 20) {
+    console.error("Invalid Supabase anon key format");
     return createMockSupabaseClient() as any;
   }
 
   try {
-    const client = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+    const client = createClient<Database>(supabaseUrl, cleanKey, {
       auth: {
         autoRefreshToken: true,
         persistSession: true,
         detectSessionInUrl: true,
       },
-      // Use standard fetch without custom overrides
+      // Add global fetch error handling
+      global: {
+        fetch: async (url, options = {}) => {
+          try {
+            const response = await fetch(url, {
+              ...options,
+              headers: {
+                ...options.headers,
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+            });
+
+            if (!response.ok) {
+              throw new Error(
+                `HTTP ${response.status}: ${response.statusText}`,
+              );
+            }
+
+            return response;
+          } catch (error) {
+            console.error("Supabase fetch error:", error);
+
+            // Return a mock response for development to prevent crashes
+            if (isDev) {
+              return new Response(
+                JSON.stringify({
+                  data: null,
+                  error: {
+                    message: "Development mode - no Supabase connection",
+                  },
+                }),
+                {
+                  status: 200,
+                  headers: { "Content-Type": "application/json" },
+                },
+              );
+            }
+
+            throw error;
+          }
+        },
+      },
       realtime: {
         params: {
           eventsPerSecond: 2,
