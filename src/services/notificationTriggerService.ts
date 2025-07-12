@@ -34,12 +34,15 @@ export class NotificationTriggerService {
         await supabase.from("order_notifications").insert({
           order_id: orderDetails.id,
           user_id: orderDetails.seller_id,
-          type: "commit_required",
+          type: "payment_received", // Use valid type from schema
           title: "⏰ Commitment Required",
           message: `You have 48 hours to commit to order ${orderDetails.id}. Please confirm you can fulfill this order or it will be automatically cancelled.`,
           read: false,
-          commit_deadline: commitDeadline.toISOString(),
-          priority: "urgent",
+          metadata: {
+            commit_deadline: commitDeadline.toISOString(),
+            priority: "urgent",
+            notification_subtype: "commit_required",
+          },
         });
       } catch (dbError) {
         console.warn("Failed to store notification in database:", dbError);
