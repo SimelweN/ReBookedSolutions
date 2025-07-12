@@ -26,7 +26,7 @@ import AdminPage from "./pages/Admin";
 const Dashboard = React.lazy(() => import("./pages/Dashboard"));
 const BookListing = React.lazy(() => import("./pages/BookListing"));
 const BookDetails = React.lazy(() => import("./pages/BookDetails"));
-const Profile = React.lazy(() => import("./pages/Profile"));
+import Profile from "./pages/Profile";
 const CreateListing = React.lazy(() => import("./pages/CreateListing"));
 const Cart = React.lazy(() => import("./pages/Cart"));
 const Checkout = React.lazy(() => import("./pages/Checkout"));
