@@ -141,7 +141,9 @@ export const checkConnectionHealth = async (
       // Handle auth errors gracefully - don't count as connection failures
       if (
         error.code === "UNAUTHORIZED" ||
-        error.message?.includes("authentication")
+        error.message?.includes("authentication") ||
+        error.message?.includes("HTTP 401") ||
+        error.message?.includes("401")
       ) {
         devWarn("Connection check: Authentication required", error);
         result.supabaseConnected = true; // Connection is working, just not authenticated
