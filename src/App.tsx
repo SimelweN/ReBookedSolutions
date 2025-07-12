@@ -80,12 +80,18 @@ function App() {
     // Check if system needs setup
     const envValid = validateEnvironment();
 
-    // In development, always show startup checker if env is not valid
-    // In production, only show if critical services are missing
-    if (!envValid && import.meta.env.DEV) {
+    // In development, we allow the app to continue with mock services
+    // Only show startup checker in production or if explicitly needed
+    if (!envValid && import.meta.env.PROD) {
       setShowStartupChecker(true);
     } else {
+      // In development, always proceed - we have fallback mock services
       setSystemReady(true);
+      if (!envValid && import.meta.env.DEV) {
+        console.log(
+          "🔧 Development mode: Proceeding with mock/fallback services",
+        );
+      }
     }
   }, []);
 
