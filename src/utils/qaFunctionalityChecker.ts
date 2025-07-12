@@ -200,7 +200,7 @@ export class QAFunctionalityChecker {
 
   // SECTION 3: GOOGLE MAPS FUNCTIONALITY
   async testGoogleMapsIntegration() {
-    console.log("🗺️ Testing Google Maps Integration...");
+    console.warn("🗺️ Testing Google Maps Integration...");
 
     // Test 3.1: Google Maps API Key
     const mapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
