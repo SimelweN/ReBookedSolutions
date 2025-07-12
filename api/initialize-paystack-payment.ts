@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
+import { rateLimit, rateLimitConfigs } from "./utils/rate-limiter";
 
 interface PaystackInitRequest {
   email: string;
