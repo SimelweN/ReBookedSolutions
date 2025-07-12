@@ -69,7 +69,7 @@ const CampusNavbar = React.memo(() => {
                 </span>
               </div>
               <span className="text-base sm:text-xl font-bold text-book-600">
-                ReBooked Solutions Campus
+                ReBooked Campus
               </span>
             </button>
           </div>
