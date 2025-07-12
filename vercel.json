@@ -17,6 +17,10 @@
     "api/**/*.ts": {
       "runtime": "nodejs18.x",
       "maxDuration": 30
+    },
+    "api/**/*.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 30
     }
   },
   "rewrites": [
@@ -60,5 +64,6 @@
         }
       ]
     }
-  ]
+  ],
+  "ignoreCommand": "npx vercel-ignore"
 }
