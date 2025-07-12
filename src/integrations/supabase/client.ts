@@ -46,9 +46,11 @@ if (isDev) {
 
 // Create a mock client for when environment variables are missing
 const createMockSupabaseClient = () => {
-  console.error(
-    "⚠️ Supabase environment variables not configured. Using mock client.",
-  );
+  if (isDev) {
+    console.warn(
+      "⚠️ Supabase environment variables not configured. Using mock client.",
+    );
+  }
 
   const mockQuery = {
     select: () => mockQuery,
@@ -59,7 +61,15 @@ const createMockSupabaseClient = () => {
     lte: () => mockQuery,
     in: () => mockQuery,
     order: () => mockQuery,
+    limit: () => mockQuery,
+    single: () => mockQuery,
+    insert: () => mockQuery,
+    update: () => mockQuery,
+    delete: () => mockQuery,
+    upsert: () => mockQuery,
     then: (resolve: any) => resolve({ data: [], error: null }),
+    catch: (reject: any) =>
+      reject(new Error("Mock client - no database connection")),
   };
 
   return {
@@ -68,18 +78,34 @@ const createMockSupabaseClient = () => {
       signUp: () =>
         Promise.resolve({
           data: null,
-          error: { message: "Supabase not configured" },
+          error: { message: "Supabase not configured - using demo mode" },
         }),
       signInWithPassword: () =>
         Promise.resolve({
           data: null,
-          error: { message: "Supabase not configured" },
+          error: { message: "Supabase not configured - using demo mode" },
         }),
       signOut: () => Promise.resolve({ error: null }),
       getSession: () =>
         Promise.resolve({ data: { session: null }, error: null }),
+      getUser: () => Promise.resolve({ data: { user: null }, error: null }),
       onAuthStateChange: () => ({
         data: { subscription: { unsubscribe: () => {} } },
+      }),
+    },
+    // Add storage mock
+    storage: {
+      from: () => ({
+        upload: () =>
+          Promise.resolve({
+            data: null,
+            error: { message: "Storage not configured" },
+          }),
+        download: () =>
+          Promise.resolve({
+            data: null,
+            error: { message: "Storage not configured" },
+          }),
       }),
     },
   };
