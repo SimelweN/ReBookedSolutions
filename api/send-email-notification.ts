@@ -154,10 +154,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    // Get Resend API key
-    const resendApiKey = process.env.VITE_RESEND_API_KEY;
+    // Get Resend API key - try both possible environment variable names
+    const resendApiKey =
+      process.env.RESEND_API_KEY || process.env.VITE_RESEND_API_KEY;
     if (!resendApiKey) {
-      console.error("VITE_RESEND_API_KEY not configured");
+      console.error("RESEND_API_KEY not configured");
       return res.status(500).json({
         success: false,
         error: "Email service not configured",
