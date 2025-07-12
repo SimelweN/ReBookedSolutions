@@ -127,13 +127,24 @@ const UniversityProfile: React.FC = () => {
                           src={university.logo}
                           alt={`${university.name} logo`}
                           className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
+                          onError={(e) => {
+                            // Hide the failed image and show fallback
+                            const img = e.currentTarget;
+                            img.style.display = "none";
+                            const fallback =
+                              img.nextElementSibling as HTMLElement;
+                            if (fallback) {
+                              fallback.style.display = "flex";
+                            }
+                          }}
                         />
-                      ) : (
-                        <span className="text-lg sm:text-2xl font-bold text-gray-700">
-                          {university.abbreviation ||
-                            university.name.substring(0, 3).toUpperCase()}
-                        </span>
-                      )}
+                      ) : null}
+                      <span
+                        className={`w-12 h-12 sm:w-16 sm:h-16 ${university.logo ? "hidden" : "flex"} items-center justify-center text-lg sm:text-2xl font-bold text-gray-700 bg-gradient-to-br from-book-500 to-book-600 text-white rounded-lg`}
+                      >
+                        {university.abbreviation ||
+                          university.name.substring(0, 3).toUpperCase()}
+                      </span>
                     </div>
                     <div className="absolute -bottom-2 -right-2 w-5 h-5 sm:w-6 sm:h-6 bg-book-500 rounded-full flex items-center justify-center">
                       <Award className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" />
