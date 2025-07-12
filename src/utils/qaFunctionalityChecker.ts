@@ -385,7 +385,7 @@ export class QAFunctionalityChecker {
 
   // SECTION 7: CART FUNCTIONALITY
   async testCartFunctionality() {
-    console.log("🛒 Testing Cart Functionality...");
+    console.warn("🛒 Testing Cart Functionality...");
 
     try {
       // Test cart localStorage operations
