@@ -19,11 +19,6 @@
       "runtime": "vercel-node@18.0.0",
       "maxDuration": 30,
       "memory": 1024
-    },
-    "api/**/*.js": {
-      "runtime": "vercel-node@18.0.0",
-      "maxDuration": 30,
-      "memory": 1024
     }
   },
   "regions": ["iad1"],
