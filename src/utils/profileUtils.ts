@@ -4,10 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
  * Safely fetch a user profile, handling cases where the profile might not exist
  * Use this instead of .single() when you're not certain the profile exists
  */
-export const safeGetProfile = async <T = any>(
+export const safeGetProfile = async <T = unknown>(
   userId: string,
   selectFields: string = "*",
-): Promise<{ data: T | null; error: any }> => {
+): Promise<{ data: T | null; error: unknown }> => {
   try {
     const { data, error } = await supabase
       .from("profiles")
@@ -26,7 +26,7 @@ export const safeGetProfile = async <T = any>(
  * Safely fetch a user profile with error handling and logging
  * Throws an error only if specified, otherwise returns null on failure
  */
-export const getUserProfile = async <T = any>(
+export const getUserProfile = async <T = unknown>(
   userId: string,
   selectFields: string = "*",
   throwOnError: boolean = false,
