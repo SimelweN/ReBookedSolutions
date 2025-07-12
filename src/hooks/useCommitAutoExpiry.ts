@@ -9,7 +9,16 @@ export const useCommitAutoExpiry = () => {
   const [urgentCount, setUrgentCount] = useState(0);
   const [nextExpiry, setNextExpiry] = useState<Date | null>(null);
 
+  // Workers environment check
+  const isBrowser =
+    typeof window !== "undefined" && typeof document !== "undefined";
+
   useEffect(() => {
+    // Skip in Workers environment
+    if (!isBrowser) {
+      return;
+    }
+
     // Ensure the service is started
     ClientCommitAutoExpiry.start();
     setIsRunning(true);
