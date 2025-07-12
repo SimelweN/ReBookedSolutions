@@ -100,7 +100,7 @@ VERCEL_DEPLOYMENT_FIXES.md - This documentation
   "version": 2,
   "functions": {
     "api/**/*.ts": {
-      "runtime": "vercel/node@20.x",
+      "runtime": "vercel-node@18.0.0",
       "maxDuration": 30
     }
   },
@@ -116,7 +116,7 @@ VERCEL_DEPLOYMENT_FIXES.md - This documentation
 20.x
 ```
 
-## 🚀 Common Vercel Deployment Errors - Prevention Guide
+## ��� Common Vercel Deployment Errors - Prevention Guide
 
 ### ✅ Fixed: Function Runtime Errors
 
