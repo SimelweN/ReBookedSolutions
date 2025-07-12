@@ -83,7 +83,13 @@ const UniversityProfile: React.FC = () => {
       uni.id === id || uni.name.toLowerCase().replace(/\s+/g, "-") === id,
   );
 
+  // Debug logging
+  console.log("UniversityProfile - looking for ID:", id);
+  console.log("Available universities:", ALL_SOUTH_AFRICAN_UNIVERSITIES.length);
+  console.log("Found university:", university?.name || "NOT FOUND");
+
   if (!university) {
+    console.log("University not found, redirecting to /university-info");
     return <Navigate to="/university-info" replace />;
   }
 
