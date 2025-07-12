@@ -65,14 +65,14 @@ export const verifyProgramAllocation = () => {
 export const logProgramVerification = () => {
   const results = verifyProgramAllocation();
 
-  console.log("🔍 PROGRAM ALLOCATION VERIFICATION");
-  console.log("==================================");
-  console.log(`📊 Total Universities: ${results.totalUniversities}`);
-  console.log(
+  console.warn("🔍 PROGRAM ALLOCATION VERIFICATION");
+  console.warn("==================================");
+  console.warn(`📊 Total Universities: ${results.totalUniversities}`);
+  console.warn(
     `✅ Universities with Programs: ${results.universitiesWithPrograms}`,
   );
-  console.log(`📚 Total Programs: ${results.totalPrograms}`);
-  console.log(
+  console.warn(`📚 Total Programs: ${results.totalPrograms}`);
+  console.warn(
     `🏫 Average Programs per University: ${Math.round(results.totalPrograms / results.universitiesWithPrograms)}`,
   );
 
