@@ -116,12 +116,12 @@ VERCEL_DEPLOYMENT_FIXES.md - This documentation
 20.x
 ```
 
-## ��� Common Vercel Deployment Errors - Prevention Guide
+## 🚀 Common Vercel Deployment Errors - Prevention Guide
 
 ### ✅ Fixed: Function Runtime Errors
 
 - **Error:** "Function Runtimes must have a valid version"
-- **Fix:** Updated runtime to `vercel/node@20.x`
+- **Fix:** Updated runtime to `vercel-node@18.0.0`
 
 ### ✅ Fixed: Build Timeout Issues
 
