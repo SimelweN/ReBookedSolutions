@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { rateLimit, rateLimitConfigs } from "./utils/rate-limiter";
 
 export const config = {
   api: {
