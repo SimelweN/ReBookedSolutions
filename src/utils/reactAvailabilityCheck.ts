@@ -110,13 +110,15 @@ export const ReactFallbacks = {
   },
 
   useContext: <T>(context: React.Context<T>): T => {
+    // Always call React.useContext - hooks must be called unconditionally
     if (typeof React !== "undefined" && React.useContext) {
       return React.useContext(context);
     }
 
-    console.warn("⚠️ Using fallback useContext implementation");
-    // Return a reasonable default - this won't work properly but prevents crashes
-    return {} as T;
+    // This should never happen in a proper React environment
+    throw new Error(
+      "React.useContext is not available - React is not properly loaded",
+    );
   },
 };
 
