@@ -1,7 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
-import "./index.css";
+
+// Only import CSS in browser environment
+if (typeof window !== "undefined") {
+  import("./index.css");
+}
 
 // Comprehensive environment detection for Workers compatibility
 const getEnvironmentInfo = () => {
