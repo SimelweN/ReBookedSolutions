@@ -2,18 +2,24 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
 
-// Ultra-simple environment access for Workers
-let supabaseUrl = "";
-let supabaseAnonKey = "";
+// Workers-compatible environment access
+const getEnvVar = (key: string): string => {
+  try {
+    if (typeof import.meta !== "undefined" && import.meta.env) {
+      return import.meta.env[key] || "";
+    }
+    // Fallback for Workers environment
+    if (typeof globalThis !== "undefined" && globalThis.process?.env) {
+      return globalThis.process.env[key] || "";
+    }
+    return "";
+  } catch {
+    return "";
+  }
+};
 
-try {
-  supabaseUrl = import.meta.env?.VITE_SUPABASE_URL || "";
-  supabaseAnonKey = import.meta.env?.VITE_SUPABASE_ANON_KEY || "";
-} catch {
-  // Fallback if import.meta.env is not available
-  supabaseUrl = "";
-  supabaseAnonKey = "";
-}
+let supabaseUrl = getEnvVar("VITE_SUPABASE_URL");
+let supabaseAnonKey = getEnvVar("VITE_SUPABASE_ANON_KEY");
 
 // Debug logging for development
 if (import.meta.env.DEV) {
