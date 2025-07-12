@@ -114,20 +114,26 @@ export class NotificationTriggerService {
           {
             order_id: orderDetails.id,
             user_id: orderDetails.seller_id,
-            type: "auto_cancelled",
+            type: "commit_expired_penalty", // Use valid type from schema
             title: "❌ Order Auto-Cancelled",
             message: `Order ${orderDetails.id} has been automatically cancelled due to missed 48-hour commitment deadline. Your seller rating may be affected.`,
             read: false,
-            priority: "urgent",
+            metadata: {
+              priority: "urgent",
+              notification_subtype: "auto_cancelled",
+            },
           },
           {
             order_id: orderDetails.id,
             user_id: orderDetails.buyer_id,
-            type: "auto_cancelled",
+            type: "commit_expired_refund", // Use valid type from schema
             title: "❌ Order Cancelled",
             message: `Your order ${orderDetails.id} has been cancelled because the seller didn't commit within 48 hours. Your refund will be processed automatically.`,
             read: false,
-            priority: "high",
+            metadata: {
+              priority: "high",
+              notification_subtype: "auto_cancelled",
+            },
           },
         ];
 
@@ -169,20 +175,27 @@ export class NotificationTriggerService {
           {
             order_id: orderDetails.id,
             user_id: orderDetails.buyer_id,
-            type: "pickup_confirmed",
+            type: "order_shipped", // Use valid type from schema
             title: "🚚 Package Picked Up",
             message: `Your order ${orderDetails.id} has been picked up by the courier and is on its way to you!${trackingNumber ? ` Tracking: ${trackingNumber}` : ""}`,
             read: false,
-            priority: "high",
+            metadata: {
+              priority: "high",
+              notification_subtype: "pickup_confirmed",
+              tracking_number: trackingNumber,
+            },
           },
           {
             order_id: orderDetails.id,
             user_id: orderDetails.seller_id,
-            type: "pickup_confirmed",
+            type: "order_shipped", // Use valid type from schema
             title: "✅ Pickup Confirmed",
             message: `Your package for order ${orderDetails.id} has been successfully picked up by the courier. Payment will be released after delivery confirmation.`,
             read: false,
-            priority: "medium",
+            metadata: {
+              priority: "medium",
+              notification_subtype: "pickup_confirmed",
+            },
           },
         ];
 
