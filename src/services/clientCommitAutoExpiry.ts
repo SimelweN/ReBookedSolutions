@@ -332,10 +332,12 @@ export class ClientCommitAutoExpiry {
         (transResult.status === "rejected" &&
           (transResult.reason?.code === "UNAUTHORIZED" ||
             transResult.reason?.message?.includes("authentication") ||
+            transResult.reason?.message?.includes("HTTP 401") ||
             transResult.reason?.message?.includes("401"))) ||
         (orderResult.status === "rejected" &&
           (orderResult.reason?.code === "UNAUTHORIZED" ||
             orderResult.reason?.message?.includes("authentication") ||
+            orderResult.reason?.message?.includes("HTTP 401") ||
             orderResult.reason?.message?.includes("401")));
 
       if (hasAuthError) {
