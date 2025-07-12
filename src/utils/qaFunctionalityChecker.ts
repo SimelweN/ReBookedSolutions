@@ -465,8 +465,8 @@ export class QAFunctionalityChecker {
       });
     }
 
-    console.log("✅ QA Functionality Check Complete");
-    console.log("===============================================");
+    console.warn("✅ QA Functionality Check Complete");
+    console.warn("===============================================");
 
     return this.results;
   }
