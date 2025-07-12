@@ -238,8 +238,8 @@ function App() {
     });
   }
 
-  return (
-    <>
+    return (
+    <HelmetProvider>
       <NoScriptFallback />
       {showStartupChecker && (
         <StartupChecker onComplete={handleStartupComplete} />
