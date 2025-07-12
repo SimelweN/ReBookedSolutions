@@ -650,12 +650,7 @@ export class FunctionFallbackService {
       return { url: publicUrl, path: data.path };
     } catch (error) {
       console.error("File upload fallback failed:", error);
-      // Return a mock response for testing
-      return {
-        url: "https://placeholder.example.com/mock-upload.jpg",
-        path: "mock/upload/path.jpg",
-        error: error instanceof Error ? error.message : "Upload failed",
-      };
+      throw error; // Don't return fake data, let the error propagate
     }
   }
 
