@@ -26,9 +26,7 @@ import AdminPage from "./pages/Admin";
 const Dashboard = React.lazy(() => import("./pages/Dashboard"));
 const BookListing = React.lazy(() => import("./pages/BookListing"));
 const BookDetails = React.lazy(() => import("./pages/BookDetails"));
-// Profile is directly imported instead of lazy loaded due to dynamic import fetch issues
-// This ensures reliable loading of the profile page
-import Profile from "./pages/Profile";
+
 const CreateListing = React.lazy(() => import("./pages/CreateListing"));
 const Cart = React.lazy(() => import("./pages/Cart"));
 const Checkout = React.lazy(() => import("./pages/Checkout"));
