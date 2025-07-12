@@ -65,47 +65,47 @@ export const verifyProgramAllocation = () => {
 export const logProgramVerification = () => {
   const results = verifyProgramAllocation();
 
-  console.log("🔍 PROGRAM ALLOCATION VERIFICATION");
-  console.log("==================================");
-  console.log(`📊 Total Universities: ${results.totalUniversities}`);
-  console.log(
+  console.warn("🔍 PROGRAM ALLOCATION VERIFICATION");
+  console.warn("==================================");
+  console.warn(`📊 Total Universities: ${results.totalUniversities}`);
+  console.warn(
     `✅ Universities with Programs: ${results.universitiesWithPrograms}`,
   );
-  console.log(`📚 Total Programs: ${results.totalPrograms}`);
-  console.log(
+  console.warn(`📚 Total Programs: ${results.totalPrograms}`);
+  console.warn(
     `🏫 Average Programs per University: ${Math.round(results.totalPrograms / results.universitiesWithPrograms)}`,
   );
 
   if (results.universitiesWithoutPrograms.length > 0) {
-    console.log(
+    console.warn(
       `⚠️ Universities without programs: ${results.universitiesWithoutPrograms.join(", ")}`,
     );
   }
 
-  console.log("\n📈 Programs by Faculty:");
+  console.warn("\n📈 Programs by Faculty:");
   Object.entries(results.programsByFaculty)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 10)
     .forEach(([faculty, count]) => {
-      console.log(`  • ${faculty}: ${count} programs`);
+      console.warn(`  • ${faculty}: ${count} programs`);
     });
 
-  console.log("\n🎯 Sample Programs:");
+  console.warn("\n🎯 Sample Programs:");
   results.samplePrograms.slice(0, 10).forEach((sample) => {
-    console.log(
+    console.warn(
       `  • ${sample.program} (${sample.university}) - APS: ${sample.aps}`,
     );
   });
 
-  console.log("\n📋 Program Statistics:");
-  console.log(
+  console.warn("\n📋 Program Statistics:");
+  console.warn(
     `  • Total Program Templates: ${PROGRAM_STATISTICS.totalPrograms}`,
   );
-  console.log(`  • Faculty Types: ${PROGRAM_STATISTICS.facultyCount}`);
-  console.log(
+  console.warn(`  • Faculty Types: ${PROGRAM_STATISTICS.facultyCount}`);
+  console.warn(
     `  • Competitive Programs: ${PROGRAM_STATISTICS.competitivePrograms}`,
   );
-  console.log(
+  console.warn(
     `  • Universal Programs: ${PROGRAM_STATISTICS.universalPrograms}`,
   );
 

@@ -19,8 +19,8 @@ export interface VerificationResult {
   errors: {
     type: "missing" | "unexpected" | "aps-mismatch";
     universityId: string;
-    expected?: any;
-    actual?: any;
+    expected?: unknown;
+    actual?: unknown;
     message: string;
   }[];
   totalUniversities: number;
@@ -167,7 +167,6 @@ export function verifyUniversityPrograms(universityId: string): {
     unexpected: number;
   };
 } {
-  const currentAssignments = getCurrentAssignments();
   const universityMapping = UNIVERSITY_PROGRAM_MAPPINGS.find(
     (m) => m.universityId === universityId,
   );
