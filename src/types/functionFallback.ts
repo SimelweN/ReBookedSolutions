@@ -7,11 +7,10 @@ export type FallbackType =
   | "deferred"
   | "none";
 
-export type ServiceLayer = "supabase" | "vercel" | "fallback";
+export type ServiceLayer = "supabase" | "fallback";
 
 export interface FunctionPolicy {
   fallback: boolean;
-  vercelAllowed: boolean;
   fallbackType: FallbackType;
   useOnly?: "Supabase Auth/Client";
   notes?: string;
