@@ -100,7 +100,7 @@ VERCEL_DEPLOYMENT_FIXES.md - This documentation
   "version": 2,
   "functions": {
     "api/**/*.ts": {
-      "runtime": "@vercel/node@20.x",
+      "runtime": "vercel/node@20.x",
       "maxDuration": 30
     }
   },
@@ -121,7 +121,7 @@ VERCEL_DEPLOYMENT_FIXES.md - This documentation
 ### ✅ Fixed: Function Runtime Errors
 
 - **Error:** "Function Runtimes must have a valid version"
-- **Fix:** Updated runtime to `@vercel/node@20.x`
+- **Fix:** Updated runtime to `vercel/node@20.x`
 
 ### ✅ Fixed: Build Timeout Issues
 
