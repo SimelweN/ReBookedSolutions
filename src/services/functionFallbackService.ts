@@ -256,6 +256,19 @@ export class FunctionFallbackService {
       console.error(`Function ${functionName} failed:`, error);
       this.updateStats(functionName, "failure");
 
+      // Better error message formatting
+      let errorMessage = "Unknown error";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+
+        // Handle specific Supabase edge function errors
+        if (
+          errorMessage.includes("Edge Function returned a non-2xx status code")
+        ) {
+          errorMessage = `Edge function ${functionName} returned an error status (possibly not deployed or misconfigured)`;
+        }
+      }
+
       if (config.critical) {
         // For critical functions, try retries
         if (config.retryAttempts && config.retryAttempts > 0) {
@@ -269,7 +282,7 @@ export class FunctionFallbackService {
 
         return {
           success: false,
-          error: `Critical function ${functionName} failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+          error: `Critical function ${functionName} failed: ${errorMessage}`,
           fallbackUsed: false,
         };
       }
