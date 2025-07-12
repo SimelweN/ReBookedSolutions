@@ -13,6 +13,7 @@ import {
   GraduationCap,
   CreditCard,
   Package,
+  ShoppingCart,
 } from "lucide-react";
 import AdminAccess from "./AdminAccess";
 import CartButton from "./CartButton";
