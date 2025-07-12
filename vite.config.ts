@@ -222,8 +222,6 @@ export default defineConfig(({ mode }) => ({
     ),
     // Ensure global React availability
     global: "globalThis",
-    // Make React available globally to prevent createContext errors
-    "globalThis.React": "globalThis.React || {}",
   },
 
   // Performance optimizations
