@@ -620,7 +620,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       });
 
       // Sign out from Supabase
-      const { error } = await supabase.auth.signOut({ scope: "global" });
+      if (supabase) {
+        const { error } = await supabase.auth.signOut({ scope: "global" });
+
+        // Handle specific case where there's no session to sign out from
+        if (error && error.message === "Auth session missing!") {
+          console.log("ℹ️ [AuthContext] No active session to sign out from");
+          // This is actually fine - user is already signed out
+        } else if (error) {
+          console.warn("⚠️ [AuthContext] Logout error:", error);
+        }
+      }
 
       // Handle specific case where there's no session to sign out from
       if (error && error.message === "Auth session missing!") {
