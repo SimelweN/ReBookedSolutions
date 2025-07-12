@@ -663,7 +663,7 @@ function App() {
                       </Suspense>
                     </div>
                   </Router>
-                  <NotificationStack position="top-right" maxVisible={3} />
+                  <NotificationWrapper position="top-right" maxVisible={3} />
                   <NotificationInitializer />
                 </CartProvider>
               </AuthProvider>
