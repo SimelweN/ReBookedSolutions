@@ -131,6 +131,13 @@ function App() {
     setSystemReady(true);
   };
 
+  // Early return for Workers environment
+  if (isWorkerEnv) {
+    return React.createElement("div", {
+      children: "ReBooked Solutions - Workers Environment Detected",
+    });
+  }
+
   return (
     <>
       <NoScriptFallback />
