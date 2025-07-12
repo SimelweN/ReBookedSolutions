@@ -4,7 +4,6 @@ export const config = {
   api: {
     bodyParser: false,
   },
-  runtime: "nodejs18.x", // Explicitly require Node.js runtime
 };
 
 // Early environment check - completely exit if not in Node.js
