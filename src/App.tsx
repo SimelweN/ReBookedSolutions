@@ -661,7 +661,6 @@ function App() {
                       </Suspense>
                     </div>
                   </Router>
-                  <Toaster position="top-center" />
                 </CartProvider>
               </AuthProvider>
             </GoogleMapsProvider>
