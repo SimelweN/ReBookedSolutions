@@ -138,9 +138,20 @@ export const checkConnectionHealth = async (
     perfMeasure("connection-health", "connection-health-start");
 
     if (error) {
-      consecutiveFailures++;
-      result.error = error.message;
-      result.supabaseConnected = false;
+      // Handle auth errors gracefully - don't count as connection failures
+      if (
+        error.code === "UNAUTHORIZED" ||
+        error.message?.includes("authentication")
+      ) {
+        devWarn("Connection check: Authentication required", error);
+        result.supabaseConnected = true; // Connection is working, just not authenticated
+        result.authStatus = "disconnected";
+        result.error = "Authentication required";
+      } else {
+        consecutiveFailures++;
+        result.error = error.message;
+        result.supabaseConnected = false;
+      }
     } else {
       consecutiveFailures = 0;
       result.supabaseConnected = true;
