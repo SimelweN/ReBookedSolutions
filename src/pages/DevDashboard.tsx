@@ -84,6 +84,7 @@ import CommitTester from "@/components/test/CommitTester";
 import ComprehensiveBackendTester from "@/components/test/ComprehensiveBackendTester";
 import EnvironmentTester from "@/components/test/EnvironmentTester";
 import ComprehensiveFunctionalityTest from "@/components/test/ComprehensiveFunctionalityTest";
+import PurchaseFlowTester from "@/components/test/PurchaseFlowTester";
 import FunctionTester from "@/components/admin/FunctionTester";
 import { getFunctionFallback } from "@/services/functionFallbackService";
 import {
