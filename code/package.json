@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "NODE_OPTIONS='--max-old-space-size=4096' vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -13,13 +13,11 @@
     "setup": "node setup-environment.js",
     "check-setup": "node scripts/auto-setup.js",
     "setup-db": "echo 'Please run the SQL script in scripts/setup-database.sql in your Supabase SQL editor'",
-    "validate": "npm run check-setup && npm run lint",
-    "vercel-dev": "vercel dev",
-    "vercel-deploy": "vercel --prod"
+    "validate": "npm run check-setup && npm run lint"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
-    "@paystack/inline-js": "^2.22.6",
+    "@paystack/inline-js": "^2.20.0",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
     "@radix-ui/react-aspect-ratio": "^1.1.0",
@@ -51,9 +49,6 @@
     "@supabase/supabase-js": "^2.50.0",
     "@tanstack/react-query": "^5.77.1",
     "@types/crypto-js": "^4.2.2",
-    "@vercel/node": "^3.0.21",
-    "@vercel/analytics": "^1.5.0",
-    "@vercel/speed-insights": "^1.2.0",
     "@vitejs/plugin-react": "^4.6.0",
     "axios": "^1.9.0",
     "caniuse-lite": "^1.0.30001726",
@@ -63,13 +58,15 @@
     "crypto-js": "^4.2.0",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.3.0",
+    "formidable": "^3.5.1",
+    "framer-motion": "^12.23.3",
     "html-to-image": "^1.11.13",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.462.0",
-    "next-themes": "^0.3.0",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
+    "react-helmet-async": "^2.0.5",
     "react-hook-form": "^7.53.0",
     "react-resizable-panels": "^2.1.3",
     "react-router-dom": "^6.26.2",
@@ -79,14 +76,17 @@
     "tailwindcss-animate": "^1.0.7",
     "use-places-autocomplete": "^4.0.1",
     "vaul": "^0.9.3",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
     "@tailwindcss/typography": "^0.5.15",
+    "@types/formidable": "^3.4.5",
     "@types/node": "^22.5.5",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@types/react-helmet-async": "^1.0.1",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.9.0",
@@ -97,8 +97,15 @@
     "tailwindcss": "^3.4.11",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1",
-    "vercel": "^37.13.1"
+    "vite": "^5.4.1"
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "packageManager": "npm@10.9.2",
+  "engines": {
+    "node": "20.x",
+    "npm": ">=10.0.0"
+  },
+  "overrides": {
+    "react": "$react",
+    "react-dom": "$react-dom"
+  }
 }

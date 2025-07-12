@@ -13,10 +13,7 @@
     "setup": "node setup-environment.js",
     "check-setup": "node scripts/auto-setup.js",
     "setup-db": "echo 'Please run the SQL script in scripts/setup-database.sql in your Supabase SQL editor'",
-    "validate": "npm run check-setup && npm run lint",
-    "vercel-dev": "vercel dev",
-    "vercel-deploy": "vercel --prod",
-    "vercel-build": "NODE_OPTIONS='--max-old-space-size=4096' npm run build"
+    "validate": "npm run check-setup && npm run lint"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -90,7 +87,6 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@types/react-helmet-async": "^1.0.1",
-    "@vercel/node": "^3.0.21",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.9.0",

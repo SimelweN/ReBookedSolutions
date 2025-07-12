@@ -46,7 +46,7 @@ export class AIFallbackWrapper {
   }
 
   /**
-   * Wrap a fetch request with AI fallback (for Vercel API routes)
+   * Wrap a fetch request with AI fallback
    */
   static async wrapFetchRequest<T = any>(
     endpoint: string,
