@@ -68,7 +68,7 @@ export const safeFetch = async (
 const originalFetch = window.fetch;
 window.fetch = async function (input: RequestInfo | URL, init?: RequestInit) {
   try {
-    return await originalFetch(input, init);
+    return await originalFetch.call(this, input, init);
   } catch (error) {
     const url = typeof input === "string" ? input : input.toString();
 
