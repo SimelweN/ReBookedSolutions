@@ -443,8 +443,8 @@ export class QAFunctionalityChecker {
   async runAllTests(): Promise<QATestResult[]> {
     this.results = [];
 
-    console.log("🔍 Starting Comprehensive QA Functionality Check...");
-    console.log("===============================================");
+    console.warn("🔍 Starting Comprehensive QA Functionality Check...");
+    console.warn("===============================================");
 
     try {
       await this.testAuthenticationSystem();
