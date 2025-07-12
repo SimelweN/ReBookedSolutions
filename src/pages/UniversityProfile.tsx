@@ -203,6 +203,7 @@ const UniversityProfile: React.FC = () => {
                     size="lg"
                     variant="outline"
                     className="border-2 border-blue-200 text-blue-600 hover:bg-blue-50 w-full sm:w-auto"
+                    onClick={handleAPSCalculator}
                   >
                     <Calculator className="h-5 w-5 mr-2" />
                     APS Calculator
