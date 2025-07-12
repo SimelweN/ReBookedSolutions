@@ -15,7 +15,8 @@
     "setup-db": "echo 'Please run the SQL script in scripts/setup-database.sql in your Supabase SQL editor'",
     "validate": "npm run check-setup && npm run lint",
     "vercel-dev": "vercel dev",
-    "vercel-deploy": "vercel --prod"
+    "vercel-deploy": "vercel --prod",
+    "vercel-build": "NODE_OPTIONS='--max-old-space-size=4096' npm run build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
