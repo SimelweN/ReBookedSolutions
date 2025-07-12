@@ -92,7 +92,9 @@ export const loginUser = async (email: string, password: string) => {
 
   if (!supabaseUrl || !supabaseKey) {
     if (import.meta.env.DEV) {
-      console.warn("🔧 Supabase not configured - using development fallback auth");
+      console.warn(
+        "🔧 Supabase not configured - using development fallback auth",
+      );
 
       // In development, simulate a successful login
       return {
@@ -119,7 +121,9 @@ export const loginUser = async (email: string, password: string) => {
         error: null,
       };
     } else {
-      throw new Error("Authentication service not configured. Please contact support.");
+      throw new Error(
+        "Authentication service not configured. Please contact support.",
+      );
     }
   }
 
@@ -132,16 +136,7 @@ export const loginUser = async (email: string, password: string) => {
     urlLength: supabaseUrl?.length || 0,
     keyPrefix: supabaseKey?.substring(0, 10) || "none",
     isDev: import.meta.env.DEV,
-    });
-  } catch (envError) {
-    console.warn(
-      "⚠️ Failed to load environment config, using fallback:",
-      envError,
-    );
-    // Fallback to direct environment variables
-    supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
-    supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
-  }
+  });
 
   if (!supabaseUrl || !supabaseKey) {
     console.error("❌ Supabase Configuration Missing:");
