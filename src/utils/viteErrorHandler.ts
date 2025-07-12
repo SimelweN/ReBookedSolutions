@@ -58,38 +58,10 @@ export const initViteErrorHandler = () => {
     isWebSocketPatched = true;
   }
 
-  // Handle fetch errors related to Vite ONLY - with safer implementation
+  // DISABLED: Fetch override to prevent conflicts with fetchErrorFix.ts
+  // The fetch error handling is now centralized in fetchErrorFix.ts
   if (!isFetchPatched) {
-    const originalFetch = window.fetch;
-
-    window.fetch = async function (...args) {
-      const url = args[0]?.toString() || "";
-
-      // Only intercept Vite-related and analytics requests that might cause issues
-      if (
-        url.includes("/@vite/") ||
-        url.includes("/__vite_ping") ||
-        url.includes("/@fs/") ||
-        url.includes("vercel.com") ||
-        url.includes("vitals.vercel-insights.com") ||
-        url.includes("vitals.vercel-analytics.com")
-      ) {
-        try {
-          return await originalFetch.call(window, ...args);
-        } catch (error) {
-          console.warn(
-            "🔥 Vite dev server request failed (server may be restarting):",
-            url,
-          );
-          // Return a fake successful response to prevent app crash
-          return new Response("", { status: 200, statusText: "OK" });
-        }
-      }
-
-      // For non-Vite requests, use original fetch without interception
-      return originalFetch.call(window, ...args);
-    };
-
+    console.log("🔥 Vite fetch error handling delegated to fetchErrorFix.ts");
     isFetchPatched = true;
   }
 
