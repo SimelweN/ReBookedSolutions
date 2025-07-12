@@ -5,7 +5,11 @@ import * as React from "react";
 import { createRoot } from "react-dom/client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import "./index.css";
+
+// Only import CSS in browser environment
+if (typeof window !== "undefined") {
+  import("./index.css");
+}
 
 // Import the simplified App
 import App from "./App";
