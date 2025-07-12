@@ -11,7 +11,7 @@ export interface QATestResult {
   category: string;
   status: "pass" | "fail" | "warning" | "skip";
   message: string;
-  details?: any;
+  details?: unknown;
   timestamp: string;
 }
 
@@ -27,11 +27,11 @@ export class QAFunctionalityChecker {
 
   // SECTION 1: USER AUTHENTICATION & PROFILE MANAGEMENT
   async testAuthenticationSystem() {
-    console.log("🔐 Testing Authentication System...");
+    console.warn("🔐 Testing Authentication System...");
 
     // Test 1.1: Database Connection
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("profiles")
         .select("count")
         .limit(1);
