@@ -532,7 +532,6 @@ const UniversityInfo = () => {
               className="flex-1 hover:bg-book-50 hover:border-book-300 text-book-600 border-book-200 text-xs sm:text-sm min-h-[36px]"
               onClick={(e) => {
                 e.stopPropagation();
-                console.log("Navigating to university:", applicationInfo.id);
                 navigate(`/university/${applicationInfo.id}`);
               }}
             >
