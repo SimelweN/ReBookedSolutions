@@ -325,7 +325,16 @@ export class FunctionFallbackService {
     } catch (error) {
       clearTimeout(timeoutId);
       console.error(`Function ${functionName} threw exception:`, error);
-      throw error;
+
+      // Return error instead of throwing to allow graceful handling
+      return {
+        data: null,
+        error: {
+          message:
+            error instanceof Error ? error.message : "Function call failed",
+          code: "FUNCTION_ERROR",
+        },
+      };
     }
   }
 
