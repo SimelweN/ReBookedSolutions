@@ -47,27 +47,33 @@ interface NotificationStackProps {
   autoHideDelay?: number;
 }
 
+// Safe auth hook that handles context errors
+const useSafeAuth = () => {
+  const [authState, setAuthState] = useState<{ user: any; isReady: boolean }>({
+    user: null,
+    isReady: false,
+  });
+
+  useEffect(() => {
+    try {
+      // Check if we're in the correct context
+      const authData = useAuth();
+      setAuthState({ user: authData.user, isReady: true });
+    } catch (error) {
+      console.warn("Auth context not available, using fallback");
+      setAuthState({ user: null, isReady: true });
+    }
+  }, []);
+
+  return authState;
+};
+
 const NotificationStack: React.FC<NotificationStackProps> = ({
   position = "top-right",
   maxVisible = 3,
   autoHideDelay = 8000,
 }) => {
-  // Safe auth usage with error boundary
-  const [authData, setAuthData] = useState<{ user: any } | null>(null);
-  const [authError, setAuthError] = useState<string | null>(null);
-
-  useEffect(() => {
-    try {
-      const { user } = useAuth();
-      setAuthData({ user });
-      setAuthError(null);
-    } catch (error) {
-      console.warn("NotificationStack: Auth context not available:", error);
-      setAuthError("Auth not available");
-      setAuthData({ user: null });
-    }
-  }, []);
-
+  const { user, isReady } = useSafeAuth();
   const {
     notifications,
     unreadCount,
@@ -75,6 +81,11 @@ const NotificationStack: React.FC<NotificationStackProps> = ({
     removeNotification,
     markAllAsRead,
   } = useNotificationStore();
+
+  // Don't render until auth is ready
+  if (!isReady) {
+    return null;
+  }
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
