@@ -1,5 +1,4 @@
-import * as React from "react";
-import { useContext } from "react";
+import React, { createContext, useContext } from "react";
 type ReactNode = React.ReactNode;
 import { useJsApiLoader } from "@react-google-maps/api";
 // Define the libraries array with proper typing
@@ -12,9 +11,9 @@ interface GoogleMapsContextType {
 }
 
 // Create the context with undefined as default
-const GoogleMapsContext = React.createContext<
-  GoogleMapsContextType | undefined
->(undefined);
+const GoogleMapsContext = createContext<GoogleMapsContextType | undefined>(
+  undefined,
+);
 
 // Custom hook to use the Google Maps context
 export const useGoogleMaps = (): GoogleMapsContextType => {
