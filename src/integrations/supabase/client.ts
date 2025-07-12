@@ -101,11 +101,16 @@ const createSupabaseClient = () => {
       global: {
         fetch: async (url, options = {}) => {
           try {
-            const response = await fetch(url, {
+            // Use native fetch to avoid circular calls
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+            const response = await globalThis.fetch(url, {
               ...options,
-              // Add timeout to prevent hanging requests
-              signal: AbortSignal.timeout?.(10000), // 10 second timeout if supported
+              signal: controller.signal,
             });
+
+            clearTimeout(timeoutId);
             return response;
           } catch (error) {
             console.warn("Supabase fetch error:", error);
