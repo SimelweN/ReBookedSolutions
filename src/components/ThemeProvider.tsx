@@ -1,10 +1,5 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  ReactNode,
-} from "react";
+import React, { useContext, useEffect, useState, ReactNode } from "react";
+import { safeCreateContext } from "../utils/reactLoader";
 
 type Theme = "dark" | "light" | "system";
 
