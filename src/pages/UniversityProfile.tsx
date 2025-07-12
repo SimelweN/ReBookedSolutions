@@ -459,7 +459,10 @@ const UniversityProfile: React.FC = () => {
                       {university.faculties?.length || 0} faculties
                     </p>
                   </div>
-                  <Button className="bg-book-600 hover:bg-book-700 text-white shadow-lg">
+                  <Button
+                    className="bg-book-600 hover:bg-book-700 text-white shadow-lg"
+                    onClick={handleAPSCalculator}
+                  >
                     <Calculator className="h-5 w-5 mr-2" />
                     Calculate Your APS
                   </Button>
