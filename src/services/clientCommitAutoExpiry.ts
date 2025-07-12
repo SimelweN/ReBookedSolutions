@@ -323,9 +323,31 @@ export class ClientCommitAutoExpiry {
       const orderCount =
         orderResult.status === "fulfilled" ? orderResult.value.count || 0 : 0;
 
+      // Check if any results failed due to auth errors
+      const hasAuthError =
+        (transResult.status === "rejected" &&
+          (transResult.reason?.code === "UNAUTHORIZED" ||
+            transResult.reason?.message?.includes("authentication") ||
+            transResult.reason?.message?.includes("401"))) ||
+        (orderResult.status === "rejected" &&
+          (orderResult.reason?.code === "UNAUTHORIZED" ||
+            orderResult.reason?.message?.includes("authentication") ||
+            orderResult.reason?.message?.includes("401")));
+
+      if (hasAuthError) {
+        // User not authenticated, return 0 without logging error
+        return 0;
+      }
+
       return transCount + orderCount;
     } catch (error) {
-      console.warn("Error getting urgent commits count:", error);
+      // Only log non-auth errors
+      if (
+        !error.message?.includes("authentication") &&
+        !error.message?.includes("401")
+      ) {
+        console.warn("Error getting urgent commits count:", error);
+      }
       return 0;
     }
   }
