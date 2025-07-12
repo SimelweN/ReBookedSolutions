@@ -41,8 +41,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import {
-  functionFallback,
   FunctionResponse,
+  getFunctionFallback,
 } from "@/services/functionFallbackService";
 
 interface TestResult {
@@ -355,8 +355,13 @@ const FunctionTester = () => {
   }, []);
 
   const loadFunctionStats = () => {
-    const stats = getFunctionFallback().getFunctionStats();
-    setFunctionStats(stats);
+    try {
+      const stats = getFunctionFallback().getFunctionStats();
+      setFunctionStats(stats);
+    } catch (error) {
+      console.warn("Could not load function stats:", error);
+      setFunctionStats({});
+    }
   };
 
   const runSingleTest = async (functionName: string, payload?: any) => {
@@ -388,7 +393,19 @@ const FunctionTester = () => {
           `✅ ${functionName} ${result.fallbackUsed ? "(fallback)" : "passed"}`,
         );
       } else {
-        toast.error(`❌ ${functionName} failed`);
+        // Show more helpful error messages for development
+        let errorMsg = result.error || "Unknown error";
+
+        if (
+          errorMsg.includes("Edge Function returned a non-2xx status code") ||
+          errorMsg.includes("possibly not deployed")
+        ) {
+          errorMsg = `Function not deployed or misconfigured (expected in dev)`;
+        }
+
+        toast.error(`❌ ${functionName}: ${errorMsg}`, {
+          duration: 3000, // Shorter duration for dev errors
+        });
       }
 
       loadFunctionStats();
@@ -437,8 +454,13 @@ const FunctionTester = () => {
 
   const clearResults = () => {
     setTestResults([]);
-    getFunctionFallback().resetStats();
+    try {
+      getFunctionFallback().resetStats();
+    } catch (error) {
+      console.warn("Could not reset stats:", error);
+    }
     setFunctionStats({});
+    loadFunctionStats(); // Reload fresh stats
     toast.info("Test results cleared");
   };
 

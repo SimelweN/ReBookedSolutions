@@ -13,10 +13,12 @@ import {
   GraduationCap,
   CreditCard,
   Package,
+  ShoppingCart,
+  Bell,
 } from "lucide-react";
 import AdminAccess from "./AdminAccess";
 import CartButton from "./CartButton";
-import NotificationBell from "./NotificationBell";
+import SimpleNotificationBell from "./SimpleNotificationBell";
 import { toast } from "sonner";
 import { preloadOnHover } from "@/utils/routePreloader";
 import { handleProfileImageError } from "@/utils/fallbackHelpers";
@@ -63,8 +65,7 @@ const Navbar = () => {
                 <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
               <span className="text-lg sm:text-xl font-bold text-book-600 truncate">
-                <span className="hidden sm:inline">ReBooked Solutions</span>
-                <span className="sm:hidden">ReBooked</span>
+                ReBooked Solutions
               </span>
             </Link>
           </div>
@@ -110,7 +111,7 @@ const Navbar = () => {
             {isAuthenticated ? (
               <>
                 <CartButton />
-                <NotificationBell />
+                <SimpleNotificationBell />
 
                 <div className="flex items-center space-x-1 lg:space-x-2">
                   <Link
@@ -251,11 +252,15 @@ const Navbar = () => {
 
                     <Link
                       to="/notifications"
-                      className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-book-600 rounded-md min-h-[44px] mb-2"
+                      className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-book-600 rounded-md min-h-[44px] mb-2 relative"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <div className="flex items-center mr-3">
-                        <NotificationBell />
+                      <div className="relative mr-3">
+                        <Bell className="w-5 h-5" />
+                        {/* Mock notification badge - in real app this would be dynamic */}
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
+                          2
+                        </span>
                       </div>
                       Notifications
                     </Link>
@@ -265,7 +270,7 @@ const Navbar = () => {
                       className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-book-600 rounded-md min-h-[44px] mb-2"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <Package className="w-5 h-5 mr-3" />
+                      <ShoppingCart className="w-5 h-5 mr-3" />
                       Cart
                     </Link>
 

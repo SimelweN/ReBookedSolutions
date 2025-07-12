@@ -84,6 +84,8 @@ import CommitTester from "@/components/test/CommitTester";
 import ComprehensiveBackendTester from "@/components/test/ComprehensiveBackendTester";
 import EnvironmentTester from "@/components/test/EnvironmentTester";
 import ComprehensiveFunctionalityTest from "@/components/test/ComprehensiveFunctionalityTest";
+import PurchaseFlowTester from "@/components/test/PurchaseFlowTester";
+import NotificationDemo from "@/components/test/NotificationDemo";
 import FunctionTester from "@/components/admin/FunctionTester";
 import { getFunctionFallback } from "@/services/functionFallbackService";
 import {
@@ -1618,6 +1620,12 @@ const DevDashboard: React.FC = () => {
                   )}
                 </CardContent>
               </Card>
+
+              {/* Purchase Flow Tester */}
+              <PurchaseFlowTester />
+
+              {/* Notification System Demo */}
+              <NotificationDemo />
             </TabsContent>
 
             {/* Dev Tools Tab */}

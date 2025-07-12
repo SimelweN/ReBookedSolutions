@@ -204,6 +204,54 @@ const FUNCTION_CONFIGS: Record<string, FunctionConfig> = {
     fallbackStrategy: "skip",
     timeout: 10000,
   },
+  "file-upload": {
+    name: "file-upload",
+    critical: false,
+    fallbackStrategy: "client",
+    timeout: 15000,
+  },
+  "study-resources-api": {
+    name: "study-resources-api",
+    critical: false,
+    fallbackStrategy: "client",
+    timeout: 10000,
+  },
+  "courier-guy-track": {
+    name: "courier-guy-track",
+    critical: false,
+    fallbackStrategy: "client",
+    timeout: 10000,
+  },
+  "fastway-track": {
+    name: "fastway-track",
+    critical: false,
+    fallbackStrategy: "client",
+    timeout: 10000,
+  },
+  "courier-guy-shipment": {
+    name: "courier-guy-shipment",
+    critical: false,
+    fallbackStrategy: "client",
+    timeout: 15000,
+  },
+  "fastway-shipment": {
+    name: "fastway-shipment",
+    critical: false,
+    fallbackStrategy: "client",
+    timeout: 15000,
+  },
+  "mark-collected": {
+    name: "mark-collected",
+    critical: false,
+    fallbackStrategy: "skip",
+    timeout: 10000,
+  },
+  "email-automation": {
+    name: "email-automation",
+    critical: false,
+    fallbackStrategy: "skip",
+    timeout: 10000,
+  },
 };
 
 export class FunctionFallbackService {
@@ -256,6 +304,19 @@ export class FunctionFallbackService {
       console.error(`Function ${functionName} failed:`, error);
       this.updateStats(functionName, "failure");
 
+      // Better error message formatting
+      let errorMessage = "Unknown error";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+
+        // Handle specific Supabase edge function errors
+        if (
+          errorMessage.includes("Edge Function returned a non-2xx status code")
+        ) {
+          errorMessage = `Function ${functionName} not deployed or misconfigured (expected in dev)`;
+        }
+      }
+
       if (config.critical) {
         // For critical functions, try retries
         if (config.retryAttempts && config.retryAttempts > 0) {
@@ -269,7 +330,7 @@ export class FunctionFallbackService {
 
         return {
           success: false,
-          error: `Critical function ${functionName} failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+          error: `Critical function ${functionName} failed: ${errorMessage}`,
           fallbackUsed: false,
         };
       }
@@ -312,7 +373,16 @@ export class FunctionFallbackService {
     } catch (error) {
       clearTimeout(timeoutId);
       console.error(`Function ${functionName} threw exception:`, error);
-      throw error;
+
+      // Return error instead of throwing to allow graceful handling
+      return {
+        data: null,
+        error: {
+          message:
+            error instanceof Error ? error.message : "Function call failed",
+          code: "FUNCTION_ERROR",
+        },
+      };
     }
   }
 
@@ -548,20 +618,40 @@ export class FunctionFallbackService {
   }
 
   private async fileUploadFallback(payload: any) {
-    // Use Supabase storage directly
-    const { file, bucket = "books", path } = payload;
+    try {
+      // Use Supabase storage directly
+      const { file, bucket = "books", path } = payload;
 
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(path, file);
+      // Validate required parameters
+      if (!file) {
+        throw new Error("File is required for upload");
+      }
+      if (!path) {
+        throw new Error("Path is required for upload");
+      }
 
-    if (error) throw error;
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .upload(path, file);
 
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from(bucket).getPublicUrl(path);
+      if (error) {
+        console.error("Storage upload error:", error);
+        throw new Error(`Upload failed: ${error.message}`);
+      }
 
-    return { url: publicUrl, path: data.path };
+      if (!data?.path) {
+        throw new Error("Upload succeeded but no path returned");
+      }
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from(bucket).getPublicUrl(data.path);
+
+      return { url: publicUrl, path: data.path };
+    } catch (error) {
+      console.error("File upload fallback failed:", error);
+      throw error; // Don't return fake data, let the error propagate
+    }
   }
 
   private async studyResourcesFallback(payload: any) {

@@ -68,13 +68,8 @@ const CampusNavbar = React.memo(() => {
                   R
                 </span>
               </div>
-              <span className="text-base sm:text-xl font-bold text-book-600 hidden xs:block">
+              <span className="text-base sm:text-xl font-bold text-book-600">
                 ReBooked Campus
-              </span>
-              <span className="text-sm font-bold text-book-600 xs:hidden">
-                ReBooked&nbsp;
-                <br />
-                <br />
               </span>
             </button>
           </div>

@@ -1,116 +1,135 @@
-/**
- * Network Error Handler
- * Fixes issues with third-party services interfering with fetch API
- */
+// Network error handler to gracefully handle fetch failures
+// Addresses FullStory, Vite client, and other network-related errors
 
-let originalFetch: typeof fetch;
-let isInitialized = false;
+let errorCounts: Record<string, number> = {};
+const MAX_ERRORS_PER_SOURCE = 3;
+const ERROR_RESET_TIME = 60000; // 1 minute
 
-// Store the original fetch before any third-party scripts can override it
-if (typeof window !== "undefined" && window.fetch) {
-  originalFetch = window.fetch.bind(window);
-}
+// Reset error counts periodically
+setInterval(() => {
+  errorCounts = {};
+}, ERROR_RESET_TIME);
 
-/**
- * Initialize network error handling
- */
-export const initNetworkErrorHandler = () => {
-  if (isInitialized || typeof window === "undefined") return;
+export const handleNetworkError = (
+  error: Error,
+  source: string = "unknown",
+) => {
+  // Track error counts to prevent spam
+  errorCounts[source] = (errorCounts[source] || 0) + 1;
 
-  // Only restore fetch in development - in production, let third-party scripts work
-  if (import.meta.env.DEV && originalFetch && window.fetch !== originalFetch) {
+  // Only log first few errors per source
+  if (errorCounts[source] <= MAX_ERRORS_PER_SOURCE) {
     console.warn(
-      "⚠️ Fetch API has been overridden by third-party script, restoring original (DEV only)",
+      `[${source}] Network error (${errorCounts[source]}/${MAX_ERRORS_PER_SOURCE}):`,
+      error.message,
     );
-    window.fetch = originalFetch;
+
+    // Specific handling for known error sources
+    if (source.includes("fullstory")) {
+      console.warn(
+        "FullStory analytics unavailable - continuing without analytics",
+      );
+    } else if (source.includes("vite") || source.includes("hmr")) {
+      console.warn("Vite HMR connection issue - page refresh may be needed");
+    } else if (source.includes("supabase")) {
+      console.warn("Supabase connection issue - check network and credentials");
+    }
   }
 
-  // Add global error handlers for network issues
-  window.addEventListener("unhandledrejection", (event) => {
-    if (
-      event.reason &&
-      event.reason.message &&
-      event.reason.message.includes("Failed to fetch")
-    ) {
-      console.warn(
-        "🌐 Network error caught and handled:",
-        event.reason.message,
-      );
-      // Prevent the error from bubbling up and breaking the app
-      event.preventDefault();
-    }
-  });
+  return { handled: true, shouldRetry: errorCounts[source] <= 2 };
+};
 
-  // Handle WebSocket connection errors for Vite HMR
-  const originalWebSocket = window.WebSocket;
-  window.WebSocket = class extends originalWebSocket {
+// Enhanced fetch wrapper with error handling
+export const safeFetch = async (
+  url: string,
+  options: RequestInit = {},
+  source: string = "api",
+): Promise<Response | null> => {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    if (error instanceof Error) {
+      handleNetworkError(error, source);
+    }
+    return null;
+  }
+};
+
+// Override global fetch to handle FullStory and other third-party errors
+const originalFetch = window.fetch;
+window.fetch = async function (input: RequestInfo | URL, init?: RequestInit) {
+  try {
+    return await originalFetch(input, init);
+  } catch (error) {
+    const url = typeof input === "string" ? input : input.toString();
+
+    // Identify error source
+    let source = "unknown";
+    if (url.includes("fullstory.com") || url.includes("fs.js")) {
+      source = "fullstory";
+    } else if (url.includes("vite") || url.includes("hmr")) {
+      source = "vite-hmr";
+    } else if (url.includes("supabase")) {
+      source = "supabase";
+    }
+
+    if (error instanceof Error) {
+      handleNetworkError(error, source);
+    }
+
+    // For FullStory errors, silently fail
+    if (source === "fullstory") {
+      return new Response("{}", { status: 200, statusText: "OK" });
+    }
+
+    // Re-throw other errors
+    throw error;
+  }
+};
+
+// Handle WebSocket errors for Vite HMR
+let originalWebSocket: typeof WebSocket | undefined;
+if (typeof WebSocket !== "undefined") {
+  originalWebSocket = WebSocket;
+
+  // @ts-ignore - Override WebSocket constructor
+  window.WebSocket = class extends WebSocket {
     constructor(url: string | URL, protocols?: string | string[]) {
       super(url, protocols);
 
       this.addEventListener("error", (event) => {
-        console.warn("🔌 WebSocket connection error (likely HMR):", event);
+        handleNetworkError(
+          new Error("WebSocket connection failed"),
+          "vite-websocket",
+        );
       });
 
       this.addEventListener("close", (event) => {
         if (event.code !== 1000) {
-          console.warn(
-            "🔌 WebSocket closed unexpectedly:",
-            event.code,
-            event.reason,
+          // Not a normal closure
+          handleNetworkError(
+            new Error(`WebSocket closed with code ${event.code}`),
+            "vite-websocket",
           );
         }
       });
     }
   };
+}
 
-  isInitialized = true;
-  console.log("✅ Network error handler initialized");
-};
-
-/**
- * Robust fetch wrapper that handles network errors gracefully
- */
-export const robustFetch = async (
-  input: RequestInfo | URL,
-  init?: RequestInit,
-): Promise<Response> => {
-  try {
-    // Use original fetch if available
-    const fetchFn = originalFetch || window.fetch;
-    const response = await fetchFn(input, init);
-    return response;
-  } catch (error) {
-    console.warn("🌐 Fetch error caught:", error);
-
-    // If it's a network error, throw a more specific error
-    if (
-      error instanceof TypeError &&
-      error.message.includes("Failed to fetch")
-    ) {
-      throw new Error(
-        "Network connection failed. Please check your internet connection.",
-      );
-    }
-
-    throw error;
+// Cleanup function for development
+export const restoreOriginalFetch = () => {
+  window.fetch = originalFetch;
+  if (originalWebSocket) {
+    window.WebSocket = originalWebSocket;
   }
 };
-
-/**
- * Debounced network check to prevent spam
- */
-let networkCheckTimeout: NodeJS.Timeout;
-export const debouncedNetworkCheck = () => {
-  clearTimeout(networkCheckTimeout);
-  networkCheckTimeout = setTimeout(() => {
-    if (navigator.onLine === false) {
-      console.warn("🔴 Device appears to be offline");
-    }
-  }, 1000);
-};
-
-// Initialize on import if in browser environment
-if (typeof window !== "undefined") {
-  // Use a small delay to ensure the page has loaded
-  setTimeout(initNetworkErrorHandler, 100);
-}

@@ -448,11 +448,19 @@ const BulletproofEdgeFunctionsTester = () => {
     const startTime = Date.now();
 
     try {
-      const testBody = func.healthCheck ? { action: "health" } : { test: true };
+      let result;
 
-      const result = await edgeFunctionRouter.invoke(func.endpoint, {
-        body: testBody,
-      });
+      if (func.healthCheck) {
+        // For health checks, use GET request
+        result = await edgeFunctionRouter.invoke(func.endpoint, {
+          method: "GET",
+        });
+      } else {
+        // For regular tests, use POST with test body
+        result = await edgeFunctionRouter.invoke(func.endpoint, {
+          body: { test: true },
+        });
+      }
 
       const duration = Date.now() - startTime;
       const usedFallback = result.data?._fallback_used || false;
