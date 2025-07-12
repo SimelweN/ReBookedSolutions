@@ -188,14 +188,17 @@ export default defineConfig(({ mode }) => ({
     // CSS code splitting
     cssCodeSplit: true,
   },
-  // Optimize dependencies
+  // Optimize dependencies - prioritize React loading
   optimizeDeps: {
     include: [
+      // React first - CRITICAL for createContext to work
       "react",
       "react-dom",
       "react-dom/client",
       "react/jsx-runtime",
+      // Then other React dependencies
       "react-router-dom",
+      // Then other libraries
       "@supabase/supabase-js",
       "@tanstack/react-query",
       "lucide-react",
@@ -205,6 +208,8 @@ export default defineConfig(({ mode }) => ({
       "@react-google-maps/api",
     ],
     force: true, // Force re-bundling to ensure consistency
+    // Ensure React is pre-bundled before anything else
+    entries: ["src/main.tsx"],
   },
 
   // Ensure React is properly available in production builds
@@ -217,6 +222,8 @@ export default defineConfig(({ mode }) => ({
     ),
     // Ensure global React availability
     global: "globalThis",
+    // Make React available globally to prevent createContext errors
+    "globalThis.React": "globalThis.React || {}",
   },
 
   // Performance optimizations
