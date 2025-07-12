@@ -73,8 +73,20 @@ function App() {
   const [systemReady, setSystemReady] = React.useState(false);
   const [showStartupChecker, setShowStartupChecker] = React.useState(false);
 
-  // Initialize commit auto-expiry system
-  useCommitAutoExpiry();
+  // Workers environment detection
+  const isWorkerEnv = React.useMemo(() => {
+    try {
+      return (
+        typeof WorkerGlobalScope !== "undefined" &&
+        typeof window === "undefined"
+      );
+    } catch {
+      return false;
+    }
+  }, []);
+
+  // Initialize commit auto-expiry system only in browser environment
+  const commitAutoExpiry = isWorkerEnv ? null : useCommitAutoExpiry();
 
   React.useEffect(() => {
     // Check if system needs setup
