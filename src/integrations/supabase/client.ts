@@ -21,12 +21,26 @@ const getEnvVar = (key: string): string => {
 let supabaseUrl = getEnvVar("VITE_SUPABASE_URL");
 let supabaseAnonKey = getEnvVar("VITE_SUPABASE_ANON_KEY");
 
-// Debug logging for development
-if (import.meta.env.DEV) {
+// Debug logging for development - Workers compatible
+const isDev = (() => {
+  try {
+    if (typeof import.meta !== "undefined" && import.meta.env) {
+      return import.meta.env.DEV || import.meta.env.NODE_ENV === "development";
+    }
+    if (typeof globalThis !== "undefined" && globalThis.process?.env) {
+      return globalThis.process.env.NODE_ENV === "development";
+    }
+    return false;
+  } catch {
+    return false;
+  }
+})();
+
+if (isDev) {
   console.log("Supabase Config Check:", {
     hasUrl: !!supabaseUrl,
     hasKey: !!supabaseAnonKey,
-    urlStart: supabaseUrl.substring(0, 20) + "...",
+    urlStart: supabaseUrl ? supabaseUrl.substring(0, 20) + "..." : "none",
   });
 }
 
