@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import AdminAccess from "./AdminAccess";
 import CartButton from "./CartButton";
-import NotificationBell from "./NotificationBell";
+import SimpleNotificationBell from "./SimpleNotificationBell";
 import { toast } from "sonner";
 import { preloadOnHover } from "@/utils/routePreloader";
 import { handleProfileImageError } from "@/utils/fallbackHelpers";
