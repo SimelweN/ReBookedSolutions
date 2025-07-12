@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import Layout from "@/components/Layout";
+import SEO from "@/components/SEO";
 import BookImageSection from "@/components/book-details/BookImageSection";
 import BookInfo from "@/components/book-details/BookInfo";
 import BookDescription from "@/components/book-details/BookDescription";
