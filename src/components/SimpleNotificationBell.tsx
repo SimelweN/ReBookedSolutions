@@ -80,20 +80,23 @@ const SimpleNotificationBell: React.FC = () => {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const getNotificationIcon = (type: SimpleNotification["type"]) => {
-    switch (type) {
-      case "order":
-        return <Package className="w-4 h-4 text-blue-600" />;
-      case "payment":
-        return <CreditCard className="w-4 h-4 text-green-600" />;
-      case "system":
-        return <AlertTriangle className="w-4 h-4 text-yellow-600" />;
-      default:
-        return <Bell className="w-4 h-4 text-gray-600" />;
-    }
-  };
+  const getNotificationIcon = React.useCallback(
+    (type: SimpleNotification["type"]) => {
+      switch (type) {
+        case "order":
+          return <Package className="w-4 h-4 text-blue-600" />;
+        case "payment":
+          return <CreditCard className="w-4 h-4 text-green-600" />;
+        case "system":
+          return <AlertTriangle className="w-4 h-4 text-yellow-600" />;
+        default:
+          return <Bell className="w-4 h-4 text-gray-600" />;
+      }
+    },
+    [],
+  );
 
-  const formatTimeAgo = (timestamp: string) => {
+  const formatTimeAgo = React.useCallback((timestamp: string) => {
     const now = new Date().getTime();
     const notifTime = new Date(timestamp).getTime();
     const diffInMinutes = Math.floor((now - notifTime) / (1000 * 60));
@@ -106,7 +109,7 @@ const SimpleNotificationBell: React.FC = () => {
 
     const diffInDays = Math.floor(diffInHours / 24);
     return `${diffInDays}d ago`;
-  };
+  }, []);
 
   const markAsRead = (notificationId: string) => {
     setNotifications((prev) =>
