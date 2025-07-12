@@ -199,16 +199,6 @@ function App() {
                           }
                         />
 
-                        {/* Test Route for University Navigation */}
-                        <Route
-                          path="/test-uni-nav"
-                          element={
-                            <Suspense fallback={<LoadingSpinner />}>
-                              <TestUniversityNavigation />
-                            </Suspense>
-                          }
-                        />
-
                         {/* Study Resources Routes */}
                         <Route
                           path="/study-resources"
