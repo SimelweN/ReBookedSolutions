@@ -11,6 +11,7 @@ import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import NoScriptFallback from "./components/NoScriptFallback";
 import LoadingFallback from "./components/LoadingFallback";
 import NotificationStack from "./components/notifications/NotificationStack";
+import NotificationInitializer from "./components/notifications/NotificationInitializer";
 import StartupChecker from "./components/StartupChecker";
 import { validateEnvironment } from "./config/environment";
 import { useCommitAutoExpiry } from "./hooks/useCommitAutoExpiry";
