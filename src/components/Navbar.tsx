@@ -110,7 +110,7 @@ const Navbar = () => {
             {isAuthenticated ? (
               <>
                 <CartButton />
-                <NotificationBell />
+                <SimpleNotificationBell />
 
                 <div className="flex items-center space-x-1 lg:space-x-2">
                   <Link
