@@ -127,7 +127,7 @@ const ConfirmEmailChange = isBrowserEnv
   ? React.lazy(() => import("./pages/ConfirmEmailChange"))
   : WorkersFallback;
 const Notifications = isBrowserEnv
-  ? React.lazy(() => import("./pages/Notifications"))
+  ? React.lazy(() => import("./pages/SimpleNotifications"))
   : WorkersFallback;
 const CheckoutSuccess = isBrowserEnv
   ? React.lazy(() => import("./pages/CheckoutSuccess"))
