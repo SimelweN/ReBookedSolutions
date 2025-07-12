@@ -339,7 +339,7 @@ export class QAFunctionalityChecker {
 
   // SECTION 6: DATABASE TABLES AND STRUCTURE
   async testDatabaseStructure() {
-    console.log("🗄️ Testing Database Structure...");
+    console.warn("🗄️ Testing Database Structure...");
 
     const criticalTables = [
       "profiles",
