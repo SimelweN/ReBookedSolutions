@@ -80,14 +80,33 @@ function App() {
     // Check if system needs setup
     const envValid = validateEnvironment();
 
+    // Workers-compatible environment check
+    const isProd = (() => {
+      try {
+        if (typeof import.meta !== "undefined" && import.meta.env) {
+          return (
+            import.meta.env.PROD || import.meta.env.NODE_ENV === "production"
+          );
+        }
+        if (typeof globalThis !== "undefined" && globalThis.process?.env) {
+          return globalThis.process.env.NODE_ENV === "production";
+        }
+        return false;
+      } catch {
+        return false;
+      }
+    })();
+
+    const isDev = !isProd;
+
     // In development, we allow the app to continue with mock services
     // Only show startup checker in production or if explicitly needed
-    if (!envValid && import.meta.env.PROD) {
+    if (!envValid && isProd) {
       setShowStartupChecker(true);
     } else {
       // In development, always proceed - we have fallback mock services
       setSystemReady(true);
-      if (!envValid && import.meta.env.DEV) {
+      if (!envValid && isDev) {
         console.log(
           "🔧 Development mode: Proceeding with mock/fallback services",
         );
