@@ -350,10 +350,7 @@ export class QAFunctionalityChecker {
 
     for (const table of criticalTables) {
       try {
-        const { data, error } = await supabase
-          .from(table)
-          .select("count")
-          .limit(1);
+        const { error } = await supabase.from(table).select("count").limit(1);
         if (error) {
           this.addResult({
             name: `Table: ${table}`,
