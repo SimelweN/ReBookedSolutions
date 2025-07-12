@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.tsx";
 
 // Only import CSS in browser environment
 if (typeof window !== "undefined") {
