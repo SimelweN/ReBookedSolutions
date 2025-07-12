@@ -111,7 +111,7 @@ export class QAFunctionalityChecker {
 
   // SECTION 5: APS CALCULATOR FUNCTIONALITY
   async testAPSCalculator() {
-    console.log("🧮 Testing APS Calculator...");
+    console.warn("🧮 Testing APS Calculator...");
 
     // Test 5.1: Basic APS system check
     try {
