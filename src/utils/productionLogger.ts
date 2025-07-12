@@ -4,26 +4,26 @@ const isDevelopment = import.meta.env.DEV;
 
 export const logger = {
   // Keep error logging for debugging critical issues
-  error: (message: string, ...args: unknown[]) => {
+  error: (message: string, ...args: any[]) => {
     console.error(message, ...args);
   },
 
   // Keep warning logging for important issues
-  warn: (message: string, ...args: unknown[]) => {
+  warn: (message: string, ...args: any[]) => {
     console.warn(message, ...args);
   },
 
   // Only log in development
-  info: (message: string, ...args: unknown[]) => {
+  info: (message: string, ...args: any[]) => {
     if (isDevelopment) {
-      console.warn(message, ...args);
+      console.log(message, ...args);
     }
   },
 
   // Only log in development
-  debug: (message: string, ...args: unknown[]) => {
+  debug: (message: string, ...args: any[]) => {
     if (isDevelopment) {
-      console.warn(message, ...args);
+      console.log(message, ...args);
     }
   },
 };
