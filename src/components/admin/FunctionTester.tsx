@@ -378,10 +378,7 @@ const FunctionTester = () => {
       const testConfig = FUNCTION_TESTS.find((t) => t.name === functionName);
       const testPayload = payload || testConfig?.testPayload || {};
 
-      const result = await getFunctionFallback().testFunction(
-        functionName,
-        testPayload,
-      );
+      const result = await functionFallback(functionName, testPayload);
 
       const testResult: TestResult = {
         functionName,
