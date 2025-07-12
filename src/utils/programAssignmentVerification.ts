@@ -19,8 +19,8 @@ export interface VerificationResult {
   errors: {
     type: "missing" | "unexpected" | "aps-mismatch";
     universityId: string;
-    expected?: any;
-    actual?: any;
+    expected?: unknown;
+    actual?: unknown;
     message: string;
   }[];
   totalUniversities: number;
