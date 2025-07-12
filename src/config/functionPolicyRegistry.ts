@@ -4,21 +4,18 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   // Authentication & User Identity
   "auth-sign-in": {
     fallback: false,
-    vercelAllowed: false,
     fallbackType: "none",
     useOnly: "Supabase Auth/Client",
     notes: "Authentication must use Supabase only",
   },
   "auth-sign-up": {
     fallback: false,
-    vercelAllowed: false,
     fallbackType: "none",
     useOnly: "Supabase Auth/Client",
     notes: "Registration must use Supabase only",
   },
   "auth-sign-out": {
     fallback: false,
-    vercelAllowed: false,
     fallbackType: "none",
     useOnly: "Supabase Auth/Client",
     notes: "Sign out must use Supabase only",
@@ -27,7 +24,6 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   // Payments & Financial Transactions
   "initialize-paystack-payment": {
     fallback: true,
-    vercelAllowed: true,
     fallbackType: "queue",
     timeout: 30000,
     retryAttempts: 3,
@@ -35,7 +31,6 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "verify-paystack-payment": {
     fallback: true,
-    vercelAllowed: true,
     fallbackType: "queue",
     timeout: 30000,
     retryAttempts: 5,
@@ -43,7 +38,6 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "create-paystack-subaccount": {
     fallback: true,
-    vercelAllowed: true,
     fallbackType: "queue",
     timeout: 20000,
     retryAttempts: 3,
