@@ -215,10 +215,23 @@ function App() {
     setSystemReady(true);
   };
 
-  // Early return for Workers environment
+  // Early return for Workers environment with static content
   if (isWorkerEnv) {
     return React.createElement("div", {
-      children: "ReBooked Solutions - Workers Environment Detected",
+      style: { padding: "20px", fontFamily: "Arial, sans-serif" },
+      children: [
+        React.createElement("h1", { key: "title" }, "ReBooked Solutions"),
+        React.createElement(
+          "p",
+          { key: "subtitle" },
+          "Static Export for Workers Environment",
+        ),
+        React.createElement(
+          "p",
+          { key: "description" },
+          "This is a server-side rendered version.",
+        ),
+      ],
     });
   }
 
