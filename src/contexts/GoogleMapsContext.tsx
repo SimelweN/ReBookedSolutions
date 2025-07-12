@@ -12,7 +12,7 @@ interface GoogleMapsContextType {
 }
 
 // Create the context with undefined as default
-const GoogleMapsContext = createContext<GoogleMapsContextType | undefined>(
+const GoogleMapsContext = safeCreateContext<GoogleMapsContextType | undefined>(
   undefined,
 );
 
