@@ -61,9 +61,6 @@ const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
 const PaymentCallback = React.lazy(() => import("./pages/PaymentCallback"));
 const UniversityProfile = React.lazy(() => import("./pages/UniversityProfile"));
 const Receipt = React.lazy(() => import("./pages/Receipt"));
-const TestUniversityNavigation = React.lazy(
-  () => import("./pages/TestUniversityNavigation"),
-);
 const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
 const DevDashboard = React.lazy(() => import("./pages/DevDashboard"));
 
