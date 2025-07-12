@@ -87,7 +87,6 @@ export class QAFunctionalityChecker {
     try {
       const {
         data: { session },
-        error,
       } = await supabase.auth.getSession();
       this.addResult({
         name: "Auth Session Check",
