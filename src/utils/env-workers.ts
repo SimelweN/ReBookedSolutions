@@ -3,7 +3,8 @@
 // Safe environment variable getter for Workers
 export const getEnv = (key: string, defaultValue?: string): string => {
   try {
-    if (typeof import !== "undefined" && import.meta && import.meta.env) {
+    // Use a safer check for import.meta.env
+    if (typeof window !== "undefined" && import.meta && import.meta.env) {
       return import.meta.env[key] || defaultValue || "";
     }
     return defaultValue || "";
