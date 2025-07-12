@@ -62,9 +62,9 @@ const FUNCTION_CONFIGS: Record<string, FunctionConfig> = {
   },
   "decline-commit": {
     name: "decline-commit",
-    critical: true,
-    fallbackStrategy: "retry",
-    retryAttempts: 2,
+    critical: false,
+    fallbackStrategy: "mock",
+    timeout: 5000,
   },
   "create-order": {
     name: "create-order",
@@ -131,7 +131,7 @@ const FUNCTION_CONFIGS: Record<string, FunctionConfig> = {
   "email-automation": {
     name: "email-automation",
     critical: false,
-    fallbackStrategy: "skip",
+    fallbackStrategy: "mock",
     timeout: 5000,
   },
   "dispute-resolution": {
@@ -313,7 +313,7 @@ export class FunctionFallbackService {
         if (
           errorMessage.includes("Edge Function returned a non-2xx status code")
         ) {
-          errorMessage = `Edge function ${functionName} returned an error status (possibly not deployed or misconfigured)`;
+          errorMessage = `Function ${functionName} not deployed or misconfigured (expected in dev)`;
         }
       }
 
