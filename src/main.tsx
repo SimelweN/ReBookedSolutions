@@ -16,8 +16,9 @@ const isBrowser = (() => {
 
 // Only load React and other dependencies in browser environment
 if (isBrowser) {
-  // Initialize network error handling early
+  // Initialize network error handling and cleanup problematic scripts early
   import("./utils/networkErrorHandler").catch(console.warn);
+  import("./utils/cleanupThirdPartyScripts").catch(console.warn);
 
   // Dynamic imports to prevent any static analysis issues in Workers builds
   Promise.all([
