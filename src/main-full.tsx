@@ -57,8 +57,16 @@ if (isBrowser) {
 
     console.log("✅ App rendered successfully");
 
-    // Initialize database status check in development
-    initDatabaseStatusCheck();
+    // Initialize database status check in development (dynamic import for Workers compatibility)
+    if (import.meta.env?.DEV) {
+      import("./utils/databaseConnectivityHelper")
+        .then(({ initDatabaseStatusCheck }) => {
+          initDatabaseStatusCheck();
+        })
+        .catch(() => {
+          // Ignore errors in Workers environment
+        });
+    }
   } catch (error) {
     console.error("❌ Failed to render app:", error);
 
