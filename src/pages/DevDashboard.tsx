@@ -1619,6 +1619,9 @@ const DevDashboard: React.FC = () => {
                   )}
                 </CardContent>
               </Card>
+
+              {/* Purchase Flow Tester */}
+              <PurchaseFlowTester />
             </TabsContent>
 
             {/* Dev Tools Tab */}
