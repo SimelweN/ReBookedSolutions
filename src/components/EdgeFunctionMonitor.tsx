@@ -467,7 +467,47 @@ const EdgeFunctionMonitor = () => {
       let testBody: any = {};
 
       if (func.healthCheck) {
-        testBody = { action: "health" };
+        // For health checks, use GET request instead of POST with body
+        try {
+          const { data, error } = await supabase.functions.invoke(
+            func.endpoint,
+            {
+              method: "GET",
+            },
+          );
+
+          if (error) {
+            throw error;
+          }
+
+          setFunctions((prev) =>
+            prev.map((f) =>
+              f.id === func.id
+                ? {
+                    ...f,
+                    status: "success",
+                    message: `Health check passed: ${data?.status || "healthy"}`,
+                    successCount: f.successCount + 1,
+                  }
+                : f,
+            ),
+          );
+          return;
+        } catch (error) {
+          setFunctions((prev) =>
+            prev.map((f) =>
+              f.id === func.id
+                ? {
+                    ...f,
+                    status: "error",
+                    message: `Health check failed: ${error.message}`,
+                    errorCount: f.errorCount + 1,
+                  }
+                : f,
+            ),
+          );
+          return;
+        }
       } else {
         switch (func.category) {
           case "payment":
