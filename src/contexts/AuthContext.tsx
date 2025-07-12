@@ -683,6 +683,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [isLoading]);
 
   useEffect(() => {
+    // Check if supabase client is available
+    if (!supabase) {
+      console.warn(
+        "⚠️ Supabase client not available, skipping auth state change listener",
+      );
+      return;
+    }
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
