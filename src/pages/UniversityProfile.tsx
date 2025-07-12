@@ -43,6 +43,7 @@ import { Degree } from "@/types/university";
 const UniversityProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("programs");
   const [selectedProgram, setSelectedProgram] = useState<Degree | null>(null);
   const [isProgramModalOpen, setIsProgramModalOpen] = useState(false);
