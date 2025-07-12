@@ -21,53 +21,7 @@ export interface SellerPickupNotificationData {
 }
 
 /**
- * Send email notification using Resend API
- */
-export async function sendEmailNotification(
-  emailData: EmailData,
-): Promise<void> {
-  try {
-    // Call the send-email-notification edge function
-    const response = await fetch("/api/send-email-notification", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(emailData),
-    });
-
-    const result = await response.json();
-
-    if (!result.success) {
-      throw new Error(result.error || "Failed to send email");
-    }
-
-    console.log(`✅ Email sent successfully to: ${emailData.to}`);
-  } catch (error) {
-    console.error("Email notification failed:", error);
-    throw error;
-  }
-}
-
-/**
- * Send seller pickup notification email
- */
-export async function sendSellerPickupNotification(
-  sellerEmail: string,
-  data: SellerPickupNotificationData,
-): Promise<void> {
-  const emailData: EmailData = {
-    to: sellerEmail,
-    subject: `📦 Pickup scheduled for "${data.book_title}" - ${data.courier}`,
-    template: "seller-pickup-notification",
-    variables: data,
-  };
-
-  await sendEmailNotification(emailData);
-}
-
-/**
- * Generate HTML email template for seller pickup notification
+ * Generate HTML email for seller pickup notification
  */
 export function generateSellerPickupEmailHTML(
   data: SellerPickupNotificationData,
@@ -98,67 +52,49 @@ export function generateSellerPickupEmailHTML(
     <div class="container">
         <div class="header">
             <h1>📦 Pickup Scheduled!</h1>
-            <p>Your book is ready for courier collection</p>
+            <p>Your book is ready for collection</p>
         </div>
         
         <div class="content">
-            <p>Hi <strong>${data.seller_name}</strong>,</p>
+            <p>Hi ${data.seller_name},</p>
             
-            <p>Great news! We've scheduled a pickup for your book "<strong>${data.book_title}</strong>" with ${data.courier}.</p>
+            <p>Great news! We've scheduled a pickup for your book:</p>
             
             <div class="pickup-info">
-                <h3>📅 Pickup Details</h3>
-                <p><strong>Date:</strong> ${data.pickup_date}</p>
-                <p><strong>Time Window:</strong> ${data.pickup_time}</p>
-                <p><strong>Courier:</strong> ${data.courier}</p>
-                <p><strong>Tracking Number:</strong> ${data.tracking_number}</p>
-            </div>
-            
-            <div class="tracking-box">
-                <p><strong>📱 Track Your Shipment:</strong></p>
-                <p>Tracking Number: <code>${data.tracking_number}</code></p>
-                <p>You can track your shipment on the ${data.courier} website or app.</p>
-            </div>
-            
-            <div style="text-align: center; margin: 30px 0;">
-                <a href="${data.label_url}" class="button" target="_blank">📄 Download Shipping Label</a>
+                <h3>📚 ${data.book_title}</h3>
+                <p><strong>📅 Pickup Date:</strong> ${data.pickup_date}</p>
+                <p><strong>⏰ Pickup Time:</strong> ${data.pickup_time}</p>
+                <p><strong>🚚 Courier:</strong> ${data.courier}</p>
             </div>
             
             <div class="instructions">
-                <h3>📋 Preparation Instructions</h3>
-                <p><strong>Before pickup time:</strong></p>
+                <h3>📋 Pickup Instructions</h3>
                 <ul>
-                    <li>🖨️ <strong>Print the shipping label</strong> and attach it securely to your package</li>
-                    <li>📦 <strong>Package your book safely</strong> - use bubble wrap or padding if needed</li>
-                    <li>✅ <strong>Ensure your pickup address is accessible</strong> and someone will be available</li>
-                    <li>📱 <strong>Keep your phone nearby</strong> - the courier may call if they can't find you</li>
-                    <li>🆔 <strong>Have ID ready</strong> - some couriers may request identification</li>
-                </ul>
-                
-                <p><strong>Packaging Tips:</strong></p>
-                <ul>
-                    <li>Use a sturdy envelope or small box</li>
-                    <li>Wrap the book in bubble wrap or plastic</li>
-                    <li>Make sure the shipping label is clearly visible</li>
-                    <li>Seal the package properly with tape</li>
+                    <li>Please ensure the book is securely packaged and ready for collection</li>
+                    <li>Have the shipping label printed and attached to the package</li>
+                    <li>Be available during the scheduled pickup window</li>
+                    <li>Keep your tracking number for reference: <strong>${data.tracking_number}</strong></li>
                 </ul>
             </div>
             
-            <div style="background-color: #e7f8f0; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <h3>💰 Payment Release</h3>
-                <p>Your payment will be released to your account after the book is successfully delivered to the buyer. You'll receive a confirmation email when this happens.</p>
+            <div class="tracking-box">
+                <h3>📦 Shipping Details</h3>
+                <p><strong>Tracking Number:</strong> ${data.tracking_number}</p>
+                <p><strong>Courier:</strong> ${data.courier}</p>
+                <a href="${data.label_url}" class="button">📄 Download Shipping Label</a>
             </div>
             
-            <div style="text-align: center; margin: 30px 0;">
-                <p><strong>Need help or have questions?</strong></p>
-                <a href="mailto:support@rebookedsolutions.co.za" class="button">Contact Support</a>
-            </div>
+            <p>If you have any questions or need to reschedule the pickup, please contact our support team immediately.</p>
+            
+            <p>Thank you for selling with ReBooked!</p>
+            
+            <p>Best regards,<br>
+            The ReBooked Team</p>
         </div>
         
         <div class="footer">
-            <p>This is an automated message from ReBooked Solutions</p>
-            <p>🌍 Connecting students with affordable textbooks across South Africa</p>
-            <p><a href="https://rebookedsolutions.co.za">rebookedsolutions.co.za</a></p>
+            <p>This is an automated email from ReBooked marketplace.</p>
+            <p>If you didn't expect this email, please contact our support team.</p>
         </div>
     </div>
 </body>
@@ -166,49 +102,89 @@ export function generateSellerPickupEmailHTML(
 }
 
 /**
- * Generate plain text version for email clients that don't support HTML
+ * Generate plain text email for seller pickup notification
  */
 export function generateSellerPickupEmailText(
   data: SellerPickupNotificationData,
 ): string {
   return `
-📦 PICKUP SCHEDULED - REBOOKED
+PICKUP SCHEDULED - ReBooked
 
 Hi ${data.seller_name},
 
-Great news! We've scheduled a pickup for your book "${data.book_title}" with ${data.courier}.
+Great news! We've scheduled a pickup for your book:
 
-📅 PICKUP DETAILS:
-• Date: ${data.pickup_date}
-• Time Window: ${data.pickup_time}
-• Courier: ${data.courier}
-• Tracking Number: ${data.tracking_number}
+BOOK: ${data.book_title}
+PICKUP DATE: ${data.pickup_date}
+PICKUP TIME: ${data.pickup_time}
+COURIER: ${data.courier}
 
-📋 PREPARATION CHECKLIST:
-Before pickup time:
-✅ Print the shipping label: ${data.label_url}
-✅ Package your book safely with bubble wrap or padding
-✅ Ensure your pickup address is accessible
-✅ Keep your phone nearby for courier contact
-✅ Have ID ready if requested
+PICKUP INSTRUCTIONS:
+- Please ensure the book is securely packaged and ready for collection
+- Have the shipping label printed and attached to the package
+- Be available during the scheduled pickup window
+- Keep your tracking number for reference: ${data.tracking_number}
 
-📦 PACKAGING TIPS:
-• Use a sturdy envelope or small box
-• Wrap the book in bubble wrap or plastic
-• Attach the shipping label securely and visibly
-• Seal the package properly with tape
+SHIPPING DETAILS:
+Tracking Number: ${data.tracking_number}
+Courier: ${data.courier}
+Download Label: ${data.label_url}
 
-💰 PAYMENT:
-Your payment will be released after successful delivery to the buyer.
+If you have any questions or need to reschedule the pickup, please contact our support team immediately.
 
-📱 TRACKING:
-Track your shipment using tracking number: ${data.tracking_number}
+Thank you for selling with ReBooked!
 
-Need help? Contact us at support@rebookedsolutions.co.za
+Best regards,
+The ReBooked Team
 
 ---
-ReBooked Solutions
-Connecting students with affordable textbooks
-https://rebookedsolutions.co.za
+This is an automated email from ReBooked marketplace.
+If you didn't expect this email, please contact our support team.
 `;
+}
+
+/**
+ * Send email notification using Resend API
+ */
+export async function sendEmailNotification(
+  emailData: EmailData,
+): Promise<void> {
+  try {
+    // Call the send-email-notification edge function
+    const response = await fetch("/api/send-email-notification", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(emailData),
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error || "Failed to send email");
+    }
+
+    console.log(`✅ Email sent successfully to: ${emailData.to}`);
+  } catch (error) {
+    console.error("Email notification failed:", error);
+    throw error;
+  }
+}
+
+/**
+ * Send notification to seller when pickup is scheduled
+ */
+export async function notifySellerPickupScheduled(
+  sellerEmail: string,
+  data: SellerPickupNotificationData,
+): Promise<void> {
+  const emailData: EmailData = {
+    to: sellerEmail,
+    subject: `📦 Pickup scheduled for "${data.book_title}" - ${data.courier}`,
+    template: "seller-pickup-notification",
+    variables: data,
+  };
+
+  await sendEmailNotification(emailData);
 }

@@ -173,8 +173,14 @@ class SystemLogger {
   }
 }
 
-// Create singleton instance
-const systemLogger = new SystemLogger();
+// Create singleton instance lazily
+let systemLogger: SystemLogger | null = null;
+const getSystemLogger = () => {
+  if (!systemLogger) {
+    systemLogger = new SystemLogger();
+  }
+  return systemLogger;
+};
 
 // Helper function to map severity to log level
 const mapSeverityToLevel = (severity: LogSeverity | LogLevel): LogLevel => {
@@ -194,18 +200,18 @@ export const logError = (
   context?: any,
 ) => {
   const level = mapSeverityToLevel(severityOrLevel);
-  return systemLogger.log(type, level, message, context);
+  return getSystemLogger().log(type, level, message, context);
 };
 
 export const logInfo = (type: LogType, message: string, context?: any) =>
-  systemLogger.log(type, "info", message, context);
+  getSystemLogger().log(type, "info", message, context);
 
 export const logWarning = (type: LogType, message: string, context?: any) =>
-  systemLogger.log(type, "warning", message, context);
+  getSystemLogger().log(type, "warning", message, context);
 
 export const getSystemLogs = (
-  filters?: Parameters<typeof systemLogger.getLogs>[0],
-) => systemLogger.getLogs(filters);
+  filters?: Parameters<SystemLogger["getLogs"]>[0],
+) => getSystemLogger().getLogs(filters);
 
 export const resolveLog = (id: string, resolution: string) =>
   systemLogger.resolve(id, resolution);

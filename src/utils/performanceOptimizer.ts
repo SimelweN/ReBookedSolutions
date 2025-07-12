@@ -31,6 +31,8 @@ export const throttle = <T extends (...args: any[]) => void>(
 
 // Clean up unused event listeners
 export const cleanupEventListeners = () => {
+  if (typeof window === "undefined") return;
+
   // Remove duplicate scroll listeners
   const events = ["scroll", "resize", "mousemove"];
   events.forEach((event) => {
@@ -47,6 +49,8 @@ export const cleanupEventListeners = () => {
 
 // Optimize images by reducing quality for performance
 export const optimizeImages = () => {
+  if (typeof document === "undefined") return;
+
   const images = document.querySelectorAll("img");
   images.forEach((img) => {
     if (!img.loading) {
@@ -61,6 +65,8 @@ export const optimizeImages = () => {
 
 // Clear unnecessary localStorage items
 export const cleanupStorage = () => {
+  if (typeof localStorage === "undefined") return;
+
   const keysToKeep = [
     "sb-access-token",
     "sb-refresh-token",
@@ -78,6 +84,20 @@ export const cleanupStorage = () => {
 
 // Reduce DOM reflows by batching operations
 export const batchDOMOperations = (operations: (() => void)[]) => {
+  if (typeof requestAnimationFrame === "undefined") {
+    // Fallback for environments without requestAnimationFrame
+    setTimeout(() => {
+      operations.forEach((op) => {
+        try {
+          op();
+        } catch (e) {
+          console.warn("DOM operation failed:", e);
+        }
+      });
+    }, 0);
+    return;
+  }
+
   requestAnimationFrame(() => {
     operations.forEach((op) => {
       try {
@@ -91,6 +111,8 @@ export const batchDOMOperations = (operations: (() => void)[]) => {
 
 // Initialize performance optimizations
 export const initPerformanceOptimizations = () => {
+  if (typeof window === "undefined") return;
+
   // Clean up on page load
   cleanupEventListeners();
   cleanupStorage();

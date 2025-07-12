@@ -2,6 +2,11 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
+// Safe environment detection
+const isNode =
+  typeof process !== "undefined" && process.versions && process.versions.node;
+const isDev = isNode && process.env.NODE_ENV !== "production";
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
@@ -10,7 +15,8 @@ export default defineConfig(({ mode }) => ({
     proxy: {
       // Proxy API requests to Vercel dev server or deployed API
       "/api": {
-        target: process.env.VITE_API_BASE_URL || "http://localhost:3000",
+        target:
+          (isNode && process.env.VITE_API_BASE_URL) || "http://localhost:3000",
         changeOrigin: true,
         secure: false,
         configure: (proxy, options) => {
@@ -33,12 +39,16 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [react()],
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-      // Ensure consistent React imports
-      react: path.resolve(__dirname, "node_modules/react"),
-      "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
-    },
+    alias: isNode
+      ? {
+          "@": path.resolve(__dirname, "./src"),
+          // Ensure consistent React imports
+          react: path.resolve(__dirname, "node_modules/react"),
+          "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
+        }
+      : {
+          "@": "/src",
+        },
     dedupe: ["react", "react-dom"], // Prevent multiple React instances
   },
   build: {

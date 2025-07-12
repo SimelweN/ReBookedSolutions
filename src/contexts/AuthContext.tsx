@@ -297,6 +297,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const initializeAuth = useCallback(() => {
     if (authInitialized) return;
 
+    // Check if supabase client is available
+    if (!supabase) {
+      console.warn(
+        "⚠️ Supabase client not available, skipping auth initialization",
+      );
+      setIsInitializing(false);
+      setIsLoading(false);
+      setInitError("Authentication service unavailable");
+      return;
+    }
+
     // Use startTransition to prevent suspense issues
     startTransition(() => {
       setIsLoading(false); // Start without loading to prevent suspense
@@ -372,7 +383,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                   exchangeError.message.includes("invalid request")
                 ) {
                   console.log(
-                    "��� [AuthContext] Clearing auth parameters from URL due to PKCE error",
+                    "���� [AuthContext] Clearing auth parameters from URL due to PKCE error",
                   );
                   // Clear the URL parameters to prevent repeated failed attempts
                   window.history.replaceState(
@@ -609,15 +620,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       });
 
       // Sign out from Supabase
-      const { error } = await supabase.auth.signOut({ scope: "global" });
+      if (supabase) {
+        const { error } = await supabase.auth.signOut({ scope: "global" });
 
-      // Handle specific case where there's no session to sign out from
-      if (error && error.message === "Auth session missing!") {
-        console.log("ℹ️ [AuthContext] No active session to sign out from");
-        // This is actually fine - user is already signed out
-      } else if (error) {
-        console.warn("⚠️ [AuthContext] Logout error:", error);
-        // Don't throw - we still want to complete the logout process
+        // Handle specific case where there's no session to sign out from
+        if (error && error.message === "Auth session missing!") {
+          console.log("ℹ️ [AuthContext] No active session to sign out from");
+          // This is actually fine - user is already signed out
+        } else if (error) {
+          console.warn("⚠️ [AuthContext] Logout error:", error);
+        }
       }
 
       console.log("✅ [AuthContext] Logout completed successfully");
@@ -683,6 +695,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [isLoading]);
 
   useEffect(() => {
+    // Check if supabase client is available
+    if (!supabase) {
+      console.warn(
+        "⚠️ Supabase client not available, skipping auth state change listener",
+      );
+      return;
+    }
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {

@@ -29,7 +29,7 @@ export const shouldSkipAuthLoading = () => {
   }
 };
 
-// Auto-enable instant startup in development
-if (import.meta.env.DEV) {
+// Auto-enable instant startup in development (browser only)
+if (import.meta.env.DEV && typeof window !== "undefined") {
   enableInstantStartup();
 }

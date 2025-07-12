@@ -19,10 +19,16 @@ export interface NotificationInput {
 }
 
 // Cache for notifications to reduce API calls
-const notificationCache = new Map<
+let notificationCache: Map<
   string,
   { data: Notification[]; timestamp: number }
->();
+> | null = null;
+const getNotificationCache = () => {
+  if (!notificationCache) {
+    notificationCache = new Map();
+  }
+  return notificationCache;
+};
 const CACHE_DURATION = 30000; // 30 seconds cache
 const MAX_CACHE_SIZE = 100; // Maximum number of cached entries
 
@@ -30,7 +36,13 @@ const MAX_CACHE_SIZE = 100; // Maximum number of cached entries
 let currentFetchController: AbortController | null = null;
 
 // Track recent notifications to prevent duplicates
-const recentNotifications = new Map<string, number>();
+let recentNotifications: Map<string, number> | null = null;
+const getRecentNotifications = () => {
+  if (!recentNotifications) {
+    recentNotifications = new Map();
+  }
+  return recentNotifications;
+};
 const DUPLICATE_PREVENTION_WINDOW = 60000; // 1 minute window
 
 export const getNotifications = async (
@@ -42,7 +54,7 @@ export const getNotifications = async (
   }
 
   // Check cache first
-  const cached = notificationCache.get(userId);
+  const cached = getNotificationCache().get(userId);
   if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
     return cached.data;
   }
@@ -116,7 +128,7 @@ export const getNotifications = async (
     }));
 
     // Update cache
-    notificationCache.set(userId, {
+    getNotificationCache().set(userId, {
       data: notifications,
       timestamp: Date.now(),
     });
@@ -153,7 +165,7 @@ export const getNotifications = async (
     }
 
     // Return cached data if available, otherwise empty array
-    const cached = notificationCache.get(userId);
+    const cached = getNotificationCache().get(userId);
     return cached ? cached.data : [];
   } finally {
     currentFetchController = null;
@@ -267,7 +279,7 @@ export const addNotification = async (
     );
 
     // Invalidate cache after adding new notification
-    notificationCache.delete(notification.userId);
+    getNotificationCache().delete(notification.userId);
 
     // Clean up old entries from recentNotifications map
     cleanupRecentNotifications();

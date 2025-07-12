@@ -14,13 +14,21 @@ const devWarn = (message: string, error?: any) => {
 };
 
 const perfMark = (name: string) => {
-  if (import.meta.env.DEV && performance.mark) {
+  if (
+    import.meta.env.DEV &&
+    typeof performance !== "undefined" &&
+    performance.mark
+  ) {
     performance.mark(name);
   }
 };
 
 const perfMeasure = (name: string, startMark: string) => {
-  if (import.meta.env.DEV && performance.measure) {
+  if (
+    import.meta.env.DEV &&
+    typeof performance !== "undefined" &&
+    performance.measure
+  ) {
     try {
       performance.measure(name, startMark);
     } catch (e) {
@@ -47,7 +55,7 @@ const ERROR_CACHE_DURATION = 5000; // 5 seconds for failed checks
 
 // Connection state tracking
 let consecutiveFailures = 0;
-let isOnline = navigator.onLine;
+let isOnline = typeof navigator !== "undefined" ? navigator.onLine : true;
 
 // Listen for online/offline events
 if (typeof window !== "undefined") {
@@ -103,7 +111,7 @@ export const checkConnectionHealth = async (
   const startTime = Date.now();
 
   const result: ConnectionHealthResult = {
-    isOnline: navigator.onLine,
+    isOnline: typeof navigator !== "undefined" ? navigator.onLine : true,
     supabaseConnected: false,
     authStatus: "disconnected",
     timestamp: new Date().toISOString(),

@@ -249,16 +249,20 @@ class HealthTracker {
   private async checkSupabaseHealth(): Promise<boolean> {
     try {
       // Try to make a simple request to Supabase
-      const response = await fetch(
-        `${process.env.VITE_SUPABASE_URL}/rest/v1/`,
-        {
-          method: "HEAD",
-          headers: {
-            apikey: process.env.VITE_SUPABASE_ANON_KEY || "",
-            Authorization: `Bearer ${process.env.VITE_SUPABASE_ANON_KEY || ""}`,
-          },
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      if (!supabaseUrl || !supabaseKey) {
+        return false;
+      }
+
+      const response = await fetch(`${supabaseUrl}/rest/v1/`, {
+        method: "HEAD",
+        headers: {
+          apikey: supabaseKey,
+          Authorization: `Bearer ${supabaseKey}`,
         },
-      );
+      });
 
       return response.ok;
     } catch (error) {

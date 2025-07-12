@@ -133,7 +133,18 @@ const extractUniversityPrograms = () => {
 };
 
 // Get comprehensive university programs data
-const UNIVERSITY_PROGRAMS = extractUniversityPrograms();
+// Get comprehensive university programs data lazily
+const getUniversityPrograms = () => {
+  try {
+    return extractUniversityPrograms();
+  } catch (error) {
+    console.warn(
+      "Failed to extract university programs, using empty array",
+      error,
+    );
+    return [];
+  }
+};
 
 interface APSSubject {
   name: string;
@@ -309,7 +320,7 @@ const ComprehensiveAPSCalculator: React.FC = () => {
 
   // Filter and analyze programs
   const { eligiblePrograms, programsByFaculty, stats } = useMemo(() => {
-    let filteredPrograms = UNIVERSITY_PROGRAMS;
+    let filteredPrograms = getUniversityPrograms();
 
     // Apply faculty filter
     if (facultyFilter !== "all") {
@@ -399,11 +410,13 @@ const ComprehensiveAPSCalculator: React.FC = () => {
 
   // Get unique faculties and universities for filters
   const availableFaculties = useMemo(() => {
-    return [...new Set(UNIVERSITY_PROGRAMS.map((p) => p.faculty))].sort();
+    return [...new Set(getUniversityPrograms().map((p) => p.faculty))].sort();
   }, []);
 
   const availableUniversities = useMemo(() => {
-    return [...new Set(UNIVERSITY_PROGRAMS.map((p) => p.abbreviation))].sort();
+    return [
+      ...new Set(getUniversityPrograms().map((p) => p.abbreviation)),
+    ].sort();
   }, []);
 
   const addSubject = useCallback(() => {

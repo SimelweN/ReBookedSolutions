@@ -53,12 +53,23 @@ import {
 } from "@/utils/apsCalculatorUtils";
 import { FALLBACK_PROGRAMS } from "@/constants/universityPrograms";
 
-// Get university programs data
-const UNIVERSITY_PROGRAMS = extractUniversityPrograms();
+// Get university programs data lazily
+const getUniversityPrograms = () => {
+  try {
+    return extractUniversityPrograms();
+  } catch (error) {
+    console.warn(
+      "Failed to extract university programs, using fallback",
+      error,
+    );
+    return [];
+  }
+};
 
-// Use real data if available, otherwise fallback
-const FINAL_UNIVERSITY_PROGRAMS =
-  UNIVERSITY_PROGRAMS.length > 0
+// Use real data if available, otherwise fallback (lazy evaluation)
+const getFinalUniversityPrograms = () => {
+  const UNIVERSITY_PROGRAMS = getUniversityPrograms();
+  return UNIVERSITY_PROGRAMS.length > 0
     ? UNIVERSITY_PROGRAMS
     : FALLBACK_PROGRAMS.map((program, index) => ({
         ...program,
@@ -67,6 +78,7 @@ const FINAL_UNIVERSITY_PROGRAMS =
         apsRequired: program.aps,
         universityId: program.abbreviation.toLowerCase(),
       }));
+};
 
 // Types
 interface APSSubject {
@@ -161,7 +173,7 @@ const SimpleAPSCalculator: React.FC = () => {
   const degreeAnalysis = useMemo(() => {
     const degrees: DegreeInsight[] = [];
 
-    FINAL_UNIVERSITY_PROGRAMS.forEach((program) => {
+    getFinalUniversityPrograms().forEach((program) => {
       degrees.push({
         id: program.id || `${program.universityId}-${program.name}`,
         name: program.name || program.program,
@@ -189,7 +201,7 @@ const SimpleAPSCalculator: React.FC = () => {
   // Group by university
   const universityMatches = useMemo(() => {
     const groupedPrograms = groupProgramsByUniversity(
-      FINAL_UNIVERSITY_PROGRAMS as UniversityProgramExtended[],
+      getFinalUniversityPrograms() as UniversityProgramExtended[],
     );
     return calculateUniversityStats(groupedPrograms, totalAPS);
   }, [totalAPS]);
