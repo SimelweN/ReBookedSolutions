@@ -98,24 +98,10 @@ const createSupabaseClient = () => {
         persistSession: true,
         detectSessionInUrl: true,
       },
-      global: {
-        fetch: async (url, options = {}) => {
-          try {
-            const response = await fetch(url, {
-              ...options,
-              // Add timeout to prevent hanging requests
-              signal: AbortSignal.timeout?.(10000), // 10 second timeout if supported
-            });
-            return response;
-          } catch (error) {
-            console.warn("Supabase fetch error:", error);
-            // Return a mock response to prevent crashes
-            return new Response(JSON.stringify({ error: "Network error" }), {
-              status: 500,
-              statusText: "Network Error",
-              headers: { "Content-Type": "application/json" },
-            });
-          }
+      // Use standard fetch without custom overrides
+      realtime: {
+        params: {
+          eventsPerSecond: 2,
         },
       },
     });

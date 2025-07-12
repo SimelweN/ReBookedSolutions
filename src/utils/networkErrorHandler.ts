@@ -49,7 +49,7 @@ export const safeFetch = async (
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
-    const response = await fetch(url, {
+    const response = await originalFetch(url, {
       ...options,
       signal: controller.signal,
     });
@@ -68,7 +68,7 @@ export const safeFetch = async (
 const originalFetch = window.fetch;
 window.fetch = async function (input: RequestInfo | URL, init?: RequestInit) {
   try {
-    return await originalFetch(input, init);
+    return await originalFetch.call(this, input, init);
   } catch (error) {
     const url = typeof input === "string" ? input : input.toString();
 
