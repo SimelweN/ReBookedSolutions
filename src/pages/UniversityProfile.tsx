@@ -73,6 +73,10 @@ const UniversityProfile: React.FC = () => {
     setSelectedProgram(null);
   };
 
+  const handleAPSCalculator = () => {
+    navigate("/university-info?tool=aps-calculator");
+  };
+
   // Helper function to check if user is eligible for a program
   const isEligibleForProgram = (program: Degree): boolean => {
     if (!userAPS || userAPS === 0) return true;
