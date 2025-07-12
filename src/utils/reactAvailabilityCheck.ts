@@ -110,13 +110,10 @@ export const ReactFallbacks = {
   },
 
   useContext: <T>(context: React.Context<T>): T => {
-    if (typeof React !== "undefined" && React.useContext) {
-      return React.useContext(context);
-    }
-
+    // Always return the context default value for fallback scenarios
+    // This avoids conditional hook calls which violate React Rules of Hooks
     console.warn("⚠️ Using fallback useContext implementation");
-    // Return a reasonable default - this won't work properly but prevents crashes
-    return {} as T;
+    return context._currentValue || ({} as T);
   },
 };
 
@@ -145,7 +142,7 @@ export function initializeReactAvailability(): void {
   }
 
   if (validation.warnings.length > 0) {
-    console.warn("⚠️ React availability warnings:");
+    console.warn("⚠��� React availability warnings:");
     validation.warnings.forEach((warning) => console.warn(`  - ${warning}`));
   }
 }
