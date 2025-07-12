@@ -111,34 +111,37 @@ const SimpleNotificationBell: React.FC = () => {
     return `${diffInDays}d ago`;
   }, []);
 
-  const markAsRead = (notificationId: string) => {
+  const markAsRead = React.useCallback((notificationId: string) => {
     setNotifications((prev) =>
       prev.map((notif) =>
         notif.id === notificationId ? { ...notif, read: true } : notif,
       ),
     );
-  };
+  }, []);
 
-  const markAllAsRead = () => {
+  const markAllAsRead = React.useCallback(() => {
     setNotifications((prev) => prev.map((notif) => ({ ...notif, read: true })));
     toast.success("All notifications marked as read");
-  };
+  }, []);
 
-  const removeNotification = (notificationId: string) => {
+  const removeNotification = React.useCallback((notificationId: string) => {
     setNotifications((prev) =>
       prev.filter((notif) => notif.id !== notificationId),
     );
-  };
+  }, []);
 
-  const handleNotificationClick = (notification: SimpleNotification) => {
-    markAsRead(notification.id);
+  const handleNotificationClick = React.useCallback(
+    (notification: SimpleNotification) => {
+      markAsRead(notification.id);
 
-    if (notification.action) {
-      navigate(notification.action.path);
-    }
+      if (notification.action) {
+        navigate(notification.action.path);
+      }
 
-    setIsOpen(false);
-  };
+      setIsOpen(false);
+    },
+    [markAsRead, navigate],
+  );
 
   if (!user) {
     return null; // Don't show notifications if user is not logged in
