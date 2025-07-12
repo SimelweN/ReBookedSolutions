@@ -169,6 +169,16 @@ OPTION 2: Manual setup
     }
   }
 
+  // In development, we're more lenient to allow development without full setup
+  if (IS_DEVELOPMENT) {
+    console.log("🔧 Development mode: Environment validation lenient");
+    if (missing.length > 0) {
+      console.warn("⚠️ Missing environment variables:", missing);
+      console.warn("📝 App will continue with mock/fallback services");
+    }
+    return true; // Allow development to continue
+  }
+
   return missing.length === 0;
 };
 
