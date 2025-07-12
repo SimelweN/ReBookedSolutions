@@ -350,6 +350,7 @@ export class ClientCommitAutoExpiry {
       // Only log non-auth errors
       if (
         !error.message?.includes("authentication") &&
+        !error.message?.includes("HTTP 401") &&
         !error.message?.includes("401")
       ) {
         console.warn("Error getting urgent commits count:", error);
