@@ -63,6 +63,17 @@ export const handleSupabaseError = (
     };
   }
 
+  if (isAuthError(error)) {
+    return {
+      data: null,
+      error: {
+        message: "Authentication required. Please sign in again.",
+        code: "UNAUTHORIZED",
+        details: error.message,
+      },
+    };
+  }
+
   if (isSupabaseConfigError(error)) {
     return {
       data: null,
