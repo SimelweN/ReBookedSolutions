@@ -1,15 +1,16 @@
 export interface BankingDetails {
   id?: string;
   user_id: string;
-  recipient_type: string;
+  recipient_type: "individual" | "business";
   full_name: string;
   bank_account_number: string;
   bank_name: string;
-  branch_code: string;
+  branch_code?: string;
   account_type: "savings" | "current";
   paystack_subaccount_code?: string;
   paystack_subaccount_id?: string;
-  subaccount_status?: "pending" | "active" | "inactive";
+  subaccount_status?: "pending" | "active" | "inactive" | "pending_setup";
+  account_verified?: boolean;
   created_at?: string;
   updated_at?: string;
 }

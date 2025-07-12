@@ -72,7 +72,26 @@ const ShippingComparison = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to get quotes");
+        // Fallback: provide default shipping options
+        console.warn("API failed, using fallback shipping options");
+        setQuotes([
+          {
+            provider: "Standard Delivery",
+            price: 50,
+            estimatedDays: "5-7 business days",
+            description: "Standard postal service (fallback option)",
+          },
+          {
+            provider: "Express Delivery",
+            price: 100,
+            estimatedDays: "2-3 business days",
+            description: "Express postal service (fallback option)",
+          },
+        ]);
+        toast.warning(
+          "Using estimated shipping options - please contact us for accurate quotes",
+        );
+        return;
       }
 
       const data = await response.json();
@@ -80,7 +99,28 @@ const ShippingComparison = () => {
       toast.success("Quotes retrieved successfully!");
     } catch (error) {
       console.error("Error getting quotes:", error);
-      toast.error("Failed to get delivery quotes");
+
+      // Network error fallback - provide manual contact option
+      setQuotes([
+        {
+          provider: "Contact for Quote",
+          price: 0,
+          estimatedDays: "TBD",
+          description:
+            "Please contact us directly for shipping quote due to technical issues",
+        },
+      ]);
+
+      const isOffline = !navigator.onLine;
+      if (isOffline) {
+        toast.error(
+          "You're offline. Please check your connection and try again.",
+        );
+      } else {
+        toast.error(
+          "Unable to get shipping quotes. Please contact us directly or try again later.",
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -321,7 +361,7 @@ const ShippingComparison = () => {
       <Button onClick={handleGetQuotes} disabled={loading}>
         {loading ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
             Getting Quotes...
           </>
         ) : (

@@ -1,30 +1,81 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
 import path from "path";
+
+// Safe environment detection
+const isNode =
+  typeof process !== "undefined" && process.versions && process.versions.node;
+const isDev = isNode && process.env.NODE_ENV !== "production";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    proxy: {
+      // Proxy API requests to Vercel dev server or deployed API
+      "/api": {
+        target:
+          (isNode && process.env.VITE_API_BASE_URL) || "http://localhost:3000",
+        changeOrigin: true,
+        secure: false,
+        configure: (proxy, options) => {
+          proxy.on("error", (err, req, res) => {
+            console.log("proxy error", err);
+          });
+          proxy.on("proxyReq", (proxyReq, req, res) => {
+            console.log("Sending Request to the Target:", req.method, req.url);
+          });
+          proxy.on("proxyRes", (proxyRes, req, res) => {
+            console.log(
+              "Received Response from the Target:",
+              proxyRes.statusCode,
+              req.url,
+            );
+          });
+        },
+      },
+    },
   },
   plugins: [react()],
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
+    alias: isNode
+      ? {
+          "@": path.resolve(__dirname, "./src"),
+          // Ensure consistent React imports
+          react: path.resolve(__dirname, "node_modules/react"),
+          "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
+        }
+      : {
+          "@": "/src",
+        },
+    dedupe: ["react", "react-dom"], // Prevent multiple React instances
   },
   build: {
     // Optimize build output
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // React and React-DOM
-          if (id.includes("react") || id.includes("react-dom")) {
-            return "react-vendor";
+          // Keep React and React-DOM together and prioritize them FIRST
+          if (
+            id.includes("node_modules/react/") ||
+            id.includes("node_modules/react-dom/")
+          ) {
+            return "0-react-core";
+          }
+          if (id.includes("react-dom")) {
+            return "0-react-core";
+          }
+          if (
+            id.includes("react") &&
+            !id.includes("react-router") &&
+            !id.includes("@react-google-maps") &&
+            !id.includes("@tanstack/react-query")
+          ) {
+            return "0-react-core";
           }
 
-          // Router
+          // Router (separate from core React)
           if (id.includes("react-router")) {
             return "router";
           }
@@ -84,7 +135,7 @@ export default defineConfig(({ mode }) => ({
           }
 
           if (
-            id.includes("/pages/EnhancedUniversityProfile") ||
+            id.includes("/pages/UniversityProfile") ||
             id.includes("/university-info/")
           ) {
             return "university";
@@ -128,8 +179,8 @@ export default defineConfig(({ mode }) => ({
     },
     // Optimize chunk size warning limit
     chunkSizeWarningLimit: 500,
-    // Enable source maps for debugging in dev
-    sourcemap: mode === "development",
+    // Enable source maps for debugging
+    sourcemap: true,
     // Minify in production
     minify: mode === "production" ? "esbuild" : false,
     // Target modern browsers for better performance
@@ -137,12 +188,17 @@ export default defineConfig(({ mode }) => ({
     // CSS code splitting
     cssCodeSplit: true,
   },
-  // Optimize dependencies
+  // Optimize dependencies - prioritize React loading
   optimizeDeps: {
     include: [
+      // React first - CRITICAL for createContext to work
       "react",
       "react-dom",
+      "react-dom/client",
+      "react/jsx-runtime",
+      // Then other React dependencies
       "react-router-dom",
+      // Then other libraries
       "@supabase/supabase-js",
       "@tanstack/react-query",
       "lucide-react",
@@ -151,10 +207,28 @@ export default defineConfig(({ mode }) => ({
       // Exclude heavy optional dependencies
       "@react-google-maps/api",
     ],
+    force: true, // Force re-bundling to ensure consistency
+    // Ensure React is pre-bundled before anything else
+    entries: ["src/main.tsx"],
   },
+
+  // Ensure React is properly available in production builds
+  define: {
+    // Ensure React is available globally if needed
+    __REACT_DEVTOOLS_GLOBAL_HOOK__: "undefined",
+    // Prevent React createContext errors in production
+    "process.env.NODE_ENV": JSON.stringify(
+      mode === "production" ? "production" : "development",
+    ),
+    // Ensure global React availability
+    global: "globalThis",
+  },
+
   // Performance optimizations
   esbuild: {
-    // Drop console logs and debugger statements in production
-    drop: mode === "production" ? ["console", "debugger"] : [],
+    // Drop only console.log and debugger in production, keep console.error for debugging
+    drop: mode === "production" ? ["debugger"] : [],
+    // Minimize dead code
+    treeShaking: true,
   },
 }));

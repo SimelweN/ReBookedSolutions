@@ -63,38 +63,20 @@ import { toast } from "sonner";
 
 // Extract all programs from the massive course database
 const extractUniversityPrograms = () => {
-  const programs: any[] = [];
+  const programs: Array<{
+    id: string;
+    name: string;
+    apsRequired: number;
+    universityId: string;
+    faculty: string;
+    subjects?: string[];
+  }> = [];
 
   try {
-    // Get all university IDs from the database
-    const allUniversityIds = [
-      "uct",
-      "wits",
-      "stellenbosch",
-      "up",
-      "ukzn",
-      "ufs",
-      "ru",
-      "nwu",
-      "uwc",
-      "ufh",
-      "ul",
-      "cput",
-      "dut",
-      "tut",
-      "cut",
-      "vut",
-      "mut",
-      "uj",
-      "unisa",
-      "unizulu",
-      "univen",
-      "nmu",
-      "wsu",
-      "smu",
-      "sol",
-      "ump",
-    ];
+    // Get all university IDs dynamically from the complete database
+    const allUniversityIds = ALL_SOUTH_AFRICAN_UNIVERSITIES.map(
+      (uni) => uni.id,
+    );
 
     // Find university info by ID
     const getUniversityInfo = (id: string) => {
@@ -151,7 +133,18 @@ const extractUniversityPrograms = () => {
 };
 
 // Get comprehensive university programs data
-const UNIVERSITY_PROGRAMS = extractUniversityPrograms();
+// Get comprehensive university programs data lazily
+const getUniversityPrograms = () => {
+  try {
+    return extractUniversityPrograms();
+  } catch (error) {
+    console.warn(
+      "Failed to extract university programs, using empty array",
+      error,
+    );
+    return [];
+  }
+};
 
 interface APSSubject {
   name: string;
@@ -160,7 +153,14 @@ interface APSSubject {
 }
 
 interface ProgramDetailsModalProps {
-  program: any;
+  program: {
+    id: string;
+    name: string;
+    apsRequired: number;
+    universityId: string;
+    faculty: string;
+    subjects?: string[];
+  };
   isOpen: boolean;
   onClose: () => void;
 }
@@ -224,7 +224,7 @@ const ProgramDetailsModal: React.FC<ProgramDetailsModalProps> = ({
                 Subject Requirements
               </h3>
               <div className="grid grid-cols-1 gap-2">
-                {program.subjects.map((subject: any, index: number) => (
+                {program.subjects.map((subject: string, index: number) => (
                   <div
                     key={index}
                     className="flex justify-between items-center p-2 bg-slate-50 rounded"
@@ -301,7 +301,14 @@ const ComprehensiveAPSCalculator: React.FC = () => {
   const [showAllPrograms, setShowAllPrograms] = useState(false);
   const [facultyFilter, setFacultyFilter] = useState("all");
   const [universityFilter, setUniversityFilter] = useState("all");
-  const [selectedProgram, setSelectedProgram] = useState<any>(null);
+  const [selectedProgram, setSelectedProgram] = useState<{
+    id: string;
+    name: string;
+    apsRequired: number;
+    universityId: string;
+    faculty: string;
+    subjects?: string[];
+  } | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   // Calculate total APS (excluding Life Orientation)
@@ -313,7 +320,7 @@ const ComprehensiveAPSCalculator: React.FC = () => {
 
   // Filter and analyze programs
   const { eligiblePrograms, programsByFaculty, stats } = useMemo(() => {
-    let filteredPrograms = UNIVERSITY_PROGRAMS;
+    let filteredPrograms = getUniversityPrograms();
 
     // Apply faculty filter
     if (facultyFilter !== "all") {
@@ -348,14 +355,24 @@ const ComprehensiveAPSCalculator: React.FC = () => {
 
     // Group by faculty
     const byFaculty = processedPrograms.reduce(
-      (acc, program) => {
+      (acc: Record<string, typeof processedPrograms>, program) => {
         if (!acc[program.faculty]) {
           acc[program.faculty] = [];
         }
         acc[program.faculty].push(program);
         return acc;
       },
-      {} as Record<string, any[]>,
+      {} as Record<
+        string,
+        Array<{
+          id: string;
+          name: string;
+          apsRequired: number;
+          universityId: string;
+          faculty: string;
+          subjects?: string[];
+        }>
+      >,
     );
 
     // Convert to array and sort
@@ -393,11 +410,13 @@ const ComprehensiveAPSCalculator: React.FC = () => {
 
   // Get unique faculties and universities for filters
   const availableFaculties = useMemo(() => {
-    return [...new Set(UNIVERSITY_PROGRAMS.map((p) => p.faculty))].sort();
+    return [...new Set(getUniversityPrograms().map((p) => p.faculty))].sort();
   }, []);
 
   const availableUniversities = useMemo(() => {
-    return [...new Set(UNIVERSITY_PROGRAMS.map((p) => p.abbreviation))].sort();
+    return [
+      ...new Set(getUniversityPrograms().map((p) => p.abbreviation)),
+    ].sort();
   }, []);
 
   const addSubject = useCallback(() => {
@@ -439,10 +458,20 @@ const ComprehensiveAPSCalculator: React.FC = () => {
     toast.success("Subject removed");
   }, []);
 
-  const handleViewDetails = useCallback((program: any) => {
-    setSelectedProgram(program);
-    setIsDetailsModalOpen(true);
-  }, []);
+  const handleViewDetails = useCallback(
+    (program: {
+      id: string;
+      name: string;
+      apsRequired: number;
+      universityId: string;
+      faculty: string;
+      subjects?: string[];
+    }) => {
+      setSelectedProgram(program);
+      setIsDetailsModalOpen(true);
+    },
+    [],
+  );
 
   return (
     <div className="max-w-7xl mx-auto p-4 lg:p-6 space-y-6">

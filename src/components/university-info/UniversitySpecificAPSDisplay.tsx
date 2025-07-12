@@ -69,6 +69,8 @@ const APSScoreCard: React.FC<APSScoreCardProps> = ({
     navigate(
       `/university/${score.universityId}?fromAPS=true&aps=${score.score}`,
     );
+    // Scroll to top after navigation
+    setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
   };
 
   const getScoreColor = (percentage: number) => {
@@ -171,6 +173,11 @@ const APSScoreCard: React.FC<APSScoreCardProps> = ({
               // Pass APS context to ensure personalized experience
               navigate(
                 `/university/${score.universityId}?fromAPS=true&aps=${score.score}`,
+              );
+              // Scroll to top after navigation
+              setTimeout(
+                () => window.scrollTo({ top: 0, behavior: "smooth" }),
+                100,
               );
             }}
             className="w-full border-book-600 text-book-600 hover:bg-book-50"

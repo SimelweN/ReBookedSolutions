@@ -80,9 +80,16 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
       const { paymentUrl, transactionId } =
         await PaymentIntegrationService.initiatePayment(paymentData);
 
-      // Store transaction ID for callback handling
-      sessionStorage.setItem("current_transaction_id", transactionId);
-      sessionStorage.setItem("payment_book_id", bookId);
+      // Store transaction ID for callback handling (with fallback)
+      try {
+        sessionStorage.setItem("current_transaction_id", transactionId);
+        sessionStorage.setItem("payment_book_id", bookId);
+      } catch (storageError) {
+        console.warn(
+          "SessionStorage not available, payment will continue without callback tracking",
+        );
+        // Payment can still continue, we'll just lose some tracking ability
+      }
 
       console.log("✅ Payment initiated, redirecting to Paystack...");
 

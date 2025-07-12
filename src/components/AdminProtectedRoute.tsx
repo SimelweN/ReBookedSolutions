@@ -48,6 +48,7 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({
       // Clear the timeout since we got a result
       if (checkTimeout) {
         clearTimeout(checkTimeout);
+        setCheckTimeout(null);
       }
 
       if (!isAuthenticated) {
@@ -62,7 +63,7 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({
         return;
       }
     }
-  }, [isAuthenticated, isAdmin, isLoading, navigate, hasChecked, checkTimeout]);
+  }, [isAuthenticated, isAdmin, isLoading, navigate, hasChecked]); // Removed checkTimeout from dependencies
 
   // Show loading spinner while checking auth
   if ((isLoading || !hasChecked) && !user) {

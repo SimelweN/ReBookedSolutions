@@ -27,6 +27,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { SellerValidationService } from "@/services/sellerValidationService";
 import SellerRestrictionBanner from "@/components/SellerRestrictionBanner";
+import BankingRequirementGate from "@/components/BankingRequirementGate";
 
 const CreateListing = () => {
   const { user, profile } = useAuth();
@@ -189,10 +190,37 @@ const CreateListing = () => {
       return;
     }
 
-    // Check if user can list books before validating form
+    // ❗ DISALLOW listing books if seller has no subaccount or address
     if (canListBooks === false) {
       toast.error("❌ Please add a pickup address before listing your book.");
       navigate("/profile");
+      return;
+    }
+
+    // Additional comprehensive validation
+    try {
+      const { validateSellerForListing } = await import(
+        "@/services/checkoutValidationService"
+      );
+      const sellerValidation = await validateSellerForListing(user.id);
+
+      if (!sellerValidation.isValid) {
+        const errorMsg = `Cannot list books: ${sellerValidation.errors.join(", ")}`;
+        toast.error(errorMsg);
+        console.error("❌ Seller validation failed:", sellerValidation);
+
+        if (!sellerValidation.hasSubaccount) {
+          navigate("/profile#banking");
+        } else if (!sellerValidation.hasAddress) {
+          navigate("/profile#address");
+        }
+        return;
+      }
+
+      console.log("✅ Seller validation passed for listing");
+    } catch (validationError) {
+      console.error("❌ Seller validation error:", validationError);
+      toast.error("Failed to validate seller information");
       return;
     }
 
@@ -301,245 +329,251 @@ const CreateListing = () => {
 
   return (
     <Layout>
-      <div
-        className={`container mx-auto ${isMobile ? "px-2" : "px-4"} py-4 md:py-8 max-w-2xl`}
-      >
-        {/* Requirements Validation */}
-        {!isCheckingRequirements &&
-          sellerValidation &&
-          !sellerValidation.canSell && (
-            <SellerRestrictionBanner
-              isVisible={true}
-              missingRequirements={sellerValidation.missingRequirements}
-              hasAddress={sellerValidation.hasAddress}
-              hasBankingDetails={sellerValidation.hasBankingDetails}
-            />
+      <BankingRequirementGate action="create a book listing">
+        <div
+          className={`container mx-auto ${isMobile ? "px-2" : "px-4"} py-4 md:py-8 max-w-2xl`}
+        >
+          {/* Requirements Validation */}
+          {!isCheckingRequirements &&
+            sellerValidation &&
+            !sellerValidation.canSell && (
+              <SellerRestrictionBanner
+                isVisible={true}
+                missingRequirements={sellerValidation.missingRequirements}
+                hasAddress={sellerValidation.hasAddress}
+                hasBankingDetails={sellerValidation.hasBankingDetails}
+              />
+            )}
+
+          {/* Loading Requirements Check */}
+          {isCheckingRequirements && (
+            <Alert className="mb-6">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <AlertDescription>
+                Checking seller requirements...
+              </AlertDescription>
+            </Alert>
           )}
 
-        {/* Loading Requirements Check */}
-        {isCheckingRequirements && (
-          <Alert className="mb-6">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <AlertDescription>Checking seller requirements...</AlertDescription>
-          </Alert>
-        )}
-
-        <Button
-          variant="ghost"
-          onClick={() => {
-            // Check if there's history to go back to
-            if (window.history.length > 1) {
-              navigate(-1);
-            } else {
-              // If no history, navigate to home page
-              navigate("/");
-            }
-          }}
-          className={`mb-4 md:mb-6 text-book-600 hover:text-book-700 ${isMobile ? "h-10" : ""}`}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          {isMobile ? "" : "Back"}
-        </Button>
-
-        <div
-          className={`bg-white rounded-lg shadow-md ${isMobile ? "p-4" : "p-8"}`}
-        >
-          <h1
-            className={`${isMobile ? "text-xl" : "text-3xl"} font-bold text-book-800 mb-6 text-center`}
+          <Button
+            variant="ghost"
+            onClick={() => {
+              // Check if there's history to go back to
+              if (window.history.length > 1) {
+                navigate(-1);
+              } else {
+                // If no history, navigate to home page
+                navigate("/");
+              }
+            }}
+            className={`mb-4 md:mb-6 text-book-600 hover:text-book-700 ${isMobile ? "h-10" : ""}`}
           >
-            Create New Listing
-          </h1>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            {isMobile ? "" : "Back"}
+          </Button>
 
-          <form
-            onSubmit={handleSubmit}
-            className={`space-y-${isMobile ? "4" : "6"}`}
+          <div
+            className={`bg-white rounded-lg shadow-md ${isMobile ? "p-4" : "p-8"}`}
           >
-            <div
-              className={`grid grid-cols-1 ${isMobile ? "gap-4" : "md:grid-cols-2 gap-6"}`}
+            <h1
+              className={`${isMobile ? "text-xl" : "text-3xl"} font-bold text-book-800 mb-6 text-center`}
             >
-              <BookInformationForm
-                formData={formData}
-                errors={errors}
-                onInputChange={handleInputChange}
-              />
+              Create New Listing
+            </h1>
 
-              <div className={`space-y-${isMobile ? "3" : "4"}`}>
-                <PricingSection
+            <form
+              onSubmit={handleSubmit}
+              className={`space-y-${isMobile ? "4" : "6"}`}
+            >
+              <div
+                className={`grid grid-cols-1 ${isMobile ? "gap-4" : "md:grid-cols-2 gap-6"}`}
+              >
+                <BookInformationForm
                   formData={formData}
                   errors={errors}
                   onInputChange={handleInputChange}
                 />
 
-                <BookTypeSection
-                  bookType={bookType}
-                  formData={formData}
-                  errors={errors}
-                  onBookTypeChange={handleBookTypeChange}
-                  onSelectChange={handleSelectChange}
-                />
-              </div>
-            </div>
+                <div className={`space-y-${isMobile ? "3" : "4"}`}>
+                  <PricingSection
+                    formData={formData}
+                    errors={errors}
+                    onInputChange={handleInputChange}
+                  />
 
-            <div>
-              <MultiImageUpload
-                currentImages={bookImages}
-                onImagesChange={(images) =>
-                  setBookImages(images as typeof bookImages)
-                }
-                variant="object"
-                maxImages={3}
-              />
-              {(errors.frontCover ||
-                errors.backCover ||
-                errors.insidePages) && (
-                <div className="mt-2 space-y-1">
-                  {errors.frontCover && (
-                    <p
-                      className={`${isMobile ? "text-xs" : "text-sm"} text-red-500`}
+                  <BookTypeSection
+                    bookType={bookType}
+                    formData={formData}
+                    errors={errors}
+                    onBookTypeChange={handleBookTypeChange}
+                    onSelectChange={handleSelectChange}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <MultiImageUpload
+                  currentImages={bookImages}
+                  onImagesChange={(images) =>
+                    setBookImages(images as typeof bookImages)
+                  }
+                  variant="object"
+                  maxImages={3}
+                />
+                {(errors.frontCover ||
+                  errors.backCover ||
+                  errors.insidePages) && (
+                  <div className="mt-2 space-y-1">
+                    {errors.frontCover && (
+                      <p
+                        className={`${isMobile ? "text-xs" : "text-sm"} text-red-500`}
+                      >
+                        {errors.frontCover}
+                      </p>
+                    )}
+                    {errors.backCover && (
+                      <p
+                        className={`${isMobile ? "text-xs" : "text-sm"} text-red-500`}
+                      >
+                        {errors.backCover}
+                      </p>
+                    )}
+                    {errors.insidePages && (
+                      <p
+                        className={`${isMobile ? "text-xs" : "text-sm"} text-red-500`}
+                      >
+                        {errors.insidePages}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-start space-x-3">
+                <Checkbox
+                  id="sellerPolicy"
+                  checked={sellerPolicyAccepted}
+                  onCheckedChange={(checked) =>
+                    setSellerPolicyAccepted(checked === true)
+                  }
+                  className="mt-1 h-4 w-4"
+                  required
+                />
+                <div className="space-y-1">
+                  <Label
+                    htmlFor="sellerPolicy"
+                    className="text-sm text-gray-600 leading-relaxed cursor-pointer"
+                  >
+                    I agree to the{" "}
+                    <button
+                      type="button"
+                      onClick={() => setShowSellerPolicyModal(true)}
+                      className="text-book-600 hover:text-book-800 underline font-medium"
                     >
-                      {errors.frontCover}
-                    </p>
-                  )}
-                  {errors.backCover && (
-                    <p
-                      className={`${isMobile ? "text-xs" : "text-sm"} text-red-500`}
-                    >
-                      {errors.backCover}
-                    </p>
-                  )}
-                  {errors.insidePages && (
-                    <p
-                      className={`${isMobile ? "text-xs" : "text-sm"} text-red-500`}
-                    >
-                      {errors.insidePages}
+                      Seller Policy and ReBooked's platform rules
+                    </button>
+                  </Label>
+                  {errors.sellerPolicy && (
+                    <p className="text-xs text-red-500">
+                      {errors.sellerPolicy}
                     </p>
                   )}
                 </div>
-              )}
-            </div>
-
-            <div className="flex items-start space-x-3">
-              <Checkbox
-                id="sellerPolicy"
-                checked={sellerPolicyAccepted}
-                onCheckedChange={(checked) =>
-                  setSellerPolicyAccepted(checked === true)
-                }
-                className="mt-1 h-4 w-4"
-                required
-              />
-              <div className="space-y-1">
-                <Label
-                  htmlFor="sellerPolicy"
-                  className="text-sm text-gray-600 leading-relaxed cursor-pointer"
-                >
-                  I agree to the{" "}
-                  <button
-                    type="button"
-                    onClick={() => setShowSellerPolicyModal(true)}
-                    className="text-book-600 hover:text-book-800 underline font-medium"
-                  >
-                    Seller Policy and ReBooked's platform rules
-                  </button>
-                </Label>
-                {errors.sellerPolicy && (
-                  <p className="text-xs text-red-500">{errors.sellerPolicy}</p>
-                )}
               </div>
-            </div>
 
-            <Button
-              type="submit"
-              disabled={
-                isSubmitting ||
-                isCheckingRequirements ||
-                canListBooks === false ||
-                !sellerPolicyAccepted
-              }
-              className={`w-full transition-all duration-200 font-semibold ${
-                canListBooks === false || !sellerPolicyAccepted
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-book-600 hover:bg-book-700 hover:shadow-lg active:scale-[0.98]"
-              } text-white ${
-                isMobile ? "py-4 h-12 text-base" : "py-4 text-lg"
-              } touch-manipulation rounded-lg`}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Creating Listing...
-                </>
-              ) : isCheckingRequirements ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Checking Requirements...
-                </>
-              ) : canListBooks === false ? (
-                "❌ Complete Setup Required"
-              ) : !sellerPolicyAccepted ? (
-                "Accept Policy to Continue"
-              ) : (
-                "📚 Create Listing"
-              )}
-            </Button>
-          </form>
-        </div>
+              <Button
+                type="submit"
+                disabled={
+                  isSubmitting ||
+                  isCheckingRequirements ||
+                  canListBooks === false ||
+                  !sellerPolicyAccepted
+                }
+                className={`w-full transition-all duration-200 font-semibold ${
+                  canListBooks === false || !sellerPolicyAccepted
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-book-600 hover:bg-book-700 hover:shadow-lg active:scale-[0.98]"
+                } text-white ${
+                  isMobile ? "py-4 h-12 text-base" : "py-4 text-lg"
+                } touch-manipulation rounded-lg`}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Creating Listing...
+                  </>
+                ) : isCheckingRequirements ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Checking Requirements...
+                  </>
+                ) : canListBooks === false ? (
+                  "❌ Complete Setup Required"
+                ) : !sellerPolicyAccepted ? (
+                  "Accept Policy to Continue"
+                ) : (
+                  "📚 Create Listing"
+                )}
+              </Button>
+            </form>
+          </div>
 
-        <FirstUploadSuccessDialog
-          isOpen={showFirstUploadDialog}
-          onClose={() => {
-            setShowFirstUploadDialog(false);
-            setShowShareProfileDialog(true);
-          }}
-        />
+          <FirstUploadSuccessDialog
+            isOpen={showFirstUploadDialog}
+            onClose={() => {
+              setShowFirstUploadDialog(false);
+              setShowShareProfileDialog(true);
+            }}
+          />
 
-        <PostListingSuccessDialog
-          isOpen={showPostListingDialog}
-          onClose={() => setShowPostListingDialog(false)}
-          onShareProfile={() => {
-            setShowPostListingDialog(false);
-            setShowShareProfileDialog(true);
-          }}
-        />
+          <PostListingSuccessDialog
+            isOpen={showPostListingDialog}
+            onClose={() => setShowPostListingDialog(false)}
+            onShareProfile={() => {
+              setShowPostListingDialog(false);
+              setShowShareProfileDialog(true);
+            }}
+          />
 
-        <ShareProfileDialog
-          isOpen={showShareProfileDialog}
-          onClose={() => setShowShareProfileDialog(false)}
-          userId={user?.id}
-          userProfile={profile}
-        />
+          <ShareProfileDialog
+            isOpen={showShareProfileDialog}
+            onClose={() => setShowShareProfileDialog(false)}
+            userId={user?.id}
+            userProfile={profile}
+          />
 
-        <SellerPolicyModal
-          isOpen={showSellerPolicyModal}
-          onClose={() => setShowSellerPolicyModal(false)}
-        />
+          <SellerPolicyModal
+            isOpen={showSellerPolicyModal}
+            onClose={() => setShowSellerPolicyModal(false)}
+          />
 
-        <CommitReminderModal
-          isOpen={showCommitReminderModal}
-          onClose={() => {
-            setShowCommitReminderModal(false);
-            // Handle first upload workflow after commit reminder
-            const handlePostCommitFlow = async () => {
-              try {
-                const hasCompleted = await hasCompletedFirstUpload(user.id);
-                if (!hasCompleted) {
-                  setShowFirstUploadDialog(true);
-                } else {
+          <CommitReminderModal
+            isOpen={showCommitReminderModal}
+            onClose={() => {
+              setShowCommitReminderModal(false);
+              // Handle first upload workflow after commit reminder
+              const handlePostCommitFlow = async () => {
+                try {
+                  const hasCompleted = await hasCompletedFirstUpload(user.id);
+                  if (!hasCompleted) {
+                    setShowFirstUploadDialog(true);
+                  } else {
+                    setShowPostListingDialog(true);
+                  }
+                } catch (prefError) {
+                  console.warn(
+                    "Could not track first upload preference:",
+                    prefError,
+                  );
                   setShowPostListingDialog(true);
                 }
-              } catch (prefError) {
-                console.warn(
-                  "Could not track first upload preference:",
-                  prefError,
-                );
-                setShowPostListingDialog(true);
-              }
-            };
-            handlePostCommitFlow();
-          }}
-          type="seller"
-        />
-      </div>
+              };
+              handlePostCommitFlow();
+            }}
+            type="seller"
+          />
+        </div>
+      </BankingRequirementGate>
     </Layout>
   );
 };

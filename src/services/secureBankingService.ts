@@ -134,7 +134,7 @@ export class SecureBankingService {
           .from("banking_details")
           .select("*")
           .eq("user_id", userId)
-          .single();
+          .maybeSingle();
 
         if (!error && data) {
           // Verify password
@@ -179,7 +179,7 @@ export class SecureBankingService {
           .from("banking_details")
           .select("id")
           .eq("user_id", userId)
-          .single();
+          .maybeSingle();
 
         if (!error && data) {
           return true;

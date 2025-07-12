@@ -1,26 +1,74 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { corsHeaders } from "../_shared/cors.ts";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3";
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
+
+// Validate environment variables at startup
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
 
-serve(async (req) => {
-  // Handle CORS preflight requests
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+  console.error(
+    "Missing required environment variables: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY",
+  );
+}
+
+if (!PAYSTACK_SECRET_KEY) {
+  console.error("Missing PAYSTACK_SECRET_KEY environment variable");
+}
+
+const supabase = createClient(
+  SUPABASE_URL ?? "",
+  SUPABASE_SERVICE_ROLE_KEY ?? "",
+);
+
+serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    if (!PAYSTACK_SECRET_KEY) {
-      console.error("PAYSTACK_SECRET_KEY environment variable is not set");
+    if (req.method !== "POST") {
+      return new Response(JSON.stringify({ error: "Method not allowed" }), {
+        status: 405,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const body = await req.json();
+
+    // Handle health check
+    if (body.action === "health") {
       return new Response(
         JSON.stringify({
-          success: false,
-          message: "Payment service configuration error",
+          success: true,
+          message: "Initialize Paystack Payment is healthy",
+          timestamp: new Date().toISOString(),
+          version: "1.0.0",
+          environment: {
+            supabaseConfigured: !!SUPABASE_URL && !!SUPABASE_SERVICE_ROLE_KEY,
+            paystackConfigured: !!PAYSTACK_SECRET_KEY,
+          },
         }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    // Handle test requests
+    if (body.test === true) {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message:
+            "Test mode - payment initialization would work with valid parameters",
+          requiredFields: ["email", "amount", "bookId", "sellerId"],
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
@@ -29,18 +77,15 @@ serve(async (req) => {
       amount,
       bookId,
       sellerId,
-      sellerSubaccountCode,
-      bookPrice,
-      deliveryFee = 0,
-      callback_url,
-      metadata,
-    } = await req.json();
+      deliveryOption,
+      shippingAddress,
+      callbackUrl,
+    } = body;
 
-    if (!email || !amount || !bookId || !sellerSubaccountCode) {
+    if (!email || !amount || !bookId || !sellerId) {
       return new Response(
         JSON.stringify({
-          success: false,
-          message: "Missing required fields",
+          error: "Missing required fields: email, amount, bookId, sellerId",
         }),
         {
           status: 400,
@@ -49,51 +94,77 @@ serve(async (req) => {
       );
     }
 
-    // Ensure amount is in kobo (smallest currency unit)
-    const amountInKobo = Math.round(amount);
-    const bookPriceInKobo = Math.round(bookPrice * 100);
-    const deliveryFeeInKobo = Math.round(deliveryFee * 100);
+    if (!PAYSTACK_SECRET_KEY) {
+      return new Response(
+        JSON.stringify({ error: "Paystack configuration missing" }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
 
-    const reference = `book_${bookId}_${Date.now()}`;
-    const sellerShare = 90; // 90% to seller, 10% to platform
+    // Get book and seller details
+    const { data: book, error: bookError } = await supabase
+      .from("books")
+      .select(
+        `
+        *,
+        profiles!books_seller_id_fkey(subaccount_code, full_name)
+      `,
+      )
+      .eq("id", bookId)
+      .single();
 
-    const payload = {
+    if (bookError || !book) {
+      return new Response(JSON.stringify({ error: "Book not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (book.sold) {
+      return new Response(
+        JSON.stringify({ error: "Book is no longer available" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    // Generate unique reference
+    const reference = `RS_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+    // Calculate split payment
+    const platformCommission = Math.round(amount * 0.1); // 10% commission
+    const sellerAmount = amount - platformCommission;
+
+    const paymentData: any = {
       email,
-      amount: amountInKobo, // Already in kobo from frontend
-      currency: "ZAR",
+      amount: amount * 100, // Convert to kobo
       reference,
-      callback_url,
+      callback_url: callbackUrl,
       metadata: {
-        ...metadata,
-        book_price_kobo: bookPriceInKobo,
-        delivery_fee_kobo: deliveryFeeInKobo,
-        total_amount_kobo: amountInKobo,
-        seller_id: sellerId,
         book_id: bookId,
+        seller_id: sellerId,
+        book_title: book.title,
+        delivery_option: deliveryOption,
+        shipping_address: shippingAddress,
+        platform_commission: platformCommission,
+        seller_amount: sellerAmount,
       },
-      // Split payment configuration - 90% of total to seller, 10% to platform
-      split: {
-        type: "percentage",
-        bearer_type: "subaccount",
-        subaccounts: [
-          {
-            subaccount: sellerSubaccountCode,
-            share: sellerShare,
-          },
-        ],
-      },
-      subaccount: sellerSubaccountCode,
-      transaction_charge: 0, // Platform takes percentage, not fixed charge
     };
 
-    console.log("Initializing Paystack payment:", {
-      reference,
-      email,
-      amount,
-      sellerSubaccountCode,
-    });
+    // Add subaccount for split payment if seller has one
+    if (book.profiles?.subaccount_code) {
+      paymentData.subaccount = book.profiles.subaccount_code;
+      paymentData.transaction_charge = platformCommission * 100; // Platform commission in kobo
+      paymentData.bearer = "subaccount";
+    }
 
-    const response = await fetch(
+    // Initialize payment with Paystack
+    const paystackResponse = await fetch(
       "https://api.paystack.co/transaction/initialize",
       {
         method: "POST",
@@ -101,54 +172,57 @@ serve(async (req) => {
           Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(paymentData),
       },
     );
 
-    const data = await response.json();
+    const paystackData = await paystackResponse.json();
 
-    if (!response.ok || !data.status) {
-      console.error("Paystack payment initialization failed:", data);
+    if (!paystackResponse.ok) {
+      console.error("Paystack error:", paystackData);
       return new Response(
         JSON.stringify({
-          success: false,
-          message: data.message || `HTTP error! status: ${response.status}`,
+          error: "Failed to initialize payment",
+          details: paystackData.message || "Unknown error",
         }),
         {
-          status: response.status,
+          status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         },
       );
     }
 
-    console.log(
-      "Paystack payment initialized successfully:",
-      data.data.reference,
-    );
+    // Log the payment initialization
+    await supabase.from("audit_logs").insert({
+      action: "payment_initialized",
+      table_name: "transactions",
+      new_values: {
+        reference,
+        book_id: bookId,
+        amount,
+        email,
+        seller_id: sellerId,
+      },
+    });
 
     return new Response(
       JSON.stringify({
         success: true,
         data: {
-          authorization_url: data.data.authorization_url,
-          access_code: data.data.access_code,
-          reference: data.data.reference,
+          authorization_url: paystackData.data.authorization_url,
+          access_code: paystackData.data.access_code,
+          reference: paystackData.data.reference,
         },
       }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (error) {
-    console.error("Error in initialize-paystack-payment function:", error);
+    console.error("Error in initialize-paystack-payment:", error);
     return new Response(
       JSON.stringify({
         success: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred",
+        error: error.message || "Internal server error",
+        timestamp: new Date().toISOString(),
       }),
       {
         status: 500,

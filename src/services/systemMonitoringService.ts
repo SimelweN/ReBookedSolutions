@@ -1,5 +1,5 @@
 import { generateSystemValidationReport } from "@/utils/enhancedValidation";
-import { getSystemStatistics } from "./apsAwareCourseAssignmentService";
+// Removed circular import - getSystemStatistics will be imported dynamically when needed
 
 /**
  * System Monitoring Service
@@ -162,7 +162,10 @@ class SystemMonitoringService {
       // Get validation report
       const validationReport = generateSystemValidationReport();
 
-      // Get system statistics
+      // Get system statistics (dynamic import to avoid circular dependency)
+      const { getSystemStatistics } = await import(
+        "./apsAwareCourseAssignmentService"
+      );
       const systemStats = getSystemStatistics();
 
       // Calculate performance metrics
@@ -416,37 +419,40 @@ class SystemMonitoringService {
   }
 }
 
-// Export singleton instance
-export const systemMonitor = SystemMonitoringService.getInstance();
+// Lazy initialization to prevent "Cannot access before initialization" errors
+export const getSystemMonitor = () => SystemMonitoringService.getInstance();
 
-// Convenience functions
+// Convenience functions using lazy getter
 export const logError = (
   type: ErrorLog["type"],
   severity: ErrorLog["severity"],
   message: string,
   context?: any,
-) => systemMonitor.logError(type, severity, message, context);
+) => getSystemMonitor().logError(type, severity, message, context);
 
 export const trackPerformance = (
   responseTime: number,
   isError?: boolean,
   cacheHit?: boolean,
-) => systemMonitor.trackPerformance(responseTime, isError, cacheHit);
+) => getSystemMonitor().trackPerformance(responseTime, isError, cacheHit);
 
-export const generateHealthReport = () => systemMonitor.generateHealthReport();
+export const generateHealthReport = () =>
+  getSystemMonitor().generateHealthReport();
 
 export const getErrorLogs = (filters?: any) =>
-  systemMonitor.getErrorLogs(filters);
+  getSystemMonitor().getErrorLogs(filters);
 
-// Auto-cleanup old errors daily
-if (typeof window !== "undefined") {
-  setInterval(
-    () => {
-      const cleaned = systemMonitor.cleanupOldErrors(7);
-      if (cleaned > 0 && import.meta.env.DEV) {
-        console.log(`Cleaned up ${cleaned} old error logs`);
-      }
-    },
-    24 * 60 * 60 * 1000,
-  ); // Daily
-}
+// Auto-cleanup old errors daily - using lazy initialization
+export const startAutoCleanup = () => {
+  if (typeof window !== "undefined") {
+    setInterval(
+      () => {
+        const cleaned = getSystemMonitor().cleanupOldErrors(7);
+        if (cleaned > 0 && import.meta.env.DEV) {
+          console.log(`Cleaned up ${cleaned} old error logs`);
+        }
+      },
+      24 * 60 * 60 * 1000,
+    ); // Daily
+  }
+};

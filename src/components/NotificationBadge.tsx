@@ -1,8 +1,9 @@
 import { memo } from "react";
 import { Bell, BellOff, AlertTriangle, RefreshCw } from "lucide-react";
-import { useNotifications } from "@/hooks/useNotifications";
+import { useNotificationStore } from "@/stores/notificationStore";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import {
   Tooltip,
   TooltipContent,
@@ -26,14 +27,27 @@ const NotificationBadge = ({
   allowRetry = false,
 }: NotificationBadgeProps) => {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const navigate = useNavigate();
 
   // Always call hooks at the top level
-  const {
-    unreadCount,
-    isLoading: notificationsLoading,
-    hasError,
-    refreshNotifications,
-  } = useNotifications();
+  const { notifications, clearAllNotifications } = useNotificationStore();
+
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const notificationsLoading = false;
+  const error = null;
+  const refreshNotifications = () => {};
+
+  const hasError = !!error;
+
+  const handleNotificationClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (hasError && allowRetry) {
+      refreshNotifications();
+    } else {
+      navigate("/notifications");
+    }
+  };
 
   // Don't show anything if auth is still loading
   if (authLoading) {
@@ -116,12 +130,8 @@ const NotificationBadge = ({
             <Button
               variant="ghost"
               size="sm"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                refreshNotifications();
-              }}
-              className="p-1 h-auto hover:bg-gray-100 rounded-md"
+              onClick={handleNotificationClick}
+              className="p-2 h-10 w-10 rounded-full hover:bg-gray-100 text-gray-700 hover:text-book-600"
               disabled={notificationsLoading}
             >
               {content}
@@ -138,15 +148,27 @@ const NotificationBadge = ({
     );
   }
 
-  // Regular tooltip for non-interactive badge
+  // Make all notification badges clickable
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div>{content}</div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleNotificationClick}
+            className="p-2 h-10 w-10 rounded-full hover:bg-gray-100 text-gray-700 hover:text-book-600"
+            disabled={notificationsLoading}
+            title="View notifications"
+          >
+            {content}
+          </Button>
         </TooltipTrigger>
         <TooltipContent>
           <p>{getTooltipContent()}</p>
+          <p className="text-xs text-gray-300 mt-1">
+            Click to view notifications
+          </p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

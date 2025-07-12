@@ -28,11 +28,14 @@ export interface BookQueryResult {
   back_cover?: string;
   inside_pages?: string;
   sold: boolean;
+  availability?: "available" | "unavailable" | "sold";
   created_at: string;
+  updated_at?: string;
   grade?: string;
   university_year?: string;
   university?: string;
   province?: string;
   seller_id: string;
+  subaccount_code?: string; // Make sure this is included
   profiles?: ProfileData | null;
 }

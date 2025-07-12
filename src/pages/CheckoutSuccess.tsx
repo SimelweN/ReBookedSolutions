@@ -1,367 +1,287 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import Layout from "@/components/Layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import SEO from "@/components/SEO";
+import Step4Confirmation from "@/components/checkout/Step4Confirmation";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-  CheckCircle,
-  Clock,
-  Truck,
-  Package,
-  ArrowRight,
-  Download,
-  MessageCircle,
-} from "lucide-react";
+import { AlertTriangle, Loader2 } from "lucide-react";
+import { OrderConfirmation } from "@/types/checkout";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const CheckoutSuccess: React.FC = () => {
-  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [orderDetails, setOrderDetails] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const location = useLocation();
 
-  const { orderId, paymentReference, totalAmount, items } =
-    location.state || {};
+  const [loading, setLoading] = useState(true);
+  const [orderData, setOrderData] = useState<OrderConfirmation | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Redirect if no order data
-    if (!orderId || !paymentReference) {
-      navigate("/", { replace: true });
-      return;
-    }
+    processPaymentCallback();
 
-    // Fetch order details
-    const fetchOrderDetails = async () => {
-      try {
-        const { data: order, error } = await supabase
-          .from("orders")
-          .select(
-            `
-            *,
-            buyer:buyer_id(name, email),
-            seller:seller_id(name, email),
-            book:book_id(title, author, image_url)
-          `,
-          )
-          .eq("id", orderId)
-          .single();
-
-        if (error) {
-          console.error("Error fetching order:", error);
-        } else {
-          setOrderDetails(order);
-        }
-      } catch (error) {
-        console.error("Error fetching order details:", error);
-      } finally {
-        setIsLoading(false);
+    // Set a maximum loading time to prevent users from being stuck
+    const loadingTimeout = setTimeout(() => {
+      if (loading) {
+        console.warn("⏰ [CheckoutSuccess] Loading timeout reached");
+        setError(
+          "Payment verification is taking longer than expected. Please check your orders or try again.",
+        );
+        setLoading(false);
       }
-    };
+    }, 45000); // 45 seconds timeout
 
-    fetchOrderDetails();
-  }, [orderId, paymentReference, navigate]);
+    return () => clearTimeout(loadingTimeout);
+  }, [loading]);
 
-  if (!orderId) {
-    return null;
+  const processPaymentCallback = async () => {
+    try {
+      console.log("🔄 [CheckoutSuccess] Starting payment verification process");
+      console.log(
+        "🔍 [CheckoutSuccess] URL search params:",
+        Object.fromEntries(searchParams),
+      );
+      console.log("🔍 [CheckoutSuccess] Location state:", location.state);
+
+      setLoading(true);
+
+      // Get payment reference from URL params
+      const reference =
+        searchParams.get("reference") || searchParams.get("trxref");
+
+      console.log("📝 [CheckoutSuccess] Payment reference found:", reference);
+
+      if (!reference) {
+        // Check if order data was passed through state (from successful payment)
+        const stateOrderData = location.state?.orderData;
+        console.log("🔍 [CheckoutSuccess] State order data:", stateOrderData);
+
+        if (stateOrderData) {
+          console.log("✅ [CheckoutSuccess] Using order data from state");
+          setOrderData(stateOrderData);
+          setLoading(false);
+          return;
+        }
+
+        console.error(
+          "❌ [CheckoutSuccess] No payment reference or state data found",
+        );
+        throw new Error("No payment reference found");
+      }
+
+      console.log(
+        "📞 [CheckoutSuccess] Verifying payment with reference:",
+        reference,
+      );
+
+      // Verify payment with Paystack (with timeout)
+      const verificationPromise = supabase.functions.invoke(
+        "verify-paystack-payment",
+        {
+          body: { reference },
+        },
+      );
+
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(
+          () => reject(new Error("Payment verification timeout")),
+          30000,
+        ),
+      );
+
+      const { data: verificationResult, error: verificationError } =
+        (await Promise.race([verificationPromise, timeoutPromise])) as any;
+
+      console.log(
+        "📊 [CheckoutSuccess] Verification result:",
+        verificationResult,
+      );
+      console.log(
+        "❌ [CheckoutSuccess] Verification error:",
+        verificationError,
+      );
+
+      if (verificationError || !verificationResult) {
+        console.error(
+          "❌ [CheckoutSuccess] Payment verification failed:",
+          verificationError,
+        );
+        throw new Error(
+          verificationError?.message || "Payment verification failed",
+        );
+      }
+
+      console.log(
+        "🔍 [CheckoutSuccess] Verification status:",
+        verificationResult.status,
+      );
+      console.log("📦 [CheckoutSuccess] Order data:", verificationResult.order);
+
+      if (verificationResult.status === "success" && verificationResult.order) {
+        // Convert the order data to our OrderConfirmation format
+        const order = verificationResult.order;
+        const orderConfirmation: OrderConfirmation = {
+          order_id: order.id,
+          payment_reference: reference,
+          book_id: order.book_id,
+          seller_id: order.seller_id,
+          buyer_id: order.buyer_id,
+          book_title: order.book_title || "Unknown Book",
+          book_price: order.book_price || 0,
+          delivery_method: order.delivery_method || "Standard Delivery",
+          delivery_price: order.delivery_price || 0,
+          total_paid: order.total_amount || 0,
+          created_at: order.created_at,
+          status: order.status || "completed",
+        };
+
+        console.log(
+          "✅ [CheckoutSuccess] Order confirmation created:",
+          orderConfirmation,
+        );
+        setOrderData(orderConfirmation);
+        console.log(
+          "🎉 [CheckoutSuccess] Order data set successfully, loading should stop",
+        );
+        toast.success("Payment verified successfully! 🎉");
+      } else {
+        console.error(
+          "❌ [CheckoutSuccess] Payment verification unsuccessful:",
+          verificationResult,
+        );
+        throw new Error(
+          verificationResult.message || "Payment verification failed",
+        );
+      }
+    } catch (err) {
+      console.error("❌ [CheckoutSuccess] Payment callback error:", err);
+      const errorMessage =
+        err instanceof Error ? err.message : "Unknown error occurred";
+      setError(errorMessage);
+      toast.error("Payment verification failed: " + errorMessage);
+    } finally {
+      console.log("🏁 [CheckoutSuccess] Setting loading to false");
+      setLoading(false);
+    }
+  };
+
+  const handleViewOrders = () => {
+    navigate("/orders");
+  };
+
+  const handleContinueShopping = () => {
+    navigate("/books");
+  };
+
+  if (loading) {
+    return (
+      <Layout>
+        <SEO
+          title="Processing Payment - ReBooked Solutions"
+          description="Processing your payment and confirming your order"
+        />
+        <div className="min-h-screen bg-gray-50 py-8">
+          <div className="max-w-2xl mx-auto px-4">
+            <div className="text-center">
+              <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-blue-500" />
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                Verifying Your Payment
+              </h1>
+              <p className="text-gray-600">
+                Please wait while we confirm your payment and create your
+                order...
+              </p>
+
+              <div className="mt-8 text-center">
+                <p className="text-sm text-gray-500 mb-4">
+                  Taking longer than usual?
+                </p>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setError("Verification timeout - please check your orders");
+                    setLoading(false);
+                  }}
+                  className="bg-white"
+                >
+                  Skip to Order Check
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
   }
 
-  const timeline = [
-    {
-      step: 1,
-      title: "Payment Confirmed",
-      description: "Your payment has been processed successfully",
-      icon: CheckCircle,
-      completed: true,
-      timestamp: orderDetails?.paid_at,
-    },
-    {
-      step: 2,
-      title: "Seller Notified",
-      description: "Seller has been notified to prepare your book",
-      icon: Package,
-      completed: true,
-      timestamp: orderDetails?.created_at,
-    },
-    {
-      step: 3,
-      title: "Awaiting Collection",
-      description: "Courier will collect within 48 hours",
-      icon: Clock,
-      completed: false,
-      deadline: orderDetails?.collection_deadline,
-    },
-    {
-      step: 4,
-      title: "In Transit",
-      description: "Book is on its way to you",
-      icon: Truck,
-      completed: false,
-    },
-  ];
+  if (error || !orderData) {
+    return (
+      <Layout>
+        <SEO
+          title="Payment Error - ReBooked Solutions"
+          description="There was an issue processing your payment"
+        />
+        <div className="min-h-screen bg-gray-50 py-8">
+          <div className="max-w-2xl mx-auto px-4">
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                {error || "Failed to load order information"}
+              </AlertDescription>
+            </Alert>
 
-  const formatDateTime = (dateString: string) => {
-    return new Date(dateString).toLocaleString("en-ZA", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+            <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h3 className="font-semibold text-blue-900 mb-2">
+                Payment Successful but Verification Failed?
+              </h3>
+              <p className="text-sm text-blue-800 mb-4">
+                If your payment was successful, you can check your order status
+                in "My Orders" or try refreshing this page.
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => window.location.reload()}
+                  variant="outline"
+                  className="bg-white"
+                >
+                  Retry Verification
+                </Button>
+                <Button
+                  onClick={() => navigate("/orders")}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  Check My Orders
+                </Button>
+              </div>
+            </div>
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "paid":
-      case "awaiting_collection":
-        return "bg-blue-100 text-blue-800";
-      case "collected":
-      case "in_transit":
-        return "bg-yellow-100 text-yellow-800";
-      case "delivered":
-      case "completed":
-        return "bg-green-100 text-green-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
+            <div className="mt-6 text-center space-x-4">
+              <Button onClick={() => navigate("/books")}>Browse Books</Button>
+              <Button variant="outline" onClick={() => navigate("/")}>
+                Go Home
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
+      <SEO
+        title="Purchase Successful - ReBooked Solutions"
+        description="Your book purchase has been completed successfully"
+        keywords="purchase complete, order confirmation, receipt"
+      />
       <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Success Header */}
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-8 h-8" />
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Order Confirmed!
-            </h1>
-            <p className="text-gray-600">
-              Thank you for your purchase. Your order has been placed
-              successfully.
-            </p>
-          </div>
-
-          {/* Order Summary */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* Order Info */}
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-medium">Order ID</p>
-                    <p className="text-gray-600 font-mono text-sm">{orderId}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-medium">Status</p>
-                    <Badge
-                      className={getStatusColor(orderDetails?.status || "paid")}
-                    >
-                      {orderDetails?.status?.replace("_", " ").toUpperCase() ||
-                        "PAID"}
-                    </Badge>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Items */}
-                <div>
-                  <h3 className="font-medium mb-3">Items Ordered</h3>
-                  <div className="space-y-3">
-                    {items?.map((item: any, index: number) => (
-                      <div
-                        key={index}
-                        className="flex gap-3 p-3 bg-gray-50 rounded-lg"
-                      >
-                        <div className="w-12 h-16 bg-gray-200 rounded overflow-hidden flex-shrink-0">
-                          {item.imageUrl ? (
-                            <img
-                              src={item.imageUrl}
-                              alt={item.title}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-gray-300 flex items-center justify-center">
-                              <Package className="w-4 h-4 text-gray-500" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium">{item.title}</h4>
-                          <p className="text-sm text-gray-600">
-                            by {item.author}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            Sold by {item.sellerName}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-semibold">
-                            R{item.price.toFixed(2)}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Totals */}
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>Subtotal</span>
-                    <span>
-                      R
-                      {(
-                        totalAmount -
-                        (orderDetails?.delivery_fee || 0) / 100
-                      ).toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Delivery</span>
-                    <span>
-                      R{((orderDetails?.delivery_fee || 0) / 100).toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between font-semibold text-lg border-t pt-2">
-                    <span>Total</span>
-                    <span>R{totalAmount?.toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Timeline */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Order Timeline</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {timeline.map((item, index) => (
-                  <div key={index} className="flex gap-4">
-                    <div className="flex flex-col items-center">
-                      <div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          item.completed
-                            ? "bg-green-600 text-white"
-                            : "bg-gray-300 text-gray-600"
-                        }`}
-                      >
-                        <item.icon className="w-5 h-5" />
-                      </div>
-                      {index < timeline.length - 1 && (
-                        <div
-                          className={`w-0.5 h-12 mt-2 ${
-                            item.completed ? "bg-green-600" : "bg-gray-300"
-                          }`}
-                        />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <h3
-                        className={`font-medium ${
-                          item.completed ? "text-green-800" : "text-gray-600"
-                        }`}
-                      >
-                        {item.title}
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        {item.description}
-                      </p>
-                      {item.timestamp && (
-                        <p className="text-xs text-gray-500 mt-1">
-                          {formatDateTime(item.timestamp)}
-                        </p>
-                      )}
-                      {item.deadline && (
-                        <p className="text-xs text-orange-600 mt-1">
-                          Deadline: {formatDateTime(item.deadline)}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Important Information */}
-          <Card className="mb-8 bg-blue-50 border-blue-200">
-            <CardContent className="pt-6">
-              <h3 className="font-medium text-blue-900 mb-3">
-                Important Information
-              </h3>
-              <ul className="space-y-2 text-sm text-blue-800">
-                <li>
-                  • The seller has 48 hours to prepare your book for courier
-                  collection
-                </li>
-                <li>• You'll receive email updates on your order status</li>
-                <li>
-                  • If the book isn't collected within 48 hours, you'll get an
-                  automatic refund
-                </li>
-                <li>• Expected delivery: 3-7 business days after collection</li>
-                <li>• Track your order anytime in your profile</li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Button asChild className="flex-1">
-              <Link to="/profile">
-                <Download className="w-4 h-4 mr-2" />
-                View Order Details
-              </Link>
-            </Button>
-
-            <Button variant="outline" asChild className="flex-1">
-              <Link to="/books">
-                Continue Shopping
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Link>
-            </Button>
-
-            <Button variant="outline" asChild className="flex-1">
-              <Link to="/contact">
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Contact Support
-              </Link>
-            </Button>
-          </div>
-
-          {/* Footer Note */}
-          <div className="text-center mt-8 p-4 bg-white rounded-lg border">
-            <p className="text-sm text-gray-600">
-              Need help? Contact us at{" "}
-              <a
-                href="mailto:support@rebookedsolutions.co.za"
-                className="text-blue-600 hover:underline"
-              >
-                support@rebookedsolutions.co.za
-              </a>{" "}
-              or call{" "}
-              <a
-                href="tel:+27123456789"
-                className="text-blue-600 hover:underline"
-              >
-                012 345 6789
-              </a>
-            </p>
-          </div>
-        </div>
+        <Step4Confirmation
+          orderData={orderData}
+          onViewOrders={handleViewOrders}
+          onContinueShopping={handleContinueShopping}
+        />
       </div>
     </Layout>
   );

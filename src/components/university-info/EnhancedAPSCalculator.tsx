@@ -115,10 +115,24 @@ const EnhancedAPSCalculator: React.FC = () => {
   const [subjects, setSubjects] = useState<APSSubjectInput[]>([]);
   const [selectedSubject, setSelectedSubject] = useState<string>("");
   const [selectedMarks, setSelectedMarks] = useState<string>("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<
+    Array<{
+      id: string;
+      name: string;
+      apsRequired: number;
+      universityId: string;
+      faculty: string;
+    }>
+  >([]);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [validationWarnings, setValidationWarnings] = useState<string[]>([]);
-  const [selectedProgram, setSelectedProgram] = useState<any>(null);
+  const [selectedProgram, setSelectedProgram] = useState<{
+    id: string;
+    name: string;
+    apsRequired: number;
+    universityId: string;
+    faculty: string;
+  } | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [facultyFilter, setFacultyFilter] = useState<string>("all");
@@ -187,14 +201,18 @@ const EnhancedAPSCalculator: React.FC = () => {
       totalAPS: apsResult.totalScore, // Extract the totalScore property
       validationResult,
       isCalculationValid: validationResult.isValid && apsSubjects.length >= 6,
-      fullCalculation: universitySpecificCalculation,
+      fullCalculation: universitySpecificCalculation as Promise<unknown> | null,
       eligibleDegrees: apsResult.eligibleDegrees, // Also store eligible degrees
     };
   }, [subjects]);
 
   // Load university-specific calculation
   const [universitySpecificScores, setUniversitySpecificScores] =
-    useState<any>(null);
+    useState<Array<{
+      universityId: string;
+      score: number;
+      subjects: Array<{ subject: string; marks: number }>;
+    }> | null>(null);
 
   useEffect(() => {
     if (apsCalculation.fullCalculation) {
@@ -1100,12 +1118,15 @@ const EnhancedAPSCalculator: React.FC = () => {
                       {selectedProgram.eligible ? "Qualified" : "Not Qualified"}
                     </Badge>
                   </div>
-                  {!selectedProgram.eligible && selectedProgram.apsGap > 0 && (
-                    <div className="text-yellow-700 text-sm mt-1">
-                      You need {selectedProgram.apsGap} more APS points to
-                      qualify
-                    </div>
-                  )}
+                  {!selectedProgram.eligible &&
+                    "apsGap" in selectedProgram &&
+                    (selectedProgram as { apsGap: number }).apsGap > 0 && (
+                      <div className="text-yellow-700 text-sm mt-1">
+                        You need{" "}
+                        {(selectedProgram as { apsGap: number }).apsGap} more
+                        APS points to qualify
+                      </div>
+                    )}
                 </div>
               </div>
 
@@ -1118,7 +1139,10 @@ const EnhancedAPSCalculator: React.FC = () => {
                     </h3>
                     <div className="grid grid-cols-1 gap-2">
                       {selectedProgram.subjects.map(
-                        (subject: any, index: number) => (
+                        (
+                          subject: { name: string; level?: number },
+                          index: number,
+                        ) => (
                           <div
                             key={index}
                             className="flex justify-between items-center p-2 bg-gray-50 rounded"

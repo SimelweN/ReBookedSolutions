@@ -53,7 +53,11 @@ export const runImmediateBookCleanup = async () => {
 };
 
 // Auto-run cleanup if needed
-if (typeof window !== "undefined" && window.location.pathname === "/") {
+if (
+  typeof window !== "undefined" &&
+  typeof localStorage !== "undefined" &&
+  window.location.pathname === "/"
+) {
   // Only run on homepage and if there's a specific flag
   const shouldCleanup = localStorage.getItem("run-book-cleanup");
   if (shouldCleanup === "true") {

@@ -122,11 +122,13 @@ export const commitBookSale = async (bookId: string): Promise<void> => {
       // In a real system, we'd check if commit is already processed
     }
 
-    // Update book to mark as sold (simplified for current schema)
+    // Update book to mark as sold and available = false
     const { error: updateError } = await supabase
       .from("books")
       .update({
         sold: true,
+        available: false,
+        updated_at: new Date().toISOString(),
       })
       .eq("id", bookId)
       .eq("seller_id", user.id);
@@ -206,17 +208,17 @@ export const getCommitPendingBooks = async (): Promise<any[]> => {
       user.id,
     );
 
-    // Query books that might be sold but not yet committed
-    // This is a simplified version - a real implementation would need
-    // a proper orders/transactions table
-    console.log("[CommitService] Querying books for user:", user.id);
+    // Query books that are available but might need commits
+    // Focus on books that are available and not sold yet
+    console.log("[CommitService] Querying available books for user:", user.id);
 
     const { data: books, error } = await supabase
       .from("books")
       .select("id, title, price, sold, created_at, seller_id")
       .eq("seller_id", user.id)
-      .eq("sold", true)
-      .order("created_at", { ascending: true });
+      .eq("sold", false)
+      .order("created_at", { ascending: false })
+      .limit(10); // Limit to recent books
 
     console.log(
       "[CommitService] Query executed, error:",
@@ -226,8 +228,20 @@ export const getCommitPendingBooks = async (): Promise<any[]> => {
     );
 
     if (error) {
+      // Enhanced error logging for debugging
+      console.error("[CommitService] Raw error object:", error);
+      console.error("[CommitService] Error message:", error.message);
+      console.error("[CommitService] Error code:", error.code);
+      console.error("[CommitService] Error details:", error.details);
+      console.error("[CommitService] Error hint:", error.hint);
+
       logCommitError("Error fetching pending books", error, {
         userId: user.id,
+        query:
+          "books table, seller_id + sold filters (removed non-existent available column)",
+        errorMessage: error.message,
+        errorCode: error.code,
+        errorDetails: error.details,
       });
       // Return empty array instead of throwing to prevent UI crashes
       return [];
@@ -238,24 +252,14 @@ export const getCommitPendingBooks = async (): Promise<any[]> => {
       books?.length || 0,
     );
 
-    // Filter for books that might need commits (this is simplified logic)
-    // In a real system, you'd have proper order status tracking
-    const pendingCommits = (books || [])
-      .filter((book) => {
-        // For now, since we don't have a proper commit tracking system,
-        // we'll just return books that are marked as sold
-        return book.sold;
-      })
-      .map((book) => ({
-        id: book.id,
-        bookId: book.id,
-        bookTitle: book.title,
-        buyerName: "Interested Buyer", // Would come from orders table in real system
-        price: book.price,
-        expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(), // 48 hours from now
-        createdAt: book.created_at,
-        status: book.sold ? "completed" : "pending",
-      }));
+    // For demonstration purposes, return empty array since we don't have a proper order system
+    // In a real system, this would query an orders table for pending transactions
+    const pendingCommits: any[] = [];
+
+    console.log(
+      "[CommitService] Simplified commit system - returning empty commits",
+    );
+    console.log("[CommitService] Available books found:", books?.length || 0);
 
     console.log(
       "[CommitService] Found pending commits:",

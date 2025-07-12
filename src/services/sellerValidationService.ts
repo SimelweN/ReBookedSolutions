@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
-import { ImprovedBankingService } from "./improvedBankingService";
 import { getUserAddresses } from "./addressService";
+import { SellerProfileService } from "./sellerProfileService";
 
 export interface SellerValidationResult {
   canSell: boolean;
@@ -12,6 +12,57 @@ export interface SellerValidationResult {
 }
 
 export class SellerValidationService {
+  /**
+   * Enhanced validation using new database functions
+   */
+  static async validateSellerRequirementsEnhanced(
+    userId: string,
+  ): Promise<SellerValidationResult> {
+    try {
+      const isReady = await SellerProfileService.isSellerReadyForOrders(userId);
+      const profile =
+        await SellerProfileService.getSellerProfileForDelivery(userId);
+
+      const missingRequirements: string[] = [];
+      let hasAddress = false;
+      let hasBankingDetails = false;
+
+      if (profile) {
+        hasAddress = !!profile.pickup_address;
+        hasBankingDetails = profile.has_subaccount;
+
+        if (!hasAddress) {
+          missingRequirements.push(
+            "A valid pickup address is required. Buyers need to know where to collect books from.",
+          );
+        }
+
+        if (!hasBankingDetails) {
+          missingRequirements.push(
+            "Banking setup is required to receive payments. Complete your banking details and Paystack subaccount setup via our secure banking portal.",
+          );
+        }
+      } else {
+        missingRequirements.push(
+          "Unable to verify seller profile. Please try again.",
+        );
+      }
+
+      return {
+        canSell: isReady,
+        missingRequirements,
+        hasAddress,
+        hasBankingDetails,
+        addressDetails: profile?.pickup_address,
+        bankingDetails: null, // We don't expose sensitive banking details
+      };
+    } catch (error) {
+      console.error("Error in enhanced seller validation:", error);
+      // Fallback to the original method
+      return this.validateSellerRequirements(userId);
+    }
+  }
+
   /**
    * Comprehensive check to determine if user can list/sell books
    */
@@ -33,7 +84,7 @@ export class SellerValidationService {
         const pickupAddress = addressDetails?.pickup_address;
         hasAddress = !!(
           pickupAddress &&
-          pickupAddress.streetAddress &&
+          (pickupAddress.streetAddress || pickupAddress.street) &&
           pickupAddress.city &&
           pickupAddress.province &&
           pickupAddress.postalCode
@@ -51,27 +102,48 @@ export class SellerValidationService {
         );
       }
 
-      // Check banking details requirements
+      // Check banking setup (subaccount_code) requirements
       try {
-        bankingDetails = await ImprovedBankingService.getBankingDetails(userId);
+        // First check banking_subaccounts table (preferred)
+        const { data: bankingSubaccounts } = await supabase
+          .from("banking_subaccounts")
+          .select("subaccount_code")
+          .eq("user_id", userId)
+          .maybeSingle();
 
-        // Banking details are required for receiving payments
-        hasBankingDetails = !!(
-          bankingDetails &&
-          bankingDetails.bank_account_number &&
-          bankingDetails.bank_name &&
-          bankingDetails.full_name
-        );
+        if (bankingSubaccounts?.subaccount_code?.trim()) {
+          hasBankingDetails = true;
+        } else {
+          // Fallback to paystack_subaccounts table
+          const { data: paystackSubaccounts } = await supabase
+            .from("paystack_subaccounts")
+            .select("subaccount_code")
+            .eq("user_id", userId)
+            .maybeSingle();
+
+          if (paystackSubaccounts?.subaccount_code?.trim()) {
+            hasBankingDetails = true;
+          } else {
+            // Final fallback to profile table
+            const { data: profileData } = await supabase
+              .from("profiles")
+              .select("subaccount_code")
+              .eq("id", userId)
+              .maybeSingle();
+
+            hasBankingDetails = !!profileData?.subaccount_code?.trim();
+          }
+        }
 
         if (!hasBankingDetails) {
           missingRequirements.push(
-            "Banking details are required to receive payments. Please add your banking information.",
+            "Banking setup is required to receive payments. Complete your banking details and Paystack subaccount setup via our secure banking portal.",
           );
         }
       } catch (error) {
-        console.error("Error checking banking details:", error);
+        console.error("Error checking banking setup:", error);
         missingRequirements.push(
-          "Unable to verify banking details. Please add your banking information.",
+          "Unable to verify banking setup. Please complete your banking details.",
         );
       }
 
@@ -99,20 +171,42 @@ export class SellerValidationService {
   }
 
   /**
-   * Quick check for banking details specifically
+   * Quick check for banking setup specifically
    */
   static async hasBankingDetails(userId: string): Promise<boolean> {
     try {
-      const bankingDetails =
-        await ImprovedBankingService.getBankingDetails(userId);
-      return !!(
-        bankingDetails &&
-        bankingDetails.bank_account_number &&
-        bankingDetails.bank_name &&
-        bankingDetails.full_name
-      );
+      // First check banking_subaccounts table (preferred)
+      const { data: bankingSubaccounts } = await supabase
+        .from("banking_subaccounts")
+        .select("subaccount_code")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (bankingSubaccounts?.subaccount_code?.trim()) {
+        return true;
+      }
+
+      // Fallback to paystack_subaccounts table
+      const { data: paystackSubaccounts } = await supabase
+        .from("paystack_subaccounts")
+        .select("subaccount_code")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (paystackSubaccounts?.subaccount_code?.trim()) {
+        return true;
+      }
+
+      // Final fallback to profile table
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("subaccount_code")
+        .eq("id", userId)
+        .maybeSingle();
+
+      return !!profileData?.subaccount_code?.trim();
     } catch (error) {
-      console.error("Error checking banking details:", error);
+      console.error("Error checking banking setup:", error);
       return false;
     }
   }
@@ -168,7 +262,7 @@ export class SellerValidationService {
   }
 
   /**
-   * Check if user can proceed with creating a new listing
+   * Check if user can proceed with creating a new listing (uses enhanced validation)
    */
   static async canCreateListing(userId: string): Promise<{
     allowed: boolean;
@@ -179,7 +273,8 @@ export class SellerValidationService {
       actionUrl: string;
     };
   }> {
-    const validation = await this.validateSellerRequirements(userId);
+    // Use enhanced validation by default, with fallback
+    const validation = await this.validateSellerRequirementsEnhanced(userId);
 
     if (validation.canSell) {
       return { allowed: true };
@@ -193,6 +288,18 @@ export class SellerValidationService {
       allowed: false,
       blockMessage,
     };
+  }
+
+  /**
+   * Quick check using new database functions
+   */
+  static async canCreateListingQuick(userId: string): Promise<boolean> {
+    try {
+      return await SellerProfileService.isSellerReadyForOrders(userId);
+    } catch (error) {
+      console.error("Error in quick seller check:", error);
+      return false;
+    }
   }
 
   /**

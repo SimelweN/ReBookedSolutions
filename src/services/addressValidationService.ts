@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { safeLogError } from "@/utils/errorHandling";
-import { ImprovedBankingService } from "@/services/improvedBankingService";
+import { safeDbOperation } from "@/utils/databaseErrorHandler";
 
 interface Address {
   complex?: string;
@@ -48,14 +48,25 @@ export const canUserListBooks = async (userId: string): Promise<boolean> => {
       return false;
     }
 
-    // Check if user has verified banking details
-    const hasVerifiedBanking =
-      await ImprovedBankingService.hasVerifiedBankingDetails(userId);
+    // Check if user has completed banking setup
+    try {
+      const { data: bankingDetails } = await supabase
+        .from("banking_details")
+        .select("paystack_subaccount_code")
+        .eq("user_id", userId)
+        .single();
 
-    if (!hasVerifiedBanking) {
-      console.log(
-        `User ${userId} cannot list books: banking details not verified or incomplete`,
-      );
+      const hasVerifiedBanking =
+        !!bankingDetails?.paystack_subaccount_code?.trim();
+
+      if (!hasVerifiedBanking) {
+        console.log(
+          `User ${userId} cannot list books: banking setup not completed`,
+        );
+        return false;
+      }
+    } catch (error) {
+      console.error("Error checking banking setup:", error);
       return false;
     }
 
@@ -80,21 +91,23 @@ export const updateAddressValidation = async (
       : validateAddress(shippingAddress);
     const canList = isPickupValid && isShippingValid;
 
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        pickup_address: pickupAddress as Record<string, unknown>,
-        shipping_address: shippingAddress as Record<string, unknown>,
-        addresses_same: addressesSame,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", userId);
+    const { data, error } = await safeDbOperation(
+      () =>
+        supabase
+          .from("profiles")
+          .update({
+            pickup_address: pickupAddress as Record<string, unknown>,
+            shipping_address: shippingAddress as Record<string, unknown>,
+            addresses_same: addressesSame,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", userId),
+      "updateAddressValidation",
+      { showToast: true },
+    );
 
     if (error) {
-      safeLogError("Error updating address validation", error, { userId });
-      throw new Error(
-        `Failed to update address validation: ${error.message || "Unknown error"}`,
-      );
+      throw new Error(error.userMessage);
     }
 
     return { canListBooks: canList };

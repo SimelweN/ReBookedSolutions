@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,11 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Copy, Share2, ExternalLink, Store } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { UserProfile } from "@/types/address";
-import EmailChangeDialog from "@/components/EmailChangeDialog";
 
 interface AccountInformationProps {
   profile: UserProfile;
@@ -24,11 +24,16 @@ const AccountInformation = ({
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [showEmailChange, setShowEmailChange] = useState(false);
   const [formData, setFormData] = useState({
     name: profile.name || "",
-    bio: profile.bio || "",
   });
+
+  // Sync formData with profile changes
+  useEffect(() => {
+    setFormData({
+      name: profile.name || "",
+    });
+  }, [profile.name]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -46,7 +51,6 @@ const AccountInformation = ({
         .from("profiles")
         .update({
           name: formData.name,
-          bio: formData.bio,
           updated_at: new Date().toISOString(),
         })
         .eq("id", user.id)
@@ -59,7 +63,6 @@ const AccountInformation = ({
       const updatedProfile: UserProfile = {
         ...profile,
         name: data.name,
-        bio: data.bio,
         updated_at: data.updated_at,
         pickup_address:
           typeof data.pickup_address === "object" &&
@@ -97,9 +100,35 @@ const AccountInformation = ({
   const handleCancel = () => {
     setFormData({
       name: profile.name || "",
-      bio: profile.bio || "",
     });
     setIsEditing(false);
+  };
+
+  const miniPageUrl = `${window.location.origin}/seller/${user?.id}`;
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(miniPageUrl);
+      toast.success("Link copied to clipboard!");
+    } catch (error) {
+      toast.error("Failed to copy link");
+    }
+  };
+
+  const handleShareLink = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${profile.name}'s ReBooked Mini Marketplace`,
+          text: `Check out my books on ReBooked!`,
+          url: miniPageUrl,
+        });
+      } catch (error) {
+        console.error("Share failed:", error);
+      }
+    } else {
+      handleCopyLink();
+    }
   };
 
   return (
@@ -125,23 +154,6 @@ const AccountInformation = ({
                 </p>
               )}
             </div>
-
-            <div>
-              <Label htmlFor="bio">Bio</Label>
-              {isEditing ? (
-                <textarea
-                  id="bio"
-                  value={formData.bio}
-                  onChange={(e) => handleInputChange("bio", e.target.value)}
-                  placeholder="Tell us about yourself..."
-                  className="min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                />
-              ) : (
-                <p className="text-sm text-gray-600 mt-1">
-                  {profile.bio || "No bio added yet"}
-                </p>
-              )}
-            </div>
           </div>
 
           <Separator />
@@ -149,16 +161,10 @@ const AccountInformation = ({
           <div className="space-y-4">
             <div>
               <Label>Email Address</Label>
-              <div className="flex items-center justify-between mt-1">
-                <span className="text-sm text-gray-600">{user?.email}</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowEmailChange(true)}
-                >
-                  Change Email
-                </Button>
-              </div>
+              <p className="text-sm text-gray-600 mt-1">{user?.email}</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Email cannot be changed from this page for security reasons
+              </p>
             </div>
 
             <div>
@@ -210,10 +216,85 @@ const AccountInformation = ({
         </CardContent>
       </Card>
 
-      <EmailChangeDialog
-        open={showEmailChange}
-        onOpenChange={setShowEmailChange}
-      />
+      {/* ReBooked Mini Page Sharing */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Store className="h-5 w-5 text-book-600" />
+            Your ReBooked Mini Marketplace
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label>Share Your Mini Page</Label>
+            <p className="text-sm text-gray-600 mt-1 mb-3">
+              Your personal marketplace where buyers can see all your books and
+              seller information.
+            </p>
+
+            <div className="bg-gray-50 rounded-lg p-3 border">
+              <div className="flex items-center gap-2 mb-2">
+                <ExternalLink className="h-4 w-4 text-gray-500" />
+                <span className="text-sm font-medium text-gray-700">
+                  Your Mini Page URL:
+                </span>
+              </div>
+              <code className="text-sm text-book-600 break-all">
+                {miniPageUrl}
+              </code>
+            </div>
+
+            <div className="flex gap-2 mt-3">
+              <Button
+                onClick={handleCopyLink}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Copy className="h-4 w-4" />
+                Copy Link
+              </Button>
+              <Button
+                onClick={handleShareLink}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Share2 className="h-4 w-4" />
+                Share
+              </Button>
+              <Button
+                onClick={() => window.open(miniPageUrl, "_blank")}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Preview
+              </Button>
+            </div>
+          </div>
+
+          <Alert className="border-book-200 bg-book-50">
+            <Store className="h-4 w-4 text-book-600" />
+            <AlertDescription className="text-book-800">
+              <div className="space-y-2">
+                <div className="font-medium">
+                  💡 Share your ReBooked Mini page to:
+                </div>
+                <ul className="text-sm space-y-1 ml-4">
+                  <li>
+                    • Share on social media (WhatsApp, Facebook, Instagram)
+                  </li>
+                  <li>• Add to your university group chats</li>
+                  <li>• Include in your email signature</li>
+                  <li>• Share with classmates directly</li>
+                </ul>
+              </div>
+            </AlertDescription>
+          </Alert>
+        </CardContent>
+      </Card>
     </>
   );
 };

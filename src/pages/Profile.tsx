@@ -34,23 +34,30 @@ import {
   Eye,
 } from "lucide-react";
 import UserProfileTabs from "@/components/profile/UserProfileTabs";
-import { saveUserAddresses, getUserAddresses } from "@/services/addressService";
 import { getUserBooks } from "@/services/book/bookQueries";
 import { deleteBook } from "@/services/book/bookMutations";
 import { Book } from "@/types/book";
 import { BookDeletionService } from "@/services/bookDeletionService";
-import { ImprovedBankingService } from "@/services/improvedBankingService";
-import SellerBankingSetupPrompt from "@/components/SellerBankingSetupPrompt";
+
 import EnhancedBecomeSellerGuide from "@/components/EnhancedBecomeSellerGuide";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useSellerRequirements } from "@/hooks/useSellerRequirements";
+import SellerRequirementsDialog from "@/components/SellerRequirementsDialog";
 
 const Profile = () => {
   const { profile, user } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const {
+    requirements,
+    showRequirementsDialog,
+    requireSellerSetup,
+    closeRequirementsDialog,
+  } = useSellerRequirements();
+
   const [isDeleteProfileDialogOpen, setIsDeleteProfileDialogOpen] =
     useState(false);
   const [isCommitSystemDialogOpen, setIsCommitSystemDialogOpen] =
@@ -76,24 +83,17 @@ const Profile = () => {
   const [deletingBooks, setDeletingBooks] = useState<Set<string>>(new Set());
   const [isTemporarilyAway, setIsTemporarilyAway] = useState(false);
   const [showDangerZone, setShowDangerZone] = useState(false);
+
   const [needsBankingSetup, setNeedsBankingSetup] = useState(false);
   const [showBankingPrompt, setShowBankingPrompt] = useState(false);
   const [showBecomeSellerGuide, setShowBecomeSellerGuide] = useState(false);
   const [hasAddress, setHasAddress] = useState(false);
   const [hasBankingDetails, setHasBankingDetails] = useState(false);
 
+  // Address loading is now handled by AddressManager component
+  // Keeping this stub for compatibility
   const loadUserAddresses = useCallback(async () => {
-    if (!user?.id) return;
-
-    try {
-      const data = await getUserAddresses(user.id);
-      setAddressData(data);
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      console.error("Error loading addresses:", errorMessage);
-      toast.error("Failed to load addresses");
-    }
+    console.log("Address loading handled by AddressManager component");
   }, [user?.id]);
 
   const loadActiveListings = useCallback(async () => {
@@ -116,21 +116,11 @@ const Profile = () => {
   }, [user?.id]);
 
   const checkBankingSetup = useCallback(async () => {
-    if (!user?.id) return;
-
-    try {
-      const bankingDetails = await ImprovedBankingService.getBankingDetails(
-        user.id,
-      );
-      const hasBankingSetup = bankingDetails?.bank_account_number;
-      const hasActiveListings = activeListings.length > 0;
-
-      setNeedsBankingSetup(!hasBankingSetup && hasActiveListings);
-      setShowBankingPrompt(!hasBankingSetup && hasActiveListings);
-    } catch (error) {
-      console.error("Error checking banking setup:", error);
-    }
-  }, [user?.id, activeListings.length]);
+    // Banking setup is now handled by the BankingSetupPopup component
+    // This function is no longer needed but kept for compatibility
+    setNeedsBankingSetup(false);
+    setShowBankingPrompt(false);
+  }, []);
 
   useEffect(() => {
     if (user?.id) {
@@ -171,7 +161,7 @@ const Profile = () => {
           .from("banking_details")
           .select("*")
           .eq("user_id", user.id)
-          .eq("is_verified", true)
+          .eq("account_verified", true)
           .single();
 
         setHasBankingDetails(!!bankingData);
@@ -218,9 +208,8 @@ const Profile = () => {
         addressData.pickup_address.province &&
         addressData.pickup_address.postalCode;
 
-      // Save the addresses
-      await saveUserAddresses(user.id, pickup, shipping, same);
-      await loadUserAddresses();
+      // Address saving is now handled by AddressManager component
+      // This function is kept for compatibility but no longer actively used
 
       // Check if user has pickup address after
       const hasPickupAddressNow =
@@ -463,16 +452,16 @@ const Profile = () => {
                 </Alert>
               )}
 
-              {/* Pickup Address Warning - Only show if user has active listings but no pickup address */}
+              {/* Pickup Address Warning - Show if user has listings that are unavailable due to missing pickup address */}
               {activeListings &&
-                activeListings.some(
-                  (book) =>
-                    !book.availability || book.availability === "unavailable",
-                ) &&
-                addressData &&
-                (!addressData.pickup_address ||
-                  !addressData.pickup_address.streetAddress ||
-                  !addressData.pickup_address.city) && (
+                (activeListings.some(
+                  (book) => book.availability === "unavailable",
+                ) ||
+                  (activeListings.length > 0 &&
+                    addressData &&
+                    (!addressData.pickup_address ||
+                      !addressData.pickup_address.streetAddress ||
+                      !addressData.pickup_address.city))) && (
                   <Alert className="border-orange-200 bg-orange-50">
                     <AlertTriangle className="h-4 w-4 text-orange-600" />
                     <AlertDescription className="text-orange-800">
@@ -486,15 +475,7 @@ const Profile = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => {
-                            // Scroll to address tab - this will depend on the tabs implementation
-                            const addressTab = document.querySelector(
-                              '[data-tab="addresses"]',
-                            );
-                            if (addressTab) {
-                              addressTab.scrollIntoView({ behavior: "smooth" });
-                            }
-                          }}
+                          onClick={() => navigate("/profile?tab=addresses")}
                           className="border-orange-300 text-orange-700 hover:bg-orange-100 mt-2"
                         >
                           Add Pickup Address
@@ -511,7 +492,11 @@ const Profile = () => {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <Button
-                    onClick={() => navigate("/create-listing")}
+                    onClick={() => {
+                      if (requireSellerSetup("create a listing")) {
+                        navigate("/create-listing");
+                      }
+                    }}
                     className="w-full bg-book-600 hover:bg-book-700 text-white"
                     size="lg"
                   >
@@ -613,12 +598,6 @@ const Profile = () => {
 
             {/* Right Content - Tabs (Keep as-is) */}
             <div className="col-span-8">
-              {/* Banking Setup Prompt for Sellers */}
-              <SellerBankingSetupPrompt
-                isVisible={showBankingPrompt && !isMobile}
-                onDismiss={() => setShowBankingPrompt(false)}
-              />
-
               <UserProfileTabs
                 activeListings={activeListings}
                 isLoading={isLoadingListings}
@@ -650,7 +629,11 @@ const Profile = () => {
             {/* Primary Action */}
             <div className="mb-6">
               <Button
-                onClick={() => navigate("/create-listing")}
+                onClick={() => {
+                  if (requireSellerSetup("create a listing")) {
+                    navigate("/create-listing");
+                  }
+                }}
                 className="bg-book-600 hover:bg-book-700 text-white w-full"
                 size="lg"
               >
@@ -671,6 +654,12 @@ const Profile = () => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56">
+                      <DropdownMenuItem
+                        onClick={() => setShowBecomeSellerGuide(true)}
+                      >
+                        <BookOpen className="h-4 w-4 mr-2" />
+                        Become a Seller
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={handleSellerHowItWorks}>
                         <BookOpen className="h-4 w-4 mr-2" />
                         Seller Guide
@@ -713,12 +702,6 @@ const Profile = () => {
 
             {/* Main Content - Tabs (Keep as-is) */}
             <div className="w-full">
-              {/* Banking Setup Prompt for Sellers */}
-              <SellerBankingSetupPrompt
-                isVisible={showBankingPrompt && isMobile}
-                onDismiss={() => setShowBankingPrompt(false)}
-              />
-
               <UserProfileTabs
                 activeListings={activeListings}
                 isLoading={isLoadingListings}
@@ -773,6 +756,12 @@ const Profile = () => {
         <EnhancedBecomeSellerGuide
           isOpen={showBecomeSellerGuide}
           onClose={() => setShowBecomeSellerGuide(false)}
+        />
+
+        <SellerRequirementsDialog
+          isOpen={showRequirementsDialog}
+          onClose={closeRequirementsDialog}
+          requirements={requirements}
         />
       </div>
     </Layout>

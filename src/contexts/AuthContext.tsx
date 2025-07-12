@@ -1,5 +1,4 @@
 import React, {
-  createContext,
   useContext,
   useEffect,
   useState,
@@ -8,6 +7,7 @@ import React, {
   useRef,
   startTransition,
 } from "react";
+import { safeCreateContext } from "../utils/reactLoader";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -24,7 +24,8 @@ import { safeNotificationOperation } from "../utils/safeAuthOperations";
 import { logError, getErrorMessage } from "@/utils/errorUtils";
 import { createFallbackProfile } from "@/utils/databaseConnectivityHelper";
 import { shouldSkipAuthLoading } from "@/utils/instantStartup";
-
+import { CookieManager } from "@/utils/cookieManager";
+import { safeLocalStorage } from "@/utils/safeLocalStorage";
 // Simple logging for development
 const devLog = (message: string, data?: unknown) => {
   if (import.meta.env.DEV) console.log(message, data);
@@ -61,7 +62,7 @@ interface AuthContextType {
   refreshProfile: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = safeCreateContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -78,14 +79,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(
-    shouldSkipAuthLoading() ? false : false,
-  ); // Always start as false
+    shouldSkipAuthLoading() ? false : true,
+  ); // Start as true unless auth should be skipped
   const [authInitialized, setAuthInitialized] = useState(false);
   const [initError, setInitError] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
 
   // Ref to track current state and prevent duplicate updates
   const currentUserIdRef = useRef<string | null>(null);
+  const initializingRef = useRef<boolean>(false);
+  const profileUpgradeRef = useRef<string | null>(null); // Track which user is being upgraded
 
   const isAuthenticated = !!user && !!session;
   const isAdmin = profile?.isAdmin === true;
@@ -121,18 +124,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const upgradeProfileIfNeeded = useCallback(
     async (currentUser: User) => {
+      // Prevent concurrent upgrades for the same user
+      if (profileUpgradeRef.current === currentUser.id) {
+        console.log("ℹ️ Profile upgrade already in progress");
+        return;
+      }
+
       try {
         // Only upgrade if we have a basic fallback profile
         if (profile && !profile.bio && !profile.profile_picture_url) {
+          // Check if we've recently failed to avoid rapid retries
+          const lastFailKey = `profile_fetch_fail_${currentUser.id}`;
+          const lastFail = sessionStorage.getItem(lastFailKey);
+          if (lastFail) {
+            const lastFailTime = parseInt(lastFail);
+            const timeSinceLastFail = Date.now() - lastFailTime;
+            // Don't retry for 5 minutes after a failure
+            if (timeSinceLastFail < 5 * 60 * 1000) {
+              console.log("ℹ️ Profile upgrade skipped - recent failure");
+              return;
+            }
+          }
+
+          // Mark this user as being upgraded
+          profileUpgradeRef.current = currentUser.id;
+
           const fullProfile = await fetchUserProfileQuick(currentUser);
           if (fullProfile && fullProfile !== profile) {
             setProfile(fullProfile);
             console.log("✅ Profile upgraded successfully");
+            // Clear failure timestamp on success
+            sessionStorage.removeItem(lastFailKey);
           }
         }
       } catch (error) {
-        // Don't log upgrade failures as errors since it's not critical
-        console.log("ℹ️ Profile upgrade skipped");
+        // Mark failure timestamp to prevent rapid retries
+        const lastFailKey = `profile_fetch_fail_${currentUser.id}`;
+        sessionStorage.setItem(lastFailKey, Date.now().toString());
+        console.log("ℹ️ Profile upgrade skipped - will retry later");
+      } finally {
+        // Clear the upgrade lock
+        profileUpgradeRef.current = null;
       }
     },
     [profile],
@@ -149,25 +181,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         if (session.user) {
           // Check if this is actually a new user to prevent unnecessary updates
           if (currentUserIdRef.current !== session.user.id) {
+            // If switching users, clear everything first to prevent mixing data
+            if (currentUserIdRef.current !== null) {
+              console.log(
+                "🔄 [AuthContext] User switching detected, clearing state first",
+              );
+
+              // Use React's startTransition for non-urgent updates to prevent glitching
+              startTransition(() => {
+                setUser(null);
+                setProfile(null);
+                setSession(null);
+              });
+
+              // Clear local storage to prevent data contamination
+              safeLocalStorage.removeItem("supabase.auth.token");
+              sessionStorage.clear();
+
+              // Small delay to ensure state is cleared
+              await new Promise((resolve) => setTimeout(resolve, 200));
+            }
+
             currentUserIdRef.current = session.user.id;
 
             // Batch state updates to prevent multiple re-renders and glitching
             const fallbackProfile = createUserFallbackProfile(session.user);
 
-            // Use React's automatic batching by updating state synchronously
-            setSession(session);
-            setUser(session.user);
-            setProfile(fallbackProfile);
-            setIsLoading(false); // Immediately stop loading for UI responsiveness
+            // Add small delay to prevent glitching between states
+            setTimeout(() => {
+              // Use startTransition for smooth state updates
+              startTransition(() => {
+                setSession(session);
+                setUser(session.user);
+                setProfile(fallbackProfile);
+                setIsLoading(false);
+              });
+            }, 100); // Small delay to stabilize
 
             console.log(
-              "ℹ️ [AuthContext] Auth state updated for new user:",
+              "✅ [AuthContext] Auth state updated for user:",
               session.user.id,
             );
           } else {
             console.log(
               "ℹ️ [AuthContext] Skipping duplicate auth update for same user",
             );
+            return; // Early return to prevent unnecessary processing
           }
 
           // Try to load full profile in background (non-blocking)
@@ -195,88 +254,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
               // Keep the fallback profile - don't change loading state
             });
 
-          // Add login notification for new sign-ins only (prevent duplicates)
-          if (event === "SIGNED_IN" && !isInitializing) {
-            try {
-              const sessionKey = `loginNotification_${session.user.id}`;
-              const localStorageKey = `lastLoginNotif_${session.user.id}`;
-              const lastNotificationTime = sessionStorage.getItem(sessionKey);
-              const lastLocalNotificationTime =
-                localStorage.getItem(localStorageKey);
-              const now = Date.now();
+          // DISABLED: Login notifications are too spammy
+          // Users can see they're logged in from the UI state
+          console.log(
+            "[AuthContext] Skipping login notification to prevent spam",
+          );
 
-              // Enhanced duplicate prevention:
-              // 1. Check session storage for this browser session
-              // 2. Check local storage for persistent checking across sessions
-              // 3. Require at least 30 minutes between notifications
-              const shouldSendNotification =
-                !lastNotificationTime &&
-                (!lastLocalNotificationTime ||
-                  now - parseInt(lastLocalNotificationTime) > 1800000); // 30 minutes
-
-              if (shouldSendNotification) {
-                // ENHANCED: Add session-wide lock to prevent multiple notifications
-                const lockKey = `notification_lock_${session.user.id}`;
-                const existingLock = sessionStorage.getItem(lockKey);
-
-                if (existingLock && now - parseInt(existingLock) < 5000) {
-                  // 5 second lock
-                  console.log(
-                    "[AuthContext] Skipping notification - recent lock exists",
-                  );
-                  return;
-                }
-
-                // Set lock immediately
-                sessionStorage.setItem(lockKey, now.toString());
-                sessionStorage.setItem(sessionKey, now.toString());
-                localStorage.setItem(localStorageKey, now.toString());
-
-                // Use safe notification operation to prevent Suspense issues
-                safeNotificationOperation(
-                  () =>
-                    addNotification({
-                      userId: session.user.id,
-                      title: "Welcome back!",
-                      message: `Successfully logged in at ${new Date().toLocaleString()}`,
-                      type: "success",
-                      read: false,
-                    }),
-                  () => {
-                    // Fallback if notification fails
-                    console.warn(
-                      "[AuthContext] Login notification failed - removing locks",
-                    );
-                    sessionStorage.removeItem(sessionKey);
-                    sessionStorage.removeItem(lockKey);
-                    localStorage.removeItem(localStorageKey);
-                  },
-                );
-              } else {
-                console.log(
-                  "[AuthContext] Skipping duplicate login notification - recent notification exists",
-                );
-              }
-            } catch (notifError) {
-              console.warn(
-                "[AuthContext] Login notification setup failed:",
-                notifError,
-              );
-            }
-          }
-
-          // Background profile maintenance (every 30 seconds)
+          // Background profile maintenance (every 2 minutes)
+          // Initial delay increased to reduce rapid retries
           setTimeout(() => {
             if (session?.user) {
               upgradeProfileIfNeeded(session.user);
             }
-          }, 2000);
+          }, 10000); // 10 seconds instead of 2
 
           const upgradeInterval = setInterval(() => {
             if (session?.user) {
               upgradeProfileIfNeeded(session.user);
             }
-          }, 30000);
+          }, 120000); // 2 minutes instead of 30 seconds
 
           return () => clearInterval(upgradeInterval);
         }
@@ -301,25 +297,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const initializeAuth = useCallback(() => {
     if (authInitialized) return;
 
+    // Check if supabase client is available
+    if (!supabase) {
+      console.warn(
+        "⚠️ Supabase client not available, skipping auth initialization",
+      );
+      setIsInitializing(false);
+      setIsLoading(false);
+      setInitError("Authentication service unavailable");
+      return;
+    }
+
     // Use startTransition to prevent suspense issues
     startTransition(() => {
       setIsLoading(false); // Start without loading to prevent suspense
       setInitError(null);
       setIsInitializing(true);
 
-      console.log("🔄 [AuthContext] Fast auth initialization...");
+      console.log("🔄 [AuthContext] Auth initialization starting...");
 
       // Immediate initialization without blocking
       (async () => {
         try {
           // Immediate fallback timeout to prevent hanging
           const immediateTimeout = setTimeout(() => {
-            console.warn(
-              "⚠️ [AuthContext] Immediate fallback - preventing hang",
-            );
+            console.info("ℹ️ [AuthContext] Setting to unauthenticated state");
             setIsLoading(false);
             setAuthInitialized(true);
-          }, 500); // 500ms immediate fallback
+            setUser(null);
+            setProfile(null);
+            setSession(null);
+          }, 2000); // Increased to 2 seconds
 
           // Ultra-fast database connectivity check
           try {
@@ -375,7 +383,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                   exchangeError.message.includes("invalid request")
                 ) {
                   console.log(
-                    "🧹 [AuthContext] Clearing auth parameters from URL due to PKCE error",
+                    "���� [AuthContext] Clearing auth parameters from URL due to PKCE error",
                   );
                   // Clear the URL parameters to prevent repeated failed attempts
                   window.history.replaceState(
@@ -553,11 +561,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const login = useCallback(
     async (email: string, password: string) => {
       try {
+        console.log("🔐 AuthContext: Starting login process");
         setIsLoading(true);
         const result = await loginUser(email, password);
+        console.log("🔐 AuthContext: loginUser completed, result:", result);
+
+        // Check if we have a session after login
+        const { data: sessionData } = await supabase.auth.getSession();
+        console.log("🔐 AuthContext: Session after login:", sessionData);
+
         // Auth state change will be handled by the listener
         return result;
       } catch (error) {
+        console.log("������ AuthContext: Login error:", error);
         handleError(error, "Login");
       } finally {
         setIsLoading(false);
@@ -583,32 +599,66 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = useCallback(async () => {
     try {
+      console.log("🚪 [AuthContext] Starting logout process");
       setIsLoading(true);
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
 
+      // Clear all local state immediately
       setUser(null);
       setProfile(null);
       setSession(null);
+
+      // Clear all browser storage
+      safeLocalStorage.clear();
+      sessionStorage.clear();
+
+      // Clear any cookies
+      document.cookie.split(";").forEach((c) => {
+        const eqPos = c.indexOf("=");
+        const name = eqPos > -1 ? c.substr(0, eqPos) : c;
+        document.cookie =
+          name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+      });
+
+      // Sign out from Supabase
+      if (supabase) {
+        const { error } = await supabase.auth.signOut({ scope: "global" });
+
+        // Handle specific case where there's no session to sign out from
+        if (error && error.message === "Auth session missing!") {
+          console.log("ℹ️ [AuthContext] No active session to sign out from");
+          // This is actually fine - user is already signed out
+        } else if (error) {
+          console.warn("⚠️ [AuthContext] Logout error:", error);
+        }
+      }
+
+      console.log("✅ [AuthContext] Logout completed successfully");
     } catch (error) {
-      handleError(error, "Logout");
+      // For logout, we still want to clear local state even if signOut fails
+      console.warn(
+        "⚠️ [AuthContext] Logout error, but clearing local state:",
+        error,
+      );
     } finally {
       setIsLoading(false);
+      // Force a page reload to ensure clean state
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 100);
     }
-  }, [handleError]);
+  }, []);
 
   useEffect(() => {
     initializeAuth();
 
-    // Emergency backup to prevent infinite loading
+    // Emergency backup to prevent infinite loading - increased timeout for better reliability
     const emergencyTimeout = setTimeout(() => {
       if (!authInitialized) {
-        console.error(
-          "🚨 [AuthContext] Emergency timeout - auth never initialized",
+        console.warn(
+          "⚠️ [AuthContext] Initialization taking longer than expected",
         );
-        console.error("🚨 [AuthContext] This indicates severe backend issues");
         console.info(
-          "💡 [AuthContext] Check database setup and Supabase connection",
+          "💡 [AuthContext] Setting to unauthenticated state to prevent hanging",
         );
 
         // Force initialization to prevent app from hanging
@@ -617,9 +667,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setUser(null);
         setProfile(null);
         setSession(null);
-        setInitError("Database connection failed. Please check setup.");
+        setInitError(null); // Don't show error, just set to unauthenticated
       }
-    }, 3000); // 3 second emergency timeout
+    }, 5000); // Increased to 5 seconds for better reliability
 
     return () => clearTimeout(emergencyTimeout);
   }, [initializeAuth, authInitialized]);
@@ -628,12 +678,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (isLoading) {
       const loadingTimeout = setTimeout(() => {
-        console.warn("⚠️ [AuthContext] Loading timeout - forcing resolution");
-        console.warn(
-          "⚠️ [AuthContext] This usually means database tables are missing",
-        );
         console.info(
-          "💡 [AuthContext] Run complete_database_setup.sql in Supabase to fix this",
+          "ℹ️ [AuthContext] Loading resolved to unauthenticated state",
         );
 
         // Force resolution to unauthenticated state to stop loading spinner
@@ -642,13 +688,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setSession(null);
         setIsLoading(false);
         setAuthInitialized(true);
-      }, 1500); // Very aggressive 1.5 second timeout
+      }, 3000); // More reasonable 3 second timeout
 
       return () => clearTimeout(loadingTimeout);
     }
   }, [isLoading]);
 
   useEffect(() => {
+    // Check if supabase client is available
+    if (!supabase) {
+      console.warn(
+        "⚠️ Supabase client not available, skipping auth state change listener",
+      );
+      return;
+    }
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -673,7 +727,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       } catch (error) {
         console.warn(
-          "⚠️ [AuthContext] Auth state change error:",
+          "���️ [AuthContext] Auth state change error:",
           error instanceof Error ? error.message : String(error),
         );
 

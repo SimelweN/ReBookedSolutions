@@ -180,7 +180,7 @@ export class EmailChangeService {
       }
 
       // For development/demo purposes, show the confirmation link in console
-      if (process.env.NODE_ENV === "development") {
+      if (import.meta.env.DEV) {
         console.log("🔗 DEVELOPMENT MODE: Email confirmation link:");
         console.log(confirmationUrl);
       }

@@ -28,30 +28,30 @@ const Admin = () => {
   if (!isAuthenticated || !user) {
     return (
       <Layout>
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-6 md:py-8">
           <div className="text-center max-w-md mx-auto">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Shield className="h-8 w-8 text-red-600" />
+            <div className="w-12 h-12 md:w-16 md:h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Shield className="h-6 w-6 md:h-8 md:w-8 text-red-600" />
             </div>
-            <h2 className="text-2xl font-semibold mb-4">
+            <h2 className="text-xl md:text-2xl font-semibold mb-4">
               Authentication Required
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 mb-6 text-sm md:text-base">
               You must be logged in to access the admin dashboard.
             </p>
             <div className="space-y-3">
               <Button
                 onClick={() => navigate("/login")}
-                className="w-full min-h-[48px]"
-                size="lg"
+                className="w-full min-h-[44px] md:min-h-[48px]"
+                size={isMobile ? "default" : "lg"}
               >
                 Log In
               </Button>
               <Button
                 variant="outline"
                 onClick={() => navigate("/")}
-                className="w-full min-h-[48px]"
-                size="lg"
+                className="w-full min-h-[44px] md:min-h-[48px]"
+                size={isMobile ? "default" : "lg"}
               >
                 Go Home
               </Button>
@@ -66,30 +66,30 @@ const Admin = () => {
   if (!isAdmin) {
     return (
       <Layout>
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-6 md:py-8">
           <div className="text-center max-w-md mx-auto">
-            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Shield className="h-8 w-8 text-orange-600" />
+            <div className="w-12 h-12 md:w-16 md:h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Shield className="h-6 w-6 md:h-8 md:w-8 text-orange-600" />
             </div>
-            <h2 className="text-2xl font-semibold mb-4">
+            <h2 className="text-xl md:text-2xl font-semibold mb-4">
               Admin Access Required
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 mb-6 text-sm md:text-base">
               You do not have administrator privileges to access this page.
             </p>
             <div className="space-y-3">
               <Button
                 onClick={() => navigate("/profile")}
-                className="w-full min-h-[48px]"
-                size="lg"
+                className="w-full min-h-[44px] md:min-h-[48px]"
+                size={isMobile ? "default" : "lg"}
               >
                 Go to Profile
               </Button>
               <Button
                 variant="outline"
                 onClick={() => navigate("/")}
-                className="w-full min-h-[48px]"
-                size="lg"
+                className="w-full min-h-[44px] md:min-h-[48px]"
+                size={isMobile ? "default" : "lg"}
               >
                 Go Home
               </Button>
@@ -133,15 +133,17 @@ const Admin = () => {
               </h1>
             </div>
 
-            <Button
-              variant="outline"
-              onClick={() => navigate("/admin/reports")}
-              className={`flex items-center ${isMobile ? "w-full" : "w-auto"} min-h-[44px] btn-mobile`}
-              size={isMobile ? "default" : "default"}
-            >
-              <Flag className="mr-2 h-4 w-4" />
-              View Reports
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => navigate("/admin/reports")}
+                className={`flex items-center ${isMobile ? "w-full" : "w-auto"} min-h-[44px] btn-mobile`}
+                size={isMobile ? "default" : "default"}
+              >
+                <Flag className="mr-2 h-4 w-4" />
+                View Reports
+              </Button>
+            </div>
           </div>
         </div>
 

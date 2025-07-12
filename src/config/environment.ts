@@ -1,19 +1,49 @@
 // Environment configuration for production readiness
+// Workers-compatible environment access
+const getEnvVar = (key: string, fallback = ""): string => {
+  try {
+    // Primary: Vite environment variables (most reliable in Workers)
+    if (typeof import.meta !== "undefined" && import.meta.env) {
+      return import.meta.env[key] || fallback;
+    }
+
+    // Fallback: Check for process env only if in Node-like environment
+    if (typeof process !== "undefined" && process.env) {
+      return process.env[key] || fallback;
+    }
+
+    // Final fallback: Try globalThis.process but with stricter checks
+    if (
+      typeof globalThis !== "undefined" &&
+      globalThis.process &&
+      typeof globalThis.process.env === "object"
+    ) {
+      return globalThis.process.env[key] || fallback;
+    }
+
+    return fallback;
+  } catch {
+    return fallback;
+  }
+};
+
 export const ENV = {
-  NODE_ENV: import.meta.env.NODE_ENV || "development",
-  VITE_SUPABASE_URL:
-    import.meta.env.VITE_SUPABASE_URL ||
-    (import.meta.env.PROD ? "" : "https://kbpjqzaqbqukutflwixf.supabase.co"),
+  NODE_ENV: getEnvVar("NODE_ENV", "development"),
+  // Remove the hardcoded fallback URLs that are returning 404
+  VITE_SUPABASE_URL: getEnvVar("VITE_SUPABASE_URL"),
   VITE_SUPABASE_ANON_KEY:
-    import.meta.env.VITE_SUPABASE_ANON_KEY?.replace(/^=+/, "") ||
-    (import.meta.env.PROD
-      ? ""
-      : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImticGpxemFxYnF1a3V0Zmx3aXhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc1NjMzNzcsImV4cCI6MjA2MzEzOTM3N30.3EdAkGlyFv1JRaRw9OFMyA5AkkKoXp0hdX1bFWpLVMc"),
-  VITE_PAYSTACK_PUBLIC_KEY: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || "",
-  VITE_APP_URL:
-    import.meta.env.VITE_APP_URL || "https://rebookedsolutions.co.za",
-  VITE_COURIER_GUY_API_KEY: import.meta.env.VITE_COURIER_GUY_API_KEY || "",
-  VITE_FASTWAY_API_KEY: import.meta.env.VITE_FASTWAY_API_KEY || "",
+    getEnvVar("VITE_SUPABASE_ANON_KEY")?.replace(/^=+/, "") || "",
+  VITE_PAYSTACK_PUBLIC_KEY: getEnvVar("VITE_PAYSTACK_PUBLIC_KEY"),
+  VITE_APP_URL: getEnvVar("VITE_APP_URL", "https://rebookedsolutions.co.za"),
+  VITE_COURIER_GUY_API_KEY: getEnvVar("VITE_COURIER_GUY_API_KEY"),
+  VITE_FASTWAY_API_KEY: getEnvVar("VITE_FASTWAY_API_KEY"),
+  VITE_GOOGLE_MAPS_API_KEY: getEnvVar("VITE_GOOGLE_MAPS_API_KEY"),
+  VITE_SENDER_API: getEnvVar("VITE_SENDER_API"),
+  VITE_RESEND_API_KEY: getEnvVar("VITE_RESEND_API_KEY"),
+  VITE_BANKING_VAULT_URL: getEnvVar(
+    "VITE_BANKING_VAULT_URL",
+    "https://paystack-vault-south-africa.lovable.app",
+  ),
 } as const;
 
 export const IS_PRODUCTION = ENV.NODE_ENV === "production";
@@ -22,12 +52,32 @@ export const IS_DEVELOPMENT = ENV.NODE_ENV === "development";
 // Validate required environment variables
 export const validateEnvironment = () => {
   const required = ["VITE_SUPABASE_URL", "VITE_SUPABASE_ANON_KEY"];
-  // Add optional API keys for production warnings
-  const optional = ["VITE_COURIER_GUY_API_KEY", "VITE_FASTWAY_API_KEY"];
+  const critical = ["VITE_PAYSTACK_PUBLIC_KEY"]; // Critical for payments
+  const optional = [
+    "VITE_COURIER_GUY_API_KEY",
+    "VITE_FASTWAY_API_KEY",
+    "VITE_GOOGLE_MAPS_API_KEY",
+    "VITE_SENDER_API",
+    "VITE_RESEND_API_KEY",
+  ];
 
   const missing = required.filter((key) => {
     const value = ENV[key as keyof typeof ENV];
-    return !value || value.trim() === "";
+    return (
+      !value ||
+      value.trim() === "" ||
+      value.includes("demo-") ||
+      value.includes("your-")
+    );
+  });
+
+  const missingCritical = critical.filter((key) => {
+    const value = ENV[key as keyof typeof ENV];
+    return (
+      !value ||
+      value.trim() === "" ||
+      (IS_PRODUCTION && (value.includes("demo-") || value.includes("test_")))
+    );
   });
 
   // Validate Supabase key format (should be a JWT token starting with eyJ)
@@ -44,76 +94,117 @@ export const validateEnvironment = () => {
     );
   }
 
+  // Validate Supabase URL format
+  if (
+    ENV.VITE_SUPABASE_URL &&
+    !ENV.VITE_SUPABASE_URL.includes(".supabase.co")
+  ) {
+    console.warn(
+      "⚠️ VITE_SUPABASE_URL doesn't appear to be a valid Supabase URL",
+    );
+  }
+
   const missingOptional = optional.filter((key) => {
     const value = ENV[key as keyof typeof ENV];
-    return !value || value.trim() === "";
+    return !value || value.trim() === "" || value.includes("demo-");
   });
 
-  if (missing.length > 0) {
+  // Check for demo/placeholder values (only warn in production)
+  const hasPlaceholders =
+    IS_PRODUCTION &&
+    Object.entries(ENV).some(
+      ([key, value]) =>
+        typeof value === "string" &&
+        (value.includes("demo-") ||
+          value.includes("your-") ||
+          value.includes("placeholder") ||
+          (key.includes("API_KEY") && value.length < 10)),
+    );
+
+  if ((missing.length > 0 && IS_PRODUCTION) || hasPlaceholders) {
     const errorMessage = `
-🚨 MISSING ENVIRONMENT VARIABLES 🚨
+🚨 CONFIGURATION REQUIRED 🚨
 
-The following required environment variables are not set:
-${missing.map((key) => `  - ${key}`).join("\n")}
+${missing.length > 0 ? `Missing required variables: ${missing.join(", ")}` : ""}
+${hasPlaceholders ? "⚠️ Demo/placeholder values detected" : ""}
+${missingCritical.length > 0 ? `⚠️ Critical for payments: ${missingCritical.join(", ")}` : ""}
 
-To fix this issue:
+🔧 QUICK SETUP OPTIONS:
 
-1. For local development, create a .env file in the project root:
-   VITE_SUPABASE_URL=your_supabase_project_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+OPTION 1: Run the setup script
+   node setup-environment.js
 
-2. For production deployment, set these environment variables in your hosting platform:
+OPTION 2: Manual setup
+   1. Create .env file with real credentials:
 
-   VERCEL:
-   - Go to your project settings in Vercel dashboard
-   - Add environment variables in the "Environment Variables" section
+   # Required (Database & Auth)
+   VITE_SUPABASE_URL=https://your-project.supabase.co
+   VITE_SUPABASE_ANON_KEY=eyJ... (from Supabase Dashboard > Settings > API)
 
-   NETLIFY:
-   - Go to your site settings in Netlify dashboard
-   - Add environment variables in "Environment variables" section
+   # Critical (Payments)
+   VITE_PAYSTACK_PUBLIC_KEY=pk_test_... (from Paystack Dashboard)
 
-3. For Fly.io deployment, use:
-   fly secrets set VITE_SUPABASE_URL=your_url VITE_SUPABASE_ANON_KEY=your_key
+   # Optional (Enhanced Features)
+   VITE_GOOGLE_MAPS_API_KEY=AIza... (Google Cloud Console)
+   VITE_SENDER_API=... (Email service)
+   VITE_COURIER_GUY_API_KEY=... (Shipping)
 
-Current environment: ${ENV.NODE_ENV}
+📋 SERVICE SETUP CHECKLIST:
+
+✅ Supabase Project: https://supabase.com/dashboard
+   - Create new project
+   - Copy URL and anon key
+   - Run database setup script
+
+✅ Paystack Account: https://dashboard.paystack.com
+   - Get test keys for development
+   - Get live keys for production
+
+✅ Google Maps API: https://console.developers.google.com
+   - Enable Places API, Geocoding API, Maps JavaScript API
+   - Create API key with restrictions
+
+🔍 Current status: ${ENV.NODE_ENV} environment
     `;
 
     console.error(errorMessage);
 
-    // In production, log error but don't crash the app completely
-    // This allows the app to show a proper error UI instead of blank screen
-    if (import.meta.env.PROD) {
+    if (IS_PRODUCTION) {
       console.error(
         `❌ Missing required environment variables: ${missing.join(", ")}`,
       );
       console.error(
         "⚠️ Application may not function correctly without proper configuration",
       );
-      // Don't throw - let the app render and show environment error component
-    } else {
-      console.warn("⚠️ Using fallback environment variables for development");
     }
-  }
-
-  // Additional validation for production
-  if (
-    import.meta.env.PROD &&
-    ENV.VITE_SUPABASE_URL === "https://kbpjqzaqbqukutflwixf.supabase.co"
-  ) {
+  } else if (missing.length > 0 && IS_DEVELOPMENT) {
     console.warn(
-      "⚠️ WARNING: Using default Supabase credentials in production. Please set proper environment variables.",
+      "ℹ️ Development mode: Some environment variables are using demo values",
+    );
+    console.warn(
+      "📋 To set up real credentials, run: node setup-environment.js",
     );
   }
 
   if (missing.length === 0) {
     console.log("✅ Environment variables validated successfully");
 
-    // Warn about missing optional API keys in production
-    if (import.meta.env.PROD && missingOptional.length > 0) {
+    // Warn about missing optional API keys
+    if (missingOptional.length > 0) {
       console.warn(
         `⚠️ Optional API keys not set (some features may be limited): ${missingOptional.join(", ")}`,
       );
     }
+  }
+
+  // In development, we're more lenient to allow development without full setup
+  if (IS_DEVELOPMENT) {
+    console.log("🔧 Development mode: Environment validation lenient");
+    if (missing.length > 0) {
+      console.warn("⚠️ Missing environment variables:", missing);
+      console.warn("📝 App will continue with mock/fallback services");
+    }
+    return true; // Allow development to continue
   }
 
   return missing.length === 0;

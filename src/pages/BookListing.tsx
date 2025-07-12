@@ -127,13 +127,11 @@ const BookListing = () => {
 
   // Initial load
   useEffect(() => {
-    console.log("BookListing component mounted");
     loadBooks();
   }, [loadBooks]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Search submitted with query:", searchQuery);
     updateFilters();
   };
 

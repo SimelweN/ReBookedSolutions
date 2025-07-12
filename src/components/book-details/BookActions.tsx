@@ -156,8 +156,40 @@ const BookActions = ({
                 const sellerId = book.seller?.id;
                 if (sellerId) {
                   const listingsUrl = `${window.location.origin}/books?seller=${sellerId}`;
-                  navigator.clipboard.writeText(listingsUrl);
-                  toast.success("Seller listings link copied to clipboard!"); // Using toast for better UX
+
+                  // Try modern clipboard API first
+                  if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard
+                      .writeText(listingsUrl)
+                      .then(() => {
+                        toast.success(
+                          "Seller listings link copied to clipboard!",
+                        );
+                      })
+                      .catch(() => {
+                        // Fallback: show the URL to user
+                        prompt("Copy this link:", listingsUrl);
+                        toast.info("Please copy the link manually.");
+                      });
+                  } else {
+                    // Fallback for older browsers
+                    const textArea = document.createElement("textarea");
+                    textArea.value = listingsUrl;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+
+                    try {
+                      document.execCommand("copy");
+                      toast.success(
+                        "Seller listings link copied to clipboard!",
+                      );
+                    } catch (error) {
+                      prompt("Copy this link:", listingsUrl);
+                      toast.info("Please copy the link manually.");
+                    } finally {
+                      document.body.removeChild(textArea);
+                    }
+                  }
                 } else {
                   toast.error(
                     "Could not find seller information for this book.",

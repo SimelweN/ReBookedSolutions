@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "lib": ["deno.window"],
+    "strict": true
+  },
+  "importMap": "./import_map.json",
+  "tasks": {
+    "dev": "deno run --allow-net --allow-read --allow-env --watch index.ts"
+  },
+  "fmt": {
+    "files": {
+      "include": ["**/*.ts", "**/*.js"],
+      "exclude": ["node_modules/", "dist/"]
+    },
+    "options": {
+      "useTabs": false,
+      "lineWidth": 100,
+      "indentWidth": 2,
+      "semiColons": true,
+      "singleQuote": true,
+      "proseWrap": "preserve"
+    }
+  },
+  "lint": {
+    "files": {
+      "include": ["**/*.ts", "**/*.js"],
+      "exclude": ["node_modules/", "dist/"]
+    },
+    "rules": {
+      "tags": ["recommended"],
+      "include": ["ban-untagged-todo"],
+      "exclude": ["no-unused-vars"]
+    }
+  }
+}

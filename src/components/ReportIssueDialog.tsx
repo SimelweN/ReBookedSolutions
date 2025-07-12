@@ -1,19 +1,25 @@
-
-import { useState } from 'react';
+import * as React from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertTriangle, Send, X } from 'lucide-react';
-import { toast } from 'sonner';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { AlertTriangle, Send, X } from "lucide-react";
+import { toast } from "sonner";
 
 interface ReportIssueDialogProps {
   isOpen: boolean;
@@ -22,57 +28,64 @@ interface ReportIssueDialogProps {
 
 const ReportIssueDialog = ({ isOpen, onClose }: ReportIssueDialogProps) => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    category: '',
-    description: ''
+    name: "",
+    email: "",
+    category: "",
+    description: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const categories = [
-    'Technical Issue',
-    'Payment Problem',
-    'Account Access',
-    'Book Listing Issue',
-    'User Behavior',
-    'Feature Request',
-    'Other'
+    "Technical Issue",
+    "Payment Problem",
+    "Account Access",
+    "Book Listing Issue",
+    "User Behavior",
+    "Feature Request",
+    "Other",
   ];
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const resetForm = () => {
-    setFormData({ name: '', email: '', category: '', description: '' });
+    setFormData({ name: "", email: "", category: "", description: "" });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.name || !formData.email || !formData.category || !formData.description) {
-      toast.error('Please fill in all required fields');
+
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.category ||
+      !formData.description
+    ) {
+      toast.error("Please fill in all required fields");
       return;
     }
 
-    if (!formData.email.includes('@')) {
-      toast.error('Please enter a valid email address');
+    if (!formData.email.includes("@")) {
+      toast.error("Please enter a valid email address");
       return;
     }
 
     setIsSubmitting(true);
-    
+
     try {
       // Simulate API call - replace with actual implementation
-      console.log('Submitting report:', formData);
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast.success('Report submitted successfully! We\'ll get back to you soon.');
+      console.log("Submitting report:", formData);
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      toast.success(
+        "Report submitted successfully! We'll get back to you soon.",
+      );
       resetForm();
       onClose();
     } catch (error) {
-      console.error('Error submitting report:', error);
-      toast.error('Failed to submit report. Please try again.');
+      console.error("Error submitting report:", error);
+      toast.error("Failed to submit report. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -105,7 +118,8 @@ const ReportIssueDialog = ({ isOpen, onClose }: ReportIssueDialogProps) => {
             </Button>
           </div>
           <DialogDescription>
-            Let us know about any problems you're experiencing and we'll help resolve them.
+            Let us know about any problems you're experiencing and we'll help
+            resolve them.
           </DialogDescription>
         </DialogHeader>
 
@@ -115,7 +129,7 @@ const ReportIssueDialog = ({ isOpen, onClose }: ReportIssueDialogProps) => {
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
+              onChange={(e) => handleInputChange("name", e.target.value)}
               placeholder="Your full name"
               required
               disabled={isSubmitting}
@@ -128,7 +142,7 @@ const ReportIssueDialog = ({ isOpen, onClose }: ReportIssueDialogProps) => {
               id="email"
               type="email"
               value={formData.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
+              onChange={(e) => handleInputChange("email", e.target.value)}
               placeholder="your.email@example.com"
               required
               disabled={isSubmitting}
@@ -137,9 +151,9 @@ const ReportIssueDialog = ({ isOpen, onClose }: ReportIssueDialogProps) => {
 
           <div>
             <Label htmlFor="category">Issue Category *</Label>
-            <Select 
-              value={formData.category} 
-              onValueChange={(value) => handleInputChange('category', value)}
+            <Select
+              value={formData.category}
+              onValueChange={(value) => handleInputChange("category", value)}
               disabled={isSubmitting}
             >
               <SelectTrigger>
@@ -160,7 +174,7 @@ const ReportIssueDialog = ({ isOpen, onClose }: ReportIssueDialogProps) => {
             <Textarea
               id="description"
               value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
+              onChange={(e) => handleInputChange("description", e.target.value)}
               placeholder="Please describe the issue you're experiencing in detail..."
               className="min-h-[100px]"
               required
@@ -179,7 +193,13 @@ const ReportIssueDialog = ({ isOpen, onClose }: ReportIssueDialogProps) => {
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting || !formData.name || !formData.email || !formData.category || !formData.description}
+              disabled={
+                isSubmitting ||
+                !formData.name ||
+                !formData.email ||
+                !formData.category ||
+                !formData.description
+              }
               className="bg-book-600 hover:bg-book-700"
             >
               {isSubmitting ? (

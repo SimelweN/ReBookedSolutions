@@ -1,433 +1,366 @@
-import React, { Suspense, startTransition } from "react";
+import React, { Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/react";
-import { ThemeProvider } from "next-themes";
+import { HelmetProvider } from "react-helmet-async";
+import { ThemeProvider } from "./components/ThemeProvider";
 import ErrorBoundary from "./components/ErrorBoundary";
+import ErrorBoundaryEnhanced from "./components/ErrorBoundaryEnhanced";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
-import AuthErrorHandler from "./components/AuthErrorHandler";
 import GoogleMapsProvider from "./contexts/GoogleMapsContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
-import ScrollToTop from "./components/ScrollToTop";
-import LoadingSpinner from "./components/LoadingSpinner";
-import PerformanceMetrics from "./components/PerformanceMetrics";
-import ConfigurationChecker from "./components/ConfigurationChecker";
-import { debugConnection } from "./utils/debugConnection";
-import { validateApiKey } from "./utils/validateApiKey";
-import { DatabaseSetup } from "./utils/databaseSetup";
-import { debugBankingDetails } from "./utils/debugBankingDetails";
-import {
-  checkDatabaseStatus,
-  logDatabaseStatus,
-} from "./utils/databaseConnectivityHelper";
-import { preloadCriticalRoutes } from "./utils/routePreloader";
-import EmergencyBypass from "./components/EmergencyBypass";
-import "./App.css";
+import NoScriptFallback from "./components/NoScriptFallback";
+import LoadingFallback from "./components/LoadingFallback";
+import NotificationWrapper from "./components/notifications/NotificationWrapper";
+import NotificationInitializer from "./components/notifications/NotificationInitializer";
+import StartupChecker from "./components/StartupChecker";
+import { validateEnvironment } from "./config/environment";
+import { useCommitAutoExpiry } from "./hooks/useCommitAutoExpiry";
 
-// Initialize debug utilities in development
-if (import.meta.env.DEV) {
-  (window as any).debugConnection = debugConnection;
-  (window as any).validateApiKey = validateApiKey;
-  (window as any).DatabaseSetup = DatabaseSetup;
-  (window as any).debugBankingDetails = debugBankingDetails;
-  (window as any).checkDatabaseStatus = checkDatabaseStatus;
-  (window as any).logDatabaseStatus = logDatabaseStatus;
-
-  // Test NEW SUBJECT ENGINE - wrapped to prevent Suspense issues
-  setTimeout(() => {
-    try {
-      import("./services/newSubjectEngine")
-        .then(({ testNewEngine }) => {
-          try {
-            console.log("🔥 Testing NEW SUBJECT ENGINE...");
-            testNewEngine();
-            console.log("✅ Subject engine test completed successfully");
-          } catch (testError) {
-            console.warn("Subject engine test execution failed:", testError);
-          }
-        })
-        .catch((importError) => {
-          console.warn("Subject engine import failed:", importError);
-        });
-    } catch (error) {
-      console.warn("Subject engine test setup failed:", error);
-    }
-  }, 3000); // Extended delay to prevent initialization conflicts
-
-  console.log("🛠️ Debug utilities available:");
-  console.log("  - debugConnection() - Full connection test");
-  console.log("  - validateApiKey() - Check API key validity");
-  console.log(
-    "  - DatabaseSetup.showSetupInstructions() - Check database setup",
-  );
-  console.log("  - debugBankingDetails() - Debug banking details errors");
-  console.log("  - checkDatabaseStatus() - Check database connectivity");
-  console.log("  - logDatabaseStatus() - Log current database status");
-  console.log("  �� Fixed subject matching tests will run automatically");
+// Only import CSS in browser environment
+if (typeof window !== "undefined") {
+  import("./App.css");
 }
 
-// Import critical pages directly for instant loading (prevents Suspense errors)
+// Import critical pages directly
 import IndexPage from "./pages/Index";
 import UniversityInfoPage from "./pages/UniversityInfo";
 import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
 import AdminPage from "./pages/Admin";
-const Index = () => <IndexPage />;
-const UniversityInfo = () => <UniversityInfoPage />;
-const Login = () => <LoginPage />;
-const Register = () => <RegisterPage />;
-const Admin = () => <AdminPage />;
+// Profile imported directly due to dynamic import fetch issues
+import Profile from "./pages/Profile";
 
-// Simple lazy loading for less critical pages
-const BookListing = React.lazy(() => import("./pages/BookListing"));
-const BookDetails = React.lazy(() => import("./pages/BookDetails"));
-const Profile = React.lazy(() => import("./pages/Profile"));
-const CreateListing = React.lazy(() => import("./pages/CreateListing"));
-const GoogleMapsDemo = React.lazy(() => import("./pages/GoogleMapsDemo"));
-const MapsTest = React.lazy(() => import("./pages/MapsTest"));
-const BasicMapsExample = React.lazy(() => import("./pages/BasicMapsExample"));
-const WorkingMapsDemo = React.lazy(() => import("./pages/WorkingMapsDemo"));
-const AdminReports = React.lazy(() => import("./pages/AdminReports"));
-const ModernUniversityProfile = React.lazy(
-  () => import("./pages/ModernUniversityProfile"),
-);
-const UniversityProfile = React.lazy(() => import("./pages/UniversityProfile"));
-const Policies = React.lazy(() => import("./pages/Policies"));
-const Privacy = React.lazy(() => import("./pages/Privacy"));
-const Terms = React.lazy(() => import("./pages/Terms"));
-const NotFound = React.lazy(() => import("./pages/NotFound"));
-const Cart = React.lazy(() => import("./pages/Cart"));
-const Checkout = React.lazy(() => import("./pages/Checkout"));
-const Shipping = React.lazy(() => import("./pages/Shipping"));
-const Notifications = React.lazy(() => import("./pages/Notifications"));
-const SimpleQADashboard = React.lazy(() => import("./pages/SimpleQADashboard"));
-const QADashboard = React.lazy(() => import("./pages/QADashboard"));
-const QAFunctionalityDashboard = React.lazy(
-  () => import("./components/QADashboard"),
-);
-const ForgotPassword = React.lazy(() => import("./pages/ForgotPassword"));
-const ResetPassword = React.lazy(() => import("./pages/ResetPassword"));
-const Verify = React.lazy(() => import("./pages/Verify"));
-const ContactUs = React.lazy(() => import("./pages/ContactUs"));
-const EditBook = React.lazy(() => import("./pages/EditBook"));
-const StudyResources = React.lazy(() => import("./pages/StudyResources"));
-const Confirm = React.lazy(() => import("./pages/Confirm"));
-const ConfirmEmailChange = React.lazy(
-  () => import("./pages/ConfirmEmailChange"),
-);
-const Report = React.lazy(() => import("./pages/Report"));
-const UserProfile = React.lazy(() => import("./pages/UserProfile"));
-const FAQ = React.lazy(() => import("./pages/FAQ"));
-const APSDemo = React.lazy(() => import("./pages/APSDemo"));
-const SystemStatus = React.lazy(() => import("./pages/SystemStatus"));
-const CheckoutSuccess = React.lazy(() => import("./pages/CheckoutSuccess"));
-const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
-const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
-const PaystackTest = React.lazy(() => import("./pages/PaystackTest"));
+// Workers-safe lazy loading - only create lazy components in browser environment
+const isBrowserEnv =
+  typeof window !== "undefined" && typeof document !== "undefined";
 
-// Create query client with optimized settings
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
-      retry: 1,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: true,
-    },
-    mutations: {
-      retry: false,
-    },
-  },
-});
+// Create a fallback component for Workers environment
+const WorkersFallback = () =>
+  React.createElement("div", {
+    children: "Page not available in Workers environment",
+  });
 
-// Minimal loading component
-const MinimalLoader = () => (
-  <div className="flex items-center justify-center h-24">
-    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-  </div>
-);
+// Conditionally lazy load pages or use fallback
+const Dashboard = isBrowserEnv
+  ? React.lazy(() => import("./pages/Dashboard"))
+  : WorkersFallback;
+const BookListing = isBrowserEnv
+  ? React.lazy(() => import("./pages/BookListing"))
+  : WorkersFallback;
+const BookDetails = isBrowserEnv
+  ? React.lazy(() => import("./pages/BookDetails"))
+  : WorkersFallback;
 
-// Fallback component for dynamic import failures
-const ImportFailureFallback: React.FC<{ error?: Error }> = ({ error }) => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-50">
-    <div className="max-w-md mx-auto text-center p-6">
-      <div className="mb-4">
-        <svg
-          className="mx-auto h-12 w-12 text-gray-400"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-          />
-        </svg>
-      </div>
-      <h3 className="text-lg font-medium text-gray-900 mb-2">Loading Error</h3>
-      <p className="text-gray-600 mb-4">
-        There was a problem loading the page. This might be due to a network
-        issue.
-      </p>
-      <button
-        onClick={() => window.location.reload()}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
-      >
-        Refresh Page
-      </button>
-    </div>
-  </div>
-);
+const CreateListing = isBrowserEnv
+  ? React.lazy(() => import("./pages/CreateListing"))
+  : WorkersFallback;
+const Cart = isBrowserEnv
+  ? React.lazy(() => import("./pages/Cart"))
+  : WorkersFallback;
+const Checkout = isBrowserEnv
+  ? React.lazy(() => import("./pages/Checkout"))
+  : WorkersFallback;
+const NewCheckout = isBrowserEnv
+  ? React.lazy(() => import("./pages/NewCheckout"))
+  : WorkersFallback;
+const SellerMarketplace = isBrowserEnv
+  ? React.lazy(() => import("./pages/SellerMarketplace"))
+  : WorkersFallback;
+const Shipping = isBrowserEnv
+  ? React.lazy(() => import("./pages/Shipping"))
+  : WorkersFallback;
+const ContactUs = isBrowserEnv
+  ? React.lazy(() => import("./pages/ContactUs"))
+  : WorkersFallback;
+const FAQ = isBrowserEnv
+  ? React.lazy(() => import("./pages/FAQ"))
+  : WorkersFallback;
+const AddProgram = isBrowserEnv
+  ? React.lazy(() => import("./pages/AddProgram"))
+  : WorkersFallback;
+const StudyResources = isBrowserEnv
+  ? React.lazy(() => import("./pages/StudyResources"))
+  : WorkersFallback;
 
-// Enhanced route wrapper for lazy components with proper error handling and transition management
-const LazyWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [error, setError] = React.useState<Error | null>(null);
-  const [isTransitioning, setIsTransitioning] = React.useState(false);
+const UserOrders = isBrowserEnv
+  ? React.lazy(() => import("./pages/EnhancedUserOrders"))
+  : WorkersFallback;
+const BankingSetup = isBrowserEnv
+  ? React.lazy(() => import("./pages/BankingSetup"))
+  : WorkersFallback;
+const AdminReports = isBrowserEnv
+  ? React.lazy(() => import("./pages/AdminReports"))
+  : WorkersFallback;
+const EditBook = isBrowserEnv
+  ? React.lazy(() => import("./pages/EditBook"))
+  : WorkersFallback;
+const NotFound = isBrowserEnv
+  ? React.lazy(() => import("./pages/NotFound"))
+  : WorkersFallback;
+const Policies = isBrowserEnv
+  ? React.lazy(() => import("./pages/Policies"))
+  : WorkersFallback;
+const Privacy = isBrowserEnv
+  ? React.lazy(() => import("./pages/Privacy"))
+  : WorkersFallback;
+const Terms = isBrowserEnv
+  ? React.lazy(() => import("./pages/Terms"))
+  : WorkersFallback;
+const CookieSettingsPage = isBrowserEnv
+  ? React.lazy(() => import("./pages/CookieSettings"))
+  : WorkersFallback;
+const Report = isBrowserEnv
+  ? React.lazy(() => import("./pages/Report"))
+  : WorkersFallback;
+const ForgotPassword = isBrowserEnv
+  ? React.lazy(() => import("./pages/ForgotPassword"))
+  : WorkersFallback;
+const ResetPassword = isBrowserEnv
+  ? React.lazy(() => import("./pages/ResetPassword"))
+  : WorkersFallback;
+const Verify = isBrowserEnv
+  ? React.lazy(() => import("./pages/Verify"))
+  : WorkersFallback;
+const Confirm = isBrowserEnv
+  ? React.lazy(() => import("./pages/Confirm"))
+  : WorkersFallback;
+const ConfirmEmailChange = isBrowserEnv
+  ? React.lazy(() => import("./pages/ConfirmEmailChange"))
+  : WorkersFallback;
+const Notifications = isBrowserEnv
+  ? React.lazy(() => import("./pages/SimpleNotifications"))
+  : WorkersFallback;
+const CheckoutSuccess = isBrowserEnv
+  ? React.lazy(() => import("./pages/CheckoutSuccess"))
+  : WorkersFallback;
+const PaymentStatus = isBrowserEnv
+  ? React.lazy(() => import("./pages/PaymentStatus"))
+  : WorkersFallback;
+const PaymentCallback = isBrowserEnv
+  ? React.lazy(() => import("./pages/PaymentCallback"))
+  : WorkersFallback;
+const UniversityProfile = isBrowserEnv
+  ? React.lazy(() => import("./pages/UniversityProfile"))
+  : WorkersFallback;
+const Receipt = isBrowserEnv
+  ? React.lazy(() => import("./pages/Receipt"))
+  : WorkersFallback;
+const ActivityLog = isBrowserEnv
+  ? React.lazy(() => import("./pages/ActivityLog"))
+  : WorkersFallback;
+const DevDashboard = isBrowserEnv
+  ? React.lazy(() => import("./pages/DevDashboard"))
+  : WorkersFallback;
 
-  React.useEffect(() => {
-    // Reset error when children change
-    setError(null);
-    setIsTransitioning(true);
-
-    // Use startTransition to prevent suspense issues during route changes
-    startTransition(() => {
-      setIsTransitioning(false);
-    });
-  }, [children]);
-
-  const errorBoundary = React.useCallback((error: Error) => {
-    setError(error);
-    console.error("LazyWrapper caught error:", error);
-    setIsTransitioning(false);
-  }, []);
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center p-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Something went wrong
-          </h2>
-          <p className="text-gray-600 mb-4">
-            Failed to load this page. Please try refreshing.
-          </p>
-          <button
-            onClick={() => {
-              setError(null);
-              setIsTransitioning(false);
-            }}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 mr-2"
-          >
-            Try Again
-          </button>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
-          >
-            Refresh Page
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <ErrorBoundary level="route" onError={errorBoundary}>
-      <Suspense fallback={<MinimalLoader />}>
-        {isTransitioning ? <MinimalLoader /> : children}
-      </Suspense>
-    </ErrorBoundary>
-  );
-};
+// Loading component with fallback
+const LoadingSpinner = () => <LoadingFallback type="compact" />;
 
 function App() {
-  // Track initialization state to prevent suspense issues
-  const [isInitialized, setIsInitialized] = React.useState(false);
+  const [systemReady, setSystemReady] = React.useState(false);
+  const [showStartupChecker, setShowStartupChecker] = React.useState(false);
 
-  // Initialize app and preload routes in the background
-  React.useEffect(() => {
-    // Set initialized immediately to prevent suspense
-    setIsInitialized(true);
-
-    // Use startTransition for non-urgent preloading
-    startTransition(() => {
-      preloadCriticalRoutes().catch((error) => {
-        console.warn("Failed to preload routes:", error);
-      });
-    });
+  // Workers environment detection
+  const isWorkerEnv = React.useMemo(() => {
+    try {
+      return (
+        typeof WorkerGlobalScope !== "undefined" &&
+        typeof window === "undefined"
+      );
+    } catch {
+      return false;
+    }
   }, []);
 
-  // Add a minimal loading fallback for the initial render
-  if (!isInitialized) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
+  // Initialize commit auto-expiry system - always call hook but handle environment inside
+  const commitAutoExpiry = useCommitAutoExpiry();
+
+  React.useEffect(() => {
+    // Check if system needs setup
+    const envValid = validateEnvironment();
+
+    // Workers-compatible environment check
+    const isProd = (() => {
+      try {
+        if (typeof import.meta !== "undefined" && import.meta.env) {
+          return (
+            import.meta.env.PROD || import.meta.env.NODE_ENV === "production"
+          );
+        }
+        if (typeof globalThis !== "undefined" && globalThis.process?.env) {
+          return globalThis.process.env.NODE_ENV === "production";
+        }
+        return false;
+      } catch {
+        return false;
+      }
+    })();
+
+    const isDev = !isProd;
+
+    // In development, we allow the app to continue with mock services
+    // Only show startup checker in production or if explicitly needed
+    if (!envValid && isProd) {
+      setShowStartupChecker(true);
+    } else {
+      // In development, always proceed - we have fallback mock services
+      setSystemReady(true);
+      if (!envValid && isDev) {
+        console.log(
+          "🔧 Development mode: Proceeding with mock/fallback services",
+        );
+      }
+    }
+  }, []);
+
+  const handleStartupComplete = () => {
+    setShowStartupChecker(false);
+    setSystemReady(true);
+  };
+
+  // Early return for Workers environment with static content
+  if (isWorkerEnv) {
+    return React.createElement("div", {
+      style: { padding: "20px", fontFamily: "Arial, sans-serif" },
+      children: [
+        React.createElement("h1", { key: "title" }, "ReBooked Solutions"),
+        React.createElement(
+          "p",
+          { key: "subtitle" },
+          "Static Export for Workers Environment",
+        ),
+        React.createElement(
+          "p",
+          { key: "description" },
+          "This is a server-side rendered version.",
+        ),
+      ],
+    });
   }
 
   return (
-    <EmergencyBypass>
-      <ErrorBoundary level="app">
-        <QueryClientProvider client={queryClient}>
+    <HelmetProvider>
+      <NoScriptFallback />
+      {showStartupChecker && (
+        <StartupChecker onComplete={handleStartupComplete} />
+      )}
+      <ErrorBoundaryEnhanced>
+        <ErrorBoundary level="app">
           <ThemeProvider attribute="class" defaultTheme="light">
             <GoogleMapsProvider>
               <AuthProvider>
                 <CartProvider>
-                  <ErrorBoundary level="router">
-                    <Suspense fallback={<MinimalLoader />}>
-                      <Router>
-                        <AuthErrorHandler />
-                        <ScrollToTop />
+                  <Router
+                    future={{
+                      v7_startTransition: true,
+                      v7_relativeSplatPath: true,
+                    }}
+                  >
+                    <div className="min-h-screen bg-white">
+                      <Suspense fallback={<LoadingSpinner />}>
                         <Routes>
-                          {/* Home route - loads instantly */}
+                          {/* Home route */}
                           <Route path="/" element={<IndexPage />} />
 
                           {/* Public routes */}
-                          <Route path="/register" element={<Register />} />
-                          <Route
-                            path="/user-profile"
-                            element={<UserProfile />}
-                          />
-                          <Route path="/qa" element={<SimpleQADashboard />} />
                           <Route
                             path="/books"
                             element={
-                              <LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
                                 <BookListing />
-                              </LazyWrapper>
+                              </Suspense>
                             }
                           />
                           <Route
                             path="/books/:id"
                             element={
-                              <LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
                                 <BookDetails />
-                              </LazyWrapper>
+                              </Suspense>
                             }
                           />
                           <Route
                             path="/book/:id"
                             element={
-                              <LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
                                 <BookDetails />
-                              </LazyWrapper>
+                              </Suspense>
                             }
                           />
-                          <Route
-                            path="/login"
-                            element={
-                              <LazyWrapper>
-                                <Login />
-                              </LazyWrapper>
-                            }
-                          />
-                          <Route
-                            path="/register"
-                            element={
-                              <LazyWrapper>
-                                <Register />
-                              </LazyWrapper>
-                            }
-                          />
+                          <Route path="/login" element={<LoginPage />} />
+                          <Route path="/register" element={<RegisterPage />} />
                           <Route
                             path="/forgot-password"
                             element={
-                              <LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
                                 <ForgotPassword />
-                              </LazyWrapper>
+                              </Suspense>
                             }
                           />
                           <Route
                             path="/reset-password"
                             element={
-                              <LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
                                 <ResetPassword />
-                              </LazyWrapper>
+                              </Suspense>
                             }
                           />
                           <Route
                             path="/verify"
                             element={
-                              <LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
                                 <Verify />
-                              </LazyWrapper>
+                              </Suspense>
                             }
                           />
                           <Route
                             path="/confirm"
                             element={
-                              <LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
                                 <Confirm />
-                              </LazyWrapper>
+                              </Suspense>
                             }
                           />
                           <Route
                             path="/confirm-email-change"
                             element={
-                              <LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
                                 <ConfirmEmailChange />
-                              </LazyWrapper>
+                              </Suspense>
                             }
                           />
 
                           {/* University and Campus Routes */}
                           <Route
                             path="/university-info"
-                            element={<UniversityInfo />}
+                            element={<UniversityInfoPage />}
                           />
-                          <Route
-                            path="/university-profile"
-                            element={
-                              <LazyWrapper>
-                                <ModernUniversityProfile />
-                              </LazyWrapper>
-                            }
-                          />
+
+                          {/* University Profile Route */}
                           <Route
                             path="/university/:id"
                             element={
-                              <LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
                                 <UniversityProfile />
-                              </LazyWrapper>
+                              </Suspense>
                             }
                           />
+
+                          {/* Study Resources Routes */}
                           <Route
                             path="/study-resources"
                             element={
-                              <LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
                                 <StudyResources />
-                              </LazyWrapper>
+                              </Suspense>
                             }
                           />
                           <Route
                             path="/study-tips"
                             element={
-                              <LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
                                 <StudyResources />
-                              </LazyWrapper>
-                            }
-                          />
-                          <Route
-                            path="/aps-demo"
-                            element={
-                              <LazyWrapper>
-                                <APSDemo />
-                              </LazyWrapper>
-                            }
-                          />
-                          <Route
-                            path="/paystack-test"
-                            element={
-                              <LazyWrapper>
-                                <PaystackTest />
-                              </LazyWrapper>
+                              </Suspense>
                             }
                           />
 
@@ -435,18 +368,17 @@ function App() {
                           <Route
                             path="/cart"
                             element={
-                              <LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
                                 <Cart />
-                              </LazyWrapper>
+                              </Suspense>
                             }
                           />
-
                           <Route
                             path="/shipping"
                             element={
-                              <LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
                                 <Shipping />
-                              </LazyWrapper>
+                              </Suspense>
                             }
                           />
 
@@ -454,177 +386,70 @@ function App() {
                           <Route
                             path="/contact"
                             element={
-                              <LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
                                 <ContactUs />
-                              </LazyWrapper>
+                              </Suspense>
                             }
                           />
                           <Route
                             path="/faq"
                             element={
-                              <LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
                                 <FAQ />
-                              </LazyWrapper>
+                              </Suspense>
                             }
                           />
                           <Route
                             path="/policies"
                             element={
-                              <LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
                                 <Policies />
-                              </LazyWrapper>
+                              </Suspense>
                             }
                           />
                           <Route
                             path="/privacy"
                             element={
-                              <LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
                                 <Privacy />
-                              </LazyWrapper>
+                              </Suspense>
                             }
                           />
                           <Route
                             path="/terms"
                             element={
-                              <LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
                                 <Terms />
-                              </LazyWrapper>
+                              </Suspense>
                             }
                           />
                           <Route
-                            path="/system-status"
+                            path="/cookie-settings"
                             element={
-                              <LazyWrapper>
-                                <SystemStatus />
-                              </LazyWrapper>
-                            }
-                          />
-
-                          {/* Maps demo routes */}
-                          <Route
-                            path="/google-maps-demo"
-                            element={
-                              <LazyWrapper>
-                                <GoogleMapsDemo />
-                              </LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <CookieSettingsPage />
+                              </Suspense>
                             }
                           />
                           <Route
-                            path="/maps-test"
+                            path="/report"
                             element={
-                              <LazyWrapper>
-                                <MapsTest />
-                              </LazyWrapper>
-                            }
-                          />
-                          <Route
-                            path="/basic-maps"
-                            element={
-                              <LazyWrapper>
-                                <BasicMapsExample />
-                              </LazyWrapper>
-                            }
-                          />
-                          <Route
-                            path="/working-maps"
-                            element={
-                              <LazyWrapper>
-                                <WorkingMapsDemo />
-                              </LazyWrapper>
+                              <ProtectedRoute>
+                                <Suspense fallback={<LoadingSpinner />}>
+                                  <Report />
+                                </Suspense>
+                              </ProtectedRoute>
                             }
                           />
 
                           {/* Protected Routes */}
                           <Route
-                            path="/user-profile"
-                            element={<UserProfile />}
-                          />
-                          <Route path="/qa" element={<SimpleQADashboard />} />
-                          <Route
-                            path="/books"
-                            element={
-                              <LazyWrapper>
-                                <BookListing />
-                              </LazyWrapper>
-                            }
-                          />
-                          <Route
-                            path="/qa-dashboard"
+                            path="/dashboard"
                             element={
                               <ProtectedRoute>
-                                <LazyWrapper>
-                                  <QADashboard />
-                                </LazyWrapper>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/user-profile"
-                            element={
-                              <ProtectedRoute>
-                                <LazyWrapper>
-                                  <UserProfile />
-                                </LazyWrapper>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/create-listing"
-                            element={
-                              <ProtectedRoute>
-                                <LazyWrapper>
-                                  <CreateListing />
-                                </LazyWrapper>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/edit-book/:id"
-                            element={
-                              <ProtectedRoute>
-                                <LazyWrapper>
-                                  <EditBook />
-                                </LazyWrapper>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/checkout"
-                            element={
-                              <ProtectedRoute>
-                                <LazyWrapper>
-                                  <Checkout />
-                                </LazyWrapper>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/checkout/success"
-                            element={
-                              <ProtectedRoute>
-                                <LazyWrapper>
-                                  <CheckoutSuccess />
-                                </LazyWrapper>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/payment-status/:orderId?"
-                            element={
-                              <ProtectedRoute>
-                                <LazyWrapper>
-                                  <PaymentStatus />
-                                </LazyWrapper>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/notifications"
-                            element={
-                              <ProtectedRoute>
-                                <LazyWrapper>
-                                  <Notifications />
-                                </LazyWrapper>
+                                <Suspense fallback={<LoadingSpinner />}>
+                                  <Dashboard />
+                                </Suspense>
                               </ProtectedRoute>
                             }
                           />
@@ -632,9 +457,111 @@ function App() {
                             path="/profile"
                             element={
                               <ProtectedRoute>
-                                <LazyWrapper>
-                                  <Profile />
-                                </LazyWrapper>
+                                <Profile />
+                              </ProtectedRoute>
+                            }
+                          />
+
+                          <Route
+                            path="/create-listing"
+                            element={
+                              <ProtectedRoute>
+                                <Suspense fallback={<LoadingSpinner />}>
+                                  <CreateListing />
+                                </Suspense>
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/edit-book/:id"
+                            element={
+                              <ProtectedRoute>
+                                <Suspense fallback={<LoadingSpinner />}>
+                                  <EditBook />
+                                </Suspense>
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/checkout"
+                            element={
+                              <ProtectedRoute>
+                                <Suspense fallback={<LoadingSpinner />}>
+                                  <Checkout />
+                                </Suspense>
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/purchase"
+                            element={
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <NewCheckout />
+                              </Suspense>
+                            }
+                          />
+
+                          <Route
+                            path="/seller/:sellerId"
+                            element={
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <SellerMarketplace />
+                              </Suspense>
+                            }
+                          />
+                          <Route
+                            path="/marketplace/:sellerId"
+                            element={
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <SellerMarketplace />
+                              </Suspense>
+                            }
+                          />
+                          <Route
+                            path="/checkout/success"
+                            element={
+                              <ProtectedRoute>
+                                <Suspense fallback={<LoadingSpinner />}>
+                                  <CheckoutSuccess />
+                                </Suspense>
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/payment-status/:orderId?"
+                            element={
+                              <ProtectedRoute>
+                                <Suspense fallback={<LoadingSpinner />}>
+                                  <PaymentStatus />
+                                </Suspense>
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/payment-callback"
+                            element={
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <PaymentCallback />
+                              </Suspense>
+                            }
+                          />
+                          <Route
+                            path="/notifications"
+                            element={
+                              <ProtectedRoute>
+                                <Suspense fallback={<LoadingSpinner />}>
+                                  <Notifications />
+                                </Suspense>
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/receipt/:reference"
+                            element={
+                              <ProtectedRoute>
+                                <Suspense fallback={<LoadingSpinner />}>
+                                  <Receipt />
+                                </Suspense>
                               </ProtectedRoute>
                             }
                           />
@@ -642,47 +569,61 @@ function App() {
                             path="/activity"
                             element={
                               <ProtectedRoute>
-                                <LazyWrapper>
+                                <Suspense fallback={<LoadingSpinner />}>
                                   <ActivityLog />
-                                </LazyWrapper>
+                                </Suspense>
+                              </ProtectedRoute>
+                            }
+                          />
+
+                          <Route
+                            path="/my-orders"
+                            element={
+                              <ProtectedRoute>
+                                <Suspense fallback={<LoadingSpinner />}>
+                                  <UserOrders />
+                                </Suspense>
+                              </ProtectedRoute>
+                            }
+                          />
+                          {/* Redirect /orders to /my-orders */}
+                          <Route
+                            path="/orders"
+                            element={
+                              <ProtectedRoute>
+                                <Suspense fallback={<LoadingSpinner />}>
+                                  <UserOrders />
+                                </Suspense>
                               </ProtectedRoute>
                             }
                           />
                           <Route
-                            path="/report"
+                            path="/banking-setup"
                             element={
                               <ProtectedRoute>
-                                <LazyWrapper>
-                                  <Report />
-                                </LazyWrapper>
+                                <Suspense fallback={<LoadingSpinner />}>
+                                  <BankingSetup />
+                                </Suspense>
                               </ProtectedRoute>
+                            }
+                          />
+
+                          {/* Program Submission Route */}
+                          <Route
+                            path="/add-program"
+                            element={
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <AddProgram />
+                              </Suspense>
                             }
                           />
 
                           {/* Admin Routes */}
                           <Route
-                            path="/qa-dashboard"
-                            element={
-                              <LazyWrapper>
-                                <QADashboard />
-                              </LazyWrapper>
-                            }
-                          />
-                          <Route
-                            path="/qa-functionality"
-                            element={
-                              <LazyWrapper>
-                                <QAFunctionalityDashboard />
-                              </LazyWrapper>
-                            }
-                          />
-                          <Route
                             path="/admin"
                             element={
                               <AdminProtectedRoute>
-                                <LazyWrapper>
-                                  <Admin />
-                                </LazyWrapper>
+                                <AdminPage />
                               </AdminProtectedRoute>
                             }
                           />
@@ -690,9 +631,21 @@ function App() {
                             path="/admin/reports"
                             element={
                               <AdminProtectedRoute>
-                                <LazyWrapper>
+                                <Suspense fallback={<LoadingSpinner />}>
                                   <AdminReports />
-                                </LazyWrapper>
+                                </Suspense>
+                              </AdminProtectedRoute>
+                            }
+                          />
+
+                          {/* Development Dashboard - Admin only */}
+                          <Route
+                            path="/dev-dashboard"
+                            element={
+                              <AdminProtectedRoute>
+                                <Suspense fallback={<LoadingSpinner />}>
+                                  <DevDashboard />
+                                </Suspense>
                               </AdminProtectedRoute>
                             }
                           />
@@ -701,39 +654,25 @@ function App() {
                           <Route
                             path="*"
                             element={
-                              <LazyWrapper>
+                              <Suspense fallback={<LoadingSpinner />}>
                                 <NotFound />
-                              </LazyWrapper>
+                              </Suspense>
                             }
                           />
                         </Routes>
-                      </Router>
-                    </Suspense>
-                  </ErrorBoundary>
+                      </Suspense>
+                    </div>
+                  </Router>
+                  <NotificationWrapper position="top-right" maxVisible={3} />
+                  <NotificationInitializer />
                 </CartProvider>
               </AuthProvider>
             </GoogleMapsProvider>
-
-            {/* Configuration checker for development */}
-            {import.meta.env.DEV && <ConfigurationChecker />}
-
-            {/* Performance monitoring */}
-            <PerformanceMetrics />
-
-            {/* Vercel Analytics and Speed Insights */}
-            <Analytics />
-            <SpeedInsights />
           </ThemeProvider>
-        </QueryClientProvider>
-      </ErrorBoundary>
-    </EmergencyBypass>
+        </ErrorBoundary>
+      </ErrorBoundaryEnhanced>
+    </HelmetProvider>
   );
-}
-
-// Add debugging utilities to window in development
-if (import.meta.env.DEV) {
-  console.log("🎉 ReBooked Solutions frontend is ready!");
-  console.log("📚 Book listing and user management system");
 }
 
 export default App;

@@ -19,10 +19,16 @@ export interface NotificationInput {
 }
 
 // Cache for notifications to reduce API calls
-const notificationCache = new Map<
+let notificationCache: Map<
   string,
   { data: Notification[]; timestamp: number }
->();
+> | null = null;
+const getNotificationCache = () => {
+  if (!notificationCache) {
+    notificationCache = new Map();
+  }
+  return notificationCache;
+};
 const CACHE_DURATION = 30000; // 30 seconds cache
 const MAX_CACHE_SIZE = 100; // Maximum number of cached entries
 
@@ -30,7 +36,13 @@ const MAX_CACHE_SIZE = 100; // Maximum number of cached entries
 let currentFetchController: AbortController | null = null;
 
 // Track recent notifications to prevent duplicates
-const recentNotifications = new Map<string, number>();
+let recentNotifications: Map<string, number> | null = null;
+const getRecentNotifications = () => {
+  if (!recentNotifications) {
+    recentNotifications = new Map();
+  }
+  return recentNotifications;
+};
 const DUPLICATE_PREVENTION_WINDOW = 60000; // 1 minute window
 
 export const getNotifications = async (
@@ -42,7 +54,7 @@ export const getNotifications = async (
   }
 
   // Check cache first
-  const cached = notificationCache.get(userId);
+  const cached = getNotificationCache().get(userId);
   if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
     return cached.data;
   }
@@ -116,7 +128,7 @@ export const getNotifications = async (
     }));
 
     // Update cache
-    notificationCache.set(userId, {
+    getNotificationCache().set(userId, {
       data: notifications,
       timestamp: Date.now(),
     });
@@ -153,7 +165,7 @@ export const getNotifications = async (
     }
 
     // Return cached data if available, otherwise empty array
-    const cached = notificationCache.get(userId);
+    const cached = getNotificationCache().get(userId);
     return cached ? cached.data : [];
   } finally {
     currentFetchController = null;
@@ -169,10 +181,26 @@ export const addNotification = async (
     const notificationKey = `${notification.userId}-${notification.title}-${notification.type}-${messageHash}`;
     const now = Date.now();
 
-    // Enhanced duplicate prevention for "Welcome back!" notifications
+    // Enhanced duplicate prevention with different rules per notification type
     let duplicateWindow = DUPLICATE_PREVENTION_WINDOW; // Default 1 minute
-    if (notification.title.includes("Welcome back")) {
-      duplicateWindow = 1800000; // 30 minutes for welcome back notifications
+
+    // Specific rules for different notification types
+    if (
+      notification.title.includes("Welcome back") ||
+      notification.title.includes("Successfully logged in")
+    ) {
+      console.log(
+        "[NotificationService] Blocking login notification - these are disabled to prevent spam",
+      );
+      return; // Block all login notifications completely
+    }
+
+    if (notification.title.includes("Listings Reactivated")) {
+      duplicateWindow = 3600000; // 1 hour for listing notifications
+    }
+
+    if (notification.title.includes("Book Sold")) {
+      duplicateWindow = 300000; // 5 minutes for sales notifications
     }
 
     // Check if we recently sent a similar notification
@@ -184,19 +212,41 @@ export const addNotification = async (
       return; // Skip sending duplicate notification
     }
 
-    // Check database for recent similar notifications (additional protection)
+    // Enhanced database check - look for exact message matches too
     const { data: recentDbNotifications, error: checkError } = await supabase
       .from("notifications")
-      .select("id, created_at")
+      .select("id, created_at, message")
       .eq("user_id", notification.userId)
       .eq("title", notification.title)
       .eq("type", notification.type)
       .gte("created_at", new Date(now - duplicateWindow).toISOString())
-      .limit(1);
+      .limit(5);
 
     if (checkError) {
       console.warn("Failed to check for duplicate notifications:", checkError);
       // Continue with insertion - don't fail completely
+    } else if (recentDbNotifications && recentDbNotifications.length > 0) {
+      // Check for exact message duplicates
+      const exactMatch = recentDbNotifications.find(
+        (dbNotif) => dbNotif.message === notification.message,
+      );
+
+      if (exactMatch) {
+        console.log(
+          `[NotificationService] Preventing exact duplicate notification found in database: ${notification.title}`,
+        );
+        // Mark as sent to prevent future attempts
+        recentNotifications.set(notificationKey, now);
+        return;
+      }
+
+      // Check for too many similar notifications
+      if (recentDbNotifications.length >= 3) {
+        console.log(
+          `[NotificationService] Too many similar notifications recently (${recentDbNotifications.length}): ${notification.title}`,
+        );
+        return;
+      }
     } else if (recentDbNotifications && recentDbNotifications.length > 0) {
       console.log(
         `[NotificationService] Found recent similar notification in database, skipping: ${notification.title}`,
@@ -229,7 +279,7 @@ export const addNotification = async (
     );
 
     // Invalidate cache after adding new notification
-    notificationCache.delete(notification.userId);
+    getNotificationCache().delete(notification.userId);
 
     // Clean up old entries from recentNotifications map
     cleanupRecentNotifications();
@@ -344,9 +394,11 @@ export const markMultipleAsRead = async (
   if (notificationIds.length === 0) return;
 
   try {
-    const { error } = await supabase
+    console.log("📖 Marking notifications as read:", notificationIds);
+
+    const { error, count } = await supabase
       .from("notifications")
-      .update({ read: true })
+      .update({ read: true }, { count: "exact" })
       .in("id", notificationIds);
 
     if (error) {
@@ -365,6 +417,7 @@ export const markMultipleAsRead = async (
       throw new Error(`Failed to mark notifications as read: ${error.message}`);
     }
 
+    console.log(`✅ Successfully marked ${count} notifications as read`);
     notificationCache.clear();
   } catch (error) {
     console.error("Error in markMultipleAsRead:", error);
@@ -378,16 +431,30 @@ export const deleteMultipleNotifications = async (
   if (notificationIds.length === 0) return;
 
   try {
-    const { error } = await supabase
+    console.log("🗑️ Deleting notifications:", notificationIds);
+
+    const { error, count } = await supabase
       .from("notifications")
-      .delete()
+      .delete({ count: "exact" })
       .in("id", notificationIds);
 
     if (error) {
-      console.error("Error deleting multiple notifications:", error);
-      throw error;
+      console.error("Error deleting multiple notifications:", {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+      });
+
+      if (error.code === "42P01") {
+        throw new Error(
+          "Notifications table does not exist. Please run database migrations.",
+        );
+      }
+
+      throw new Error(`Failed to delete notifications: ${error.message}`);
     }
 
+    console.log(`✅ Successfully deleted ${count} notifications`);
     notificationCache.clear();
   } catch (error) {
     console.error("Error in deleteMultipleNotifications:", error);

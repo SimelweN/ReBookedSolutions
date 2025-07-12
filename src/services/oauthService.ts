@@ -10,7 +10,7 @@ export class OAuthService {
    * Defaults to current origin for development and production
    */
   private static getRedirectUrl(): string {
-    const isDevelopment = process.env.NODE_ENV === "development";
+    const isDevelopment = import.meta.env.DEV;
     const developmentUrl = "http://localhost:8080";
     const productionUrl = "https://rebookedsolutions.co.za";
 

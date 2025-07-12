@@ -291,16 +291,16 @@ export class PaymentIntegrationService {
   ): Promise<string> {
     try {
       const { data, error } = await supabase
-        .from("banking_details")
-        .select("paystack_subaccount_code")
+        .from("banking_subaccounts")
+        .select("subaccount_code")
         .eq("user_id", sellerId)
         .single();
 
-      if (error || !data?.paystack_subaccount_code) {
+      if (error || !data?.subaccount_code) {
         throw new Error("Seller payment account not found");
       }
 
-      return data.paystack_subaccount_code;
+      return data.subaccount_code;
     } catch (error) {
       console.error("Failed to get seller subaccount:", error);
       throw new Error("Seller payment account not properly set up");

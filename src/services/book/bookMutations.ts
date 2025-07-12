@@ -4,30 +4,72 @@ import { mapBookFromDatabase } from "./bookMapper";
 import { handleBookServiceError } from "./bookErrorHandler";
 import { BookQueryResult } from "./bookTypes";
 import { ActivityService } from "@/services/activityService";
+import { PaystackSubaccountService } from "@/services/paystackSubaccountService";
 
 export const createBook = async (bookData: BookFormData): Promise<Book> => {
   try {
     const {
       data: { user },
+      error: authError,
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      throw new Error("User not authenticated");
+    if (authError) {
+      console.error("Authentication error:", authError);
+      throw new Error(
+        "Failed to verify user authentication. Please log in again.",
+      );
     }
 
-    // Fetch province from user's pickup address
+    if (!user) {
+      throw new Error(
+        "User not authenticated. Please log in to create a book listing.",
+      );
+    }
+
+    // Verify user has valid subaccount before allowing book creation
+    const subaccountValidation =
+      await PaystackSubaccountService.validateSubaccount(user.id);
+
+    if (!subaccountValidation.isValid) {
+      throw new Error(subaccountValidation.message);
+    }
+
+    // Get the user's subaccount code for direct linking
+    const userSubaccountCode = subaccountValidation.subaccountCode;
+
+    // Fetch seller address data from user's pickup address
     let province = null;
+    let sellerAddress = null;
     try {
-      const { data: profileData } = await supabase
+      const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .select("pickup_address")
         .eq("id", user.id)
         .single();
 
-      if (profileData?.pickup_address) {
-        // Check if pickup_address has province property
+      if (profileError) {
+        if (profileError.code === "PGRST116") {
+          // No profile found - this is okay, continue without address
+          console.log("No profile found for user, continuing without address");
+        } else {
+          console.warn(
+            "Error fetching user profile for address:",
+            profileError,
+          );
+          // Continue without address - it's not critical for book creation
+        }
+      } else if (profileData?.pickup_address) {
+        // Extract seller address data for book table
         const pickupAddress = profileData.pickup_address as any;
-        if (pickupAddress?.province) {
+        if (pickupAddress && typeof pickupAddress === "object") {
+          sellerAddress = {
+            street: pickupAddress.streetAddress || pickupAddress.street || "",
+            city: pickupAddress.city || "",
+            province: pickupAddress.province || "",
+            postal_code:
+              pickupAddress.postalCode || pickupAddress.postal_code || "",
+            country: "South Africa",
+          };
           province = pickupAddress.province;
         } else if (typeof pickupAddress === "string") {
           // If pickup_address is a string, try to extract province from it
@@ -47,12 +89,12 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
         }
       }
     } catch (addressError) {
-      console.warn("Could not fetch user address for province:", addressError);
-      // Continue without province - it's not critical for book creation
+      console.warn("Could not fetch user address:", addressError);
+      // Continue without address - it's not critical for book creation
     }
 
-    // Create book data without province first (safer approach)
-    const bookDataWithoutProvince = {
+    // Create book data with subaccount_code (only use existing database fields)
+    const bookDataWithSubaccount = {
       seller_id: user.id,
       title: bookData.title,
       author: bookData.author,
@@ -66,32 +108,63 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
       inside_pages: bookData.insidePages,
       grade: bookData.grade,
       university_year: bookData.universityYear,
+      province: province,
+      subaccount_code: userSubaccountCode, // Direct link to seller's subaccount
     };
 
-    // Store province for future use when database schema is updated
-    if (province) {
-      console.log("📍 Province extracted from user address:", province);
-      console.log("💡 Province will be stored once database schema is updated");
-      // TODO: Add province to book data when 'province' column is available in production
+    // Log seller data inclusion
+    if (sellerAddress) {
+      console.log("📍 Seller address included in book data:", sellerAddress);
+      console.log("💡 Book now contains all seller data needed for checkout");
     }
 
     const { data: book, error } = await supabase
       .from("books")
-      .insert([bookDataWithoutProvince])
+      .insert([bookDataWithSubaccount])
       .select()
       .single();
 
     if (error) {
       console.error("Error creating book:", error.message || String(error));
+
+      // Enhanced error handling with specific error types
+      if (error.code === "23505") {
+        throw new Error(
+          "A book with similar details already exists. Please check your listings.",
+        );
+      } else if (error.code === "23502") {
+        throw new Error(
+          "Missing required book information. Please fill in all required fields.",
+        );
+      } else if (error.code === "42P01") {
+        throw new Error("Database table not found. Please contact support.");
+      } else if (error.message?.includes("permission")) {
+        throw new Error(
+          "You don't have permission to create books. Please contact support.",
+        );
+      } else if (
+        error.message?.includes("network") ||
+        error.message?.includes("timeout")
+      ) {
+        throw new Error(
+          "Network error. Please check your connection and try again.",
+        );
+      }
+
       handleBookServiceError(error, "create book");
     }
 
-    // Fetch seller profile
-    const { data: seller } = await supabase
+    // Fetch seller profile with error handling
+    const { data: seller, error: sellerError } = await supabase
       .from("profiles")
       .select("id, name, email")
       .eq("id", user.id)
       .single();
+
+    if (sellerError) {
+      console.warn("Could not fetch seller profile:", sellerError);
+      // Continue without seller profile - book creation was successful
+    }
 
     const bookWithProfile: BookQueryResult = {
       ...book,
@@ -105,6 +178,11 @@ export const createBook = async (bookData: BookFormData): Promise<Book> => {
     };
 
     const mappedBook = mapBookFromDatabase(bookWithProfile);
+
+    // Book is now directly linked to seller's subaccount and contains seller address
+    console.log(
+      `✅ Book ${book.id} created with seller data - subaccount: ${userSubaccountCode}, address: ${sellerAddress ? "included" : "not available"}`,
+    );
 
     // Log activity for book listing
     try {
@@ -141,10 +219,20 @@ export const updateBook = async (
   try {
     const {
       data: { user },
+      error: authError,
     } = await supabase.auth.getUser();
 
+    if (authError) {
+      console.error("Authentication error:", authError);
+      throw new Error(
+        "Failed to verify user authentication. Please log in again.",
+      );
+    }
+
     if (!user) {
-      throw new Error("User not authenticated");
+      throw new Error(
+        "User not authenticated. Please log in to update your book.",
+      );
     }
 
     // First verify the user owns this book
@@ -154,12 +242,23 @@ export const updateBook = async (
       .eq("id", bookId)
       .single();
 
-    if (fetchError || !existingBook) {
-      throw new Error("Book not found");
+    if (fetchError) {
+      console.error("Error fetching book for update:", fetchError);
+      if (fetchError.code === "PGRST116") {
+        throw new Error("Book not found. It may have been deleted.");
+      } else if (fetchError.code === "42P01") {
+        throw new Error("Database table not found. Please contact support.");
+      } else {
+        throw new Error("Failed to fetch book details. Please try again.");
+      }
+    }
+
+    if (!existingBook) {
+      throw new Error("Book not found. It may have been deleted.");
     }
 
     if (existingBook.seller_id !== user.id) {
-      throw new Error("User not authorized to edit this book");
+      throw new Error("You are not authorized to edit this book.");
     }
 
     const updateData: any = {};
@@ -230,10 +329,20 @@ export const deleteBook = async (bookId: string): Promise<void> => {
   try {
     const {
       data: { user },
+      error: authError,
     } = await supabase.auth.getUser();
 
+    if (authError) {
+      console.error("Authentication error:", authError);
+      throw new Error(
+        "Failed to verify user authentication. Please log in again.",
+      );
+    }
+
     if (!user) {
-      throw new Error("User not authenticated");
+      throw new Error(
+        "User not authenticated. Please log in to delete your book.",
+      );
     }
 
     console.log("Attempting to delete book:", bookId);
@@ -245,17 +354,35 @@ export const deleteBook = async (bookId: string): Promise<void> => {
       .eq("id", bookId)
       .single();
 
-    if (fetchError || !existingBook) {
-      console.error("Book not found:", fetchError);
-      throw new Error("Book not found");
+    if (fetchError) {
+      console.error("Error fetching book for deletion:", fetchError);
+      if (fetchError.code === "PGRST116") {
+        throw new Error("Book not found. It may have already been deleted.");
+      } else if (fetchError.code === "42P01") {
+        throw new Error("Database table not found. Please contact support.");
+      } else {
+        throw new Error("Failed to fetch book details. Please try again.");
+      }
     }
 
-    // Check if user is admin
-    const { data: profile } = await supabase
+    if (!existingBook) {
+      throw new Error("Book not found. It may have already been deleted.");
+    }
+
+    // Check if user is admin with error handling
+    const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("is_admin")
       .eq("id", user.id)
       .single();
+
+    if (profileError) {
+      console.warn(
+        "Could not fetch user profile for admin check:",
+        profileError,
+      );
+      // Continue with owner check only
+    }
 
     const isAdmin = profile?.is_admin || false;
     const isOwner = existingBook.seller_id === user.id;

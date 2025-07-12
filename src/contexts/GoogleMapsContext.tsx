@@ -1,6 +1,7 @@
-import React, { createContext, useContext, ReactNode } from "react";
+import React, { useContext } from "react";
+import { safeCreateContext } from "../utils/reactLoader";
+type ReactNode = React.ReactNode;
 import { useJsApiLoader } from "@react-google-maps/api";
-
 // Define the libraries array with proper typing
 const libraries: "places"[] = ["places"];
 
@@ -11,7 +12,7 @@ interface GoogleMapsContextType {
 }
 
 // Create the context with undefined as default
-const GoogleMapsContext = createContext<GoogleMapsContextType | undefined>(
+const GoogleMapsContext = safeCreateContext<GoogleMapsContextType | undefined>(
   undefined,
 );
 
@@ -33,27 +34,45 @@ interface GoogleMapsProviderProps {
 export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
   children,
 }) => {
+  // Skip Google Maps loading in non-browser environments
+  if (typeof window === "undefined") {
+    const mockContext: GoogleMapsContextType = {
+      isLoaded: false,
+      loadError: undefined,
+    };
+    return (
+      <GoogleMapsContext.Provider value={mockContext}>
+        {children}
+      </GoogleMapsContext.Provider>
+    );
+  }
+
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-  // Check if API key is available
-  const hasApiKey = Boolean(apiKey && apiKey.trim() !== "");
+  // Check if API key is available and we're in browser environment
+  const isBrowser =
+    typeof window !== "undefined" && typeof document !== "undefined";
+  const hasApiKey = Boolean(apiKey && apiKey.trim() !== "" && isBrowser);
 
-  // Only load Google Maps if we have a valid API key
+  // Always call useJsApiLoader hook - React hooks must be called unconditionally
   const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: apiKey || "",
     libraries,
     preventGoogleFontsLoading: true,
-    // Skip loading if no API key
-    skipApiLoad: !hasApiKey,
+    // Skip loading if no API key or not in browser
+    skipApiLoad: !hasApiKey || !isBrowser,
   });
 
-  // If no API key, provide fallback state
+  // Provide fallback state for non-browser or no API key
   const value: GoogleMapsContextType = {
-    isLoaded: hasApiKey ? isLoaded : false,
-    loadError: hasApiKey
-      ? loadError
-      : new Error("Google Maps API key not configured"),
+    isLoaded: hasApiKey && isBrowser ? isLoaded : false,
+    loadError:
+      hasApiKey && isBrowser
+        ? loadError
+        : isBrowser
+          ? new Error("Google Maps API key not configured")
+          : new Error("Google Maps not available in Workers environment"),
   };
 
   // Log warning in development

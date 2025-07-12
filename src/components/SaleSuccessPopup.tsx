@@ -156,6 +156,9 @@ const SaleSuccessPopup = ({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center">{steps[step].title}</DialogTitle>
+          <DialogDescription className="text-center text-muted-foreground">
+            {steps[step].description}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">

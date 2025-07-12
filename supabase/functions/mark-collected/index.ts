@@ -1,227 +1,153 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.0";
-import { corsHeaders } from "../_shared/cors.ts";
 
-const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3";
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+const supabase = createClient(
+  Deno.env.get('SUPABASE_URL') ?? '',
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+);
+
+serve(async (req: Request) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const {
-      order_id,
-      tracking_number,
-      collected_by,
-      trigger_payout = false,
-    } = await req.json();
-
-    if (!order_id) {
+    if (req.method !== 'POST') {
       return new Response(
-        JSON.stringify({
-          success: false,
-          message: "Order ID is required",
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+        JSON.stringify({ error: 'Method not allowed' }),
+        { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { orderId, collectedBy, collectionNotes } = await req.json();
+
+    if (!orderId) {
+      return new Response(
+        JSON.stringify({ error: 'Order ID is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     // Get the order details
     const { data: order, error: orderError } = await supabase
-      .from("orders")
-      .select("*")
-      .eq("id", order_id)
+      .from('orders')
+      .select(`
+        *,
+        books(title, author, seller_id),
+        profiles!orders_seller_id_fkey(full_name, email, subaccount_code)
+      `)
+      .eq('id', orderId)
       .single();
 
     if (orderError || !order) {
       return new Response(
-        JSON.stringify({
-          success: false,
-          message: "Order not found",
-        }),
-        {
-          status: 404,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+        JSON.stringify({ error: 'Order not found' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Validate order status
-    if (order.status !== "paid" && order.status !== "awaiting_collection") {
+    if (order.status !== 'committed') {
       return new Response(
-        JSON.stringify({
-          success: false,
-          message: `Cannot mark order as collected. Current status: ${order.status}`,
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+        JSON.stringify({ error: 'Order must be committed before it can be marked as collected' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     // Update order status to collected
-    const updateData: any = {
-      status: "collected",
-      collected_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-
-    if (tracking_number) {
-      updateData.delivery_tracking_number = tracking_number;
-      updateData.status = "in_transit";
-    }
-
-    if (collected_by) {
-      updateData.metadata = {
-        ...order.metadata,
-        collected_by,
-        collection_confirmed_at: new Date().toISOString(),
-      };
-    }
-
-    const { data: updatedOrder, error: updateError } = await supabase
-      .from("orders")
-      .update(updateData)
-      .eq("id", order_id)
-      .select()
-      .single();
+    const { error: updateError } = await supabase
+      .from('orders')
+      .update({
+        status: 'collected',
+        updated_at: new Date().toISOString(),
+        metadata: {
+          ...order.metadata,
+          collected_at: new Date().toISOString(),
+          collected_by: collectedBy,
+          collection_notes: collectionNotes
+        }
+      })
+      .eq('id', orderId);
 
     if (updateError) {
-      console.error("Error updating order:", updateError);
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "Failed to update order status",
-        }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
+      throw updateError;
     }
 
-    // Update corresponding transaction
-    await supabase
-      .from("transactions")
-      .update({
-        status: tracking_number ? "committed" : "collected",
-        updated_at: new Date().toISOString(),
-      })
-      .eq("paystack_reference", order.paystack_reference);
+    // Send notifications
+    const notifications = [
+      {
+        user_id: order.buyer_id,
+        type: 'order_collected',
+        title: 'Order Collected Successfully',
+        message: `Your order for "${order.books?.title}" has been marked as collected. Thank you for your purchase!`
+      },
+      {
+        user_id: order.seller_id,
+        type: 'order_collected',
+        title: 'Order Collected',
+        message: `Your book "${order.books?.title}" has been collected by the buyer. Payout will be processed shortly.`
+      }
+    ];
 
-    // Trigger seller payout if requested and we have the necessary info
-    let payoutResult = null;
-    if (trigger_payout && PAYSTACK_SECRET_KEY && order.seller_subaccount_code) {
+    await supabase.from('notifications').insert(notifications);
+
+    // Trigger seller payout if seller has subaccount
+    if (order.profiles?.subaccount_code) {
       try {
-        // Get seller banking details
-        const { data: bankingDetails } = await supabase
-          .from("banking_details")
-          .select("recipient_code")
-          .eq("user_id", order.seller_id)
-          .eq("is_verified", true)
-          .single();
-
-        if (bankingDetails?.recipient_code) {
-          const payoutResponse = await fetch(
-            "https://api.paystack.co/transfer",
-            {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                source: "balance",
-                amount: order.seller_amount,
-                recipient: bankingDetails.recipient_code,
-                reason: `ReBooked Sale - Order ${order.id}`,
-                reference: `payout_${order.id}_${Date.now()}`,
-              }),
-            },
-          );
-
-          const payoutData = await payoutResponse.json();
-
-          if (payoutData.status) {
-            payoutResult = {
-              success: true,
-              transfer_code: payoutData.data.transfer_code,
-            };
-
-            // Update order with payout info
-            await supabase
-              .from("orders")
-              .update({
-                metadata: {
-                  ...updatedOrder.metadata,
-                  payout_initiated: true,
-                  payout_transfer_code: payoutData.data.transfer_code,
-                  payout_initiated_at: new Date().toISOString(),
-                },
-              })
-              .eq("id", order_id);
-          } else {
-            payoutResult = {
-              success: false,
-              message: payoutData.message || "Payout failed",
-            };
-          }
-        }
+        await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/pay-seller`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            orderId: orderId,
+            sellerId: order.seller_id
+          })
+        });
       } catch (payoutError) {
-        console.error("Payout error:", payoutError);
-        payoutResult = {
-          success: false,
-          message: "Payout failed due to system error",
-        };
+        console.error('Error triggering seller payout:', payoutError);
+        // Don't fail the collection marking if payout fails
       }
     }
 
-    // TODO: Send notifications
-    // - Notify buyer that order is collected/in transit
-    // - Notify seller that collection is confirmed
-    // - Update delivery service with status change
-
-    console.log("Order marked as collected successfully:", order_id);
+    // Log the collection
+    await supabase.from('audit_logs').insert({
+      action: 'order_collected',
+      table_name: 'orders',
+      record_id: orderId,
+      user_id: collectedBy,
+      new_values: {
+        collected_at: new Date().toISOString(),
+        collected_by: collectedBy,
+        collection_notes: collectionNotes,
+        book_title: order.books?.title
+      }
+    });
 
     return new Response(
       JSON.stringify({
         success: true,
-        data: {
-          order_id: updatedOrder.id,
-          status: updatedOrder.status,
-          collected_at: updatedOrder.collected_at,
-          tracking_number: updatedOrder.delivery_tracking_number,
-          payout: payoutResult,
-        },
+        message: 'Order marked as collected successfully',
+        order: {
+          id: order.id,
+          status: 'collected',
+          collected_at: new Date().toISOString()
+        }
       }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
+
   } catch (error) {
-    console.error("Error in mark-collected function:", error);
+    console.error('Error in mark-collected:', error);
     return new Response(
-      JSON.stringify({
-        success: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred",
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
+      JSON.stringify({ error: error.message }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });

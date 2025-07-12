@@ -94,15 +94,66 @@ const Login = () => {
         throw new Error("Email and password are required");
       }
 
-      console.log("Attempting login with:", email);
-      await login(email, password);
-      console.log("Login successful, navigating to home");
+      console.log("🔐 Attempting login with:", email);
+      console.log("🔐 Auth context state before login:", { isAuthenticated });
+
+      const result = await login(email, password);
+      console.log("🔐 Login result:", result);
+
+      // Wait a moment for auth state to update
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      console.log("🔐 Auth context state after login:", { isAuthenticated });
+      console.log("🔐 Navigating to home page");
       navigate("/", { replace: true });
     } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Login failed";
-      console.error("Login error:", error);
-      console.error("Login error in component:", errorMessage);
+      // Comprehensive error message extraction
+      let errorMessage = "Login failed";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === "string") {
+        errorMessage = error;
+      } else if (error && typeof error === "object") {
+        // Handle object errors (like Supabase errors)
+        const errorObj = error as {
+          message?: string;
+          error_description?: string;
+          error?: string;
+        };
+        errorMessage =
+          errorObj.message ||
+          errorObj.error_description ||
+          errorObj.error ||
+          errorObj.details ||
+          JSON.stringify(error, null, 2) ||
+          "Login failed - please try again";
+      } else {
+        errorMessage = String(error) || "Login failed";
+      }
+
+      // Enhanced error logging with proper serialization
+      console.error("Login error details:");
+      console.error("- Extracted message:", errorMessage);
+      console.error("- Error type:", typeof error);
+      console.error("- Is Error instance:", error instanceof Error);
+      console.error("- Constructor:", error?.constructor?.name);
+
+      // Safely log the original error
+      if (error instanceof Error) {
+        console.error("- Original Error Message:", error.message);
+        console.error("- Original Error Name:", error.name);
+        if (error.stack) console.error("- Original Error Stack:", error.stack);
+      } else if (error && typeof error === "object") {
+        try {
+          console.error("- Original Object:", JSON.stringify(error, null, 2));
+        } catch (jsonError) {
+          console.error("- Original Object (non-serializable):", String(error));
+          console.error("- Object keys:", Object.keys(error));
+        }
+      } else {
+        console.error("- Original Error (primitive):", error);
+      }
 
       // Handle network errors specifically
       if (
@@ -346,10 +397,11 @@ const Login = () => {
                     <Input
                       id="password"
                       type="password"
-                      placeholder="••••••••"
+                      placeholder="••••••••••"
                       className="pl-10 h-12 border-gray-300 focus:border-book-500 focus:ring-book-500 rounded-lg"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      autoComplete="current-password"
                       required
                       disabled={isLoading}
                     />
@@ -362,10 +414,10 @@ const Login = () => {
                   disabled={isLoading}
                 >
                   {isLoading ? (
-                    <>
+                    <span className="flex items-center">
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Logging in...
-                    </>
+                    </span>
                   ) : (
                     "Log in"
                   )}
