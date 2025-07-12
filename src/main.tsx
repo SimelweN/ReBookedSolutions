@@ -1,7 +1,7 @@
-// Ultra-minimal Workers-compatible entry point
-// Avoid ALL static imports that could cause Workers build issues
+import "./index.css";
+import { ensureReactLoaded } from "./utils/reactLoader";
 
-// Only execute browser code when actually in browser
+// Define browser environment check
 const isBrowser = (() => {
   try {
     return (
@@ -14,76 +14,71 @@ const isBrowser = (() => {
   }
 })();
 
-// Only load React and other dependencies in browser environment
+// Only execute React app in browser environment
 if (isBrowser) {
-  // Initialize cleanup for problematic scripts
-  import("./utils/cleanupThirdPartyScripts").catch(console.warn);
+  // Apply targeted fetch error fix
+  import("./utils/fetchErrorFix").catch(console.warn);
 
-  // TODO: Re-enable network error handler after fixing circular fetch issue
-  // import("./utils/networkErrorHandler").catch(console.warn);
+  // Ensure React is loaded first, then load the app
+  ensureReactLoaded()
+    .then(async (React) => {
+      // Load ReactDOM after React is confirmed available
+      const ReactDOM = await import("react-dom/client");
 
-  // Dynamic imports to prevent any static analysis issues in Workers builds
-  Promise.all([
-    import("react"),
-    import("react-dom/client"),
-    import("./index.css"),
-  ])
-    .then(([React, ReactDOM]) => {
-      // Now dynamically import the App component
-      import("./App.tsx")
-        .then((AppModule) => {
-          const App = AppModule.default;
-          try {
-            const rootElement = document.getElementById("root");
-            if (rootElement) {
-              ReactDOM.createRoot(rootElement).render(
-                React.createElement(
-                  React.StrictMode,
-                  null,
-                  React.createElement(App),
-                ),
-              );
-            } else {
-              console.error("Root element not found");
-            }
-          } catch (error) {
-            console.error("Failed to render app:", error);
-            // Fallback rendering
-            try {
-              const rootElement = document.getElementById("root");
-              if (rootElement) {
-                rootElement.innerHTML = `
+      // Now safely import App component
+      const AppModule = await import("./App.tsx");
+      const App = AppModule.default;
+
+      try {
+        const rootElement = document.getElementById("root");
+        if (rootElement) {
+          const root = ReactDOM.createRoot(rootElement);
+          root.render(
+            React.createElement(
+              React.StrictMode,
+              null,
+              React.createElement(App),
+            ),
+          );
+          console.log("✅ App rendered successfully");
+        } else {
+          console.error("Root element not found");
+        }
+      } catch (error) {
+        console.error("Failed to render app:", error);
+        // Fallback rendering
+        try {
+          const rootElement = document.getElementById("root");
+          if (rootElement) {
+            rootElement.innerHTML = `
               <div style="padding: 20px; font-family: Arial, sans-serif;">
                 <h1>ReBooked Solutions</h1>
                 <p>Loading issue detected. Please refresh the page.</p>
                 <p style="font-size: 12px; color: #666;">Error: ${error instanceof Error ? error.message : "Unknown error"}</p>
               </div>
             `;
-              }
-            } catch (fallbackError) {
-              console.error("Fallback rendering failed:", fallbackError);
-            }
           }
-        })
-        .catch((error) => {
-          console.error("Failed to load App component:", error);
-          try {
-            const rootElement = document.getElementById("root");
-            if (rootElement) {
-              rootElement.innerHTML = `
+        } catch (fallbackError) {
+          console.error("Fallback rendering failed:", fallbackError);
+        }
+      }
+    })
+    .catch((error) => {
+      console.error("Failed to load React or App component:", error);
+      try {
+        const rootElement = document.getElementById("root");
+        if (rootElement) {
+          rootElement.innerHTML = `
             <div style="padding: 20px; font-family: Arial, sans-serif;">
               <h1>ReBooked Solutions</h1>
               <p>App failed to load. Please refresh the page.</p>
+              <p style="font-size: 12px; color: #666;">Error: ${error instanceof Error ? error.message : "Unknown error"}</p>
             </div>
           `;
-            }
-          } catch (fallbackError) {
-            console.error("Complete fallback failed:", fallbackError);
-          }
-        });
-    })
-    .catch((error) => {
-      console.error("Failed to load React dependencies:", error);
+        }
+      } catch (fallbackError) {
+        console.error("Complete fallback failed:", fallbackError);
+      }
     });
 } else {
   console.log("Non-browser environment detected - React rendering skipped");

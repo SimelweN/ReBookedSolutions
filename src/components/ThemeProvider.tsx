@@ -1,10 +1,5 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  ReactNode,
-} from "react";
+import React, { useContext, useEffect, useState, ReactNode } from "react";
+import { safeCreateContext } from "../utils/reactLoader";
 
 type Theme = "dark" | "light" | "system";
 
@@ -27,7 +22,8 @@ const initialState: ThemeProviderState = {
   setTheme: () => null,
 };
 
-const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
+const ThemeProviderContext =
+  safeCreateContext<ThemeProviderState>(initialState);
 
 export function ThemeProvider({
   children,

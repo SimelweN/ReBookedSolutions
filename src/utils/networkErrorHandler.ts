@@ -64,37 +64,12 @@ export const safeFetch = async (
   }
 };
 
-// Override global fetch to handle FullStory and other third-party errors
+// DISABLED: Override global fetch to prevent conflicts with other handlers
+// Use fetchErrorFix.ts instead for targeted error handling
 const originalFetch = window.fetch;
-window.fetch = async function (input: RequestInfo | URL, init?: RequestInit) {
-  try {
-    return await originalFetch.call(this, input, init);
-  } catch (error) {
-    const url = typeof input === "string" ? input : input.toString();
 
-    // Identify error source
-    let source = "unknown";
-    if (url.includes("fullstory.com") || url.includes("fs.js")) {
-      source = "fullstory";
-    } else if (url.includes("vite") || url.includes("hmr")) {
-      source = "vite-hmr";
-    } else if (url.includes("supabase")) {
-      source = "supabase";
-    }
-
-    if (error instanceof Error) {
-      handleNetworkError(error, source);
-    }
-
-    // For FullStory errors, silently fail
-    if (source === "fullstory") {
-      return new Response("{}", { status: 200, statusText: "OK" });
-    }
-
-    // Re-throw other errors
-    throw error;
-  }
-};
+// Export original fetch for use by other utilities
+export { originalFetch };
 
 // Handle WebSocket errors for Vite HMR
 let originalWebSocket: typeof WebSocket | undefined;

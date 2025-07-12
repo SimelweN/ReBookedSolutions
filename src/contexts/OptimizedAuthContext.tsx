@@ -1,5 +1,4 @@
 import React, {
-  createContext,
   useContext,
   useEffect,
   useState,
@@ -7,6 +6,7 @@ import React, {
   useMemo,
   useRef,
 } from "react";
+import { safeCreateContext } from "../utils/reactLoader";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -53,8 +53,10 @@ interface AuthActions {
 }
 
 // Split context into state and actions to prevent unnecessary re-renders
-const AuthStateContext = createContext<AuthState | undefined>(undefined);
-const AuthActionsContext = createContext<AuthActions | undefined>(undefined);
+const AuthStateContext = safeCreateContext<AuthState | undefined>(undefined);
+const AuthActionsContext = safeCreateContext<AuthActions | undefined>(
+  undefined,
+);
 
 export const useAuthState = () => {
   const context = useContext(AuthStateContext);
