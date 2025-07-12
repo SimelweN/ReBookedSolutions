@@ -168,6 +168,26 @@ const createSupabaseClient = () => {
           } catch (error) {
             console.error("Supabase fetch error:", error);
 
+            // Handle HTTP 401 (Unauthorized) errors
+            if (error.message?.includes("HTTP 401")) {
+              console.warn(
+                "HTTP 401: Authentication required or invalid credentials",
+              );
+              return new Response(
+                JSON.stringify({
+                  data: null,
+                  error: {
+                    message: "Authentication required. Please sign in again.",
+                    code: "UNAUTHORIZED",
+                  },
+                }),
+                {
+                  status: 200,
+                  headers: { "Content-Type": "application/json" },
+                },
+              );
+            }
+
             // Handle network errors gracefully
             if (isNetworkError(error)) {
               console.warn(
