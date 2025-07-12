@@ -205,6 +205,9 @@ const createSupabaseClient = () => {
               );
             }
 
+            // Log other types of errors (but not 401 or network errors)
+            console.error("Supabase fetch error:", error);
+
             // Return a mock response for development to prevent crashes
             if (isDev) {
               return new Response(
