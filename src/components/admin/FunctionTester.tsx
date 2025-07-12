@@ -43,6 +43,7 @@ import { toast } from "sonner";
 import {
   functionFallback,
   FunctionResponse,
+  getFunctionFallback,
 } from "@/services/functionFallbackService";
 
 interface TestResult {
