@@ -297,6 +297,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const initializeAuth = useCallback(() => {
     if (authInitialized) return;
 
+    // Check if supabase client is available
+    if (!supabase) {
+      console.warn(
+        "⚠️ Supabase client not available, skipping auth initialization",
+      );
+      setIsInitializing(false);
+      setIsLoading(false);
+      setInitError("Authentication service unavailable");
+      return;
+    }
+
     // Use startTransition to prevent suspense issues
     startTransition(() => {
       setIsLoading(false); // Start without loading to prevent suspense
@@ -372,7 +383,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                   exchangeError.message.includes("invalid request")
                 ) {
                   console.log(
-                    "��� [AuthContext] Clearing auth parameters from URL due to PKCE error",
+                    "���� [AuthContext] Clearing auth parameters from URL due to PKCE error",
                   );
                   // Clear the URL parameters to prevent repeated failed attempts
                   window.history.replaceState(
