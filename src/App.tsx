@@ -236,13 +236,14 @@ function App() {
     });
   }
 
-  return (
+    return (
     <>
       <NoScriptFallback />
       {showStartupChecker && (
         <StartupChecker onComplete={handleStartupComplete} />
       )}
-      <ErrorBoundary level="app">
+      <ErrorBoundaryEnhanced>
+        <ErrorBoundary level="app">
         <ThemeProvider attribute="class" defaultTheme="light">
           <GoogleMapsProvider>
             <AuthProvider>
