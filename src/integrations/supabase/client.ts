@@ -166,13 +166,9 @@ const createSupabaseClient = () => {
 
             return response;
           } catch (error) {
-            console.error("Supabase fetch error:", error);
-
-            // Handle HTTP 401 (Unauthorized) errors
+            // Handle HTTP 401 (Unauthorized) errors first (don't log as errors)
             if (error.message?.includes("HTTP 401")) {
-              console.warn(
-                "HTTP 401: Authentication required or invalid credentials",
-              );
+              // Don't log 401 errors as they're expected when not authenticated
               return new Response(
                 JSON.stringify({
                   data: null,
