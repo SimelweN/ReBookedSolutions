@@ -632,15 +632,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       }
 
-      // Handle specific case where there's no session to sign out from
-      if (error && error.message === "Auth session missing!") {
-        console.log("ℹ️ [AuthContext] No active session to sign out from");
-        // This is actually fine - user is already signed out
-      } else if (error) {
-        console.warn("⚠️ [AuthContext] Logout error:", error);
-        // Don't throw - we still want to complete the logout process
-      }
-
       console.log("✅ [AuthContext] Logout completed successfully");
     } catch (error) {
       // For logout, we still want to clear local state even if signOut fails
