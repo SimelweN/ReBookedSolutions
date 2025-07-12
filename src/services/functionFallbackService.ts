@@ -464,6 +464,56 @@ export class FunctionFallbackService {
     }
   }
 
+  private async useMockFallback<T>(
+    functionName: string,
+    payload: any,
+    options: { silent?: boolean } = {},
+  ): Promise<FunctionResponse<T>> {
+    if (!options.silent) {
+      console.log(`Using mock response for ${functionName} (development mode)`);
+    }
+
+    // Return mock responses for common edge functions
+    switch (functionName) {
+      case "decline-commit":
+        return {
+          success: true,
+          data: {
+            success: true,
+            message: "Order declined and book relisted (mock)",
+            order: {
+              id: payload.orderId || "mock-order-id",
+              status: "cancelled",
+              cancelled_at: new Date().toISOString(),
+            },
+          } as T,
+          fallbackUsed: true,
+        };
+
+      case "email-automation":
+        return {
+          success: true,
+          data: {
+            success: true,
+            message: "Email automation health check (mock)",
+            timestamp: new Date().toISOString(),
+          } as T,
+          fallbackUsed: true,
+        };
+
+      default:
+        return {
+          success: true,
+          data: {
+            success: true,
+            message: `Mock response for ${functionName}`,
+            timestamp: new Date().toISOString(),
+          } as T,
+          fallbackUsed: true,
+        };
+    }
+  }
+
   private async useClientFallback<T>(
     functionName: string,
     payload: any,
