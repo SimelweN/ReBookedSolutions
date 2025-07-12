@@ -64,12 +64,15 @@ export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
     skipApiLoad: !hasApiKey || !isBrowser,
   });
 
-  // If no API key, provide fallback state
+  // Provide fallback state for non-browser or no API key
   const value: GoogleMapsContextType = {
-    isLoaded: hasApiKey ? isLoaded : false,
-    loadError: hasApiKey
-      ? loadError
-      : new Error("Google Maps API key not configured"),
+    isLoaded: hasApiKey && isBrowser ? isLoaded : false,
+    loadError:
+      hasApiKey && isBrowser
+        ? loadError
+        : isBrowser
+          ? new Error("Google Maps API key not configured")
+          : new Error("Google Maps not available in Workers environment"),
   };
 
   // Log warning in development
