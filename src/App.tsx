@@ -182,14 +182,27 @@ function App() {
     // Workers-compatible environment check
     const isProd = (() => {
       try {
+        // Primary: Vite environment detection
         if (typeof import.meta !== "undefined" && import.meta.env) {
           return (
             import.meta.env.PROD || import.meta.env.NODE_ENV === "production"
           );
         }
-        if (typeof globalThis !== "undefined" && globalThis.process?.env) {
+
+        // Fallback: Check process env if available
+        if (typeof process !== "undefined" && process.env) {
+          return process.env.NODE_ENV === "production";
+        }
+
+        // Final fallback with strict checks
+        if (
+          typeof globalThis !== "undefined" &&
+          globalThis.process &&
+          typeof globalThis.process.env === "object"
+        ) {
           return globalThis.process.env.NODE_ENV === "production";
         }
+
         return false;
       } catch {
         return false;
