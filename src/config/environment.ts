@@ -2,13 +2,25 @@
 // Workers-compatible environment access
 const getEnvVar = (key: string, fallback = ""): string => {
   try {
+    // Primary: Vite environment variables (most reliable in Workers)
     if (typeof import.meta !== "undefined" && import.meta.env) {
       return import.meta.env[key] || fallback;
     }
-    // Fallback for Workers environment
-    if (typeof globalThis !== "undefined" && globalThis.process?.env) {
+
+    // Fallback: Check for process env only if in Node-like environment
+    if (typeof process !== "undefined" && process.env) {
+      return process.env[key] || fallback;
+    }
+
+    // Final fallback: Try globalThis.process but with stricter checks
+    if (
+      typeof globalThis !== "undefined" &&
+      globalThis.process &&
+      typeof globalThis.process.env === "object"
+    ) {
       return globalThis.process.env[key] || fallback;
     }
+
     return fallback;
   } catch {
     return fallback;
