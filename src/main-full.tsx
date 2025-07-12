@@ -85,7 +85,8 @@ export const handleWorkerRequest = () => {
 // Prevent any immediate execution in Workers
 if (
   typeof WorkerGlobalScope !== "undefined" &&
-  self instanceof WorkerGlobalScope
+  typeof self !== "undefined" &&
+  typeof window === "undefined"
 ) {
   // We're in a Worker environment, export handler only
   console.log("Workers environment detected");
