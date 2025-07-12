@@ -52,7 +52,22 @@ const NotificationStack: React.FC<NotificationStackProps> = ({
   maxVisible = 3,
   autoHideDelay = 8000,
 }) => {
-  const { user } = useAuth();
+  // Safe auth usage with error boundary
+  const [authData, setAuthData] = useState<{ user: any } | null>(null);
+  const [authError, setAuthError] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const { user } = useAuth();
+      setAuthData({ user });
+      setAuthError(null);
+    } catch (error) {
+      console.warn("NotificationStack: Auth context not available:", error);
+      setAuthError("Auth not available");
+      setAuthData({ user: null });
+    }
+  }, []);
+
   const {
     notifications,
     unreadCount,
