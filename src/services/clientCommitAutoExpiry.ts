@@ -240,7 +240,7 @@ export class ClientCommitAutoExpiry {
   static async getNextExpiryTime(): Promise<Date | null> {
     try {
       // Get the earliest expiry from both tables
-      const { data: nextTransaction } = await supabase
+      const { data: nextTransaction, error: transError } = await supabase
         .from("transactions")
         .select("expires_at, commit_deadline")
         .in("status", ["paid_pending_seller", "paid"])
@@ -250,7 +250,7 @@ export class ClientCommitAutoExpiry {
         .limit(1)
         .single();
 
-      const { data: nextOrder } = await supabase
+      const { data: nextOrder, error: orderError } = await supabase
         .from("orders")
         .select("expires_at, commit_deadline")
         .eq("status", "paid")
@@ -259,6 +259,15 @@ export class ClientCommitAutoExpiry {
         .order("commit_deadline", { ascending: true, nullsLast: true })
         .limit(1)
         .single();
+
+      // Handle auth errors gracefully - don't log as errors
+      if (
+        transError?.code === "UNAUTHORIZED" ||
+        orderError?.code === "UNAUTHORIZED"
+      ) {
+        // User not authenticated, return null instead of logging error
+        return null;
+      }
 
       const dates = [
         nextTransaction?.expires_at || nextTransaction?.commit_deadline,
@@ -269,7 +278,13 @@ export class ClientCommitAutoExpiry {
 
       return new Date(Math.min(...dates.map((d) => new Date(d!).getTime())));
     } catch (error) {
-      console.warn("Error getting next expiry time:", error);
+      // Only log non-auth errors
+      if (
+        !error.message?.includes("authentication") &&
+        !error.message?.includes("401")
+      ) {
+        console.warn("Error getting next expiry time:", error);
+      }
       return null;
     }
   }
