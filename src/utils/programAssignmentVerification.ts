@@ -167,7 +167,6 @@ export function verifyUniversityPrograms(universityId: string): {
     unexpected: number;
   };
 } {
-  const currentAssignments = getCurrentAssignments();
   const universityMapping = UNIVERSITY_PROGRAM_MAPPINGS.find(
     (m) => m.universityId === universityId,
   );
