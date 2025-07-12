@@ -2,18 +2,18 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
 
-// Direct environment variable access for Workers compatibility
-const getEnvVar = (key: string): string => {
-  try {
-    // Use import.meta.env directly for better Workers compatibility
-    return (import.meta.env && import.meta.env[key]) || "";
-  } catch {
-    return "";
-  }
-};
+// Ultra-simple environment access for Workers
+let supabaseUrl = "";
+let supabaseAnonKey = "";
 
-const supabaseUrl = getEnvVar("VITE_SUPABASE_URL");
-const supabaseAnonKey = getEnvVar("VITE_SUPABASE_ANON_KEY");
+try {
+  supabaseUrl = import.meta.env?.VITE_SUPABASE_URL || "";
+  supabaseAnonKey = import.meta.env?.VITE_SUPABASE_ANON_KEY || "";
+} catch {
+  // Fallback if import.meta.env is not available
+  supabaseUrl = "";
+  supabaseAnonKey = "";
+}
 
 // Create client directly if environment variables are available
 export const supabase =
