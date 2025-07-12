@@ -18,13 +18,15 @@ const Layout = ({ children }: LayoutProps) => {
       </main>
       <Footer />
       <ConnectionStatus />
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          className: "mobile-toast",
-          duration: 4000,
-        }}
-      />
+      <ToastErrorBoundary>
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            className: "mobile-toast",
+            duration: 4000,
+          }}
+        />
+      </ToastErrorBoundary>
     </div>
   );
 };
