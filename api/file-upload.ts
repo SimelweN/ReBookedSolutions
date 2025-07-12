@@ -24,6 +24,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 
+  // Apply rate limiting for file uploads
+  const rateLimiter = rateLimit(rateLimitConfigs.upload);
+  if (!rateLimiter(req, res)) {
+    return; // Rate limit exceeded, response already sent
+  }
+
   // Check authentication
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
