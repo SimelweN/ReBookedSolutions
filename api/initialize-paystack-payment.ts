@@ -14,6 +14,12 @@ interface PaystackInitRequest {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Apply rate limiting
+  const rateLimiter = rateLimit(rateLimitConfigs.payment);
+  if (!rateLimiter(req, res)) {
+    return; // Rate limit exceeded, response already sent
+  }
+
   // CORS headers - restrict to specific domains
   const allowedOrigins = [
     "https://rebookedsolutions.co.za",
