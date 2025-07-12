@@ -74,11 +74,14 @@ export class NotificationTriggerService {
         await supabase.from("order_notifications").insert({
           order_id: orderDetails.id,
           user_id: orderDetails.buyer_id,
-          type: "seller_committed",
+          type: "sale_committed", // Use valid type from schema
           title: "✅ Seller Committed",
           message: `Great news! The seller has committed to your order ${orderDetails.id}. Your book is now being prepared for delivery.`,
           read: false,
-          priority: "high",
+          metadata: {
+            priority: "high",
+            notification_subtype: "seller_committed",
+          },
         });
       } catch (dbError) {
         console.warn("Failed to store notification in database:", dbError);
@@ -227,11 +230,16 @@ export class NotificationTriggerService {
         await supabase.from("order_notifications").insert({
           order_id: orderDetails.id,
           user_id: recipientId,
-          type: "order_cancelled",
+          type: "sale_declined", // Use valid type from schema
           title: "❌ Order Cancelled",
           message: `Order ${orderDetails.id} has been cancelled by ${cancellerName}. ${reason ? `Reason: ${reason}` : "Refund will be processed automatically."}`,
           read: false,
-          priority: "medium",
+          metadata: {
+            priority: "medium",
+            notification_subtype: "order_cancelled",
+            cancelled_by: cancelledBy,
+            reason: reason,
+          },
         });
       } catch (dbError) {
         console.warn("Failed to store notification in database:", dbError);
