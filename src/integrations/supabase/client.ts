@@ -1,6 +1,7 @@
 // Minimal Supabase client for Workers build compatibility
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
+import { isNetworkError } from "../../utils/supabaseErrorHandler";
 
 // Workers-compatible environment access
 const getEnvVar = (key: string): string => {
