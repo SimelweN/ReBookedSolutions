@@ -77,6 +77,5 @@
         }
       ]
     }
-  ],
-  "ignoreCommand": "bash vercel-ignore.sh"
+  ]
 }
