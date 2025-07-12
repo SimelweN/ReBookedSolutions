@@ -25,14 +25,14 @@
 
     // Try to load main app after a delay (avoid immediate import analysis)
     setTimeout(function () {
-      // Use dynamic import only if available
-      if (typeof window.importShim !== "undefined") {
-        window.importShim("./smart-main.js");
-      } else if (typeof eval === "function") {
-        // Fallback using eval to avoid static analysis
-        eval(
-          'import("./smart-main.js").catch(function(e) { console.error("Import failed:", e); })',
-        );
+      // Simple dynamic import with function constructor to avoid static analysis
+      try {
+        var dynamicImport = new Function("path", "return import(path)");
+        dynamicImport("./smart-main.js").catch(function (e) {
+          console.error("Import failed:", e);
+        });
+      } catch (e) {
+        console.log("Dynamic import not available:", e);
       }
     }, 500);
   } else {
