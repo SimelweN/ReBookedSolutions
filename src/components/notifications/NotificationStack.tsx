@@ -344,44 +344,4 @@ const NotificationStack: React.FC<NotificationStackProps> = ({
   );
 };
 
-// Wrapper component that handles auth context errors gracefully
-const NotificationStack: React.FC<NotificationStackProps> = (props) => {
-  const [hasAuthError, setHasAuthError] = useState(false);
-
-  useEffect(() => {
-    const handleError = (error: any) => {
-      if (
-        error.message &&
-        error.message.includes("useAuth must be used within an AuthProvider")
-      ) {
-        setHasAuthError(true);
-      }
-    };
-
-    window.addEventListener("error", handleError);
-    window.addEventListener("unhandledrejection", handleError);
-
-    return () => {
-      window.removeEventListener("error", handleError);
-      window.removeEventListener("unhandledrejection", handleError);
-    };
-  }, []);
-
-  // If there's an auth error, don't render the notification stack
-  if (hasAuthError) {
-    console.warn(
-      "NotificationStack: Auth context not available, skipping render",
-    );
-    return null;
-  }
-
-  // Use error boundary to catch auth context errors
-  try {
-    return <NotificationStackInternal {...props} />;
-  } catch (error) {
-    console.warn("NotificationStack render error:", error);
-    return null;
-  }
-};
-
 export default NotificationStack;
