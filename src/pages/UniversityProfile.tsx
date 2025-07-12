@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Navigate, Link, useSearchParams } from "react-router-dom";
+import {
+  useParams,
+  Navigate,
+  Link,
+  useSearchParams,
+  useNavigate,
+} from "react-router-dom";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/index";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
