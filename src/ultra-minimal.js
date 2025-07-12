@@ -46,3 +46,8 @@
     };
   }
 })();
+
+// Minimal ES module export for Workers compatibility
+export default function ultraMinimal() {
+  return "ReBooked Solutions - Ultra Minimal";
+}
