@@ -325,7 +325,9 @@ function App() {
                           path="/profile"
                           element={
                             <ProtectedRoute>
-                              <Profile />
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <Profile />
+                              </Suspense>
                             </ProtectedRoute>
                           }
                         />
