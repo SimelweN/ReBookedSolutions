@@ -440,7 +440,11 @@ const FunctionTester = () => {
 
   const clearResults = () => {
     setTestResults([]);
-    // Reset stats - since resetStats might not be available, just clear local state
+    try {
+      getFunctionFallback().resetStats();
+    } catch (error) {
+      console.warn("Could not reset stats:", error);
+    }
     setFunctionStats({});
     loadFunctionStats(); // Reload fresh stats
     toast.info("Test results cleared");
