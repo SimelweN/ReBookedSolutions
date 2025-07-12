@@ -277,7 +277,7 @@ export class QAFunctionalityChecker {
 
     // Test 4.2: Banking Details Table
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("banking_details")
         .select("count")
         .limit(1);
