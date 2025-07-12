@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { Bell, BellOff, AlertTriangle, RefreshCw } from "lucide-react";
-import { useNotifications } from "@/hooks/useNotifications";
+import { useNotificationStore } from "@/stores/notificationStore";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -30,12 +30,12 @@ const NotificationBadge = ({
   const navigate = useNavigate();
 
   // Always call hooks at the top level
-  const {
-    unreadCount,
-    loading: notificationsLoading,
-    error,
-    refetch: refreshNotifications,
-  } = useNotifications();
+  const { notifications, clearAllNotifications } = useNotificationStore();
+
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const notificationsLoading = false;
+  const error = null;
+  const refreshNotifications = () => {};
 
   const hasError = !!error;
 
