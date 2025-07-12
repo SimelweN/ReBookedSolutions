@@ -1713,6 +1713,7 @@ const UniversityProfile: React.FC = () => {
                           <Button
                             variant="outline"
                             className="w-full border-book-200 text-book-600 hover:bg-book-50"
+                            onClick={handleAPSCalculator}
                           >
                             <Calculator className="h-5 w-5 mr-2" />
                             Calculate My APS Score
