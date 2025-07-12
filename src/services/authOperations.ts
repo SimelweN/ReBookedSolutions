@@ -349,6 +349,7 @@ export const fetchUserProfileQuick = async (
         if (
           profileError.code === "UNAUTHORIZED" ||
           profileError.message?.includes("authentication") ||
+          profileError.message?.includes("HTTP 401") ||
           profileError.message?.includes("401")
         ) {
           // User not authenticated, return null silently
