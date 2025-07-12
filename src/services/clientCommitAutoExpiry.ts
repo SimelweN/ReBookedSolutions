@@ -240,7 +240,7 @@ export class ClientCommitAutoExpiry {
   static async getNextExpiryTime(): Promise<Date | null> {
     try {
       // Get the earliest expiry from both tables
-      const { data: nextTransaction } = await supabase
+      const { data: nextTransaction, error: transError } = await supabase
         .from("transactions")
         .select("expires_at, commit_deadline")
         .in("status", ["paid_pending_seller", "paid"])
@@ -250,7 +250,7 @@ export class ClientCommitAutoExpiry {
         .limit(1)
         .single();
 
-      const { data: nextOrder } = await supabase
+      const { data: nextOrder, error: orderError } = await supabase
         .from("orders")
         .select("expires_at, commit_deadline")
         .eq("status", "paid")
@@ -259,6 +259,19 @@ export class ClientCommitAutoExpiry {
         .order("commit_deadline", { ascending: true, nullsLast: true })
         .limit(1)
         .single();
+
+      // Handle auth errors gracefully - don't log as errors
+      if (
+        transError?.code === "UNAUTHORIZED" ||
+        transError?.message?.includes("HTTP 401") ||
+        transError?.message?.includes("401") ||
+        orderError?.code === "UNAUTHORIZED" ||
+        orderError?.message?.includes("HTTP 401") ||
+        orderError?.message?.includes("401")
+      ) {
+        // User not authenticated, return null instead of logging error
+        return null;
+      }
 
       const dates = [
         nextTransaction?.expires_at || nextTransaction?.commit_deadline,
@@ -269,7 +282,14 @@ export class ClientCommitAutoExpiry {
 
       return new Date(Math.min(...dates.map((d) => new Date(d!).getTime())));
     } catch (error) {
-      console.warn("Error getting next expiry time:", error);
+      // Only log non-auth errors
+      if (
+        !error.message?.includes("authentication") &&
+        !error.message?.includes("HTTP 401") &&
+        !error.message?.includes("401")
+      ) {
+        console.warn("Error getting next expiry time:", error);
+      }
       return null;
     }
   }
@@ -308,9 +328,34 @@ export class ClientCommitAutoExpiry {
       const orderCount =
         orderResult.status === "fulfilled" ? orderResult.value.count || 0 : 0;
 
+      // Check if any results failed due to auth errors
+      const hasAuthError =
+        (transResult.status === "rejected" &&
+          (transResult.reason?.code === "UNAUTHORIZED" ||
+            transResult.reason?.message?.includes("authentication") ||
+            transResult.reason?.message?.includes("HTTP 401") ||
+            transResult.reason?.message?.includes("401"))) ||
+        (orderResult.status === "rejected" &&
+          (orderResult.reason?.code === "UNAUTHORIZED" ||
+            orderResult.reason?.message?.includes("authentication") ||
+            orderResult.reason?.message?.includes("HTTP 401") ||
+            orderResult.reason?.message?.includes("401")));
+
+      if (hasAuthError) {
+        // User not authenticated, return 0 without logging error
+        return 0;
+      }
+
       return transCount + orderCount;
     } catch (error) {
-      console.warn("Error getting urgent commits count:", error);
+      // Only log non-auth errors
+      if (
+        !error.message?.includes("authentication") &&
+        !error.message?.includes("HTTP 401") &&
+        !error.message?.includes("401")
+      ) {
+        console.warn("Error getting urgent commits count:", error);
+      }
       return 0;
     }
   }

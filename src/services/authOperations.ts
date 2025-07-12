@@ -345,6 +345,17 @@ export const fetchUserProfileQuick = async (
       )) as any;
 
       if (profileError) {
+        // Handle auth errors gracefully - don't log as warnings
+        if (
+          profileError.code === "UNAUTHORIZED" ||
+          profileError.message?.includes("authentication") ||
+          profileError.message?.includes("HTTP 401") ||
+          profileError.message?.includes("401")
+        ) {
+          // User not authenticated, return null silently
+          return null;
+        }
+
         // Profile not found is normal for new users
         if (profileError.code === "PGRST116") {
           console.log("ℹ�� Profile not found - will use fallback");

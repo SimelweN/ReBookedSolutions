@@ -33,7 +33,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       success: true,
       status: "healthy",
       timestamp: new Date().toISOString(),
-      runtime: "nodejs18.x",
+      runtime: "vercel-node@18.0.0",
       environment: process.env.NODE_ENV || "unknown",
       version: process.version,
       platform: process.platform,

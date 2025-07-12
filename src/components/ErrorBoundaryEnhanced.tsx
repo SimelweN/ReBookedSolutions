@@ -19,13 +19,17 @@ class ErrorBoundaryEnhanced extends Component<Props, State> {
   }
 
   static getDerivedStateFromError(error: Error): State {
-    // Check if this is a third-party script error
+    // Check if this is a third-party script error or network issue
     const isThirdPartyError =
       error.stack?.includes("fullstory.com") ||
       error.stack?.includes("fs.js") ||
       error.stack?.includes("chrome-extension://") ||
       error.message.includes("Failed to fetch") ||
-      error.name === "ChunkLoadError";
+      error.message.includes("TypeError: Failed to fetch") ||
+      error.message.includes("NetworkError") ||
+      error.message.includes("fetch") ||
+      error.name === "ChunkLoadError" ||
+      (error.name === "TypeError" && error.message.includes("fetch"));
 
     return {
       hasError: true,

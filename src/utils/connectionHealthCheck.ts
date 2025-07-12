@@ -138,9 +138,22 @@ export const checkConnectionHealth = async (
     perfMeasure("connection-health", "connection-health-start");
 
     if (error) {
-      consecutiveFailures++;
-      result.error = error.message;
-      result.supabaseConnected = false;
+      // Handle auth errors gracefully - don't count as connection failures
+      if (
+        error.code === "UNAUTHORIZED" ||
+        error.message?.includes("authentication") ||
+        error.message?.includes("HTTP 401") ||
+        error.message?.includes("401")
+      ) {
+        devWarn("Connection check: Authentication required", error);
+        result.supabaseConnected = true; // Connection is working, just not authenticated
+        result.authStatus = "disconnected";
+        result.error = "Authentication required";
+      } else {
+        consecutiveFailures++;
+        result.error = error.message;
+        result.supabaseConnected = false;
+      }
     } else {
       consecutiveFailures = 0;
       result.supabaseConnected = true;
@@ -159,8 +172,19 @@ export const checkConnectionHealth = async (
       ])) as any;
 
       if (authError) {
-        result.authStatus = "error";
-        if (!result.error) result.error = authError.message;
+        // Handle auth errors gracefully - don't treat as connection failures
+        if (
+          authError.code === "UNAUTHORIZED" ||
+          authError.message?.includes("authentication") ||
+          authError.message?.includes("HTTP 401") ||
+          authError.message?.includes("401")
+        ) {
+          devWarn("Auth session check: Authentication error", authError);
+          result.authStatus = "disconnected";
+        } else {
+          result.authStatus = "error";
+          if (!result.error) result.error = authError.message;
+        }
       } else if (session) {
         result.authStatus = "connected";
       } else {
