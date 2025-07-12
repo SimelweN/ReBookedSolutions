@@ -393,7 +393,19 @@ const FunctionTester = () => {
           `✅ ${functionName} ${result.fallbackUsed ? "(fallback)" : "passed"}`,
         );
       } else {
-        toast.error(`❌ ${functionName} failed`);
+        // Show more helpful error messages for development
+        let errorMsg = result.error || "Unknown error";
+
+        if (
+          errorMsg.includes("Edge Function returned a non-2xx status code") ||
+          errorMsg.includes("possibly not deployed")
+        ) {
+          errorMsg = `Function not deployed or misconfigured (expected in dev)`;
+        }
+
+        toast.error(`❌ ${functionName}: ${errorMsg}`, {
+          duration: 3000, // Shorter duration for dev errors
+        });
       }
 
       loadFunctionStats();
