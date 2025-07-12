@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Navigate, Link, useSearchParams } from "react-router-dom";
+import {
+  useParams,
+  Navigate,
+  Link,
+  useSearchParams,
+  useNavigate,
+} from "react-router-dom";
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/index";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -37,6 +43,7 @@ import { Degree } from "@/types/university";
 const UniversityProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("programs");
   const [selectedProgram, setSelectedProgram] = useState<Degree | null>(null);
   const [isProgramModalOpen, setIsProgramModalOpen] = useState(false);
@@ -64,6 +71,10 @@ const UniversityProfile: React.FC = () => {
   const closeProgramModal = () => {
     setIsProgramModalOpen(false);
     setSelectedProgram(null);
+  };
+
+  const handleAPSCalculator = () => {
+    navigate("/university-info?tool=aps-calculator");
   };
 
   // Helper function to check if user is eligible for a program
@@ -127,13 +138,24 @@ const UniversityProfile: React.FC = () => {
                           src={university.logo}
                           alt={`${university.name} logo`}
                           className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
+                          onError={(e) => {
+                            // Hide the failed image and show fallback
+                            const img = e.currentTarget;
+                            img.style.display = "none";
+                            const fallback =
+                              img.nextElementSibling as HTMLElement;
+                            if (fallback) {
+                              fallback.style.display = "flex";
+                            }
+                          }}
                         />
-                      ) : (
-                        <span className="text-lg sm:text-2xl font-bold text-gray-700">
-                          {university.abbreviation ||
-                            university.name.substring(0, 3).toUpperCase()}
-                        </span>
-                      )}
+                      ) : null}
+                      <span
+                        className={`w-12 h-12 sm:w-16 sm:h-16 ${university.logo ? "hidden" : "flex"} items-center justify-center text-lg sm:text-2xl font-bold text-gray-700 bg-gradient-to-br from-book-500 to-book-600 text-white rounded-lg`}
+                      >
+                        {university.abbreviation ||
+                          university.name.substring(0, 3).toUpperCase()}
+                      </span>
                     </div>
                     <div className="absolute -bottom-2 -right-2 w-5 h-5 sm:w-6 sm:h-6 bg-book-500 rounded-full flex items-center justify-center">
                       <Award className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" />
@@ -181,6 +203,7 @@ const UniversityProfile: React.FC = () => {
                     size="lg"
                     variant="outline"
                     className="border-2 border-blue-200 text-blue-600 hover:bg-blue-50 w-full sm:w-auto"
+                    onClick={handleAPSCalculator}
                   >
                     <Calculator className="h-5 w-5 mr-2" />
                     APS Calculator
@@ -436,7 +459,10 @@ const UniversityProfile: React.FC = () => {
                       {university.faculties?.length || 0} faculties
                     </p>
                   </div>
-                  <Button className="bg-book-600 hover:bg-book-700 text-white shadow-lg">
+                  <Button
+                    className="bg-book-600 hover:bg-book-700 text-white shadow-lg"
+                    onClick={handleAPSCalculator}
+                  >
                     <Calculator className="h-5 w-5 mr-2" />
                     Calculate Your APS
                   </Button>
@@ -997,7 +1023,7 @@ const UniversityProfile: React.FC = () => {
                           <ul className="text-sm text-purple-700 space-y-1">
                             <li>• Online application system</li>
                             <li>• Early application recommended</li>
-                            <li>• Various accommodation options</li>
+                            <li>��� Various accommodation options</li>
                             <li>• Payment plan options</li>
                           </ul>
                         </div>
@@ -1687,6 +1713,7 @@ const UniversityProfile: React.FC = () => {
                           <Button
                             variant="outline"
                             className="w-full border-book-200 text-book-600 hover:bg-book-50"
+                            onClick={handleAPSCalculator}
                           >
                             <Calculator className="h-5 w-5 mr-2" />
                             Calculate My APS Score

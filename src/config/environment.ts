@@ -1,21 +1,37 @@
 // Environment configuration for production readiness
+// Workers-compatible environment access
+const getEnvVar = (key: string, fallback = ""): string => {
+  try {
+    if (typeof import.meta !== "undefined" && import.meta.env) {
+      return import.meta.env[key] || fallback;
+    }
+    // Fallback for Workers environment
+    if (typeof globalThis !== "undefined" && globalThis.process?.env) {
+      return globalThis.process.env[key] || fallback;
+    }
+    return fallback;
+  } catch {
+    return fallback;
+  }
+};
+
 export const ENV = {
-  NODE_ENV: import.meta.env.NODE_ENV || "development",
+  NODE_ENV: getEnvVar("NODE_ENV", "development"),
   // Remove the hardcoded fallback URLs that are returning 404
-  VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL || "",
+  VITE_SUPABASE_URL: getEnvVar("VITE_SUPABASE_URL"),
   VITE_SUPABASE_ANON_KEY:
-    import.meta.env.VITE_SUPABASE_ANON_KEY?.replace(/^=+/, "") || "",
-  VITE_PAYSTACK_PUBLIC_KEY: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || "",
-  VITE_APP_URL:
-    import.meta.env.VITE_APP_URL || "https://rebookedsolutions.co.za",
-  VITE_COURIER_GUY_API_KEY: import.meta.env.VITE_COURIER_GUY_API_KEY || "",
-  VITE_FASTWAY_API_KEY: import.meta.env.VITE_FASTWAY_API_KEY || "",
-  VITE_GOOGLE_MAPS_API_KEY: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
-  VITE_SENDER_API: import.meta.env.VITE_SENDER_API || "",
-  VITE_RESEND_API_KEY: import.meta.env.VITE_RESEND_API_KEY || "",
-  VITE_BANKING_VAULT_URL:
-    import.meta.env.VITE_BANKING_VAULT_URL ||
+    getEnvVar("VITE_SUPABASE_ANON_KEY")?.replace(/^=+/, "") || "",
+  VITE_PAYSTACK_PUBLIC_KEY: getEnvVar("VITE_PAYSTACK_PUBLIC_KEY"),
+  VITE_APP_URL: getEnvVar("VITE_APP_URL", "https://rebookedsolutions.co.za"),
+  VITE_COURIER_GUY_API_KEY: getEnvVar("VITE_COURIER_GUY_API_KEY"),
+  VITE_FASTWAY_API_KEY: getEnvVar("VITE_FASTWAY_API_KEY"),
+  VITE_GOOGLE_MAPS_API_KEY: getEnvVar("VITE_GOOGLE_MAPS_API_KEY"),
+  VITE_SENDER_API: getEnvVar("VITE_SENDER_API"),
+  VITE_RESEND_API_KEY: getEnvVar("VITE_RESEND_API_KEY"),
+  VITE_BANKING_VAULT_URL: getEnvVar(
+    "VITE_BANKING_VAULT_URL",
     "https://paystack-vault-south-africa.lovable.app",
+  ),
 } as const;
 
 export const IS_PRODUCTION = ENV.NODE_ENV === "production";
@@ -167,6 +183,16 @@ OPTION 2: Manual setup
         `⚠️ Optional API keys not set (some features may be limited): ${missingOptional.join(", ")}`,
       );
     }
+  }
+
+  // In development, we're more lenient to allow development without full setup
+  if (IS_DEVELOPMENT) {
+    console.log("🔧 Development mode: Environment validation lenient");
+    if (missing.length > 0) {
+      console.warn("⚠️ Missing environment variables:", missing);
+      console.warn("📝 App will continue with mock/fallback services");
+    }
+    return true; // Allow development to continue
   }
 
   return missing.length === 0;

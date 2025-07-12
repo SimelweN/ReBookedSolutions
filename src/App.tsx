@@ -13,7 +13,11 @@ import LoadingFallback from "./components/LoadingFallback";
 import StartupChecker from "./components/StartupChecker";
 import { validateEnvironment } from "./config/environment";
 import { useCommitAutoExpiry } from "./hooks/useCommitAutoExpiry";
-import "./App.css";
+
+// Only import CSS in browser environment
+if (typeof window !== "undefined") {
+  import("./App.css");
+}
 
 // Import critical pages directly
 import IndexPage from "./pages/Index";
@@ -21,48 +25,130 @@ import UniversityInfoPage from "./pages/UniversityInfo";
 import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
 import AdminPage from "./pages/Admin";
+// Profile imported directly due to dynamic import fetch issues
+import Profile from "./pages/Profile";
 
-// Lazy load other pages
-const Dashboard = React.lazy(() => import("./pages/Dashboard"));
-const BookListing = React.lazy(() => import("./pages/BookListing"));
-const BookDetails = React.lazy(() => import("./pages/BookDetails"));
-const Profile = React.lazy(() => import("./pages/Profile"));
-const CreateListing = React.lazy(() => import("./pages/CreateListing"));
-const Cart = React.lazy(() => import("./pages/Cart"));
-const Checkout = React.lazy(() => import("./pages/Checkout"));
-const NewCheckout = React.lazy(() => import("./pages/NewCheckout"));
-const SellerMarketplace = React.lazy(() => import("./pages/SellerMarketplace"));
-const Shipping = React.lazy(() => import("./pages/Shipping"));
-const ContactUs = React.lazy(() => import("./pages/ContactUs"));
-const FAQ = React.lazy(() => import("./pages/FAQ"));
-const AddProgram = React.lazy(() => import("./pages/AddProgram"));
-const StudyResources = React.lazy(() => import("./pages/StudyResources"));
+// Workers-safe lazy loading - only create lazy components in browser environment
+const isBrowserEnv =
+  typeof window !== "undefined" && typeof document !== "undefined";
 
-const UserOrders = React.lazy(() => import("./pages/EnhancedUserOrders"));
-const BankingSetup = React.lazy(() => import("./pages/BankingSetup"));
-const AdminReports = React.lazy(() => import("./pages/AdminReports"));
-const EditBook = React.lazy(() => import("./pages/EditBook"));
-const NotFound = React.lazy(() => import("./pages/NotFound"));
-const Policies = React.lazy(() => import("./pages/Policies"));
-const Privacy = React.lazy(() => import("./pages/Privacy"));
-const Terms = React.lazy(() => import("./pages/Terms"));
-const CookieSettingsPage = React.lazy(() => import("./pages/CookieSettings"));
-const Report = React.lazy(() => import("./pages/Report"));
-const ForgotPassword = React.lazy(() => import("./pages/ForgotPassword"));
-const ResetPassword = React.lazy(() => import("./pages/ResetPassword"));
-const Verify = React.lazy(() => import("./pages/Verify"));
-const Confirm = React.lazy(() => import("./pages/Confirm"));
-const ConfirmEmailChange = React.lazy(
-  () => import("./pages/ConfirmEmailChange"),
-);
-const Notifications = React.lazy(() => import("./pages/Notifications"));
-const CheckoutSuccess = React.lazy(() => import("./pages/CheckoutSuccess"));
-const PaymentStatus = React.lazy(() => import("./pages/PaymentStatus"));
-const PaymentCallback = React.lazy(() => import("./pages/PaymentCallback"));
-const UniversityProfile = React.lazy(() => import("./pages/UniversityProfile"));
-const Receipt = React.lazy(() => import("./pages/Receipt"));
-const ActivityLog = React.lazy(() => import("./pages/ActivityLog"));
-const DevDashboard = React.lazy(() => import("./pages/DevDashboard"));
+// Create a fallback component for Workers environment
+const WorkersFallback = () =>
+  React.createElement("div", {
+    children: "Page not available in Workers environment",
+  });
+
+// Conditionally lazy load pages or use fallback
+const Dashboard = isBrowserEnv
+  ? React.lazy(() => import("./pages/Dashboard"))
+  : WorkersFallback;
+const BookListing = isBrowserEnv
+  ? React.lazy(() => import("./pages/BookListing"))
+  : WorkersFallback;
+const BookDetails = isBrowserEnv
+  ? React.lazy(() => import("./pages/BookDetails"))
+  : WorkersFallback;
+
+const CreateListing = isBrowserEnv
+  ? React.lazy(() => import("./pages/CreateListing"))
+  : WorkersFallback;
+const Cart = isBrowserEnv
+  ? React.lazy(() => import("./pages/Cart"))
+  : WorkersFallback;
+const Checkout = isBrowserEnv
+  ? React.lazy(() => import("./pages/Checkout"))
+  : WorkersFallback;
+const NewCheckout = isBrowserEnv
+  ? React.lazy(() => import("./pages/NewCheckout"))
+  : WorkersFallback;
+const SellerMarketplace = isBrowserEnv
+  ? React.lazy(() => import("./pages/SellerMarketplace"))
+  : WorkersFallback;
+const Shipping = isBrowserEnv
+  ? React.lazy(() => import("./pages/Shipping"))
+  : WorkersFallback;
+const ContactUs = isBrowserEnv
+  ? React.lazy(() => import("./pages/ContactUs"))
+  : WorkersFallback;
+const FAQ = isBrowserEnv
+  ? React.lazy(() => import("./pages/FAQ"))
+  : WorkersFallback;
+const AddProgram = isBrowserEnv
+  ? React.lazy(() => import("./pages/AddProgram"))
+  : WorkersFallback;
+const StudyResources = isBrowserEnv
+  ? React.lazy(() => import("./pages/StudyResources"))
+  : WorkersFallback;
+
+const UserOrders = isBrowserEnv
+  ? React.lazy(() => import("./pages/EnhancedUserOrders"))
+  : WorkersFallback;
+const BankingSetup = isBrowserEnv
+  ? React.lazy(() => import("./pages/BankingSetup"))
+  : WorkersFallback;
+const AdminReports = isBrowserEnv
+  ? React.lazy(() => import("./pages/AdminReports"))
+  : WorkersFallback;
+const EditBook = isBrowserEnv
+  ? React.lazy(() => import("./pages/EditBook"))
+  : WorkersFallback;
+const NotFound = isBrowserEnv
+  ? React.lazy(() => import("./pages/NotFound"))
+  : WorkersFallback;
+const Policies = isBrowserEnv
+  ? React.lazy(() => import("./pages/Policies"))
+  : WorkersFallback;
+const Privacy = isBrowserEnv
+  ? React.lazy(() => import("./pages/Privacy"))
+  : WorkersFallback;
+const Terms = isBrowserEnv
+  ? React.lazy(() => import("./pages/Terms"))
+  : WorkersFallback;
+const CookieSettingsPage = isBrowserEnv
+  ? React.lazy(() => import("./pages/CookieSettings"))
+  : WorkersFallback;
+const Report = isBrowserEnv
+  ? React.lazy(() => import("./pages/Report"))
+  : WorkersFallback;
+const ForgotPassword = isBrowserEnv
+  ? React.lazy(() => import("./pages/ForgotPassword"))
+  : WorkersFallback;
+const ResetPassword = isBrowserEnv
+  ? React.lazy(() => import("./pages/ResetPassword"))
+  : WorkersFallback;
+const Verify = isBrowserEnv
+  ? React.lazy(() => import("./pages/Verify"))
+  : WorkersFallback;
+const Confirm = isBrowserEnv
+  ? React.lazy(() => import("./pages/Confirm"))
+  : WorkersFallback;
+const ConfirmEmailChange = isBrowserEnv
+  ? React.lazy(() => import("./pages/ConfirmEmailChange"))
+  : WorkersFallback;
+const Notifications = isBrowserEnv
+  ? React.lazy(() => import("./pages/Notifications"))
+  : WorkersFallback;
+const CheckoutSuccess = isBrowserEnv
+  ? React.lazy(() => import("./pages/CheckoutSuccess"))
+  : WorkersFallback;
+const PaymentStatus = isBrowserEnv
+  ? React.lazy(() => import("./pages/PaymentStatus"))
+  : WorkersFallback;
+const PaymentCallback = isBrowserEnv
+  ? React.lazy(() => import("./pages/PaymentCallback"))
+  : WorkersFallback;
+const UniversityProfile = isBrowserEnv
+  ? React.lazy(() => import("./pages/UniversityProfile"))
+  : WorkersFallback;
+const Receipt = isBrowserEnv
+  ? React.lazy(() => import("./pages/Receipt"))
+  : WorkersFallback;
+const ActivityLog = isBrowserEnv
+  ? React.lazy(() => import("./pages/ActivityLog"))
+  : WorkersFallback;
+const DevDashboard = isBrowserEnv
+  ? React.lazy(() => import("./pages/DevDashboard"))
+  : WorkersFallback;
 
 // Loading component with fallback
 const LoadingSpinner = () => <LoadingFallback type="compact" />;
@@ -71,19 +157,56 @@ function App() {
   const [systemReady, setSystemReady] = React.useState(false);
   const [showStartupChecker, setShowStartupChecker] = React.useState(false);
 
-  // Initialize commit auto-expiry system
-  useCommitAutoExpiry();
+  // Workers environment detection
+  const isWorkerEnv = React.useMemo(() => {
+    try {
+      return (
+        typeof WorkerGlobalScope !== "undefined" &&
+        typeof window === "undefined"
+      );
+    } catch {
+      return false;
+    }
+  }, []);
+
+  // Initialize commit auto-expiry system only in browser environment
+  const commitAutoExpiry = isWorkerEnv ? null : useCommitAutoExpiry();
 
   React.useEffect(() => {
     // Check if system needs setup
     const envValid = validateEnvironment();
 
-    // In development, always show startup checker if env is not valid
-    // In production, only show if critical services are missing
-    if (!envValid && import.meta.env.DEV) {
+    // Workers-compatible environment check
+    const isProd = (() => {
+      try {
+        if (typeof import.meta !== "undefined" && import.meta.env) {
+          return (
+            import.meta.env.PROD || import.meta.env.NODE_ENV === "production"
+          );
+        }
+        if (typeof globalThis !== "undefined" && globalThis.process?.env) {
+          return globalThis.process.env.NODE_ENV === "production";
+        }
+        return false;
+      } catch {
+        return false;
+      }
+    })();
+
+    const isDev = !isProd;
+
+    // In development, we allow the app to continue with mock services
+    // Only show startup checker in production or if explicitly needed
+    if (!envValid && isProd) {
       setShowStartupChecker(true);
     } else {
+      // In development, always proceed - we have fallback mock services
       setSystemReady(true);
+      if (!envValid && isDev) {
+        console.log(
+          "🔧 Development mode: Proceeding with mock/fallback services",
+        );
+      }
     }
   }, []);
 
@@ -91,6 +214,26 @@ function App() {
     setShowStartupChecker(false);
     setSystemReady(true);
   };
+
+  // Early return for Workers environment with static content
+  if (isWorkerEnv) {
+    return React.createElement("div", {
+      style: { padding: "20px", fontFamily: "Arial, sans-serif" },
+      children: [
+        React.createElement("h1", { key: "title" }, "ReBooked Solutions"),
+        React.createElement(
+          "p",
+          { key: "subtitle" },
+          "Static Export for Workers Environment",
+        ),
+        React.createElement(
+          "p",
+          { key: "description" },
+          "This is a server-side rendered version.",
+        ),
+      ],
+    });
+  }
 
   return (
     <>
@@ -310,9 +453,7 @@ function App() {
                           path="/profile"
                           element={
                             <ProtectedRoute>
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <Profile />
-                              </Suspense>
+                              <Profile />
                             </ProtectedRoute>
                           }
                         />

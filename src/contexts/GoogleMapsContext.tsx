@@ -49,25 +49,30 @@ export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
 
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-  // Check if API key is available
-  const hasApiKey = Boolean(apiKey && apiKey.trim() !== "");
+  // Check if API key is available and we're in browser environment
+  const isBrowser =
+    typeof window !== "undefined" && typeof document !== "undefined";
+  const hasApiKey = Boolean(apiKey && apiKey.trim() !== "" && isBrowser);
 
-  // Only load Google Maps if we have a valid API key
+  // Only load Google Maps if we have a valid API key and we're in browser
   const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: apiKey || "",
     libraries,
     preventGoogleFontsLoading: true,
-    // Skip loading if no API key
-    skipApiLoad: !hasApiKey,
+    // Skip loading if no API key or not in browser
+    skipApiLoad: !hasApiKey || !isBrowser,
   });
 
-  // If no API key, provide fallback state
+  // Provide fallback state for non-browser or no API key
   const value: GoogleMapsContextType = {
-    isLoaded: hasApiKey ? isLoaded : false,
-    loadError: hasApiKey
-      ? loadError
-      : new Error("Google Maps API key not configured"),
+    isLoaded: hasApiKey && isBrowser ? isLoaded : false,
+    loadError:
+      hasApiKey && isBrowser
+        ? loadError
+        : isBrowser
+          ? new Error("Google Maps API key not configured")
+          : new Error("Google Maps not available in Workers environment"),
   };
 
   // Log warning in development
