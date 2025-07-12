@@ -21,6 +21,8 @@ import UniversityInfoPage from "./pages/UniversityInfo";
 import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
 import AdminPage from "./pages/Admin";
+// Profile imported directly due to dynamic import fetch issues
+import Profile from "./pages/Profile";
 
 // Lazy load other pages
 const Dashboard = React.lazy(() => import("./pages/Dashboard"));
