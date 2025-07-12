@@ -256,7 +256,7 @@ export class QAFunctionalityChecker {
 
   // SECTION 4: PAYMENT SYSTEM
   async testPaymentSystem() {
-    console.log("💳 Testing Payment System...");
+    console.warn("💳 Testing Payment System...");
 
     // Test 4.1: Paystack Configuration
     const paystackKey = ENV.VITE_PAYSTACK_PUBLIC_KEY;
