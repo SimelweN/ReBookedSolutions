@@ -11,7 +11,7 @@ export interface FunctionResponse<T = any> {
 export interface FunctionConfig {
   name: string;
   critical: boolean;
-  fallbackStrategy: "client" | "skip" | "retry" | "mock";
+  fallbackStrategy: "client" | "skip" | "retry";
   retryAttempts?: number;
   timeout?: number;
 }
@@ -62,9 +62,9 @@ const FUNCTION_CONFIGS: Record<string, FunctionConfig> = {
   },
   "decline-commit": {
     name: "decline-commit",
-    critical: false,
-    fallbackStrategy: "mock",
-    timeout: 5000,
+    critical: true,
+    fallbackStrategy: "retry",
+    retryAttempts: 2,
   },
   "create-order": {
     name: "create-order",
@@ -131,7 +131,7 @@ const FUNCTION_CONFIGS: Record<string, FunctionConfig> = {
   "email-automation": {
     name: "email-automation",
     critical: false,
-    fallbackStrategy: "mock",
+    fallbackStrategy: "skip",
     timeout: 5000,
   },
   "dispute-resolution": {
