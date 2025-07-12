@@ -238,7 +238,7 @@ function App() {
     });
   }
 
-    return (
+  return (
     <HelmetProvider>
       <NoScriptFallback />
       {showStartupChecker && (
@@ -671,7 +671,7 @@ function App() {
           </ThemeProvider>
         </ErrorBoundary>
       </ErrorBoundaryEnhanced>
-    </>
+    </HelmetProvider>
   );
 }
 
