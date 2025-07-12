@@ -206,9 +206,8 @@ const AIFallbackSystemTester = () => {
                   errorDetails,
                 };
               } else {
-                throw new Error(
-                  `HTTP ${response.status}: ${await response.text()}`,
-                );
+                const errorText = await response.text();
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
               }
             } catch (vercelError) {
               layerStatus.vercel = "failed";
