@@ -175,7 +175,9 @@ export const checkConnectionHealth = async (
         // Handle auth errors gracefully - don't treat as connection failures
         if (
           authError.code === "UNAUTHORIZED" ||
-          authError.message?.includes("authentication")
+          authError.message?.includes("authentication") ||
+          authError.message?.includes("HTTP 401") ||
+          authError.message?.includes("401")
         ) {
           devWarn("Auth session check: Authentication error", authError);
           result.authStatus = "disconnected";
