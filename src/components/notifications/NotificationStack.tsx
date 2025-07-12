@@ -52,29 +52,7 @@ const NotificationStack: React.FC<NotificationStackProps> = ({
   maxVisible = 3,
   autoHideDelay = 8000,
 }) => {
-  // Use auth with fallback
-  const [user, setUser] = useState<any>(null);
-  const [authReady, setAuthReady] = useState(false);
-
-  useEffect(() => {
-    try {
-      const authContext = useAuth();
-      setUser(authContext.user);
-      setAuthReady(true);
-    } catch (error) {
-      // Auth context not available, continue without user
-      console.warn(
-        "NotificationStack: Auth context not ready, continuing without user",
-      );
-      setUser(null);
-      setAuthReady(true);
-    }
-  }, []);
-
-  // Wait for auth check to complete
-  if (!authReady) {
-    return null;
-  }
+  const { user } = useAuth();
   const {
     notifications,
     unreadCount,
