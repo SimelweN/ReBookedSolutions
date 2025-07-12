@@ -53,7 +53,7 @@ export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
     typeof window !== "undefined" && typeof document !== "undefined";
   const hasApiKey = Boolean(apiKey && apiKey.trim() !== "" && isBrowser);
 
-  // Only load Google Maps if we have a valid API key and we're in browser
+  // Always call useJsApiLoader hook - React hooks must be called unconditionally
   const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: apiKey || "",
