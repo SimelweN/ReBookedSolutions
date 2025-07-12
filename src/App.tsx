@@ -661,6 +661,7 @@ function App() {
                       </Suspense>
                     </div>
                   </Router>
+                  <NotificationStack position="top-right" maxVisible={3} />
                 </CartProvider>
               </AuthProvider>
             </GoogleMapsProvider>
