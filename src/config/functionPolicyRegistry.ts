@@ -231,7 +231,7 @@ export const FUNCTION_POLICY_REGISTRY: Record<string, FunctionPolicy> = {
   },
   "realtime-notifications": {
     fallback: true,
-    vercelAllowed: false,
+    
     fallbackType: "queue",
     timeout: 5000,
     retryAttempts: 2,
