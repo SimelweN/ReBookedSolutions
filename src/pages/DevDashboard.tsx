@@ -219,13 +219,14 @@ const DevDashboard: React.FC = () => {
                   </Button>
 
                   <Button
-                    onClick={() =>
-                      console.log("Console test from DevDashboard")
-                    }
+                    onClick={() => {
+                      toast.info("System status checked!");
+                      checkSystemStatus();
+                    }}
                     variant="outline"
                     className="w-full"
                   >
-                    Test Console Logging
+                    Check System Status
                   </Button>
                 </CardContent>
               </Card>
