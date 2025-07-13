@@ -1,5 +1,28 @@
 import React from "react";
-import { GoogleMap, LoadScript, useGoogleMap } from "@react-google-maps/api";
+
+// Conditional import to prevent Workers build issues
+let GoogleMap: any, LoadScript: any, useGoogleMap: any;
+
+if (typeof window !== "undefined") {
+  try {
+    const googleMapsApi = require("@react-google-maps/api");
+    GoogleMap = googleMapsApi.GoogleMap;
+    LoadScript = googleMapsApi.LoadScript;
+    useGoogleMap = googleMapsApi.useGoogleMap;
+  } catch (error) {
+    // Fallback for environments where Google Maps is not available
+    GoogleMap = () => null;
+    LoadScript = ({ children }: { children: React.ReactNode }) => (
+      <>{children}</>
+    );
+    useGoogleMap = () => null;
+  }
+} else {
+  // Server-side fallbacks
+  GoogleMap = () => null;
+  LoadScript = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+  useGoogleMap = () => null;
+}
 
 type ReactNode = React.ReactNode;
 
