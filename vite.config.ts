@@ -49,12 +49,7 @@ export default defineConfig(({ command, mode }) => {
     plugins: [react()],
     resolve: {
       alias: {
-        "@": isNode ? path.resolve(__dirname, "./src") : "/src",
-        // Always alias React and React-DOM to ensure single instance
-        react: isNode ? path.resolve(__dirname, "node_modules/react") : "react",
-        "react-dom": isNode
-          ? path.resolve(__dirname, "node_modules/react-dom")
-          : "react-dom",
+        "@": path.resolve(__dirname, "./src"),
       },
       dedupe: ["react", "react-dom"], // Prevent multiple React instances
     },
