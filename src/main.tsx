@@ -8,6 +8,10 @@ import {
   isProductionDeployment,
 } from "./utils/environmentCheck";
 
+// Initialize runtime error handlers early
+import "./utils/runtimeErrorHandler";
+import "./utils/productionConsole";
+
 // Define browser environment check
 const isBrowser = (() => {
   try {
