@@ -19,17 +19,28 @@ export const useCommitAutoExpiry = () => {
       return;
     }
 
-    // Ensure the service is started
-    ClientCommitAutoExpiry.start();
-    setIsRunning(true);
+    // Defer initialization to avoid circular dependency issues
+    const initializeService = () => {
+      try {
+        // Ensure the service is started
+        ClientCommitAutoExpiry.start();
+        setIsRunning(true);
 
-    // Initial load of urgent commits and next expiry
-    loadUrgentInfo();
+        // Initial load of urgent commits and next expiry
+        loadUrgentInfo();
+      } catch (error) {
+        console.warn("Failed to initialize commit auto-expiry:", error);
+      }
+    };
+
+    // Use setTimeout to defer initialization after module loading is complete
+    const timeoutId = setTimeout(initializeService, 100);
 
     // Update urgent info every 5 minutes
     const interval = setInterval(loadUrgentInfo, 5 * 60 * 1000);
 
     return () => {
+      clearTimeout(timeoutId);
       clearInterval(interval);
     };
   }, []);
