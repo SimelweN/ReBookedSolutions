@@ -1,5 +1,5 @@
 import React from "react";
-import { LoadScript } from "@react-google-maps/api";
+import { GoogleMap, LoadScript, useGoogleMap } from "@react-google-maps/api";
 
 type ReactNode = React.ReactNode;
 
