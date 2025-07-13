@@ -246,8 +246,7 @@ function App() {
       )}
       <ErrorBoundaryEnhanced>
         <ErrorBoundary level="app">
-          <ThemeProvider attribute="class" defaultTheme="light">
-            <GoogleMapsProvider>
+                    <ThemeProvider attribute="class" defaultTheme="light">
               <AuthProvider>
                 <CartProvider>
                   <Router
