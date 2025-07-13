@@ -137,7 +137,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   // Initialize Google Maps Autocomplete
   useEffect(() => {
     if (
-      isLoaded &&
+      apiKey &&
       addressInputRef.current &&
       !autocompleteRef.current &&
       window.google
@@ -167,7 +167,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
         }
       }
     };
-  }, [isLoaded]);
+  }, [apiKey]);
 
   // Load user's saved address and autofill user info on component mount
   useEffect(() => {
@@ -700,16 +700,16 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
                     })}
                     type="text"
                     placeholder={
-                      isLoaded
+                      apiKey
                         ? "Start typing your address..."
                         : "Enter your complete street address manually"
                     }
                     className={`w-full p-3 border rounded-lg ${
-                      !isLoaded ? "bg-yellow-50 border-yellow-300" : "bg-white"
+                      !apiKey ? "bg-yellow-50 border-yellow-300" : "bg-white"
                     } ${
                       errors.street_address
                         ? "border-red-500"
-                        : isLoaded
+                        : apiKey
                           ? "border-gray-300"
                           : "border-yellow-300"
                     } focus:ring-2 focus:ring-book-500 focus:border-book-500`}
@@ -718,7 +718,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
                     required
                   />
 
-                  {!isLoaded && (
+                  {!apiKey && (
                     <Alert className="mt-2 border-yellow-300 bg-yellow-50">
                       <AlertCircle className="h-4 w-4 text-yellow-600" />
                       <AlertDescription className="text-yellow-800">
