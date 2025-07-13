@@ -673,7 +673,7 @@ function App() {
                 </Router>
                 <NotificationWrapper position="top-right" maxVisible={3} />
                 <NotificationInitializer />
-                <Toaster position="bottom-right" />
+                <Toaster />
               </CartProvider>
             </AuthProvider>
           </ThemeProvider>
