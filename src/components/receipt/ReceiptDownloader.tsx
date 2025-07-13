@@ -95,8 +95,21 @@ const ReceiptDownloader: React.FC<ReceiptDownloaderProps> = (props) => {
   };
 
   const shareReceipt = async () => {
+    // Ensure we're in browser environment
+    if (typeof window === "undefined") {
+      toast.error("Sharing not available in this environment");
+      return;
+    }
+
     if (!receiptRef.current) {
       toast.error("Receipt not ready for sharing");
+      return;
+    }
+
+    // Load html-to-image library
+    await loadHtmlToImage();
+    if (!toPng) {
+      toast.error("Image generation not available");
       return;
     }
 
