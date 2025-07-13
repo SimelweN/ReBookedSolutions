@@ -52,18 +52,23 @@ export const isReactAvailable = (): boolean => {
 
 // Get React instance (throws if not available)
 export const getReact = (): any => {
+  // First check our cached instance
   if (reactInstance) {
     return reactInstance;
   }
 
-  if (typeof window !== "undefined" && (window as any).React) {
-    return (window as any).React;
+  // In browser environments, check global availability
+  if (typeof window !== "undefined") {
+    if ((window as any).React) {
+      return (window as any).React;
+    }
   }
 
   if (typeof globalThis !== "undefined" && (globalThis as any).React) {
     return (globalThis as any).React;
   }
 
+  // For Workers environments or when React isn't loaded yet, throw
   throw new Error(
     "React is not available yet. Call ensureReactLoaded() first.",
   );
