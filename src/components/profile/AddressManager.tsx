@@ -23,7 +23,7 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import GoogleMapsAddressInput from "@/components/GoogleMapsAddressInput";
+import BasicAddressInput from "@/components/BasicAddressInput";
 
 interface AddressData {
   streetAddress: string;
@@ -361,7 +361,7 @@ const AddressManager = () => {
                 Where buyers will collect books from you
               </p>
 
-              <GoogleMapsAddressInput
+              <BasicAddressInput
                 onAddressSelect={handlePickupAddressSelect}
                 placeholder="Search for your pickup address..."
                 defaultValue={pickupAddress.streetAddress}
@@ -465,7 +465,7 @@ const AddressManager = () => {
                   Where you want items delivered when buying books
                 </p>
 
-                <GoogleMapsAddressInput
+                <BasicAddressInput
                   onAddressSelect={handleShippingAddressSelect}
                   placeholder="Search for your shipping address..."
                   defaultValue={shippingAddress.streetAddress}

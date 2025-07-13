@@ -81,7 +81,6 @@ export default defineConfig(({ command, mode }) => {
             if (
               id.includes("react") &&
               !id.includes("react-router") &&
-              !id.includes("@react-google-maps") &&
               !id.includes("@tanstack/react-query")
             ) {
               return "0-react-core";
@@ -100,15 +99,6 @@ export default defineConfig(({ command, mode }) => {
             // Supabase
             if (id.includes("@supabase") || id.includes("supabase")) {
               return "supabase";
-            }
-
-            // Maps - Force Google Maps API into separate chunk
-            if (
-              id.includes("@react-google-maps/api") ||
-              id.includes("google-maps") ||
-              id.includes("maps")
-            ) {
-              return "google-maps";
             }
 
             // Query and data
@@ -219,7 +209,6 @@ export default defineConfig(({ command, mode }) => {
         "@supabase/supabase-js",
         "@tanstack/react-query",
         "lucide-react",
-        "@react-google-maps/api", // Force optimization to fix temporal dead zone
       ],
       exclude: [],
       force: true, // Force re-bundling to ensure consistency

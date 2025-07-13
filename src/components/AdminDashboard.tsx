@@ -50,6 +50,7 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   TestTube,
+  Terminal,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -61,6 +62,7 @@ import DatabaseTest from "@/components/admin/DatabaseTest";
 import QADashboard from "@/components/admin/QADashboard";
 import FunctionTester from "@/components/admin/FunctionTester";
 import EdgeFunctionMonitor from "@/components/EdgeFunctionMonitor";
+import RealConsole from "@/components/admin/RealConsole";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -410,7 +412,7 @@ const AdminDashboard = () => {
         return;
       }
 
-      if (usersData) {
+      if (usersData && Array.isArray(usersData)) {
         const today = new Date().toDateString();
         const newUsersToday = usersData.filter((user) => {
           try {
@@ -424,6 +426,13 @@ const AdminDashboard = () => {
           ...prev,
           totalUsers: usersData.length,
           newUsersToday,
+        }));
+      } else {
+        console.warn("Users data is not an array:", usersData);
+        setStats((prev) => ({
+          ...prev,
+          totalUsers: 0,
+          newUsersToday: 0,
         }));
       }
     } catch (error) {
@@ -464,7 +473,7 @@ const AdminDashboard = () => {
         return;
       }
 
-      if (booksData) {
+      if (booksData && Array.isArray(booksData)) {
         const today = new Date().toDateString();
         const booksListedToday = booksData.filter((book) => {
           try {
@@ -478,6 +487,13 @@ const AdminDashboard = () => {
           ...prev,
           activeBooks: booksData.length, // Total books as fallback
           booksListedToday,
+        }));
+      } else {
+        console.warn("Books data is not an array:", booksData);
+        setStats((prev) => ({
+          ...prev,
+          activeBooks: 0,
+          booksListedToday: 0,
         }));
       }
     } catch (error) {
@@ -806,6 +822,13 @@ const AdminDashboard = () => {
             <TabsTrigger value="qa" className="flex items-center space-x-2">
               <Shield className="h-4 w-4" />
               <span>QA Testing</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="console"
+              className="flex items-center space-x-2"
+            >
+              <Terminal className="h-4 w-4" />
+              <span>Console</span>
             </TabsTrigger>
             <TabsTrigger
               value="settings"
@@ -1218,6 +1241,11 @@ const AdminDashboard = () => {
           {/* QA Testing Tab */}
           <TabsContent value="qa" className="space-y-6">
             <QADashboard />
+          </TabsContent>
+
+          {/* Console Tab */}
+          <TabsContent value="console" className="space-y-6">
+            <RealConsole height="600px" className="border-0 shadow-lg" />
           </TabsContent>
 
           {/* Settings Tab */}

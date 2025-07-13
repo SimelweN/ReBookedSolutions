@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
-import GoogleMapsProvider from "./contexts/GoogleMapsContext";
+
 import ErrorBoundary from "./components/ErrorBoundary";
 
 // Import all real pages
@@ -34,71 +34,66 @@ const SimpleApp = () => {
   return (
     <ErrorBoundary level="app">
       <ThemeProvider attribute="class" defaultTheme="light">
-        <GoogleMapsProvider>
-          <AuthProvider>
-            <CartProvider>
-              <Router>
-                <div style={{ minHeight: "100vh", background: "white" }}>
-                  <Routes>
-                    {/* Home route */}
-                    <Route path="/" element={<IndexPage />} />
+        <AuthProvider>
+          <CartProvider>
+            <Router>
+              <div style={{ minHeight: "100vh", background: "white" }}>
+                <Routes>
+                  {/* Home route */}
+                  <Route path="/" element={<IndexPage />} />
 
-                    {/* Public routes */}
-                    <Route path="/books" element={<BookListing />} />
-                    <Route path="/books/:id" element={<BookDetails />} />
-                    <Route path="/book/:id" element={<BookDetails />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
+                  {/* Public routes */}
+                  <Route path="/books" element={<BookListing />} />
+                  <Route path="/books/:id" element={<BookDetails />} />
+                  <Route path="/book/:id" element={<BookDetails />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
 
-                    {/* University and Campus Routes */}
-                    <Route
-                      path="/university-info"
-                      element={<UniversityInfoPage />}
-                    />
-                    <Route
-                      path="/study-resources"
-                      element={<StudyResources />}
-                    />
+                  {/* University and Campus Routes */}
+                  <Route
+                    path="/university-info"
+                    element={<UniversityInfoPage />}
+                  />
+                  <Route path="/study-resources" element={<StudyResources />} />
 
-                    {/* Shopping and Cart Routes */}
-                    <Route path="/cart" element={<Cart />} />
-                    <Route path="/checkout" element={<Checkout />} />
-                    <Route path="/shipping" element={<Shipping />} />
+                  {/* Shopping and Cart Routes */}
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/shipping" element={<Shipping />} />
 
-                    {/* Support and Info Pages */}
-                    <Route path="/contact" element={<ContactUs />} />
-                    <Route path="/faq" element={<FAQ />} />
+                  {/* Support and Info Pages */}
+                  <Route path="/contact" element={<ContactUs />} />
+                  <Route path="/faq" element={<FAQ />} />
 
-                    {/* Protected Routes */}
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/user-profile" element={<UserProfile />} />
-                    <Route path="/create-listing" element={<CreateListing />} />
-                    <Route path="/activity" element={<ActivityLog />} />
-                    <Route path="/my-orders" element={<UserOrders />} />
-                    <Route path="/banking-setup" element={<BankingSetup />} />
+                  {/* Protected Routes */}
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/user-profile" element={<UserProfile />} />
+                  <Route path="/create-listing" element={<CreateListing />} />
+                  <Route path="/activity" element={<ActivityLog />} />
+                  <Route path="/my-orders" element={<UserOrders />} />
+                  <Route path="/banking-setup" element={<BankingSetup />} />
 
-                    {/* Admin Routes */}
-                    <Route path="/admin" element={<Admin />} />
-                    <Route path="/admin/reports" element={<AdminReports />} />
+                  {/* Admin Routes */}
+                  <Route path="/admin" element={<Admin />} />
+                  <Route path="/admin/reports" element={<AdminReports />} />
 
-                    {/* 404 Route */}
-                    <Route
-                      path="*"
-                      element={
-                        <div style={{ padding: "20px" }}>
-                          <h1>404 - Page Not Found</h1>
-                          <a href="/" style={{ color: "#2563eb" }}>
-                            ← Back to Home
-                          </a>
-                        </div>
-                      }
-                    />
-                  </Routes>
-                </div>
-              </Router>
-            </CartProvider>
-          </AuthProvider>
-        </GoogleMapsProvider>
+                  {/* 404 Route */}
+                  <Route
+                    path="*"
+                    element={
+                      <div style={{ padding: "20px" }}>
+                        <h1>404 - Page Not Found</h1>
+                        <a href="/" style={{ color: "#2563eb" }}>
+                          ← Back to Home
+                        </a>
+                      </div>
+                    }
+                  />
+                </Routes>
+              </div>
+            </Router>
+          </CartProvider>
+        </AuthProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

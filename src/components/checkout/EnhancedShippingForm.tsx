@@ -86,8 +86,6 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   cartItems,
 }) => {
   // All hooks must be called before any early returns
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -134,40 +132,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
   const watchedValues = watch();
 
-  // Initialize Google Maps Autocomplete
-  useEffect(() => {
-    if (
-      apiKey &&
-      addressInputRef.current &&
-      !autocompleteRef.current &&
-      window.google
-    ) {
-      try {
-        autocompleteRef.current = new google.maps.places.Autocomplete(
-          addressInputRef.current,
-          {
-            componentRestrictions: { country: "za" },
-            fields: ["address_components", "formatted_address", "geometry"],
-            types: ["address"],
-          },
-        );
-
-        autocompleteRef.current.addListener("place_changed", handlePlaceSelect);
-      } catch (error) {
-        console.warn("Google Maps Autocomplete failed to initialize:", error);
-      }
-    }
-
-    return () => {
-      if (autocompleteRef.current && window.google) {
-        try {
-          google.maps.event.clearInstanceListeners(autocompleteRef.current);
-        } catch (error) {
-          console.warn("Failed to clear Google Maps listeners:", error);
-        }
-      }
-    };
-  }, [apiKey]);
+  // Google Maps removed - using basic address input
 
   // Load user's saved address and autofill user info on component mount
   useEffect(() => {
@@ -268,45 +233,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
     setValue("postal_code", address.postalCode || address.postal_code || "");
   };
 
-  const handlePlaceSelect = () => {
-    if (!autocompleteRef.current) return;
-
-    const place = autocompleteRef.current.getPlace();
-    if (!place.address_components) return;
-
-    let streetNumber = "";
-    let route = "";
-    let locality = "";
-    let sublocality = "";
-    let adminArea1 = "";
-    let postalCode = "";
-
-    place.address_components.forEach((component) => {
-      const types = component.types;
-
-      if (types.includes("street_number")) {
-        streetNumber = component.long_name;
-      } else if (types.includes("route")) {
-        route = component.long_name;
-      } else if (types.includes("locality")) {
-        locality = component.long_name;
-      } else if (types.includes("sublocality")) {
-        sublocality = component.long_name;
-      } else if (types.includes("administrative_area_level_1")) {
-        adminArea1 = component.long_name;
-      } else if (types.includes("postal_code")) {
-        postalCode = component.long_name;
-      }
-    });
-
-    // Populate form fields
-    setValue("street_address", `${streetNumber} ${route}`.trim());
-    setValue("city", locality || sublocality);
-    setValue("province", adminArea1);
-    setValue("postal_code", postalCode);
-
-    toast.success("Address details filled from Google Maps");
-  };
+  // Google Maps place selection removed
 
   const getDeliveryQuotes = async () => {
     if (
@@ -436,7 +363,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
     console.log("🔥 FORM SUBMIT TRIGGERED!");
     console.log("📋 Form data:", data);
     console.log("❌ Current errors:", errors);
-    console.log("👀 Watched values:", watchedValues);
+    console.log("�� Watched values:", watchedValues);
     console.log(
       "📝 Recipient name value:",
       data.recipient_name,

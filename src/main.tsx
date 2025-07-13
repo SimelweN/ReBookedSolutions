@@ -19,6 +19,9 @@ const isBrowser = (() => {
 
 // Only execute React app in browser environment
 if (isBrowser) {
+  // Initialize console interceptor for dev console
+  import("./services/consoleInterceptor").catch(console.warn);
+
   // Apply targeted fetch error fix
   import("./utils/fetchErrorFix").catch(console.warn);
 
