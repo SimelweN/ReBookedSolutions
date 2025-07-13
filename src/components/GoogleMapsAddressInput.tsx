@@ -1,10 +1,33 @@
 import { useRef, useState, useCallback } from "react";
-import {
-  Autocomplete,
-  GoogleMap,
-  Marker,
-  useGoogleMap,
-} from "@react-google-maps/api";
+
+// Conditional import to prevent Workers build issues
+let Autocomplete: any, GoogleMap: any, Marker: any, useGoogleMap: any;
+
+if (typeof window !== "undefined") {
+  try {
+    const googleMapsApi = require("@react-google-maps/api");
+    Autocomplete = googleMapsApi.Autocomplete;
+    GoogleMap = googleMapsApi.GoogleMap;
+    Marker = googleMapsApi.Marker;
+    useGoogleMap = googleMapsApi.useGoogleMap;
+  } catch (error) {
+    // Fallback for environments where Google Maps is not available
+    Autocomplete = ({ children }: { children: React.ReactNode }) => (
+      <>{children}</>
+    );
+    GoogleMap = () => null;
+    Marker = () => null;
+    useGoogleMap = () => null;
+  }
+} else {
+  // Server-side fallbacks
+  Autocomplete = ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  );
+  GoogleMap = () => null;
+  Marker = () => null;
+  useGoogleMap = () => null;
+}
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MapPin, Loader2 } from "lucide-react";
