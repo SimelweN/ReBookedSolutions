@@ -12,7 +12,11 @@ export default defineConfig(({ command, mode }) => {
   return {
     server: {
       host: "::",
-      port: 8080,
+      port: 8081,
+      hmr: {
+        port: 8081,
+        host: "localhost",
+      },
       proxy: {
         // Proxy API requests to Vercel dev server or deployed API
         "/api": {
