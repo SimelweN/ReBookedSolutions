@@ -412,7 +412,7 @@ const AdminDashboard = () => {
         return;
       }
 
-      if (usersData) {
+      if (usersData && Array.isArray(usersData)) {
         const today = new Date().toDateString();
         const newUsersToday = usersData.filter((user) => {
           try {
@@ -466,7 +466,7 @@ const AdminDashboard = () => {
         return;
       }
 
-      if (booksData) {
+      if (booksData && Array.isArray(booksData)) {
         const today = new Date().toDateString();
         const booksListedToday = booksData.filter((book) => {
           try {
