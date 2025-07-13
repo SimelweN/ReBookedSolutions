@@ -37,11 +37,11 @@ const isDev = (() => {
   }
 })();
 
-if (isDev) {
-  console.log("Supabase Config Check:", {
+// Only log configuration in development if there are issues
+if (isDev && (!supabaseUrl || !supabaseAnonKey)) {
+  console.warn("⚠️ Supabase configuration incomplete:", {
     hasUrl: !!supabaseUrl,
     hasKey: !!supabaseAnonKey,
-    urlStart: supabaseUrl ? supabaseUrl.substring(0, 20) + "..." : "none",
   });
 }
 
