@@ -18,6 +18,9 @@ interface GoogleMapsProviderProps {
 export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
   children,
 }) => {
+  const [isReady, setIsReady] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
   // Skip Google Maps loading in non-browser environments
   if (typeof window === "undefined") {
     return <>{children}</>;
@@ -29,6 +32,22 @@ export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
   const isBrowser =
     typeof window !== "undefined" && typeof document !== "undefined";
   const hasApiKey = Boolean(apiKey && apiKey.trim() !== "" && isBrowser);
+
+  // Use stable libraries reference to prevent re-initialization
+  if (!librariesRef) {
+    librariesRef = libraries;
+  }
+
+  // Initialize maps safely after component mount
+  useEffect(() => {
+    if (hasApiKey && isBrowser) {
+      // Small delay to ensure DOM is ready
+      const timer = setTimeout(() => {
+        setIsReady(true);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [hasApiKey, isBrowser]);
 
   // Log warning in development
   if (!hasApiKey && import.meta.env.DEV) {
@@ -42,16 +61,31 @@ export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
     return <>{children}</>;
   }
 
+  if (hasError) {
+    console.error(
+      "Google Maps failed to load, rendering children without maps",
+    );
+    return <>{children}</>;
+  }
+
+  if (!isReady) {
+    return <>{children}</>;
+  }
+
   // Wrap LoadScript with error boundary to prevent initialization crashes
   try {
     return (
       <LoadScript
         googleMapsApiKey={apiKey || ""}
-        libraries={libraries}
+        libraries={librariesRef}
         preventGoogleFontsLoading={true}
         loadingElement={<div>Loading Google Maps...</div>}
+        onLoad={() => {
+          console.log("Google Maps loaded successfully");
+        }}
         onError={(error) => {
           console.error("Google Maps LoadScript error:", error);
+          setHasError(true);
         }}
       >
         {children}
@@ -59,6 +93,7 @@ export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
     );
   } catch (error) {
     console.error("Google Maps provider initialization error:", error);
+    setHasError(true);
     return <>{children}</>;
   }
 };
