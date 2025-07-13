@@ -50,7 +50,7 @@ const createMockSupabaseClient = () => {
   if (isDev) {
     console.warn(
       "⚠️ Supabase environment variables not configured. Using mock client.\n" +
-        "💡 To fix: Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file",
+        "💡 To fix: Run 'npm run setup' to configure with real credentials",
     );
   }
 
