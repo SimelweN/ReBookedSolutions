@@ -7,7 +7,7 @@ import React, {
   useRef,
   startTransition,
 } from "react";
-// Import React directly to avoid createContext issues
+import { safeCreateContext } from "../utils/reactLoader";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -62,7 +62,7 @@ interface AuthContextType {
   refreshProfile: () => Promise<void>;
 }
 
-const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
+const AuthContext = safeCreateContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
