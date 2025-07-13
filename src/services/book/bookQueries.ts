@@ -178,7 +178,20 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
         }
 
         // Get unique seller IDs - now safe since we know booksData is an array
-        const sellerIds = [...new Set(booksData.map((book) => book.seller_id))];
+        let sellerIds;
+        try {
+          sellerIds = [...new Set(booksData.map((book) => book.seller_id))];
+        } catch (mapError) {
+          console.error(
+            "Error mapping seller IDs:",
+            mapError,
+            "booksData type:",
+            typeof booksData,
+            "booksData:",
+            booksData,
+          );
+          return [];
+        }
 
         // Fetch seller profiles with fallback
         let profilesMap = new Map();
