@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { GoogleMap, LoadScript, useGoogleMap } from "@react-google-maps/api";
 
 type ReactNode = React.ReactNode;
 
@@ -8,6 +7,21 @@ const libraries: "places"[] = ["places"];
 
 // Stable reference to prevent re-initialization
 let librariesRef: "places"[] | undefined;
+
+// Conditional imports for Workers compatibility
+let GoogleMap: any, LoadScript: any, useGoogleMap: any;
+
+// Only import Google Maps in browser environment
+if (typeof window !== "undefined") {
+  try {
+    const googleMapsApi = require("@react-google-maps/api");
+    GoogleMap = googleMapsApi.GoogleMap;
+    LoadScript = googleMapsApi.LoadScript;
+    useGoogleMap = googleMapsApi.useGoogleMap;
+  } catch (error) {
+    console.warn("Google Maps API not available:", error);
+  }
+}
 
 // Provider props interface
 interface GoogleMapsProviderProps {
