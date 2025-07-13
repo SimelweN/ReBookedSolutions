@@ -6,8 +6,8 @@ import React, {
   useMemo,
   useRef,
   startTransition,
+  createContext,
 } from "react";
-import { safeCreateContext } from "../utils/reactLoader";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import {
