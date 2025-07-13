@@ -361,7 +361,7 @@ const AddressManager = () => {
                 Where buyers will collect books from you
               </p>
 
-              <GoogleMapsAddressInput
+              <BasicAddressInput
                 onAddressSelect={handlePickupAddressSelect}
                 placeholder="Search for your pickup address..."
                 defaultValue={pickupAddress.streetAddress}
