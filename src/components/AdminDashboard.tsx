@@ -427,6 +427,13 @@ const AdminDashboard = () => {
           totalUsers: usersData.length,
           newUsersToday,
         }));
+      } else {
+        console.warn("Users data is not an array:", usersData);
+        setStats((prev) => ({
+          ...prev,
+          totalUsers: 0,
+          newUsersToday: 0,
+        }));
       }
     } catch (error) {
       console.error("Error loading user stats:", error);
@@ -480,6 +487,13 @@ const AdminDashboard = () => {
           ...prev,
           activeBooks: booksData.length, // Total books as fallback
           booksListedToday,
+        }));
+      } else {
+        console.warn("Books data is not an array:", booksData);
+        setStats((prev) => ({
+          ...prev,
+          activeBooks: 0,
+          booksListedToday: 0,
         }));
       }
     } catch (error) {
