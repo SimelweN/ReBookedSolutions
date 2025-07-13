@@ -46,7 +46,17 @@ export default defineConfig(({ command, mode }) => {
         },
       },
     },
-    plugins: [react()],
+    plugins: [
+      react({
+        jsxRuntime: "automatic",
+        jsxImportSource: "@emotion/react",
+        fastRefresh: true,
+        // Ensure proper JSX runtime
+        babel: {
+          plugins: [],
+        },
+      }),
+    ],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
