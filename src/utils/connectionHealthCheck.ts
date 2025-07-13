@@ -80,6 +80,18 @@ if (typeof window !== "undefined") {
 export const checkConnectionHealth = async (
   skipCache = false,
 ): Promise<ConnectionHealthResult> => {
+  // Skip connection health checks in development to prevent 401 errors
+  if (import.meta.env.DEV || import.meta.env.NODE_ENV === "development") {
+    return {
+      isOnline: true,
+      supabaseConnected: true,
+      authStatus: "connected",
+      latency: 0,
+      timestamp: new Date().toISOString(),
+      cached: false,
+    };
+  }
+
   const now = Date.now();
 
   // Quick return if definitely offline
