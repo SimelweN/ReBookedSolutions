@@ -419,7 +419,7 @@ const CommitTester = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {mockOrders.length === 0 ? (
+          {!Array.isArray(mockOrders) || mockOrders.length === 0 ? (
             <Alert>
               <AlertDescription>
                 No orders found. Create a mock order to begin testing.
