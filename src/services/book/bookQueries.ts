@@ -134,10 +134,15 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
           setTimeout(() => reject(new Error("Query timeout")), 5000),
         );
 
-        const { data: booksData, error: booksError } = (await Promise.race([
-          booksPromise,
-          timeoutPromise,
-        ])) as any;
+        const queryResult = await Promise.race([booksPromise, timeoutPromise]);
+
+        // Handle timeout case
+        if (queryResult instanceof Error) {
+          console.error("[Books query] Query timed out");
+          throw queryResult;
+        }
+
+        const { data: booksData, error: booksError } = queryResult as any;
 
         if (booksError) {
           const errorMessage = booksError.message || "Unknown database error";
@@ -159,13 +164,34 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
           );
         }
 
-        if (!booksData || booksData.length === 0) {
+        // Ensure booksData is an array before proceeding
+        if (!booksData || !Array.isArray(booksData)) {
+          console.log(
+            "No books data or invalid data format, returning empty array",
+          );
+          return [];
+        }
+
+        if (booksData.length === 0) {
           console.log("No books found");
           return [];
         }
 
-        // Get unique seller IDs
-        const sellerIds = [...new Set(booksData.map((book) => book.seller_id))];
+        // Get unique seller IDs - now safe since we know booksData is an array
+        let sellerIds;
+        try {
+          sellerIds = [...new Set(booksData.map((book) => book.seller_id))];
+        } catch (mapError) {
+          console.error(
+            "Error mapping seller IDs:",
+            mapError,
+            "booksData type:",
+            typeof booksData,
+            "booksData:",
+            booksData,
+          );
+          return [];
+        }
 
         // Fetch seller profiles with fallback
         let profilesMap = new Map();
@@ -206,21 +232,32 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
         });
 
         // Map books using the book mapper for consistency
-        const books: Book[] = booksData.map((bookData: any) => {
-          const sellerProfile = profilesMap.get(bookData.seller_id) || {
-            id: bookData.seller_id,
-            name: "Unknown Seller",
-            email: "unknown@example.com",
-            pickup_address: null,
-          };
+        let books: Book[];
+        try {
+          books = booksData.map((bookData: any) => {
+            const sellerProfile = profilesMap.get(bookData.seller_id) || {
+              id: bookData.seller_id,
+              name: "Unknown Seller",
+              email: "unknown@example.com",
+              pickup_address: null,
+            };
 
-          const bookDataWithProfile = {
-            ...bookData,
-            profiles: sellerProfile,
-          };
+            const bookDataWithProfile = {
+              ...bookData,
+              profiles: sellerProfile,
+            };
 
-          return mapBookFromDatabase(bookDataWithProfile, sellerProfile);
-        });
+            return mapBookFromDatabase(bookDataWithProfile, sellerProfile);
+          });
+        } catch (mappingError) {
+          console.error(
+            "Error mapping books:",
+            mappingError,
+            "booksData type:",
+            typeof booksData,
+          );
+          return [];
+        }
 
         console.log(
           "✅ [BookQueries] Successfully processed books:",
@@ -459,7 +496,14 @@ export const getBooksByUser = async (userId: string): Promise<Book[]> => {
           );
         }
 
-        if (!booksData || booksData.length === 0) {
+        if (!booksData || !Array.isArray(booksData)) {
+          console.log(
+            `No books data or invalid data format for user: ${userId}`,
+          );
+          return [];
+        }
+
+        if (booksData.length === 0) {
           console.log(`No books found for user: ${userId}`);
           return [];
         }
@@ -488,13 +532,24 @@ export const getBooksByUser = async (userId: string): Promise<Book[]> => {
         }
 
         // Map books using the seller profile
-        const books = booksData.map((bookData) => {
-          const bookDataWithProfile = {
-            ...bookData,
-            profiles: seller,
-          };
-          return mapBookFromDatabase(bookDataWithProfile, seller);
-        });
+        let books;
+        try {
+          books = booksData.map((bookData) => {
+            const bookDataWithProfile = {
+              ...bookData,
+              profiles: seller,
+            };
+            return mapBookFromDatabase(bookDataWithProfile, seller);
+          });
+        } catch (mappingError) {
+          console.error(
+            "Error mapping books in getBooksByUser:",
+            mappingError,
+            "booksData type:",
+            typeof booksData,
+          );
+          return [];
+        }
 
         console.log(
           `✅ Successfully fetched ${books.length} books for user ${userId}`,

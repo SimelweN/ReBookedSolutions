@@ -230,7 +230,9 @@ const DevDashboard: React.FC = () => {
         // Function exists, use it
         const { data, error } = await supabase.rpc("get_table_names", {});
         if (!error) {
-          setDbTables(data || []);
+          // Ensure data is an array before setting
+          const tableData = Array.isArray(data) ? data : [];
+          setDbTables(tableData);
           return;
         }
       }
@@ -1210,24 +1212,30 @@ const DevDashboard: React.FC = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
-                      {dbTables.map((table) => (
-                        <Button
-                          key={table.table_name}
-                          variant={
-                            selectedTable === table.table_name
-                              ? "default"
-                              : "outline"
-                          }
-                          className="w-full justify-start"
-                          onClick={() => {
-                            setSelectedTable(table.table_name);
-                            loadTableData(table.table_name);
-                          }}
-                        >
-                          <Database className="h-4 w-4 mr-2" />
-                          {table.table_name}
-                        </Button>
-                      ))}
+                      {dbTables && Array.isArray(dbTables) ? (
+                        dbTables.map((table) => (
+                          <Button
+                            key={table.table_name}
+                            variant={
+                              selectedTable === table.table_name
+                                ? "default"
+                                : "outline"
+                            }
+                            className="w-full justify-start"
+                            onClick={() => {
+                              setSelectedTable(table.table_name);
+                              loadTableData(table.table_name);
+                            }}
+                          >
+                            <Database className="h-4 w-4 mr-2" />
+                            {table.table_name}
+                          </Button>
+                        ))
+                      ) : (
+                        <p className="text-muted-foreground">
+                          No database tables available
+                        </p>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

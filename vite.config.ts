@@ -202,10 +202,11 @@ export default defineConfig(({ mode }) => ({
       "@supabase/supabase-js",
       "@tanstack/react-query",
       "lucide-react",
+      "@react-google-maps/api", // Added back to include list for proper optimization
     ],
     exclude: [
       // Exclude heavy optional dependencies
-      "@react-google-maps/api",
+      // "@react-google-maps/api", // Temporarily removed for debugging
     ],
     force: true, // Force re-bundling to ensure consistency
     // Ensure React is pre-bundled before anything else
