@@ -221,7 +221,18 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
             (await Promise.race([profilesPromise, profilesTimeout])) as any;
 
           if (profilesError) {
-            console.warn("Failed to fetch seller profiles, using fallbacks");
+            // Handle database setup required for profiles table
+            if (
+              profilesError.code === "TABLE_NOT_FOUND" ||
+              profilesError.message?.includes("404") ||
+              profilesError.message?.includes("does not exist")
+            ) {
+              console.warn(
+                "👤 Profiles table not found - database setup required",
+              );
+            } else {
+              console.warn("Failed to fetch seller profiles, using fallbacks");
+            }
           } else if (profilesData) {
             profilesData.forEach((profile: any) => {
               profilesMap.set(profile.id, profile);
