@@ -22,20 +22,31 @@ const SentryTester: React.FC = () => {
   };
 
   const testPerformanceTransaction = () => {
-    const transaction = Sentry.startTransaction({
-      name: "Test Performance Transaction",
-      op: "custom",
-    });
+    // Use the current Sentry API for performance monitoring
+    const startTime = Date.now();
 
-    Sentry.getCurrentHub().configureScope((scope) => {
-      scope.setSpan(transaction);
-    });
+    Sentry.startSpan(
+      {
+        name: "Test Performance Transaction",
+        op: "custom.test",
+        description: "Testing performance monitoring in DevDashboard",
+      },
+      (span) => {
+        if (span) {
+          span.setTag("test-type", "performance");
+          span.setData("start-time", startTime);
+        }
 
-    // Simulate some work
-    setTimeout(() => {
-      transaction.finish();
-      toast.success("Performance transaction completed and sent to Sentry!");
-    }, 1000);
+        // Simulate some work
+        setTimeout(() => {
+          if (span) {
+            span.setData("duration", Date.now() - startTime);
+            span.setStatus({ code: 2, message: "ok" });
+          }
+          toast.success("Performance span completed and sent to Sentry!");
+        }, 1000);
+      },
+    );
   };
 
   const testUserContext = () => {
@@ -147,7 +158,7 @@ const SentryTester: React.FC = () => {
               variant="outline"
               className="w-full"
             >
-              Test Performance Transaction
+              Test Performance Span
             </Button>
 
             <Button

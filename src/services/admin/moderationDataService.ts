@@ -29,66 +29,87 @@ export interface ModerationData {
 }
 
 export const loadModerationData = async (): Promise<ModerationData> => {
-  // First, get reports and suspended users
-  const [reportsResponse, usersResponse] = await Promise.all([
-    supabase
-      .from("reports")
-      .select("*")
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("profiles")
-      .select("id, name, email, status, suspended_at, suspension_reason")
-      .in("status", ["suspended", "banned"])
-      .order("created_at", { ascending: false }),
-  ]);
+  try {
+    // First, get reports and suspended users
+    const [reportsResponse, usersResponse] = await Promise.all([
+      supabase
+        .from("reports")
+        .select("*")
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("profiles")
+        .select("id, name, email, status, suspended_at, suspension_reason")
+        .in("status", ["suspended", "banned"])
+        .order("created_at", { ascending: false }),
+    ]);
 
-  if (reportsResponse.error) {
-    throw new Error(`Failed to load reports: ${reportsResponse.error.message}`);
-  }
+    if (reportsResponse.error) {
+      console.error("Reports query error:", reportsResponse.error);
+      throw new Error(
+        `Failed to load reports: ${reportsResponse.error.message}`,
+      );
+    }
 
-  if (usersResponse.error) {
-    throw new Error(
-      `Failed to load suspended users: ${usersResponse.error.message}`,
-    );
-  }
+    if (usersResponse.error) {
+      console.error("Users query error:", usersResponse.error);
+      throw new Error(
+        `Failed to load suspended users: ${usersResponse.error.message}`,
+      );
+    }
 
-  // Get unique reporter user IDs to minimize profile queries
-  const reporterUserIds = Array.from(
-    new Set(
-      (reportsResponse.data || []).map(
-        (report: any) => report.reporter_user_id,
+    // Safely handle potentially null/undefined data
+    const reportsData = Array.isArray(reportsResponse.data)
+      ? reportsResponse.data
+      : [];
+    const usersData = Array.isArray(usersResponse.data)
+      ? usersResponse.data
+      : [];
+
+    console.log("Reports response validation:", {
+      data: reportsResponse.data,
+      isArray: Array.isArray(reportsResponse.data),
+      type: typeof reportsResponse.data,
+      length: reportsData.length,
+    });
+
+    // Get unique reporter user IDs to minimize profile queries
+    const reporterUserIds = Array.from(
+      new Set(
+        reportsData
+          .map((report: any) => report.reporter_user_id)
+          .filter(Boolean),
       ),
-    ),
-  );
-
-  // Fetch reporter profiles only for users who have made reports
-  let reporterProfilesResponse = { data: [], error: null };
-  if (reporterUserIds.length > 0) {
-    reporterProfilesResponse = await supabase
-      .from("profiles")
-      .select("id, name, email")
-      .in("id", reporterUserIds);
-  }
-
-  if (reporterProfilesResponse.error) {
-    console.warn(
-      "Failed to load reporter profiles:",
-      reporterProfilesResponse.error.message,
     );
-    // Continue without reporter profiles rather than failing
-  }
 
-  // Create a map of profiles for quick lookup
-  const profilesMap = new Map();
-  if (reporterProfilesResponse.data) {
-    reporterProfilesResponse.data.forEach((profile) => {
+    // Fetch reporter profiles only for users who have made reports
+    let reporterProfilesResponse = { data: [], error: null };
+    if (reporterUserIds.length > 0) {
+      reporterProfilesResponse = await supabase
+        .from("profiles")
+        .select("id, name, email")
+        .in("id", reporterUserIds);
+    }
+
+    if (reporterProfilesResponse.error) {
+      console.warn(
+        "Failed to load reporter profiles:",
+        reporterProfilesResponse.error.message,
+      );
+      // Continue without reporter profiles rather than failing
+    }
+
+    // Create a map of profiles for quick lookup
+    const profilesMap = new Map();
+    const reporterProfilesData = Array.isArray(reporterProfilesResponse.data)
+      ? reporterProfilesResponse.data
+      : [];
+
+    reporterProfilesData.forEach((profile) => {
       profilesMap.set(profile.id, profile);
     });
-  }
 
-  // Join data manually
-  const typedReports: Report[] = (reportsResponse.data || []).map(
-    (report: any) => {
+    // Join data manually
+    const typedReports: Report[] = reportsData.map((report: any) => {
       const reporterProfile = profilesMap.get(report.reporter_user_id);
       return {
         ...report,
@@ -96,15 +117,22 @@ export const loadModerationData = async (): Promise<ModerationData> => {
         reporter_email: reporterProfile?.email,
         reporter_name: reporterProfile?.name,
       };
-    },
-  );
+    });
 
-  const typedUsers: SuspendedUser[] = usersResponse.data || [];
+    const typedUsers: SuspendedUser[] = usersData;
 
-  return {
-    reports: typedReports,
-    suspendedUsers: typedUsers,
-  };
+    return {
+      reports: typedReports,
+      suspendedUsers: typedUsers,
+    };
+  } catch (error) {
+    console.error("Error loading moderation data:", error);
+    // Return empty data instead of throwing to prevent component crashes
+    return {
+      reports: [],
+      suspendedUsers: [],
+    };
+  }
 };
 
 export const updateReportStatus = async (

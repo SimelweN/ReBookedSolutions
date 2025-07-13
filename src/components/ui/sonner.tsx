@@ -1,13 +1,26 @@
-import React from "react";
-import { Toaster as Sonner, toast } from "sonner";
+import React, { useEffect, useState } from "react";
+import { Toaster as SonnerToaster, toast } from "sonner";
 
-type ToasterProps = React.ComponentProps<typeof Sonner>;
+type ToasterProps = React.ComponentProps<typeof SonnerToaster>;
 
 const Toaster = ({ ...props }: ToasterProps) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    // Defer mounting to avoid SSR/hydration issues and setState during render
+    setIsMounted(true);
+  }, []);
+
+  // Don't render until after mount to prevent setState warnings
+  if (!isMounted || typeof window === "undefined") {
+    return null;
+  }
+
   return (
-    <Sonner
+    <SonnerToaster
       theme="light"
       className="toaster group"
+      position="bottom-right"
       toastOptions={{
         classNames: {
           toast:
@@ -23,5 +36,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
     />
   );
 };
+
+Toaster.displayName = "Toaster";
 
 export { Toaster, toast };

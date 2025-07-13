@@ -87,6 +87,11 @@ import ComprehensiveFunctionalityTest from "@/components/test/ComprehensiveFunct
 import PurchaseFlowTester from "@/components/test/PurchaseFlowTester";
 import NotificationDemo from "@/components/test/NotificationDemo";
 import FunctionTester from "@/components/admin/FunctionTester";
+import DatabaseTest from "@/components/admin/DatabaseTest";
+import QADashboard from "@/components/admin/QADashboard";
+import EdgeFunctionMonitor from "@/components/EdgeFunctionMonitor";
+import RealConsole from "@/components/admin/RealConsole";
+import SentryTester from "@/components/test/SentryTester";
 import { getFunctionFallback } from "@/services/functionFallbackService";
 import {
   createGetTableNamesFunction,
@@ -1037,6 +1042,34 @@ const DevDashboard: React.FC = () => {
                   <CheckCircle className="h-3 w-3 lg:h-4 lg:w-4" />
                   <span>Full Test</span>
                 </TabsTrigger>
+                <TabsTrigger
+                  value="qa-testing"
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
+                >
+                  <Shield className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>QA Testing</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="edge-monitor"
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
+                >
+                  <Activity className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Monitor</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="console"
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
+                >
+                  <Terminal className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Console</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="sentry-test"
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
+                >
+                  <Shield className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Sentry</span>
+                </TabsTrigger>
               </TabsList>
             </div>
 
@@ -1204,6 +1237,7 @@ const DevDashboard: React.FC = () => {
 
             {/* Database Tab */}
             <TabsContent value="database" className="space-y-6">
+              <DatabaseTest />
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Database Tables */}
                 <Card>
@@ -1810,6 +1844,26 @@ const DevDashboard: React.FC = () => {
             {/* Comprehensive Functionality Test Tab */}
             <TabsContent value="comprehensive-test" className="space-y-6">
               <ComprehensiveFunctionalityTest />
+            </TabsContent>
+
+            {/* QA Testing Tab */}
+            <TabsContent value="qa-testing" className="space-y-6">
+              <QADashboard />
+            </TabsContent>
+
+            {/* Edge Function Monitor Tab */}
+            <TabsContent value="edge-monitor" className="space-y-6">
+              <EdgeFunctionMonitor />
+            </TabsContent>
+
+            {/* Console Tab */}
+            <TabsContent value="console" className="space-y-6">
+              <RealConsole height="600px" className="border-0 shadow-lg" />
+            </TabsContent>
+
+            {/* Sentry Testing Tab */}
+            <TabsContent value="sentry-test" className="space-y-6">
+              <SentryTester />
             </TabsContent>
           </Tabs>
         </div>
