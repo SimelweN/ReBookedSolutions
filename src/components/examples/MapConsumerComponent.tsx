@@ -26,6 +26,17 @@ function MapConsumerComponent() {
 
 // Example of proper Google Maps usage that relies on GoogleMapsProvider context
 const GoogleMapsExample = () => {
+  // Skip in Workers environment
+  if (typeof window === "undefined" || !GoogleMap) {
+    return (
+      <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+        <p className="text-gray-600">
+          Google Maps not available in this environment
+        </p>
+      </div>
+    );
+  }
+
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
   if (!apiKey) {
