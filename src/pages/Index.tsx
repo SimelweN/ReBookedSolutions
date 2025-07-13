@@ -14,7 +14,6 @@ const Index = React.memo(() => {
     (e: React.FormEvent) => {
       e.preventDefault();
       if (searchQuery.trim()) {
-        console.log("Searching for:", searchQuery.trim());
         navigate(`/books?search=${encodeURIComponent(searchQuery.trim())}`);
       }
     },
