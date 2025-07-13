@@ -250,6 +250,13 @@ const AdminDashboard = () => {
       color: "bg-red-500",
       action: runSecurityCheck,
     },
+    {
+      title: "Development Tools",
+      description: "Access testing & debugging tools",
+      icon: TestTube,
+      color: "bg-indigo-500",
+      action: () => navigate("/dev-dashboard"),
+    },
   ];
 
   // Load real data on component mount
