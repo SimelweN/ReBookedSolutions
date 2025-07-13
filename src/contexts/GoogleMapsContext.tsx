@@ -1,49 +1,23 @@
-import React, { useContext, createContext } from "react";
+import React from "react";
+import { LoadScript } from "@react-google-maps/api";
+
 type ReactNode = React.ReactNode;
-import { useJsApiLoader } from "@react-google-maps/api";
+
 // Define the libraries array with proper typing
 const libraries: "places"[] = ["places"];
-
-// Define the context type
-interface GoogleMapsContextType {
-  isLoaded: boolean;
-  loadError: Error | undefined;
-}
-
-// Create the context with undefined as default
-const GoogleMapsContext = createContext<GoogleMapsContextType | undefined>(
-  undefined,
-);
-
-// Custom hook to use the Google Maps context
-export const useGoogleMaps = (): GoogleMapsContextType => {
-  const context = useContext(GoogleMapsContext);
-  if (context === undefined) {
-    throw new Error("useGoogleMaps must be used within a GoogleMapsProvider");
-  }
-  return context;
-};
 
 // Provider props interface
 interface GoogleMapsProviderProps {
   children: ReactNode;
 }
 
-// Google Maps Provider component
+// Google Maps Provider component using LoadScript
 export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
   children,
 }) => {
   // Skip Google Maps loading in non-browser environments
   if (typeof window === "undefined") {
-    const mockContext: GoogleMapsContextType = {
-      isLoaded: false,
-      loadError: undefined,
-    };
-    return (
-      <GoogleMapsContext.Provider value={mockContext}>
-        {children}
-      </GoogleMapsContext.Provider>
-    );
+    return <>{children}</>;
   }
 
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -52,27 +26,6 @@ export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
   const isBrowser =
     typeof window !== "undefined" && typeof document !== "undefined";
   const hasApiKey = Boolean(apiKey && apiKey.trim() !== "" && isBrowser);
-
-  // Always call useJsApiLoader hook - React hooks must be called unconditionally
-  const { isLoaded, loadError } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: apiKey || "",
-    libraries,
-    preventGoogleFontsLoading: true,
-    // Skip loading if no API key or not in browser
-    skipApiLoad: !hasApiKey || !isBrowser,
-  });
-
-  // Provide fallback state for non-browser or no API key
-  const value: GoogleMapsContextType = {
-    isLoaded: hasApiKey && isBrowser ? isLoaded : false,
-    loadError:
-      hasApiKey && isBrowser
-        ? loadError
-        : isBrowser
-          ? new Error("Google Maps API key not configured")
-          : new Error("Google Maps not available in Workers environment"),
-  };
 
   // Log warning in development
   if (!hasApiKey && import.meta.env.DEV) {
@@ -83,12 +36,17 @@ export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
         "2. Add VITE_GOOGLE_MAPS_API_KEY=your_api_key to your .env file\n" +
         "3. Enable Places API in Google Cloud Console",
     );
+    return <>{children}</>;
   }
 
   return (
-    <GoogleMapsContext.Provider value={value}>
+    <LoadScript
+      googleMapsApiKey={apiKey || ""}
+      libraries={libraries}
+      preventGoogleFontsLoading={true}
+    >
       {children}
-    </GoogleMapsContext.Provider>
+    </LoadScript>
   );
 };
 
