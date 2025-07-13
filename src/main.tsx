@@ -16,6 +16,8 @@ const isBrowser = (() => {
   }
 })();
 
+// Only execute React app in browser environment
+if (isBrowser) {
   try {
     const rootElement = document.getElementById("root");
     if (rootElement) {
