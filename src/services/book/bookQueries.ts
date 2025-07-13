@@ -231,24 +231,33 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
           }
         });
 
-                // Map books using the book mapper for consistency
+        // Map books using the book mapper for consistency
         let books: Book[];
         try {
           books = booksData.map((bookData: any) => {
-          const sellerProfile = profilesMap.get(bookData.seller_id) || {
-            id: bookData.seller_id,
-            name: "Unknown Seller",
-            email: "unknown@example.com",
-            pickup_address: null,
-          };
+            const sellerProfile = profilesMap.get(bookData.seller_id) || {
+              id: bookData.seller_id,
+              name: "Unknown Seller",
+              email: "unknown@example.com",
+              pickup_address: null,
+            };
 
-          const bookDataWithProfile = {
-            ...bookData,
-            profiles: sellerProfile,
-          };
+            const bookDataWithProfile = {
+              ...bookData,
+              profiles: sellerProfile,
+            };
 
-          return mapBookFromDatabase(bookDataWithProfile, sellerProfile);
-        });
+            return mapBookFromDatabase(bookDataWithProfile, sellerProfile);
+          });
+        } catch (mappingError) {
+          console.error(
+            "Error mapping books:",
+            mappingError,
+            "booksData type:",
+            typeof booksData,
+          );
+          return [];
+        }
 
         console.log(
           "✅ [BookQueries] Successfully processed books:",
