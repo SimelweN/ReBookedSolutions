@@ -161,6 +161,20 @@ export const checkConnectionHealth = async (
         result.supabaseConnected = true; // Connection is working, just not authenticated
         result.authStatus = "disconnected";
         result.error = "Authentication required";
+      }
+      // Handle 404 errors - likely database not set up yet
+      else if (
+        error.code === "TABLE_NOT_FOUND" ||
+        error.message?.includes("HTTP 404") ||
+        error.message?.includes("404") ||
+        error.message?.includes("table") ||
+        error.message?.includes("relation") ||
+        error.message?.includes("does not exist")
+      ) {
+        devWarn("Connection check: Database setup required", error);
+        result.supabaseConnected = true; // Connection is working, just no tables
+        result.authStatus = "connected";
+        result.error = "Database setup required";
       } else {
         consecutiveFailures++;
         result.error = error.message;
