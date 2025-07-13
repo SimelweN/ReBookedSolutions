@@ -4,13 +4,30 @@
  * Disable Vite HMR in production environments
  */
 export const disableHMRInProduction = () => {
-  if (typeof window !== "undefined" && import.meta.env.PROD) {
-    // Override the Vite client to prevent HMR connections in production
+  if (
+    typeof window !== "undefined" &&
+    (import.meta.env.PROD || isProductionDeployment())
+  ) {
+    // Override fetch to block Vite client requests
+    const originalFetch = window.fetch;
+    window.fetch = (...args) => {
+      const url = args[0];
+      if (
+        typeof url === "string" &&
+        (url.includes("/@vite/client") || url.includes("__vite_ping"))
+      ) {
+        console.log("🚫 Blocked Vite client request in production");
+        return Promise.reject(new Error("Vite client disabled in production"));
+      }
+      return originalFetch.apply(window, args);
+    };
+
+    // Override ping function
     if ("__vite_ping" in window) {
       (window as any).__vite_ping = () => Promise.resolve();
     }
 
-    // Disable any WebSocket connections that might be related to HMR
+    // Disable WebSocket connections
     if ("__vite_ws" in window) {
       const ws = (window as any).__vite_ws;
       if (ws && typeof ws.close === "function") {
@@ -18,7 +35,20 @@ export const disableHMRInProduction = () => {
       }
     }
 
-    console.log("🚀 Production mode: HMR disabled");
+    // Block WebSocket creation for Vite HMR
+    const OriginalWebSocket = window.WebSocket;
+    window.WebSocket = class extends OriginalWebSocket {
+      constructor(url: string | URL, protocols?: string | string[]) {
+        const urlStr = typeof url === "string" ? url : url.toString();
+        if (urlStr.includes("__vite_hmr") || urlStr.includes("vite-hmr")) {
+          console.log("🚫 Blocked Vite WebSocket in production");
+          throw new Error("Vite WebSocket disabled in production");
+        }
+        super(url, protocols);
+      }
+    };
+
+    console.log("🚀 Production mode: HMR aggressively disabled");
   }
 };
 
