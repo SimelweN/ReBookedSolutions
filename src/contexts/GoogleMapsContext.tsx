@@ -39,15 +39,25 @@ export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
     return <>{children}</>;
   }
 
-  return (
-    <LoadScript
-      googleMapsApiKey={apiKey || ""}
-      libraries={libraries}
-      preventGoogleFontsLoading={true}
-    >
-      {children}
-    </LoadScript>
-  );
+  // Wrap LoadScript with error boundary to prevent initialization crashes
+  try {
+    return (
+      <LoadScript
+        googleMapsApiKey={apiKey || ""}
+        libraries={libraries}
+        preventGoogleFontsLoading={true}
+        loadingElement={<div>Loading Google Maps...</div>}
+        onError={(error) => {
+          console.error("Google Maps LoadScript error:", error);
+        }}
+      >
+        {children}
+      </LoadScript>
+    );
+  } catch (error) {
+    console.error("Google Maps provider initialization error:", error);
+    return <>{children}</>;
+  }
 };
 
 export default GoogleMapsProvider;
