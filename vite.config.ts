@@ -242,6 +242,8 @@ export default defineConfig(({ command, mode }) => {
       ),
       // Ensure global React availability
       global: "globalThis",
+      // Disable HMR in production
+      __VITE_HMR__: mode !== "production",
     },
 
     // Performance optimizations
