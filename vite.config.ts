@@ -9,14 +9,15 @@ const isDev = isNode && process.env.NODE_ENV !== "production";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
+  const isProduction = mode === 'production';
+
   return {
-    server: {
+    server: !isProduction ? {
       host: "::",
       port: 8081,
       hmr: {
         port: 8081,
         host: "localhost",
-        clientPort: mode === "development" ? 8081 : undefined,
       },
       proxy: {
         // Proxy API requests to Vercel dev server or deployed API
