@@ -46,6 +46,11 @@ export const useCommitAutoExpiry = () => {
   }, []);
 
   const loadUrgentInfo = async () => {
+    // Skip if not in browser environment
+    if (!isBrowser) {
+      return;
+    }
+
     try {
       const [urgentCount, nextExpiry] = await Promise.all([
         ClientCommitAutoExpiry.getUrgentCommitsCount(),
@@ -55,7 +60,16 @@ export const useCommitAutoExpiry = () => {
       setUrgentCount(urgentCount);
       setNextExpiry(nextExpiry);
     } catch (error) {
-      console.warn("Error loading urgent commit info:", error);
+      // Don't log auth errors as they're expected when not authenticated
+      if (
+        !error?.message?.includes("authentication") &&
+        !error?.message?.includes("401")
+      ) {
+        console.warn("Error loading urgent commit info:", error);
+      }
+      // Set default values on error
+      setUrgentCount(0);
+      setNextExpiry(null);
     }
   };
 
