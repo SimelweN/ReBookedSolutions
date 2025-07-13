@@ -270,19 +270,28 @@ const GoogleMapsAddressInput = ({
 
           {/* Map Preview using the proper pattern */}
           <div className="border rounded-lg overflow-hidden">
-            <GoogleMap
-              id="address-preview-map"
-              mapContainerStyle={mapContainerStyle}
-              center={coords}
-              zoom={15}
-              options={{
-                streetViewControl: false,
-                mapTypeControl: false,
-                fullscreenControl: false,
-              }}
-            >
-              <MapConsumer coords={coords} address={address} />
-            </GoogleMap>
+            {isGoogleMapsReady() ? (
+              <GoogleMap
+                id="address-preview-map"
+                mapContainerStyle={mapContainerStyle}
+                center={coords}
+                zoom={15}
+                options={{
+                  streetViewControl: false,
+                  mapTypeControl: false,
+                  fullscreenControl: false,
+                }}
+              >
+                <MapConsumer coords={coords} address={address} />
+              </GoogleMap>
+            ) : (
+              <div className="flex items-center justify-center h-[300px] bg-gray-100">
+                <div className="text-center">
+                  <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
+                  <p className="text-sm text-gray-600">Loading map...</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
