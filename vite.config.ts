@@ -205,7 +205,7 @@ export default defineConfig(({ mode }) => ({
     ],
     exclude: [
       // Exclude heavy optional dependencies
-      "@react-google-maps/api",
+      // "@react-google-maps/api", // Temporarily removed for debugging
     ],
     force: true, // Force re-bundling to ensure consistency
     // Ensure React is pre-bundled before anything else
