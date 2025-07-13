@@ -156,6 +156,9 @@ const DevDashboard = isBrowserEnv
 const SentryTest = isBrowserEnv
   ? React.lazy(() => import("./pages/SentryTest"))
   : WorkersFallback;
+const ToastDemo = isBrowserEnv
+  ? React.lazy(() => import("./pages/ToastDemo"))
+  : WorkersFallback;
 
 // Loading component with fallback
 const LoadingSpinner = () => <LoadingFallback type="compact" />;
@@ -658,6 +661,18 @@ function App() {
                           }
                         />
 
+                        {/* Toast Demo - Admin only */}
+                        <Route
+                          path="/toast-demo"
+                          element={
+                            <AdminProtectedRoute>
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <ToastDemo />
+                              </Suspense>
+                            </AdminProtectedRoute>
+                          }
+                        />
+
                         {/* 404 Route */}
                         <Route
                           path="*"
@@ -673,7 +688,7 @@ function App() {
                 </Router>
                 <NotificationWrapper position="top-right" maxVisible={3} />
                 <NotificationInitializer />
-                <Toaster position="bottom-right" />
+                <Toaster />
               </CartProvider>
             </AuthProvider>
           </ThemeProvider>
