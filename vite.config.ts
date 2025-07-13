@@ -81,7 +81,6 @@ export default defineConfig(({ command, mode }) => {
             if (
               id.includes("react") &&
               !id.includes("react-router") &&
-              !id.includes("@react-google-maps") &&
               !id.includes("@tanstack/react-query")
             ) {
               return "0-react-core";
