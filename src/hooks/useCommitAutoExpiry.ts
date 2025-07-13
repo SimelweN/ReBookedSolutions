@@ -19,22 +19,38 @@ export const useCommitAutoExpiry = () => {
       return;
     }
 
-    // Ensure the service is started
-    ClientCommitAutoExpiry.start();
-    setIsRunning(true);
+    // Defer initialization to avoid circular dependency issues
+    const initializeService = () => {
+      try {
+        // Ensure the service is started
+        ClientCommitAutoExpiry.start();
+        setIsRunning(true);
 
-    // Initial load of urgent commits and next expiry
-    loadUrgentInfo();
+        // Initial load of urgent commits and next expiry
+        loadUrgentInfo();
+      } catch (error) {
+        console.warn("Failed to initialize commit auto-expiry:", error);
+      }
+    };
+
+    // Use setTimeout to defer initialization after module loading is complete
+    const timeoutId = setTimeout(initializeService, 100);
 
     // Update urgent info every 5 minutes
     const interval = setInterval(loadUrgentInfo, 5 * 60 * 1000);
 
     return () => {
+      clearTimeout(timeoutId);
       clearInterval(interval);
     };
   }, []);
 
   const loadUrgentInfo = async () => {
+    // Skip if not in browser environment
+    if (!isBrowser) {
+      return;
+    }
+
     try {
       const [urgentCount, nextExpiry] = await Promise.all([
         ClientCommitAutoExpiry.getUrgentCommitsCount(),
@@ -44,7 +60,16 @@ export const useCommitAutoExpiry = () => {
       setUrgentCount(urgentCount);
       setNextExpiry(nextExpiry);
     } catch (error) {
-      console.warn("Error loading urgent commit info:", error);
+      // Don't log auth errors as they're expected when not authenticated
+      if (
+        !error?.message?.includes("authentication") &&
+        !error?.message?.includes("401")
+      ) {
+        console.warn("Error loading urgent commit info:", error);
+      }
+      // Set default values on error
+      setUrgentCount(0);
+      setNextExpiry(null);
     }
   };
 

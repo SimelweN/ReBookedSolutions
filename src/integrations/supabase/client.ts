@@ -50,7 +50,7 @@ const createMockSupabaseClient = () => {
   if (isDev) {
     console.warn(
       "⚠️ Supabase environment variables not configured. Using mock client.\n" +
-        "💡 To fix: Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file",
+        "💡 To fix: Run 'npm run setup' to configure with real credentials",
     );
   }
 
@@ -129,10 +129,15 @@ const createMockSupabaseClient = () => {
 
 // Enhanced client creation with error handling and fetch protection
 const createSupabaseClient = () => {
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (
+    !supabaseUrl ||
+    !supabaseAnonKey ||
+    supabaseUrl.includes("demo-") ||
+    supabaseAnonKey.includes("demo-")
+  ) {
     if (isDev) {
       console.warn(
-        "Supabase environment variables not configured, using mock client",
+        "Supabase environment variables not configured or using demo values, using mock client",
       );
     }
     return createMockSupabaseClient() as any;
