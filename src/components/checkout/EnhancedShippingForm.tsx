@@ -132,40 +132,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
 
   const watchedValues = watch();
 
-  // Initialize Google Maps Autocomplete
-  useEffect(() => {
-    if (
-      apiKey &&
-      addressInputRef.current &&
-      !autocompleteRef.current &&
-      window.google
-    ) {
-      try {
-        autocompleteRef.current = new google.maps.places.Autocomplete(
-          addressInputRef.current,
-          {
-            componentRestrictions: { country: "za" },
-            fields: ["address_components", "formatted_address", "geometry"],
-            types: ["address"],
-          },
-        );
-
-        autocompleteRef.current.addListener("place_changed", handlePlaceSelect);
-      } catch (error) {
-        console.warn("Google Maps Autocomplete failed to initialize:", error);
-      }
-    }
-
-    return () => {
-      if (autocompleteRef.current && window.google) {
-        try {
-          google.maps.event.clearInstanceListeners(autocompleteRef.current);
-        } catch (error) {
-          console.warn("Failed to clear Google Maps listeners:", error);
-        }
-      }
-    };
-  }, [apiKey]);
+  // Google Maps removed - using basic address input
 
   // Load user's saved address and autofill user info on component mount
   useEffect(() => {
@@ -434,7 +401,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
     console.log("🔥 FORM SUBMIT TRIGGERED!");
     console.log("📋 Form data:", data);
     console.log("❌ Current errors:", errors);
-    console.log("👀 Watched values:", watchedValues);
+    console.log("�� Watched values:", watchedValues);
     console.log(
       "📝 Recipient name value:",
       data.recipient_name,
