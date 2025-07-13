@@ -661,6 +661,18 @@ function App() {
                           }
                         />
 
+                        {/* Toast Demo - Admin only */}
+                        <Route
+                          path="/toast-demo"
+                          element={
+                            <AdminProtectedRoute>
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <ToastDemo />
+                              </Suspense>
+                            </AdminProtectedRoute>
+                          }
+                        />
+
                         {/* 404 Route */}
                         <Route
                           path="*"
