@@ -22,20 +22,20 @@ const SentryTester: React.FC = () => {
   };
 
   const testPerformanceTransaction = () => {
-    const transaction = Sentry.startTransaction({
-      name: "Test Performance Transaction",
-      op: "custom",
-    });
-
-    Sentry.getCurrentHub().configureScope((scope) => {
-      scope.setSpan(transaction);
-    });
-
-    // Simulate some work
-    setTimeout(() => {
-      transaction.finish();
-      toast.success("Performance transaction completed and sent to Sentry!");
-    }, 1000);
+    // Use the current Sentry API for performance monitoring
+    Sentry.startSpan(
+      {
+        name: "Test Performance Transaction",
+        op: "custom",
+      },
+      (span) => {
+        // Simulate some work
+        setTimeout(() => {
+          span?.setStatus({ code: 2, message: "ok" });
+          toast.success("Performance span completed and sent to Sentry!");
+        }, 1000);
+      },
+    );
   };
 
   const testUserContext = () => {
