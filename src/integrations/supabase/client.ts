@@ -229,9 +229,7 @@ const createSupabaseClient = () => {
 
             // Handle network errors gracefully
             if (isNetworkError(error)) {
-              console.warn(
-                "Network error detected, returning fallback response",
-              );
+              // Silent handling - don't spam console with network errors
               return new Response(
                 JSON.stringify({
                   data: null,
