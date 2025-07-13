@@ -472,7 +472,14 @@ export const getBooksByUser = async (userId: string): Promise<Book[]> => {
           );
         }
 
-        if (!booksData || booksData.length === 0) {
+        if (!booksData || !Array.isArray(booksData)) {
+          console.log(
+            `No books data or invalid data format for user: ${userId}`,
+          );
+          return [];
+        }
+
+        if (booksData.length === 0) {
           console.log(`No books found for user: ${userId}`);
           return [];
         }
