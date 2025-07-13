@@ -57,11 +57,13 @@ export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
   // Initialize maps safely after component mount
   useEffect(() => {
     if (hasApiKey && isBrowser) {
-      // Small delay to ensure DOM is ready
-      const timer = setTimeout(() => {
-        setIsReady(true);
-      }, 100);
-      return () => clearTimeout(timer);
+      loadGoogleMapsApi().then(() => {
+        // Small delay to ensure DOM is ready
+        const timer = setTimeout(() => {
+          setIsReady(true);
+        }, 100);
+        return () => clearTimeout(timer);
+      });
     }
   }, [hasApiKey, isBrowser]);
 
