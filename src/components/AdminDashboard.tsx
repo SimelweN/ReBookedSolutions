@@ -61,6 +61,7 @@ import DatabaseTest from "@/components/admin/DatabaseTest";
 import QADashboard from "@/components/admin/QADashboard";
 import FunctionTester from "@/components/admin/FunctionTester";
 import EdgeFunctionMonitor from "@/components/EdgeFunctionMonitor";
+import RealConsole from "@/components/admin/RealConsole";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -808,6 +809,13 @@ const AdminDashboard = () => {
               <span>QA Testing</span>
             </TabsTrigger>
             <TabsTrigger
+              value="console"
+              className="flex items-center space-x-2"
+            >
+              <Terminal className="h-4 w-4" />
+              <span>Console</span>
+            </TabsTrigger>
+            <TabsTrigger
               value="settings"
               className="flex items-center space-x-2"
             >
@@ -1218,6 +1226,11 @@ const AdminDashboard = () => {
           {/* QA Testing Tab */}
           <TabsContent value="qa" className="space-y-6">
             <QADashboard />
+          </TabsContent>
+
+          {/* Console Tab */}
+          <TabsContent value="console" className="space-y-6">
+            <RealConsole height="600px" className="border-0 shadow-lg" />
           </TabsContent>
 
           {/* Settings Tab */}
