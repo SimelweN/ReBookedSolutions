@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useRef,
 } from "react";
-// Direct React import to avoid createContext issues
+import { safeCreateContext } from "../utils/reactLoader";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -53,8 +53,8 @@ interface AuthActions {
 }
 
 // Split context into state and actions to prevent unnecessary re-renders
-const AuthStateContext = React.createContext<AuthState | undefined>(undefined);
-const AuthActionsContext = React.createContext<AuthActions | undefined>(
+const AuthStateContext = safeCreateContext<AuthState | undefined>(undefined);
+const AuthActionsContext = safeCreateContext<AuthActions | undefined>(
   undefined,
 );
 
@@ -303,7 +303,7 @@ export const OptimizedAuthProvider: React.FC<{ children: React.ReactNode }> =
           } = await supabase.auth.getSession();
 
           if (error) {
-            console.warn("⚠️ Session retrieval error:", error);
+            console.warn("⚠�� Session retrieval error:", error);
             setAuthState((prev) => ({ ...prev, isLoading: false }));
             return;
           }
