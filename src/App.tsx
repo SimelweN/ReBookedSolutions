@@ -153,6 +153,9 @@ const ActivityLog = isBrowserEnv
 const DevDashboard = isBrowserEnv
   ? React.lazy(() => import("./pages/DevDashboard"))
   : WorkersFallback;
+const SentryTest = isBrowserEnv
+  ? React.lazy(() => import("./pages/SentryTest"))
+  : WorkersFallback;
 
 // Loading component with fallback
 const LoadingSpinner = () => <LoadingFallback type="compact" />;
