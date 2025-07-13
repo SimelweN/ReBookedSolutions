@@ -53,11 +53,12 @@ export const loadModerationData = async (): Promise<ModerationData> => {
   }
 
   // Get unique reporter user IDs to minimize profile queries
+  const reportsData = Array.isArray(reportsResponse.data)
+    ? reportsResponse.data
+    : [];
   const reporterUserIds = Array.from(
     new Set(
-      (reportsResponse.data || []).map(
-        (report: any) => report.reporter_user_id,
-      ),
+      reportsData.map((report: any) => report.reporter_user_id).filter(Boolean),
     ),
   );
 
