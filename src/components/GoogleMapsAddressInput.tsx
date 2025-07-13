@@ -1,13 +1,23 @@
 import { useRef, useState, useCallback } from "react";
-import {
-  Autocomplete,
-  GoogleMap,
-  Marker,
-  useGoogleMap,
-} from "@react-google-maps/api";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MapPin, Loader2 } from "lucide-react";
+
+// Conditional imports for Workers compatibility
+let Autocomplete: any, GoogleMap: any, Marker: any, useGoogleMap: any;
+
+// Only import Google Maps in browser environment
+if (typeof window !== "undefined") {
+  try {
+    const googleMapsApi = require("@react-google-maps/api");
+    Autocomplete = googleMapsApi.Autocomplete;
+    GoogleMap = googleMapsApi.GoogleMap;
+    Marker = googleMapsApi.Marker;
+    useGoogleMap = googleMapsApi.useGoogleMap;
+  } catch (error) {
+    console.warn("Google Maps API not available:", error);
+  }
+}
 
 const mapContainerStyle = { width: "100%", height: "300px" };
 
