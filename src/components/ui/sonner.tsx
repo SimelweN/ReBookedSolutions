@@ -1,13 +1,19 @@
 import React from "react";
-import { Toaster as Sonner, toast } from "sonner";
+import { Toaster as SonnerToaster, toast } from "sonner";
 
-type ToasterProps = React.ComponentProps<typeof Sonner>;
+type ToasterProps = React.ComponentProps<typeof SonnerToaster>;
 
-const Toaster = ({ ...props }: ToasterProps) => {
+const Toaster = React.memo(({ ...props }: ToasterProps) => {
+  // Ensure we're in a browser environment
+  if (typeof window === "undefined") {
+    return null;
+  }
+
   return (
-    <Sonner
+    <SonnerToaster
       theme="light"
       className="toaster group"
+      position="bottom-right"
       toastOptions={{
         classNames: {
           toast:
@@ -22,6 +28,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
       {...props}
     />
   );
-};
+});
+
+Toaster.displayName = "Toaster";
 
 export { Toaster, toast };
