@@ -264,14 +264,7 @@ function App() {
                           <Route path="/" element={<IndexPage />} />
 
                           {/* Public routes */}
-                          <Route
-                            path="/books"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <BookListing />
-                              </Suspense>
-                            }
-                          />
+                          <Route path="/books" element={<BookListing />} />
                           <Route
                             path="/books/:id"
                             element={
