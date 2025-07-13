@@ -48,8 +48,21 @@ const ReceiptDownloader: React.FC<ReceiptDownloaderProps> = (props) => {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const downloadAsImage = async (format: "png" | "jpeg" = "png") => {
+    // Ensure we're in browser environment
+    if (typeof window === "undefined") {
+      toast.error("Download not available in this environment");
+      return;
+    }
+
     if (!receiptRef.current) {
       toast.error("Receipt not ready for download");
+      return;
+    }
+
+    // Load html-to-image library
+    await loadHtmlToImage();
+    if (!toPng || !toJpeg) {
+      toast.error("Image generation not available");
       return;
     }
 
