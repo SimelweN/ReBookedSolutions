@@ -44,7 +44,11 @@ const GoogleMapsAddressInput = ({
   className = "",
   defaultValue = "",
 }: GoogleMapsAddressInputProps) => {
-  const { isLoaded } = useGoogleMaps();
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: apiKey || "",
+    libraries: ["places"],
+  });
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const [address, setAddress] = useState(defaultValue || "");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
