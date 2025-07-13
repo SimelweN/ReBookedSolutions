@@ -5,6 +5,7 @@ import SEO from "@/components/SEO";
 import OptimizedImage from "@/components/OptimizedImage";
 import { Button } from "@/components/ui/button";
 import { Search, BookOpen } from "lucide-react";
+import EnhancedDatabaseSetupStatus from "@/components/EnhancedDatabaseSetupStatus";
 
 const Index = React.memo(() => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -14,7 +15,6 @@ const Index = React.memo(() => {
     (e: React.FormEvent) => {
       e.preventDefault();
       if (searchQuery.trim()) {
-        console.log("Searching for:", searchQuery.trim());
         navigate(`/books?search=${encodeURIComponent(searchQuery.trim())}`);
       }
     },
@@ -139,6 +139,13 @@ const Index = React.memo(() => {
               </Link>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Database Setup Status */}
+      <section className="py-8 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <EnhancedDatabaseSetupStatus />
         </div>
       </section>
 

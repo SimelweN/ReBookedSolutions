@@ -159,6 +159,18 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
             return [];
           }
 
+          // Handle database setup required (404 or table not found errors)
+          if (
+            errorCode === "TABLE_NOT_FOUND" ||
+            errorMessage.includes("404") ||
+            errorMessage.includes("does not exist") ||
+            errorMessage.includes("relation") ||
+            errorMessage.includes("table")
+          ) {
+            console.warn("📚 Books table not found - database setup required");
+            return [];
+          }
+
           throw new Error(
             `Failed to fetch books: ${errorMessage} (Code: ${errorCode})`,
           );
@@ -209,7 +221,18 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
             (await Promise.race([profilesPromise, profilesTimeout])) as any;
 
           if (profilesError) {
-            console.warn("Failed to fetch seller profiles, using fallbacks");
+            // Handle database setup required for profiles table
+            if (
+              profilesError.code === "TABLE_NOT_FOUND" ||
+              profilesError.message?.includes("404") ||
+              profilesError.message?.includes("does not exist")
+            ) {
+              console.warn(
+                "👤 Profiles table not found - database setup required",
+              );
+            } else {
+              console.warn("Failed to fetch seller profiles, using fallbacks");
+            }
           } else if (profilesData) {
             profilesData.forEach((profile: any) => {
               profilesMap.set(profile.id, profile);

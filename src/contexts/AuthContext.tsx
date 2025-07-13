@@ -345,10 +345,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
             await Promise.race([connectivityCheck, connectivityTimeout]);
             console.log("✅ [AuthContext] Database connectivity verified");
-          } catch (dbError) {
-            console.warn(
-              "⚠️ [AuthContext] Database connection issues detected, using fallback",
-            );
+          } catch (dbError: any) {
+            // Handle database setup required gracefully
+            if (
+              dbError?.code === "TABLE_NOT_FOUND" ||
+              dbError?.message?.includes("404") ||
+              dbError?.message?.includes("does not exist") ||
+              dbError?.message?.includes("relation") ||
+              dbError?.message?.includes("table")
+            ) {
+              console.warn(
+                "📋 [AuthContext] Database setup required - profiles table not found",
+              );
+            } else {
+              console.warn(
+                "⚠️ [AuthContext] Database connection issues detected, using fallback",
+              );
+            }
             console.info(
               "ℹ️ [AuthContext] Continuing with fallback profile strategy",
             );

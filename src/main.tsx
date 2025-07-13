@@ -3,6 +3,14 @@ import ReactDOM from "react-dom/client";
 import * as Sentry from "@sentry/react";
 import App from "./App.tsx";
 import "./index.css";
+import {
+  disableHMRInProduction,
+  isProductionDeployment,
+} from "./utils/environmentCheck";
+
+// Initialize runtime error handlers early
+import "./utils/runtimeErrorHandler";
+import "./utils/productionConsole";
 
 // Define browser environment check
 const isBrowser = (() => {
@@ -17,37 +25,58 @@ const isBrowser = (() => {
   }
 })();
 
-// Initialize Sentry as early as possible in browser environment
+// Disable HMR in production deployments (early and aggressive)
 if (isBrowser) {
+  try {
+    disableHMRInProduction();
+  } catch (error) {
+    console.warn("HMR disabling failed:", error);
+  }
+}
+
+// Add global error handlers for development
+if (isBrowser && import.meta.env.DEV) {
+  // Handle unhandled promise rejections (like fetch errors)
+  window.addEventListener("unhandledrejection", (event) => {
+    if (event.reason?.message?.includes("Failed to fetch")) {
+      console.warn(
+        "🔧 Development: Network fetch error handled:",
+        event.reason.message,
+      );
+      event.preventDefault(); // Prevent the error from being logged to console
+    }
+  });
+
+  // Handle global errors
+  window.addEventListener("error", (event) => {
+    if (event.error?.message?.includes("Failed to fetch")) {
+      console.warn(
+        "🔧 Development: Global fetch error handled:",
+        event.error.message,
+      );
+      event.preventDefault();
+    }
+  });
+}
+
+// Initialize Sentry only in production to prevent development fetch errors
+const isProduction =
+  import.meta.env.PROD || import.meta.env.NODE_ENV === "production";
+if (isBrowser && isProduction) {
   Sentry.init({
     dsn: "https://d607a8ffffc0d2ba8736074faa5a86f8@o4509633019838464.ingest.us.sentry.io/4509661214081024",
-    // Setting this option to true will send default PII data to Sentry.
-    // For example, automatic IP address collection on events
-    sendDefaultPii: true,
     integrations: [
       Sentry.browserTracingIntegration(),
       Sentry.replayIntegration(),
     ],
-    // Tracing
-    tracesSampleRate: 1.0, //  Capture 100% of the transactions
-    // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
-    tracePropagationTargets: ["localhost", /^https:\/\/yourserver\.io\/api/],
-    // Session Replay
-    replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-    replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
-    // Environment configuration
-    environment: import.meta.env.MODE || "development",
-    // Release tracking
+    tracesSampleRate: 0.1, // Reduced for production
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1.0,
+    environment: import.meta.env.MODE || "production",
     release: import.meta.env.VITE_APP_VERSION || "1.0.0",
-    // Additional configuration for better debugging
-    beforeSend(event) {
-      // Filter out non-critical errors in development
-      if (import.meta.env.MODE !== "production") {
-        console.log("Sentry event:", event);
-      }
-      return event;
-    },
   });
+} else if (import.meta.env.DEV) {
+  console.log("🔧 Sentry disabled in development mode");
 }
 
 // Only execute React app in browser environment

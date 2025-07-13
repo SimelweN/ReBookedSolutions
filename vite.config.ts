@@ -9,43 +9,51 @@ const isDev = isNode && process.env.NODE_ENV !== "production";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
+  const isProduction = mode === "production";
+
   return {
-    server: {
-      host: "::",
-      port: 8080,
-      proxy: {
-        // Proxy API requests to Vercel dev server or deployed API
-        "/api": {
-          target:
-            (isNode && process.env.VITE_API_BASE_URL) ||
-            "http://localhost:8080",
-          changeOrigin: true,
-          secure: false,
-          configure: (proxy: any, options: any) => {
-            proxy.on("error", (err: any, req: any, res: any) => {
-              // eslint-disable-next-line no-console
-              console.log("proxy error", err);
-            });
-            proxy.on("proxyReq", (proxyReq: any, req: any, res: any) => {
-              // eslint-disable-next-line no-console
-              console.log(
-                "Sending Request to the Target:",
-                req.method,
-                req.url,
-              );
-            });
-            proxy.on("proxyRes", (proxyRes: any, req: any, res: any) => {
-              // eslint-disable-next-line no-console
-              console.log(
-                "Received Response from the Target:",
-                proxyRes.statusCode,
-                req.url,
-              );
-            });
+    server: !isProduction
+      ? {
+          host: "::",
+          port: 8081,
+          hmr: {
+            port: 8081,
+            host: "localhost",
           },
-        },
-      },
-    },
+          proxy: {
+            // Proxy API requests to Vercel dev server or deployed API
+            "/api": {
+              target:
+                (isNode && process.env.VITE_API_BASE_URL) ||
+                "http://localhost:8080",
+              changeOrigin: true,
+              secure: false,
+              configure: (proxy: any, options: any) => {
+                proxy.on("error", (err: any, req: any, res: any) => {
+                  // eslint-disable-next-line no-console
+                  console.log("proxy error", err);
+                });
+                proxy.on("proxyReq", (proxyReq: any, req: any, res: any) => {
+                  // eslint-disable-next-line no-console
+                  console.log(
+                    "Sending Request to the Target:",
+                    req.method,
+                    req.url,
+                  );
+                });
+                proxy.on("proxyRes", (proxyRes: any, req: any, res: any) => {
+                  // eslint-disable-next-line no-console
+                  console.log(
+                    "Received Response from the Target:",
+                    proxyRes.statusCode,
+                    req.url,
+                  );
+                });
+              },
+            },
+          },
+        }
+      : undefined,
     plugins: [
       react({
         jsxRuntime: "automatic",
@@ -234,6 +242,8 @@ export default defineConfig(({ command, mode }) => {
       ),
       // Ensure global React availability
       global: "globalThis",
+      // Disable HMR in production
+      __VITE_HMR__: mode !== "production",
     },
 
     // Performance optimizations

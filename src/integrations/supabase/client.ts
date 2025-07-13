@@ -37,20 +37,20 @@ const isDev = (() => {
   }
 })();
 
-if (isDev) {
-  console.log("Supabase Config Check:", {
+// Only log configuration in development if there are issues
+if (isDev && (!supabaseUrl || !supabaseAnonKey)) {
+  console.warn("⚠️ Supabase configuration incomplete:", {
     hasUrl: !!supabaseUrl,
     hasKey: !!supabaseAnonKey,
-    urlStart: supabaseUrl ? supabaseUrl.substring(0, 20) + "..." : "none",
   });
 }
 
 // Create a mock client for when environment variables are missing
 const createMockSupabaseClient = () => {
-  if (isDev) {
+  // Only warn if environment variables are completely missing (not just demo values)
+  if (isDev && !supabaseUrl && !supabaseAnonKey) {
     console.warn(
-      "⚠️ Supabase environment variables not configured. Using mock client.\n" +
-        "💡 To fix: Run 'npm run setup' to configure with real credentials",
+      "⚠️ Supabase not configured - using mock client for development",
     );
   }
 
@@ -175,10 +175,33 @@ const createSupabaseClient = () => {
                 ...options.headers,
                 Accept: "application/json",
                 "Content-Type": "application/json",
+                apikey: cleanKey,
+                Authorization: `Bearer ${cleanKey}`,
               },
             });
 
             if (!response.ok) {
+              // Handle 404 errors gracefully - likely tables don't exist yet
+              if (response.status === 404) {
+                console.warn(
+                  "⚠️ Database table not found - database setup may be required",
+                );
+                return new Response(
+                  JSON.stringify({
+                    data: [],
+                    error: {
+                      message:
+                        "Database table not found. Please complete database setup.",
+                      code: "TABLE_NOT_FOUND",
+                    },
+                  }),
+                  {
+                    status: 200,
+                    headers: { "Content-Type": "application/json" },
+                  },
+                );
+              }
+
               throw new Error(
                 `HTTP ${response.status}: ${response.statusText}`,
               );
@@ -206,9 +229,7 @@ const createSupabaseClient = () => {
 
             // Handle network errors gracefully
             if (isNetworkError(error)) {
-              console.warn(
-                "Network error detected, returning fallback response",
-              );
+              // Silent handling - don't spam console with network errors
               return new Response(
                 JSON.stringify({
                   data: null,
