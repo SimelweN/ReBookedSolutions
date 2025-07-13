@@ -14,8 +14,13 @@ export const validateAssignmentRule = (rule: any) => {
   return { isValid: true, errors: [] };
 };
 
+export const validateAPSSubjectsEnhanced = (subjects: any) => {
+  return { isValid: true, errors: [] };
+};
+
 export const enhancedValidation = {
   validateUniversityInput,
   validateAPSInput,
   validateAssignmentRule,
+  validateAPSSubjectsEnhanced,
 };
