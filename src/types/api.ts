@@ -1,33 +1,5 @@
 // Comprehensive API types to replace 'any' usage throughout the codebase
 
-// Google Maps API types
-export interface GoogleMapsPlace {
-  place_id: string;
-  formatted_address: string;
-  address_components: GoogleMapsAddressComponent[];
-  geometry: {
-    location: {
-      lat: () => number;
-      lng: () => number;
-    };
-  };
-}
-
-export interface GoogleMapsAddressComponent {
-  long_name: string;
-  short_name: string;
-  types: string[];
-}
-
-export interface GoogleMapsPrediction {
-  place_id: string;
-  description: string;
-  structured_formatting: {
-    main_text: string;
-    secondary_text: string;
-  };
-}
-
 // Payment/Order types
 export interface PaymentOrderData {
   id: string;
