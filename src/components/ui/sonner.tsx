@@ -1,26 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { Toaster as SonnerToaster, toast } from "sonner";
+"use client";
 
-type ToasterProps = React.ComponentProps<typeof SonnerToaster>;
+import { useTheme } from "next/themes";
+import { Toaster as Sonner } from "sonner";
+
+type ToasterProps = React.ComponentProps<typeof Sonner>;
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    // Defer mounting to avoid SSR/hydration issues and setState during render
-    setIsMounted(true);
-  }, []);
-
-  // Don't render until after mount to prevent setState warnings
-  if (!isMounted || typeof window === "undefined") {
-    return null;
-  }
+  const { theme = "system" } = useTheme();
 
   return (
-    <SonnerToaster
-      theme="light"
+    <Sonner
+      theme={theme as ToasterProps["theme"]}
       className="toaster group"
-      position="bottom-right"
       toastOptions={{
         classNames: {
           toast:
@@ -37,6 +28,4 @@ const Toaster = ({ ...props }: ToasterProps) => {
   );
 };
 
-Toaster.displayName = "Toaster";
-
-export { Toaster, toast };
+export { Toaster };
