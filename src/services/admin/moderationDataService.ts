@@ -67,15 +67,15 @@ export const loadModerationData = async (): Promise<ModerationData> => {
       type: typeof usersResponse.data
     });
 
-    // Get unique reporter user IDs to minimize profile queries
-  const reportsData = Array.isArray(reportsResponse.data) ? reportsResponse.data : [];
-  const reporterUserIds = Array.from(
-    new Set(
-      reportsData.map(
-        (report: any) => report.reporter_user_id,
-      ).filter(Boolean),
-    ),
-  );
+        // Get unique reporter user IDs to minimize profile queries
+    const reportsData = Array.isArray(reportsResponse.data) ? reportsResponse.data : [];
+    const reporterUserIds = Array.from(
+      new Set(
+        reportsData.map(
+          (report: any) => report.reporter_user_id,
+        ).filter(Boolean),
+      ),
+    );
 
   // Fetch reporter profiles only for users who have made reports
   let reporterProfilesResponse = { data: [], error: null };
