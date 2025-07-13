@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useRef,
 } from "react";
-import { safeCreateContext } from "../utils/reactLoader";
+// Direct React import to avoid createContext issues
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -53,8 +53,8 @@ interface AuthActions {
 }
 
 // Split context into state and actions to prevent unnecessary re-renders
-const AuthStateContext = safeCreateContext<AuthState | undefined>(undefined);
-const AuthActionsContext = safeCreateContext<AuthActions | undefined>(
+const AuthStateContext = React.createContext<AuthState | undefined>(undefined);
+const AuthActionsContext = React.createContext<AuthActions | undefined>(
   undefined,
 );
 
