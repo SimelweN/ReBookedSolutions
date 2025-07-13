@@ -3,7 +3,7 @@ import {
   Autocomplete,
   GoogleMap,
   Marker,
-  useLoadScript,
+  useGoogleMap,
 } from "@react-google-maps/api";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,6 +35,20 @@ interface GoogleMapsAddressInputProps {
   defaultValue?: string;
 }
 
+// Internal component that uses useGoogleMap hook inside GoogleMap context
+const MapConsumer = ({
+  coords,
+  address,
+}: {
+  coords: { lat: number; lng: number } | null;
+  address: string;
+}) => {
+  const map = useGoogleMap();
+  console.log("Google Map instance:", map);
+
+  return coords ? <Marker position={coords} title={address} /> : null;
+};
+
 const GoogleMapsAddressInput = ({
   onAddressSelect,
   label = "Address",
@@ -45,10 +59,6 @@ const GoogleMapsAddressInput = ({
   defaultValue = "",
 }: GoogleMapsAddressInputProps) => {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: apiKey || "",
-    libraries: ["places"],
-  });
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const [address, setAddress] = useState(defaultValue || "");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
@@ -163,11 +173,17 @@ const GoogleMapsAddressInput = ({
     [handlePlaceChanged],
   );
 
-  if (!isLoaded) {
+  // Check if we're inside a GoogleMapsProvider context
+  if (!apiKey) {
     return (
-      <div className="flex items-center justify-center p-4">
-        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-        Loading Maps...
+      <div className={`space-y-2 ${className}`}>
+        <Label htmlFor="address-input">
+          {label} {required && <span className="text-red-500">*</span>}
+        </Label>
+        <div className="text-sm text-yellow-600 bg-yellow-50 p-2 rounded">
+          Google Maps API key not configured. Please add
+          VITE_GOOGLE_MAPS_API_KEY to your environment.
+        </div>
       </div>
     );
   }
@@ -243,9 +259,10 @@ const GoogleMapsAddressInput = ({
             </p>
           </div>
 
-          {/* Map Preview */}
+          {/* Map Preview using the proper pattern */}
           <div className="border rounded-lg overflow-hidden">
             <GoogleMap
+              id="address-preview-map"
               mapContainerStyle={mapContainerStyle}
               center={coords}
               zoom={15}
@@ -255,7 +272,7 @@ const GoogleMapsAddressInput = ({
                 fullscreenControl: false,
               }}
             >
-              <Marker position={coords} title={address} />
+              <MapConsumer coords={coords} address={address} />
             </GoogleMap>
           </div>
         </div>

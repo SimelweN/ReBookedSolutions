@@ -92,9 +92,13 @@ export default defineConfig(({ command, mode }) => {
               return "supabase";
             }
 
-            // Maps
-            if (id.includes("google-maps") || id.includes("maps")) {
-              return "maps";
+            // Maps - Force Google Maps API into separate chunk
+            if (
+              id.includes("@react-google-maps/api") ||
+              id.includes("google-maps") ||
+              id.includes("maps")
+            ) {
+              return "google-maps";
             }
 
             // Query and data
@@ -210,6 +214,11 @@ export default defineConfig(({ command, mode }) => {
       force: true, // Force re-bundling to ensure consistency
       // Ensure React is pre-bundled before anything else
       entries: ["src/main.tsx"],
+      // Fix ESM transformation issues
+      esbuildOptions: {
+        target: "esnext",
+        format: "esm",
+      },
     },
 
     // Ensure React is properly available in production builds
