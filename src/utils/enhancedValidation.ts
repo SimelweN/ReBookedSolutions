@@ -10,7 +10,12 @@ export const validateAPSInput = (input: any) => {
   return { isValid: true, errors: [] };
 };
 
+export const validateAssignmentRule = (rule: any) => {
+  return { isValid: true, errors: [] };
+};
+
 export const enhancedValidation = {
   validateUniversityInput,
   validateAPSInput,
+  validateAssignmentRule,
 };
