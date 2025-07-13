@@ -1,4 +1,3 @@
-import { GoogleMap, useGoogleMap } from "@react-google-maps/api";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,6 +6,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+// Conditional imports for Workers compatibility
+let GoogleMap: any, useGoogleMap: any;
+
+// Only import Google Maps in browser environment
+if (typeof window !== "undefined") {
+  try {
+    const googleMapsApi = require("@react-google-maps/api");
+    GoogleMap = googleMapsApi.GoogleMap;
+    useGoogleMap = googleMapsApi.useGoogleMap;
+  } catch (error) {
+    console.warn("Google Maps API not available:", error);
+  }
+}
 
 // MapConsumerComponent that properly uses useGoogleMap hook
 function MapConsumerComponent() {
