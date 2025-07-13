@@ -1,9 +1,13 @@
 import { useRef, useState, useCallback } from "react";
-import { Autocomplete, GoogleMap, Marker } from "@react-google-maps/api";
+import {
+  Autocomplete,
+  GoogleMap,
+  Marker,
+  useLoadScript,
+} from "@react-google-maps/api";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MapPin, Loader2 } from "lucide-react";
-import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
 
 const mapContainerStyle = { width: "100%", height: "300px" };
 
@@ -40,7 +44,11 @@ const GoogleMapsAddressInput = ({
   className = "",
   defaultValue = "",
 }: GoogleMapsAddressInputProps) => {
-  const { isLoaded } = useGoogleMaps();
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: apiKey || "",
+    libraries: ["places"],
+  });
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const [address, setAddress] = useState(defaultValue || "");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(

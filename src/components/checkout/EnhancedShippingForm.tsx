@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useGoogleMaps } from "@/contexts/GoogleMapsContext";
+import { useLoadScript } from "@react-google-maps/api";
 import {
   getEnhancedDeliveryQuotes,
   validateSellersHaveAddresses,
@@ -86,7 +86,11 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   cartItems,
 }) => {
   // All hooks must be called before any early returns
-  const { isLoaded } = useGoogleMaps();
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: apiKey || "",
+    libraries: ["places"],
+  });
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
 
