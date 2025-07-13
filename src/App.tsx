@@ -31,6 +31,8 @@ import RegisterPage from "./pages/Register";
 import AdminPage from "./pages/Admin";
 // Profile imported directly due to dynamic import fetch issues
 import Profile from "./pages/Profile";
+// BookListing imported directly due to dynamic import fetch issues
+import BookListing from "./pages/BookListing";
 
 // Workers-safe lazy loading - only create lazy components in browser environment
 const isBrowserEnv =
