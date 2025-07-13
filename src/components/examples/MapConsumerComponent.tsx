@@ -1,4 +1,4 @@
-import { GoogleMap, LoadScript, useGoogleMap } from "@react-google-maps/api";
+import { GoogleMap, useGoogleMap } from "@react-google-maps/api";
 
 // Example MapConsumerComponent that properly uses useGoogleMap hook
 function MapConsumerComponent() {
@@ -8,7 +8,7 @@ function MapConsumerComponent() {
   return null;
 }
 
-// Example of proper Google Maps usage following the guidelines
+// Example of proper Google Maps usage that relies on GoogleMapsProvider context
 const GoogleMapsExample = () => {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
@@ -20,17 +20,16 @@ const GoogleMapsExample = () => {
     );
   }
 
+  // No LoadScript here - rely on GoogleMapsProvider from context
   return (
-    <LoadScript googleMapsApiKey={apiKey}>
-      <GoogleMap
-        id="map"
-        center={{ lat: -25.746, lng: 28.188 }}
-        zoom={10}
-        mapContainerStyle={{ width: "100%", height: "400px" }}
-      >
-        <MapConsumerComponent />
-      </GoogleMap>
-    </LoadScript>
+    <GoogleMap
+      id="map"
+      center={{ lat: -25.746, lng: 28.188 }}
+      zoom={10}
+      mapContainerStyle={{ width: "100%", height: "400px" }}
+    >
+      <MapConsumerComponent />
+    </GoogleMap>
   );
 };
 
