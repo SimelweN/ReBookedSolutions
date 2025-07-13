@@ -14,8 +14,16 @@ export const useCommitAutoExpiry = () => {
     typeof window !== "undefined" && typeof document !== "undefined";
 
   useEffect(() => {
-    // Skip in Workers environment
+    // Skip in Workers environment or development with demo credentials
     if (!isBrowser) {
+      return;
+    }
+
+    // Skip in development to prevent 401 errors with demo Supabase
+    const isDev =
+      import.meta.env.DEV || import.meta.env.NODE_ENV === "development";
+    if (isDev) {
+      console.log("🔄 Commit auto-expiry disabled in development mode");
       return;
     }
 
