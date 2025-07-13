@@ -3,6 +3,10 @@ import ReactDOM from "react-dom/client";
 import * as Sentry from "@sentry/react";
 import App from "./App.tsx";
 import "./index.css";
+import {
+  disableHMRInProduction,
+  isProductionDeployment,
+} from "./utils/environmentCheck";
 
 // Define browser environment check
 const isBrowser = (() => {
