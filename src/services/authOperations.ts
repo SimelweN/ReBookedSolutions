@@ -82,9 +82,8 @@ export const loginUser = async (email: string, password: string) => {
     throw new Error("Please enter a valid email address");
   }
 
-  if (password.length < 6) {
-    throw new Error("Password must be at least 6 characters long");
-  }
+  // Note: For login, we don't validate password length - let the server handle it
+  // Password length validation should only be done during registration
 
   // Check if Supabase is configured - if not, provide development fallback
   const supabaseUrl = ENV.VITE_SUPABASE_URL;
