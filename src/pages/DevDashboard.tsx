@@ -1844,6 +1844,26 @@ const DevDashboard: React.FC = () => {
             <TabsContent value="comprehensive-test" className="space-y-6">
               <ComprehensiveFunctionalityTest />
             </TabsContent>
+
+            {/* QA Testing Tab */}
+            <TabsContent value="qa-testing" className="space-y-6">
+              <QADashboard />
+            </TabsContent>
+
+            {/* Edge Function Monitor Tab */}
+            <TabsContent value="edge-monitor" className="space-y-6">
+              <EdgeFunctionMonitor />
+            </TabsContent>
+
+            {/* Console Tab */}
+            <TabsContent value="console" className="space-y-6">
+              <RealConsole height="600px" className="border-0 shadow-lg" />
+            </TabsContent>
+
+            {/* Sentry Testing Tab */}
+            <TabsContent value="sentry-test" className="space-y-6">
+              <SentryTester />
+            </TabsContent>
           </Tabs>
         </div>
       </div>
