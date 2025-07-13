@@ -233,45 +233,7 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
     setValue("postal_code", address.postalCode || address.postal_code || "");
   };
 
-  const handlePlaceSelect = () => {
-    if (!autocompleteRef.current) return;
-
-    const place = autocompleteRef.current.getPlace();
-    if (!place.address_components) return;
-
-    let streetNumber = "";
-    let route = "";
-    let locality = "";
-    let sublocality = "";
-    let adminArea1 = "";
-    let postalCode = "";
-
-    place.address_components.forEach((component) => {
-      const types = component.types;
-
-      if (types.includes("street_number")) {
-        streetNumber = component.long_name;
-      } else if (types.includes("route")) {
-        route = component.long_name;
-      } else if (types.includes("locality")) {
-        locality = component.long_name;
-      } else if (types.includes("sublocality")) {
-        sublocality = component.long_name;
-      } else if (types.includes("administrative_area_level_1")) {
-        adminArea1 = component.long_name;
-      } else if (types.includes("postal_code")) {
-        postalCode = component.long_name;
-      }
-    });
-
-    // Populate form fields
-    setValue("street_address", `${streetNumber} ${route}`.trim());
-    setValue("city", locality || sublocality);
-    setValue("province", adminArea1);
-    setValue("postal_code", postalCode);
-
-    toast.success("Address details filled from Google Maps");
-  };
+  // Google Maps place selection removed
 
   const getDeliveryQuotes = async () => {
     if (
