@@ -158,7 +158,7 @@ const SentryTester: React.FC = () => {
               variant="outline"
               className="w-full"
             >
-              Test Performance Transaction
+              Test Performance Span
             </Button>
 
             <Button
