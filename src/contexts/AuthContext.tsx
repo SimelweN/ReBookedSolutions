@@ -6,8 +6,8 @@ import React, {
   useMemo,
   useRef,
   startTransition,
+  createContext,
 } from "react";
-import { safeCreateContext } from "../utils/reactLoader";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -62,7 +62,7 @@ interface AuthContextType {
   refreshProfile: () => Promise<void>;
 }
 
-const AuthContext = safeCreateContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -126,7 +126,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     async (currentUser: User) => {
       // Prevent concurrent upgrades for the same user
       if (profileUpgradeRef.current === currentUser.id) {
-        console.log("ℹ️ Profile upgrade already in progress");
+        console.log("���️ Profile upgrade already in progress");
         return;
       }
 
