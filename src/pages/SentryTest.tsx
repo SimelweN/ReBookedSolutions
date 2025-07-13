@@ -1,6 +1,6 @@
 import React from "react";
 import Layout from "@/components/Layout";
-import SentryTester from "@/components/test/SentryTester";
+import SentryTester from "@/components/SentryTester";
 import SEO from "@/components/SEO";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
