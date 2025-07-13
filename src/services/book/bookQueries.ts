@@ -231,8 +231,10 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
           }
         });
 
-        // Map books using the book mapper for consistency
-        const books: Book[] = booksData.map((bookData: any) => {
+                // Map books using the book mapper for consistency
+        let books: Book[];
+        try {
+          books = booksData.map((bookData: any) => {
           const sellerProfile = profilesMap.get(bookData.seller_id) || {
             id: bookData.seller_id,
             name: "Unknown Seller",
