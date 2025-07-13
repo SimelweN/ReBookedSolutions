@@ -7,7 +7,7 @@ import React, {
   useRef,
   startTransition,
 } from "react";
-import { safeCreateContext } from "../utils/reactLoader";
+// Import React directly to avoid createContext issues
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import {
