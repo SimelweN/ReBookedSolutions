@@ -57,8 +57,6 @@
     "cmdk": "^1.0.0",
     "crypto-js": "^4.2.0",
     "date-fns": "^3.6.0",
-    "embla-carousel-react": "^8.3.0",
-    "formidable": "^3.5.1",
     "framer-motion": "^12.23.3",
     "html-to-image": "^1.11.13",
     "input-otp": "^1.2.4",
