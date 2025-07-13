@@ -134,10 +134,15 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
           setTimeout(() => reject(new Error("Query timeout")), 5000),
         );
 
-        const { data: booksData, error: booksError } = (await Promise.race([
-          booksPromise,
-          timeoutPromise,
-        ])) as any;
+        const queryResult = await Promise.race([booksPromise, timeoutPromise]);
+
+        // Handle timeout case
+        if (queryResult instanceof Error) {
+          console.error("[Books query] Query timed out");
+          throw queryResult;
+        }
+
+        const { data: booksData, error: booksError } = queryResult as any;
 
         if (booksError) {
           const errorMessage = booksError.message || "Unknown database error";
