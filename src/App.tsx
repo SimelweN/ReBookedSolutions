@@ -46,7 +46,29 @@ const Dashboard = isBrowserEnv
   ? React.lazy(() => import("./pages/Dashboard"))
   : WorkersFallback;
 const BookListing = isBrowserEnv
-  ? React.lazy(() => import("./pages/BookListing"))
+  ? React.lazy(() =>
+      import("./pages/BookListing").catch((error) => {
+        console.error("Failed to load BookListing:", error);
+        // Return a fallback component
+        return {
+          default: () => (
+            <div className="min-h-screen flex items-center justify-center">
+              <div className="text-center">
+                <h2 className="text-xl font-semibold mb-2">
+                  Unable to load Book Listing
+                </h2>
+                <p className="text-muted-foreground mb-4">
+                  Please refresh the page to try again.
+                </p>
+                <Button onClick={() => window.location.reload()}>
+                  Refresh Page
+                </Button>
+              </div>
+            </div>
+          ),
+        };
+      }),
+    )
   : WorkersFallback;
 const BookDetails = isBrowserEnv
   ? React.lazy(() => import("./pages/BookDetails"))
