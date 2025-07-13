@@ -532,13 +532,24 @@ export const getBooksByUser = async (userId: string): Promise<Book[]> => {
         }
 
         // Map books using the seller profile
-        const books = booksData.map((bookData) => {
-          const bookDataWithProfile = {
-            ...bookData,
-            profiles: seller,
-          };
-          return mapBookFromDatabase(bookDataWithProfile, seller);
-        });
+        let books;
+        try {
+          books = booksData.map((bookData) => {
+            const bookDataWithProfile = {
+              ...bookData,
+              profiles: seller,
+            };
+            return mapBookFromDatabase(bookDataWithProfile, seller);
+          });
+        } catch (mappingError) {
+          console.error(
+            "Error mapping books in getBooksByUser:",
+            mappingError,
+            "booksData type:",
+            typeof booksData,
+          );
+          return [];
+        }
 
         console.log(
           `✅ Successfully fetched ${books.length} books for user ${userId}`,
