@@ -19,11 +19,17 @@ const isBrowser = (() => {
 
 // Only execute React app in browser environment
 if (isBrowser) {
-  // Initialize console interceptor for dev console
-  import("./services/consoleInterceptor").catch(console.warn);
-
-  // Apply targeted fetch error fix
-  import("./utils/fetchErrorFix").catch(console.warn);
+  // Initialize services synchronously to avoid circular dependencies
+  try {
+    // Import console interceptor if available
+    if (import.meta.env.DEV) {
+      import("./services/consoleInterceptor").catch(() => {
+        // Silent catch - not critical for app function
+      });
+    }
+  } catch {
+    // Silent catch - not critical
+  }
 
   try {
     const rootElement = document.getElementById("root");
