@@ -129,10 +129,15 @@ const createMockSupabaseClient = () => {
 
 // Enhanced client creation with error handling and fetch protection
 const createSupabaseClient = () => {
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (
+    !supabaseUrl ||
+    !supabaseAnonKey ||
+    supabaseUrl.includes("demo-") ||
+    supabaseAnonKey.includes("demo-")
+  ) {
     if (isDev) {
       console.warn(
-        "Supabase environment variables not configured, using mock client",
+        "Supabase environment variables not configured or using demo values, using mock client",
       );
     }
     return createMockSupabaseClient() as any;
