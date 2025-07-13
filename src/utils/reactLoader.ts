@@ -69,12 +69,36 @@ export const getReact = (): any => {
   );
 };
 
-// Import React directly - this ensures React is available at module load time
-import React from "react";
+// Safe createContext that works in both browser and Workers environments
+export const safeCreateContext = <T>(defaultValue: T): any => {
+  // In browser environments, try to get React directly
+  if (typeof window !== "undefined") {
+    try {
+      // Import React dynamically to avoid module loading issues
+      const React = require("react");
+      if (React && React.createContext) {
+        return React.createContext(defaultValue);
+      }
+    } catch (e) {
+      // Fallback to the custom loader
+    }
+  }
 
-// Safe createContext using direct React import
-export const safeCreateContext = <T>(defaultValue: T): React.Context<T> => {
-  return React.createContext(defaultValue);
+  // Fallback approach for Workers or when React isn't available
+  try {
+    const React = getReact();
+    return React.createContext(defaultValue);
+  } catch (error) {
+    console.warn("React not available for createContext, returning mock");
+    // Return a mock context for Workers/development
+    return {
+      Provider: ({ children }: { children: any }) => children,
+      Consumer: ({ children }: { children: any }) => children(defaultValue),
+      _currentValue: defaultValue,
+      _currentValue2: defaultValue,
+      _threadCount: 0,
+    };
+  }
 };
 
 // Initialize React loading immediately when this module is imported
