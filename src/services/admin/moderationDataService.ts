@@ -88,17 +88,15 @@ export const loadModerationData = async (): Promise<ModerationData> => {
   }
 
   // Join data manually
-  const typedReports: Report[] = (reportsResponse.data || []).map(
-    (report: any) => {
-      const reporterProfile = profilesMap.get(report.reporter_user_id);
-      return {
-        ...report,
-        status: report.status as "pending" | "resolved" | "dismissed",
-        reporter_email: reporterProfile?.email,
-        reporter_name: reporterProfile?.name,
-      };
-    },
-  );
+  const typedReports: Report[] = reportsData.map((report: any) => {
+    const reporterProfile = profilesMap.get(report.reporter_user_id);
+    return {
+      ...report,
+      status: report.status as "pending" | "resolved" | "dismissed",
+      reporter_email: reporterProfile?.email,
+      reporter_name: reporterProfile?.name,
+    };
+  });
 
   const typedUsers: SuspendedUser[] = usersResponse.data || [];
 
