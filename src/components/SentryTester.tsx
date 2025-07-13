@@ -9,20 +9,32 @@ const SentryTester: React.FC = () => {
     try {
       throw new Error("Test error triggered manually from Sentry Test page");
     } catch (error) {
-      Sentry.captureException(error);
-      console.error("Error sent to Sentry:", error);
+      // Only send to Sentry in production
+      if (import.meta.env.PROD) {
+        Sentry.captureException(error);
+      } else {
+        console.log("🔧 Development: Error would be sent to Sentry:", error);
+      }
     }
   };
 
   const triggerWarning = () => {
-    Sentry.captureMessage(
-      "Test warning message from Sentry Test page",
-      "warning",
-    );
+    if (import.meta.env.PROD) {
+      Sentry.captureMessage(
+        "Test warning message from Sentry Test page",
+        "warning",
+      );
+    } else {
+      console.warn("🔧 Development: Warning would be sent to Sentry");
+    }
   };
 
   const triggerInfo = () => {
-    Sentry.captureMessage("Test info message from Sentry Test page", "info");
+    if (import.meta.env.PROD) {
+      Sentry.captureMessage("Test info message from Sentry Test page", "info");
+    } else {
+      console.info("🔧 Development: Info would be sent to Sentry");
+    }
   };
 
   return (
