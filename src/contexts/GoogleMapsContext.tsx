@@ -11,17 +11,19 @@ let librariesRef: "places"[] | undefined;
 // Conditional imports for Workers compatibility
 let GoogleMap: any, LoadScript: any, useGoogleMap: any;
 
-// Only import Google Maps in browser environment
-if (typeof window !== "undefined") {
-  try {
-    const googleMapsApi = require("@react-google-maps/api");
-    GoogleMap = googleMapsApi.GoogleMap;
-    LoadScript = googleMapsApi.LoadScript;
-    useGoogleMap = googleMapsApi.useGoogleMap;
-  } catch (error) {
-    console.warn("Google Maps API not available:", error);
+// Dynamic import for Workers compatibility
+const loadGoogleMapsApi = async () => {
+  if (typeof window !== "undefined" && !GoogleMap) {
+    try {
+      const googleMapsApi = await import("@react-google-maps/api");
+      GoogleMap = googleMapsApi.GoogleMap;
+      LoadScript = googleMapsApi.LoadScript;
+      useGoogleMap = googleMapsApi.useGoogleMap;
+    } catch (error) {
+      console.warn("Google Maps API not available:", error);
+    }
   }
-}
+};
 
 // Provider props interface
 interface GoogleMapsProviderProps {
