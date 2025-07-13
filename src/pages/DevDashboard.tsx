@@ -1237,6 +1237,7 @@ const DevDashboard: React.FC = () => {
 
             {/* Database Tab */}
             <TabsContent value="database" className="space-y-6">
+              <DatabaseTest />
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Database Tables */}
                 <Card>
