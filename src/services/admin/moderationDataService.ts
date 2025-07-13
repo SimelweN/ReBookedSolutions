@@ -29,36 +29,51 @@ export interface ModerationData {
 }
 
 export const loadModerationData = async (): Promise<ModerationData> => {
-  // First, get reports and suspended users
-  const [reportsResponse, usersResponse] = await Promise.all([
-    supabase
-      .from("reports")
-      .select("*")
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("profiles")
-      .select("id, name, email, status, suspended_at, suspension_reason")
-      .in("status", ["suspended", "banned"])
-      .order("created_at", { ascending: false }),
-  ]);
+  try {
+    // First, get reports and suspended users
+    const [reportsResponse, usersResponse] = await Promise.all([
+      supabase
+        .from("reports")
+        .select("*")
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("profiles")
+        .select("id, name, email, status, suspended_at, suspension_reason")
+        .in("status", ["suspended", "banned"])
+        .order("created_at", { ascending: false }),
+    ]);
 
-  if (reportsResponse.error) {
-    throw new Error(`Failed to load reports: ${reportsResponse.error.message}`);
-  }
+    if (reportsResponse.error) {
+      console.error("Reports query error:", reportsResponse.error);
+      throw new Error(`Failed to load reports: ${reportsResponse.error.message}`);
+    }
 
-  if (usersResponse.error) {
-    throw new Error(
-      `Failed to load suspended users: ${usersResponse.error.message}`,
-    );
-  }
+    if (usersResponse.error) {
+      console.error("Users query error:", usersResponse.error);
+      throw new Error(
+        `Failed to load suspended users: ${usersResponse.error.message}`,
+      );
+    }
 
-  // Get unique reporter user IDs to minimize profile queries
-  const reportsData = Array.isArray(reportsResponse.data)
-    ? reportsResponse.data
-    : [];
+    // Validate response data types
+    console.log("Reports response:", {
+      data: reportsResponse.data,
+      isArray: Array.isArray(reportsResponse.data),
+      type: typeof reportsResponse.data
+    });
+    console.log("Users response:", {
+      data: usersResponse.data,
+      isArray: Array.isArray(usersResponse.data),
+      type: typeof usersResponse.data
+    });
+
+    // Get unique reporter user IDs to minimize profile queries
+  const reportsData = Array.isArray(reportsResponse.data) ? reportsResponse.data : [];
   const reporterUserIds = Array.from(
     new Set(
-      reportsData.map((report: any) => report.reporter_user_id).filter(Boolean),
+      reportsData.map(
+        (report: any) => report.reporter_user_id,
+      ).filter(Boolean),
     ),
   );
 
@@ -87,20 +102,20 @@ export const loadModerationData = async (): Promise<ModerationData> => {
     });
   }
 
-  // Join data manually
-  const typedReports: Report[] = reportsData.map((report: any) => {
-    const reporterProfile = profilesMap.get(report.reporter_user_id);
-    return {
-      ...report,
-      status: report.status as "pending" | "resolved" | "dismissed",
-      reporter_email: reporterProfile?.email,
-      reporter_name: reporterProfile?.name,
-    };
-  });
+    // Join data manually
+  const typedReports: Report[] = reportsData.map(
+    (report: any) => {
+      const reporterProfile = profilesMap.get(report.reporter_user_id);
+      return {
+        ...report,
+        status: report.status as "pending" | "resolved" | "dismissed",
+        reporter_email: reporterProfile?.email,
+        reporter_name: reporterProfile?.name,
+      };
+    },
+  );
 
-  const typedUsers: SuspendedUser[] = Array.isArray(usersResponse.data)
-    ? usersResponse.data
-    : [];
+    const typedUsers: SuspendedUser[] = Array.isArray(usersResponse.data) ? usersResponse.data : [];
 
   return {
     reports: typedReports,
