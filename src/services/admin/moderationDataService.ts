@@ -98,7 +98,9 @@ export const loadModerationData = async (): Promise<ModerationData> => {
     };
   });
 
-  const typedUsers: SuspendedUser[] = usersResponse.data || [];
+  const typedUsers: SuspendedUser[] = Array.isArray(usersResponse.data)
+    ? usersResponse.data
+    : [];
 
   return {
     reports: typedReports,
