@@ -646,6 +646,18 @@ function App() {
                           }
                         />
 
+                        {/* Sentry Test - Admin only */}
+                        <Route
+                          path="/sentry-test"
+                          element={
+                            <AdminProtectedRoute>
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <SentryTest />
+                              </Suspense>
+                            </AdminProtectedRoute>
+                          }
+                        />
+
                         {/* 404 Route */}
                         <Route
                           path="*"
