@@ -230,7 +230,9 @@ const DevDashboard: React.FC = () => {
         // Function exists, use it
         const { data, error } = await supabase.rpc("get_table_names", {});
         if (!error) {
-          setDbTables(data || []);
+          // Ensure data is an array before setting
+          const tableData = Array.isArray(data) ? data : [];
+          setDbTables(tableData);
           return;
         }
       }
