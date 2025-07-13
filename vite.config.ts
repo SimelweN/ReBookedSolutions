@@ -92,9 +92,13 @@ export default defineConfig(({ command, mode }) => {
               return "supabase";
             }
 
-            // Maps
-            if (id.includes("google-maps") || id.includes("maps")) {
-              return "maps";
+            // Maps - Force Google Maps API into separate chunk
+            if (
+              id.includes("@react-google-maps/api") ||
+              id.includes("google-maps") ||
+              id.includes("maps")
+            ) {
+              return "google-maps";
             }
 
             // Query and data
