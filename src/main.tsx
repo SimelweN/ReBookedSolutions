@@ -17,6 +17,31 @@ const isBrowser = (() => {
   }
 })();
 
+// Add global error handlers for development
+if (isBrowser && import.meta.env.DEV) {
+  // Handle unhandled promise rejections (like fetch errors)
+  window.addEventListener("unhandledrejection", (event) => {
+    if (event.reason?.message?.includes("Failed to fetch")) {
+      console.warn(
+        "🔧 Development: Network fetch error handled:",
+        event.reason.message,
+      );
+      event.preventDefault(); // Prevent the error from being logged to console
+    }
+  });
+
+  // Handle global errors
+  window.addEventListener("error", (event) => {
+    if (event.error?.message?.includes("Failed to fetch")) {
+      console.warn(
+        "🔧 Development: Global fetch error handled:",
+        event.error.message,
+      );
+      event.preventDefault();
+    }
+  });
+}
+
 // Initialize Sentry only in production to prevent development fetch errors
 const isProduction =
   import.meta.env.PROD || import.meta.env.NODE_ENV === "production";
