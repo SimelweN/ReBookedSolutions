@@ -13,6 +13,7 @@ import NoScriptFallback from "./components/NoScriptFallback";
 import LoadingFallback from "./components/LoadingFallback";
 import NotificationWrapper from "./components/notifications/NotificationWrapper";
 import NotificationInitializer from "./components/notifications/NotificationInitializer";
+import { Toaster } from "./components/ui/sonner";
 import StartupChecker from "./components/StartupChecker";
 import { validateEnvironment } from "./config/environment";
 import { useCommitAutoExpiry } from "./hooks/useCommitAutoExpiry";
@@ -151,6 +152,9 @@ const ActivityLog = isBrowserEnv
   : WorkersFallback;
 const DevDashboard = isBrowserEnv
   ? React.lazy(() => import("./pages/DevDashboard"))
+  : WorkersFallback;
+const SentryTest = isBrowserEnv
+  ? React.lazy(() => import("./pages/SentryTest"))
   : WorkersFallback;
 
 // Loading component with fallback
@@ -642,6 +646,18 @@ function App() {
                           }
                         />
 
+                        {/* Sentry Test - Admin only */}
+                        <Route
+                          path="/sentry-test"
+                          element={
+                            <AdminProtectedRoute>
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <SentryTest />
+                              </Suspense>
+                            </AdminProtectedRoute>
+                          }
+                        />
+
                         {/* 404 Route */}
                         <Route
                           path="*"
@@ -657,6 +673,7 @@ function App() {
                 </Router>
                 <NotificationWrapper position="top-right" maxVisible={3} />
                 <NotificationInitializer />
+                <Toaster position="bottom-right" />
               </CartProvider>
             </AuthProvider>
           </ThemeProvider>
