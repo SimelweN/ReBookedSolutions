@@ -16,6 +16,7 @@ export default defineConfig(({ command, mode }) => {
       hmr: {
         port: 8081,
         host: "localhost",
+        clientPort: mode === "development" ? 8081 : undefined,
       },
       proxy: {
         // Proxy API requests to Vercel dev server or deployed API
