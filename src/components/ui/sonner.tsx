@@ -1,44 +1,41 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { Toaster as SonnerToaster, toast } from "sonner";
 
 type ToasterProps = React.ComponentProps<typeof SonnerToaster>;
 
-const Toaster = React.memo(({ ...props }: ToasterProps) => {
-  // Ensure we're in a browser environment
-  if (typeof window === "undefined") {
+const Toaster = ({ ...props }: ToasterProps) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    // Defer mounting to avoid SSR/hydration issues and setState during render
+    setIsMounted(true);
+  }, []);
+
+  // Don't render until after mount to prevent setState warnings
+  if (!isMounted || typeof window === "undefined") {
     return null;
   }
 
-  // Memoize the toastOptions to prevent unnecessary re-renders
-  const toastOptions = useMemo(
-    () => ({
-      classNames: {
-        toast:
-          "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
-        description: "group-[.toast]:text-muted-foreground",
-        actionButton:
-          "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
-        cancelButton:
-          "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
-      },
-    }),
-    [],
+  return (
+    <SonnerToaster
+      theme="light"
+      className="toaster group"
+      position="bottom-right"
+      toastOptions={{
+        classNames: {
+          toast:
+            "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
+          description: "group-[.toast]:text-muted-foreground",
+          actionButton:
+            "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
+          cancelButton:
+            "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
+        },
+      }}
+      {...props}
+    />
   );
-
-  // Memoize the entire component to prevent setState during render
-  return useMemo(
-    () => (
-      <SonnerToaster
-        theme="light"
-        className="toaster group"
-        position="bottom-right"
-        toastOptions={toastOptions}
-        {...props}
-      />
-    ),
-    [toastOptions, props],
-  );
-});
+};
 
 Toaster.displayName = "Toaster";
 
