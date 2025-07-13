@@ -85,9 +85,19 @@ const CommitTester = () => {
         .limit(10);
 
       if (error) throw error;
-      setMockOrders(data || []);
+
+      if (!data || !Array.isArray(data)) {
+        console.log(
+          "No orders data or invalid data format, setting empty array",
+        );
+        setMockOrders([]);
+        return;
+      }
+
+      setMockOrders(data);
     } catch (error: any) {
       console.error("Error loading orders:", error);
+      setMockOrders([]);
     }
   };
 
