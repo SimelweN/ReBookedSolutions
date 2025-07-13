@@ -1,7 +1,23 @@
-import { GoogleMap, useGoogleMap } from "@react-google-maps/api";
+// Conditional imports for Workers compatibility
+let GoogleMap: any, useGoogleMap: any;
+
+// Only import Google Maps in browser environment
+if (typeof window !== "undefined") {
+  try {
+    const googleMapsApi = require("@react-google-maps/api");
+    GoogleMap = googleMapsApi.GoogleMap;
+    useGoogleMap = googleMapsApi.useGoogleMap;
+  } catch (error) {
+    console.warn("Google Maps API not available:", error);
+  }
+}
 
 // Example MapConsumerComponent that properly uses useGoogleMap hook
 function MapConsumerComponent() {
+  if (typeof window === "undefined" || !useGoogleMap) {
+    return null;
+  }
+
   const map = useGoogleMap();
   console.log("Google Map:", map);
 
