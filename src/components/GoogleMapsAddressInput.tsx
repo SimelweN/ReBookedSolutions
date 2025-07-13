@@ -59,6 +59,15 @@ const GoogleMapsAddressInput = ({
   defaultValue = "",
 }: GoogleMapsAddressInputProps) => {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+
+  // Safety check to prevent accessing Google Maps before it's ready
+  const isGoogleMapsReady = () => {
+    return (
+      typeof window !== "undefined" &&
+      typeof window.google !== "undefined" &&
+      typeof window.google.maps !== "undefined"
+    );
+  };
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const [address, setAddress] = useState(defaultValue || "");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
