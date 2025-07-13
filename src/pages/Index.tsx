@@ -42,11 +42,6 @@ const Index = React.memo(() => {
         url="https://www.rebookedsolutions.co.za/"
       />
 
-      {/* Temporary Sonner Test - TODO: Remove after testing */}
-      <div className="bg-yellow-50 border border-yellow-200 p-4 m-4 rounded">
-        <SonnerTestComponent />
-      </div>
-
       {/* Mobile-Optimized Hero Section */}
       <section className="bg-gradient-to-r from-book-100 to-book-200 py-8 sm:py-12 md:py-16 lg:py-20">
         <div className="container mx-auto px-4 flex flex-col md:flex-row items-center gap-6 md:gap-8">
