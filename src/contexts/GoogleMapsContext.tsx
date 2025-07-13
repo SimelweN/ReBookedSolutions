@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { GoogleMap, LoadScript, useGoogleMap } from "@react-google-maps/api";
 
 type ReactNode = React.ReactNode;
 
 // Define the libraries array with proper typing
 const libraries: "places"[] = ["places"];
+
+// Stable reference to prevent re-initialization
+let librariesRef: "places"[] | undefined;
 
 // Provider props interface
 interface GoogleMapsProviderProps {
