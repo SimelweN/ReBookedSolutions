@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { safeCreateContext } from "../utils/reactLoader";
+// Direct React import to avoid createContext issues
 import { CartItem, CartContextType } from "@/types/cart";
 import { Book } from "@/types/book";
 import { toast } from "sonner";
