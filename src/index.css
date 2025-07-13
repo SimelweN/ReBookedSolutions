@@ -9,6 +9,9 @@
 /* Campus transitions and animations */
 @import "./styles/campus-transitions.css";
 
+/* Enhanced toast notifications */
+@import "./styles/toast.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
