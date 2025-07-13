@@ -1,5 +1,4 @@
-import React, { useContext } from "react";
-import { safeCreateContext } from "../utils/reactLoader";
+import React, { useContext, createContext } from "react";
 type ReactNode = React.ReactNode;
 import { useJsApiLoader } from "@react-google-maps/api";
 // Define the libraries array with proper typing
