@@ -49,9 +49,9 @@ export default defineConfig(({ command, mode }) => {
     plugins: [
       react({
         jsxRuntime: "automatic",
-        jsxImportSource: "@emotion/react",
+        jsxImportSource: "react",
         fastRefresh: true,
-        // Ensure proper JSX runtime
+        // Ensure proper JSX runtime transformation
         babel: {
           plugins: [],
         },
