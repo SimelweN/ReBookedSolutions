@@ -443,12 +443,22 @@ export class CommitSystemService {
         seller_committed: order.status === "committed",
       }));
 
-      const allPendingCommits = [...transactions, ...formattedOrders];
+      // Ensure both arrays are valid before spreading
+      const validTransactions = Array.isArray(transactions) ? transactions : [];
+      const validFormattedOrders = Array.isArray(formattedOrders)
+        ? formattedOrders
+        : [];
+
+      const allPendingCommits = [...validTransactions, ...validFormattedOrders];
 
       console.log(`📊 Found ${allPendingCommits.length} pending commits`);
       return allPendingCommits;
     } catch (error) {
       console.error("❌ Error fetching pending commits:", error);
+      console.error("Error details:", {
+        message: error instanceof Error ? error.message : "Unknown error",
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       return [];
     }
   }
