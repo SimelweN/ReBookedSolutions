@@ -142,6 +142,13 @@ const Index = React.memo(() => {
         </div>
       </section>
 
+      {/* Database Setup Status */}
+      <section className="py-8 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <DatabaseSetupStatus />
+        </div>
+      </section>
+
       {/* ReBooked Campus Promotion Section */}
       <section className="py-8 sm:py-12 bg-gradient-to-r from-book-600 to-book-700">
         <div className="container mx-auto px-4">
