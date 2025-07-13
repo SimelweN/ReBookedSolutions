@@ -159,6 +159,18 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
             return [];
           }
 
+          // Handle database setup required (404 or table not found errors)
+          if (
+            errorCode === "TABLE_NOT_FOUND" ||
+            errorMessage.includes("404") ||
+            errorMessage.includes("does not exist") ||
+            errorMessage.includes("relation") ||
+            errorMessage.includes("table")
+          ) {
+            console.warn("📚 Books table not found - database setup required");
+            return [];
+          }
+
           throw new Error(
             `Failed to fetch books: ${errorMessage} (Code: ${errorCode})`,
           );
