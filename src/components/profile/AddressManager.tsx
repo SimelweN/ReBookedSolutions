@@ -465,7 +465,7 @@ const AddressManager = () => {
                   Where you want items delivered when buying books
                 </p>
 
-                <GoogleMapsAddressInput
+                <BasicAddressInput
                   onAddressSelect={handleShippingAddressSelect}
                   placeholder="Search for your shipping address..."
                   defaultValue={shippingAddress.streetAddress}
