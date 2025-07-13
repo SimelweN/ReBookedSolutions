@@ -86,8 +86,6 @@ const EnhancedShippingForm: React.FC<EnhancedShippingFormProps> = ({
   cartItems,
 }) => {
   // All hooks must be called before any early returns
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
 
   const [isLoading, setIsLoading] = useState(false);
