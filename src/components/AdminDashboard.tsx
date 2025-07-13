@@ -50,6 +50,7 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   TestTube,
+  Terminal,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
