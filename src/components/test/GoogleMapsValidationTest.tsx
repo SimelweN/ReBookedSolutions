@@ -23,6 +23,14 @@ if (typeof window !== "undefined") {
 
 // MapConsumerComponent that properly uses useGoogleMap hook
 function MapConsumerComponent() {
+  if (typeof window === "undefined" || !useGoogleMap) {
+    return (
+      <div className="absolute top-2 left-2 bg-white p-2 rounded shadow-md">
+        <p className="text-xs text-gray-600">Maps not available</p>
+      </div>
+    );
+  }
+
   const map = useGoogleMap();
   console.log("Google Map:", map);
 
