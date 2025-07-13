@@ -35,8 +35,8 @@ export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
   const [isReady, setIsReady] = useState(false);
   const [hasError, setHasError] = useState(false);
 
-  // Skip Google Maps loading in non-browser environments
-  if (typeof window === "undefined") {
+  // Skip Google Maps loading in non-browser environments or when APIs not available
+  if (typeof window === "undefined" || !LoadScript || !GoogleMap) {
     return <>{children}</>;
   }
 
