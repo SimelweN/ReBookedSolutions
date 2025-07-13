@@ -1042,6 +1042,34 @@ const DevDashboard: React.FC = () => {
                   <CheckCircle className="h-3 w-3 lg:h-4 lg:w-4" />
                   <span>Full Test</span>
                 </TabsTrigger>
+                <TabsTrigger
+                  value="qa-testing"
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
+                >
+                  <Shield className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>QA Testing</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="edge-monitor"
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
+                >
+                  <Activity className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Monitor</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="console"
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
+                >
+                  <Terminal className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Console</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="sentry-test"
+                  className="flex items-center gap-1 px-3 py-2 text-xs lg:text-sm whitespace-nowrap"
+                >
+                  <Shield className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span>Sentry</span>
+                </TabsTrigger>
               </TabsList>
             </div>
 
