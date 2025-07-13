@@ -30,6 +30,8 @@ import RegisterPage from "./pages/Register";
 import AdminPage from "./pages/Admin";
 // Profile imported directly due to dynamic import fetch issues
 import Profile from "./pages/Profile";
+// BookListing imported directly due to dynamic import fetch issues
+import BookListing from "./pages/BookListing";
 
 // Workers-safe lazy loading - only create lazy components in browser environment
 const isBrowserEnv =
@@ -45,9 +47,7 @@ const WorkersFallback = () =>
 const Dashboard = isBrowserEnv
   ? React.lazy(() => import("./pages/Dashboard"))
   : WorkersFallback;
-const BookListing = isBrowserEnv
-  ? React.lazy(() => import("./pages/BookListing"))
-  : WorkersFallback;
+
 const BookDetails = isBrowserEnv
   ? React.lazy(() => import("./pages/BookDetails"))
   : WorkersFallback;
@@ -263,14 +263,7 @@ function App() {
                           <Route path="/" element={<IndexPage />} />
 
                           {/* Public routes */}
-                          <Route
-                            path="/books"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <BookListing />
-                              </Suspense>
-                            }
-                          />
+                          <Route path="/books" element={<BookListing />} />
                           <Route
                             path="/books/:id"
                             element={
