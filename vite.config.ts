@@ -58,7 +58,7 @@ export default defineConfig(({ command, mode }) => {
       react({
         jsxRuntime: "automatic",
         jsxImportSource: "react",
-        fastRefresh: true,
+        fastRefresh: false,
         // Ensure proper JSX runtime transformation
         babel: {
           plugins: [],
