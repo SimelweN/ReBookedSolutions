@@ -5,7 +5,7 @@ import SEO from "@/components/SEO";
 import OptimizedImage from "@/components/OptimizedImage";
 import { Button } from "@/components/ui/button";
 import { Search, BookOpen } from "lucide-react";
-import DatabaseSetupStatus from "@/components/DatabaseSetupStatus";
+import EnhancedDatabaseSetupStatus from "@/components/EnhancedDatabaseSetupStatus";
 
 const Index = React.memo(() => {
   const [searchQuery, setSearchQuery] = useState("");
