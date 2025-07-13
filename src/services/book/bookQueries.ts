@@ -159,12 +159,20 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
           );
         }
 
-        if (!booksData || booksData.length === 0) {
+        // Ensure booksData is an array before proceeding
+        if (!booksData || !Array.isArray(booksData)) {
+          console.log(
+            "No books data or invalid data format, returning empty array",
+          );
+          return [];
+        }
+
+        if (booksData.length === 0) {
           console.log("No books found");
           return [];
         }
 
-        // Get unique seller IDs
+        // Get unique seller IDs - now safe since we know booksData is an array
         const sellerIds = [...new Set(booksData.map((book) => book.seller_id))];
 
         // Fetch seller profiles with fallback
