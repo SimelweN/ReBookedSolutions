@@ -16,6 +16,7 @@ import NotificationInitializer from "./components/notifications/NotificationInit
 import StartupChecker from "./components/StartupChecker";
 import { validateEnvironment } from "./config/environment";
 import { useCommitAutoExpiry } from "./hooks/useCommitAutoExpiry";
+import { Button } from "./components/ui/button";
 
 // Only import CSS in browser environment
 if (typeof window !== "undefined") {
