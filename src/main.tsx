@@ -21,9 +21,13 @@ const isBrowser = (() => {
   }
 })();
 
-// Disable HMR in production deployments
-if (isBrowser && isProductionDeployment()) {
-  disableHMRInProduction();
+// Disable HMR in production deployments (early and aggressive)
+if (isBrowser) {
+  try {
+    disableHMRInProduction();
+  } catch (error) {
+    console.warn("HMR disabling failed:", error);
+  }
 }
 
 // Add global error handlers for development
