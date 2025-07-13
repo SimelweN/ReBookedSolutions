@@ -192,6 +192,27 @@ const GoogleMapsAddressInput = ({
     [handlePlaceChanged],
   );
 
+  // Check for Workers environment or missing APIs
+  if (typeof window === "undefined" || !Autocomplete || !GoogleMap) {
+    return (
+      <div className={`space-y-2 ${className}`}>
+        <Label htmlFor="address-input">
+          {label} {required && <span className="text-red-500">*</span>}
+        </Label>
+        <Input
+          type="text"
+          placeholder={placeholder}
+          defaultValue={defaultValue}
+          className="w-full"
+          disabled
+        />
+        <div className="text-sm text-gray-500">
+          Address input not available in this environment
+        </div>
+      </div>
+    );
+  }
+
   // Check if we're inside a GoogleMapsProvider context
   if (!apiKey) {
     return (
