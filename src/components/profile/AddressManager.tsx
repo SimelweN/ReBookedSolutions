@@ -23,7 +23,7 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import GoogleMapsAddressInput from "@/components/GoogleMapsAddressInput";
+import BasicAddressInput from "@/components/BasicAddressInput";
 
 interface AddressData {
   streetAddress: string;
