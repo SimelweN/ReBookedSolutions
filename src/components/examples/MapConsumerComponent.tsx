@@ -34,4 +34,5 @@ const GoogleMapsExample = () => {
   );
 };
 
+export { MapConsumerComponent };
 export default GoogleMapsExample;
