@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "react/jsx-runtime";
 import App from "./App.tsx";
 import "./index.css";
 
@@ -16,20 +15,6 @@ const isBrowser = (() => {
     return false;
   }
 })();
-
-// Only execute React app in browser environment
-if (isBrowser) {
-  // Initialize services synchronously to avoid circular dependencies
-  try {
-    // Import console interceptor if available
-    if (import.meta.env.DEV) {
-      import("./services/consoleInterceptor").catch(() => {
-        // Silent catch - not critical for app function
-      });
-    }
-  } catch {
-    // Silent catch - not critical
-  }
 
   try {
     const rootElement = document.getElementById("root");
