@@ -5,6 +5,8 @@ export interface Order {
   book_id: string;
   amount: number; // in kobo (ZAR cents)
   delivery_option: "pickup" | "delivery";
+  delivery_method?: string;
+  tracking_number?: string;
   delivery_address?: any;
   paystack_reference: string;
   paystack_subaccount?: string;

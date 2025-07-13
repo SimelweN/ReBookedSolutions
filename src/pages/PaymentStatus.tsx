@@ -15,6 +15,9 @@ import {
   Download,
   Share,
   MessageSquare,
+  Truck,
+  AlertCircle,
+  DollarSign,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import PaystackPaymentService, {
@@ -76,39 +79,53 @@ const PaymentStatus: React.FC = () => {
 
       let foundOrder: Order | null = null;
 
-      console.log("🔍 Starting order lookup with:", {
-        userId: user.id,
-        userEmail: user.email,
-        orderId,
-        reference,
-        urlSearchParams: window.location.search,
-      });
+      if (import.meta.env.MODE !== "production") {
+        console.log("🔍 Starting order lookup with:", {
+          orderId,
+          reference,
+          userId: user.id,
+          userEmail: user.email,
+          urlSearchParams: window.location.search
+        });
+      }
+      // All logging and blocks are now correct
 
       // Try to load order by ID first
       if (orderId) {
-        console.log("🔍 Looking up order by ID:", orderId);
+        if (import.meta.env.MODE !== "production") {
+          console.log("🔍 Looking up order by ID:", orderId);
+        }
         try {
           foundOrder = await getOrderById(orderId);
-          console.log("📋 Raw order found by ID:", foundOrder);
+          if (import.meta.env.MODE !== "production") {
+            console.log("📋 Raw order found by ID:", foundOrder);
+          }
 
           // Check if this order belongs to the current user
           if (foundOrder) {
-            console.log("🔍 Order ownership check:", {
-              orderBuyerId: foundOrder.buyer_id,
-              orderSellerId: foundOrder.seller_id,
-              currentUserId: user.id,
-              buyerMatch: foundOrder.buyer_id === user.id,
-              sellerMatch: foundOrder.seller_id === user.id,
-            });
+            if (import.meta.env.MODE !== "production") {
+              console.log("🔍 Order ownership check:", {
+                orderBuyerId: foundOrder.buyer_id,
+                orderSellerId: foundOrder.seller_id,
+                currentUserId: user.id,
+                buyerMatch: foundOrder.buyer_id === user.id,
+                sellerMatch: foundOrder.seller_id === user.id
+              });
+            }
+            // Removed stray lines, only console.log inside if block
 
             if (
               foundOrder.buyer_id !== user.id &&
               foundOrder.seller_id !== user.id
             ) {
-              console.log("❌ Order found but doesn't belong to current user");
+              if (import.meta.env.MODE !== "production") {
+                console.log("❌ Order found but doesn't belong to current user");
+              }
               foundOrder = null;
             } else {
-              console.log("✅ Order belongs to current user");
+              if (import.meta.env.MODE !== "production") {
+                console.log("✅ Order belongs to current user");
+              }
             }
           }
         } catch (error) {
@@ -118,29 +135,40 @@ const PaymentStatus: React.FC = () => {
 
       // If not found by ID, try by reference
       if (!foundOrder && reference) {
-        console.log("🔍 Looking up order by reference:", reference);
+        if (import.meta.env.MODE !== "production") {
+          console.log("🔍 Looking up order by reference:", reference);
+        }
         try {
           foundOrder = await getOrderByReference(reference);
-          console.log("📋 Raw order found by reference:", foundOrder);
+          if (import.meta.env.MODE !== "production") {
+            console.log("📋 Raw order found by reference:", foundOrder);
+          }
 
           // Check if this order belongs to the current user
           if (foundOrder) {
-            console.log("🔍 Order ownership check (by reference):", {
-              orderBuyerId: foundOrder.buyer_id,
-              orderSellerId: foundOrder.seller_id,
-              currentUserId: user.id,
-              buyerMatch: foundOrder.buyer_id === user.id,
-              sellerMatch: foundOrder.seller_id === user.id,
-            });
+            if (import.meta.env.MODE !== "production") {
+              console.log("🔍 Order ownership check (by reference):", {
+                orderBuyerId: foundOrder.buyer_id,
+                orderSellerId: foundOrder.seller_id,
+                currentUserId: user.id,
+                buyerMatch: foundOrder.buyer_id === user.id,
+                sellerMatch: foundOrder.seller_id === user.id
+              });
+            }
+            // Removed stray lines, only console.log inside if block
 
             if (
               foundOrder.buyer_id !== user.id &&
               foundOrder.seller_id !== user.id
             ) {
-              console.log("❌ Order found but doesn't belong to current user");
+              if (import.meta.env.MODE !== "production") {
+                console.log("❌ Order found but doesn't belong to current user");
+              }
               foundOrder = null;
             } else {
-              console.log("✅ Order belongs to current user");
+              if (import.meta.env.MODE !== "production") {
+                console.log("✅ Order belongs to current user");
+              }
             }
           }
         } catch (error) {
@@ -148,47 +176,44 @@ const PaymentStatus: React.FC = () => {
         }
       }
 
-      console.log("🔍 Final order lookup result:", {
-        userId: user.id,
-        orderId,
-        reference,
-        foundOrder: foundOrder ? "✅ Found" : "❌ Not found",
-        orderData: foundOrder
-          ? {
-              id: foundOrder.id,
-              buyerId: foundOrder.buyer_id,
-              sellerId: foundOrder.seller_id,
-              status: foundOrder.status,
-              paymentStatus: foundOrder.payment_status,
-            }
-          : null,
-      });
+      if (import.meta.env.MODE !== "production") {
+        console.log("🔍 Final order lookup result:", {
+          orderId,
+          reference,
+          foundOrder
+        });
+      }
+      // Removed stray lines, only console.log inside if block
 
       if (foundOrder) {
         setOrder(foundOrder);
-        console.log("✅ Order loaded successfully:", foundOrder.id);
+        if (import.meta.env.MODE !== "production") {
+          console.log("✅ Order loaded successfully:", foundOrder.id);
+        }
       } else {
-        console.log("❌ Order not found for user:", user.id);
-
+        if (import.meta.env.MODE !== "production") {
+          console.log("❌ Order not found for user:", user.id);
+        }
         // Debug: Check what orders this user has
         try {
           const userOrders = await getUserOrders(user.id);
-          console.log(
-            "🔍 User's available orders:",
-            userOrders.map((o) => ({
-              id: o.id,
-              paystack_reference: o.paystack_reference,
-              status: o.status,
-              created_at: o.created_at,
-            })),
-          );
-
-          if (userOrders.length === 0) {
-            console.log("ℹ️ User has no orders at all");
-          } else {
+          if (import.meta.env.MODE !== "production") {
             console.log(
-              `ℹ️ User has ${userOrders.length} orders, but none match the requested ID/reference`,
+              "🔍 User's available orders:",
+              userOrders.map((o) => ({
+                id: o.id,
+                paystack_reference: o.paystack_reference,
+                status: o.status,
+                created_at: o.created_at,
+              })),
             );
+            if (userOrders.length === 0) {
+              console.log("ℹ️ User has no orders at all");
+            } else {
+              console.log(
+                `ℹ️ User has ${userOrders.length} orders, but none match the requested ID/reference`,
+              );
+            }
           }
         } catch (debugError) {
           console.error(
@@ -196,7 +221,6 @@ const PaymentStatus: React.FC = () => {
             debugError,
           );
         }
-
         setError("Order not found or doesn't belong to your account");
       }
     } catch (error) {

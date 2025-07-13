@@ -8,6 +8,8 @@ import type {
   UpdateOrderData,
 } from "@/types/orders";
 
+export type { Order };
+
 /**
  * Enhanced Order Service - Handles the new order system with notifications and receipts
  */

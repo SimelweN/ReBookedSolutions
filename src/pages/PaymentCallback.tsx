@@ -52,7 +52,9 @@ const PaymentCallback: React.FC = () => {
         return;
       }
 
-      console.log(`Verifying payment with reference: ${paymentRef}`);
+      if (import.meta.env.MODE !== "production") {
+        console.log(`Verifying payment with reference: ${paymentRef}`);
+      }
 
       const verification =
         await PaystackPaymentService.verifyPayment(paymentRef);

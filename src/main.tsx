@@ -40,7 +40,9 @@ if (isBrowser) {
               React.createElement(App),
             ),
           );
-          console.log("✅ App rendered successfully");
+          if (import.meta.env.MODE !== "production") {
+            console.log("✅ App rendered successfully");
+          }
         } else {
           console.error("Root element not found");
         }
@@ -81,7 +83,9 @@ if (isBrowser) {
       }
     });
 } else {
-  console.log("Non-browser environment detected - React rendering skipped");
+  if (import.meta.env.MODE !== "production") {
+    console.log("Non-browser environment detected - React rendering skipped");
+  }
 }
 
 // Export minimal function for Workers/static environments

@@ -3,12 +3,12 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 // Safe environment detection
-const isNode =
-  typeof process !== "undefined" && process.versions && process.versions.node;
+const isNode = typeof process !== "undefined" && process.versions && process.versions.node;
 const isDev = isNode && process.env.NODE_ENV !== "production";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ command, mode }) => {
+  return {
   server: {
     host: "::",
     port: 8080,
@@ -16,17 +16,20 @@ export default defineConfig(({ mode }) => ({
       // Proxy API requests to Vercel dev server or deployed API
       "/api": {
         target:
-          (isNode && process.env.VITE_API_BASE_URL) || "http://localhost:3000",
+          (isNode && process.env.VITE_API_BASE_URL) || "http://localhost:8080",
         changeOrigin: true,
         secure: false,
-        configure: (proxy, options) => {
-          proxy.on("error", (err, req, res) => {
+        configure: (proxy: any, options: any) => {
+          proxy.on("error", (err: any, req: any, res: any) => {
+            // eslint-disable-next-line no-console
             console.log("proxy error", err);
           });
-          proxy.on("proxyReq", (proxyReq, req, res) => {
+          proxy.on("proxyReq", (proxyReq: any, req: any, res: any) => {
+            // eslint-disable-next-line no-console
             console.log("Sending Request to the Target:", req.method, req.url);
           });
-          proxy.on("proxyRes", (proxyRes, req, res) => {
+          proxy.on("proxyRes", (proxyRes: any, req: any, res: any) => {
+            // eslint-disable-next-line no-console
             console.log(
               "Received Response from the Target:",
               proxyRes.statusCode,
@@ -39,23 +42,19 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [react()],
   resolve: {
-    alias: isNode
-      ? {
-          "@": path.resolve(__dirname, "./src"),
-          // Ensure consistent React imports
-          react: path.resolve(__dirname, "node_modules/react"),
-          "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
-        }
-      : {
-          "@": "/src",
-        },
+    alias: {
+      "@": isNode ? path.resolve(__dirname, "./src") : "/src",
+      // Always alias React and React-DOM to ensure single instance
+      react: isNode ? path.resolve(__dirname, "node_modules/react") : "react",
+      "react-dom": isNode ? path.resolve(__dirname, "node_modules/react-dom") : "react-dom",
+    },
     dedupe: ["react", "react-dom"], // Prevent multiple React instances
   },
   build: {
     // Optimize build output
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
+        manualChunks: (id: string) => {
           // Keep React and React-DOM together and prioritize them FIRST
           if (
             id.includes("node_modules/react/") ||
@@ -154,7 +153,7 @@ export default defineConfig(({ mode }) => ({
           }
         },
         // Add hash to filenames for cache busting
-        chunkFileNames: (chunkInfo) => {
+        chunkFileNames: (chunkInfo: { facadeModuleId?: string | null }) => {
           const facadeModuleId = chunkInfo.facadeModuleId
             ? chunkInfo.facadeModuleId
                 .split("/")
@@ -165,7 +164,7 @@ export default defineConfig(({ mode }) => ({
           return `assets/${facadeModuleId}-[hash].js`;
         },
         entryFileNames: "assets/[name]-[hash].js",
-        assetFileNames: (assetInfo) => {
+        assetFileNames: (assetInfo: { name?: string }) => {
           const extType = assetInfo.name?.split(".").pop();
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType || "")) {
             return `assets/images/[name]-[hash].[ext]`;
@@ -223,13 +222,16 @@ export default defineConfig(({ mode }) => ({
     ),
     // Ensure global React availability
     global: "globalThis",
+    // Set React as a global variable for legacy/interop
+    React: "react",
   },
 
   // Performance optimizations
   esbuild: {
-    // Drop only console.log and debugger in production, keep console.error for debugging
-    drop: mode === "production" ? ["debugger"] : [],
+    // Drop only debugger in production, keep console.error for debugging
+    drop: mode === "production" ? ["debugger"] : undefined,
     // Minimize dead code
     treeShaking: true,
   },
-}));
+  };
+});
