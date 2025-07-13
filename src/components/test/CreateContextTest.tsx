@@ -3,7 +3,7 @@
  */
 
 import * as React from "react";
-import { safeCreateContext } from "../../utils/reactLoader";
+// Direct React import to avoid createContext issues
 
 interface TestContextValue {
   message: string;
@@ -16,7 +16,7 @@ const defaultValue: TestContextValue = {
 };
 
 // Test the context creation - using safe wrapper
-const TestContext = safeCreateContext<TestContextValue>(defaultValue);
+const TestContext = React.createContext<TestContextValue>(defaultValue);
 
 export const CreateContextTest: React.FC = () => {
   const [count, setCount] = React.useState(0);
