@@ -175,6 +175,8 @@ const createSupabaseClient = () => {
                 ...options.headers,
                 Accept: "application/json",
                 "Content-Type": "application/json",
+                apikey: cleanKey,
+                Authorization: `Bearer ${cleanKey}`,
               },
             });
 
