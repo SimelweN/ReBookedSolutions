@@ -46,7 +46,11 @@ const Dashboard = isBrowserEnv
   ? React.lazy(() => import("./pages/Dashboard"))
   : WorkersFallback;
 const BookListing = isBrowserEnv
-  ? React.lazy(() => import("./pages/BookListing"))
+  ? React.lazy(() =>
+      import("./pages/BookListing").then((module) => ({
+        default: module.default,
+      })),
+    )
   : WorkersFallback;
 const BookDetails = isBrowserEnv
   ? React.lazy(() => import("./pages/BookDetails"))
