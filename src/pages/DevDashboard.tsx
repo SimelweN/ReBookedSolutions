@@ -87,6 +87,11 @@ import ComprehensiveFunctionalityTest from "@/components/test/ComprehensiveFunct
 import PurchaseFlowTester from "@/components/test/PurchaseFlowTester";
 import NotificationDemo from "@/components/test/NotificationDemo";
 import FunctionTester from "@/components/admin/FunctionTester";
+import DatabaseTest from "@/components/admin/DatabaseTest";
+import QADashboard from "@/components/admin/QADashboard";
+import EdgeFunctionMonitor from "@/components/EdgeFunctionMonitor";
+import RealConsole from "@/components/admin/RealConsole";
+import SentryTester from "@/components/test/SentryTester";
 import { getFunctionFallback } from "@/services/functionFallbackService";
 import {
   createGetTableNamesFunction,
