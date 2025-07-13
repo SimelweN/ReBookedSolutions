@@ -209,7 +209,6 @@ export default defineConfig(({ command, mode }) => {
         "@supabase/supabase-js",
         "@tanstack/react-query",
         "lucide-react",
-        "@react-google-maps/api", // Force optimization to fix temporal dead zone
       ],
       exclude: [],
       force: true, // Force re-bundling to ensure consistency
