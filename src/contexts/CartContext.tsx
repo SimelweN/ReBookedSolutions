@@ -1,10 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
-// Direct React import to avoid createContext issues
+import { safeCreateContext } from "../utils/reactLoader";
 import { CartItem, CartContextType } from "@/types/cart";
 import { Book } from "@/types/book";
 import { toast } from "sonner";
 import { safeLocalStorage } from "@/utils/safeLocalStorage";
-const CartContext = React.createContext<CartContextType | undefined>(undefined);
+const CartContext = safeCreateContext<CartContextType | undefined>(undefined);
 
 export const useCart = () => {
   const context = useContext(CartContext);
