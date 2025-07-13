@@ -1,9 +1,24 @@
 import React, { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2, Share2 } from "lucide-react";
-import { toPng, toJpeg } from "html-to-image";
 import ReceiptComponent from "./ReceiptComponent";
 import { toast } from "sonner";
+
+// Conditional imports for Workers compatibility
+let toPng: any, toJpeg: any;
+
+// Dynamic import for Workers compatibility
+const loadHtmlToImage = async () => {
+  if (typeof window !== "undefined" && !toPng) {
+    try {
+      const htmlToImage = await import("html-to-image");
+      toPng = htmlToImage.toPng;
+      toJpeg = htmlToImage.toJpeg;
+    } catch (error) {
+      console.warn("html-to-image not available:", error);
+    }
+  }
+};
 
 interface ReceiptDownloaderProps {
   reference: string;
@@ -33,8 +48,21 @@ const ReceiptDownloader: React.FC<ReceiptDownloaderProps> = (props) => {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const downloadAsImage = async (format: "png" | "jpeg" = "png") => {
+    // Ensure we're in browser environment
+    if (typeof window === "undefined") {
+      toast.error("Download not available in this environment");
+      return;
+    }
+
     if (!receiptRef.current) {
       toast.error("Receipt not ready for download");
+      return;
+    }
+
+    // Load html-to-image library
+    await loadHtmlToImage();
+    if (!toPng || !toJpeg) {
+      toast.error("Image generation not available");
       return;
     }
 
@@ -67,8 +95,21 @@ const ReceiptDownloader: React.FC<ReceiptDownloaderProps> = (props) => {
   };
 
   const shareReceipt = async () => {
+    // Ensure we're in browser environment
+    if (typeof window === "undefined") {
+      toast.error("Sharing not available in this environment");
+      return;
+    }
+
     if (!receiptRef.current) {
       toast.error("Receipt not ready for sharing");
+      return;
+    }
+
+    // Load html-to-image library
+    await loadHtmlToImage();
+    if (!toPng) {
+      toast.error("Image generation not available");
       return;
     }
 

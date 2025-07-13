@@ -1,10 +1,29 @@
-import React from "react";
-import { GoogleMap, LoadScript, useGoogleMap } from "@react-google-maps/api";
+import React, { useState, useEffect } from "react";
 
 type ReactNode = React.ReactNode;
 
 // Define the libraries array with proper typing
 const libraries: "places"[] = ["places"];
+
+// Stable reference to prevent re-initialization
+let librariesRef: "places"[] | undefined;
+
+// Conditional imports for Workers compatibility
+let GoogleMap: any, LoadScript: any, useGoogleMap: any;
+
+// Dynamic import for Workers compatibility
+const loadGoogleMapsApi = async () => {
+  if (typeof window !== "undefined" && !GoogleMap) {
+    try {
+      const googleMapsApi = await import("@react-google-maps/api");
+      GoogleMap = googleMapsApi.GoogleMap;
+      LoadScript = googleMapsApi.LoadScript;
+      useGoogleMap = googleMapsApi.useGoogleMap;
+    } catch (error) {
+      console.warn("Google Maps API not available:", error);
+    }
+  }
+};
 
 // Provider props interface
 interface GoogleMapsProviderProps {
@@ -15,8 +34,11 @@ interface GoogleMapsProviderProps {
 export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
   children,
 }) => {
-  // Skip Google Maps loading in non-browser environments
-  if (typeof window === "undefined") {
+  const [isReady, setIsReady] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  // Skip Google Maps loading in non-browser environments or when APIs not available
+  if (typeof window === "undefined" || !LoadScript || !GoogleMap) {
     return <>{children}</>;
   }
 
@@ -26,6 +48,24 @@ export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
   const isBrowser =
     typeof window !== "undefined" && typeof document !== "undefined";
   const hasApiKey = Boolean(apiKey && apiKey.trim() !== "" && isBrowser);
+
+  // Use stable libraries reference to prevent re-initialization
+  if (!librariesRef) {
+    librariesRef = libraries;
+  }
+
+  // Initialize maps safely after component mount
+  useEffect(() => {
+    if (hasApiKey && isBrowser) {
+      loadGoogleMapsApi().then(() => {
+        // Small delay to ensure DOM is ready
+        const timer = setTimeout(() => {
+          setIsReady(true);
+        }, 100);
+        return () => clearTimeout(timer);
+      });
+    }
+  }, [hasApiKey, isBrowser]);
 
   // Log warning in development
   if (!hasApiKey && import.meta.env.DEV) {
@@ -39,15 +79,41 @@ export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
     return <>{children}</>;
   }
 
-  return (
-    <LoadScript
-      googleMapsApiKey={apiKey || ""}
-      libraries={libraries}
-      preventGoogleFontsLoading={true}
-    >
-      {children}
-    </LoadScript>
-  );
+  if (hasError) {
+    console.error(
+      "Google Maps failed to load, rendering children without maps",
+    );
+    return <>{children}</>;
+  }
+
+  if (!isReady) {
+    return <>{children}</>;
+  }
+
+  // Wrap LoadScript with error boundary to prevent initialization crashes
+  try {
+    return (
+      <LoadScript
+        googleMapsApiKey={apiKey || ""}
+        libraries={librariesRef}
+        preventGoogleFontsLoading={true}
+        loadingElement={<div>Loading Google Maps...</div>}
+        onLoad={() => {
+          console.log("Google Maps loaded successfully");
+        }}
+        onError={(error) => {
+          console.error("Google Maps LoadScript error:", error);
+          setHasError(true);
+        }}
+      >
+        {children}
+      </LoadScript>
+    );
+  } catch (error) {
+    console.error("Google Maps provider initialization error:", error);
+    setHasError(true);
+    return <>{children}</>;
+  }
 };
 
 export default GoogleMapsProvider;

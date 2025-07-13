@@ -46,7 +46,17 @@ export default defineConfig(({ command, mode }) => {
         },
       },
     },
-    plugins: [react()],
+    plugins: [
+      react({
+        jsxRuntime: "automatic",
+        jsxImportSource: "react",
+        fastRefresh: true,
+        // Ensure proper JSX runtime transformation
+        babel: {
+          plugins: [],
+        },
+      }),
+    ],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
@@ -202,6 +212,7 @@ export default defineConfig(({ command, mode }) => {
         "react-dom",
         "react-dom/client",
         "react/jsx-runtime",
+        "react/jsx-dev-runtime",
         // Then other React dependencies
         "react-router-dom",
         // Then other libraries
@@ -218,6 +229,9 @@ export default defineConfig(({ command, mode }) => {
       esbuildOptions: {
         target: "esnext",
         format: "esm",
+        jsx: "automatic",
+        jsxFactory: undefined,
+        jsxFragment: undefined,
       },
     },
 

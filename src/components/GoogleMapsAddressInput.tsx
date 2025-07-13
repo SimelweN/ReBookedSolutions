@@ -1,13 +1,25 @@
 import { useRef, useState, useCallback } from "react";
-import {
-  Autocomplete,
-  GoogleMap,
-  Marker,
-  useGoogleMap,
-} from "@react-google-maps/api";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MapPin, Loader2 } from "lucide-react";
+
+// Conditional imports for Workers compatibility
+let Autocomplete: any, GoogleMap: any, Marker: any, useGoogleMap: any;
+
+// Dynamic import for Workers compatibility
+const loadGoogleMapsApi = async () => {
+  if (typeof window !== "undefined" && !GoogleMap) {
+    try {
+      const googleMapsApi = await import("@react-google-maps/api");
+      Autocomplete = googleMapsApi.Autocomplete;
+      GoogleMap = googleMapsApi.GoogleMap;
+      Marker = googleMapsApi.Marker;
+      useGoogleMap = googleMapsApi.useGoogleMap;
+    } catch (error) {
+      console.warn("Google Maps API not available:", error);
+    }
+  }
+};
 
 const mapContainerStyle = { width: "100%", height: "300px" };
 
@@ -59,6 +71,15 @@ const GoogleMapsAddressInput = ({
   defaultValue = "",
 }: GoogleMapsAddressInputProps) => {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+
+  // Safety check to prevent accessing Google Maps before it's ready
+  const isGoogleMapsReady = () => {
+    return (
+      typeof window !== "undefined" &&
+      typeof window.google !== "undefined" &&
+      typeof window.google.maps !== "undefined"
+    );
+  };
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const [address, setAddress] = useState(defaultValue || "");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
@@ -173,6 +194,27 @@ const GoogleMapsAddressInput = ({
     [handlePlaceChanged],
   );
 
+  // Check for Workers environment or missing APIs
+  if (typeof window === "undefined" || !Autocomplete || !GoogleMap) {
+    return (
+      <div className={`space-y-2 ${className}`}>
+        <Label htmlFor="address-input">
+          {label} {required && <span className="text-red-500">*</span>}
+        </Label>
+        <Input
+          type="text"
+          placeholder={placeholder}
+          defaultValue={defaultValue}
+          className="w-full"
+          disabled
+        />
+        <div className="text-sm text-gray-500">
+          Address input not available in this environment
+        </div>
+      </div>
+    );
+  }
+
   // Check if we're inside a GoogleMapsProvider context
   if (!apiKey) {
     return (
@@ -261,19 +303,28 @@ const GoogleMapsAddressInput = ({
 
           {/* Map Preview using the proper pattern */}
           <div className="border rounded-lg overflow-hidden">
-            <GoogleMap
-              id="address-preview-map"
-              mapContainerStyle={mapContainerStyle}
-              center={coords}
-              zoom={15}
-              options={{
-                streetViewControl: false,
-                mapTypeControl: false,
-                fullscreenControl: false,
-              }}
-            >
-              <MapConsumer coords={coords} address={address} />
-            </GoogleMap>
+            {isGoogleMapsReady() ? (
+              <GoogleMap
+                id="address-preview-map"
+                mapContainerStyle={mapContainerStyle}
+                center={coords}
+                zoom={15}
+                options={{
+                  streetViewControl: false,
+                  mapTypeControl: false,
+                  fullscreenControl: false,
+                }}
+              >
+                <MapConsumer coords={coords} address={address} />
+              </GoogleMap>
+            ) : (
+              <div className="flex items-center justify-center h-[300px] bg-gray-100">
+                <div className="text-center">
+                  <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
+                  <p className="text-sm text-gray-600">Loading map...</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
