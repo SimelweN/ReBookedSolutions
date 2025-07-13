@@ -47,10 +47,10 @@ if (isDev && (!supabaseUrl || !supabaseAnonKey)) {
 
 // Create a mock client for when environment variables are missing
 const createMockSupabaseClient = () => {
-  if (isDev) {
+  // Only warn if environment variables are completely missing (not just demo values)
+  if (isDev && !supabaseUrl && !supabaseAnonKey) {
     console.warn(
-      "⚠️ Supabase environment variables not configured. Using mock client.\n" +
-        "💡 To fix: Run 'npm run setup' to configure with real credentials",
+      "⚠️ Supabase not configured - using mock client for development",
     );
   }
 
