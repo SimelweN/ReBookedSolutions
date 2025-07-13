@@ -21,6 +21,11 @@ const isBrowser = (() => {
   }
 })();
 
+// Disable HMR in production deployments
+if (isBrowser && isProductionDeployment()) {
+  disableHMRInProduction();
+}
+
 // Add global error handlers for development
 if (isBrowser && import.meta.env.DEV) {
   // Handle unhandled promise rejections (like fetch errors)
