@@ -62,6 +62,7 @@ import ProgramReview from "@/components/admin/ProgramReview";
 const AdminDashboard = () => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTab, setSelectedTab] = useState("overview");
   const [isLoading, setIsLoading] = useState(false);
