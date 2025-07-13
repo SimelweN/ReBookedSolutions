@@ -69,22 +69,12 @@ export const getReact = (): any => {
   );
 };
 
-// Safe createContext that waits for React
-export const safeCreateContext = <T>(defaultValue: T): any => {
-  try {
-    const React = getReact();
-    return React.createContext(defaultValue);
-  } catch (error) {
-    console.warn("React not available for createContext, returning mock");
-    // Return a mock context for development
-    return {
-      Provider: ({ children }: { children: any }) => children,
-      Consumer: ({ children }: { children: any }) => children(defaultValue),
-      _currentValue: defaultValue,
-      _currentValue2: defaultValue,
-      _threadCount: 0,
-    };
-  }
+// Import React directly - this ensures React is available at module load time
+import React from "react";
+
+// Safe createContext using direct React import
+export const safeCreateContext = <T>(defaultValue: T): React.Context<T> => {
+  return React.createContext(defaultValue);
 };
 
 // Initialize React loading immediately when this module is imported

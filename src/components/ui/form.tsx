@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useContext, useId, forwardRef } from "react";
-import { safeCreateContext } from "../../utils/reactLoader";
+// Direct React import to avoid createContext issues
 import * as LabelPrimitive from "@radix-ui/react-label";
 import { Slot } from "@radix-ui/react-slot";
 import {
@@ -23,7 +23,7 @@ type FormFieldContextValue<
   name: TName;
 };
 
-const FormFieldContext = safeCreateContext<FormFieldContextValue>(
+const FormFieldContext = React.createContext<FormFieldContextValue>(
   {} as FormFieldContextValue,
 );
 
@@ -67,7 +67,7 @@ type FormItemContextValue = {
   id: string;
 };
 
-const FormItemContext = safeCreateContext<FormItemContextValue>(
+const FormItemContext = React.createContext<FormItemContextValue>(
   {} as FormItemContextValue,
 );
 
