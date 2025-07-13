@@ -181,6 +181,27 @@ const createSupabaseClient = () => {
             });
 
             if (!response.ok) {
+              // Handle 404 errors gracefully - likely tables don't exist yet
+              if (response.status === 404) {
+                console.warn(
+                  "⚠️ Database table not found - database setup may be required",
+                );
+                return new Response(
+                  JSON.stringify({
+                    data: [],
+                    error: {
+                      message:
+                        "Database table not found. Please complete database setup.",
+                      code: "TABLE_NOT_FOUND",
+                    },
+                  }),
+                  {
+                    status: 200,
+                    headers: { "Content-Type": "application/json" },
+                  },
+                );
+              }
+
               throw new Error(
                 `HTTP ${response.status}: ${response.statusText}`,
               );
