@@ -145,7 +145,7 @@ const Index = React.memo(() => {
       {/* Database Setup Status */}
       <section className="py-8 bg-gray-50">
         <div className="container mx-auto px-4">
-          <DatabaseSetupStatus />
+          <EnhancedDatabaseSetupStatus />
         </div>
       </section>
 
