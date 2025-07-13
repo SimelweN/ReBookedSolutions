@@ -246,420 +246,419 @@ function App() {
       )}
       <ErrorBoundaryEnhanced>
         <ErrorBoundary level="app">
-                    <ThemeProvider attribute="class" defaultTheme="light">
-              <AuthProvider>
-                <CartProvider>
-                  <Router
-                    future={{
-                      v7_startTransition: true,
-                      v7_relativeSplatPath: true,
-                    }}
-                  >
-                    <div className="min-h-screen bg-white">
-                      <Suspense fallback={<LoadingSpinner />}>
-                        <Routes>
-                          {/* Home route */}
-                          <Route path="/" element={<IndexPage />} />
+          <ThemeProvider attribute="class" defaultTheme="light">
+            <AuthProvider>
+              <CartProvider>
+                <Router
+                  future={{
+                    v7_startTransition: true,
+                    v7_relativeSplatPath: true,
+                  }}
+                >
+                  <div className="min-h-screen bg-white">
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <Routes>
+                        {/* Home route */}
+                        <Route path="/" element={<IndexPage />} />
 
-                          {/* Public routes */}
-                          <Route path="/books" element={<BookListing />} />
-                          <Route
-                            path="/books/:id"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <BookDetails />
-                              </Suspense>
-                            }
-                          />
-                          <Route
-                            path="/book/:id"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <BookDetails />
-                              </Suspense>
-                            }
-                          />
-                          <Route path="/login" element={<LoginPage />} />
-                          <Route path="/register" element={<RegisterPage />} />
-                          <Route
-                            path="/forgot-password"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <ForgotPassword />
-                              </Suspense>
-                            }
-                          />
-                          <Route
-                            path="/reset-password"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <ResetPassword />
-                              </Suspense>
-                            }
-                          />
-                          <Route
-                            path="/verify"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <Verify />
-                              </Suspense>
-                            }
-                          />
-                          <Route
-                            path="/confirm"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <Confirm />
-                              </Suspense>
-                            }
-                          />
-                          <Route
-                            path="/confirm-email-change"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <ConfirmEmailChange />
-                              </Suspense>
-                            }
-                          />
+                        {/* Public routes */}
+                        <Route path="/books" element={<BookListing />} />
+                        <Route
+                          path="/books/:id"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <BookDetails />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/book/:id"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <BookDetails />
+                            </Suspense>
+                          }
+                        />
+                        <Route path="/login" element={<LoginPage />} />
+                        <Route path="/register" element={<RegisterPage />} />
+                        <Route
+                          path="/forgot-password"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <ForgotPassword />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/reset-password"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <ResetPassword />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/verify"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <Verify />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/confirm"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <Confirm />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/confirm-email-change"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <ConfirmEmailChange />
+                            </Suspense>
+                          }
+                        />
 
-                          {/* University and Campus Routes */}
-                          <Route
-                            path="/university-info"
-                            element={<UniversityInfoPage />}
-                          />
+                        {/* University and Campus Routes */}
+                        <Route
+                          path="/university-info"
+                          element={<UniversityInfoPage />}
+                        />
 
-                          {/* University Profile Route */}
-                          <Route
-                            path="/university/:id"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <UniversityProfile />
-                              </Suspense>
-                            }
-                          />
+                        {/* University Profile Route */}
+                        <Route
+                          path="/university/:id"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <UniversityProfile />
+                            </Suspense>
+                          }
+                        />
 
-                          {/* Study Resources Routes */}
-                          <Route
-                            path="/study-resources"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <StudyResources />
-                              </Suspense>
-                            }
-                          />
-                          <Route
-                            path="/study-tips"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <StudyResources />
-                              </Suspense>
-                            }
-                          />
+                        {/* Study Resources Routes */}
+                        <Route
+                          path="/study-resources"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <StudyResources />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/study-tips"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <StudyResources />
+                            </Suspense>
+                          }
+                        />
 
-                          {/* Shopping and Cart Routes */}
-                          <Route
-                            path="/cart"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <Cart />
-                              </Suspense>
-                            }
-                          />
-                          <Route
-                            path="/shipping"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <Shipping />
-                              </Suspense>
-                            }
-                          />
+                        {/* Shopping and Cart Routes */}
+                        <Route
+                          path="/cart"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <Cart />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/shipping"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <Shipping />
+                            </Suspense>
+                          }
+                        />
 
-                          {/* Support and Info Pages */}
-                          <Route
-                            path="/contact"
-                            element={
+                        {/* Support and Info Pages */}
+                        <Route
+                          path="/contact"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <ContactUs />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/faq"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <FAQ />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/policies"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <Policies />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/privacy"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <Privacy />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/terms"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <Terms />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/cookie-settings"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <CookieSettingsPage />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/report"
+                          element={
+                            <ProtectedRoute>
                               <Suspense fallback={<LoadingSpinner />}>
-                                <ContactUs />
+                                <Report />
                               </Suspense>
-                            }
-                          />
-                          <Route
-                            path="/faq"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <FAQ />
-                              </Suspense>
-                            }
-                          />
-                          <Route
-                            path="/policies"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <Policies />
-                              </Suspense>
-                            }
-                          />
-                          <Route
-                            path="/privacy"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <Privacy />
-                              </Suspense>
-                            }
-                          />
-                          <Route
-                            path="/terms"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <Terms />
-                              </Suspense>
-                            }
-                          />
-                          <Route
-                            path="/cookie-settings"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <CookieSettingsPage />
-                              </Suspense>
-                            }
-                          />
-                          <Route
-                            path="/report"
-                            element={
-                              <ProtectedRoute>
-                                <Suspense fallback={<LoadingSpinner />}>
-                                  <Report />
-                                </Suspense>
-                              </ProtectedRoute>
-                            }
-                          />
+                            </ProtectedRoute>
+                          }
+                        />
 
-                          {/* Protected Routes */}
-                          <Route
-                            path="/dashboard"
-                            element={
-                              <ProtectedRoute>
-                                <Suspense fallback={<LoadingSpinner />}>
-                                  <Dashboard />
-                                </Suspense>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/profile"
-                            element={
-                              <ProtectedRoute>
-                                <Profile />
-                              </ProtectedRoute>
-                            }
-                          />
-
-                          <Route
-                            path="/create-listing"
-                            element={
-                              <ProtectedRoute>
-                                <Suspense fallback={<LoadingSpinner />}>
-                                  <CreateListing />
-                                </Suspense>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/edit-book/:id"
-                            element={
-                              <ProtectedRoute>
-                                <Suspense fallback={<LoadingSpinner />}>
-                                  <EditBook />
-                                </Suspense>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/checkout"
-                            element={
-                              <ProtectedRoute>
-                                <Suspense fallback={<LoadingSpinner />}>
-                                  <Checkout />
-                                </Suspense>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/purchase"
-                            element={
+                        {/* Protected Routes */}
+                        <Route
+                          path="/dashboard"
+                          element={
+                            <ProtectedRoute>
                               <Suspense fallback={<LoadingSpinner />}>
-                                <NewCheckout />
+                                <Dashboard />
                               </Suspense>
-                            }
-                          />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/profile"
+                          element={
+                            <ProtectedRoute>
+                              <Profile />
+                            </ProtectedRoute>
+                          }
+                        />
 
-                          <Route
-                            path="/seller/:sellerId"
-                            element={
+                        <Route
+                          path="/create-listing"
+                          element={
+                            <ProtectedRoute>
                               <Suspense fallback={<LoadingSpinner />}>
-                                <SellerMarketplace />
+                                <CreateListing />
                               </Suspense>
-                            }
-                          />
-                          <Route
-                            path="/marketplace/:sellerId"
-                            element={
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/edit-book/:id"
+                          element={
+                            <ProtectedRoute>
                               <Suspense fallback={<LoadingSpinner />}>
-                                <SellerMarketplace />
+                                <EditBook />
                               </Suspense>
-                            }
-                          />
-                          <Route
-                            path="/checkout/success"
-                            element={
-                              <ProtectedRoute>
-                                <Suspense fallback={<LoadingSpinner />}>
-                                  <CheckoutSuccess />
-                                </Suspense>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/payment-status/:orderId?"
-                            element={
-                              <ProtectedRoute>
-                                <Suspense fallback={<LoadingSpinner />}>
-                                  <PaymentStatus />
-                                </Suspense>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/payment-callback"
-                            element={
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/checkout"
+                          element={
+                            <ProtectedRoute>
                               <Suspense fallback={<LoadingSpinner />}>
-                                <PaymentCallback />
+                                <Checkout />
                               </Suspense>
-                            }
-                          />
-                          <Route
-                            path="/notifications"
-                            element={
-                              <ProtectedRoute>
-                                <Suspense fallback={<LoadingSpinner />}>
-                                  <Notifications />
-                                </Suspense>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/receipt/:reference"
-                            element={
-                              <ProtectedRoute>
-                                <Suspense fallback={<LoadingSpinner />}>
-                                  <Receipt />
-                                </Suspense>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/activity"
-                            element={
-                              <ProtectedRoute>
-                                <Suspense fallback={<LoadingSpinner />}>
-                                  <ActivityLog />
-                                </Suspense>
-                              </ProtectedRoute>
-                            }
-                          />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/purchase"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <NewCheckout />
+                            </Suspense>
+                          }
+                        />
 
-                          <Route
-                            path="/my-orders"
-                            element={
-                              <ProtectedRoute>
-                                <Suspense fallback={<LoadingSpinner />}>
-                                  <UserOrders />
-                                </Suspense>
-                              </ProtectedRoute>
-                            }
-                          />
-                          {/* Redirect /orders to /my-orders */}
-                          <Route
-                            path="/orders"
-                            element={
-                              <ProtectedRoute>
-                                <Suspense fallback={<LoadingSpinner />}>
-                                  <UserOrders />
-                                </Suspense>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/banking-setup"
-                            element={
-                              <ProtectedRoute>
-                                <Suspense fallback={<LoadingSpinner />}>
-                                  <BankingSetup />
-                                </Suspense>
-                              </ProtectedRoute>
-                            }
-                          />
-
-                          {/* Program Submission Route */}
-                          <Route
-                            path="/add-program"
-                            element={
+                        <Route
+                          path="/seller/:sellerId"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <SellerMarketplace />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/marketplace/:sellerId"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <SellerMarketplace />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/checkout/success"
+                          element={
+                            <ProtectedRoute>
                               <Suspense fallback={<LoadingSpinner />}>
-                                <AddProgram />
+                                <CheckoutSuccess />
                               </Suspense>
-                            }
-                          />
-
-                          {/* Admin Routes */}
-                          <Route
-                            path="/admin"
-                            element={
-                              <AdminProtectedRoute>
-                                <AdminPage />
-                              </AdminProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/admin/reports"
-                            element={
-                              <AdminProtectedRoute>
-                                <Suspense fallback={<LoadingSpinner />}>
-                                  <AdminReports />
-                                </Suspense>
-                              </AdminProtectedRoute>
-                            }
-                          />
-
-                          {/* Development Dashboard - Admin only */}
-                          <Route
-                            path="/dev-dashboard"
-                            element={
-                              <AdminProtectedRoute>
-                                <Suspense fallback={<LoadingSpinner />}>
-                                  <DevDashboard />
-                                </Suspense>
-                              </AdminProtectedRoute>
-                            }
-                          />
-
-                          {/* 404 Route */}
-                          <Route
-                            path="*"
-                            element={
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/payment-status/:orderId?"
+                          element={
+                            <ProtectedRoute>
                               <Suspense fallback={<LoadingSpinner />}>
-                                <NotFound />
+                                <PaymentStatus />
                               </Suspense>
-                            }
-                          />
-                        </Routes>
-                      </Suspense>
-                    </div>
-                  </Router>
-                  <NotificationWrapper position="top-right" maxVisible={3} />
-                  <NotificationInitializer />
-                </CartProvider>
-              </AuthProvider>
-            </GoogleMapsProvider>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/payment-callback"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <PaymentCallback />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/notifications"
+                          element={
+                            <ProtectedRoute>
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <Notifications />
+                              </Suspense>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/receipt/:reference"
+                          element={
+                            <ProtectedRoute>
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <Receipt />
+                              </Suspense>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/activity"
+                          element={
+                            <ProtectedRoute>
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <ActivityLog />
+                              </Suspense>
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/my-orders"
+                          element={
+                            <ProtectedRoute>
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <UserOrders />
+                              </Suspense>
+                            </ProtectedRoute>
+                          }
+                        />
+                        {/* Redirect /orders to /my-orders */}
+                        <Route
+                          path="/orders"
+                          element={
+                            <ProtectedRoute>
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <UserOrders />
+                              </Suspense>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/banking-setup"
+                          element={
+                            <ProtectedRoute>
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <BankingSetup />
+                              </Suspense>
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        {/* Program Submission Route */}
+                        <Route
+                          path="/add-program"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <AddProgram />
+                            </Suspense>
+                          }
+                        />
+
+                        {/* Admin Routes */}
+                        <Route
+                          path="/admin"
+                          element={
+                            <AdminProtectedRoute>
+                              <AdminPage />
+                            </AdminProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/reports"
+                          element={
+                            <AdminProtectedRoute>
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <AdminReports />
+                              </Suspense>
+                            </AdminProtectedRoute>
+                          }
+                        />
+
+                        {/* Development Dashboard - Admin only */}
+                        <Route
+                          path="/dev-dashboard"
+                          element={
+                            <AdminProtectedRoute>
+                              <Suspense fallback={<LoadingSpinner />}>
+                                <DevDashboard />
+                              </Suspense>
+                            </AdminProtectedRoute>
+                          }
+                        />
+
+                        {/* 404 Route */}
+                        <Route
+                          path="*"
+                          element={
+                            <Suspense fallback={<LoadingSpinner />}>
+                              <NotFound />
+                            </Suspense>
+                          }
+                        />
+                      </Routes>
+                    </Suspense>
+                  </div>
+                </Router>
+                <NotificationWrapper position="top-right" maxVisible={3} />
+                <NotificationInitializer />
+              </CartProvider>
+            </AuthProvider>
           </ThemeProvider>
         </ErrorBoundary>
       </ErrorBoundaryEnhanced>
