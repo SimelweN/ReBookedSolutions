@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useLoadScript } from "@react-google-maps/api";
+
 import {
   getEnhancedDeliveryQuotes,
   validateSellersHaveAddresses,
