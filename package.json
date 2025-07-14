@@ -57,7 +57,6 @@
     "react-helmet-async": "^2.0.5",
     "react-hook-form": "^7.53.0",
     "react-router-dom": "^6.26.2",
-    "sonner": "^1.6.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8",
