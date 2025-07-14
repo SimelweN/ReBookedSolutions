@@ -1,1 +1,149 @@
+# Supabase Configuration File
+# This file contains configuration settings for your Supabase project
+
 project_id = "kbpjqzaqbqukutflwixf"
+
+[api]
+# The domain and port for the local API server
+enabled = true
+port = 54321
+
+[db]
+# Database configuration
+port = 54322
+major_version = 15
+
+[studio]
+# Studio configuration
+enabled = true
+port = 54323
+
+[auth]
+# Auth configuration
+enabled = true
+[auth.external.google]
+enabled = false
+[auth.external.github]
+enabled = false
+
+[functions]
+# Edge Functions configuration
+# Default Deno version for all functions
+deno_version = "1.37.2"
+
+[functions.verify-paystack-payment]
+# Payment verification function
+verify_jwt = true
+
+[functions.initialize-paystack-payment]
+# Payment initialization function
+verify_jwt = true
+
+[functions.pay-seller]
+# Seller payout function
+verify_jwt = true
+
+[functions.create-paystack-subaccount]
+# Paystack subaccount creation
+verify_jwt = true
+
+[functions.file-upload]
+# File upload function
+verify_jwt = true
+
+[functions.send-email-notification]
+# Email notification function
+verify_jwt = true
+
+[functions.get-delivery-quotes]
+# Delivery quotes function
+verify_jwt = false
+
+[functions.study-resources-api]
+# Study resources API
+verify_jwt = false
+
+[functions.commit-to-sale]
+# Commit to sale function
+verify_jwt = true
+
+[functions.decline-commit]
+# Decline commit function
+verify_jwt = true
+
+[functions.mark-collected]
+# Mark order as collected
+verify_jwt = true
+
+[functions.auto-expire-commits]
+# Auto-expire commits (scheduled)
+verify_jwt = false
+
+[functions.process-book-purchase]
+# Process book purchase
+verify_jwt = true
+
+[functions.email-automation]
+# Email automation function
+verify_jwt = false
+
+[functions.courier-guy-quote]
+# Courier guy delivery quotes
+verify_jwt = false
+
+[functions.courier-guy-shipment]
+# Courier guy shipment creation
+verify_jwt = true
+
+[functions.courier-guy-track]
+# Courier guy tracking
+verify_jwt = false
+
+[functions.fastway-quote]
+# Fastway delivery quotes
+verify_jwt = false
+
+[functions.fastway-shipment]
+# Fastway shipment creation
+verify_jwt = true
+
+[functions.fastway-track]
+# Fastway tracking
+verify_jwt = false
+
+[edge_runtime]
+# Runtime configuration for edge functions
+policy = "local"
+inspector_port = 8083
+
+# Environment variables (references only - actual values set via CLI or dashboard)
+[env]
+# Core Supabase variables
+SUPABASE_URL = "env(SUPABASE_URL)"
+SUPABASE_ANON_KEY = "env(SUPABASE_ANON_KEY)"
+SUPABASE_SERVICE_ROLE_KEY = "env(SUPABASE_SERVICE_ROLE_KEY)"
+
+# Payment integration
+PAYSTACK_SECRET_KEY = "env(PAYSTACK_SECRET_KEY)"
+PAYSTACK_PUBLIC_KEY = "env(PAYSTACK_PUBLIC_KEY)"
+
+# Email providers
+SENDER_API_KEY = "env(SENDER_API_KEY)"
+RESEND_API_KEY = "env(RESEND_API_KEY)"
+FROM_EMAIL = "env(FROM_EMAIL)"
+
+# Shipping providers  
+COURIER_GUY_API_KEY = "env(COURIER_GUY_API_KEY)"
+FASTWAY_API_KEY = "env(FASTWAY_API_KEY)"
+SHIPLOGIC_API_KEY = "env(SHIPLOGIC_API_KEY)"
+
+# Database settings
+DATABASE_URL = "env(DATABASE_URL)"
+
+# File storage
+STORAGE_BUCKET = "env(STORAGE_BUCKET)"
+
+[storage]
+# Storage configuration
+enabled = true
+file_size_limit = "50MiB"

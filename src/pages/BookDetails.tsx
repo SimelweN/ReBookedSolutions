@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import Layout from "@/components/Layout";
+import SEO from "@/components/SEO";
 import BookImageSection from "@/components/book-details/BookImageSection";
 import BookInfo from "@/components/book-details/BookInfo";
 import BookDescription from "@/components/book-details/BookDescription";
@@ -26,20 +27,34 @@ const BookDetails = () => {
 
   // Validate and debug book ID
   useEffect(() => {
+    console.log("📱 [BookDetails] Component mounted with ID:", id);
     debugBookId(id);
     const validId = extractBookId(id);
 
     if (!validId) {
-      console.error("Invalid or missing book ID in URL:", id);
+      console.error("❌ [BookDetails] Invalid or missing book ID in URL:", id);
       toast.error("Invalid book link - redirecting to browse books");
       // Add a small delay to ensure the user sees the error message
       setTimeout(() => {
         navigate("/books");
       }, 2000);
+    } else {
+      console.log("✅ [BookDetails] Valid book ID extracted:", validId);
     }
   }, [id, navigate]);
 
   const { book, isLoading, error } = useBookDetails(id || "");
+
+  // Debug the hook results
+  useEffect(() => {
+    console.log("📊 [BookDetails] Hook state updated:", {
+      bookId: id,
+      isLoading,
+      hasBook: !!book,
+      error,
+      bookTitle: book?.title,
+    });
+  }, [id, book, isLoading, error]);
 
   const handleBuyNow = async () => {
     if (!user) {
@@ -60,17 +75,44 @@ const BookDetails = () => {
       return;
     }
 
-    // Add to cart and proceed to checkout
+    // Navigate to new checkout flow with book data
     try {
-      // Add book to cart
-      addToCart(book);
-      toast.success("Book added to cart. Proceeding to checkout...");
+      if (book.sold) {
+        toast.error("This book has already been sold");
+        return;
+      }
 
-      // Navigate to integrated checkout
-      navigate("/checkout");
+      // Debug book data before navigation
+      console.log("BookDetails - Original book data:", book);
+      console.log("BookDetails - seller_id:", book.seller_id);
+
+      // ✅ As a buyer, proceed to checkout - checkout flow will handle address collection
+      // Note: We'll validate seller readiness in the checkout flow, not here
+
+      const bookForPurchase = {
+        id: book.id,
+        title: book.title,
+        author: book.author,
+        price: book.price,
+        condition: book.condition,
+        isbn: book.isbn,
+        image_url: book.imageUrl,
+        seller_id: book.seller?.id || book.seller_id,
+        seller_subaccount_code:
+          book.seller_subaccount_code || book.subaccountCode,
+      };
+
+      console.log("✅ Proceeding to checkout with book:", bookForPurchase);
+
+      // Navigate to new checkout flow with book data
+      navigate("/checkout", {
+        state: {
+          book: bookForPurchase,
+        },
+      });
     } catch (error) {
-      console.error("Error proceeding to checkout:", error);
-      toast.error("Unable to proceed to checkout. Please try again.");
+      console.error("Error proceeding to purchase:", error);
+      toast.error("Unable to proceed to purchase. Please try again.");
     }
   };
 
@@ -215,6 +257,34 @@ const BookDetails = () => {
 
   return (
     <Layout>
+      <SEO
+        title={`${book.title} by ${book.author} - ReBooked Solutions`}
+        description={`Buy ${book.title} by ${book.author} for R${book.price}. ${book.description || "Quality used textbook available for students."}`}
+        canonical={`https://rebookedsolutions.co.za/books/${book.id}`}
+        type="product"
+        image={book.image || "/placeholder.svg"}
+        imageAlt={`Cover of ${book.title} by ${book.author}`}
+        product={{
+          name: book.title,
+          description: book.description || `${book.title} by ${book.author}`,
+          image: book.image || "/placeholder.svg",
+          price: book.price,
+          currency: "ZAR",
+          availability: book.sold ? "OutOfStock" : "InStock",
+          condition: book.condition || "UsedCondition",
+          author: book.author,
+          isbn: book.isbn,
+          category: book.category,
+          seller: {
+            name: book.seller?.name || "ReBooked Seller",
+          },
+        }}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Books", url: "/books" },
+          { name: book.title, url: `/books/${book.id}` },
+        ]}
+      />
       <div className="container mx-auto px-4 py-4 sm:py-8 max-w-6xl">
         {/* Back button */}
         <div className="mb-4 sm:mb-6">

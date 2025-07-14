@@ -12,6 +12,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import PaystackPaymentService from "@/services/paystackPaymentService";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface PaystackPaymentButtonProps {
@@ -20,7 +21,7 @@ interface PaystackPaymentButtonProps {
   className?: string;
   onSuccess?: (reference: string) => void;
   onError?: (error: string) => void;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, string | number | boolean>;
 }
 
 const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({
@@ -107,18 +108,73 @@ const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({
         }
       }
 
+      // Get seller's subaccount code directly from the book
+      let subaccountCode = undefined;
+      if (items.length > 0 && items[0].bookId) {
+        try {
+          // First try to get subaccount_code directly from the book
+          const { data: bookData } = await supabase
+            .from("books")
+            .select("subaccount_code, seller_id")
+            .eq("id", items[0].bookId)
+            .single();
+
+          if (bookData?.subaccount_code) {
+            subaccountCode = bookData.subaccount_code;
+            console.log("Using direct book subaccount_code:", subaccountCode);
+          } else if (bookData?.seller_id) {
+            // Fallback to seller lookup if book doesn't have direct subaccount_code
+            console.warn(
+              "Book missing subaccount_code, falling back to seller lookup",
+            );
+            const { data: subaccountData } = await supabase
+              .from("banking_subaccounts")
+              .select("subaccount_code")
+              .eq("user_id", bookData.seller_id)
+              .single();
+
+            if (subaccountData?.subaccount_code) {
+              subaccountCode = subaccountData.subaccount_code;
+              console.log(
+                "Using seller subaccount from banking_subaccounts:",
+                subaccountCode,
+              );
+            }
+          }
+
+          if (!subaccountCode) {
+            console.warn("No subaccount found for book:", items[0].bookId);
+          }
+        } catch (error) {
+          console.warn("Could not fetch book subaccount:", error);
+        }
+      }
+
       // Initialize Paystack payment
-      await PaystackPaymentService.initializePayment({
+      const paymentResult = await PaystackPaymentService.initializePayment({
         email: user.email || "",
         amount: amount, // amount in kobo
         reference: reference,
+        subaccount: subaccountCode,
         metadata: {
           order_id: order.id,
           user_id: user.id,
           items_count: items.length,
+          seller_id: items[0]?.sellerId,
+          subaccount_code: subaccountCode,
           ...metadata,
         },
       });
+
+      // Check if payment was cancelled
+      if (paymentResult && (paymentResult as any).cancelled) {
+        setPaymentStatus("idle"); // Reset to allow retry
+        console.log(
+          "💡 Payment was cancelled by user, resetting to idle state",
+        );
+        onError?.("Payment cancelled by user");
+        return; // Don't show error, user cancelled intentionally
+      }
 
       // Payment successful
       setPaymentStatus("success");
@@ -136,12 +192,16 @@ const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({
 
       // Handle different types of errors
       if (
+        errorMessage.includes("PAYMENT_CANCELLED_BY_USER") ||
         errorMessage.includes("cancelled by user") ||
         errorMessage.includes("window was closed")
       ) {
         setPaymentStatus("idle"); // Reset to allow retry
-        toast.info("Payment was cancelled");
+        console.log(
+          "💡 Payment was cancelled by user, resetting to idle state",
+        );
         onError?.("Payment cancelled by user");
+        return; // Don't show error toast, already handled by service
       } else if (
         errorMessage.includes("not configured") ||
         errorMessage.includes("service unavailable")
@@ -263,10 +323,7 @@ const PaystackPaymentButton: React.FC<PaystackPaymentButtonProps> = ({
 
       {/* Commission Info */}
       <div className="text-center text-xs text-gray-500">
-        <p>
-          Platform fee: 10% • Seller receives:{" "}
-          {formatAmount(Math.round(amount * 0.9))}
-        </p>
+        <p>Secure payment powered by Paystack</p>
       </div>
     </div>
   );

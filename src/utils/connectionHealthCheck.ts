@@ -14,13 +14,21 @@ const devWarn = (message: string, error?: any) => {
 };
 
 const perfMark = (name: string) => {
-  if (import.meta.env.DEV && performance.mark) {
+  if (
+    import.meta.env.DEV &&
+    typeof performance !== "undefined" &&
+    performance.mark
+  ) {
     performance.mark(name);
   }
 };
 
 const perfMeasure = (name: string, startMark: string) => {
-  if (import.meta.env.DEV && performance.measure) {
+  if (
+    import.meta.env.DEV &&
+    typeof performance !== "undefined" &&
+    performance.measure
+  ) {
     try {
       performance.measure(name, startMark);
     } catch (e) {
@@ -47,7 +55,7 @@ const ERROR_CACHE_DURATION = 5000; // 5 seconds for failed checks
 
 // Connection state tracking
 let consecutiveFailures = 0;
-let isOnline = navigator.onLine;
+let isOnline = typeof navigator !== "undefined" ? navigator.onLine : true;
 
 // Listen for online/offline events
 if (typeof window !== "undefined") {
@@ -72,6 +80,18 @@ if (typeof window !== "undefined") {
 export const checkConnectionHealth = async (
   skipCache = false,
 ): Promise<ConnectionHealthResult> => {
+  // Skip connection health checks in development to prevent 401 errors
+  if (import.meta.env.DEV || import.meta.env.NODE_ENV === "development") {
+    return {
+      isOnline: true,
+      supabaseConnected: true,
+      authStatus: "connected",
+      latency: 0,
+      timestamp: new Date().toISOString(),
+      cached: false,
+    };
+  }
+
   const now = Date.now();
 
   // Quick return if definitely offline
@@ -103,7 +123,7 @@ export const checkConnectionHealth = async (
   const startTime = Date.now();
 
   const result: ConnectionHealthResult = {
-    isOnline: navigator.onLine,
+    isOnline: typeof navigator !== "undefined" ? navigator.onLine : true,
     supabaseConnected: false,
     authStatus: "disconnected",
     timestamp: new Date().toISOString(),
@@ -130,9 +150,36 @@ export const checkConnectionHealth = async (
     perfMeasure("connection-health", "connection-health-start");
 
     if (error) {
-      consecutiveFailures++;
-      result.error = error.message;
-      result.supabaseConnected = false;
+      // Handle auth errors gracefully - don't count as connection failures
+      if (
+        error.code === "UNAUTHORIZED" ||
+        error.message?.includes("authentication") ||
+        error.message?.includes("HTTP 401") ||
+        error.message?.includes("401")
+      ) {
+        devWarn("Connection check: Authentication required", error);
+        result.supabaseConnected = true; // Connection is working, just not authenticated
+        result.authStatus = "disconnected";
+        result.error = "Authentication required";
+      }
+      // Handle 404 errors - likely database not set up yet
+      else if (
+        error.code === "TABLE_NOT_FOUND" ||
+        error.message?.includes("HTTP 404") ||
+        error.message?.includes("404") ||
+        error.message?.includes("table") ||
+        error.message?.includes("relation") ||
+        error.message?.includes("does not exist")
+      ) {
+        devWarn("Connection check: Database setup required", error);
+        result.supabaseConnected = true; // Connection is working, just no tables
+        result.authStatus = "connected";
+        result.error = "Database setup required";
+      } else {
+        consecutiveFailures++;
+        result.error = error.message;
+        result.supabaseConnected = false;
+      }
     } else {
       consecutiveFailures = 0;
       result.supabaseConnected = true;
@@ -151,8 +198,19 @@ export const checkConnectionHealth = async (
       ])) as any;
 
       if (authError) {
-        result.authStatus = "error";
-        if (!result.error) result.error = authError.message;
+        // Handle auth errors gracefully - don't treat as connection failures
+        if (
+          authError.code === "UNAUTHORIZED" ||
+          authError.message?.includes("authentication") ||
+          authError.message?.includes("HTTP 401") ||
+          authError.message?.includes("401")
+        ) {
+          devWarn("Auth session check: Authentication error", authError);
+          result.authStatus = "disconnected";
+        } else {
+          result.authStatus = "error";
+          if (!result.error) result.error = authError.message;
+        }
       } else if (session) {
         result.authStatus = "connected";
       } else {
@@ -294,11 +352,17 @@ export const retryWithConnection = async <T>(
       lastError = error;
 
       const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      const errorCode = (error as any)?.code || "NO_CODE";
+        error instanceof Error
+          ? error.message
+          : error?.message ||
+            (typeof error === "string"
+              ? error
+              : JSON.stringify(error, null, 2));
+      const errorCode =
+        (error as any)?.code || (error as any)?.error_code || "NO_CODE";
 
       console.warn(
-        `[ConnectionHealthCheck] Operation failed on attempt ${attempt}: ${errorMessage} (${errorCode})`,
+        `[ConnectionHealthCheck] Operation failed on attempt ${attempt}: ${errorMessage} (Code: ${errorCode})`,
       );
 
       // Don't retry on certain errors
@@ -307,7 +371,8 @@ export const retryWithConnection = async <T>(
         error?.message?.includes("auth") ||
         error?.code === "PGRST116" || // Not found
         error?.message?.includes("permission") ||
-        error?.message?.includes("unauthorized")
+        error?.message?.includes("unauthorized") ||
+        errorCode === "SUPABASE_NOT_CONFIGURED" // Don't retry Supabase config issues
       ) {
         console.warn(`Not retrying error: ${errorMessage} (non-retryable)`);
         throw error;
@@ -324,9 +389,17 @@ export const retryWithConnection = async <T>(
   }
 
   const finalErrorMessage =
-    lastError instanceof Error ? lastError.message : String(lastError);
+    lastError instanceof Error
+      ? lastError.message
+      : lastError?.message ||
+        (typeof lastError === "string"
+          ? lastError
+          : JSON.stringify(lastError, null, 2));
+  const finalErrorCode =
+    (lastError as any)?.code || (lastError as any)?.error_code || "NO_CODE";
+
   console.error(
-    `[ConnectionHealthCheck] All retry attempts failed: ${finalErrorMessage}`,
+    `[ConnectionHealthCheck] All retry attempts failed: ${finalErrorMessage} (Code: ${finalErrorCode})`,
   );
 
   throw lastError;

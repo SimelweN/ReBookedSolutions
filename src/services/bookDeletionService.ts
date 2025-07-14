@@ -208,7 +208,7 @@ export class BookDeletionService {
       const { error: updateError } = await supabase
         .from("books")
         .update({
-          status: "unavailable",
+          availability: "unavailable",
           updated_at: new Date().toISOString(),
         })
         .eq("seller_id", userId)
@@ -227,7 +227,7 @@ export class BookDeletionService {
         userId,
         title: "Listings Deactivated",
         message:
-          "Your listing is currently unavailable because you removed your pickup address. Please add a pickup address to reactivate your listing(s).",
+          "Your listings are currently unavailable because you removed your pickup address. Please add a pickup address to reactivate your listing(s).",
         type: "warning",
         read: false,
       });
@@ -252,11 +252,11 @@ export class BookDeletionService {
       const { error: updateError } = await supabase
         .from("books")
         .update({
-          status: "active",
+          availability: "available",
           updated_at: new Date().toISOString(),
         })
         .eq("seller_id", userId)
-        .eq("status", "unavailable")
+        .eq("availability", "unavailable")
         .eq("sold", false);
 
       if (updateError) {

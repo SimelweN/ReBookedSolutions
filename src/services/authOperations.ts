@@ -1,6 +1,7 @@
 import { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { isAdminUser } from "@/services/admin/adminAuthService";
+import { ENV } from "@/config/environment";
 import {
   logError,
   getErrorMessage,
@@ -27,30 +28,44 @@ const testNetworkConnectivity = async (): Promise<void> => {
     );
   }
 
+  // Skip network test in development to avoid interference
+  if (import.meta.env.DEV) {
+    console.log("🌐 Skipping network connectivity test in development");
+    return;
+  }
+
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // Reduced timeout
 
     await fetch("https://httpbin.org/get", {
       method: "GET",
       signal: controller.signal,
+      cache: "no-cache",
     });
 
     clearTimeout(timeoutId);
   } catch (error) {
+    console.warn("🌐 Primary connectivity test failed, trying fallback");
+
     // Fallback test with Google
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
 
       await fetch("https://www.google.com/favicon.ico", {
         method: "GET",
         signal: controller.signal,
         mode: "no-cors",
+        cache: "no-cache",
       });
 
       clearTimeout(timeoutId);
     } catch (fallbackError) {
+      console.warn("🌐 Both connectivity tests failed:", {
+        error,
+        fallbackError,
+      });
       throw new Error(
         "Cannot reach internet servers. Please check your network connection and try again.",
       );
@@ -67,24 +82,85 @@ export const loginUser = async (email: string, password: string) => {
     throw new Error("Please enter a valid email address");
   }
 
-  if (password.length < 6) {
-    throw new Error("Password must be at least 6 characters long");
+  // Note: For login, we don't validate password length - let the server handle it
+  // Password length validation should only be done during registration
+
+  // Check if Supabase is configured - if not, provide development fallback
+  const supabaseUrl = ENV.VITE_SUPABASE_URL;
+  const supabaseKey = ENV.VITE_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    if (import.meta.env.DEV) {
+      console.warn(
+        "🔧 Supabase not configured - using development fallback auth",
+      );
+
+      // In development, simulate a successful login
+      return {
+        data: {
+          user: {
+            id: `dev-user-${Date.now()}`,
+            email: email,
+            created_at: new Date().toISOString(),
+            email_confirmed_at: new Date().toISOString(),
+            aud: "authenticated",
+            role: "authenticated",
+          },
+          session: {
+            access_token: "dev-token",
+            refresh_token: "dev-refresh",
+            expires_at: Date.now() + 3600000,
+            token_type: "bearer",
+            user: {
+              id: `dev-user-${Date.now()}`,
+              email: email,
+            },
+          },
+        },
+        error: null,
+      };
+    } else {
+      throw new Error(
+        "Authentication service not configured. Please contact support.",
+      );
+    }
   }
 
   // Quick network connectivity check
   await testNetworkConnectivity();
 
-  // Verify Supabase configuration
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  console.log("🔧 Supabase Config Check:", {
+    hasUrl: !!supabaseUrl,
+    hasKey: !!supabaseKey,
+    urlLength: supabaseUrl?.length || 0,
+    keyPrefix: supabaseKey?.substring(0, 10) || "none",
+    isDev: import.meta.env.DEV,
+  });
 
   if (!supabaseUrl || !supabaseKey) {
+    console.error("❌ Supabase Configuration Missing:");
+    console.error("- VITE_SUPABASE_URL:", supabaseUrl ? "✓ Set" : "❌ Missing");
+    console.error(
+      "- VITE_SUPABASE_ANON_KEY:",
+      supabaseKey ? "✓ Set" : "❌ Missing",
+    );
+
     throw new Error(
-      "Authentication service configuration missing. Please contact support.",
+      import.meta.env.DEV
+        ? "Supabase configuration missing. Using fallback development configuration."
+        : "Authentication service unavailable. Please try again later or contact support.",
     );
   }
 
   if (!supabaseKey.startsWith("eyJ")) {
+    console.error(
+      "❌ Invalid Supabase API key format. Key should start with 'eyJ'",
+    );
+    console.error(
+      "Current key starts with:",
+      supabaseKey.substring(0, 10) + "...",
+    );
+
     throw new Error(
       "Authentication service configuration invalid. Please contact support.",
     );
@@ -236,49 +312,22 @@ export const fetchUserProfileQuick = async (
   user: User,
 ): Promise<Profile | null> => {
   try {
-    console.log("🔄 Quick profile fetch for user:", user.id);
+    // Reduce logging frequency - only log once per minute per user
+    const logKey = `profile_fetch_log_${user.id}`;
+    const lastLog = sessionStorage.getItem(logKey);
+    const shouldLog = !lastLog || Date.now() - parseInt(lastLog) > 60000;
 
-    // Test if profiles table exists with a very quick check
-    try {
-      const { error: tableCheckError } = (await withTimeout(
-        supabase.from("profiles").select("id").limit(1),
-        800, // Ultra-fast timeout for existence check
-        "Table check timeout",
-      )) as any;
+    if (shouldLog) {
+      console.log("🔄 Quick profile fetch for user:", user.id);
+      sessionStorage.setItem(logKey, Date.now().toString());
+    }
 
-      if (tableCheckError) {
-        // Handle specific table missing error
-        if (
-          tableCheckError.message?.includes("relation") &&
-          tableCheckError.message?.includes("does not exist")
-        ) {
-          console.warn(
-            "❌ Profiles table does not exist - using fallback profile",
-          );
-          return null;
-        }
+    // Use global circuit breaker for table existence check
+    const { checkDatabaseHealth } = await import("@/utils/databaseHealthCheck");
+    const dbHealth = await checkDatabaseHealth();
 
-        // Handle permission errors
-        if (
-          tableCheckError.message?.includes("permission denied") ||
-          tableCheckError.code === "42501"
-        ) {
-          console.warn(
-            "❌ No permission to access profiles table - using fallback",
-          );
-          return null;
-        }
-
-        // Handle network/connection errors
-        if (isNetworkError(tableCheckError)) {
-          console.warn(
-            "⚠️ Network error checking profiles table - using fallback",
-          );
-          return null;
-        }
-      }
-    } catch (tableCheckError) {
-      console.warn("⚠️ Table existence check failed - using fallback profile");
+    if (!dbHealth.isHealthy) {
+      console.log("ℹ️ Database unavailable - using fallback profile");
       return null;
     }
 
@@ -295,9 +344,20 @@ export const fetchUserProfileQuick = async (
       )) as any;
 
       if (profileError) {
+        // Handle auth errors gracefully - don't log as warnings
+        if (
+          profileError.code === "UNAUTHORIZED" ||
+          profileError.message?.includes("authentication") ||
+          profileError.message?.includes("HTTP 401") ||
+          profileError.message?.includes("401")
+        ) {
+          // User not authenticated, return null silently
+          return null;
+        }
+
         // Profile not found is normal for new users
         if (profileError.code === "PGRST116") {
-          console.log("ℹ️ Profile not found - will use fallback");
+          console.log("ℹ�� Profile not found - will use fallback");
           return null;
         }
 

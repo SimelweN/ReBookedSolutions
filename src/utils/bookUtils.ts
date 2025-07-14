@@ -23,7 +23,7 @@ export const extractBookId = (id: string | undefined): string | null => {
  * Debug book ID - logs validation info
  */
 export const debugBookId = (id: string | undefined): void => {
-  if (process.env.NODE_ENV === "development") {
+  if (import.meta.env.DEV) {
     console.log("Book ID Debug:", {
       id,
       isPresent: !!id,

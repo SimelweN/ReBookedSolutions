@@ -15,11 +15,20 @@ import {
   Download,
   Share,
   MessageSquare,
+  Truck,
+  AlertCircle,
+  DollarSign,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import PaystackPaymentService, {
   OrderData,
 } from "@/services/paystackPaymentService";
+import {
+  getOrderById,
+  getOrderByReference,
+  getUserOrders,
+  type Order,
+} from "@/services/enhancedOrderService";
 import SEO from "@/components/SEO";
 import { toast } from "sonner";
 
@@ -30,7 +39,7 @@ const PaymentStatus: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
 
   const reference = searchParams.get("reference");
-  const [order, setOrder] = useState<OrderData | null>(null);
+  const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,23 +62,166 @@ const PaymentStatus: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      if (reference) {
-        // If we have a reference, try to verify the payment first
-        await PaystackPaymentService.verifyPayment(reference);
+      if (!user?.id) {
+        setError("User not authenticated");
+        return;
       }
 
-      // Load order details
-      // This would typically query the orders table by ID or reference
-      // For now, we'll use a placeholder implementation
-      const orders = await PaystackPaymentService.getOrdersByStatus("paid");
-      const foundOrder = orders.find(
-        (o) => o.id === orderId || o.paystack_ref === reference,
-      );
+      if (reference) {
+        // If we have a reference, try to verify the payment first
+        try {
+          await PaystackPaymentService.verifyPayment(reference);
+        } catch (verifyError) {
+          console.warn("Payment verification failed:", verifyError);
+          // Continue to try fetching order anyway
+        }
+      }
+
+      let foundOrder: Order | null = null;
+
+      if (import.meta.env.MODE !== "production") {
+        console.log("🔍 Starting order lookup with:", {
+          orderId,
+          reference,
+          userId: user.id,
+          userEmail: user.email,
+          urlSearchParams: window.location.search
+        });
+      }
+      // All logging and blocks are now correct
+
+      // Try to load order by ID first
+      if (orderId) {
+        if (import.meta.env.MODE !== "production") {
+          console.log("🔍 Looking up order by ID:", orderId);
+        }
+        try {
+          foundOrder = await getOrderById(orderId);
+          if (import.meta.env.MODE !== "production") {
+            console.log("📋 Raw order found by ID:", foundOrder);
+          }
+
+          // Check if this order belongs to the current user
+          if (foundOrder) {
+            if (import.meta.env.MODE !== "production") {
+              console.log("🔍 Order ownership check:", {
+                orderBuyerId: foundOrder.buyer_id,
+                orderSellerId: foundOrder.seller_id,
+                currentUserId: user.id,
+                buyerMatch: foundOrder.buyer_id === user.id,
+                sellerMatch: foundOrder.seller_id === user.id
+              });
+            }
+            // Removed stray lines, only console.log inside if block
+
+            if (
+              foundOrder.buyer_id !== user.id &&
+              foundOrder.seller_id !== user.id
+            ) {
+              if (import.meta.env.MODE !== "production") {
+                console.log("❌ Order found but doesn't belong to current user");
+              }
+              foundOrder = null;
+            } else {
+              if (import.meta.env.MODE !== "production") {
+                console.log("✅ Order belongs to current user");
+              }
+            }
+          }
+        } catch (error) {
+          console.error("❌ Error looking up order by ID:", error);
+        }
+      }
+
+      // If not found by ID, try by reference
+      if (!foundOrder && reference) {
+        if (import.meta.env.MODE !== "production") {
+          console.log("🔍 Looking up order by reference:", reference);
+        }
+        try {
+          foundOrder = await getOrderByReference(reference);
+          if (import.meta.env.MODE !== "production") {
+            console.log("📋 Raw order found by reference:", foundOrder);
+          }
+
+          // Check if this order belongs to the current user
+          if (foundOrder) {
+            if (import.meta.env.MODE !== "production") {
+              console.log("🔍 Order ownership check (by reference):", {
+                orderBuyerId: foundOrder.buyer_id,
+                orderSellerId: foundOrder.seller_id,
+                currentUserId: user.id,
+                buyerMatch: foundOrder.buyer_id === user.id,
+                sellerMatch: foundOrder.seller_id === user.id
+              });
+            }
+            // Removed stray lines, only console.log inside if block
+
+            if (
+              foundOrder.buyer_id !== user.id &&
+              foundOrder.seller_id !== user.id
+            ) {
+              if (import.meta.env.MODE !== "production") {
+                console.log("❌ Order found but doesn't belong to current user");
+              }
+              foundOrder = null;
+            } else {
+              if (import.meta.env.MODE !== "production") {
+                console.log("✅ Order belongs to current user");
+              }
+            }
+          }
+        } catch (error) {
+          console.error("❌ Error looking up order by reference:", error);
+        }
+      }
+
+      if (import.meta.env.MODE !== "production") {
+        console.log("🔍 Final order lookup result:", {
+          orderId,
+          reference,
+          foundOrder
+        });
+      }
+      // Removed stray lines, only console.log inside if block
 
       if (foundOrder) {
         setOrder(foundOrder);
+        if (import.meta.env.MODE !== "production") {
+          console.log("✅ Order loaded successfully:", foundOrder.id);
+        }
       } else {
-        setError("Order not found");
+        if (import.meta.env.MODE !== "production") {
+          console.log("❌ Order not found for user:", user.id);
+        }
+        // Debug: Check what orders this user has
+        try {
+          const userOrders = await getUserOrders(user.id);
+          if (import.meta.env.MODE !== "production") {
+            console.log(
+              "🔍 User's available orders:",
+              userOrders.map((o) => ({
+                id: o.id,
+                paystack_reference: o.paystack_reference,
+                status: o.status,
+                created_at: o.created_at,
+              })),
+            );
+            if (userOrders.length === 0) {
+              console.log("ℹ️ User has no orders at all");
+            } else {
+              console.log(
+                `ℹ️ User has ${userOrders.length} orders, but none match the requested ID/reference`,
+              );
+            }
+          }
+        } catch (debugError) {
+          console.error(
+            "❌ Error fetching user orders for debugging:",
+            debugError,
+          );
+        }
+        setError("Order not found or doesn't belong to your account");
       }
     } catch (error) {
       console.error("Error loading order details:", error);
@@ -109,13 +261,14 @@ const PaymentStatus: React.FC = () => {
       ReBooked Solutions - Order Receipt
 
       Order ID: ${order.id}
-      Reference: ${order.paystack_ref}
+      Reference: ${order.paystack_reference}
       Date: ${new Date(order.created_at).toLocaleDateString()}
       Amount: R${(order.amount / 100).toFixed(2)}
       Status: ${order.status}
+      Payment Status: ${order.payment_status}
 
-      Items:
-      ${order.items.map((item) => `- ${item.title}: R${(item.price / 100).toFixed(2)}`).join("\n")}
+      Book Details:
+      ${order.book ? `- ${order.book.title} by ${order.book.author}` : "- Book details not available"}
 
       Thank you for your purchase!
     `;
@@ -131,12 +284,20 @@ const PaymentStatus: React.FC = () => {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
+      case "pending":
+        return <Clock className="w-8 h-8 text-gray-500" />;
       case "paid":
         return <CreditCard className="w-8 h-8 text-blue-500" />;
-      case "ready_for_payout":
+      case "committed":
         return <Package className="w-8 h-8 text-orange-500" />;
-      case "paid_out":
+      case "shipped":
+        return <Truck className="w-8 h-8 text-purple-500" />;
+      case "delivered":
         return <CheckCircle className="w-8 h-8 text-green-500" />;
+      case "cancelled":
+        return <AlertCircle className="w-8 h-8 text-red-500" />;
+      case "refunded":
+        return <DollarSign className="w-8 h-8 text-yellow-500" />;
       default:
         return <Clock className="w-8 h-8 text-gray-500" />;
     }
@@ -144,12 +305,20 @@ const PaymentStatus: React.FC = () => {
 
   const getStatusMessage = (status: string) => {
     switch (status) {
+      case "pending":
+        return "Your order is being processed...";
       case "paid":
-        return "Payment confirmed! Your order is being prepared for shipping.";
-      case "ready_for_payout":
-        return "Your order has been picked up by the courier and is on its way to you.";
-      case "paid_out":
-        return "Order completed! The seller has been paid.";
+        return "Payment confirmed! The seller has 48 hours to commit to your order.";
+      case "committed":
+        return "Great! The seller has committed to your order and will prepare it for collection/delivery.";
+      case "shipped":
+        return "Your order has been shipped and is on its way to you.";
+      case "delivered":
+        return "Order delivered successfully!";
+      case "cancelled":
+        return "This order has been cancelled.";
+      case "refunded":
+        return "This order has been refunded.";
       default:
         return "Processing your order...";
     }
@@ -260,8 +429,199 @@ const PaymentStatus: React.FC = () => {
                 <Badge variant="secondary" className="text-lg px-4 py-2">
                   {order.status.toUpperCase().replace("_", " ")}
                 </Badge>
+                {order.payment_status &&
+                  order.payment_status !== order.status && (
+                    <Badge variant="outline" className="ml-2">
+                      Payment: {order.payment_status}
+                    </Badge>
+                  )}
               </CardContent>
             </Card>
+          )}
+
+          {/* Purchase Summary */}
+          {order && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              {/* Order Summary */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Package className="w-5 h-5" />
+                    <span>Purchase Summary</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-sm text-gray-600">Order ID</p>
+                      <p className="font-mono text-sm">{order.id}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-gray-600">Date</p>
+                      <p className="text-sm">
+                        {new Date(order.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <h4 className="font-medium mb-3">Book Purchased</h4>
+                    <div className="space-y-3">
+                      {order.book ? (
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">
+                              {order.book.title}
+                            </p>
+                            {order.book.author && (
+                              <p className="text-xs text-gray-600">
+                                by {order.book.author}
+                              </p>
+                            )}
+                            {order.book.imageUrl && (
+                              <div className="mt-2">
+                                <img
+                                  src={order.book.imageUrl}
+                                  alt={order.book.title}
+                                  className="w-16 h-20 object-cover rounded"
+                                />
+                              </div>
+                            )}
+                          </div>
+                          <div className="text-right ml-4">
+                            <p className="font-medium">
+                              R{(order.amount / 100).toFixed(2)}
+                            </p>
+                            <p className="text-xs text-gray-600">Qty: 1</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-sm text-gray-600">
+                          Book details not available
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-4 space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Book Price</span>
+                      <span>R{(order.amount / 100).toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Delivery</span>
+                      <span>
+                        {order.delivery_option === "pickup"
+                          ? "Collection"
+                          : "Included"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between font-medium text-lg border-t pt-2">
+                      <span>Total Paid</span>
+                      <span>R{(order.amount / 100).toFixed(2)}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Delivery Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Package className="w-5 h-5" />
+                    <span>Delivery Information</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {order.delivery_option === "delivery" &&
+                  order.delivery_address ? (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">
+                        Delivery Address
+                      </p>
+                      <div className="text-sm">
+                        <p>{order.delivery_address.street}</p>
+                        <p>
+                          {order.delivery_address.city},{" "}
+                          {order.delivery_address.province}
+                        </p>
+                        <p>{order.delivery_address.postal_code}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">
+                        Collection Method
+                      </p>
+                      <p className="text-sm">
+                        {order.delivery_option === "pickup"
+                          ? "Pickup from seller"
+                          : "Collection method not specified"}
+                      </p>
+                    </div>
+                  )}
+
+                  {order.delivery_method && (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">
+                        Delivery Method
+                      </p>
+                      <p className="text-sm capitalize">
+                        {order.delivery_method}
+                      </p>
+                    </div>
+                  )}
+
+                  {order.tracking_number && (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">
+                        Tracking Number
+                      </p>
+                      <p className="font-mono text-sm">
+                        {order.tracking_number}
+                      </p>
+                    </div>
+                  )}
+
+                  {order.commit_deadline && order.status === "paid" && (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">
+                        Seller Commitment Deadline
+                      </p>
+                      <p className="text-sm font-medium text-orange-600">
+                        {new Date(order.commit_deadline).toLocaleDateString()}{" "}
+                        at{" "}
+                        {new Date(order.commit_deadline).toLocaleTimeString()}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Seller must commit within 48 hours of payment
+                      </p>
+                    </div>
+                  )}
+
+                  {order.committed_at && (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">Committed At</p>
+                      <p className="text-sm">
+                        {new Date(order.committed_at).toLocaleDateString()} at{" "}
+                        {new Date(order.committed_at).toLocaleTimeString()}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="border-t pt-4">
+                    <p className="text-sm text-gray-600 mb-2">Instructions</p>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <p className="text-sm text-blue-800">
+                        {order.delivery_address
+                          ? "Your order will be delivered to the address above. You'll receive tracking information once the seller dispatches the item."
+                          : "Please contact the seller to arrange collection. Make sure to bring valid ID and mention your order reference."}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           )}
 
           {/* Detailed Status Tracker */}

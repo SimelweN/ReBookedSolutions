@@ -58,6 +58,10 @@ export class EmailVerificationService {
       });
 
       if (error) {
+        console.error(
+          "Token hash verification error:",
+          JSON.stringify(error, null, 2),
+        );
         logError("Token hash verification error", error);
         return {
           success: false,
@@ -109,6 +113,10 @@ export class EmailVerificationService {
       });
 
       if (error) {
+        console.error(
+          "Legacy token verification error:",
+          JSON.stringify(error, null, 2),
+        );
         logError("Legacy token verification error", error);
         return {
           success: false,
@@ -156,6 +164,7 @@ export class EmailVerificationService {
       const { data, error } = await supabase.auth.exchangeCodeForSession(url);
 
       if (error) {
+        console.error("Code exchange error:", JSON.stringify(error, null, 2));
         logError("Code exchange error", error);
         return {
           success: false,
@@ -201,6 +210,7 @@ export class EmailVerificationService {
       const { data: sessionData, error } = await supabase.auth.getSession();
 
       if (error) {
+        console.error("Session check error:", JSON.stringify(error, null, 2));
         logError("Session check error", error);
         return {
           success: false,
@@ -245,18 +255,25 @@ export class EmailVerificationService {
   ): Promise<VerificationResult> {
     console.log("🔍 Starting comprehensive email verification");
     console.log("📍 URL:", currentUrl);
-    console.log("📍 Params:", params);
+    console.log("📍 Params:", JSON.stringify(params, null, 2));
 
     // Check for errors first
     if (this.hasErrorParams(params)) {
       const errorMessage =
         params.error_description || "Email verification failed";
-      console.error("❌ Verification error from URL:", {
-        error_code: params.error_code,
-        error_description: params.error_description,
-      });
+      console.error(
+        "❌ Verification error from URL:",
+        JSON.stringify(
+          {
+            error_code: params.error_code,
+            error_description: params.error_description,
+          },
+          null,
+          2,
+        ),
+      );
 
-      return {
+      const errorResult = {
         success: false,
         message: errorMessage,
         method: "url_error",
@@ -265,54 +282,116 @@ export class EmailVerificationService {
           description: params.error_description,
         },
       };
+
+      console.log("EmailVerificationService returning URL error:", errorResult);
+      return errorResult;
     }
 
     // Method 1: Token hash verification (preferred)
     if (params.token_hash && params.type) {
+      console.log("🔐 Trying Method 1: Token hash verification", {
+        token_hash_length: params.token_hash.length,
+        type: params.type,
+      });
       const result = await this.verifyWithTokenHash(
         params.token_hash,
         params.type,
       );
-      if (result.success) {
-        return result;
-      }
-      console.log("Token hash verification failed, trying other methods...");
-    }
-
-    // Method 2: Legacy token verification
-    if (params.token && params.type) {
-      const result = await this.verifyWithLegacyToken(
-        params.token,
-        params.type,
+      console.log(
+        "🔐 Token hash verification result:",
+        JSON.stringify(result, null, 2),
       );
       if (result.success) {
         return result;
       }
-      console.log("Legacy token verification failed, trying other methods...");
+      console.log("❌ Token hash verification failed, trying other methods...");
+    } else {
+      console.log(
+        "⏭️ Skipping Method 1: Token hash verification (missing params)",
+        {
+          has_token_hash: !!params.token_hash,
+          has_type: !!params.type,
+        },
+      );
+    }
+
+    // Method 2: Legacy token verification
+    if (params.token && params.type) {
+      console.log("🔐 Trying Method 2: Legacy token verification", {
+        token_length: params.token.length,
+        type: params.type,
+      });
+      const result = await this.verifyWithLegacyToken(
+        params.token,
+        params.type,
+      );
+      console.log(
+        "🔐 Legacy token verification result:",
+        JSON.stringify(result, null, 2),
+      );
+      if (result.success) {
+        return result;
+      }
+      console.log(
+        "❌ Legacy token verification failed, trying other methods...",
+      );
+    } else {
+      console.log(
+        "⏭️ Skipping Method 2: Legacy token verification (missing params)",
+        {
+          has_token: !!params.token,
+          has_type: !!params.type,
+        },
+      );
     }
 
     // Method 3: PKCE code exchange
     if (params.code || currentUrl.includes("code=")) {
+      console.log("🔐 Trying Method 3: PKCE code exchange", {
+        has_code_param: !!params.code,
+        url_contains_code: currentUrl.includes("code="),
+        url_length: currentUrl.length,
+      });
       const result = await this.verifyWithCodeExchange(currentUrl);
+      console.log("🔐 Code exchange result:", JSON.stringify(result, null, 2));
       if (result.success) {
         return result;
       }
-      console.log("Code exchange failed, trying other methods...");
+      console.log("❌ Code exchange failed, trying other methods...");
+    } else {
+      console.log("⏭️ Skipping Method 3: PKCE code exchange (no code found)", {
+        has_code: !!params.code,
+        url_has_code: currentUrl.includes("code="),
+      });
     }
 
     // Method 4: Check existing session
+    console.log("🔐 Trying Method 4: Check existing session");
     const sessionResult = await this.checkExistingSession();
+    console.log(
+      "🔐 Session check result:",
+      JSON.stringify(sessionResult, null, 2),
+    );
     if (sessionResult.success) {
       return sessionResult;
     }
+    console.log("❌ Session check failed");
+
+    console.log("❌ All verification methods exhausted");
 
     // If all methods fail
-    return {
+    const failureResult = {
       success: false,
       message:
         "Unable to verify email with any available method. Please try registering again or contact support.",
       method: "all_failed",
     };
+
+    console.log(
+      "EmailVerificationService returning failure result:",
+      failureResult,
+    );
+    return failureResult;
   }
 
   /**
@@ -326,10 +405,12 @@ export class EmailVerificationService {
     const error = result.error;
     let baseMessage = "Email verification failed. ";
 
-    if (
-      error?.message?.includes("expired") ||
-      error?.code === "token_expired"
-    ) {
+    // Extract error message safely
+    const errorMessage =
+      error?.message || error?.error_description || error?.description || "";
+    const errorCode = error?.code || error?.error_code || "";
+
+    if (errorMessage.includes("expired") || errorCode === "token_expired") {
       return (
         baseMessage +
         "The verification link has expired. Please register again."
@@ -337,8 +418,8 @@ export class EmailVerificationService {
     }
 
     if (
-      error?.message?.includes("already confirmed") ||
-      error?.code === "email_already_confirmed"
+      errorMessage.includes("already confirmed") ||
+      errorCode === "email_already_confirmed"
     ) {
       return (
         baseMessage +
@@ -346,31 +427,39 @@ export class EmailVerificationService {
       );
     }
 
-    if (
-      error?.message?.includes("invalid") ||
-      error?.code === "invalid_token"
-    ) {
+    if (errorMessage.includes("invalid") || errorCode === "invalid_token") {
       return (
         baseMessage + "The verification link is invalid. Please register again."
       );
     }
 
-    if (error?.message?.includes("Email not confirmed")) {
+    if (errorMessage.includes("Email not confirmed")) {
       return (
         baseMessage +
         "Your email is not yet confirmed. Please check your email for the confirmation link."
       );
     }
 
-    if (
-      error?.message?.includes("not found") ||
-      error?.code === "user_not_found"
-    ) {
+    if (errorMessage.includes("not found") || errorCode === "user_not_found") {
       return baseMessage + "User not found. Please register again.";
     }
 
-    return (
-      baseMessage + (result.message || "Please try again or contact support.")
-    );
+    // Ensure we return a proper string message
+    let finalMessage = result.message || "Please try again or contact support.";
+
+    // Prevent [object Object] from being returned
+    if (typeof finalMessage === "object") {
+      try {
+        finalMessage = JSON.stringify(finalMessage);
+      } catch {
+        finalMessage = "Please try again or contact support.";
+      }
+    }
+
+    if (finalMessage === "[object Object]") {
+      finalMessage = "Please try again or contact support.";
+    }
+
+    return baseMessage + finalMessage;
   }
 }

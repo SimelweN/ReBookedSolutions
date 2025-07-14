@@ -15,24 +15,37 @@ export const useBookDetails = (bookId: string | undefined) => {
   const [error, setError] = useState<string | null>(null);
 
   const loadBook = useCallback(async () => {
-    if (!bookId) return;
+    if (!bookId) {
+      console.log("🔍 [useBookDetails] No bookId provided, skipping load");
+      return;
+    }
 
+    console.log("🔄 [useBookDetails] Starting book load for ID:", bookId);
     setIsLoading(true);
     setError(null);
 
     try {
-      console.log("Loading book with ID:", bookId);
+      console.log("📞 [useBookDetails] Calling getBookById...");
       const bookData = await getBookById(bookId);
+      console.log("📊 [useBookDetails] getBookById returned:", bookData);
 
       if (!bookData) {
+        console.log("⚠️ [useBookDetails] No book data returned, setting error");
         setError("Book not found");
         return;
       }
 
-      console.log("Book loaded successfully:", bookData);
+      console.log(
+        "✅ [useBookDetails] Book loaded successfully, setting state",
+      );
       setBook(bookData);
     } catch (error) {
-      console.error("Error loading book:", error);
+      console.error("❌ [useBookDetails] Error loading book:", error);
+      console.error("❌ [useBookDetails] Error details:", {
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        bookId,
+      });
 
       // Handle specific error types
       if (error instanceof Error) {
@@ -53,6 +66,9 @@ export const useBookDetails = (bookId: string | undefined) => {
         setError("An unexpected error occurred");
       }
     } finally {
+      console.log(
+        "🏁 [useBookDetails] Book load finished, setting loading to false",
+      );
       setIsLoading(false);
     }
   }, [bookId]);

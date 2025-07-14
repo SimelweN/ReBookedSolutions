@@ -37,3 +37,9 @@
 
 /
   Cache-Control: public, max-age=0, must-revalidate
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://js.paystack.co; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://api.paystack.co https://js.paystack.co wss://*.supabase.co; frame-src 'self' https://js.paystack.co https://checkout.paystack.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.paystack.com;
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()

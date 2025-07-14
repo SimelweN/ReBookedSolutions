@@ -1,20 +1,23 @@
 import CampusNavbar from "@/components/CampusNavbar";
-import StudyResourcesPage from "@/components/university-info/study-resources/StudyResourcesPage";
 import SEO from "@/components/SEO";
+import StudyResourcesPage from "@/components/university-info/study-resources/StudyResourcesPage";
 
 const StudyResources = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
       <SEO
-        title="Study Resources & Tips | ReBooked Campus"
-        description="Master your studies with expert tips, proven techniques, and practical resources. From time management to exam preparation, everything you need for academic success."
-        keywords="study tips, study resources, time management, exam preparation, academic success, student resources"
+        title="Study Resources & Tips - ReBooked Solutions"
+        description="Discover study tips, guides, and resources to help you succeed in your academic journey. Access university-specific content, exam preparation materials, and learning strategies."
+        keywords="study tips, study guides, university resources, exam preparation, academic success, learning strategies"
       />
-      <CampusNavbar />
-      <div className="container mx-auto px-4 py-8">
-        <StudyResourcesPage />
+
+      <div className="min-h-screen bg-gray-50">
+        <CampusNavbar />
+        <main className="pt-16">
+          <StudyResourcesPage />
+        </main>
       </div>
-    </div>
+    </>
   );
 };
 

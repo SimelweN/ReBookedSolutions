@@ -49,6 +49,21 @@ const shouldLogBookError = (): boolean => {
 // Enhanced error logging function with spam protection
 const logDetailedError = (context: string, error: any, details?: any) => {
   if (shouldLogBookError()) {
+    // Extract proper error message
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : error?.message ||
+          (typeof error === "string" ? error : JSON.stringify(error, null, 2));
+    const errorCode = error?.code || error?.error_code || "NO_CODE";
+
+    console.error(`[${context}] ${errorMessage} (Code: ${errorCode})`);
+
+    if (details) {
+      console.error(`[${context}] Details:`, details);
+    }
+
+    // Also log the structured error info
     logError(context, error);
   }
 };
@@ -144,30 +159,62 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
         // Get unique seller IDs
         const sellerIds = [...new Set(booksData.map((book) => book.seller_id))];
 
-        // Fetch seller profiles with fallback
+        // Fetch enhanced seller profiles using the new service
         let profilesMap = new Map();
         try {
-          const profilesPromise = supabase
-            .from("profiles")
-            .select("id, name, email")
-            .in("id", sellerIds);
+          const { SellerProfileService } = await import(
+            "../sellerProfileService"
+          );
+          const enhancedProfiles =
+            await SellerProfileService.getMultipleSellerProfiles(sellerIds);
 
-          const profilesTimeout = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error("Profiles timeout")), 3000),
+          enhancedProfiles.forEach((profile, sellerId) => {
+            profilesMap.set(sellerId, {
+              id: profile.seller_id,
+              name: profile.seller_name,
+              email: profile.seller_email,
+              hasAddress: !!profile.pickup_address,
+              hasSubaccount: profile.has_subaccount,
+              isReadyForOrders: false, // Will be checked individually if needed
+            });
+          });
+        } catch (profileError) {
+          console.warn(
+            "Error fetching enhanced profiles, falling back to basic profiles:",
+            profileError,
           );
 
-          const { data: profilesData, error: profilesError } =
-            (await Promise.race([profilesPromise, profilesTimeout])) as any;
+          // Fallback to basic profile fetching
+          try {
+            const profilesPromise = supabase
+              .from("profiles")
+              .select("id, name, email, pickup_address, subaccount_code")
+              .in("id", sellerIds);
 
-          if (profilesError) {
-            console.warn("Failed to fetch seller profiles, using fallbacks");
-          } else if (profilesData) {
-            profilesData.forEach((profile: any) => {
-              profilesMap.set(profile.id, profile);
-            });
+            const profilesTimeout = new Promise((_, reject) =>
+              setTimeout(() => reject(new Error("Profiles timeout")), 3000),
+            );
+
+            const { data: profilesData, error: profilesError } =
+              (await Promise.race([profilesPromise, profilesTimeout])) as any;
+
+            if (profilesError) {
+              console.warn("Failed to fetch seller profiles, using fallbacks");
+            } else if (profilesData) {
+              profilesData.forEach((profile: any) => {
+                profilesMap.set(profile.id, {
+                  id: profile.id,
+                  name: profile.name,
+                  email: profile.email,
+                  hasAddress: !!profile.pickup_address,
+                  hasSubaccount: !!profile.subaccount_code?.trim(),
+                  isReadyForOrders: false,
+                });
+              });
+            }
+          } catch (fallbackError) {
+            console.warn("Error fetching fallback profiles:", fallbackError);
           }
-        } catch (profileError) {
-          console.warn("Error fetching profiles:", profileError);
         }
 
         // Ensure all seller IDs have profiles (fallback)
@@ -177,6 +224,9 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
               id,
               name: "Unknown Seller",
               email: "unknown@example.com",
+              hasAddress: false,
+              hasSubaccount: false,
+              isReadyForOrders: false,
             });
           }
         });
@@ -211,6 +261,9 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
               id: sellerProfile.id,
               name: sellerProfile.name,
               email: sellerProfile.email,
+              hasAddress: sellerProfile.hasAddress,
+              hasSubaccount: sellerProfile.hasSubaccount,
+              isReadyForOrders: sellerProfile.isReadyForOrders,
             },
           };
         });

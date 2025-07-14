@@ -38,9 +38,15 @@ const EmailChangeDialog = ({ open, onOpenChange }: EmailChangeDialogProps) => {
     setError("");
 
     try {
-      const result = await EmailChangeService.requestEmailChange(user.id, newEmail);
+      const result = await EmailChangeService.requestEmailChange(
+        user.id,
+        newEmail,
+      );
       if (result.success) {
-        toast.success(result.message || "Email change initiated! Check your new email for confirmation.");
+        toast.success(
+          result.message ||
+            "Email change initiated! Check your new email for confirmation.",
+        );
         onOpenChange(false);
         setNewEmail("");
         setPassword("");
@@ -49,7 +55,8 @@ const EmailChangeDialog = ({ open, onOpenChange }: EmailChangeDialogProps) => {
         toast.error(result.message || "Failed to change email");
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to change email";
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to change email";
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -70,7 +77,8 @@ const EmailChangeDialog = ({ open, onOpenChange }: EmailChangeDialogProps) => {
         <DialogHeader>
           <DialogTitle>Change Email Address</DialogTitle>
           <DialogDescription>
-            Enter your new email address and current password to change your email.
+            Enter your new email address and current password to change your
+            email.
           </DialogDescription>
         </DialogHeader>
 
@@ -112,6 +120,7 @@ const EmailChangeDialog = ({ open, onOpenChange }: EmailChangeDialogProps) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your current password"
+              autoComplete="current-password"
               required
             />
           </div>

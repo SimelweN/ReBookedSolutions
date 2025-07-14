@@ -150,6 +150,15 @@ const Footer = () => {
                   All Policies & Terms
                 </Link>
               </li>
+              <li>
+                <Link
+                  to="/cookie-settings"
+                  className="text-gray-600 hover:text-book-600 text-sm font-medium transition-colors"
+                  onClick={handleLinkClick}
+                >
+                  Cookie Settings
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

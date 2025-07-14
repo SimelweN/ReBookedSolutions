@@ -4,31 +4,54 @@ import { PostgrestError } from "@supabase/supabase-js";
  * Enhanced error logging with proper serialization
  */
 export const logError = (context: string, error: unknown) => {
-  // Comprehensive error object for better debugging
-  const errorInfo = {
-    context,
-    timestamp: new Date().toISOString(),
-    message: error instanceof Error ? error.message : String(error),
-    name: error instanceof Error ? error.name : undefined,
-    code: (error as any)?.code || (error as any)?.error_code,
-    details: (error as any)?.details,
-    hint: (error as any)?.hint,
-    stack: error instanceof Error ? error.stack : undefined,
-    type: typeof error,
-    constructor: error?.constructor?.name,
+  const timestamp = new Date().toISOString();
+
+  console.group(`🚨 [${context}] ${timestamp}`);
+
+  if (error instanceof Error) {
+    console.error("Error Message:", error.message);
+    console.error("Error Name:", error.name);
+    if (error.stack) console.error("Stack Trace:", error.stack);
+  } else if (error && typeof error === "object") {
+    console.error("Error Type: Object");
+
+    // Safely extract common properties
+    const errorObj = error as any;
+    if (errorObj.message) console.error("Message:", errorObj.message);
+    if (errorObj.code) console.error("Code:", errorObj.code);
+    if (errorObj.error_code) console.error("Error Code:", errorObj.error_code);
+    if (errorObj.details) console.error("Details:", errorObj.details);
+    if (errorObj.hint) console.error("Hint:", errorObj.hint);
+
+    // Try to serialize the full object
+    try {
+      const serialized = JSON.stringify(error, null, 2);
+      console.error("Full Object:", serialized);
+    } catch (jsonError) {
+      console.error("Object (non-serializable):", String(error));
+      try {
+        console.error("Object Keys:", Object.keys(error));
+      } catch (keysError) {
+        console.error("Cannot extract object keys");
+      }
+    }
+  } else {
+    console.error("Error (primitive):", error);
+    console.error("Error Type:", typeof error);
+  }
+
+  // Classification
+  const errorClassification = {
     isNetworkError: isNetworkError(error),
     isAuthError: isAuthError(error),
     isDatabaseError: isDatabaseError(error),
   };
 
-  // Use structured logging
-  console.error(`[${context}]`, errorInfo);
+  console.error("Error Classification:", errorClassification);
 
-  // Also log a simple version for quick scanning
-  const simpleMessage = `${context}: ${errorInfo.message}${errorInfo.code ? ` (${errorInfo.code})` : ""}`;
-  console.error(simpleMessage);
+  console.groupEnd();
 
-  return errorInfo;
+  return errorClassification;
 };
 
 /**
@@ -106,7 +129,73 @@ export const getErrorMessage = (
     return error;
   }
 
-  // Last resort
+  // Handle objects that might have error properties
+  if (error && typeof error === "object") {
+    const errorObj = error as any;
+
+    // Try various common error properties
+    const possibleMessage =
+      errorObj.message ||
+      errorObj.error ||
+      errorObj.error_description ||
+      errorObj.details ||
+      errorObj.hint ||
+      errorObj.statusText ||
+      errorObj.description;
+
+    if (possibleMessage && typeof possibleMessage === "string") {
+      return possibleMessage;
+    }
+
+    // Try to get meaningful error info from nested properties
+    if (errorObj.error && typeof errorObj.error === "object") {
+      const nestedMessage =
+        errorObj.error.message || errorObj.error.description;
+      if (nestedMessage && typeof nestedMessage === "string") {
+        return nestedMessage;
+      }
+    }
+
+    // If object has meaningful properties, try to serialize them
+    try {
+      const serialized = JSON.stringify(error, null, 2);
+      if (serialized && serialized !== "{}" && serialized !== "null") {
+        // Make sure the serialized object is readable
+        if (serialized.length > 200) {
+          // If too long, try to extract key info
+          const keyInfo = {
+            message: errorObj.message,
+            code: errorObj.code,
+            error: errorObj.error,
+            status: errorObj.status,
+          };
+          return `Error: ${JSON.stringify(keyInfo)}`;
+        }
+        return `Error details: ${serialized}`;
+      }
+    } catch (jsonError) {
+      // JSON.stringify failed, try alternative
+      try {
+        const keys = Object.keys(error);
+        if (keys.length > 0) {
+          const keyValues = keys
+            .slice(0, 3)
+            .map((key) => `${key}: ${errorObj[key]}`)
+            .join(", ");
+          return `Error: ${keyValues}`;
+        }
+      } catch {
+        // Continue to fallback
+      }
+    }
+  }
+
+  // Last resort - avoid [object Object]
+  const stringified = String(error);
+  if (stringified && stringified !== "[object Object]") {
+    return stringified;
+  }
+
   return fallback;
 };
 

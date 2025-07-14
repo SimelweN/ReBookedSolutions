@@ -11,6 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { TransactionService } from "@/services/transactionService";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface CommitToSaleButtonProps {
   transactionId: string;
@@ -33,6 +34,7 @@ const CommitToSaleButton: React.FC<CommitToSaleButtonProps> = ({
 }) => {
   const [isCommitting, setIsCommitting] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const { user } = useAuth();
 
   const timeRemaining = () => {
     const now = new Date();
@@ -62,15 +64,11 @@ const CommitToSaleButton: React.FC<CommitToSaleButtonProps> = ({
 
     setIsCommitting(true);
     try {
-      // Get current user ID (you might need to get this from auth context)
-      const user = await import("@/contexts/AuthContext").then((m) =>
-        m.useAuth(),
-      );
-      if (!user) {
+      if (!user?.id) {
         throw new Error("User not authenticated");
       }
 
-      await TransactionService.commitSale(transactionId, user.user?.id || "");
+      await TransactionService.commitSale(transactionId, user.id);
 
       toast.success("🎉 Sale committed successfully!");
       setShowConfirmDialog(false);

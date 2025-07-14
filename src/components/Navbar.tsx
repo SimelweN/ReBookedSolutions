@@ -6,19 +6,22 @@ import {
   BookOpen,
   Menu,
   X,
-  Plus,
   User,
   LogOut,
   UserPlus,
   Truck,
   GraduationCap,
   CreditCard,
+  Package,
+  ShoppingCart,
+  Bell,
 } from "lucide-react";
 import AdminAccess from "./AdminAccess";
 import CartButton from "./CartButton";
-import NotificationBadge from "./NotificationBadge";
+import SimpleNotificationBell from "./SimpleNotificationBell";
 import { toast } from "sonner";
 import { preloadOnHover } from "@/utils/routePreloader";
+import { handleProfileImageError } from "@/utils/fallbackHelpers";
 
 const Navbar = () => {
   const { user, logout, isAuthenticated, profile } = useAuth();
@@ -62,8 +65,7 @@ const Navbar = () => {
                 <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
               <span className="text-lg sm:text-xl font-bold text-book-600 truncate">
-                <span className="hidden sm:inline">ReBooked Solutions</span>
-                <span className="sm:hidden">ReBooked Solutions</span>
+                ReBooked Solutions
               </span>
             </Link>
           </div>
@@ -109,28 +111,24 @@ const Navbar = () => {
             {isAuthenticated ? (
               <>
                 <CartButton />
-
-                <NotificationBadge
-                  allowRetry={true}
-                  showErrorIndicator={true}
-                  className="text-gray-700 hover:text-book-600"
-                />
+                <SimpleNotificationBell />
 
                 <div className="flex items-center space-x-1 lg:space-x-2">
                   <Link
                     to="/profile"
                     onMouseEnter={() => preloadOnHover("/profile")}
+                    title="Profile"
                   >
                     <Button
                       variant="ghost"
                       className="text-gray-700 hover:text-book-600 p-2 h-10 w-10 rounded-full"
-                      title={profile?.name || user?.email || "Profile"}
                     >
                       {profile?.profile_picture_url ? (
                         <img
                           src={profile.profile_picture_url}
                           alt={profile?.name || "Profile"}
                           className="w-6 h-6 rounded-full object-cover"
+                          onError={(e) => handleProfileImageError(e, "w-5 h-5")}
                         />
                       ) : (
                         <User className="w-5 h-5" />
@@ -233,69 +231,68 @@ const Navbar = () => {
                 <>
                   <div className="border-t border-gray-100 pt-3 mt-3">
                     <Link
-                      to="/create-listing"
-                      className="flex items-center px-4 py-3 text-base font-medium text-white bg-book-600 rounded-md min-h-[44px]"
+                      to="/profile"
+                      className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-book-600 rounded-md min-h-[44px] mb-2"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <Plus className="w-5 h-5 mr-2" />
-                      Sell Book
+                      {profile?.profile_picture_url ? (
+                        <img
+                          src={profile.profile_picture_url}
+                          alt="Profile"
+                          className="w-6 h-6 rounded-full object-cover mr-3"
+                          onError={(e) =>
+                            handleProfileImageError(e, "w-5 h-5 mr-3")
+                          }
+                        />
+                      ) : (
+                        <User className="w-5 h-5 mr-3" />
+                      )}
+                      Profile
                     </Link>
-                  </div>
 
-                  <Link
-                    to="/payments"
-                    className={`flex items-center px-4 py-3 text-base font-medium rounded-md min-h-[44px] transition-colors ${
-                      isActive("/payments")
-                        ? "bg-book-50 text-book-600"
-                        : "text-gray-700 hover:bg-gray-50 hover:text-book-600"
-                    }`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <CreditCard className="w-5 h-5 mr-3" />
-                    Payments
-                  </Link>
+                    <Link
+                      to="/notifications"
+                      className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-book-600 rounded-md min-h-[44px] mb-2 relative"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <div className="relative mr-3">
+                        <Bell className="w-5 h-5" />
+                        {/* Mock notification badge - in real app this would be dynamic */}
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
+                          2
+                        </span>
+                      </div>
+                      Notifications
+                    </Link>
 
-                  <Link
-                    to="/notifications"
-                    className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-book-600 rounded-md min-h-[44px]"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <NotificationBadge
-                      className="mr-3"
-                      iconSize="w-5 h-5"
-                      allowRetry={true}
-                      showErrorIndicator={true}
-                    />
-                    <span>Notifications</span>
-                  </Link>
+                    <Link
+                      to="/cart"
+                      className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-book-600 rounded-md min-h-[44px] mb-2"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <ShoppingCart className="w-5 h-5 mr-3" />
+                      Cart
+                    </Link>
 
-                  <Link
-                    to="/profile"
-                    className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-book-600 rounded-md min-h-[44px]"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {profile?.profile_picture_url ? (
-                      <img
-                        src={profile.profile_picture_url}
-                        alt="Profile"
-                        className="w-6 h-6 rounded-full object-cover mr-3"
+                    {/* Admin Access in Mobile Menu */}
+                    <div className="mb-2">
+                      <AdminAccess
+                        isMobile={true}
+                        onMenuClose={() => setIsMenuOpen(false)}
                       />
-                    ) : (
-                      <User className="w-5 h-5 mr-3" />
-                    )}
-                    Profile
-                  </Link>
+                    </div>
 
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setIsMenuOpen(false);
-                    }}
-                    className="flex items-center w-full text-left px-4 py-3 text-base font-medium text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-md min-h-[44px]"
-                  >
-                    <LogOut className="w-5 h-5 mr-3" />
-                    Logout
-                  </button>
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center w-full text-left px-4 py-3 text-base font-medium text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-md min-h-[44px]"
+                    >
+                      <LogOut className="w-5 h-5 mr-3" />
+                      Logout
+                    </button>
+                  </div>
                 </>
               ) : (
                 <div className="border-t border-gray-100 pt-3 mt-3 space-y-2">

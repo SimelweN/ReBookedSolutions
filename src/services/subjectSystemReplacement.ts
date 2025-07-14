@@ -77,4 +77,6 @@ export function getSubjectStatus(
   };
 }
 
-console.log("✅ NEW SUBJECT SYSTEM loaded - All old matching logic replaced");
+if (typeof window !== "undefined") {
+  console.log("✅ NEW SUBJECT SYSTEM loaded - All old matching logic replaced");
+}

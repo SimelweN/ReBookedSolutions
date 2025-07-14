@@ -5,10 +5,18 @@ import {
 } from "@/services/commitService";
 import { toast } from "sonner";
 
+interface PendingCommit {
+  id: string;
+  book_id: string;
+  buyer_id: string;
+  created_at: string;
+  status: string;
+}
+
 interface UseCommitReturn {
   isCommitting: boolean;
   commitBook: (bookId: string) => Promise<void>;
-  pendingCommits: any[];
+  pendingCommits: PendingCommit[];
   refreshPendingCommits: () => Promise<void>;
   isLoading: boolean;
 }
@@ -19,7 +27,7 @@ interface UseCommitReturn {
  */
 export const useCommit = (): UseCommitReturn => {
   const [isCommitting, setIsCommitting] = useState(false);
-  const [pendingCommits, setPendingCommits] = useState<any[]>([]);
+  const [pendingCommits, setPendingCommits] = useState<PendingCommit[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const commitBook = useCallback(

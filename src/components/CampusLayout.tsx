@@ -28,309 +28,119 @@ const CampusLayout = ({ children }: CampusLayoutProps) => {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav
-        style={{
-          backgroundColor: "rgb(255, 255, 255)",
-          boxShadow:
-            "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
-          position: "sticky",
-          top: "0px",
-          zIndex: "50",
-        }}
-      >
-        <div
-          style={{
-            marginLeft: "auto",
-            marginRight: "auto",
-            maxWidth: "1280px",
-            paddingLeft: "24px",
-            paddingRight: "24px",
-          }}
-        >
-          <div
-            style={{
-              alignItems: "center",
-              display: "flex",
-              height: "64px",
-              justifyContent: "space-between",
-            }}
-          >
+      <nav className="bg-white shadow-lg sticky top-0 z-50">
+        <div className="mx-auto max-w-screen-xl px-6">
+          <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <div
-              style={{
-                alignItems: "center",
-                display: "flex",
-              }}
-            >
+            <div className="flex items-center">
               <button
                 onClick={() => handleNavigation("/")}
-                style={{
-                  alignItems: "center",
-                  cursor: "pointer",
-                  display: "flex",
-                  background: "none",
-                  border: "none",
-                  padding: "0",
-                }}
+                className="flex items-center cursor-pointer bg-transparent border-none p-0"
               >
-                <div
-                  style={{
-                    alignItems: "center",
-                    backgroundColor: "rgb(21, 115, 71)",
-                    borderRadius: "12px",
-                    cursor: "pointer",
-                    display: "flex",
-                    height: "32px",
-                    justifyContent: "center",
-                    width: "32px",
-                  }}
-                >
-                  <span
-                    style={{
-                      color: "rgb(255, 255, 255)",
-                      cursor: "pointer",
-                      fontSize: "18px",
-                      fontWeight: "700",
-                      lineHeight: "28px",
-                    }}
-                  >
+                <div className="flex items-center justify-center w-8 h-8 bg-green-700 rounded-xl cursor-pointer">
+                  <span className="text-white text-lg font-bold leading-7">
                     R
                   </span>
                 </div>
-                <span
-                  style={{
-                    color: "rgb(21, 115, 71)",
-                    cursor: "pointer",
-                    fontSize: "20px",
-                    fontWeight: "700",
-                    lineHeight: "28px",
-                    marginLeft: "8px",
-                  }}
-                >
+                <span className="text-green-700 text-xl font-bold leading-7 ml-2">
                   ReBooked Solutions
                 </span>
               </button>
             </div>
 
             {/* Desktop Navigation */}
-            <div
-              style={{ display: window.innerWidth >= 768 ? "block" : "none" }}
-            >
-              <div
-                style={{
-                  alignItems: "baseline",
-                  display: "flex",
-                  marginLeft: "40px",
-                }}
-              >
+            <div className="hidden md:block">
+              <div className="flex items-baseline ml-10 space-x-4">
                 <button
                   onClick={() => handleNavigation("/")}
-                  style={{
-                    borderRadius: "10px",
-                    color: isActive("/")
-                      ? "rgb(21, 115, 71)"
-                      : "rgb(55, 65, 81)",
-                    backgroundColor: isActive("/")
-                      ? "rgb(230, 244, 234)"
-                      : "transparent",
-                    cursor: "pointer",
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    lineHeight: "20px",
-                    paddingBottom: "8px",
-                    paddingLeft: "12px",
-                    paddingRight: "12px",
-                    paddingTop: "8px",
-                    border: "none",
-                    transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
-                  }}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+                    isActive("/")
+                      ? "text-green-700 bg-green-50"
+                      : "text-gray-700 hover:text-green-700 hover:bg-green-50"
+                  }`}
                 >
                   Home
                 </button>
                 <button
                   onClick={() => handleNavigation("/university-info")}
-                  style={{
-                    backgroundColor: isActive("/university-info")
-                      ? "rgb(230, 244, 234)"
-                      : "transparent",
-                    borderRadius: "10px",
-                    color: isActive("/university-info")
-                      ? "rgb(21, 115, 71)"
-                      : "rgb(55, 65, 81)",
-                    cursor: "pointer",
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    lineHeight: "20px",
-                    marginLeft: "16px",
-                    paddingBottom: "8px",
-                    paddingLeft: "12px",
-                    paddingRight: "12px",
-                    paddingTop: "8px",
-                    border: "none",
-                    transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
-                  }}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+                    isActive("/university-info")
+                      ? "text-green-700 bg-green-50"
+                      : "text-gray-700 hover:text-green-700 hover:bg-green-50"
+                  }`}
                 >
-                  Browse Universities
+                  University Info
                 </button>
                 <button
                   onClick={() => handleNavigation("/books")}
-                  style={{
-                    borderRadius: "10px",
-                    color:
-                      location.pathname === "/books"
-                        ? "rgb(21, 115, 71)"
-                        : "rgb(55, 65, 81)",
-                    backgroundColor:
-                      location.pathname === "/books"
-                        ? "rgb(230, 244, 234)"
-                        : "transparent",
-                    cursor: "pointer",
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    lineHeight: "20px",
-                    marginLeft: "16px",
-                    paddingBottom: "8px",
-                    paddingLeft: "12px",
-                    paddingRight: "12px",
-                    paddingTop: "8px",
-                    border: "none",
-                    transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
-                  }}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+                    isActive("/books")
+                      ? "text-green-700 bg-green-50"
+                      : "text-gray-700 hover:text-green-700 hover:bg-green-50"
+                  }`}
                 >
-                  Books
+                  Browse Books
                 </button>
               </div>
             </div>
 
-            {/* Mobile Menu Button */}
-            <div
-              style={{ display: window.innerWidth < 768 ? "block" : "none" }}
-            >
+            {/* Mobile menu button */}
+            <div className="md:hidden">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                style={{
-                  alignItems: "center",
-                  borderRadius: "10px",
-                  color: "rgb(55, 65, 81)",
-                  cursor: "pointer",
-                  display: "inline-flex",
-                  fontSize: "14px",
-                  fontWeight: "500",
-                  gap: "8px",
-                  height: "36px",
-                  justifyContent: "center",
-                  paddingLeft: "12px",
-                  paddingRight: "12px",
-                  backgroundColor: "transparent",
-                  border: "none",
-                  transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
-                }}
+                className="flex items-center justify-center p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+                aria-label="Toggle mobile menu"
               >
                 {isMobileMenuOpen ? (
-                  <X style={{ height: "16px", width: "16px" }} />
+                  <X className="w-4 h-4" />
                 ) : (
-                  <Menu style={{ height: "16px", width: "16px" }} />
+                  <Menu className="w-4 h-4" />
                 )}
               </button>
             </div>
           </div>
-
-          {/* Mobile Menu */}
-          {isMobileMenuOpen && (
-            <div
-              style={{
-                paddingBottom: "16px",
-                paddingTop: "8px",
-                borderTop: "1px solid rgb(243, 244, 246)",
-              }}
-            >
-              <div
-                style={{ display: "flex", flexDirection: "column", gap: "8px" }}
-              >
-                <button
-                  onClick={() => handleNavigation("/")}
-                  style={{
-                    borderRadius: "10px",
-                    color: isActive("/")
-                      ? "rgb(21, 115, 71)"
-                      : "rgb(55, 65, 81)",
-                    backgroundColor: isActive("/")
-                      ? "rgb(230, 244, 234)"
-                      : "transparent",
-                    cursor: "pointer",
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    lineHeight: "20px",
-                    paddingBottom: "8px",
-                    paddingLeft: "12px",
-                    paddingRight: "12px",
-                    paddingTop: "8px",
-                    border: "none",
-                    textAlign: "left",
-                    width: "100%",
-                  }}
-                >
-                  Home
-                </button>
-                <button
-                  onClick={() => handleNavigation("/university-info")}
-                  style={{
-                    backgroundColor: isActive("/university-info")
-                      ? "rgb(230, 244, 234)"
-                      : "transparent",
-                    borderRadius: "10px",
-                    color: isActive("/university-info")
-                      ? "rgb(21, 115, 71)"
-                      : "rgb(55, 65, 81)",
-                    cursor: "pointer",
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    lineHeight: "20px",
-                    paddingBottom: "8px",
-                    paddingLeft: "12px",
-                    paddingRight: "12px",
-                    paddingTop: "8px",
-                    border: "none",
-                    textAlign: "left",
-                    width: "100%",
-                  }}
-                >
-                  Browse Universities
-                </button>
-                <button
-                  onClick={() => handleNavigation("/books")}
-                  style={{
-                    borderRadius: "10px",
-                    color:
-                      location.pathname === "/books"
-                        ? "rgb(21, 115, 71)"
-                        : "rgb(55, 65, 81)",
-                    backgroundColor:
-                      location.pathname === "/books"
-                        ? "rgb(230, 244, 234)"
-                        : "transparent",
-                    cursor: "pointer",
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    lineHeight: "20px",
-                    paddingBottom: "8px",
-                    paddingLeft: "12px",
-                    paddingRight: "12px",
-                    paddingTop: "8px",
-                    border: "none",
-                    textAlign: "left",
-                    width: "100%",
-                  }}
-                >
-                  Books
-                </button>
-              </div>
-            </div>
-          )}
         </div>
+
+        {/* Mobile Navigation */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-white border-t pb-4 pt-2">
+            <div className="flex flex-col space-y-2 px-6">
+              <button
+                onClick={() => handleNavigation("/")}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 text-left ${
+                  isActive("/")
+                    ? "text-green-700 bg-green-50"
+                    : "text-gray-700 hover:text-green-700 hover:bg-green-50"
+                }`}
+              >
+                Home
+              </button>
+              <button
+                onClick={() => handleNavigation("/university-info")}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 text-left ${
+                  isActive("/university-info")
+                    ? "text-green-700 bg-green-50"
+                    : "text-gray-700 hover:text-green-700 hover:bg-green-50"
+                }`}
+              >
+                University Info
+              </button>
+              <button
+                onClick={() => handleNavigation("/books")}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 text-left ${
+                  isActive("/books")
+                    ? "text-green-700 bg-green-50"
+                    : "text-gray-700 hover:text-green-700 hover:bg-green-50"
+                }`}
+              >
+                Browse Books
+              </button>
+            </div>
+          </div>
+        )}
       </nav>
 
-      {/* Main content area */}
+      {/* Content */}
       <main className="flex-1">{children}</main>
     </div>
   );

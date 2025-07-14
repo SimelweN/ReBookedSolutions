@@ -1,5 +1,4 @@
-import * as React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -270,33 +269,35 @@ const PaymentStatusTracker: React.FC<PaymentStatusTrackerProps> = ({
             </div>
           )}
 
-          {/* Payout Information */}
-          {order.status !== "pending" && order.status !== "failed" && (
-            <div className="border-t pt-4">
-              <h4 className="font-medium text-gray-900 mb-2 flex items-center">
-                <DollarSign className="w-4 h-4 mr-1" />
-                Payout Breakdown
-              </h4>
-              <div className="space-y-1 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Order Total:</span>
-                  <span>{formatAmount(order.amount)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Platform Fee (10%):</span>
-                  <span className="text-red-600">
-                    -{formatAmount(Math.round(order.amount * 0.1))}
-                  </span>
-                </div>
-                <div className="flex justify-between font-medium border-t pt-1">
-                  <span>Seller Receives:</span>
-                  <span className="text-green-600">
-                    {formatAmount(getSellerAmount(order.amount))}
-                  </span>
+          {/* Payout Information - Only show to sellers */}
+          {order.status !== "pending" &&
+            order.status !== "failed" &&
+            user?.id === order.seller_id && (
+              <div className="border-t pt-4">
+                <h4 className="font-medium text-gray-900 mb-2 flex items-center">
+                  <DollarSign className="w-4 h-4 mr-1" />
+                  Your Payout
+                </h4>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Order Total:</span>
+                    <span>{formatAmount(order.amount)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Platform Fee (10%):</span>
+                    <span className="text-red-600">
+                      -{formatAmount(Math.round(order.amount * 0.1))}
+                    </span>
+                  </div>
+                  <div className="flex justify-between font-medium border-t pt-1">
+                    <span>You Receive:</span>
+                    <span className="text-green-600">
+                      {formatAmount(getSellerAmount(order.amount))}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
         </CardContent>
       </Card>
 

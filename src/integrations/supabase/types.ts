@@ -81,9 +81,63 @@ export type Database = {
         };
         Relationships: [];
       };
+      banking_subaccounts: {
+        Row: {
+          id: string;
+          business_name: string;
+          email: string;
+          bank_name: string;
+          bank_code: string;
+          account_number: string;
+          subaccount_code: string | null;
+          paystack_response: Json | null;
+          status: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+          user_id: string;
+        };
+        Insert: {
+          id?: string;
+          business_name: string;
+          email: string;
+          bank_name: string;
+          bank_code: string;
+          account_number: string;
+          subaccount_code?: string | null;
+          paystack_response?: Json | null;
+          status?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+          user_id: string;
+        };
+        Update: {
+          id?: string;
+          business_name?: string;
+          email?: string;
+          bank_name?: string;
+          bank_code?: string;
+          account_number?: string;
+          subaccount_code?: string | null;
+          paystack_response?: Json | null;
+          status?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "banking_subaccounts_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       books: {
         Row: {
           author: string;
+          availability: string | null;
           back_cover: string | null;
           category: string;
           condition: string;
@@ -99,10 +153,13 @@ export type Database = {
           seller_id: string;
           sold: boolean;
           title: string;
+          university: string | null;
           university_year: string | null;
+          updated_at: string | null;
         };
         Insert: {
           author: string;
+          availability?: string | null;
           back_cover?: string | null;
           category: string;
           condition: string;
@@ -118,10 +175,13 @@ export type Database = {
           seller_id: string;
           sold?: boolean;
           title: string;
+          university?: string | null;
           university_year?: string | null;
+          updated_at?: string | null;
         };
         Update: {
           author?: string;
+          availability?: string | null;
           back_cover?: string | null;
           category?: string;
           condition?: string;
@@ -137,9 +197,19 @@ export type Database = {
           seller_id?: string;
           sold?: boolean;
           title?: string;
+          university?: string | null;
           university_year?: string | null;
+          updated_at?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "books_seller_id_fkey";
+            columns: ["seller_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       broadcasts: {
         Row: {
@@ -278,6 +348,133 @@ export type Database = {
         };
         Relationships: [];
       };
+      orders: {
+        Row: {
+          id: string;
+          buyer_id: string | null;
+          buyer_email: string;
+          seller_id: string;
+          book_id: string;
+          book_title: string;
+          book_price: number;
+          paystack_ref: string;
+          amount: number;
+          delivery_fee: number;
+          platform_fee: number;
+          seller_amount: number;
+          status: string;
+          courier_provider: string | null;
+          courier_service: string | null;
+          courier_tracking_number: string | null;
+          courier_quote_id: string | null;
+          shipping_address: Json;
+          pickup_address: Json | null;
+          delivery_quote: Json | null;
+          collection_deadline: string | null;
+          delivery_deadline: string | null;
+          payment_held: boolean;
+          seller_notified_at: string | null;
+          seller_subaccount_code: string | null;
+          metadata: Json | null;
+          created_at: string;
+          updated_at: string;
+          paid_at: string | null;
+          collected_at: string | null;
+          delivered_at: string | null;
+          completed_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          buyer_id?: string | null;
+          buyer_email: string;
+          seller_id: string;
+          book_id: string;
+          book_title: string;
+          book_price: number;
+          paystack_ref: string;
+          amount: number;
+          delivery_fee?: number;
+          platform_fee?: number;
+          seller_amount: number;
+          status?: string;
+          courier_provider?: string | null;
+          courier_service?: string | null;
+          courier_tracking_number?: string | null;
+          courier_quote_id?: string | null;
+          shipping_address: Json;
+          pickup_address?: Json | null;
+          delivery_quote?: Json | null;
+          collection_deadline?: string | null;
+          delivery_deadline?: string | null;
+          payment_held?: boolean;
+          seller_notified_at?: string | null;
+          seller_subaccount_code?: string | null;
+          metadata?: Json | null;
+          created_at?: string;
+          updated_at?: string;
+          paid_at?: string | null;
+          collected_at?: string | null;
+          delivered_at?: string | null;
+          completed_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          buyer_id?: string | null;
+          buyer_email?: string;
+          seller_id?: string;
+          book_id?: string;
+          book_title?: string;
+          book_price?: number;
+          paystack_ref?: string;
+          amount?: number;
+          delivery_fee?: number;
+          platform_fee?: number;
+          seller_amount?: number;
+          status?: string;
+          courier_provider?: string | null;
+          courier_service?: string | null;
+          courier_tracking_number?: string | null;
+          courier_quote_id?: string | null;
+          shipping_address?: Json;
+          pickup_address?: Json | null;
+          delivery_quote?: Json | null;
+          collection_deadline?: string | null;
+          delivery_deadline?: string | null;
+          payment_held?: boolean;
+          seller_notified_at?: string | null;
+          seller_subaccount_code?: string | null;
+          metadata?: Json | null;
+          created_at?: string;
+          updated_at?: string;
+          paid_at?: string | null;
+          collected_at?: string | null;
+          delivered_at?: string | null;
+          completed_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "orders_buyer_id_fkey";
+            columns: ["buyer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_seller_id_fkey";
+            columns: ["seller_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_book_id_fkey";
+            columns: ["book_id"];
+            isOneToOne: false;
+            referencedRelation: "books";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profiles: {
         Row: {
           addresses_same: boolean | null;
@@ -292,6 +489,7 @@ export type Database = {
           profile_picture_url: string | null;
           shipping_address: Json | null;
           status: string | null;
+          subaccount_code: string | null;
           suspended_at: string | null;
           suspension_reason: string | null;
           updated_at: string;
@@ -309,6 +507,7 @@ export type Database = {
           profile_picture_url?: string | null;
           shipping_address?: Json | null;
           status?: string | null;
+          subaccount_code?: string | null;
           suspended_at?: string | null;
           suspension_reason?: string | null;
           updated_at?: string;
@@ -326,6 +525,7 @@ export type Database = {
           profile_picture_url?: string | null;
           shipping_address?: Json | null;
           status?: string | null;
+          subaccount_code?: string | null;
           suspended_at?: string | null;
           suspension_reason?: string | null;
           updated_at?: string;
@@ -440,6 +640,130 @@ export type Database = {
           notified?: boolean;
         };
         Relationships: [];
+      };
+      study_resources: {
+        Row: {
+          id: string;
+          title: string;
+          description: string;
+          content: string | null;
+          resource_type: string;
+          university_id: string;
+          course_code: string;
+          year_level: number;
+          semester: string | null;
+          tags: string[];
+          file_url: string | null;
+          file_size: number | null;
+          file_type: string | null;
+          created_by: string;
+          is_verified: boolean;
+          download_count: number;
+          rating: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description: string;
+          content?: string | null;
+          resource_type: string;
+          university_id: string;
+          course_code: string;
+          year_level: number;
+          semester?: string | null;
+          tags?: string[];
+          file_url?: string | null;
+          file_size?: number | null;
+          file_type?: string | null;
+          created_by: string;
+          is_verified?: boolean;
+          download_count?: number;
+          rating?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          description?: string;
+          content?: string | null;
+          resource_type?: string;
+          university_id?: string;
+          course_code?: string;
+          year_level?: number;
+          semester?: string | null;
+          tags?: string[];
+          file_url?: string | null;
+          file_size?: number | null;
+          file_type?: string | null;
+          created_by?: string;
+          is_verified?: boolean;
+          download_count?: number;
+          rating?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "study_resources_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      file_uploads: {
+        Row: {
+          id: string;
+          user_id: string;
+          file_name: string;
+          file_path: string;
+          file_type: string;
+          file_size: number;
+          public_url: string;
+          folder: string;
+          metadata: Record<string, any>;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          file_name: string;
+          file_path: string;
+          file_type: string;
+          file_size: number;
+          public_url: string;
+          folder: string;
+          metadata?: Record<string, any>;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          file_name?: string;
+          file_path?: string;
+          file_type?: string;
+          file_size?: number;
+          public_url?: string;
+          folder?: string;
+          metadata?: Record<string, any>;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "file_uploads_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
     };
     Views: {

@@ -134,6 +134,7 @@ const Register = () => {
                       className="pl-10"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      autoComplete="new-password"
                       required
                     />
                   </div>
@@ -152,6 +153,7 @@ const Register = () => {
                       className="pl-10"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
+                      autoComplete="new-password"
                       required
                     />
                   </div>

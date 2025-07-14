@@ -5,6 +5,7 @@ import SEO from "@/components/SEO";
 import OptimizedImage from "@/components/OptimizedImage";
 import { Button } from "@/components/ui/button";
 import { Search, BookOpen } from "lucide-react";
+import EnhancedDatabaseSetupStatus from "@/components/EnhancedDatabaseSetupStatus";
 
 const Index = React.memo(() => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -14,7 +15,6 @@ const Index = React.memo(() => {
     (e: React.FormEvent) => {
       e.preventDefault();
       if (searchQuery.trim()) {
-        console.log("Searching for:", searchQuery.trim());
         navigate(`/books?search=${encodeURIComponent(searchQuery.trim())}`);
       }
     },
@@ -43,9 +43,9 @@ const Index = React.memo(() => {
       />
 
       {/* Mobile-Optimized Hero Section */}
-      <section className="bg-gradient-to-r from-book-100 to-book-200 py-12 sm:py-16 lg:py-20">
-        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2 mb-8 md:mb-0 text-center md:text-left">
+      <section className="bg-gradient-to-r from-book-100 to-book-200 py-8 sm:py-12 md:py-16 lg:py-20">
+        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center gap-6 md:gap-8">
+          <div className="md:w-1/2 text-center md:text-left">
             <div className="mb-4">
               <span className="inline-block bg-book-600/10 text-book-700 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium italic">
                 "Pre-Loved Pages, New Adventures"
@@ -76,15 +76,15 @@ const Index = React.memo(() => {
               </Button>
             </div>
           </div>
-          <div className="md:w-1/2 flex justify-center">
+          <div className="md:w-1/2 flex justify-center mt-6 md:mt-0">
             <OptimizedImage
               src="https://cdn.builder.io/api/v1/assets/4b236342bc954bc3a0760c75cd3f3881/pexels-yankrukov-8199706-ad0e6d"
               alt="Three diverse students smiling with stacks of textbooks in library"
               width={600}
               height={400}
               priority={true}
-              className="rounded-lg shadow-xl max-w-full h-auto w-full max-w-sm md:max-w-full lg:max-w-[715px] lg:mx-auto"
-              containerClassName="w-full"
+              className="rounded-lg shadow-xl w-full h-auto object-cover aspect-[4/3] sm:aspect-[3/2] max-w-xs sm:max-w-sm md:max-w-lg mx-auto"
+              containerClassName="w-full px-4 sm:px-0"
             />
           </div>
         </div>
@@ -139,6 +139,13 @@ const Index = React.memo(() => {
               </Link>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Database Setup Status */}
+      <section className="py-8 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <EnhancedDatabaseSetupStatus />
         </div>
       </section>
 

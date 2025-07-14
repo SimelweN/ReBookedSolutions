@@ -49,6 +49,21 @@ const shouldLogBookError = (): boolean => {
 // Enhanced error logging function with spam protection
 const logDetailedError = (context: string, error: any, details?: any) => {
   if (shouldLogBookError()) {
+    // Extract proper error message
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : error?.message ||
+          (typeof error === "string" ? error : JSON.stringify(error, null, 2));
+    const errorCode = error?.code || error?.error_code || "NO_CODE";
+
+    console.error(`[${context}] ${errorMessage} (Code: ${errorCode})`);
+
+    if (details) {
+      console.error(`[${context}] Details:`, details);
+    }
+
+    // Also log the structured error info
     logError(context, error);
   }
 };
@@ -119,10 +134,15 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
           setTimeout(() => reject(new Error("Query timeout")), 5000),
         );
 
-        const { data: booksData, error: booksError } = (await Promise.race([
-          booksPromise,
-          timeoutPromise,
-        ])) as any;
+        const queryResult = await Promise.race([booksPromise, timeoutPromise]);
+
+        // Handle timeout case
+        if (queryResult instanceof Error) {
+          console.error("[Books query] Query timed out");
+          throw queryResult;
+        }
+
+        const { data: booksData, error: booksError } = queryResult as any;
 
         if (booksError) {
           const errorMessage = booksError.message || "Unknown database error";
@@ -131,25 +151,66 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
           console.error(`[Books query failed] ${errorMessage}`);
           safeBooksLogError("Books query failed", booksError);
 
+          // Handle Supabase not configured gracefully
+          if (errorCode === "SUPABASE_NOT_CONFIGURED") {
+            console.warn(
+              "⚠️ Supabase not configured - returning empty books list",
+            );
+            return [];
+          }
+
+          // Handle database setup required (404 or table not found errors)
+          if (
+            errorCode === "TABLE_NOT_FOUND" ||
+            errorMessage.includes("404") ||
+            errorMessage.includes("does not exist") ||
+            errorMessage.includes("relation") ||
+            errorMessage.includes("table")
+          ) {
+            console.warn("📚 Books table not found - database setup required");
+            return [];
+          }
+
           throw new Error(
             `Failed to fetch books: ${errorMessage} (Code: ${errorCode})`,
           );
         }
 
-        if (!booksData || booksData.length === 0) {
+        // Ensure booksData is an array before proceeding
+        if (!booksData || !Array.isArray(booksData)) {
+          console.log(
+            "No books data or invalid data format, returning empty array",
+          );
+          return [];
+        }
+
+        if (booksData.length === 0) {
           console.log("No books found");
           return [];
         }
 
-        // Get unique seller IDs
-        const sellerIds = [...new Set(booksData.map((book) => book.seller_id))];
+        // Get unique seller IDs - now safe since we know booksData is an array
+        let sellerIds;
+        try {
+          sellerIds = [...new Set(booksData.map((book) => book.seller_id))];
+        } catch (mapError) {
+          console.error(
+            "Error mapping seller IDs:",
+            mapError,
+            "booksData type:",
+            typeof booksData,
+            "booksData:",
+            booksData,
+          );
+          return [];
+        }
 
         // Fetch seller profiles with fallback
         let profilesMap = new Map();
         try {
           const profilesPromise = supabase
             .from("profiles")
-            .select("id, name, email")
+            .select("id, name, email, pickup_address")
             .in("id", sellerIds);
 
           const profilesTimeout = new Promise((_, reject) =>
@@ -160,7 +221,18 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
             (await Promise.race([profilesPromise, profilesTimeout])) as any;
 
           if (profilesError) {
-            console.warn("Failed to fetch seller profiles, using fallbacks");
+            // Handle database setup required for profiles table
+            if (
+              profilesError.code === "TABLE_NOT_FOUND" ||
+              profilesError.message?.includes("404") ||
+              profilesError.message?.includes("does not exist")
+            ) {
+              console.warn(
+                "👤 Profiles table not found - database setup required",
+              );
+            } else {
+              console.warn("Failed to fetch seller profiles, using fallbacks");
+            }
           } else if (profilesData) {
             profilesData.forEach((profile: any) => {
               profilesMap.set(profile.id, profile);
@@ -177,43 +249,38 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
               id,
               name: "Unknown Seller",
               email: "unknown@example.com",
+              pickup_address: null,
             });
           }
         });
 
-        // Map books to include seller information
-        const books: Book[] = booksData.map((bookData: any) => {
-          const sellerProfile = profilesMap.get(bookData.seller_id) || {
-            id: bookData.seller_id,
-            name: "Unknown Seller",
-            email: "unknown@example.com",
-          };
+        // Map books using the book mapper for consistency
+        let books: Book[];
+        try {
+          books = booksData.map((bookData: any) => {
+            const sellerProfile = profilesMap.get(bookData.seller_id) || {
+              id: bookData.seller_id,
+              name: "Unknown Seller",
+              email: "unknown@example.com",
+              pickup_address: null,
+            };
 
-          // Create book object with safe fallbacks
-          return {
-            id: bookData.id,
-            title: bookData.title || "Untitled",
-            author: bookData.author || "Unknown Author",
-            price: bookData.price || 0,
-            condition: bookData.condition || "unknown",
-            category: bookData.category || "uncategorized",
-            grade: bookData.grade || "",
-            university: bookData.university || "",
-            universityYear: bookData.university_year || "",
-            description: bookData.description || "",
-            imageUrl: bookData.image_url || bookData.front_cover || "",
-            frontCover: bookData.front_cover || "",
-            backCover: bookData.back_cover || "",
-            sold: bookData.sold || false,
-            createdAt: bookData.created_at || new Date().toISOString(),
-            sellerId: bookData.seller_id,
-            seller: {
-              id: sellerProfile.id,
-              name: sellerProfile.name,
-              email: sellerProfile.email,
-            },
-          };
-        });
+            const bookDataWithProfile = {
+              ...bookData,
+              profiles: sellerProfile,
+            };
+
+            return mapBookFromDatabase(bookDataWithProfile, sellerProfile);
+          });
+        } catch (mappingError) {
+          console.error(
+            "Error mapping books:",
+            mappingError,
+            "booksData type:",
+            typeof booksData,
+          );
+          return [];
+        }
 
         console.log(
           "✅ [BookQueries] Successfully processed books:",
@@ -237,12 +304,13 @@ export const getBooks = async (filters: BookFilters = {}): Promise<Book[]> => {
 
 export const getBookById = async (id: string): Promise<Book | null> => {
   try {
-    console.log("Fetching book by ID:", id);
+    console.log("🔍 [getBookById] Starting fetch for book ID:", id);
 
     // Validate UUID format before making database call
     const uuidRegex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(id)) {
+      console.error("❌ [getBookById] Invalid UUID format:", id);
       const error = new Error(
         "Invalid book ID format. Please check the link and try again.",
       );
@@ -252,61 +320,153 @@ export const getBookById = async (id: string): Promise<Book | null> => {
 
     return await retryWithConnection(
       async () => {
-        const { data: bookData, error: bookError } = await supabase
+        console.log("🔄 [getBookById] Making database query for book:", id);
+
+        // Test basic connection first
+        try {
+          const { error: connectionError } = await supabase
+            .from("books")
+            .select("id")
+            .limit(1);
+
+          if (connectionError) {
+            console.error(
+              "❌ [getBookById] Connection test failed:",
+              connectionError,
+            );
+            throw new Error(
+              `Database connection failed: ${connectionError.message}`,
+            );
+          }
+          console.log("✅ [getBookById] Database connection test passed");
+        } catch (error) {
+          console.error("❌ [getBookById] Connection test error:", error);
+          throw error;
+        }
+
+        // First get book data - try with all fields
+        let { data: bookData, error: bookError } = await supabase
           .from("books")
-          .select("*")
+          .select(
+            `
+            id,
+            title,
+            author,
+            description,
+            price,
+            category,
+            condition,
+            image_url,
+            front_cover,
+            back_cover,
+            inside_pages,
+            sold,
+            availability,
+            created_at,
+            updated_at,
+            grade,
+            university_year,
+            university,
+            province,
+            seller_id,
+            subaccount_code
+          `,
+          )
           .eq("id", id)
           .single();
+
+        // If that fails, try with minimal fields (in case there are missing columns)
+        if (bookError && bookError.code === "42703") {
+          console.log(
+            "⚠️ [getBookById] Some columns missing, trying with basic fields...",
+          );
+          const basicQuery = await supabase
+            .from("books")
+            .select(
+              `
+              id,
+              title,
+              author,
+              description,
+              price,
+              category,
+              condition,
+              image_url,
+              sold,
+              created_at,
+              seller_id
+            `,
+            )
+            .eq("id", id)
+            .single();
+
+          bookData = basicQuery.data;
+          bookError = basicQuery.error;
+        }
+
+        console.log("📊 [getBookById] Book query result:", {
+          bookData,
+          bookError,
+        });
 
         if (bookError) {
           if (bookError.code === "PGRST116") {
             // Not found - not an error, just return null
-            console.log(`Book not found with ID: ${id}`);
+            console.log(`⚠️ [getBookById] Book not found with ID: ${id}`);
             return null;
           }
-
-          const errorMessage = bookError.message || "Unknown database error";
-          const errorCode = bookError.code || "NO_CODE";
-
-          logDetailedError("Failed to fetch book by ID", {
-            bookId: id,
-            error: bookError,
-            code: errorCode,
-          });
-
-          throw new Error(
-            `Failed to fetch book: ${errorMessage} (Code: ${errorCode})`,
-          );
+          console.error("❌ [getBookById] Book query error:", bookError);
+          throw bookError;
         }
 
         if (!bookData) {
-          console.log(`No book found with ID: ${id}`);
+          console.log(`⚠️ [getBookById] No book data returned for ID: ${id}`);
           return null;
         }
 
-        // Fetch seller profile separately
-        const { data: sellerProfile, error: sellerError } = await supabase
+        console.log(
+          "✅ [getBookById] Book data fetched successfully, fetching seller profile...",
+        );
+
+        // Then get seller profile separately (including pickup_address for hasAddress check)
+        const { data: profileData, error: profileError } = await supabase
           .from("profiles")
-          .select("id, name, email")
+          .select("id, name, email, pickup_address")
           .eq("id", bookData.seller_id)
           .single();
 
-        if (sellerError) {
+        console.log("📊 [getBookById] Profile query result:", {
+          profileData,
+          profileError,
+        });
+
+        // Profile error is not critical - continue without it
+        if (profileError) {
           console.warn(
-            `Failed to fetch seller profile for book ${id}:`,
-            sellerError.message,
+            `⚠️ [getBookById] Could not fetch profile for seller ${bookData.seller_id}:`,
+            profileError,
           );
-          // Continue with fallback seller data instead of failing
         }
 
-        // Use mapBookFromDatabase with fallback seller data
-        const fallbackSeller = {
-          id: bookData.seller_id,
-          name: "Unknown Seller",
-          email: "unknown@example.com",
+        // Combine book and profile data
+        const bookDataWithProfile = {
+          ...bookData,
+          profiles: profileData || {
+            id: bookData.seller_id,
+            name: "Unknown Seller",
+            email: "unknown@example.com",
+            pickup_address: null,
+          },
         };
 
-        return mapBookFromDatabase(bookData, sellerProfile || fallbackSeller);
+        console.log("🔄 [getBookById] Mapping book data...");
+        const mappedBook = mapBookFromDatabase(
+          bookDataWithProfile,
+          profileData,
+        );
+        console.log("✅ [getBookById] Book mapped successfully:", mappedBook);
+
+        return mappedBook;
       },
       1,
       1000,
@@ -359,15 +519,22 @@ export const getBooksByUser = async (userId: string): Promise<Book[]> => {
           );
         }
 
-        if (!booksData || booksData.length === 0) {
+        if (!booksData || !Array.isArray(booksData)) {
+          console.log(
+            `No books data or invalid data format for user: ${userId}`,
+          );
+          return [];
+        }
+
+        if (booksData.length === 0) {
           console.log(`No books found for user: ${userId}`);
           return [];
         }
 
-        // Fetch seller profile
+        // Fetch seller profile (including pickup_address for hasAddress check)
         const { data: sellerProfile, error: sellerError } = await supabase
           .from("profiles")
-          .select("id, name, email")
+          .select("id, name, email, pickup_address")
           .eq("id", userId)
           .single();
 
@@ -375,6 +542,7 @@ export const getBooksByUser = async (userId: string): Promise<Book[]> => {
           id: userId,
           name: "Unknown Seller",
           email: "unknown@example.com",
+          pickup_address: null,
         };
 
         const seller = sellerProfile || fallbackSeller;
@@ -387,9 +555,24 @@ export const getBooksByUser = async (userId: string): Promise<Book[]> => {
         }
 
         // Map books using the seller profile
-        const books = booksData.map((bookData) =>
-          mapBookFromDatabase(bookData, seller),
-        );
+        let books;
+        try {
+          books = booksData.map((bookData) => {
+            const bookDataWithProfile = {
+              ...bookData,
+              profiles: seller,
+            };
+            return mapBookFromDatabase(bookDataWithProfile, seller);
+          });
+        } catch (mappingError) {
+          console.error(
+            "Error mapping books in getBooksByUser:",
+            mappingError,
+            "booksData type:",
+            typeof booksData,
+          );
+          return [];
+        }
 
         console.log(
           `✅ Successfully fetched ${books.length} books for user ${userId}`,

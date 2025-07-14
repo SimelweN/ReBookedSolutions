@@ -12,7 +12,12 @@ import {
 } from "lucide-react";
 
 interface APSRecoveryStatusProps {
-  userProfile: any;
+  userProfile: {
+    subjects: Array<{ subject: string; marks: number }>;
+    totalAPS: number;
+    lastUpdated: string;
+    isValid?: boolean;
+  } | null;
   storageSource: string;
   onRefresh?: () => void;
   className?: string;

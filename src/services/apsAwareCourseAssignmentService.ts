@@ -9,7 +9,7 @@ import {
 import { ALL_SOUTH_AFRICAN_UNIVERSITIES } from "@/constants/universities/complete-26-universities";
 import { calculateAPS, validateAPSSubjects } from "@/utils/apsCalculation";
 import { validateAssignmentRule } from "@/utils/enhancedValidation";
-import { logError } from "./systemMonitoringService";
+import { logError } from "@/utils/systemLogger";
 import { adaptToOldFormat } from "./newSubjectEngine";
 
 /**

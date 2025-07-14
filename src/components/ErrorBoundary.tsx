@@ -54,12 +54,39 @@ class ErrorBoundary extends Component<Props, State> {
   };
 
   private handleReload = () => {
-    window.location.reload();
+    try {
+      window.location.reload();
+    } catch (error) {
+      console.error("Page reload failed:", error);
+      // Fallback: try navigation to homepage
+      try {
+        window.location.href = "/";
+      } catch (navError) {
+        console.error("Navigation fallback also failed:", navError);
+        alert(
+          "Unable to reload the page. Please manually refresh your browser.",
+        );
+      }
+    }
   };
 
   private handleGoHome = () => {
-    // Use window.location as fallback since router might be broken in error state
-    window.location.href = "/";
+    try {
+      // Use window.location as fallback since router might be broken in error state
+      window.location.href = "/";
+    } catch (error) {
+      // Ultimate fallback: try to reload the page
+      console.error("Navigation failed:", error);
+      try {
+        window.location.reload();
+      } catch (reloadError) {
+        console.error("Reload also failed:", reloadError);
+        // Show user message as last resort
+        alert(
+          "Navigation failed. Please manually refresh the page or go to the homepage.",
+        );
+      }
+    }
   };
 
   public render() {
@@ -80,7 +107,7 @@ class ErrorBoundary extends Component<Props, State> {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {this.state.error && process.env.NODE_ENV === "development" && (
+              {this.state.error && import.meta.env.DEV && (
                 <details className="text-sm bg-gray-100 p-3 rounded-md">
                   <summary className="cursor-pointer font-medium text-gray-700 mb-2">
                     <Bug className="w-4 h-4 inline mr-1" />

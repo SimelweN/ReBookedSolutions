@@ -36,6 +36,7 @@ import {
   BookOpen,
   Lightbulb,
   FileText,
+  Settings,
 } from "lucide-react";
 
 interface AdminUtilitiesTabProps {
@@ -835,6 +836,8 @@ const AdminUtilitiesTab = ({ className }: AdminUtilitiesTabProps) => {
           </CardContent>
         </Card>
       )}
+
+      {/* Note: Demo testing functionality has been moved to QA Dashboard in Admin Panel */}
     </div>
   );
 };

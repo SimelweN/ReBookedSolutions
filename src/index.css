@@ -4,9 +4,13 @@
 /* Mobile Improvements */
 @import "./styles/mobile-improvements.css";
 @import "./styles/campus-enhanced.css";
+@import "./styles/university-profile-mobile.css";
 
 /* Campus transitions and animations */
 @import "./styles/campus-transitions.css";
+
+/* Enhanced toast notifications */
+@import "./styles/toast.css";
 
 @tailwind base;
 @tailwind components;

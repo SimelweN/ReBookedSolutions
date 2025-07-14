@@ -408,13 +408,16 @@ const UniversityInfo = () => {
                     className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
                     onError={(e) => {
                       e.currentTarget.style.display = "none";
-                      e.currentTarget.nextElementSibling.style.display =
-                        "block";
+                      const fallback = e.currentTarget
+                        .nextElementSibling as HTMLElement;
+                      if (fallback) {
+                        fallback.style.display = "flex";
+                      }
                     }}
                   />
                 ) : null}
                 <div
-                  className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-book-500 to-book-600 rounded-lg flex items-center justify-center text-white font-bold text-xs sm:text-sm ${universityData?.logo ? "hidden" : "block"}`}
+                  className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-book-500 to-book-600 rounded-lg ${universityData?.logo ? "hidden" : "flex"} items-center justify-center text-white font-bold text-xs sm:text-sm`}
                 >
                   {applicationInfo.abbreviation}
                 </div>

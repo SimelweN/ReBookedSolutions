@@ -76,10 +76,14 @@ const BookListing = () => {
       if (priceRange[0] > 0) filters.minPrice = priceRange[0];
       if (priceRange[1] < 1000) filters.maxPrice = priceRange[1];
 
-      console.log("Applied filters:", filters);
+      if (import.meta.env.MODE !== "production") {
+        console.log("Applied filters:", filters);
+      }
 
       const loadedBooks = await getBooks(filters);
-      console.log("Loaded books count:", loadedBooks.length);
+      if (import.meta.env.MODE !== "production") {
+        console.log("Loaded books count:", loadedBooks.length);
+      }
 
       // Ensure we have an array
       const booksArray = Array.isArray(loadedBooks) ? loadedBooks : [];
@@ -91,7 +95,9 @@ const BookListing = () => {
       });
 
       if (booksArray.length === 0) {
-        console.log("No books found with current filters");
+        if (import.meta.env.MODE !== "production") {
+          console.log("No books found with current filters");
+        }
       }
     } catch (error) {
       const errorDetails = {
@@ -127,13 +133,11 @@ const BookListing = () => {
 
   // Initial load
   useEffect(() => {
-    console.log("BookListing component mounted");
     loadBooks();
   }, [loadBooks]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Search submitted with query:", searchQuery);
     updateFilters();
   };
 
