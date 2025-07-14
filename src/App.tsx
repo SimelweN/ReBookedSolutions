@@ -13,7 +13,7 @@ import NoScriptFallback from "./components/NoScriptFallback";
 import LoadingFallback from "./components/LoadingFallback";
 import NotificationWrapper from "./components/notifications/NotificationWrapper";
 import NotificationInitializer from "./components/notifications/NotificationInitializer";
-import { Toaster } from "./components/ui/sonner";
+
 import StartupChecker from "./components/StartupChecker";
 import { validateEnvironment } from "./config/environment";
 import { useCommitAutoExpiry } from "./hooks/useCommitAutoExpiry";
@@ -688,7 +688,6 @@ function App() {
                 </Router>
                 <NotificationWrapper position="top-right" maxVisible={3} />
                 <NotificationInitializer />
-                <Toaster />
               </CartProvider>
             </AuthProvider>
           </ThemeProvider>
